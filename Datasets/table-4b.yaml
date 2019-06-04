@@ -1,0 +1,20 @@
+statementMapping:
+  region:
+    - left: B
+      right: I
+      top: 4
+      bottom: 8
+  template:
+    item: item(A/$row)
+    property: C3002 # murder
+    value: value($col/$row)
+    qualifier:
+      - property: P85 #point in time
+        value: value($col/3-n)
+        calendar: Q1985727
+        precision: year
+        time_zone: 0 
+      - property: P6001 # applies to people
+        value: item($col/4)
+      - property: P123 #source
+        value: item(B/$row)

@@ -1,0 +1,21 @@
+statementMapping:
+  region:
+    - left: B
+      right: H
+      top: 4
+      bottom: 11
+      skip_column: value($col/4) = "Source"
+  template:
+    item: item($col-1/3)
+    property: C3002 # murder
+    value: value($col/$row)
+    qualifier:
+      - property: P85 #point in time
+        value: value(A/$row-n)
+        calendar: Q1985727
+        precision: year
+        time_zone: 0 
+      - property: P6001 # applies to people
+        value: item(H/$row)
+      - property: P123 #source
+        value: item($col-1/$row)
