@@ -1,0 +1,17 @@
+from utility_functions import get_excel_column_index
+class ColumnExpression:
+    def __init__(self):
+        self.column_variable=None
+        self.operations=[]
+
+    def evaluate(self,bindings):
+        cv=self.column_variable.evaluate(bindings)
+        cv=get_excel_column_index(cv)
+        for i in self.operations:
+            if i['cell_operator'] == '+':
+                cv=cv+int(i['cell_operator_argument'].evaluate(bindings))
+            elif i['cell_operator'] == '-':
+                cv=cv-int(i['cell_operator_argument'].evaluate(bindings))
+        if cv<0:
+            raise ValueError('Column value out of bound')
+        return cv
