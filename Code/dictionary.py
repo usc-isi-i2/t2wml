@@ -5,7 +5,9 @@ from RowExpression import RowExpression
 from ColumnVariable import ColumnVariable
 from RowVariable import RowVariable
 from CellOperatorArgument import CellOperatorArgument
-class_dictionary={
+
+
+class_dictionary = {
     'value_expression': ValueExpression,
     'cell_expression': CellExpression,
     'column_expression': ColumnExpression,
