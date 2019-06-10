@@ -5,23 +5,21 @@ start: value_expression
 !expression: cell_expression
        | value_expression
        | item_expression
-       | STRING 
+       | STRING             -> expression_string
        | column_expression
        | row_expression
 
 !value_expression: "value" "(" cell_expression ")"
-                | STRING
                 | "value" "(" boolean_equation ")"
                 
 
 !item_expression:  "item" "(" cell_expression ")"
-                | STRING
                 | "item" "(" boolean_equation ")"
                 
 
 !boolean_equation: boolean_expression "->" expression
 
-boolean_expression: or_expression (operator or_expression)*
+boolean_expression: or_expression [operator or_expression]
 
 !or_expression: and_expression ("or" and_expression)*
 

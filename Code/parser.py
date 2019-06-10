@@ -58,13 +58,56 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
     elif instruction.data == "row_variable":
         node = class_dictionary[instruction.data]()
         root.row_variable = node
-        root.row_variable.value = instruction.children[0][0]
+        root.row_variable.value = instruction.children[0]
     elif instruction.data == "cell_operator":
-        root.operations.append({'cell_operator': instruction.children[0][0]})
+        root.operations.append({"cell_operator": instruction.children[0][0]})
     elif instruction.data == "cell_operator_argument":
         node = class_dictionary[instruction.data]()
         node.value = instruction.children[0][0]
-        root.operations[-1]['cell_operator_argument'] = node
+        root.operations[-1]["cell_operator_argument"] = node
+    elif instruction.data == "expression":
+        node = class_dictionary[instruction.data]()
+        if root.expression is None:
+            root.expression = node
+            for i in instruction.children:
+                if isinstance(i, Tree):
+                    create_class_tree(i, root.expression)
+        else:
+            root.expression.append(node)
+            for i in instruction.children:
+                if isinstance(i, Tree):
+                    create_class_tree(i, root.expression[-1])
+    elif instruction.data == "expression_string":
+        # print(str(instruction.children[0]))
+        node = class_dictionary["expression"]()
+        node.string = instruction.children[0]
+        root.expression.append(node)
+    elif instruction.data == "and_expression":
+        node = class_dictionary[instruction.data]()
+        root.and_expression.append(node)
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.and_expression[-1])
+    elif instruction.data == "or_expression":
+        node = class_dictionary[instruction.data]()
+        root.or_expression.append(node)
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.or_expression[-1])
+    elif instruction.data == "operator":
+        root.operator = instruction.children[0]
+    elif instruction.data == "boolean_expression":
+        node = class_dictionary[instruction.data]()
+        root.boolean_expression = node
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.boolean_expression)
+    elif instruction.data == "boolean_equation":
+        node = class_dictionary[instruction.data]()
+        root.boolean_equation = node
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.boolean_equation)
 
 
 def main() -> None:
@@ -75,7 +118,7 @@ def main() -> None:
     """
     # text variable contains the string to be parsed
     text = """
-        value($col+2+1/3)
+        value("abca" ends_with "a" -> $col/$row)
     """
     records = pyexcel.get_book(file_name=__CWD__ + "\\Datasets\\homicide_report_total_and_sex.xlsx")
     bindings["excel_sheet"] = records["table-1a"]

@@ -1,13 +1,11 @@
-import os
 from typing import Union
-
-__CWD__ = os.getcwd()
 
 
 class ValueExpression:
     def __init__(self) -> None:
         self.cell_expression = None
-        
+        self.boolean_equation = None
+
     def evaluate(self, bindings: dict) -> Union[str, int]:
         """
         This function calls evaluate function of its respective not null members
@@ -15,8 +13,13 @@ class ValueExpression:
         :param bindings:
         :return: value of a cell in the excel file
         """
-        ce, re = self.cell_expression.evaluate(bindings)
-        print("Workbook:", __CWD__, "\\Datasets\\homicide_report_total_and_sex.xlsx")
-        print("Worksheet: table-1a")
-        print("Row:", re, "Col:", ce)
+        if self.cell_expression:
+            ce, re = self.cell_expression.evaluate(bindings)
+        else:
+            cell_expression = self.boolean_equation.evaluate(bindings)
+            if cell_expression:
+                ce = cell_expression[0]
+                re = cell_expression[1]
+            else:
+                raise ValueError("Invalid Row and Column values")
         return bindings['excel_sheet'][re, ce]
