@@ -7,7 +7,7 @@ class Region:
 		self.right = right
 		self.top = top
 		self.bottom = bottom
-		self.workbook = self.create_workbook(self.left, self.right, self.top, self.bottom)
+		self.workbook = self.create_workbook()
 
 	def create_workbook(self):
 		workbook = {}
