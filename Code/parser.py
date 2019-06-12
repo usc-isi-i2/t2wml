@@ -5,6 +5,7 @@ from bindings import bindings
 import os
 from typing import Union
 from ValueExpression import ValueExpression
+from ItemTable import ItemTable
 import pyexcel
 
 
@@ -78,7 +79,6 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
                 if isinstance(i, Tree):
                     create_class_tree(i, root.expression[-1])
     elif instruction.data == "expression_string":
-        # print(str(instruction.children[0]))
         node = class_dictionary["expression"]()
         node.string = instruction.children[0]
         root.expression.append(node)
@@ -122,6 +122,12 @@ def main() -> None:
     """
     records = pyexcel.get_book(file_name=__CWD__ + "\\Datasets\\homicide_report_total_and_sex.xlsx")
     bindings["excel_sheet"] = records["table-1a"]
+
+    wikified_excel_file = __CWD__ + "\\Code\\wikified_excel_file.csv" #This line will generate error as currently there's no csv file at this path
+    item_table = ItemTable()
+    item_table.generate_hash_tables(wikified_excel_file, True)
+    bindings["item_table"] = item_table
+
     root = generate_tree(text)
     result = root.evaluate(bindings)
     print("Query:", text.strip())

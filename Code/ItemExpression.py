@@ -13,6 +13,6 @@ class ItemExpression:
 		:return: value of a cell in the excel file
 		"""
 		ce, re = self.cell_expression.evaluate(bindings)
-		# get item of cell ce,re
-		# return bindings['excel_sheet'][re, ce]
-		return 0
+		value = bindings['excel_sheet'][re, ce]
+		return bindings["item_table"].get_item(ce, re, value)
+
