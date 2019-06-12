@@ -19,11 +19,11 @@ start: value_expression
 
 !boolean_equation: boolean_expression "->" expression
 
-boolean_expression: or_expression [operator or_expression]
+boolean_expression: or_expression ("or" or_expression)*
 
-!or_expression: and_expression ("or" and_expression)*
+!or_expression: and_expression ("and" and_expression)*
 
-!and_expression: expression ("and" expression)*
+!and_expression: expression [operator expression]
 
 !operator: "=" | "!=" | "contains" | "starts_with" | "ends_with"
 

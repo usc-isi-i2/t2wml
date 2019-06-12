@@ -108,6 +108,18 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
         for i in instruction.children:
             if isinstance(i, Tree):
                 create_class_tree(i, root.boolean_equation)
+    elif instruction.data == "value_expression":
+        node = class_dictionary[instruction.data]()
+        root.value_expression = node
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.value_expression)
+    elif instruction.data == "item_expression":
+        node = class_dictionary[instruction.data]()
+        root.item_expression = node
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.value_expression)
 
 
 def main() -> None:
@@ -118,12 +130,13 @@ def main() -> None:
     """
     # text variable contains the string to be parsed
     text = """
-        value("abca" ends_with "a" -> $col/$row)
+        value(value(C/6) = "Females" and value(E/6) = "1" -> $col/$row)
     """
     records = pyexcel.get_book(file_name=__CWD__ + "\\Datasets\\homicide_report_total_and_sex.xlsx")
     bindings["excel_sheet"] = records["table-1a"]
 
-    wikified_excel_file = __CWD__ + "\\Code\\wikified_excel_file.csv" #This line will generate error as currently there's no csv file at this path
+    # The following line will generate an error because currently there's no csv file at this path
+    wikified_excel_file = __CWD__ + "\\Code\\wikified_excel_file.csv"
     item_table = ItemTable()
     item_table.generate_hash_tables(wikified_excel_file, True)
     bindings["item_table"] = item_table
