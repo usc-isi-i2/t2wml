@@ -39,5 +39,5 @@ class ItemTable:
 		elif self.value_to_qnode.get(value, None):
 			return self.value_to_qnode[value]
 		else:
-			raise Exception('No QNode Exists for this cell value')
+			raise Exception('No QNode Exists for this cell value',column,row)
 

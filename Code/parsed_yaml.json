@@ -1,0 +1,1 @@
+{"statementMapping": {"region": [{"left": 2, "right": 6, "top": 2, "bottom": 9}], "template": {"item": "Q970", "property": "C3002", "value": "GHD Estimate", "unit": "D1002", "qualifier": [{"property": "P85", "value": "Source", "calendar": "Q1985727", "precision": "year", "time_zone": 0}, {"property": "P6001", "value": "Q6581072"}]}}}

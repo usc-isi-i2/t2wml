@@ -15,7 +15,7 @@ class RowExpression:
         :return: row variable of type int
         """
         rv = self.row_variable.evaluate(bindings)
-        rv = get_excel_row_index(rv)
+        # rv = get_excel_row_index(rv)
         for i in self.operations:
             if i['cell_operator'] == '+':
                 rv = rv+int(i['cell_operator_argument'].evaluate(bindings))

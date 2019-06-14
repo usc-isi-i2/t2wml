@@ -1,3 +1,6 @@
+from utility_functions import get_excel_row_index
+
+
 class RowVariable:
     def __init__(self) -> None:
         self.value = None
@@ -9,4 +12,9 @@ class RowVariable:
         :param bindings:
         :return: row variable of type str
         """
-        return bindings.get(self.value, self.value)
+        try:
+            value = bindings[self.value]
+            if value:
+                return value
+        except KeyError:
+            return get_excel_row_index(self.value)

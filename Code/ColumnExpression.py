@@ -15,7 +15,7 @@ class ColumnExpression:
         :return: column index of type int
         """
         cv = self.column_variable.evaluate(bindings)
-        cv = get_excel_column_index(cv)
+        # cv = get_excel_column_index(cv)
         for i in self.operations:
             if i['cell_operator'] == '+':
                 cv = cv+int(i['cell_operator_argument'].evaluate(bindings))

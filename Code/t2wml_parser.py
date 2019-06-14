@@ -5,8 +5,6 @@ from bindings import bindings
 import os
 from typing import Union
 from ValueExpression import ValueExpression
-from ItemTable import ItemTable
-import pyexcel
 
 
 __CWD__ = os.getcwd()
@@ -122,30 +120,40 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
                 create_class_tree(i, root.value_expression)
 
 
-def main() -> None:
+def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     """
-    This is the main function. It parses the text based on the prescribed grammar, creates the class tree
-    and then evaluates the expression/equation
-    :return:
+    This function drives the complete process of evaluation a t2wml expression
+    :param text_to_parse:
+    :return: result as int or string
     """
-    # text variable contains the string to be parsed
-    text = """
-        value(value(C/6) = "Females" and value(E/6) = "1" -> $col/$row)
-    """
-    records = pyexcel.get_book(file_name=__CWD__ + "\\Datasets\\homicide_report_total_and_sex.xlsx")
-    bindings["excel_sheet"] = records["table-1a"]
-
-    # The following line will generate an error because currently there's no csv file at this path
-    wikified_excel_file = __CWD__ + "\\Code\\wikified_excel_file.csv"
-    item_table = ItemTable()
-    item_table.generate_hash_tables(wikified_excel_file, True)
-    bindings["item_table"] = item_table
-
-    root = generate_tree(text)
+    root = generate_tree(text_to_parse)
     result = root.evaluate(bindings)
-    print("Query:", text.strip())
-    print("Result:", result)
+    return result
 
 
-if __name__ == "__main__":
-    main()
+# def main() -> None:
+#     """
+#     This is the main function. It parses the text based on the prescribed grammar, creates the class tree
+#     and then evaluates the expression/equation
+#     :return:
+#     """
+#     # text variable contains the string to be parsed
+#     text = """
+#         value(value(C/6) = "Females" and value(E/6)-> $col/$row)
+#     """
+#
+#     excel_file_path = __CWD__ + "\\Datasets\\homicide_report_total_and_sex.xlsx"
+#     add_excel_file_to_bindings(file_name, "table_1a")
+#
+#     # The following line will generate an error because currently there's no csv file at this path
+#     wikifier_result = __CWD__ + "\\Code\\wikified_excel_file.csv"
+#     add_wikifier_result_to_bindings(wikifier_result)
+#
+#     root = generate_tree(text)
+#     result = root.evaluate(bindings)
+#     print("Query:", text.strip())
+#     print("Result:", result)
+
+
+# if __name__ == "__main__":
+#     main()
