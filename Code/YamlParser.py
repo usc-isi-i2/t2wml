@@ -1,10 +1,8 @@
 import yaml
 from t2wml_parser import parse_and_evaluate
-import json
 import os
 from typing import Sequence
 from utility_functions import *
-import pprint
 
 __CWD__ = os.getcwd()
 
@@ -64,27 +62,5 @@ class YAMLParser:
 		if qualifier_modified:
 			self.set_qualifiers(qualifiers)
 
-	def yaml_to_json(self, yaml_object: str) -> str:
-		# print(self.yaml_data)
-		# with open("Code\\parsed_yaml.json", "w") as json_out:
-		return json.dumps(yaml_object)
-
-	def get_template_in_json(self):
-		return self.yaml_to_json(self.yaml_data['statementMapping']['template'])
-
-def pretty_print_json():
-	with open('Code\\parsed_yaml.json', 'r') as f:
-		data = f.read()
-		json_data = json.loads(data)
-
-	pprint.pprint(json_data)
-
-#
-# yaml_file = __CWD__ + "\\Datasets\\table-1a.yaml"
-# excel_file = __CWD__ + "\\Datasets\\homicide_report_total_and_sex.xlsx"
-# excel_sheet_name = "table-1a"
-# wikified_result = __CWD__ + "\\Datasets\\wikified_result.csv"
-# yp = YAMLParser(yaml_file)
-# yp.resolve_yaml()
-# yp.yaml_to_json()
-# pretty_print_json()
+	def get_template(self):
+		return self.yaml_data['statementMapping']['template']

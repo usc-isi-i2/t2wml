@@ -4,7 +4,7 @@ from bindings import bindings
 from YamlParser import YAMLParser
 from Region import Region
 import utility_functions
-from collections import OrderedDict
+import json
 import os
 
 
@@ -50,23 +50,18 @@ def main():
 	add_excel_file_to_bindings()
 	add_wikifier_result_to_bindings()
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
-	data = OrderedDict()
+	data = []
 	bindings["$col"] = bindings["$left"] + 1
 	bindings["$row"] = bindings["$top"] + 1
 
-	# print(region.sheet[(5,8)].next)
-	# return
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
-
 		yaml_parser.resolve_template()
-		data[(bindings["$col"], bindings["$row"])] = yaml_parser.get_template_in_json()
+		data.append({'row': bindings["$row"], 'column': bindings["$col"], 'statement': yaml_parser.get_template_in_json()})
 		if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
-			bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
+			(bindings["$col"], bindings["$row"]) = region.sheet[(bindings["$col"], bindings["$row"])].next
 		else:
 			bindings["$col"], bindings["$row"] = None, None
-		print(bindings["$col"], bindings["$row"])
-		# break
-	print(data)
+	print(json.dumps(data))
 
 
 if __name__ == "__main__":
