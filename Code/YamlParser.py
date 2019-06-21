@@ -3,7 +3,7 @@ from t2wml_parser import parse_and_evaluate
 import os
 from typing import Sequence
 from utility_functions import *
-
+import copy
 __CWD__ = os.getcwd()
 
 
@@ -22,45 +22,32 @@ class YAMLParser:
 	def get_template_item(self) -> str:
 		return str(self.yaml_data['statementMapping']['template']['item'])
 
-	def set_template_item(self, item: str) -> None:
-		self.yaml_data['statementMapping']['template']['item'] = item
-
 	def get_template_value(self) -> str:
 		return str(self.yaml_data['statementMapping']['template']['value'])
-
-	def set_template_value(self, value: str) -> None:
-		self.yaml_data['statementMapping']['template']['value'] = value
 
 	def get_qualifiers(self) -> str:
 		return self.yaml_data['statementMapping']['template']['qualifier']
 
-	def set_qualifiers(self, qualifiers: str) -> None:
-		self.yaml_data['statementMapping']['template']['qualifier'] = qualifiers
-
-	def resolve_template(self) -> None:
+	def resolve_template(self, template: str) -> None:
 		# Resolve Template Item if needed
 		item = self.get_template_item()
 		if not item.isalnum():
 			item = parse_and_evaluate(item)
-			self.set_template_item(item)
+			template['item'] = item
 
 		# Resolve Template Value if needed
 		value = self.get_template_value()
 		if not value.isalnum():
 			value = parse_and_evaluate(value)
-			self.set_template_value(value)
+			template["value"] = value
 
-		# Resolve Qualifiers if needed
-		qualifiers = self.get_qualifiers()
-		qualifier_modified = False
-		for i in range(len(qualifiers)):
-			qualifier_value = str(qualifiers[i]['value'])
+		for i in range(len(template['qualifier'])):
+			qualifier_value = str(template['qualifier'][i]['value'])
 			if not qualifier_value.isalnum():
-				qualifiers[i]['value'] = parse_and_evaluate(qualifier_value)
-				qualifier_modified = True
-
-		if qualifier_modified:
-			self.set_qualifiers(qualifiers)
+				template['qualifier'][i]['value'] = parse_and_evaluate(qualifier_value)
 
 	def get_template(self):
-		return self.yaml_data['statementMapping']['template']
+		template = copy.deepcopy(self.yaml_data['statementMapping']['template'])
+		self.resolve_template(template)
+
+		return template

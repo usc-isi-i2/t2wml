@@ -127,6 +127,7 @@ def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     :return: result as int or string
     """
     root = generate_tree(text_to_parse)
+    # print(bindings["$row"], bindings["$col"])
     result = root.evaluate(bindings)
     return result
 

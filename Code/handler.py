@@ -55,13 +55,12 @@ def main():
 	bindings["$row"] = bindings["$top"] + 1
 
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
-		yaml_parser.resolve_template()
 		data.append({'row': bindings["$row"], 'column': bindings["$col"], 'statement': yaml_parser.get_template()})
 		if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
-			(bindings["$col"], bindings["$row"]) = region.sheet[(bindings["$col"], bindings["$row"])].next
+			bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
 		else:
 			bindings["$col"], bindings["$row"] = None, None
-	print(json.dumps(data))
+	return json.dumps(data)
 
 
 if __name__ == "__main__":
