@@ -19,7 +19,6 @@ def allowed_file(filename: str, file_type: str):
 
 def upload_file(file_type: str):
     user_id = request.cookies.get('userID')
-    file_content = ""
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
@@ -46,10 +45,8 @@ def upload_form():
     if not request.cookies.get('userID'):
         user_id = uuid.uuid4().hex
         resp.set_cookie('userID', user_id)
-    # file_content = request.args['file_content']
-    # if file_content != "":
     try:
-        print(session["file_content"], "%%%%%%%%%%%%%")
+        print(session["file_content"])
     except KeyError:
         pass
     return resp
