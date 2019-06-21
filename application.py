@@ -2,9 +2,11 @@ import os
 import uuid
 import urllib.request
 from app_config import app
-from flask import Flask, flash, request, redirect, render_template, url_for, session
+from flask import Flask, flash, request, redirect, render_template, url_for, session, Response
 from werkzeug.utils import secure_filename
 from Code.utility_functions import excel_to_json, read_file
+import json
+
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 ALLOWED_YAML_FILE_EXTENSIONS = {'yaml', 'txt'}
@@ -19,24 +21,29 @@ def allowed_file(filename: str, file_type: str):
 
 def upload_file(file_type: str):
     user_id = request.cookies.get('userID')
+    message = ""
     if request.method == 'POST':
         if 'file' not in request.files:
-            flash('No file part')
+            message = 'No file part'
         file = request.files['file']
         if file.filename == '':
-            flash('No file selected for uploading')
+            message = 'No file selected for uploading'
         if file and allowed_file(file.filename, file_type):
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], user_id + "_" + filename)
             file.save(file_path)
             if file_type == "excel":
-                session["file_content"] = excel_to_json(file_path)
+                message = excel_to_json(file_path)
             else:
-                session["file_content"] = read_file(file_path)
-            flash('File successfully uploaded')
+                message = read_file(file_path)
         else:
-            flash('This file type is currently not supported')
-        return redirect(url_for('upload_form'))
+            message = 'This file type is currently not supported'
+
+        js = json.dumps(message)
+        resp = Response(js, status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+
+        return resp
 
 
 @app.route('/')
