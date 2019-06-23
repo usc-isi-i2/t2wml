@@ -1,0 +1,99 @@
+P100001:
+  type: quantity
+  label: 
+    en:
+    - net ODA received
+  description:
+    en:
+    - Net official development assistance is disbursement flows (net of repayment of principal) that meet the DAC definition of ODA and are made to countries and territories on the DAC list of aid recipients.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/DT.ODA.ODAT.GI.ZS
+P100002:
+  type: quantity
+  label: 
+    en:
+    - access to electricity
+  description:
+    en:
+    - Access to electricity, urban is the percentage of urban population with access to electricity.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS
+P100003:
+  type: quantity
+  label: 
+    en:
+    - prevalence of undernourishment (% of population)
+  description:
+    en:
+    - Population below minimum level of dietary energy consumption (also referred to as prevalence of undernourishment) shows the percentage of the population whose food intake is insufficient to meet dietary energy requirements continuously. Data showing as 5 may signify a prevalence of undernourishment below 5%.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/SN.ITK.DEFC.ZS
+P100003:
+  type: quantity
+  label: 
+    en:
+    - military expenditure (% of general government expenditure)
+  description:
+    en:
+    - Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/MS.MIL.XPND.ZS
+P100004:
+  type: quantity
+  label: 
+    en:
+    - military expenditure (% of GDP)
+  description:
+    en:
+    - Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS
+P100005:
+  type: quantity
+  label: 
+    en:
+    - employment to population ratio, 15+, total (%) (national estimate)
+  description:
+    en:
+    - Employment to population ratio is the proportion of a country's population that is employed. Employment is defined as persons of working age who, during a short reference period, were engaged in any activity to produce goods or provide services for pay or profit, whether at work during the reference period (i.e. who worked in a job for at least one hour) or not at work due to temporary absence from a job, or to working-time arrangements. Ages 15 and older are generally considered the working-age population.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/SL.EMP.TOTL.SP.NE.ZS
