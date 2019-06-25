@@ -70,8 +70,16 @@ def upload_excel():
 def upload_yaml():
     user_id = request.args.get("id")
     yaml_data = request.args.get("yaml")
-    yaml.dump(yaml_data, os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"), allow_unicode=True)
-    print(highlight_region(user_id))
+    # yaml.dump(yaml_data, os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"), allow_unicode=True)
+    with open(os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"), "w") as f:
+        f.write(yaml_data)
+    # print(highlight_region(user_id))
+    return highlight_region(user_id)
+
+
+@app.route('/upload_yaml', methods=['POST'])
+def resolve_cell():
+    user_id = request.args.get("id")
     return highlight_region(user_id)
 
 

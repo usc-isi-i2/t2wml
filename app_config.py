@@ -3,8 +3,8 @@ import os
 from flask_cors import CORS
 
 __CWD__ = os.getcwd()
-UPLOAD_FOLDER = __CWD__ + "\\Code"
-CODE_FOLDER = __CWD__ + "\\"
+UPLOAD_FOLDER = __CWD__ + "\\uploads"
+CODE_FOLDER = __CWD__ + "\\Code"
 app = Flask(__name__)
 CORS(app)
 app.secret_key = "secret key"

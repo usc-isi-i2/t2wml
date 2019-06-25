@@ -38,7 +38,7 @@ def get_excel_row_index(row: Union[str, int]) -> int:
 
 
 def get_actual_cell_index(cell_index):
-    col = get_column_letter(cell_index[0])
+    col = get_column_letter(cell_index[0]+1)
     row = str(cell_index[1] + 1)
     return col+row
 

@@ -3,7 +3,7 @@ import json
 import os
 from app_config import app
 import sys
-sys.path.insert(0, app.config['UPLOAD_FOLDER'])
+sys.path.insert(0, app.config['CODE_FOLDER'])
 from ItemTable import ItemTable
 from bindings import bindings
 from YamlParser import YAMLParser
@@ -44,6 +44,23 @@ def add_wikifier_result_to_bindings() -> None:
 		print('Wikifier Result File cannot be found or opened')
 
 
+def add_holes(region: Region):
+	for col in range(bindings["$left"] + 1, bindings["right"]):
+		for row in range(bindings["$top"] + 1, bindings["$bottom"]):
+			if check_if_empty(bindings['excel_sheet'][re, ce]):
+				region.add_hole(row, col, col)
+
+
+def check_special_characters(string):
+	return all(char in string.punctuation for char in string)
+
+
+def check_if_empty(string: str):
+	if string is None or string == "" or check_special_characters(string):
+		return True
+	return False
+
+
 def highlight_region(user_id):
 	yaml_parser = YAMLParser(os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"))
 	left, right, top, bottom = yaml_parser.get_region()
@@ -52,12 +69,12 @@ def highlight_region(user_id):
 	bindings["$top"] = utility_functions.get_excel_row_index(top)
 	bindings["$bottom"] = utility_functions.get_excel_row_index(bottom)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
+	add_holes(region)
 	data = {"data_region": [], "item": [], "qualifier_region": []}
 	bindings["$col"] = bindings["$left"] + 1
 	bindings["$row"] = bindings["$top"] + 1
 
 	item = yaml_parser.get_template_item()
-	# value = yaml_parser.get_template_value()
 	qualifiers = yaml_parser.get_qualifiers()
 
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
@@ -78,6 +95,23 @@ def highlight_region(user_id):
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	json_data = json.dumps(data)
+	return json_data
+
+
+def resolve_cell(user_id, column, row):
+	yaml_parser = YAMLParser(os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"))
+	add_excel_file_to_bindings()
+	add_wikifier_result_to_bindings()
+	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
+	data = []
+	bindings["$col"] = column
+	bindings["$row"] = row
+
+	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
+		data.append({'row': bindings["$row"], 'column': bindings["$col"], 'statement': yaml_parser.get_template()})
+
+	json_data = json.dumps(data)
+	print(json_data)
 	return json_data
 
 
@@ -107,4 +141,4 @@ def main():
 
 
 if __name__ == "__main__":
-	highlight_region()
+	main()
