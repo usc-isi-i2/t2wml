@@ -16,3 +16,6 @@ class ItemExpression:
 		value = bindings['excel_sheet'][re, ce]
 		return bindings["item_table"].get_item(ce, re, value)
 
+	def get_cell(self, bindings: dict) -> tuple:
+		ce, re = self.cell_expression.evaluate(bindings)
+		return ce, re

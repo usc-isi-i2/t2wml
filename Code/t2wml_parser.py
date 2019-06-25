@@ -5,7 +5,7 @@ from bindings import bindings
 import os
 from typing import Union
 from ValueExpression import ValueExpression
-
+from BooleanEquation import BooleanEquation
 
 __CWD__ = os.getcwd()
 
@@ -127,10 +127,17 @@ def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     :return: result as int or string
     """
     root = generate_tree(text_to_parse)
-    # print(bindings["$row"], bindings["$col"])
     result = root.evaluate(bindings)
     return result
 
+
+def parse_and_get_cell(text_to_parse: str) -> tuple:
+    root = generate_tree(text_to_parse)
+    if isinstance(root, BooleanEquation):
+        result = root.evaluate(bindings)
+    else:
+        result = root.get_cell(bindings)
+    return result
 
 # def main() -> None:
 #     """

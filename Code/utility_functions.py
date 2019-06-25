@@ -37,6 +37,12 @@ def get_excel_row_index(row: Union[str, int]) -> int:
     return int(row)-1
 
 
+def get_actual_cell_index(cell_index):
+    col = get_column_letter(cell_index[0])
+    row = str(cell_index[1] + 1)
+    return col+row
+
+
 def get_property_type(wikidata_property: str) -> str:
     query = """SELECT ?type WHERE {
       wd:"""+wikidata_property+""" rdf:type wikibase:Property ;

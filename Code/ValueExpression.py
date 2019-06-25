@@ -23,3 +23,7 @@ class ValueExpression:
             else:
                 raise ValueError("Invalid Row and Column values")
         return bindings['excel_sheet'][re, ce]
+
+    def get_cell(self, bindings: dict) -> tuple:
+        ce, re = self.cell_expression.evaluate(bindings)
+        return ce, re

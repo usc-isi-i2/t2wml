@@ -3,13 +3,13 @@ import json
 import os
 __CWD__ = os.getcwd()
 from utility_functions import get_property_type
-sys.path.insert(0, __CWD__ + "\\etk")
+sys.path.insert(0, "F:\\isi\\T2WML\\etk")
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
 from etk.etk_module import ETKModule
 from etk.wikidata.entity import WDProperty, WDItem
 from etk.wikidata.value import Datatype, Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, ExternalIdentifier, GlobeCoordinate
-sys.path.insert(0, __CWD__ + "\\t2wml")
+sys.path.insert(0, "F:\\isi\\T2WML\\t2wml")
 from handler import main
 
 
