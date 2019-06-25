@@ -9,7 +9,7 @@ statementMapping:
     property: P1000001 # homicide
     value: value($col/$row)
     qualifier:
-      - property: P85 # point in time
+      - property: P585 # point in time
         value: value($col/4)
         precision: year
         time_zone: 0 
