@@ -1,0 +1,19 @@
+statementMapping:
+  region:
+    - left: B
+      right: I
+      top: 4
+      bottom: 8
+  template:
+    item: item(A/$row)
+    property: P1000001 # homicide
+    value: value($col/$row)
+    qualifier:
+      - property: P85 # point in time
+        value: value($col/4)
+        precision: year
+        time_zone: 0 
+      - property: P6001 # applies to people
+        value: item($col-n/3)
+      - property: P248 # stated in
+        value: item(B/$row)
