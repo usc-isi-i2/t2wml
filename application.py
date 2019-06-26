@@ -1,11 +1,7 @@
-import os
-import uuid
-import urllib.request
 from app_config import app
-from flask import Flask, flash, request, redirect, render_template, url_for, session, Response
+from flask import request, Response
 from werkzeug.utils import secure_filename
 import json
-import yaml
 import sys
 sys.path.insert(0, app.config['UPLOAD_FOLDER'])
 from utility_functions import excel_to_json, read_file
@@ -33,7 +29,7 @@ def upload_file(user_id: str):
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             filename = user_id + "." + get_file_extension(filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = app.config['UPLOAD_FOLDER'] / filename
             file.save(file_path)
             data = excel_to_json(file_path)
         else:
@@ -69,11 +65,10 @@ def upload_excel():
 @app.route('/upload_yaml', methods=['POST'])
 def upload_yaml():
     user_id = request.args.get("id")
-    yaml_data = request.args.get("yaml")
+    yaml_data = request.values("yaml")
     # yaml.dump(yaml_data, os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"), allow_unicode=True)
-    with open(os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"), "w") as f:
+    with open(app.config['UPLOAD_FOLDER'] / user_id + ".yaml", "w") as f:
         f.write(yaml_data)
-    # print(highlight_region(user_id))
     return highlight_region(user_id)
 
 
