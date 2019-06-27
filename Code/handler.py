@@ -14,20 +14,23 @@ import utility_functions
 import t2wml_parser
 
 __CWD__ = os.getcwd()
-__YAML_FILE__ = __CWD__ + "/Datasets/table-1a.yaml"
-__EXCEL_FILE__ = Path(__CWD__ + "/Datasets/homicide_report_total_and_sex.xlsx")
+__YAML_FILE__ = str(Path.cwd() / "Datasets/table-1a.yaml")
+__EXCEL_FILE__ = str(Path.cwd() / "Datasets/homicide_report_total_and_sex.xlsx")
 __EXCEL_SHEET_NAME__ = "table-1a"
-__WIKIFIED_RESULT__ = Path(__CWD__ + "/Datasets/wikified_result.csv")
+__WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/wikified_result.csv")
 
 
-def add_excel_file_to_bindings() -> None:
+def add_excel_file_to_bindings(user_id: str) -> None:
 	"""
 	This function reads the excel file and add the pyexcel object to the bindings
 	:return: None
 	"""
 	try:
-		records = pyexcel.get_book(file_name=__EXCEL_FILE__)
-		bindings["excel_sheet"] = records[__EXCEL_SHEET_NAME__]
+		records = pyexcel.get_book(file_name=app.config["__user_files__"][user_id]["excel"])
+		for sheet in records:
+			bindings["excel_sheet"] = sheet
+			# for reading only the first sheet in the excel workbook
+			break
 	except IOError:
 		print('Excel File cannot be found or opened')
 
@@ -46,14 +49,9 @@ def add_wikifier_result_to_bindings() -> None:
 
 
 def add_holes(region: Region):
-	print(bindings)
-
 	for col in range(bindings["$left"] + 1, bindings["$right"]):
 		for row in range(bindings["$top"] + 1, bindings["$bottom"]):
-			print(col,row)
-			print(bindings['excel_sheet'][row, col])
 			if check_if_empty(str(bindings['excel_sheet'][row, col])):
-				print(col,row)
 				region.add_hole(row, col, col)
 
 
@@ -62,7 +60,6 @@ def check_special_characters(text):
 
 
 def check_if_empty(string: str):
-	print(string)
 	if string is None or string == "" or check_special_characters(string):
 		return True
 	return False
@@ -75,12 +72,10 @@ def highlight_region(user_id):
 	bindings["$right"] = utility_functions.get_excel_column_index(right)
 	bindings["$top"] = utility_functions.get_excel_row_index(top)
 	bindings["$bottom"] = utility_functions.get_excel_row_index(bottom)
-	add_excel_file_to_bindings()
+	add_excel_file_to_bindings(user_id)
 	add_wikifier_result_to_bindings()
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
-	# print("region")
 	add_holes(region)
-	print("rr")
 	data = {"data_region": [], "item": [], "qualifier_region": []}
 	bindings["$col"] = bindings["$left"] + 1
 	bindings["$row"] = bindings["$top"] + 1
@@ -110,30 +105,30 @@ def highlight_region(user_id):
 
 
 def resolve_cell(user_id, column, row):
-	yaml_parser = YAMLParser(Path(app.config['UPLOAD_FOLDER'] / user_id + ".yaml"))
-	add_excel_file_to_bindings()
+	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
+	left, right, top, bottom = yaml_parser.get_region()
+	bindings["$left"] = utility_functions.get_excel_column_index(left)
+	bindings["$right"] = utility_functions.get_excel_column_index(right)
+	bindings["$top"] = utility_functions.get_excel_row_index(top)
+	bindings["$bottom"] = utility_functions.get_excel_row_index(bottom)
+	add_excel_file_to_bindings(user_id)
 	add_wikifier_result_to_bindings()
-	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
-	data = []
 	bindings["$col"] = column
 	bindings["$row"] = row
-
-	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
-		data.append({'row': bindings["$row"], 'column': bindings["$col"], 'statement': yaml_parser.get_template()})
-
+	data = {'statement': yaml_parser.get_template()}
 	json_data = json.dumps(data)
-	print(json_data)
 	return json_data
 
 
 def main():
+	# used-id will be passed
 	yaml_parser = YAMLParser(__YAML_FILE__)
 	left, right, top, bottom = yaml_parser.get_region()
 	bindings["$left"] = utility_functions.get_excel_column_index(left)
 	bindings["$right"] = utility_functions.get_excel_column_index(right)
 	bindings["$top"] = utility_functions.get_excel_row_index(top)
 	bindings["$bottom"] = utility_functions.get_excel_row_index(bottom)
-	add_excel_file_to_bindings()
+	# add_excel_file_to_bindings(user_id)
 	add_wikifier_result_to_bindings()
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	data = []
@@ -147,7 +142,6 @@ def main():
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	json_data = json.dumps(data)
-	print(json_data)
 	return json_data
 
 

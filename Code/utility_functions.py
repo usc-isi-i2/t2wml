@@ -73,6 +73,7 @@ def excel_to_json(file_path):
             for col in range(len(item[row])):
                 r[column_index_map[col+1]] = item[row][col]
             result["rowData"].append(r)
+        # break here for accessing only the first sheet in the workbook
         break
     return json.dumps(result)
 

@@ -1,9 +1,9 @@
 import yaml
-from t2wml_parser import parse_and_evaluate
+from t2wml_parser import parse_evaluate_and_get_cell, parse_and_evaluate
 import os
 from typing import Sequence
-from utility_functions import *
 import copy
+from utility_functions import get_actual_cell_index
 __CWD__ = os.getcwd()
 
 
@@ -35,8 +35,9 @@ class YAMLParser:
 		# Resolve Template Item if needed
 		template_item = self.get_template_item()
 		if not template_item.isalnum():
-			template_item = parse_and_evaluate(template_item)
-			template['item'] = template_item
+			result = parse_evaluate_and_get_cell(template_item)
+			template['item_cell_index'] = get_actual_cell_index((result[0], result[1]))
+			template['item'] = result[2]
 
 		# Resolve Template Property if needed
 		template_property = self.get_template_property()
@@ -53,7 +54,9 @@ class YAMLParser:
 		for i in range(len(template['qualifier'])):
 			qualifier_value = str(template['qualifier'][i]['value'])
 			if not qualifier_value.isalnum():
-				template['qualifier'][i]['value'] = parse_and_evaluate(qualifier_value)
+				result = parse_evaluate_and_get_cell(qualifier_value)
+				template['qualifier'][i]['cell_index'] = get_actual_cell_index((result[0], result[1]))
+				template['qualifier'][i]['value'] = result[2]
 
 	def get_template(self):
 		template = copy.deepcopy(self.yaml_data['statementMapping']['template'])

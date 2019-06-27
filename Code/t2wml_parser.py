@@ -131,12 +131,12 @@ def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     return result
 
 
-def parse_and_get_cell(text_to_parse: str) -> tuple:
+def parse_evaluate_and_get_cell(text_to_parse: str) -> tuple:
     root = generate_tree(text_to_parse)
     if isinstance(root, BooleanEquation):
         result = root.evaluate(bindings)
     else:
-        result = root.get_cell(bindings)
+        result = root.evaluate_and_get_cell(bindings)
     return result
 
 # def main() -> None:
