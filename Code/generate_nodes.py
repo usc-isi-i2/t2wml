@@ -67,6 +67,7 @@ def model_data():
 					p.add_statement(pnode, Item(item['value']))
 		doc.kg.add_subject(p)
 
+	print(doc.kg.serialize('ttl'))
 
 	# # first we add properties and entities
 	# # Define Qnode for properties related to crime.
@@ -213,9 +214,6 @@ def model_data():
 	#
 	# # serialization
 	# f = open(file_path, 'w')
-	print(doc.kg.serialize('ttl'))
-	# f.close()
-	#
-	# print('Serialization completed!')
+
 
 model_data()

@@ -30,7 +30,7 @@ def upload_file(user_id: str):
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             filename = user_id + "." + get_file_extension(filename)
-            file_path = app.config['UPLOAD_FOLDER'] / filename
+            file_path = str(Path(app.config['UPLOAD_FOLDER']) / filename)
             file.save(file_path)
             data = excel_to_json(file_path)
             app.config["__user_files__"][user_id]['excel'] = str(Path(app.config["UPLOAD_FOLDER"]) / filename)
@@ -66,26 +66,28 @@ def create_user(user_id: str):
 def upload_excel():
     user_id = request.args.get("id")
     create_user(user_id)
+    app.config["__user_files__"][user_id] = {}
     return upload_file(user_id)
 
 
 @app.route('/upload_yaml', methods=['POST'])
 def upload_yaml():
     user_id = request.args.get("id")
-    create_user(user_id)
-    yaml_data = request.values("yaml")
+    # create_user(user_id)
+    yaml_data = request.values["yaml"]
     # yaml.dump(yaml_data, os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"), allow_unicode=True)
-    filename = Path(app.config['UPLOAD_FOLDER']) / user_id + ".yaml"
+    filename = str(Path(app.config['UPLOAD_FOLDER']) / user_id) + ".yaml"
+    # print(filename)
     with open(filename, "w") as f:
         f.write(yaml_data)
-        app.config["__user_files__"][user_id]['yaml'] = str(Path(app.config["UPLOAD_FOLDER"]) / filename)
+        app.config["__user_files__"][user_id]['yaml'] = filename
     return highlight_region(user_id)
 
 
 @app.route('/resolve_cell', methods=['POST'])
 def get_cell_statement():
     user_id = request.args.get("id")
-    create_user(user_id)
+    # create_user(user_id)
     col = get_excel_column_index(request.args.get("col"))
     row = get_excel_row_index(request.args.get("row"))
     return resolve_cell(user_id, col, row)

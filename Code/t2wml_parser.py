@@ -6,11 +6,11 @@ import os
 from typing import Union
 from ValueExpression import ValueExpression
 from BooleanEquation import BooleanEquation
-
+from pathlib import Path
 __CWD__ = os.getcwd()
 
 # instantiate Lark Parser
-parser = Lark(open(__CWD__+'\\Code\\grammar.lark'))
+parser = Lark(open(Path.cwd() / 'Code/grammar.lark'))
 
 
 def generate_tree(program: str) -> Union[ValueExpression]:
@@ -128,6 +128,15 @@ def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     """
     root = generate_tree(text_to_parse)
     result = root.evaluate(bindings)
+    return result
+
+
+def parse_and_get_cell(text_to_parse: str) -> tuple:
+    root = generate_tree(text_to_parse)
+    if isinstance(root, BooleanEquation):
+        result = root.evaluate(bindings)
+    else:
+        result = root.get_cell(bindings)
     return result
 
 

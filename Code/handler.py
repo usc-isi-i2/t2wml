@@ -66,7 +66,7 @@ def check_if_empty(string: str):
 
 
 def highlight_region(user_id):
-	yaml_parser = YAMLParser(Path(app.config['UPLOAD_FOLDER'] / user_id + ".yaml"))
+	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
 	left, right, top, bottom = yaml_parser.get_region()
 	bindings["$left"] = utility_functions.get_excel_column_index(left)
 	bindings["$right"] = utility_functions.get_excel_column_index(right)
@@ -86,8 +86,10 @@ def highlight_region(user_id):
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		cell = utility_functions.get_actual_cell_index((bindings["$col"], bindings["$row"]))
 		data["data_region"].append(cell)
+		print(item)
 
 		item_cell = t2wml_parser.parse_and_get_cell(item)
+		print(item_cell)
 		cell = utility_functions.get_actual_cell_index(item_cell)
 		data["item"].append(cell)
 
@@ -101,6 +103,7 @@ def highlight_region(user_id):
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	json_data = json.dumps(data)
+	print(json_data)
 	return json_data
 
 
@@ -113,9 +116,13 @@ def resolve_cell(user_id, column, row):
 	bindings["$bottom"] = utility_functions.get_excel_row_index(bottom)
 	add_excel_file_to_bindings(user_id)
 	add_wikifier_result_to_bindings()
+	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
+	add_holes(region)
 	bindings["$col"] = column
 	bindings["$row"] = row
-	data = {'statement': yaml_parser.get_template()}
+	data=[]
+	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
+		data = {'statement': yaml_parser.get_template()}
 	json_data = json.dumps(data)
 	return json_data
 
