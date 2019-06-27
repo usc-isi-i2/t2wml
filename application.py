@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 sys.path.insert(0, app.config['CODE_FOLDER'])
-from utility_functions import excel_to_json, read_file
+from utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index
 from handler import highlight_region, resolve_cell
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
@@ -86,8 +86,8 @@ def upload_yaml():
 def get_cell_statement():
     user_id = request.args.get("id")
     create_user(user_id)
-    col = int(request.args.get("col"))
-    row = int(request.args.get("row"))
+    col = get_excel_column_index(request.args.get("col"))
+    row = get_excel_row_index(request.args.get("row"))
     return resolve_cell(user_id, col, row)
 
 
