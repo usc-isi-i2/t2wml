@@ -1,20 +1,12 @@
-from app_config import app
-import sys
-import json
-import os
-__CWD__ = os.getcwd()
-from utility_functions import get_property_type
-sys.path.insert(0, app.config['ETK_PATH'])
+from Code.utility_functions import get_property_type
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
 from etk.etk_module import ETKModule
-from etk.wikidata.entity import WDProperty, WDItem
-from etk.wikidata.value import Datatype, Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, ExternalIdentifier, GlobeCoordinate
-sys.path.insert(0, app.config["CODE_FOLDER"])
-from handler import main
+from etk.wikidata.entity import WDItem
+from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, ExternalIdentifier, GlobeCoordinate
 
 
-def model_data(format='ttl'):
+def generate_triples(resolved_excel, filetype='ttl'):
 	# initialize
 	kg_schema = KGSchema()
 	kg_schema.add_schema('@prefix : <http://isi.edu/> .', 'ttl')
@@ -44,7 +36,6 @@ def model_data(format='ttl'):
 	doc.kg.bind('prov', 'http://www.w3.org/ns/prov#')
 	doc.kg.bind('schema', 'http://schema.org/')
 
-	resolved_excel = list(json.loads(main()))
 	property_type_cache = {}
 	for i in resolved_excel:
 		item = WDItem(i["statement"]["item"])
@@ -79,7 +70,6 @@ def model_data(format='ttl'):
 
 			s.add_qualifier(j["property"], value)
 		doc.kg.add_subject(s)
-	print(doc.kg.serialize(format))
 
-
-model_data()
+	data = doc.kg.serialize(filetype)
+	return data

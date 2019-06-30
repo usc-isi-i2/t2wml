@@ -1,4 +1,5 @@
-from RegionNode import RegionNode
+from Code.RegionNode import RegionNode
+from collections import OrderedDict
 
 
 class Region:
@@ -14,7 +15,7 @@ class Region:
 		This function creates the region which is a dictionary of RegionNode objects with keys as (column, row)
 		:return: region as a dict
 		"""
-		sheet = {}
+		sheet = OrderedDict()
 		previous = None
 		for column in range(self.left + 1, self.right):
 			for row in range(self.top + 1, self.bottom):
@@ -164,3 +165,6 @@ class Region:
 			if not cell:
 				return None
 		return cell
+
+	def get_head(self):
+		return list(self.sheet.keys())[0]

@@ -1,5 +1,6 @@
 from typing import Union
 from SPARQLWrapper import SPARQLWrapper, JSON
+from Code.property_type_map import property_type_map
 
 
 def get_column_letter(n):
@@ -44,16 +45,23 @@ def get_actual_cell_index(cell_index):
 
 
 def get_property_type(wikidata_property: str) -> str:
-    query = """SELECT ?type WHERE {
-      wd:"""+wikidata_property+""" rdf:type wikibase:Property ;
-        wikibase:propertyType ?type .  
-    }"""
+    try:
+        type = property_type_map[wikidata_property]
+    except KeyError:
+        query = """SELECT ?type WHERE {
+          wd:"""+wikidata_property+""" rdf:type wikibase:Property ;
+            wikibase:propertyType ?type .  
+        }"""
 
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-    return results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+        try:
+            type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+        except IndexError:
+            type = "Property Not Found"
+    return type
 
 
 def excel_to_json(file_path):
@@ -81,3 +89,9 @@ def excel_to_json(file_path):
 def read_file(file_path):
     with open(file_path, "r") as f:
         return f.read()
+
+
+def write_file(filepath, data):
+    with open(filepath, "w") as f:
+        f.write(data)
+        f.close()

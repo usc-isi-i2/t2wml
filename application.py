@@ -2,11 +2,9 @@ from app_config import app
 from flask import request, Response
 from werkzeug.utils import secure_filename
 import json
-import sys
 from pathlib import Path
-sys.path.insert(0, app.config['CODE_FOLDER'])
-from utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index
-from handler import highlight_region, resolve_cell
+from Code.utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index
+from Code.handler import highlight_region, resolve_cell, generate_download_file
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
@@ -49,35 +47,21 @@ def create_user(user_id: str):
     if user_id not in app.config["__user_files__"]:
         app.config["__user_files__"][user_id] = {}
 
-# @app.route('/')
-# def upload_form():
-#     resp = app.make_response(render_template('index.html'))
-#     if not request.cookies.get('userID'):
-#         user_id = uuid.uuid4().hex
-#         resp.set_cookie('userID', user_id)
-#     try:
-#         print(session["file_content"])
-#     except KeyError:
-#         pass
-#     return resp
-
 
 @app.route('/upload_excel', methods=['POST'])
 def upload_excel():
     user_id = request.args.get("id")
     create_user(user_id)
-    app.config["__user_files__"][user_id] = {}
+    print(app.config["__user_files__"][user_id])
     return upload_file(user_id)
 
 
 @app.route('/upload_yaml', methods=['POST'])
 def upload_yaml():
     user_id = request.args.get("id")
-    # create_user(user_id)
+    create_user(user_id)
     yaml_data = request.values["yaml"]
-    # yaml.dump(yaml_data, os.path.join(app.config['UPLOAD_FOLDER'], user_id + ".yaml"), allow_unicode=True)
     filename = str(Path(app.config['UPLOAD_FOLDER']) / user_id) + ".yaml"
-    # print(filename)
     with open(filename, "w") as f:
         f.write(yaml_data)
         app.config["__user_files__"][user_id]['yaml'] = filename
@@ -87,10 +71,16 @@ def upload_yaml():
 @app.route('/resolve_cell', methods=['POST'])
 def get_cell_statement():
     user_id = request.args.get("id")
-    # create_user(user_id)
     col = get_excel_column_index(request.args.get("col"))
     row = get_excel_row_index(request.args.get("row"))
     return resolve_cell(user_id, col, row)
+
+
+@app.route('/download', methods=['POST'])
+def downloader():
+    user_id = request.args.get("id")
+    filetype = request.args.get("type")
+    return generate_download_file(user_id, filetype)
 
 
 if __name__ == "__main__":

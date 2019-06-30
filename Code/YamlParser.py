@@ -1,10 +1,8 @@
 import yaml
-from t2wml_parser import parse_evaluate_and_get_cell, parse_and_evaluate
-import os
 from typing import Sequence
 import copy
-from utility_functions import get_actual_cell_index
-__CWD__ = os.getcwd()
+from Code.utility_functions import get_actual_cell_index
+from Code.t2wml_parser import parse_evaluate_and_get_cell, parse_and_evaluate
 
 
 class YAMLParser:
@@ -61,5 +59,4 @@ class YAMLParser:
 	def get_template(self):
 		template = copy.deepcopy(self.yaml_data['statementMapping']['template'])
 		self.resolve_template(template)
-
 		return template

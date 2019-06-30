@@ -1,11 +1,11 @@
 from lark import Lark
 from lark.tree import Tree
-from dictionary import class_dictionary
-from bindings import bindings
 import os
 from typing import Union
-from ValueExpression import ValueExpression
-from BooleanEquation import BooleanEquation
+from Code.dictionary import class_dictionary
+from Code.bindings import bindings
+from Code.ValueExpression import ValueExpression
+from Code.BooleanEquation import BooleanEquation
 from pathlib import Path
 __CWD__ = os.getcwd()
 
@@ -147,30 +147,3 @@ def parse_evaluate_and_get_cell(text_to_parse: str) -> tuple:
     else:
         result = root.evaluate_and_get_cell(bindings)
     return result
-
-# def main() -> None:
-#     """
-#     This is the main function. It parses the text based on the prescribed grammar, creates the class tree
-#     and then evaluates the expression/equation
-#     :return:
-#     """
-#     # text variable contains the string to be parsed
-#     text = """
-#         value(value(C/6) = "Females" and value(E/6)-> $col/$row)
-#     """
-#
-#     excel_file_path = __CWD__ + "\\Datasets\\homicide_report_total_and_sex.xlsx"
-#     add_excel_file_to_bindings(file_name, "table_1a")
-#
-#     # The following line will generate an error because currently there's no csv file at this path
-#     wikifier_result = __CWD__ + "\\Code\\wikified_excel_file.csv"
-#     add_wikifier_result_to_bindings(wikifier_result)
-#
-#     root = generate_tree(text)
-#     result = root.evaluate(bindings)
-#     print("Query:", text.strip())
-#     print("Result:", result)
-
-
-# if __name__ == "__main__":
-#     main()
