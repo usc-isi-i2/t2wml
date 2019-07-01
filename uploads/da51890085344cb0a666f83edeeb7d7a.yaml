@@ -1,0 +1,19 @@
+statementMapping:
+  region:
+    - left: C
+      right: G
+      top: 3
+      bottom: 10
+  template:
+    item: item(A/$row)
+    property: P1082 #C3002 # murder
+    value: value($col/$row)
+    #unit: D1002
+    qualifier:
+      - property: P85
+        value: value($col/3)
+        calendar: Q1985727
+        precision: year
+        time_zone: 0 
+      - property: P6001 # applies to people
+        value: item(C/$row)
