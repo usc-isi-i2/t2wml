@@ -1,5 +1,6 @@
 from typing import Union
 from SPARQLWrapper import SPARQLWrapper, JSON
+from Code.property_type_map import property_type_map
 
 
 def get_column_letter(n):
@@ -38,22 +39,29 @@ def get_excel_row_index(row: Union[str, int]) -> int:
 
 
 def get_actual_cell_index(cell_index):
-    col = get_column_letter(cell_index[0])
+    col = get_column_letter(cell_index[0]+1)
     row = str(cell_index[1] + 1)
     return col+row
 
 
 def get_property_type(wikidata_property: str) -> str:
-    query = """SELECT ?type WHERE {
-      wd:"""+wikidata_property+""" rdf:type wikibase:Property ;
-        wikibase:propertyType ?type .  
-    }"""
+    try:
+        type = property_type_map[wikidata_property]
+    except KeyError:
+        query = """SELECT ?type WHERE {
+          wd:"""+wikidata_property+""" rdf:type wikibase:Property ;
+            wikibase:propertyType ?type .  
+        }"""
 
-    sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-    return results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+        sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+        try:
+            type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+        except IndexError:
+            type = "Property Not Found"
+    return type
 
 
 def excel_to_json(file_path):
@@ -73,6 +81,7 @@ def excel_to_json(file_path):
             for col in range(len(item[row])):
                 r[column_index_map[col+1]] = item[row][col]
             result["rowData"].append(r)
+        # break here for accessing only the first sheet in the workbook
         break
     return json.dumps(result)
 
@@ -80,3 +89,9 @@ def excel_to_json(file_path):
 def read_file(file_path):
     with open(file_path, "r") as f:
         return f.read()
+
+
+def write_file(filepath, data):
+    with open(filepath, "w") as f:
+        f.write(data)
+        f.close()

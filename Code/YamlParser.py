@@ -1,10 +1,8 @@
 import yaml
-from t2wml_parser import parse_and_evaluate
-import os
 from typing import Sequence
-from utility_functions import *
 import copy
-__CWD__ = os.getcwd()
+from Code.utility_functions import get_actual_cell_index
+from Code.t2wml_parser import parse_evaluate_and_get_cell, parse_and_evaluate
 
 
 class YAMLParser:
@@ -25,29 +23,40 @@ class YAMLParser:
 	def get_template_value(self) -> str:
 		return str(self.yaml_data['statementMapping']['template']['value'])
 
+	def get_template_property(self) -> str:
+		return str(self.yaml_data['statementMapping']['template']['property'])
+
 	def get_qualifiers(self) -> str:
 		return self.yaml_data['statementMapping']['template']['qualifier']
 
 	def resolve_template(self, template: str) -> None:
 		# Resolve Template Item if needed
-		item = self.get_template_item()
-		if not item.isalnum():
-			item = parse_and_evaluate(item)
-			template['item'] = item
+		template_item = self.get_template_item()
+		if not template_item.isalnum():
+			result = parse_evaluate_and_get_cell(template_item)
+			template['item_cell_index'] = get_actual_cell_index((result[0], result[1]))
+			template['item'] = result[2]
+
+		# Resolve Template Property if needed
+		template_property = self.get_template_property()
+		if not template_property.isalnum():
+			template_property = parse_and_evaluate(template_property)
+			template['property'] = template_property
 
 		# Resolve Template Value if needed
-		value = self.get_template_value()
-		if not value.isalnum():
-			value = parse_and_evaluate(value)
-			template["value"] = value
+		template_value = self.get_template_value()
+		if not template_value.isalnum():
+			template_value = parse_and_evaluate(template_value)
+			template["value"] = template_value
 
 		for i in range(len(template['qualifier'])):
 			qualifier_value = str(template['qualifier'][i]['value'])
 			if not qualifier_value.isalnum():
-				template['qualifier'][i]['value'] = parse_and_evaluate(qualifier_value)
+				result = parse_evaluate_and_get_cell(qualifier_value)
+				template['qualifier'][i]['cell_index'] = get_actual_cell_index((result[0], result[1]))
+				template['qualifier'][i]['value'] = result[2]
 
 	def get_template(self):
 		template = copy.deepcopy(self.yaml_data['statementMapping']['template'])
 		self.resolve_template(template)
-
 		return template

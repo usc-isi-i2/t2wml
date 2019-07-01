@@ -1,6 +1,6 @@
 from typing import Union
 import csv
-
+from Code.utility_functions import get_actual_cell_index
 
 class ItemTable:
 	def __init__(self):
@@ -39,5 +39,4 @@ class ItemTable:
 		elif self.value_to_qnode.get(value, None):
 			return self.value_to_qnode[value]
 		else:
-			raise Exception('No QNode Exists for this cell value',column,row)
-
+			raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))

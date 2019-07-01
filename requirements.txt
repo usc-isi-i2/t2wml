@@ -1,0 +1,11 @@
+Werkzeug==0.14.1
+pyexcel==0.5.14
+Flask_Cors==3.0.7
+etk==2.1.7
+Flask==1.0.2
+lark_parser==0.7.1
+SPARQLWrapper==1.8.4
+lark==0.0.4
+typing==3.7.4
+PyYAML==5.1.1
+git+https://github.com/usc-isi-i2/etk@development

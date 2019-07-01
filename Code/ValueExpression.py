@@ -25,5 +25,25 @@ class ValueExpression:
         return bindings['excel_sheet'][re, ce]
 
     def get_cell(self, bindings: dict) -> tuple:
-        ce, re = self.cell_expression.evaluate(bindings)
+        if self.cell_expression:
+            ce, re = self.cell_expression.evaluate(bindings)
+        else:
+            cell_expression = self.boolean_equation.evaluate(bindings)
+            if cell_expression:
+                ce = cell_expression[0]
+                re = cell_expression[1]
+            else:
+                raise ValueError("Invalid Row and Column values")
         return ce, re
+
+    def evaluate_and_get_cell(self, bindings:dict) -> tuple:
+        if self.cell_expression:
+            ce, re = self.cell_expression.evaluate(bindings)
+        else:
+            cell_expression = self.boolean_equation.evaluate(bindings)
+            if cell_expression:
+                ce = cell_expression[0]
+                re = cell_expression[1]
+            else:
+                raise ValueError("Invalid Row and Column values")
+        return ce, re, bindings['excel_sheet'][re, ce]

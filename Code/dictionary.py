@@ -1,16 +1,16 @@
-from ValueExpression import ValueExpression
-from CellExpression import CellExpression
-from ColumnExpression import ColumnExpression
-from RowExpression import RowExpression
-from ColumnVariable import ColumnVariable
-from RowVariable import RowVariable
-from CellOperatorArgument import CellOperatorArgument
-from BooleanEquation import BooleanEquation
-from BooleanExpression import BooleanExpression
-from OrExpression import OrExpression
-from AndExpression import AndExpression
-from Expression import Expression
-from ItemExpression import ItemExpression
+from Code.ValueExpression import ValueExpression
+from Code.CellExpression import CellExpression
+from Code.ColumnExpression import ColumnExpression
+from Code.RowExpression import RowExpression
+from Code.ColumnVariable import ColumnVariable
+from Code.RowVariable import RowVariable
+from Code.CellOperatorArgument import CellOperatorArgument
+from Code.BooleanEquation import BooleanEquation
+from Code.BooleanExpression import BooleanExpression
+from Code.OrExpression import OrExpression
+from Code.AndExpression import AndExpression
+from Code.Expression import Expression
+from Code.ItemExpression import ItemExpression
 
 
 class_dictionary = {

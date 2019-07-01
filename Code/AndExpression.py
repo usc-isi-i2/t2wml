@@ -1,6 +1,3 @@
-from typing import Union
-
-
 class AndExpression:
 	def __init__(self):
 		self.expression = []

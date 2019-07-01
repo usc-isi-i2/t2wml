@@ -1,9 +1,10 @@
 import os
 import yaml
 import sys
+from pathlib import Path
 CWD = os.getcwd()
-from utility_functions import get_property_type
-sys.path.insert(0, "F:\\isi\\T2WML\\etk")
+from Code.utility_functions import get_property_type
+# sys.path.insert(0, Path(CWD + "/etk"))
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
 from etk.etk_module import ETKModule
@@ -12,11 +13,8 @@ from etk.wikidata.value import Datatype, Item, Property, StringValue, URLValue, 
 
 
 def model_data():
-	stream = open(CWD + "\\Datasets\\data.worldbank.org\\new_items_properties.yaml", 'r')
+	stream = open(Path(CWD + "/Datasets/data.worldbank.org/new_items_properties.yaml"), 'r')
 	yaml_data = yaml.safe_load(stream)
-
-
-
 	# initialize
 	kg_schema = KGSchema()
 	kg_schema.add_schema('@prefix : <http://isi.edu/> .', 'ttl')
@@ -66,6 +64,7 @@ def model_data():
 					p.add_statement(pnode, Item(item['value']))
 		doc.kg.add_subject(p)
 
+	print(doc.kg.serialize('ttl'))
 
 	# # first we add properties and entities
 	# # Define Qnode for properties related to crime.
@@ -212,9 +211,6 @@ def model_data():
 	#
 	# # serialization
 	# f = open(file_path, 'w')
-	print(doc.kg.serialize('ttl'))
-	# f.close()
-	#
-	# print('Serialization completed!')
+
 
 model_data()
