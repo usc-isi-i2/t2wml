@@ -1,6 +1,8 @@
 from typing import Union
 from SPARQLWrapper import SPARQLWrapper, JSON
 import string
+import pyexcel
+import json
 from Code.property_type_map import property_type_map
 
 
@@ -65,25 +67,31 @@ def get_property_type(wikidata_property: str) -> str:
     return type
 
 
-def excel_to_json(file_path):
-    print("in excel 2 json")
-    import pyexcel as p
-    import json
-    book_dict = p.get_book_dict(file_name=file_path)
-    result = {"columnDefs": [{"headerName": "", "field": "^", "pinned": "left"}], "rowData": []}
+def excel_to_json(file_path, sheet_name=None):
+    book_dict = pyexcel.get_book_dict(file_name=file_path)
+    sheet_data = {"columnDefs": [{"headerName": "", "field": "^", "pinned": "left"}], "rowData": []}
     column_index_map = {}
-    for key, item in book_dict.items():
-        for i in range(len(item[0])):
-            column = get_column_letter(i+1)
-            column_index_map[i+1] = column
-            result["columnDefs"].append({"headerName": column_index_map[i + 1], "field": column_index_map[i + 1]})
-        for row in range(len(item)):
-            r = {"^": str(row + 1)}
-            for col in range(len(item[row])):
-                r[column_index_map[col+1]] = item[row][col]
-            result["rowData"].append(r)
-        # break here for accessing only the first sheet in the workbook
-        break
+    
+    result = dict()
+    if not sheet_name:
+        result["sheetNames"] = list()
+        for sheet in book_dict.keys():
+            result["sheetNames"].append(sheet)
+        sheet_name = result["sheetNames"][0]
+
+    sheet = book_dict[sheet_name]
+    for i in range(len(sheet[0])):
+        column = get_column_letter(i+1)
+        column_index_map[i+1] = column
+        sheet_data["columnDefs"].append({"headerName": column_index_map[i + 1], "field": column_index_map[i + 1]})
+    for row in range(len(sheet)):
+        r = {"^": str(row + 1)}
+        for col in range(len(sheet[row])):
+            r[column_index_map[col+1]] = sheet[row][col]
+        sheet_data["rowData"].append(r)
+    result["sheetData"] = dict()
+    result["sheetData"][sheet_name] = sheet_data
+
     return json.dumps(result)
 
 

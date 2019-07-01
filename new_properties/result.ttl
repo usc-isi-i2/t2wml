@@ -1,0 +1,309 @@
+@prefix : <http://isi.edu/> .
+@prefix p: <http://www.wikidata.org/prop/> .
+@prefix pq: <http://www.wikidata.org/prop/qualifier/> .
+@prefix pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/> .
+@prefix pqv: <http://www.wikidata.org/prop/qualifier/value/> .
+@prefix pr: <http://www.wikidata.org/prop/reference/> .
+@prefix prn: <http://www.wikidata.org/prop/reference/value-normalized/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix prv: <http://www.wikidata.org/prop/reference/value/> .
+@prefix ps: <http://www.wikidata.org/prop/statement/> .
+@prefix psn: <http://www.wikidata.org/prop/statement/value-normalized/> .
+@prefix psv: <http://www.wikidata.org/prop/statement/value/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix wdno: <http://www.wikidata.org/prop/novalue/> .
+@prefix wdref: <http://www.wikidata.org/reference/> .
+@prefix wds: <http://www.wikidata.org/entity/statement/> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+@prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/> .
+@prefix wdv: <http://www.wikidata.org/value/> .
+@prefix wikibase: <http://wikiba.se/ontology#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+wd:P100001 a wikibase:Property ;
+    rdfs:label "net ODA received"@en ;
+    schema:description "Net official development assistance is disbursement flows (net of repayment of principal) that meet the DAC definition of ODA and are made to countries and territories on the DAC list of aid recipients."@en ;
+    schema:name "net ODA received"@en ;
+    wikibase:claim p:P100001 ;
+    wikibase:directClaim wdt:P100001 ;
+    wikibase:directClaimNormalized wdtn:P100001 ;
+    wikibase:novalue wdno:P100001 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100001 ;
+    wikibase:qualifierValue pqv:P100001 ;
+    wikibase:qualifierValueNormalized pqn:P100001 ;
+    wikibase:reference pr:P100001 ;
+    wikibase:referenceValue prv:P100001 ;
+    wikibase:referenceValueNormalized prn:P100001 ;
+    wikibase:statementProperty ps:P100001 ;
+    wikibase:statementValue psv:P100001 ;
+    wikibase:statementValueNormalized psn:P100001 ;
+    skos:prefLabel "net ODA received"@en ;
+    p:P1629 wds:P100001-668af28d-4c94-43bb-8ddf-83cb8c740949 ;
+    p:P1896 wds:P100001-32b45d38-67ba-45a9-ab48-5b6aba8aa4ed ;
+    p:P31 wds:P100001-3afb16b2-05da-4622-abb3-94ff07ce61ee,
+        wds:P100001-4713b5d7-e04e-44a6-b6c6-4690e2fea5fe,
+        wds:P100001-e256174f-730d-4f71-a144-1ea0e86acc04 .
+
+wd:P100002 a wikibase:Property ;
+    rdfs:label "access to electricity"@en ;
+    schema:description "Access to electricity, urban is the percentage of urban population with access to electricity."@en ;
+    schema:name "access to electricity"@en ;
+    wikibase:claim p:P100002 ;
+    wikibase:directClaim wdt:P100002 ;
+    wikibase:directClaimNormalized wdtn:P100002 ;
+    wikibase:novalue wdno:P100002 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100002 ;
+    wikibase:qualifierValue pqv:P100002 ;
+    wikibase:qualifierValueNormalized pqn:P100002 ;
+    wikibase:reference pr:P100002 ;
+    wikibase:referenceValue prv:P100002 ;
+    wikibase:referenceValueNormalized prn:P100002 ;
+    wikibase:statementProperty ps:P100002 ;
+    wikibase:statementValue psv:P100002 ;
+    wikibase:statementValueNormalized psn:P100002 ;
+    skos:prefLabel "access to electricity"@en ;
+    p:P1629 wds:P100002-813b1662-1b0c-46eb-bcd8-4c47bdf10f4e ;
+    p:P1896 wds:P100002-6fdf7ccb-5137-4e03-8f31-ab9cd0b9bef0 ;
+    p:P31 wds:P100002-274be100-12cc-4b38-a1d9-6fcd171db747,
+        wds:P100002-29be5d5f-7f7c-4ad8-a3a0-6e0edef69a8f,
+        wds:P100002-7a18b1bb-1d82-41ee-9be2-91b89af5b6e1 .
+
+wd:P100003 a wikibase:Property ;
+    rdfs:label "prevalence of undernourishment (% of population)"@en ;
+    schema:description "Population below minimum level of dietary energy consumption (also referred to as prevalence of undernourishment) shows the percentage of the population whose food intake is insufficient to meet dietary energy requirements continuously. Data showing as 5 may signify a prevalence of undernourishment below 5%."@en ;
+    schema:name "prevalence of undernourishment (% of population)"@en ;
+    wikibase:claim p:P100003 ;
+    wikibase:directClaim wdt:P100003 ;
+    wikibase:directClaimNormalized wdtn:P100003 ;
+    wikibase:novalue wdno:P100003 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100003 ;
+    wikibase:qualifierValue pqv:P100003 ;
+    wikibase:qualifierValueNormalized pqn:P100003 ;
+    wikibase:reference pr:P100003 ;
+    wikibase:referenceValue prv:P100003 ;
+    wikibase:referenceValueNormalized prn:P100003 ;
+    wikibase:statementProperty ps:P100003 ;
+    wikibase:statementValue psv:P100003 ;
+    wikibase:statementValueNormalized psn:P100003 ;
+    skos:prefLabel "prevalence of undernourishment (% of population)"@en ;
+    p:P1629 wds:P100003-d3cec0b5-ed80-4440-be4e-c8fcc72386fa ;
+    p:P1896 wds:P100003-c9df0cc3-008c-4da8-95e9-f1547af5dfe7 ;
+    p:P31 wds:P100003-06fa3199-5ba5-4419-ac8c-206c2580799d,
+        wds:P100003-471749ea-2227-416a-91a2-7014af04224c,
+        wds:P100003-bca7ceae-f5d8-4d2c-9a76-0dffc51d2b0b .
+
+wd:P100004 a wikibase:Property ;
+    rdfs:label "military expenditure (% of general government expenditure)"@en ;
+    schema:description "Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)"@en ;
+    schema:name "military expenditure (% of general government expenditure)"@en ;
+    wikibase:claim p:P100004 ;
+    wikibase:directClaim wdt:P100004 ;
+    wikibase:directClaimNormalized wdtn:P100004 ;
+    wikibase:novalue wdno:P100004 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100004 ;
+    wikibase:qualifierValue pqv:P100004 ;
+    wikibase:qualifierValueNormalized pqn:P100004 ;
+    wikibase:reference pr:P100004 ;
+    wikibase:referenceValue prv:P100004 ;
+    wikibase:referenceValueNormalized prn:P100004 ;
+    wikibase:statementProperty ps:P100004 ;
+    wikibase:statementValue psv:P100004 ;
+    wikibase:statementValueNormalized psn:P100004 ;
+    skos:prefLabel "military expenditure (% of general government expenditure)"@en ;
+    p:P1629 wds:P100004-df87607a-e54d-464e-aa6a-de2fb3dc7dcd ;
+    p:P1896 wds:P100004-15089804-aecf-4fb5-820d-1574baede76e ;
+    p:P31 wds:P100004-6e18b3a1-f32b-4401-97bb-0be8fee8c772,
+        wds:P100004-d8d7d561-839d-4f6b-9a1c-66fe7c7a7619 .
+
+wd:P100005 a wikibase:Property ;
+    rdfs:label "military expenditure (% of GDP)"@en ;
+    schema:description "Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)"@en ;
+    schema:name "military expenditure (% of GDP)"@en ;
+    wikibase:claim p:P100005 ;
+    wikibase:directClaim wdt:P100005 ;
+    wikibase:directClaimNormalized wdtn:P100005 ;
+    wikibase:novalue wdno:P100005 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100005 ;
+    wikibase:qualifierValue pqv:P100005 ;
+    wikibase:qualifierValueNormalized pqn:P100005 ;
+    wikibase:reference pr:P100005 ;
+    wikibase:referenceValue prv:P100005 ;
+    wikibase:referenceValueNormalized prn:P100005 ;
+    wikibase:statementProperty ps:P100005 ;
+    wikibase:statementValue psv:P100005 ;
+    wikibase:statementValueNormalized psn:P100005 ;
+    skos:prefLabel "military expenditure (% of GDP)"@en ;
+    p:P1629 wds:P100005-a88aa579-335d-4c55-91be-1b09fde158b3 ;
+    p:P1896 wds:P100005-ab1ff5f0-f1ea-4a67-b556-74a1e15445d3 ;
+    p:P31 wds:P100005-1d8b0e6c-e717-4c5a-a744-d320ca81fc83,
+        wds:P100005-81cc7b06-137d-49df-8d87-3382887d58db .
+
+wd:P100006 a wikibase:Property ;
+    rdfs:label "employment to population ratio, 15+, total (%) (national estimate)"@en ;
+    schema:description "Employment to population ratio is the proportion of a country's population that is employed. Employment is defined as persons of working age who, during a short reference period, were engaged in any activity to produce goods or provide services for pay or profit, whether at work during the reference period (i.e. who worked in a job for at least one hour) or not at work due to temporary absence from a job, or to working-time arrangements. Ages 15 and older are generally considered the working-age population."@en ;
+    schema:name "employment to population ratio, 15+, total (%) (national estimate)"@en ;
+    wikibase:claim p:P100006 ;
+    wikibase:directClaim wdt:P100006 ;
+    wikibase:directClaimNormalized wdtn:P100006 ;
+    wikibase:novalue wdno:P100006 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100006 ;
+    wikibase:qualifierValue pqv:P100006 ;
+    wikibase:qualifierValueNormalized pqn:P100006 ;
+    wikibase:reference pr:P100006 ;
+    wikibase:referenceValue prv:P100006 ;
+    wikibase:referenceValueNormalized prn:P100006 ;
+    wikibase:statementProperty ps:P100006 ;
+    wikibase:statementValue psv:P100006 ;
+    wikibase:statementValueNormalized psn:P100006 ;
+    skos:prefLabel "employment to population ratio, 15+, total (%) (national estimate)"@en ;
+    p:P1629 wds:P100006-fa182f57-7056-43b3-8c3b-b0d7fd836089 ;
+    p:P1896 wds:P100006-2b64893b-1ad3-4492-ab54-09635d7e8ed1 ;
+    p:P31 wds:P100006-31307277-1cbd-4468-abe0-0466831cf6f9,
+        wds:P100006-957e7fdc-0904-45a3-9563-6f52d60034b6 .
+
+wds:P100001-32b45d38-67ba-45a9-ab48-5b6aba8aa4ed a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/DT.ODA.ODAT.GI.ZS> .
+
+wds:P100001-3afb16b2-05da-4622-abb3-94ff07ce61ee a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100001-4713b5d7-e04e-44a6-b6c6-4690e2fea5fe a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100001-668af28d-4c94-43bb-8ddf-83cb8c740949 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100001-e256174f-730d-4f71-a144-1ea0e86acc04 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100002-274be100-12cc-4b38-a1d9-6fcd171db747 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100002-29be5d5f-7f7c-4ad8-a3a0-6e0edef69a8f a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100002-6fdf7ccb-5137-4e03-8f31-ab9cd0b9bef0 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS> .
+
+wds:P100002-7a18b1bb-1d82-41ee-9be2-91b89af5b6e1 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100002-813b1662-1b0c-46eb-bcd8-4c47bdf10f4e a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100003-06fa3199-5ba5-4419-ac8c-206c2580799d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100003-471749ea-2227-416a-91a2-7014af04224c a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100003-bca7ceae-f5d8-4d2c-9a76-0dffc51d2b0b a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100003-c9df0cc3-008c-4da8-95e9-f1547af5dfe7 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/SN.ITK.DEFC.ZS> .
+
+wds:P100003-d3cec0b5-ed80-4440-be4e-c8fcc72386fa a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100004-15089804-aecf-4fb5-820d-1574baede76e a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/MS.MIL.XPND.ZS> .
+
+wds:P100004-6e18b3a1-f32b-4401-97bb-0be8fee8c772 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100004-d8d7d561-839d-4f6b-9a1c-66fe7c7a7619 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100004-df87607a-e54d-464e-aa6a-de2fb3dc7dcd a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100005-1d8b0e6c-e717-4c5a-a744-d320ca81fc83 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100005-81cc7b06-137d-49df-8d87-3382887d58db a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100005-a88aa579-335d-4c55-91be-1b09fde158b3 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100005-ab1ff5f0-f1ea-4a67-b556-74a1e15445d3 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS> .
+
+wds:P100006-2b64893b-1ad3-4492-ab54-09635d7e8ed1 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/SL.EMP.TOTL.SP.NE.ZS> .
+
+wds:P100006-31307277-1cbd-4468-abe0-0466831cf6f9 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100006-957e7fdc-0904-45a3-9563-6f52d60034b6 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100006-fa182f57-7056-43b3-8c3b-b0d7fd836089 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
