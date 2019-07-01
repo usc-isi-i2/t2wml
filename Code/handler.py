@@ -7,7 +7,7 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_excel_row_index, get_excel_column_index, get_actual_cell_index
+from Code.utility_functions import get_excel_row_index, get_excel_column_index, get_actual_cell_index, check_if_empty
 from Code.t2wml_parser import parse_and_get_cell
 from Code.triple_generator import generate_triples
 
@@ -53,25 +53,25 @@ def add_holes(region: Region) -> None:
 			if check_if_empty(str(bindings['excel_sheet'][row, col])):
 				region.add_hole(row, col, col)
 
-
-def check_special_characters(text) -> bool:
-	"""
-	This funtion checks if the text is made up of only special characters
-	:param text:
-	:return:
-	"""
-	return all(char in string.punctuation for char in text)
-
-
-def check_if_empty(text: str) -> bool:
-	"""
-	This function checks if the text is empty or has only special characters
-	:param text:
-	:return:
-	"""
-	if text is None or text == "" or check_special_characters(text):
-		return True
-	return False
+#
+# def check_special_characters(text) -> bool:
+# 	"""
+# 	This funtion checks if the text is made up of only special characters
+# 	:param text:
+# 	:return:
+# 	"""
+# 	return all(char in string.punctuation for char in text)
+#
+#
+# def check_if_empty(text: str) -> bool:
+# 	"""
+# 	This function checks if the text is empty or has only special characters
+# 	:param text:
+# 	:return:
+# 	"""
+# 	if text is None or text == "" or check_special_characters(text):
+# 		return True
+# 	return False
 
 
 def highlight_region(user_id: str) -> str:

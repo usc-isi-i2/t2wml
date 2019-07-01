@@ -1,5 +1,6 @@
 from typing import Union
 from SPARQLWrapper import SPARQLWrapper, JSON
+import string
 from Code.property_type_map import property_type_map
 
 
@@ -79,7 +80,8 @@ def excel_to_json(file_path):
         for row in range(len(item)):
             r = {"^": str(row + 1)}
             for col in range(len(item[row])):
-                r[column_index_map[col+1]] = item[row][col]
+                if not check_if_empty(item[row][col]):
+                    r[column_index_map[col+1]] = item[row][col]
             result["rowData"].append(r)
         # break here for accessing only the first sheet in the workbook
         break
@@ -95,3 +97,23 @@ def write_file(filepath, data):
     with open(filepath, "w") as f:
         f.write(data)
         f.close()
+
+
+def check_special_characters(text) -> bool:
+    """
+    This funtion checks if the text is made up of only special characters
+    :param text:
+    :return:
+    """
+    return all(char in string.punctuation for char in text)
+
+
+def check_if_empty(text: str) -> bool:
+    """
+    This function checks if the text is empty or has only special characters
+    :param text:
+    :return:
+    """
+    if text is None or text == "" or check_special_characters(text):
+        return True
+    return False
