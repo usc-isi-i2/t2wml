@@ -1,5 +1,5 @@
 from app_config import app
-from flask import request, Response
+from flask import request, Response, render_template
 from werkzeug.utils import secure_filename
 import json
 from pathlib import Path
@@ -54,6 +54,10 @@ def create_user(user_id: str):
     if user_id not in app.config["__user_files__"]:
         app.config["__user_files__"][user_id] = {}
 
+@app.route('/')
+def upload_form():
+    resp = app.make_response(render_template('index.html'))
+    return resp
 
 @app.route('/upload_excel', methods=['POST'])
 def upload_excel():
