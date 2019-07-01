@@ -14,17 +14,18 @@ from Code.triple_generator import generate_triples
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/wikified_result.csv")
 
 
-def add_excel_file_to_bindings(user_id: str) -> None:
+def add_excel_file_to_bindings(user_id: str, sheet_name: str) -> None:
 	"""
 	This function reads the excel file and add the pyexcel object to the bindings
 	:return: None
 	"""
 	try:
 		records = pyexcel.get_book(file_name=app.config["__user_files__"][user_id]["excel"])
-		for sheet in records:
-			bindings["excel_sheet"] = sheet
-			# for reading only the first sheet in the excel workbook
-			break
+		if not sheet_name:
+			bindings["excel_sheet"] = records[0]
+		else:
+			bindings["excel_sheet"] = records[sheet_name]
+
 	except IOError:
 		print('Excel File cannot be found or opened')
 
@@ -53,31 +54,12 @@ def add_holes(region: Region) -> None:
 			if check_if_empty(str(bindings['excel_sheet'][row, col])):
 				region.add_hole(row, col, col)
 
-#
-# def check_special_characters(text) -> bool:
-# 	"""
-# 	This funtion checks if the text is made up of only special characters
-# 	:param text:
-# 	:return:
-# 	"""
-# 	return all(char in string.punctuation for char in text)
-#
-#
-# def check_if_empty(text: str) -> bool:
-# 	"""
-# 	This function checks if the text is empty or has only special characters
-# 	:param text:
-# 	:return:
-# 	"""
-# 	if text is None or text == "" or check_special_characters(text):
-# 		return True
-# 	return False
 
-
-def highlight_region(user_id: str) -> str:
+def highlight_region(user_id: str, sheet_name: str = None) -> str:
 	"""
 	This function finds the cells with data values and their corresponding cells with the item values and qualifiers
 	:param user_id:
+	:param sheet_name:
 	:return:
 	"""
 	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
@@ -86,7 +68,7 @@ def highlight_region(user_id: str) -> str:
 	bindings["$right"] = get_excel_column_index(right)
 	bindings["$top"] = get_excel_row_index(top)
 	bindings["$bottom"] = get_excel_row_index(bottom)
-	add_excel_file_to_bindings(user_id)
+	add_excel_file_to_bindings(user_id, sheet_name)
 	add_wikifier_result_to_bindings()
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
@@ -129,12 +111,13 @@ def highlight_region(user_id: str) -> str:
 	return json_data
 
 
-def resolve_cell(user_id: str, column: str, row: str) -> str:
+def resolve_cell(user_id: str, column: str, row: str, sheet_name: str = None) -> str:
 	"""
 	This function evaluates the yaml file for this column and row
 	:param user_id:
 	:param column:
 	:param row:
+	:param sheet_name:
 	:return:
 	"""
 	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
@@ -143,7 +126,7 @@ def resolve_cell(user_id: str, column: str, row: str) -> str:
 	bindings["$right"] = get_excel_column_index(right)
 	bindings["$top"] = get_excel_row_index(top)
 	bindings["$bottom"] = get_excel_row_index(bottom)
-	add_excel_file_to_bindings(user_id)
+	add_excel_file_to_bindings(user_id, sheet_name)
 	add_wikifier_result_to_bindings()
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
@@ -160,12 +143,13 @@ def resolve_cell(user_id: str, column: str, row: str) -> str:
 	return json_data
 
 
-def generate_download_file(user_id: str, filetype: str) -> str:
+def generate_download_file(user_id: str, filetype: str, sheet_name: str = None) -> str:
 	"""
 	This function evaluets the yaml file for all the cells in the region
 	and generates the output in json or in the form of rdf triples
 	:param user_id:
 	:param filetype:
+	:param sheet_name:
 	:return:
 	"""
 	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
@@ -174,7 +158,7 @@ def generate_download_file(user_id: str, filetype: str) -> str:
 	bindings["$right"] = get_excel_column_index(right)
 	bindings["$top"] = get_excel_row_index(top)
 	bindings["$bottom"] = get_excel_row_index(bottom)
-	add_excel_file_to_bindings(user_id)
+	add_excel_file_to_bindings(user_id, sheet_name)
 	add_wikifier_result_to_bindings()
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
