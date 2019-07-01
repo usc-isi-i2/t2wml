@@ -80,8 +80,7 @@ def excel_to_json(file_path):
         for row in range(len(item)):
             r = {"^": str(row + 1)}
             for col in range(len(item[row])):
-                if not check_if_empty(item[row][col]):
-                    r[column_index_map[col+1]] = item[row][col]
+                r[column_index_map[col+1]] = item[row][col]
             result["rowData"].append(r)
         # break here for accessing only the first sheet in the workbook
         break
@@ -114,6 +113,7 @@ def check_if_empty(text: str) -> bool:
     :param text:
     :return:
     """
+    text = text.strip()
     if text is None or text == "" or check_special_characters(text):
         return True
     return False
