@@ -71,7 +71,10 @@ def excel_to_json(file_path, sheet_name=None):
     book_dict = pyexcel.get_book_dict(file_name=file_path)
     sheet_data = {"columnDefs": [{"headerName": "", "field": "^", "pinned": "left"}], "rowData": []}
     column_index_map = {}
-    
+
+    is_first_excel = (False, True)[(file_path[-4:] == ".xls" or file_path[-5:] == ".xlsx") and (sheet_name == None)]
+    print(file_path, sheet_name, is_first_excel)
+
     result = dict()
     if not sheet_name:
         result["sheetNames"] = list()
@@ -89,9 +92,13 @@ def excel_to_json(file_path, sheet_name=None):
         for col in range(len(sheet[row])):
             r[column_index_map[col+1]] = sheet[row][col]
         sheet_data["rowData"].append(r)
-    result["sheetData"] = dict()
-    result["sheetData"][sheet_name] = sheet_data
-    return json.dumps(result)
+
+    if is_first_excel:
+        result["sheetData"] = dict()
+        result["sheetData"][sheet_name] = sheet_data
+        return json.dumps(result)
+    else:
+        return json.dumps(sheet_data)
 
 
 def read_file(file_path):
