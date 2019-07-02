@@ -19,12 +19,12 @@ def get_file_extension(filename: str):
 
 def upload_file(user_id: str, sheet_name: str):
     data = ""
-    if not sheet_name:
+    if sheet_name:
         try:
-           file_path = app.config["__user_files__"][user_id]['excel']
+            file_path = app.config["__user_files__"][user_id]['excel']
+            data = excel_to_json(file_path, sheet_name)
         except KeyError:
             data = "Excel file not found"
-        data = excel_to_json(file_path)
     else:
         if 'file' not in request.files:
             data = 'No file part'
@@ -64,8 +64,8 @@ def upload_excel():
     user_id = request.args.get("id")
     create_user(user_id)
     try:
-        sheet_name = app.config["__user_files__"][user_id]['sheet_name']
-    except KeyError:
+        sheet_name = request.args.get("sheet_name")
+    except:
         sheet_name = None
     return upload_file(user_id, sheet_name)
 
@@ -76,7 +76,7 @@ def upload_yaml():
     create_user(user_id)
     yaml_data = request.values["yaml"]
     try:
-        sheet_name = get_excel_row_index(request.args.get("sheet_name"))
+        sheet_name = request.args.get("sheet_name")
     except:
         sheet_name = None
     filename = str(Path(app.config['UPLOAD_FOLDER']) / user_id) + ".yaml"
