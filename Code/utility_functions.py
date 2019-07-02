@@ -91,7 +91,6 @@ def excel_to_json(file_path, sheet_name=None):
         sheet_data["rowData"].append(r)
     result["sheetData"] = dict()
     result["sheetData"][sheet_name] = sheet_data
-
     return json.dumps(result)
 
 
