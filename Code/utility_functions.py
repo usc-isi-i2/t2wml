@@ -72,8 +72,9 @@ def excel_to_json(file_path, sheet_name=None):
     sheet_data = {"columnDefs": [{"headerName": "", "field": "^", "pinned": "left"}], "rowData": []}
     column_index_map = {}
 
-    is_first_excel = (False, True)[(file_path[-4:] == ".xls" or file_path[-5:] == ".xlsx") and (sheet_name == None)]
-    print(file_path, sheet_name, is_first_excel)
+    file_path = file_path.lower()
+    is_first_excel = (False, True)[(file_path.endswith(".xls") or file_path.endswith(".xlsx")) and (sheet_name == None)]
+    # print(file_path, sheet_name, is_first_excel)
 
     result = dict()
     if not sheet_name:
