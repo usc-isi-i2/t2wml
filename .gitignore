@@ -105,8 +105,5 @@ venv.bak/
 
 .idea/
 .Code/RegionTestCase.py
-Datasets/wits.worldbank.org/.DS_Store
-Datasets/.DS_Store
-Datasets/data.worldbank.org/.DS_Store
-Datasets/data.worldbank.org/data/.DS_Store
-Datasets/data.worldbank.org/bae/.DS_Store
+.DS_Store
+uploads/*
