@@ -11,15 +11,15 @@ from Code.handler import highlight_region, resolve_cell, generate_download_file
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
 
-def allowed_file(filename: str):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXCEL_FILE_EXTENSIONS
+def allowed_file(filename: str, file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in file_extensions
 
 
 def get_file_extension(filename: str):
     return filename.split(".")[-1]
 
 
-def upload_file(user_id: str, sheet_name: str):
+def excel_uploader(user_id: str, sheet_name: str):
     data = ""
     if sheet_name:
         try:
@@ -52,6 +52,27 @@ def upload_file(user_id: str, sheet_name: str):
     return resp
 
 
+def wikified_output_uploader(user_id: str):
+    data = {"byCell": {}, "byValue": {}, "error": ""}
+    if 'wikifier_output' not in request.files:
+        data["error"] = 'No file part'
+    else:
+        file = request.files['wikifier_output']
+        if file.filename == '':
+            data["error"] = 'No file selected for uploading'
+        if file and allowed_file(file.filename, "csv"):
+            filename = secure_filename(file.filename)
+            filename = user_id + "." + get_file_extension(filename)
+            file_path = str(Path(app.config['UPLOAD_FOLDER']) / filename)
+            file.save(file_path)
+            app.config["__user_files__"][user_id]['wikified_output'] = file_path
+        else:
+            data = 'This file type is currently not supported'
+
+    json_data = json.dumps(data)
+    return json_data
+
+
 def create_user(user_id: str):
     if user_id not in app.config["__user_files__"]:
         app.config["__user_files__"][user_id] = {}
@@ -72,7 +93,7 @@ def upload_excel():
         sheet_name = request.args.get("sheet_name")
     except:
         sheet_name = None
-    return upload_file(user_id, sheet_name)
+    return excel_uploader(user_id, sheet_name)
 
 
 @app.route('/upload_yaml', methods=['POST'])
@@ -120,13 +141,8 @@ def downloader():
 @app.route('/upload_wikifier_output', methods=['POST'])
 def upload_wikified_output():
     user_id = request.args.get("id")
-    wikified_output = request.args.get("wikified_output")
     create_user(user_id)
-    filename = str(Path(app.config['UPLOAD_FOLDER']) / user_id) + "_wikified_output.csv"
-    with open(filename, "w") as f:
-        f.write(wikified_output)
-        app.config["__user_files__"][user_id]['wikified_output'] = filename
-    return json.dumps("True")
+    return wikified_output_uploader(user_id)
 
 
 if __name__ == "__main__":

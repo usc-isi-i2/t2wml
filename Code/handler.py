@@ -90,9 +90,10 @@ def highlight_region(user_id: str, sheet_name: str = None) -> str:
 
 			qualifier_cells = set()
 			for qualifier in qualifiers:
-				qualifier_cell = parse_and_get_cell(qualifier["value"])
-				qualifier_cell = get_actual_cell_index(qualifier_cell)
-				qualifier_cells.add(qualifier_cell)
+				if not str(qualifier["value"]).isalnum():
+					qualifier_cell = parse_and_get_cell(qualifier["value"])
+					qualifier_cell = get_actual_cell_index(qualifier_cell)
+					qualifier_cells.add(qualifier_cell)
 
 			data["data_region"].add(data_cell)
 			data["item"].add(item_cell)
@@ -182,18 +183,10 @@ def generate_download_file(user_id: str, filetype: str, sheet_name: str = None) 
 
 	if filetype == 'json':
 		json_data = json.dumps(data)
-		# filename = user_id + "_output.json"
-		# # filepath = str(Path(app.config["DOWNLOAD_FOLDER"]) / filename)
-		# filepath = "F:\\isi\\T2WML\\t2wml\\downloads\\output.json"
-		# utility_functions.write_file(filepath, json_data)
 		return json_data
 	elif filetype == 'ttl':
 		try:
 			json_data = generate_triples(data, filetype)
-			# filename = user_id + "_output.ttl"
-			# # filepath = str(Path(app.config["DOWNLOAD_FOLDER"]) / filename)
-			# filepath = "F:\\isi\\T2WML\\t2wml\\downloads\\output.ttl"
-			# utility_functions.write_file(filepath, json_data)
 			return json_data
 		except Exception as e:
 			return str(e)
