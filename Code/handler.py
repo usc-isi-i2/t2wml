@@ -65,10 +65,10 @@ def highlight_region(user_id: str, sheet_name: str = None) -> str:
 	"""
 	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
 	left, right, top, bottom = yaml_parser.get_region()
-	bindings["$left"] = get_excel_column_index(left)
-	bindings["$right"] = get_excel_column_index(right)
-	bindings["$top"] = get_excel_row_index(top)
-	bindings["$bottom"] = get_excel_row_index(bottom)
+	bindings["$left"] = left
+	bindings["$right"] = right
+	bindings["$top"] = top
+	bindings["$bottom"] = bottom
 	add_excel_file_to_bindings(user_id, sheet_name)
 	add_wikifier_result_to_bindings(user_id)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
@@ -124,10 +124,10 @@ def resolve_cell(user_id: str, column: str, row: str, sheet_name: str = None) ->
 	"""
 	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
 	left, right, top, bottom = yaml_parser.get_region()
-	bindings["$left"] = get_excel_column_index(left)
-	bindings["$right"] = get_excel_column_index(right)
-	bindings["$top"] = get_excel_row_index(top)
-	bindings["$bottom"] = get_excel_row_index(bottom)
+	bindings["$left"] = left
+	bindings["$right"] = right
+	bindings["$top"] = top
+	bindings["$bottom"] = bottom
 	add_excel_file_to_bindings(user_id, sheet_name)
 	add_wikifier_result_to_bindings(user_id)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
@@ -156,10 +156,10 @@ def generate_download_file(user_id: str, filetype: str, sheet_name: str = None) 
 	"""
 	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
 	left, right, top, bottom = yaml_parser.get_region()
-	bindings["$left"] = get_excel_column_index(left)
-	bindings["$right"] = get_excel_column_index(right)
-	bindings["$top"] = get_excel_row_index(top)
-	bindings["$bottom"] = get_excel_row_index(bottom)
+	bindings["$left"] = left
+	bindings["$right"] = right
+	bindings["$top"] = top
+	bindings["$bottom"] = bottom
 	add_excel_file_to_bindings(user_id, sheet_name)
 	add_wikifier_result_to_bindings(user_id)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])

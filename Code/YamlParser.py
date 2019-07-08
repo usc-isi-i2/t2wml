@@ -11,10 +11,10 @@ class YAMLParser:
 			self.yaml_data = yaml.safe_load(stream)
 
 	def get_region(self) -> Sequence[str]:
-		left = self.yaml_data['statementMapping']['region'][0]['left']
-		right = self.yaml_data['statementMapping']['region'][0]['right']
-		top = self.yaml_data['statementMapping']['region'][0]['top']
-		bottom = self.yaml_data['statementMapping']['region'][0]['bottom']
+		left = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['left']))
+		right = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['right']))
+		top = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['top']))
+		bottom = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
 		return left, right, top, bottom
 
 	def get_template_item(self) -> str:

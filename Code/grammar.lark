@@ -1,6 +1,8 @@
 start: value_expression
     | item_expression
     | boolean_equation
+    | column_expression
+    | row_expression
 
 !expression: cell_expression
        | value_expression
