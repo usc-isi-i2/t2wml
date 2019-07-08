@@ -81,7 +81,7 @@ def upload_yaml():
     create_user(user_id)
     yaml_data = request.values["yaml"]
     if check_if_empty(yaml_data):
-        return json.dumps("Yaml")
+        return json.dumps("YAML file is either empty or not valid")
     try:
         sheet_name = request.args.get("sheet_name")
     except:
@@ -121,7 +121,7 @@ def downloader():
 def upload_wikified_output():
     user_id = request.args.get("id")
     wikified_output = request.args.get("wikified_output")
-
+    create_user(user_id)
     filename = str(Path(app.config['UPLOAD_FOLDER']) / user_id) + "_wikified_output.csv"
     with open(filename, "w") as f:
         f.write(wikified_output)
