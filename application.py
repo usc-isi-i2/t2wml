@@ -53,7 +53,7 @@ def excel_uploader(user_id: str, sheet_name: str):
 
 
 def wikified_output_uploader(user_id: str):
-    data = {"byCell": {}, "byValue": {}, "error": ""}
+    data = {"error": ""}
     if 'wikifier_output' not in request.files:
         data["error"] = 'No file part'
     else:

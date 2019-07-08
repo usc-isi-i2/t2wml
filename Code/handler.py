@@ -84,9 +84,12 @@ def highlight_region(user_id: str, sheet_name: str = None) -> str:
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
+			data["data_region"].add(data_cell)
 
-			item_cell = parse_and_get_cell(item)
-			item_cell = get_actual_cell_index(item_cell)
+			if not item.isalnum():
+				item_cell = parse_and_get_cell(item)
+				item_cell = get_actual_cell_index(item_cell)
+				data["item"].add(item_cell)
 
 			qualifier_cells = set()
 			for qualifier in qualifiers:
@@ -94,9 +97,6 @@ def highlight_region(user_id: str, sheet_name: str = None) -> str:
 					qualifier_cell = parse_and_get_cell(qualifier["value"])
 					qualifier_cell = get_actual_cell_index(qualifier_cell)
 					qualifier_cells.add(qualifier_cell)
-
-			data["data_region"].add(data_cell)
-			data["item"].add(item_cell)
 			data["qualifier_region"] |= qualifier_cells
 		except Exception as e:
 			data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = str(e)

@@ -36,18 +36,21 @@ class YAMLParser:
 			result = parse_evaluate_and_get_cell(template_item)
 			template['item_cell_index'] = get_actual_cell_index((result[0], result[1]))
 			template['item'] = result[2]
+		else:
+			template['item_cell_index'] = ""
+			template['item'] = template_item
 
 		# Resolve Template Property if needed
 		template_property = self.get_template_property()
 		if not template_property.isalnum():
 			template_property = parse_and_evaluate(template_property)
-			template['property'] = template_property
+		template['property'] = template_property
 
 		# Resolve Template Value if needed
 		template_value = self.get_template_value()
 		if not template_value.isalnum():
 			template_value = parse_and_evaluate(template_value)
-			template["value"] = template_value
+		template["value"] = template_value
 
 		if template.get('qualifier', None):
 			for i in range(len(template['qualifier'])):
