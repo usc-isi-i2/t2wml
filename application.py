@@ -2,7 +2,9 @@ from app_config import app
 from flask import request, Response, render_template
 from werkzeug.utils import secure_filename
 import json
+import time
 from pathlib import Path
+from Code.utility_functions import check_if_empty
 from Code.utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index
 from Code.handler import highlight_region, resolve_cell, generate_download_file
 
@@ -54,13 +56,16 @@ def create_user(user_id: str):
     if user_id not in app.config["__user_files__"]:
         app.config["__user_files__"][user_id] = {}
 
+
 @app.route('/')
 def upload_form():
     resp = app.make_response(render_template('index.html'))
     return resp
 
+
 @app.route('/upload_excel', methods=['POST'])
 def upload_excel():
+    t = time.time()
     user_id = request.args.get("id")
     create_user(user_id)
     try:
@@ -75,6 +80,8 @@ def upload_yaml():
     user_id = request.args.get("id")
     create_user(user_id)
     yaml_data = request.values["yaml"]
+    if check_if_empty(yaml_data):
+        return json.dumps("Yaml")
     try:
         sheet_name = request.args.get("sheet_name")
     except:
@@ -108,6 +115,18 @@ def downloader():
     except KeyError:
         sheet_name = None
     return generate_download_file(user_id, filetype, sheet_name)
+
+
+@app.route('/upload_wikifier_output', methods=['POST'])
+def upload_wikified_output():
+    user_id = request.args.get("id")
+    wikified_output = request.args.get("wikified_output")
+
+    filename = str(Path(app.config['UPLOAD_FOLDER']) / user_id) + "_wikified_output.csv"
+    with open(filename, "w") as f:
+        f.write(wikified_output)
+        app.config["__user_files__"][user_id]['wikified_output'] = filename
+    return json.dumps("True")
 
 
 if __name__ == "__main__":

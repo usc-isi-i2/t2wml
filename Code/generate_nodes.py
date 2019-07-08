@@ -3,7 +3,7 @@ import yaml
 import sys
 from pathlib import Path
 CWD = os.getcwd()
-from Code.utility_functions import get_property_type
+from Code.utility_functions import get_property_type, translate_precision_to_integer
 # sys.path.insert(0, Path(CWD + "/etk"))
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
@@ -49,6 +49,7 @@ def model_data():
 		'quantity': Datatype.QuantityValue,
 		'url': URLValue
 	}
+	property_type_cache = {}
 	for k, v in yaml_data.items():
 		p = WDProperty(k, type_map[v['type']], creator='http://www.isi.edu/t2wml')
 		for lang, value in v['label'].items():
@@ -59,10 +60,34 @@ def model_data():
 				p.add_description(val, lang=lang)
 		for pnode, items in v['statements'].items():
 			for item in items:
-				if pnode == 'P1896':
-					p.add_statement(pnode, URLValue(item['value']))
-				else:
-					p.add_statement(pnode, Item(item['value']))
+				try:
+					property_type = property_type_cache[pnode]
+				except KeyError:
+					property_type = get_property_type(pnode)
+					property_type_cache[pnode] = property_type
+				if property_type == "WikibaseItem":
+					value = Item(str(item['value']))
+				elif property_type == "WikibaseProperty":
+					value = Property(item['value'])
+				elif property_type == "String":
+					value = StringValue(item['value'])
+				elif property_type == "Quantity":
+					value = QuantityValue(item['value'])
+				elif property_type == "Time":
+					value = TimeValue(str(item['value']), Item(item["calendar"]), translate_precision_to_integer(item["precision"]), item["time_zone"])
+				elif property_type == "Url":
+					value = URLValue(item['value'])
+				elif property_type == "Monolingualtext":
+					value = MonolingualText(item['value'], item["lang"])
+				elif property_type == "ExternalId":
+					value = ExternalIdentifier(item['value'])
+				elif property_type == "GlobeCoordinate":
+					value = GlobeCoordinate(item["latitude"], item["longitude"], item["precision"])
+
+				# if pnode == 'P1896':
+				p.add_statement(pnode, value)
+				# else:
+				# 	p.add_statement(pnode, Item(item['value']))
 		doc.kg.add_subject(p)
 
 	with open(Path.cwd().parent / "new_properties/result.ttl", "w") as f:
@@ -73,4 +98,6 @@ def model_data():
 model_data()
 with open(Path.cwd().parent / "new_properties/changes.tsv", "w") as fp:
 	serialize_change_record(fp)
+
+
 

@@ -74,7 +74,6 @@ def excel_to_json(file_path, sheet_name=None):
 
     file_path = file_path.lower()
     is_first_excel = (False, True)[(file_path.endswith(".xls") or file_path.endswith(".xlsx")) and (sheet_name == None)]
-    # print(file_path, sheet_name, is_first_excel)
 
     result = dict()
     if not sheet_name:
@@ -91,7 +90,7 @@ def excel_to_json(file_path, sheet_name=None):
     for row in range(len(sheet)):
         r = {"^": str(row + 1)}
         for col in range(len(sheet[row])):
-            r[column_index_map[col+1]] = sheet[row][col]
+            r[column_index_map[col+1]] = str(sheet[row][col]).strip()
         sheet_data["rowData"].append(r)
 
     if is_first_excel:
@@ -132,3 +131,39 @@ def check_if_empty(text: str) -> bool:
     if text is None or text == "" or check_special_characters(text):
         return True
     return False
+
+
+def translate_precision_to_integer(precision: str) -> int:
+    if isinstance(precision, int):
+        return precision
+    precision_map = {
+                        "gigayear": 0,
+                        "gigayears": 0,
+                        "100 megayears": 1,
+                        "100 megayear": 1,
+                        "10 megayears": 2,
+                        "10 megayear": 2,
+                        "megayears": 3,
+                        "megayear": 3,
+                        "100 kiloyears": 4,
+                        "100 kiloyear": 4,
+                        "10 kiloyears": 5,
+                        "10 kiloyear": 5,
+                        "millennium": 6,
+                        "century": 7,
+                        "10 years": 8,
+                        "10 year": 8,
+                        "years": 9,
+                        "year": 9,
+                        "months": 10,
+                        "month": 10,
+                        "days": 11,
+                        "day": 11,
+                        "hours": 12,
+                        "hour": 12,
+                        "minutes": 13,
+                        "minute": 13,
+                        "seconds": 14,
+                        "second": 14
+                    }
+    return precision_map[precision.lower()]

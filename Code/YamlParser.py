@@ -55,6 +55,8 @@ class YAMLParser:
 				result = parse_evaluate_and_get_cell(qualifier_value)
 				template['qualifier'][i]['cell_index'] = get_actual_cell_index((result[0], result[1]))
 				template['qualifier'][i]['value'] = result[2]
+			# else:
+			# 	template['qualifier'][i]['value'] = qualifier_value
 
 	def get_template(self):
 		template = copy.deepcopy(self.yaml_data['statementMapping']['template'])

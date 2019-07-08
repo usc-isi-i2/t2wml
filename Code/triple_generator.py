@@ -1,9 +1,11 @@
-from Code.utility_functions import get_property_type
+from pathlib import Path
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
 from etk.etk_module import ETKModule
 from etk.wikidata.entity import WDItem
 from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, ExternalIdentifier, GlobeCoordinate
+from etk.wikidata import serialize_change_record
+from Code.utility_functions import get_property_type, translate_precision_to_integer
 
 
 def generate_triples(resolved_excel, filetype='ttl'):
@@ -38,7 +40,7 @@ def generate_triples(resolved_excel, filetype='ttl'):
 
 	property_type_cache = {}
 	for i in resolved_excel:
-		item = WDItem(i["statement"]["item"])
+		item = WDItem(i["statement"]["item"],  creator='http://www.isi.edu/t2wml')
 		s = item.add_statement(i["statement"]["property"], QuantityValue(i["statement"]["value"]))
 		doc.kg.add_subject(item)
 
@@ -48,7 +50,6 @@ def generate_triples(resolved_excel, filetype='ttl'):
 			except KeyError:
 				property_type = get_property_type(j["property"])
 				property_type_cache[j["property"]] = property_type
-
 			if property_type == "WikibaseItem":
 				value = Item(str(j["value"]))
 			elif property_type == "WikibaseProperty":
@@ -58,7 +59,7 @@ def generate_triples(resolved_excel, filetype='ttl'):
 			elif property_type == "Quantity":
 				value = QuantityValue(j["value"])
 			elif property_type == "Time":
-				value = TimeValue(str(j["value"]), Item(j["calendar"]), j["precision"], j["time_zone"])
+				value = TimeValue(str(j["value"]), Item(j["calendar"]), translate_precision_to_integer(j["precision"]), j["time_zone"])
 			elif property_type == "Url":
 				value = URLValue(j["value"])
 			elif property_type == "Monolingualtext":
@@ -72,4 +73,8 @@ def generate_triples(resolved_excel, filetype='ttl'):
 		doc.kg.add_subject(s)
 
 	data = doc.kg.serialize(filetype)
+	with open(Path.cwd() / "new_properties/FP.CPI.TOTL_results.ttl", "w") as fp:
+		fp.write(data)
+	with open(Path.cwd() / "new_properties/FP.CPI.TOTL_changes.tsv", "w") as fp:
+		serialize_change_record(fp)
 	return data

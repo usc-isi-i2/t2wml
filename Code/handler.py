@@ -11,7 +11,7 @@ from Code.utility_functions import get_excel_row_index, get_excel_column_index, 
 from Code.t2wml_parser import parse_and_get_cell
 from Code.triple_generator import generate_triples
 
-__WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/wikified_result.csv")
+__WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
 def add_excel_file_to_bindings(user_id: str, sheet_name: str) -> None:
@@ -30,14 +30,15 @@ def add_excel_file_to_bindings(user_id: str, sheet_name: str) -> None:
 		print('Excel File cannot be found or opened')
 
 
-def add_wikifier_result_to_bindings() -> None:
+def add_wikifier_result_to_bindings(user_id: str) -> None:
 	"""
 	This function creates an object of the wikified result file and adds that object to the bindings
 	:return:
 	"""
 	try:
 		item_table = ItemTable()
-		item_table.generate_hash_tables(__WIKIFIED_RESULT__, True)
+		wikified_output = app.config["__user_files__"][user_id]['wikified_output']
+		item_table.generate_hash_tables(wikified_output, True)
 		bindings["item_table"] = item_table
 	except IOError:
 		print('Wikifier Result File cannot be found or opened')
@@ -69,7 +70,7 @@ def highlight_region(user_id: str, sheet_name: str = None) -> str:
 	bindings["$top"] = get_excel_row_index(top)
 	bindings["$bottom"] = get_excel_row_index(bottom)
 	add_excel_file_to_bindings(user_id, sheet_name)
-	add_wikifier_result_to_bindings()
+	add_wikifier_result_to_bindings(user_id)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
 	head = region.get_head()
@@ -127,7 +128,7 @@ def resolve_cell(user_id: str, column: str, row: str, sheet_name: str = None) ->
 	bindings["$top"] = get_excel_row_index(top)
 	bindings["$bottom"] = get_excel_row_index(bottom)
 	add_excel_file_to_bindings(user_id, sheet_name)
-	add_wikifier_result_to_bindings()
+	add_wikifier_result_to_bindings(user_id)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
 	bindings["$col"] = column
@@ -159,7 +160,7 @@ def generate_download_file(user_id: str, filetype: str, sheet_name: str = None) 
 	bindings["$top"] = get_excel_row_index(top)
 	bindings["$bottom"] = get_excel_row_index(bottom)
 	add_excel_file_to_bindings(user_id, sheet_name)
-	add_wikifier_result_to_bindings()
+	add_wikifier_result_to_bindings(user_id)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
 	data = []
