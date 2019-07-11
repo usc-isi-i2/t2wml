@@ -1,0 +1,187 @@
+P100011:
+  type: quantity
+  label: 
+    en:
+    - security apparatus
+  description:
+    en:
+    - The Security Apparatus indicator considers the security threats to a state, such as bombings, attacks and battle-related deaths, rebel movements, mutinies, coups, or terrorism. The Security Apparatus also takes into account serious criminal factors, such as organized crime and homicides, and perceived trust of citizens in domestic security. In some instances, the security apparatus may extend beyond traditional military or police forces to include state-sponsored or state-supported private militias that terrorize political opponents, suspected “enemies,” or civilians seen to be sympathetic to the opposition. In other instances, the security apparatus of a state can include a “deep state”, that may consist of secret intelligence units, or other irregular security forces, that serve the interests of a political leader or clique. As a counter example, the indicator will also take into account armed resistance to a governing authority, particularly the manifestation of violent uprisings and insurgencies, proliferation of independent militias, vigilantes, or mercenary groups that challenge the state’s monopoly of the use of force.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/c1/
+P100012:
+  type: quantity
+  label: 
+    en:
+    - factionalized elites
+  description:
+    en:
+    - The Factionalized Elites indicator considers the fragmentation of state institutions along ethnic, class, clan, racial or religious lines, as well as and brinksmanship and gridlock between ruling elites. It also factors the use of nationalistic political rhetoric by ruling elites, often in terms of nationalism, xenophobia, communal irredentism (e.g., a “greater Serbia”) or of communal solidarity (e.g., “ethnic cleansing” or “defending the faith”). In extreme cases, it can be representative of the absence of legitimate leadership widely accepted as representing the entire citizenry. The Factionalized Elites indicator measures power struggles, political competition, political transitions, and where elections occur will factor in the credibility of electoral processes (or in their absence, the perceived legitimacy of the ruling class).
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/c2/
+P100013:
+  type: quantity
+  label: 
+    en:
+    - group grievance
+  description:
+    en:
+    - The Group Grievance Indicator focuses on divisions and schisms between different groups in society – particularly divisions based on social or political characteristics – and their role in access to services or resources, and inclusion in the political process. Group Grievance may also have a historical component, where aggrieved communal groups cite injustices of the past, sometimes going back centuries, that influence and shape that group’s role in society and relationships with other groups. This history may in turn be shaped by patterns of real or perceived atrocities or “crimes” committed with apparent impunity against communal groups. Groups may also feel aggrieved because they are denied autonomy, self-determination or political independence to which they believe they are entitled. The Indicator also considers where specific groups are singled out by state authorities, or by dominant groups, for persecution or repression, or where there is public scapegoating of groups believed to have acquired wealth, status or power “illegitimately”, which may manifest itself in the emergence of fiery rhetoric, such as through “hate” radio, pamphleteering, and stereotypical or nationalistic political speech.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q22984494    # Wikidata property related to demography
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/c3/
+P100014:
+  type: quantity
+  label: 
+    en:
+    - economic decline and poverty
+  description:
+    en:
+    - The Economic Decline Indicator considers factors related to economic decline within a country. For example, the Indicator looks at patterns of progressive economic decline of the society as a whole as measured by per capita income, Gross National Product, unemployment rates, inflation, productivity, debt, poverty levels, or business failures. It also takes into account sudden drops in commodity prices, trade revenue, or foreign investment, and any collapse or devaluation of the national currency. The Economic Decline Indicator further considers the responses to economic conditions and their consequences, such as extreme social hardship imposed by economic austerity programs, or perceived increasing group inequalities. The Economic Decline Indicator is focused on the formal economy – as well as illicit trade, including the drug and human trafficking, and capital flight, or levels of corruption and illicit transactions such as money laundering or embezzlement.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q1167393     # Economic Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/e1/
+P100015:
+  type: quantity
+  label: 
+    en:
+    - uneven economic development
+  description:
+    en:
+    - The Uneven Economic Development Indicator considers inequality within the economy, irrespective of the actual performance of an economy. For example, the Indicator looks at structural inequality that is based on group (such as racial, ethnic, religious, or other identity group) or based on education, economic status, or region (such as urban-rural divide). The Indicator considers not only actual inequality, but also perceptions of inequality, recognizing that perceptions of economic inequality can fuel grievance as much as real inequality, and can reinforce communal tensions or nationalistic rhetoric. Further to measuring economic inequality, the Indicator also takes into account the opportunities for groups to improve their economic status, such as through access to employment, education, or job training such that even if there is economic inequality present, to what degree it is structural and reinforcing.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q1167393     # Economic Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/e2/
+P100016:
+  type: quantity
+  label: 
+    en:
+    - human flight and brain drain
+  description:
+    en:
+    - The Human Flight and Brain Drain Indicator considers the economic impact of human displacement (for economic or political reasons) and the consequences this may have on a country’s development. On the one hand, this may involve the voluntary emigration of the middle class – particularly economically productive segments of the population, such as entrepreneurs, or skilled workers such as physicians – due to economic deterioration in their home country and the hope of better opportunities farther afield. On the other hand, it may involve the forced displacement of professionals or intellectuals who are fleeing their country due to actual or feared persecution or repression, and specifically the economic impact that displacement may wreak on an economy through the loss of productive, skilled professional labor.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics    
+    P1629:                # subject item of this property
+    - value: Q1167393     # Economic Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/e3/
+P100017:
+  type: quantity
+  label:
+    en:
+    - state legitimacy
+  description:
+    en:
+    - The State Legitimacy Indicator considers the representativeness and openness of government and its relationship with its citizenry. The Indicator looks at the population’s level of confidence in state institutions and processes, and assesses the effects where that confidence is absent, manifested through mass public demonstrations, sustained civil disobedience, or the rise of armed insurgencies. Though the State Legitimacy indicator does not necessarily make a judgment on democratic governance, it does consider the integrity of elections where they take place (such as flawed or boycotted elections), the nature of political transitions, and where there is an absence of democratic elections, the degree to which the government is representative of the population of which it governs. The Indicator takes into account openness of government, specifically the openness of ruling elites to transparency, accountability and political representation, or conversely the levels of corruption, profiteering, and marginalizing, persecuting, or otherwise excluding opposition groups. The Indicator also considers the ability of a state to exercise basic functions that infer a population’s confidence in its government and institutions, such as through the ability to collect taxes.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/p1/
+P100018:
+  type: quantity
+  label:
+    en:
+    - public services
+  description:
+    en:
+    - The Public Services Indicator refers to the presence of basic state functions that serve the people. On the one hand, this may include the provision of essential services, such as health, education, water and sanitation, transport infrastructure, electricity and power, and internet and connectivity. On the other hand, it may include the state’s ability to protect its citizens, such as from terrorism and violence, through perceived effective policing. Further, even where basic state functions and services are provided, the Indicator further considers to whom – whether the state narrowly serves the ruling elites, such as security agencies, presidential staff, the central bank, or the diplomatic service, while failing to provide comparable levels of service to the general populace – such as rural versus urban populations. The Indicator also considers the level and maintenance of general infrastructure to the extent that its absence would negatively affect the country’s actual or potential development.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/p2/
+P100019:
+  type: quantity
+  label:
+    en:
+    - human rights and rule of law
+  description:
+    en:
+    - The Human Rights and Rule of Law Indicator considers the relationship between the state and its population insofar as fundamental human rights are protected and freedoms are observed and respected. The Indicator looks at whether there is widespread abuse of legal, political and social rights, including those of individuals, groups and institutions (e.g. harassment of the press, politicization of the judiciary, internal use of military for political ends, repression of political opponents). The Indicator also considers outbreaks of politically inspired (as opposed to criminal) violence perpetrated against civilians. It also looks at factors such as denial of due process consistent with international norms and practices for political prisoners or dissidents, and whether there is current or emerging authoritarian, dictatorial or military rule in which constitutional and democratic institutions and processes are suspended or manipulated.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q8458        # Wikidata property for human rights
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/p3/
+P100020:
+  type: quantity
+  label:
+    en:
+    - demographic pressures
+  description:
+    en:
+    - The Demographic Pressures Indicator considers pressures upon the state deriving from the population itself or the environment around it. For example, the Indicator measures population pressures related to food supply, access to safe water, and other life-sustaining resources, or health, such as prevalence of disease and epidemics. The Indicator considers demographic characteristics, such as pressures from high population growth rates or skewed population distributions, such as a “youth or age bulge,” or sharply divergent rates of population growth among competing communal groups, recognizing that such effects can have profound social, economic, and political effects. Beyond the population, the Indicator also takes into account pressures stemming from natural disasters (hurricanes, earthquakes, floods or drought), and pressures upon the population from environmental hazards.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q22984494    # Wikidata property related to demography
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/s1/
+P100021:
+  type: quantity
+  label:
+    en:
+    - refugees and idps
+  description:
+    en:
+    - The Refugees and Internally Displaced Persons Indicator measures the pressure upon states caused by the forced displacement of large communities as a result of social, political, environmental or other causes, measuring displacement within countries, as well as refugee flows into others. The indicator measures refugees by country of Asylum, recognizing that population inflows can put additional pressure on public services, and can sometimes create broader humanitarian and security challenges for the receiving state, if that state does not have the absorption capacity and adequate resources. The Indicator also measures the Internally Displaced Persons (IDP) and Refugees by country of origin, which signifies internal state pressures as a result of violence, environmental or other factors such as health epidemics. These measures are considered within the context of the state’s population (per capita) and human development trajectory, and over time (year on year spikes), recognizing that some IDPs or refugees for example, may have been displaced for long periods of time.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/s2/
+P100022:
+  type: quantity
+  label:
+    en:
+    - external intervention
+  description:
+    en:
+    - The External Intervention Indicator considers the influence and impact of external actors in the functioning – particularly security and economic – of a state. On the one hand, External Intervention focuses on security aspects of engagement from external actors, both covert and overt, in the internal affairs of a state at risk by governments, armies, intelligence services, identity groups, or other entities that may affect the balance of power (or resolution of a conflict) within a state. On the other hand, External Intervention also focuses on economic engagement by outside actors, including multilateral organizations, through large-scale loans, development projects, or foreign aid, such as ongoing budget support, control of finances, or management of the state’s economic policy, creating economic dependency. External Intervention also takes into account humanitarian intervention, such as the deployment of an international peacekeeping mission.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    # P1629:                # subject item of this property
+    # - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://fragilestatesindex.org/indicators/x1/  
