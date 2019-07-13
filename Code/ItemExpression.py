@@ -23,7 +23,10 @@ class ItemExpression:
 			else:
 				raise ValueError("Invalid Row and Column values")
 		value = bindings['excel_sheet'][re, ce]
-		return bindings["item_table"].get_item(ce, re, value)
+		if bindings['item_table']:
+			return bindings["item_table"].get_item(ce, re, value)
+		else:
+			return None
 
 	def get_cell(self, bindings: dict) -> tuple:
 		if self.cell_expression:

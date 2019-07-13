@@ -8,40 +8,31 @@ from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
 from Code.utility_functions import get_excel_row_index, get_excel_column_index, get_actual_cell_index, check_if_empty
-from Code.t2wml_parser import parse_and_get_cell
+from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
-
+from Code.ItemExpression import ItemExpression
+from Code.ValueExpression import ValueExpression
+from Code.BooleanEquation import BooleanEquation
+from Code.ColumnExpression import ColumnExpression
+from Code.RowExpression import RowExpression
+from Code.UserData import UserData
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
-def add_excel_file_to_bindings(user_id: str, sheet_name: str) -> None:
+def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
 	"""
 	This function reads the excel file and add the pyexcel object to the bindings
 	:return: None
 	"""
 	try:
-		records = pyexcel.get_book(file_name=app.config["__user_files__"][user_id]["excel"])
+		records = pyexcel.get_book(file_name=excel_filepath)
 		if not sheet_name:
 			bindings["excel_sheet"] = records[0]
 		else:
 			bindings["excel_sheet"] = records[sheet_name]
 
 	except IOError:
-		print('Excel File cannot be found or opened')
-
-
-def add_wikifier_result_to_bindings(user_id: str) -> None:
-	"""
-	This function creates an object of the wikified result file and adds that object to the bindings
-	:return:
-	"""
-	try:
-		item_table = ItemTable()
-		wikified_output = app.config["__user_files__"][user_id]['wikified_output']
-		item_table.generate_hash_tables(wikified_output, True)
-		bindings["item_table"] = item_table
-	except IOError:
-		print('Wikifier Result File cannot be found or opened')
+		raise IOError('Excel File cannot be found or opened')
 
 
 def add_holes(region: Region) -> None:
@@ -56,47 +47,50 @@ def add_holes(region: Region) -> None:
 				region.add_hole(row, col, col)
 
 
-def highlight_region(user_id: str, sheet_name: str = None) -> str:
-	"""
-	This function finds the cells with data values and their corresponding cells with the item values and qualifiers
-	:param user_id:
-	:param sheet_name:
-	:return:
-	"""
-	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
-	left, right, top, bottom = yaml_parser.get_region()
-	bindings["$left"] = left
-	bindings["$right"] = right
-	bindings["$top"] = top
-	bindings["$bottom"] = bottom
-	add_excel_file_to_bindings(user_id, sheet_name)
-	add_wikifier_result_to_bindings(user_id)
+def update_bindings(item_table: dict, region: dict = None, excel_filepath: str = None, sheet_name: str =None):
+	if region:
+		bindings["$left"] = region['left']
+		bindings["$right"] = region['right']
+		bindings["$top"] = region['top']
+		bindings["$bottom"] = region['bottom']
+	if excel_filepath:
+		add_excel_file_to_bindings(excel_filepath, sheet_name)
+	bindings["item_table"] = item_table
+
+
+def highlight_region(item_table, excel_data_filepath, sheet_name, region, template) -> str:
+	update_bindings(item_table, region, excel_data_filepath, sheet_name)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
 	head = region.get_head()
 	data = {"data_region": set(), "item": set(), "qualifier_region": set(), 'error': dict()}
 	bindings["$col"] = head[0]
 	bindings["$row"] = head[1]
-
-	item = yaml_parser.get_template_item()
-	qualifiers = yaml_parser.get_qualifiers()
+	item = template['item']
+	qualifiers = template['qualifier']
 
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
 			data["data_region"].add(data_cell)
 
-			if not item.isalnum():
-				item_cell = parse_and_get_cell(item)
-				item_cell = get_actual_cell_index(item_cell)
-				data["item"].add(item_cell)
+			if isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+				try:
+					item_cell = get_cell(item)
+					item_cell = get_actual_cell_index(item_cell)
+					data["item"].add(item_cell)
+				except AttributeError:
+					pass
 
 			qualifier_cells = set()
 			for qualifier in qualifiers:
-				if not str(qualifier["value"]).isalnum():
-					qualifier_cell = parse_and_get_cell(qualifier["value"])
-					qualifier_cell = get_actual_cell_index(qualifier_cell)
-					qualifier_cells.add(qualifier_cell)
+				if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+					try:
+						qualifier_cell = get_cell(qualifier["value"])
+						qualifier_cell = get_actual_cell_index(qualifier_cell)
+						qualifier_cells.add(qualifier_cell)
+					except AttributeError:
+						pass
 			data["qualifier_region"] |= qualifier_cells
 		except Exception as e:
 			data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = str(e)
@@ -109,27 +103,11 @@ def highlight_region(user_id: str, sheet_name: str = None) -> str:
 	data['data_region'] = list(data['data_region'])
 	data['item'] = list(data['item'])
 	data['qualifier_region'] = list(data['qualifier_region'])
-	json_data = json.dumps(data)
-	return json_data
+	return data
 
 
-def resolve_cell(user_id: str, column: str, row: str, sheet_name: str = None) -> str:
-	"""
-	This function evaluates the yaml file for this column and row
-	:param user_id:
-	:param column:
-	:param row:
-	:param sheet_name:
-	:return:
-	"""
-	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
-	left, right, top, bottom = yaml_parser.get_region()
-	bindings["$left"] = left
-	bindings["$right"] = right
-	bindings["$top"] = top
-	bindings["$bottom"] = bottom
-	add_excel_file_to_bindings(user_id, sheet_name)
-	add_wikifier_result_to_bindings(user_id)
+def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region: dict, template: dict, column: str, row: str) -> str:
+	update_bindings(item_table, region, excel_data_filepath, sheet_name)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
 	bindings["$col"] = column
@@ -137,7 +115,7 @@ def resolve_cell(user_id: str, column: str, row: str, sheet_name: str = None) ->
 	data = {}
 	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
-			statement = yaml_parser.get_template()
+			statement = evaluate_template(template)
 			data = {'statement': statement}
 		except Exception as e:
 			data = {'error': str(e)}
@@ -145,48 +123,70 @@ def resolve_cell(user_id: str, column: str, row: str, sheet_name: str = None) ->
 	return json_data
 
 
-def generate_download_file(user_id: str, filetype: str, sheet_name: str = None) -> str:
-	"""
-	This function evaluets the yaml file for all the cells in the region
-	and generates the output in json or in the form of rdf triples
-	:param user_id:
-	:param filetype:
-	:param sheet_name:
-	:return:
-	"""
-	yaml_parser = YAMLParser(app.config["__user_files__"][user_id]["yaml"])
-	left, right, top, bottom = yaml_parser.get_region()
-	bindings["$left"] = left
-	bindings["$right"] = right
-	bindings["$top"] = top
-	bindings["$bottom"] = bottom
-	add_excel_file_to_bindings(user_id, sheet_name)
-	add_wikifier_result_to_bindings(user_id)
+def generate_download_file(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region: dict, template: dict, filetype: str):
+	update_bindings(item_table, region, excel_data_filepath, sheet_name)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
-	data = []
+	response = []
 	error = []
 	head = region.get_head()
 	bindings["$col"] = head[0]
 	bindings["$row"] = head[1]
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
-		print(bindings["$col"], bindings["$row"])
 		try:
-			stat = yaml_parser.get_template()
-			data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': stat})
+			statement = evaluate_template(template)
+			response.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
 		except Exception as e:
 			error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
 		if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
 			bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
 		else:
 			bindings["$col"], bindings["$row"] = None, None
-
 	if filetype == 'json':
-		json_data = json.dumps(data)
-		return json_data
+		json_response = json.dumps(response)
+		return json_response
 	elif filetype == 'ttl':
 		try:
-			json_data = generate_triples(data, filetype)
-			return json_data
+			json_response = generate_triples(response, filetype)
+			return json_response
 		except Exception as e:
 			return str(e)
+
+
+def load_yaml_data(yaml_filepath):
+	yaml_parser = YAMLParser(yaml_filepath)
+	region = yaml_parser.get_region()
+	template = yaml_parser.get_template()
+	return region, template
+
+
+def build_item_table(wikifier_output_filepath, excel_data_filepath, sheet_name):
+	item_table = ItemTable()
+	item_table.generate_hash_tables(wikifier_output_filepath)
+	if excel_data_filepath:
+		item_table.populate_cell_to_qnode_using_cell_values(excel_data_filepath, sheet_name)
+	return item_table
+
+
+def evaluate_template(template):
+	response = dict()
+	for key, value in template.items():
+		if key == 'qualifier':
+			for i in range(len(template[key])):
+				response[key] = []
+				temp_dict = dict()
+				for k, v in template[key][i].items():
+					if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
+						col, row, temp_dict[k] = v.evaluate_and_get_cell(bindings)
+						temp_dict['cell'] = get_actual_cell_index((col, row))
+					else:
+						temp_dict[k] = v
+				response[key].append(temp_dict)
+		else:
+			if isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
+				col, row, response[key] = value.evaluate_and_get_cell(bindings)
+				if key == "item":
+					response['cell'] = get_actual_cell_index((col, row))
+			else:
+				response[key] = value
+	return response

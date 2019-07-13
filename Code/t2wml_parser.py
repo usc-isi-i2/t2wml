@@ -6,6 +6,8 @@ from Code.dictionary import class_dictionary
 from Code.bindings import bindings
 from Code.ValueExpression import ValueExpression
 from Code.BooleanEquation import BooleanEquation
+from Code.ColumnExpression import ColumnExpression
+from Code.RowExpression import RowExpression
 from pathlib import Path
 __CWD__ = os.getcwd()
 
@@ -131,9 +133,8 @@ def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     return result
 
 
-def parse_and_get_cell(text_to_parse: str) -> tuple:
-    root = generate_tree(text_to_parse)
-    if isinstance(root, BooleanEquation):
+def get_cell(root: str) -> tuple:
+    if isinstance(root, (BooleanEquation, RowExpression, ColumnExpression)):
         result = root.evaluate(bindings)
     else:
         result = root.get_cell(bindings)
@@ -142,7 +143,7 @@ def parse_and_get_cell(text_to_parse: str) -> tuple:
 
 def parse_evaluate_and_get_cell(text_to_parse: str) -> tuple:
     root = generate_tree(text_to_parse)
-    if isinstance(root, BooleanEquation):
+    if isinstance(root, (BooleanEquation, RowExpression, ColumnExpression)):
         result = root.evaluate(bindings)
     else:
         result = root.evaluate_and_get_cell(bindings)
