@@ -32,7 +32,7 @@ def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
 		raise IOError('Excel File cannot be found or opened')
 
 
-def add_holes(region: Region) -> None:
+def remove_empty_and_invalid_cells(region: Region) -> None:
 	"""
 	This functions searches for empty or invalid strings in the region and remove those cells from the region
 	:param region:
@@ -58,7 +58,7 @@ def update_bindings(item_table: dict, region: dict = None, excel_filepath: str =
 def highlight_region(item_table, excel_data_filepath, sheet_name, region_specification, template) -> str:
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
-	add_holes(region)
+	remove_empty_and_invalid_cells(region)
 	head = region.get_head()
 	data = {"data_region": set(), "item": set(), "qualifier_region": set(), 'error': dict()}
 	bindings["$col"] = head[0]
@@ -75,28 +75,39 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region_specifi
 
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
-			data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
-			data["data_region"].add(data_cell)
+			row_be_skipped = False
+			column_be_skipped = False
+			if region_specification['skip_row']:
+				row_be_skipped = region_specification['skip_row'].evaluate(bindings)
+				region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
 
-			if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
-				try:
-					item_cell = get_cell(item)
-					item_cell = get_actual_cell_index(item_cell)
-					data["item"].add(item_cell)
-				except AttributeError:
-					pass
+			if region_specification['skip_column']:
+				column_be_skipped = region_specification['skip_column'].evaluate(bindings)
+				region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
 
-			if qualifiers:
-				qualifier_cells = set()
-				for qualifier in qualifiers:
-					if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
-						try:
-							qualifier_cell = get_cell(qualifier["value"])
-							qualifier_cell = get_actual_cell_index(qualifier_cell)
-							qualifier_cells.add(qualifier_cell)
-						except AttributeError:
-							pass
-				data["qualifier_region"] |= qualifier_cells
+			if not row_be_skipped and not column_be_skipped:
+				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
+				data["data_region"].add(data_cell)
+
+				if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+					try:
+						item_cell = get_cell(item)
+						item_cell = get_actual_cell_index(item_cell)
+						data["item"].add(item_cell)
+					except AttributeError:
+						pass
+
+				if qualifiers:
+					qualifier_cells = set()
+					for qualifier in qualifiers:
+						if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+							try:
+								qualifier_cell = get_cell(qualifier["value"])
+								qualifier_cell = get_actual_cell_index(qualifier_cell)
+								qualifier_cells.add(qualifier_cell)
+							except AttributeError:
+								pass
+					data["qualifier_region"] |= qualifier_cells
 		except Exception as e:
 			data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = str(e)
 
@@ -114,7 +125,6 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region_specifi
 def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: str, row: str) -> str:
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
-	add_holes(region)
 	bindings["$col"] = column
 	bindings["$row"] = row
 	data = {}
@@ -131,7 +141,6 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str):
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
-	add_holes(region)
 	response = []
 	error = []
 	head = region.get_head()

@@ -13,7 +13,17 @@ class YAMLParser:
 		right = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['right']))
 		top = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['top']))
 		bottom = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
-		return {'left': left, 'right': right, 'top': top, 'bottom': bottom}
+		if 'skip_row' in self.yaml_data['statementMapping']['region'][0]:
+			skip_row = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_row'])
+		else:
+			skip_row = None
+
+		if 'skip_column' in self.yaml_data['statementMapping']['region'][0]:
+			skip_column = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_row'])
+		else:
+			skip_column = None
+
+		return {'left': left, 'right': right, 'top': top, 'bottom': bottom, 'skip_row': skip_row, 'skip_column': skip_column}
 
 	def get_template_item(self) -> str:
 		try:

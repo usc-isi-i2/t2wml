@@ -3,6 +3,7 @@ start: value_expression
     | boolean_equation
     | column_expression
     | row_expression
+    | boolean_expression
 
 !expression: cell_expression
        | value_expression
