@@ -42,7 +42,10 @@ def excel_uploader(user: UserData, sheet_name: str):
 				file.save(file_path)
 				data = excel_to_json(file_path, sheet_name)
 				if not sheet_name:
-					sheet_name = data['sheetNames'][0]
+					try:
+						sheet_name = data['sheetNames'][0]
+					except KeyError:
+						sheet_name = None
 				user_data.set_file_location(file_path)
 				user_data.set_sheet_name(sheet_name)
 			else:
