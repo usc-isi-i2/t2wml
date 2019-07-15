@@ -5,7 +5,7 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty
+from Code.utility_functions import get_actual_cell_index, check_if_empty, get_excel_column_index, get_excel_row_index
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -170,7 +170,11 @@ def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: 
 def load_yaml_data(yaml_filepath):
 	yaml_parser = YAMLParser(yaml_filepath)
 	region = yaml_parser.get_region()
-	region['region_object'] = Region(region["left"], region["right"], region["top"], region["bottom"])
+	left = get_excel_column_index(region["left"])
+	right = get_excel_column_index(region["right"])
+	top = get_excel_row_index(region["top"])
+	bottom = get_excel_row_index(region["bottom"])
+	region['region_object'] = Region(left, right, top, bottom)
 	template = yaml_parser.get_template()
 	return region, template
 

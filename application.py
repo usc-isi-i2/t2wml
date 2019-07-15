@@ -23,7 +23,7 @@ def get_file_extension(filename: str):
 
 def excel_uploader(user: UserData, sheet_name: str):
 	user_data = user.get_excel_data()
-	data = {"error":""}
+	data = {"error": ""}
 	if sheet_name and not check_if_empty(user_data.get_file_location()):
 		file_path = user_data.get_file_location()
 		data = excel_to_json(file_path, sheet_name)
