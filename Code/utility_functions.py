@@ -3,8 +3,6 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import string
 import pyexcel
 import os
-import json
-import csv
 from Code.property_type_map import property_type_map
 
 

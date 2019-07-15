@@ -1,13 +1,11 @@
 import pyexcel
 import json
-from app_config import app
-import string
 from pathlib import Path
 from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_excel_row_index, get_excel_column_index, get_actual_cell_index, check_if_empty
+from Code.utility_functions import get_actual_cell_index, check_if_empty
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -15,7 +13,6 @@ from Code.ValueExpression import ValueExpression
 from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
-from Code.UserData import UserData
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
@@ -123,7 +120,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	return json_data
 
 
-def generate_download_file(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region: dict, template: dict, filetype: str):
+def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region: dict, template: dict, filetype: str):
 	update_bindings(item_table, region, excel_data_filepath, sheet_name)
 	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
 	add_holes(region)
@@ -147,7 +144,7 @@ def generate_download_file(item_table: ItemTable, excel_data_filepath: str, shee
 		return json_response
 	elif filetype == 'ttl':
 		try:
-			json_response = generate_triples(response, filetype)
+			json_response = generate_triples(user_id, response, filetype)
 			return json_response
 		except Exception as e:
 			return str(e)

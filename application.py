@@ -1,13 +1,13 @@
 from app_config import app
-from flask import request, Response, render_template
+from flask import request, render_template
 from werkzeug.utils import secure_filename
 import json
 from pathlib import Path
+import os
 from Code.utility_functions import check_if_empty
 from Code.utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index, delete_file
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table
 from Code.UserData import UserData
-# from Code.utility_functions import assign_qnodes_to_cells
 
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
@@ -23,18 +23,18 @@ def get_file_extension(filename: str):
 
 def excel_uploader(user: UserData, sheet_name: str):
 	user_data = user.get_excel_data()
-	data = ""
+	data = {"error":""}
 	if sheet_name and not check_if_empty(user_data.get_file_location()):
 		file_path = user_data.get_file_location()
 		data = excel_to_json(file_path, sheet_name)
 		user_data.set_sheet_name(sheet_name)
 	else:
 		if 'file' not in request.files:
-			data = 'No file part'
+			data["error"] = 'No file part'
 		else:
 			file = request.files['file']
 			if file.filename == '':
-				data = 'No file selected for uploading'
+				data["error"] = 'No file selected for uploading'
 			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
 				filename = user.get_user_id() + "_excel_file." + get_file_extension(filename)
@@ -46,7 +46,7 @@ def excel_uploader(user: UserData, sheet_name: str):
 				user_data.set_file_location(file_path)
 				user_data.set_sheet_name(sheet_name)
 			else:
-				data = 'This file type is currently not supported'
+				data["error"] = 'This file type is currently not supported'
 	# resp = Response(data, status=200, mimetype='application/json')
 	# resp.headers['Access-Control-Allow-Origin'] = '*'
 	# resp.headers['Access-Control-Allow-Methods'] = 'POST'
@@ -94,6 +94,7 @@ def upload_excel():
 	except:
 		sheet_name = None
 
+	os.makedirs("uploads", exist_ok=True)
 	response = excel_uploader(user, sheet_name)
 	excel_data_filepath = user.get_excel_data().get_file_location()
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
@@ -109,6 +110,8 @@ def upload_excel():
 def upload_yaml():
 	user_id = request.args.get("id")
 	yaml_data = request.values["yaml"]
+
+	os.makedirs("uploads", exist_ok=True)
 	user = app.config['users'].get_user(user_id)
 	user.reset('yaml')
 	yaml_configuration = user.get_yaml_data()
@@ -157,12 +160,14 @@ def downloader():
 	template = user.get_yaml_data().get_template()
 	region = user.get_yaml_data().get_region()
 	item_table = user.get_wikifier_output_data().get_item_table()
-	return generate_download_file(item_table, excel_data_filepath, sheet_name, region, template, filetype)
+	return generate_download_file(user_id, item_table, excel_data_filepath, sheet_name, region, template, filetype)
 
 
 @app.route('/upload_wikifier_output', methods=['POST'])
 def upload_wikified_output():
 	user_id = request.args.get("id")
+
+	os.makedirs("uploads", exist_ok=True)
 	user = app.config['users'].get_user(user_id)
 	user.reset('wikifier_output')
 	response = wikified_output_uploader(user)

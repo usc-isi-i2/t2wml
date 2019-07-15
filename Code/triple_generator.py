@@ -1,5 +1,7 @@
 from pathlib import Path
 from etk.etk import ETK
+from app_config import app
+import os
 from etk.knowledge_graph.schema import KGSchema
 from etk.etk_module import ETKModule
 from etk.wikidata.entity import WDItem
@@ -8,7 +10,7 @@ from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_property_type, translate_precision_to_integer
 
 
-def generate_triples(resolved_excel, filetype='ttl'):
+def generate_triples(user_id, resolved_excel, filetype='ttl'):
 	# initialize
 	kg_schema = KGSchema()
 	kg_schema.add_schema('@prefix : <http://isi.edu/> .', 'ttl')
@@ -73,8 +75,12 @@ def generate_triples(resolved_excel, filetype='ttl'):
 		doc.kg.add_subject(s)
 
 	data = doc.kg.serialize(filetype)
-	with open(Path.cwd() / "new_properties/FP.CPI.TOTL_results.ttl", "w") as fp:
+	os.makedirs(Path.cwd() / "new_properties", exist_ok=True)
+	results_file_name = user_id + "_results.ttl"
+	changes_file_name = user_id + "_changes.tsv"
+
+	with open(Path(app.config['downloads']) / results_file_name, "w") as fp:
 		fp.write(data)
-	with open(Path.cwd() / "new_properties/FP.CPI.TOTL_changes.tsv", "w") as fp:
+	with open(Path(app.config['downloads']) / changes_file_name, "w") as fp:
 		serialize_change_record(fp)
 	return data
