@@ -55,23 +55,30 @@ def update_bindings(item_table: dict, region: dict = None, excel_filepath: str =
 	bindings["item_table"] = item_table
 
 
-def highlight_region(item_table, excel_data_filepath, sheet_name, region, template) -> str:
-	update_bindings(item_table, region, excel_data_filepath, sheet_name)
-	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
+def highlight_region(item_table, excel_data_filepath, sheet_name, region_specification, template) -> str:
+	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
+	region = region_specification['region_object']
 	add_holes(region)
 	head = region.get_head()
 	data = {"data_region": set(), "item": set(), "qualifier_region": set(), 'error': dict()}
 	bindings["$col"] = head[0]
 	bindings["$row"] = head[1]
-	item = template['item']
-	qualifiers = template['qualifier']
+	try:
+		item = template['item']
+	except KeyError:
+		item = None
+
+	try:
+		qualifiers = template['qualifier']
+	except KeyError:
+		qualifiers = None
 
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
 			data["data_region"].add(data_cell)
 
-			if isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+			if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
 				try:
 					item_cell = get_cell(item)
 					item_cell = get_actual_cell_index(item_cell)
@@ -79,16 +86,17 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region, templa
 				except AttributeError:
 					pass
 
-			qualifier_cells = set()
-			for qualifier in qualifiers:
-				if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
-					try:
-						qualifier_cell = get_cell(qualifier["value"])
-						qualifier_cell = get_actual_cell_index(qualifier_cell)
-						qualifier_cells.add(qualifier_cell)
-					except AttributeError:
-						pass
-			data["qualifier_region"] |= qualifier_cells
+			if qualifiers:
+				qualifier_cells = set()
+				for qualifier in qualifiers:
+					if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+						try:
+							qualifier_cell = get_cell(qualifier["value"])
+							qualifier_cell = get_actual_cell_index(qualifier_cell)
+							qualifier_cells.add(qualifier_cell)
+						except AttributeError:
+							pass
+				data["qualifier_region"] |= qualifier_cells
 		except Exception as e:
 			data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = str(e)
 
@@ -103,9 +111,9 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region, templa
 	return data
 
 
-def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region: dict, template: dict, column: str, row: str) -> str:
-	update_bindings(item_table, region, excel_data_filepath, sheet_name)
-	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
+def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: str, row: str) -> str:
+	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
+	region = region_specification['region_object']
 	add_holes(region)
 	bindings["$col"] = column
 	bindings["$row"] = row
@@ -120,9 +128,9 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	return json_data
 
 
-def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region: dict, template: dict, filetype: str):
-	update_bindings(item_table, region, excel_data_filepath, sheet_name)
-	region = Region(bindings["$left"], bindings["$right"], bindings["$top"], bindings["$bottom"])
+def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str):
+	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
+	region = region_specification['region_object']
 	add_holes(region)
 	response = []
 	error = []
@@ -153,6 +161,7 @@ def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: 
 def load_yaml_data(yaml_filepath):
 	yaml_parser = YAMLParser(yaml_filepath)
 	region = yaml_parser.get_region()
+	region['region_object'] = Region(region["left"], region["right"], region["top"], region["bottom"])
 	template = yaml_parser.get_template()
 	return region, template
 

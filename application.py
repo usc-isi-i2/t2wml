@@ -82,17 +82,13 @@ def upload_form():
 
 @app.route('/upload_excel', methods=['POST'])
 def upload_excel():
-	user_id = request.args.get("id")
-	is_new_upload = request.args.get("is_new_upload")
+	user_id = request.form["id"]
+	is_new_upload = True if request.form["is_new_upload"] == "True" else False
 	user = app.config['users'].get_user(user_id)
+	sheet_name = request.form.get("sheetName")
 
 	if is_new_upload:
-		user.reset(user_id, 'excel')
-
-	try:
-		sheet_name = request.args.get("sheet_name")
-	except:
-		sheet_name = None
+		user.reset('excel')
 
 	os.makedirs("uploads", exist_ok=True)
 	response = excel_uploader(user, sheet_name)
@@ -108,7 +104,7 @@ def upload_excel():
 
 @app.route('/upload_yaml', methods=['POST'])
 def upload_yaml():
-	user_id = request.args.get("id")
+	user_id = request.form["id"]
 	yaml_data = request.values["yaml"]
 
 	os.makedirs("uploads", exist_ok=True)
@@ -138,9 +134,9 @@ def upload_yaml():
 
 @app.route('/resolve_cell', methods=['POST'])
 def get_cell_statement():
-	user_id = request.args.get("id")
-	column = get_excel_column_index(request.args.get("col"))
-	row = get_excel_row_index(request.args.get("row"))
+	user_id = request.form["id"]
+	column = get_excel_column_index(request.form["col"])
+	row = get_excel_row_index(request.form["row"])
 	user = app.config['users'].get_user(user_id)
 	excel_data_filepath = user.get_excel_data().get_file_location()
 	sheet_name = user.get_excel_data().get_sheet_name()
@@ -152,8 +148,8 @@ def get_cell_statement():
 
 @app.route('/download', methods=['POST'])
 def downloader():
-	user_id = request.args.get("id")
-	filetype = request.args.get("type")
+	user_id = request.form["id"]
+	filetype = request.form["type"]
 	user = app.config['users'].get_user(user_id)
 	excel_data_filepath = user.get_excel_data().get_file_location()
 	sheet_name = user.get_excel_data().get_sheet_name()
@@ -165,8 +161,7 @@ def downloader():
 
 @app.route('/upload_wikifier_output', methods=['POST'])
 def upload_wikified_output():
-	user_id = request.args.get("id")
-
+	user_id = request.form["id"]
 	os.makedirs("uploads", exist_ok=True)
 	user = app.config['users'].get_user(user_id)
 	user.reset('wikifier_output')

@@ -5,7 +5,7 @@ import copy
 class YAMLData:
 	def __init__(self):
 		self.file_location = None
-		self.region = {'left': None, 'right': None, 'top': None, 'bottom': None}
+		self.region = {'left': None, 'right': None, 'top': None, 'bottom': None, 'region_object': None}
 		self.template = None
 
 	def get_file_location(self) -> str:
@@ -28,6 +28,7 @@ class YAMLData:
 		self.region['right'] = region['right']
 		self.region['top'] = region['top']
 		self.region['bottom'] = region['bottom']
+		self.region['region_object'] = region['region_object']
 
 	def set_template(self, template: dict) -> None:
 		self.template = template
