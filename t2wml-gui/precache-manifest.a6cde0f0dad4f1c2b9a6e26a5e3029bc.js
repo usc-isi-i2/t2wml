@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/editor.worker.js"
   },
   {
-    "revision": "ad6b60cb167d88c3c5a5746951b39a8c",
+    "revision": "7aee0b48a2b4f43d41cee369a8ca5cb6",
     "url": "/t2wml-gui/index.html"
   },
   {
@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/css/2.eb3de469.chunk.css"
   },
   {
-    "revision": "68b3d3941e356b71ba25",
+    "revision": "64b18ad0f444c33f1ffd",
     "url": "/t2wml-gui/static/css/main.d3bcda0c.chunk.css"
   },
   {
@@ -24,8 +24,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/js/3.a393f7e8.chunk.js"
   },
   {
-    "revision": "68b3d3941e356b71ba25",
-    "url": "/t2wml-gui/static/js/main.298288f0.chunk.js"
+    "revision": "64b18ad0f444c33f1ffd",
+    "url": "/t2wml-gui/static/js/main.bb29f37f.chunk.js"
   },
   {
     "revision": "c05f238f62b900a06307",
