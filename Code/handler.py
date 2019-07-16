@@ -57,6 +57,7 @@ def update_bindings(item_table: dict, region: dict = None, excel_filepath: str =
 
 def highlight_region(item_table, excel_data_filepath, sheet_name, region_specification, template) -> str:
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
+	print(template)
 	region = region_specification['region_object']
 	remove_empty_and_invalid_cells(region)
 	head = region.get_head()
@@ -79,11 +80,12 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region_specifi
 			column_be_skipped = False
 			if region_specification['skip_row']:
 				row_be_skipped = region_specification['skip_row'].evaluate(bindings)
-				region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
+				print(row_be_skipped)
+				# region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
 
 			if region_specification['skip_column']:
 				column_be_skipped = region_specification['skip_column'].evaluate(bindings)
-				region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
+				# region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
 
 			if not row_be_skipped and not column_be_skipped:
 				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
@@ -187,8 +189,8 @@ def evaluate_template(template):
 	response = dict()
 	for key, value in template.items():
 		if key == 'qualifier':
+			response[key] = []
 			for i in range(len(template[key])):
-				response[key] = []
 				temp_dict = dict()
 				for k, v in template[key][i].items():
 					if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):

@@ -19,7 +19,7 @@ class YAMLParser:
 			skip_row = None
 
 		if 'skip_column' in self.yaml_data['statementMapping']['region'][0]:
-			skip_column = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_row'])
+			skip_column = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_column'])
 		else:
 			skip_column = None
 
