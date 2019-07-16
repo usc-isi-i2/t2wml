@@ -22,9 +22,14 @@ class ValueExpression:
                 re = cell_expression[1]
             else:
                 raise ValueError("Invalid Row and Column values")
-        return bindings['excel_sheet'][re, ce]
+        return str(bindings['excel_sheet'][re, ce])
 
     def get_cell(self, bindings: dict) -> tuple:
+        """
+        This function returns the cell index on which this expression evaluates
+        :param bindings:
+        :return:
+        """
         if self.cell_expression:
             ce, re = self.cell_expression.evaluate(bindings)
         else:
@@ -36,7 +41,12 @@ class ValueExpression:
                 raise ValueError("Invalid Row and Column values")
         return ce, re
 
-    def evaluate_and_get_cell(self, bindings:dict) -> tuple:
+    def evaluate_and_get_cell(self, bindings: dict) -> tuple:
+        """
+        This function evaluates the Value expression and returns the result along with the cell index
+        :param bindings:
+        :return:
+        """
         if self.cell_expression:
             ce, re = self.cell_expression.evaluate(bindings)
         else:
@@ -46,4 +56,4 @@ class ValueExpression:
                 re = cell_expression[1]
             else:
                 raise ValueError("Invalid Row and Column values")
-        return ce, re, bindings['excel_sheet'][re, ce]
+        return ce, re, str(bindings['excel_sheet'][re, ce])

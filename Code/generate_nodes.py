@@ -13,7 +13,11 @@ from etk.wikidata.value import Datatype, Item, Property, StringValue, URLValue, 
 from etk.wikidata import serialize_change_record
 
 
-def model_data():
+def model_data() -> None:
+	"""
+	This function generates triples for user defined properties for uploading them to wikidata
+	:return:
+	"""
 	stream = open(Path.cwd().parent / "Datasets/data.worldbank.org/new_items_properties.yaml", 'r')
 	yaml_data = yaml.safe_load(stream)
 	# initialize

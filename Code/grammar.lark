@@ -3,6 +3,7 @@ start: value_expression
     | boolean_equation
     | column_expression
     | row_expression
+    | boolean_expression
 
 !expression: cell_expression
        | value_expression
@@ -25,7 +26,7 @@ boolean_expression: or_expression ("or" or_expression)*
 
 !or_expression: and_expression ("and" and_expression)*
 
-!and_expression: expression [operator expression]
+!and_expression: expression operator expression
 
 !operator: "=" | "!=" | "contains" | "starts_with" | "ends_with"
 
