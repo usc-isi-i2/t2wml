@@ -29,6 +29,11 @@ class ItemExpression:
 			return None
 
 	def get_cell(self, bindings: dict) -> tuple:
+		"""
+		This function returns the cell index on which this expression will evaluate
+		:param bindings:
+		:return:
+		"""
 		if self.cell_expression:
 			ce, re = self.cell_expression.evaluate(bindings)
 		else:
@@ -41,6 +46,11 @@ class ItemExpression:
 		return ce, re
 
 	def evaluate_and_get_cell(self, bindings: dict) -> tuple:
+		"""
+		This function evaluates the ItemExpression and returns the result with the cell index
+		:param bindings:
+		:return:
+		"""
 		if self.cell_expression:
 			ce, re = self.cell_expression.evaluate(bindings)
 		else:

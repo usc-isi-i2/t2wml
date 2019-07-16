@@ -44,6 +44,12 @@ class ItemTable:
 			raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
 
 	def populate_cell_to_qnode_using_cell_values(self, excel_filepath: str, sheet_name: str = None):
+		"""
+		This function populates the cell_to_qnode dictionary using the value_to_qnode dictionary and the data file
+		:param excel_filepath:
+		:param sheet_name:
+		:return:
+		"""
 		records = pyexcel.get_book(file_name=excel_filepath)
 		if not sheet_name:
 			sheet = records[0]
@@ -61,6 +67,10 @@ class ItemTable:
 					self.cell_to_qnode[(col, row)] = self.value_to_qnode[sheet[row, col]]
 
 	def serialize_cell_to_qnode(self):
+		"""
+		This function serializes the cell_to_qnode dictionary
+		:return:
+		"""
 		serialized_dict = dict()
 		for cell, value in self.cell_to_qnode.items():
 			cell = get_actual_cell_index(cell)

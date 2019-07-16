@@ -10,7 +10,14 @@ from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_property_type, translate_precision_to_integer
 
 
-def generate_triples(user_id, resolved_excel, filetype='ttl'):
+def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl') -> str:
+	"""
+	This function uses ETK to generate the RDF triples
+	:param user_id:
+	:param resolved_excel:
+	:param filetype:
+	:return:
+	"""
 	# initialize
 	kg_schema = KGSchema()
 	kg_schema.add_schema('@prefix : <http://isi.edu/> .', 'ttl')

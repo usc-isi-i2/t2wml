@@ -9,6 +9,10 @@ class YAMLParser:
 			self.yaml_data = yaml.safe_load(stream)
 
 	def get_region(self) -> Sequence[str]:
+		"""
+		This function parses the region specified in the YAML
+		:return:
+		"""
 		left = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['left']))
 		right = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['right']))
 		top = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['top']))
@@ -26,6 +30,10 @@ class YAMLParser:
 		return {'left': left, 'right': right, 'top': top, 'bottom': bottom, 'skip_row': skip_row, 'skip_column': skip_column}
 
 	def get_template_item(self) -> str:
+		"""
+		This function returns the value of the item attribute of the template
+		:return:
+		"""
 		try:
 			response = str(self.yaml_data['statementMapping']['template']['item'])
 		except KeyError:
@@ -33,6 +41,10 @@ class YAMLParser:
 		return response
 
 	def get_template_value(self) -> str:
+		"""
+		This function returns the value of the value attribute of the template
+		:return:
+		"""
 		try:
 			response = str(self.yaml_data['statementMapping']['template']['value'])
 		except KeyError:
@@ -40,6 +52,10 @@ class YAMLParser:
 		return response
 
 	def get_template_property(self) -> str:
+		"""
+		This function returns the value of the property attribute of the template
+		:return:
+		"""
 		try:
 			response = str(self.yaml_data['statementMapping']['template']['property'])
 		except KeyError:
@@ -47,6 +63,10 @@ class YAMLParser:
 		return response
 
 	def get_qualifiers(self) -> str:
+		"""
+		This function returns the value of the qualifier attribute of the template
+		:return:
+		"""
 		try:
 			response = self.yaml_data['statementMapping']['template']['qualifier']
 		except KeyError:
@@ -54,6 +74,11 @@ class YAMLParser:
 		return response
 
 	def resolve_template(self, template: str) -> None:
+		"""
+		This function parses all the expressions of the template and replace them with their respective class objects
+		:param template:
+		:return:
+		"""
 		# Resolve Template Item if needed
 		template_item = self.get_template_item()
 		if template_item:
@@ -87,7 +112,11 @@ class YAMLParser:
 					else:
 						template['qualifier'][i]['value'] = qualifier_value
 
-	def get_template(self):
+	def get_template(self) -> dict:
+		"""
+		This function resolves and returns the template
+		:return:
+		"""
 		template = self.yaml_data['statementMapping']['template']
 		self.resolve_template(template)
 		return template

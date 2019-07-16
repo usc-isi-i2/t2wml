@@ -22,6 +22,12 @@ def get_file_extension(filename: str):
 
 
 def excel_uploader(user: UserData, sheet_name: str):
+	"""
+	This function helps in processing the data file
+	:param user:
+	:param sheet_name:
+	:return:
+	"""
 	user_data = user.get_excel_data()
 	data = {"error": ""}
 	if sheet_name and not check_if_empty(user_data.get_file_location()):
@@ -50,14 +56,15 @@ def excel_uploader(user: UserData, sheet_name: str):
 				user_data.set_sheet_name(sheet_name)
 			else:
 				data["error"] = 'This file type is currently not supported'
-	# resp = Response(data, status=200, mimetype='application/json')
-	# resp.headers['Access-Control-Allow-Origin'] = '*'
-	# resp.headers['Access-Control-Allow-Methods'] = 'POST'
-	# resp.headers['Access-Control-Allow-Headers'] = "Origin, X-Requested-With, Content-Type, Accept"
 	return data
 
 
 def wikified_output_uploader(user: UserData):
+	"""
+	This function helps in processing the wikifier output file
+	:param user:
+	:return:
+	"""
 	user_data = user.get_wikifier_output_data()
 	data = {"error": ""}
 	if 'wikifier_output' not in request.files:
@@ -79,12 +86,20 @@ def wikified_output_uploader(user: UserData):
 
 @app.route('/')
 def upload_form():
+	"""
+	This functions renders the GUI
+	:return:
+	"""
 	resp = app.make_response(render_template('index.html'))
 	return resp
 
 
 @app.route('/upload_excel', methods=['POST'])
 def upload_excel():
+	"""
+	This function uploads the data file
+	:return:
+	"""
 	user_id = request.form["id"]
 	is_new_upload = True if request.form["is_new_upload"] == "True" else False
 	user = app.config['users'].get_user(user_id)
@@ -107,6 +122,10 @@ def upload_excel():
 
 @app.route('/upload_yaml', methods=['POST'])
 def upload_yaml():
+	"""
+	This function process the yaml
+	:return:
+	"""
 	user_id = request.form["id"]
 	yaml_data = request.values["yaml"]
 
@@ -137,6 +156,10 @@ def upload_yaml():
 
 @app.route('/resolve_cell', methods=['POST'])
 def get_cell_statement():
+	"""
+	This function returns the statement of a particular cell
+	:return:
+	"""
 	user_id = request.form["id"]
 	column = get_excel_column_index(request.form["col"])
 	row = get_excel_row_index(request.form["row"])
@@ -151,6 +174,10 @@ def get_cell_statement():
 
 @app.route('/download', methods=['POST'])
 def downloader():
+	"""
+	This functions initiates the download
+	:return:
+	"""
 	user_id = request.form["id"]
 	filetype = request.form["type"]
 	user = app.config['users'].get_user(user_id)
@@ -164,6 +191,10 @@ def downloader():
 
 @app.route('/upload_wikifier_output', methods=['POST'])
 def upload_wikified_output():
+	"""
+	This function uploads the wikifier output
+	:return:
+	"""
 	user_id = request.form["id"]
 	os.makedirs("uploads", exist_ok=True)
 	user = app.config['users'].get_user(user_id)

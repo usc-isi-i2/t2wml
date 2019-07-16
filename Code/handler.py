@@ -44,7 +44,15 @@ def remove_empty_and_invalid_cells(region: Region) -> None:
 				region.add_hole(row, col, col)
 
 
-def update_bindings(item_table: dict, region: dict = None, excel_filepath: str = None, sheet_name: str =None):
+def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: str = None, sheet_name: str = None):
+	"""
+	This function updates the bindings dictionary with the region, excel_file and item_table
+	:param item_table:
+	:param region:
+	:param excel_filepath:
+	:param sheet_name:
+	:return:
+	"""
 	if region:
 		bindings["$left"] = region['left']
 		bindings["$right"] = region['right']
@@ -55,15 +63,24 @@ def update_bindings(item_table: dict, region: dict = None, excel_filepath: str =
 	bindings["item_table"] = item_table
 
 
-def highlight_region(item_table, excel_data_filepath, sheet_name, region_specification, template) -> str:
+def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict) -> str:
+	"""
+	This function add holes in the region_object and builds up the list of data_region, item_region and qualifier_region
+	:param item_table:
+	:param excel_data_filepath:
+	:param sheet_name:
+	:param region_specification:
+	:param template:
+	:return:
+	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
-	print(template)
 	region = region_specification['region_object']
 	remove_empty_and_invalid_cells(region)
 	head = region.get_head()
 	data = {"data_region": set(), "item": set(), "qualifier_region": set(), 'error': dict()}
 	bindings["$col"] = head[0]
 	bindings["$row"] = head[1]
+	holes = []
 	try:
 		item = template['item']
 	except KeyError:
@@ -80,12 +97,9 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region_specifi
 			column_be_skipped = False
 			if region_specification['skip_row']:
 				row_be_skipped = region_specification['skip_row'].evaluate(bindings)
-				print(row_be_skipped)
-				# region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
 
 			if region_specification['skip_column']:
 				column_be_skipped = region_specification['skip_column'].evaluate(bindings)
-				# region.add_hole(bindings["$row"], bindings["$col"], bindings["$col"])
 
 			if not row_be_skipped and not column_be_skipped:
 				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
@@ -110,6 +124,8 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region_specifi
 							except AttributeError:
 								pass
 					data["qualifier_region"] |= qualifier_cells
+			else:
+				holes.append((bindings["$row"], bindings["$col"]))
 		except Exception as e:
 			data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = str(e)
 
@@ -121,10 +137,25 @@ def highlight_region(item_table, excel_data_filepath, sheet_name, region_specifi
 	data['data_region'] = list(data['data_region'])
 	data['item'] = list(data['item'])
 	data['qualifier_region'] = list(data['qualifier_region'])
+
+	for cell_index in holes:
+		region.add_hole(cell_index[0], cell_index[1], cell_index[1])
+
 	return data
 
 
 def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: str, row: str) -> str:
+	"""
+	This cell resolve the statement for a particular cell
+	:param item_table:
+	:param excel_data_filepath:
+	:param sheet_name:
+	:param region_specification:
+	:param template:
+	:param column:
+	:param row:
+	:return:
+	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
 	bindings["$col"] = column
@@ -140,7 +171,18 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	return json_data
 
 
-def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str):
+def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str):
+	"""
+	This function generates the download files based on the filetype
+	:param user_id:
+	:param item_table:
+	:param excel_data_filepath:
+	:param sheet_name:
+	:param region_specification:
+	:param template:
+	:param filetype:
+	:return:
+	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
 	response = []
@@ -169,7 +211,12 @@ def generate_download_file(user_id, item_table: ItemTable, excel_data_filepath: 
 			return str(e)
 
 
-def load_yaml_data(yaml_filepath):
+def load_yaml_data(yaml_filepath: str):
+	"""
+	This function loads the YAML file data, parses different expressions and generates the statement
+	:param yaml_filepath:
+	:return:
+	"""
 	yaml_parser = YAMLParser(yaml_filepath)
 	region = yaml_parser.get_region()
 	region['region_object'] = Region(region["left"], region["right"], region["top"], region["bottom"])
@@ -177,7 +224,14 @@ def load_yaml_data(yaml_filepath):
 	return region, template
 
 
-def build_item_table(wikifier_output_filepath, excel_data_filepath, sheet_name):
+def build_item_table(wikifier_output_filepath: str, excel_data_filepath: str, sheet_name: str) -> ItemTable:
+	"""
+	This function builds up the item table
+	:param wikifier_output_filepath:
+	:param excel_data_filepath:
+	:param sheet_name:
+	:return:
+	"""
 	item_table = ItemTable()
 	item_table.generate_hash_tables(wikifier_output_filepath)
 	if excel_data_filepath:
@@ -185,7 +239,13 @@ def build_item_table(wikifier_output_filepath, excel_data_filepath, sheet_name):
 	return item_table
 
 
-def evaluate_template(template):
+def evaluate_template(template: dict) -> dict:
+	"""
+	This function resolves the template by parsing the T2WML expressions
+	and replacing them by the class trees of those expressions
+	:param template:
+	:return:
+	"""
 	response = dict()
 	for key, value in template.items():
 		if key == 'qualifier':
