@@ -75,12 +75,12 @@ def generate_triples(user_id, resolved_excel, filetype='ttl'):
 		doc.kg.add_subject(s)
 
 	data = doc.kg.serialize(filetype)
-	os.makedirs(Path.cwd() / "new_properties", exist_ok=True)
-	results_file_name = user_id + "_results.ttl"
-	changes_file_name = user_id + "_changes.tsv"
+	# os.makedirs(Path.cwd() / "new_properties", exist_ok=True)
+	# results_file_name = user_id + "_results.ttl"
+	# changes_file_name = user_id + "_changes.tsv"
 
-	with open(Path(app.config['downloads']) / results_file_name, "w") as fp:
-		fp.write(data)
-	with open(Path(app.config['downloads']) / changes_file_name, "w") as fp:
-		serialize_change_record(fp)
+	# with open(Path(app.config['downloads']) / results_file_name, "w") as fp:
+	# 	fp.write(data)
+	# with open(Path(app.config['downloads']) / changes_file_name, "w") as fp:
+	# 	serialize_change_record(fp)
 	return data
