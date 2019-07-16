@@ -14,10 +14,21 @@ ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
 
 def allowed_file(filename: str, file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
+	"""
+	This function checks if the file extension is present in the list of allowed file extensions
+	:param filename:
+	:param file_extensions:
+	:return:
+	"""
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in file_extensions
 
 
 def get_file_extension(filename: str):
+	"""
+	THis function returns the file extension of a file
+	:param filename:
+	:return:
+	"""
 	return filename.split(".")[-1]
 
 
