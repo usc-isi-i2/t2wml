@@ -88,7 +88,7 @@ def upload_excel():
 	user_id = request.form["id"]
 	is_new_upload = True if request.form["is_new_upload"] == "True" else False
 	user = app.config['users'].get_user(user_id)
-	sheet_name = request.form.get("sheetName")
+	sheet_name = request.form.get("sheet_name")
 
 	if is_new_upload:
 		user.reset('excel')
