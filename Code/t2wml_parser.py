@@ -6,6 +6,8 @@ from Code.dictionary import class_dictionary
 from Code.bindings import bindings
 from Code.ValueExpression import ValueExpression
 from Code.BooleanEquation import BooleanEquation
+from Code.ColumnExpression import ColumnExpression
+from Code.RowExpression import RowExpression
 from pathlib import Path
 __CWD__ = os.getcwd()
 
@@ -117,7 +119,7 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
         root.item_expression = node
         for i in instruction.children:
             if isinstance(i, Tree):
-                create_class_tree(i, root.value_expression)
+                create_class_tree(i, root.item_expression)
 
 
 def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
@@ -131,9 +133,14 @@ def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:
     return result
 
 
-def parse_and_get_cell(text_to_parse: str) -> tuple:
-    root = generate_tree(text_to_parse)
-    if isinstance(root, BooleanEquation):
+def get_cell(root: str) -> tuple:
+    """
+    This function evaluates the expression if it is a BooleanEquation, RowExpression or ColumnExpression object
+    otherwise it returns the cell index on which that Expression operates
+    :param root:
+    :return:
+    """
+    if isinstance(root, (BooleanEquation, RowExpression, ColumnExpression)):
         result = root.evaluate(bindings)
     else:
         result = root.get_cell(bindings)
@@ -141,8 +148,15 @@ def parse_and_get_cell(text_to_parse: str) -> tuple:
 
 
 def parse_evaluate_and_get_cell(text_to_parse: str) -> tuple:
+    """
+    This function evaluates the expressions and return its value.
+    If the expression is not a BooleanEquation, RowExpression or ColumnExpression object the resullt
+    is returned along with the cell index it operates on
+    :param text_to_parse:
+    :return:
+    """
     root = generate_tree(text_to_parse)
-    if isinstance(root, BooleanEquation):
+    if isinstance(root, (BooleanEquation, RowExpression, ColumnExpression)):
         result = root.evaluate(bindings)
     else:
         result = root.evaluate_and_get_cell(bindings)
