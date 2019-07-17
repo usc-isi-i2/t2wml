@@ -3,15 +3,15 @@ statementMapping:
     - left: C
       right: G
       top: 3
-      bottom: 10
+      bottom: 13
       skip_row: value(C/$row) = "Total"
+      skip_cell: value($col/$row) = "n/a"
   template:
     item: item(A/$row)
-    property: C3002 # murder
+    property: P1082 # murder
     value: value($col/$row)
-    unit: D1002
     qualifier:
-      - property: P85
+      - property: P585
         value: value($col/3)
         calendar: Q1985727
         precision: year
