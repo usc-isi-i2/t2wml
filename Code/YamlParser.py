@@ -27,7 +27,12 @@ class YAMLParser:
 		else:
 			skip_column = None
 
-		return {'left': left, 'right': right, 'top': top, 'bottom': bottom, 'skip_row': skip_row, 'skip_column': skip_column}
+		if 'skip_cell' in self.yaml_data['statementMapping']['region'][0]:
+			skip_cell = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_cell'])
+		else:
+			skip_cell = None
+
+		return {'left': left, 'right': right, 'top': top, 'bottom': bottom, 'skip_row': skip_row, 'skip_column': skip_column, 'skip_cell': skip_cell}
 
 	def get_template_item(self) -> str:
 		"""
