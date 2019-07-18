@@ -95,13 +95,17 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 		try:
 			row_be_skipped = False
 			column_be_skipped = False
+			cell_be_skipped = False
 			if region_specification['skip_row']:
 				row_be_skipped = region_specification['skip_row'].evaluate(bindings)
 
 			if region_specification['skip_column']:
 				column_be_skipped = region_specification['skip_column'].evaluate(bindings)
 
-			if not row_be_skipped and not column_be_skipped:
+			if region_specification['skip_cell']:
+				cell_be_skipped = region_specification['skip_cell'].evaluate(bindings)
+
+			if not row_be_skipped and not column_be_skipped and not cell_be_skipped:
 				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
 				data["data_region"].add(data_cell)
 
