@@ -18,17 +18,23 @@ class YAMLParser:
 		top = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['top']))
 		bottom = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
 		if 'skip_row' in self.yaml_data['statementMapping']['region'][0]:
-			skip_row = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_row'])
+			skip_row = list()
+			for i in range(len(self.yaml_data['statementMapping']['region'][0]['skip_row'])):
+				skip_row.append(generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_row'][i]))
 		else:
 			skip_row = None
 
 		if 'skip_column' in self.yaml_data['statementMapping']['region'][0]:
-			skip_column = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_column'])
+			skip_column = list()
+			for i in range(len(self.yaml_data['statementMapping']['region'][0]['skip_column'])):
+				skip_column.append(generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_column'][i]))
 		else:
 			skip_column = None
 
 		if 'skip_cell' in self.yaml_data['statementMapping']['region'][0]:
-			skip_cell = generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_cell'])
+			skip_cell = list()
+			for i in range(len(self.yaml_data['statementMapping']['region'][0]['skip_cell'])):
+				skip_cell.append(generate_tree(self.yaml_data['statementMapping']['region'][0]['skip_cell'][i]))
 		else:
 			skip_cell = None
 
