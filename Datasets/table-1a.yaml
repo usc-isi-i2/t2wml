@@ -10,7 +10,7 @@ statementMapping:
     value: value($col/$row)
     #unit: D1002
     qualifier:
-      - property: P85
+      - property: P585
         value: value($col/3)
         calendar: Q1985727
         precision: year

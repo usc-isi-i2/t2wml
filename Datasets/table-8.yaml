@@ -4,14 +4,15 @@ statementMapping:
       right: E
       top: 4
       bottom: 16
-      skip_row: value(A/$row) != "" and value(B:D/$row) = ""
+      skip_row:
+        - value(A/$row) != "" and value(B:D/$row) = ""
   template:
     item: value(A/$row-n) != "" and value(B:D/$row-n) = "" -> item(A/$row-n)
     # item: item(A/$row).instance_of Q6256 -> item(A/$row)
     property: C3002 # murder
     value: value($col/$row)
     qualifier:
-      - property: P85 #point in time
+      - property: P585 #point in time
         value: value(A/$row)
         calendar: Q1985727
         precision: year

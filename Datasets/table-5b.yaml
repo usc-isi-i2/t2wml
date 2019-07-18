@@ -4,13 +4,14 @@ statementMapping:
       right: H
       top: 4
       bottom: 11
-      skip_column: value($col/4) = "Source"
+      skip_column:
+        - value($col/4) = "Source"
   template:
     item: item($col-1/3)
     property: C3002 # murder
     value: value($col/$row)
     qualifier:
-      - property: P85 #point in time
+      - property: P585 #point in time
         value: value(A/$row-n)
         calendar: Q1985727
         precision: year

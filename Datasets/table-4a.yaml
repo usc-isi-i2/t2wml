@@ -9,7 +9,7 @@ statementMapping:
     property: C3002 # murder
     value: value($col/$row)
     qualifier:
-      - property: P85 #point in time
+      - property: P585 #point in time
         value: value($col/3-n)
         calendar: Q1985727
         precision: year
