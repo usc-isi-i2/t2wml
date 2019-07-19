@@ -1,0 +1,25 @@
+statementMapping:
+  region:
+    - left: C
+      right: G
+      top: 3
+      bottom: 13
+      skip_row:
+        - value(C/$row) = "Total"
+        - value(C/$row) = "Males"
+      skip_cell:
+        - value($col/$row) = "n/a"
+      skip_column:
+        - value($col/3) = "2001"
+  template:
+    item: item(A/$row)
+    property: P1082 # murder
+    value: value($col/$row)
+    qualifier:
+      - property: P585
+        value: value($col/3)
+        calendar: Q1985727
+        precision: year
+        time_zone: 0 
+      - property: P6001 # applies to people
+        value: item(C/$row)
