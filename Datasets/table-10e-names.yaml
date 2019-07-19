@@ -7,13 +7,14 @@ statementMapping:
       # in addition to skipping, we name the row years, there will be
       # multiple rows named years. % symbol assigns a name to the row
       # one could also specify % years[B:D] to name a range of cells
-      skip_row: value(A:B/$row) = "" and value(C:D/$row) != "" % years
+      skip_row:
+        - value(A:B/$row) = "" and value(C:D/$row) != "" % years
   template:
     item: item(A/$row)
     property: C3002 # murder
     value: value($col/$row)
     qualifier:
-      - property: P85 #point in time
+      - property: P585 #point in time
         # the subtract iterator looks for the first row named years going up.
         value: value($col/-years)
         calendar: Q1985727

@@ -4,8 +4,13 @@ statementMapping:
       right: G
       top: 3
       bottom: 13
-      skip_row: value(C/$row) = "Total"
-      skip_cell: value($col/$row) = "n/a"
+      skip_row:
+        - value(C/$row) = "Total"
+        - value(C/$row) = "Males"
+      skip_cell:
+        - value($col/$row) = "n/a"
+      skip_column:
+        - value($col/3) = "2002"
   template:
     item: item(A/$row)
     property: P1082 # murder
