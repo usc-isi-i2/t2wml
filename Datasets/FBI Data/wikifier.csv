@@ -1,0 +1,64 @@
+column,row,value,qnode
+,,Autauga,Q156168
+,,Baldwin,Q156163
+,,Bibb,Q461204
+,,Blount,Q111250
+,,Calhoun,Q108856
+,,Chilton,Q111266
+,,Elmore,Q494630
+,,Etowah,Q493951
+,,Geneva,Q494620
+,,Hale,Q501147
+,,Henry,Q501000
+,,Houston,Q496292
+,,Jefferson,Q112271
+,,Lauderdale,Q261672
+,,Lawrence,Q502737
+,,Lee,Q501055
+,,Limestone,Q501108
+,,Lowndes,Q503461
+,,Madison,Q493715
+,,Mobile,Q495738
+,,Montgomery,Q502784
+,,Morgan,Q137828
+,,Russell,Q503329
+,,Shelby,Q501084
+,,St. Clair,Q503451
+,,Tuscaloosa,Q503877
+,,Walker,Q506291
+,,Barbour,Q109437
+,,Butler,Q108871
+,,Chambers,Q111280
+,,Cherokee,Q108832
+,,Clarke,Q111273
+,,Clay,Q156570
+,,Cleburne,Q327080
+,,Coffee,Q485660
+,,Coosa,Q487738
+,,Covington,Q487725
+,,Cullman,Q188204
+,,Dale,Q488840
+,,Dallas,Q488847
+,,DeKalb,Q494626
+,,Escambia,Q487744
+,,Franklin,Q488892
+,,Greene,Q493709
+,,Marengo,Q501074
+,,Marion,Q502739
+,,Marshall,Q502925
+,,Monroe,Q501060
+,,Pike,Q492888
+,,Talladega,Q302918
+,,Tallapoosa,Q512787
+,,Washington,Q501157
+,,Wilcox,Q503081
+,,Violent crime,P100023
+,,Murder and nonnegligent manslaughter,P100024
+,,Rape (revised definition),P100025
+,,Robbery,P100026
+,,Aggravated assault,P100027
+,,Property crime,P100028
+,,Burglary,P100029
+,,Larceny-theft,P100030
+,,Motor vehicle theft,P100031
+,,Arson,P100032
