@@ -1,7 +1,7 @@
 statementMapping:
   region:
-    - left: C
-      right: M
+    - left: B
+      right: N
       top: 6
       bottom: 60
   template:
