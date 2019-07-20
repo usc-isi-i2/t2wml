@@ -1,0 +1,293 @@
+@prefix : <http://isi.edu/> .
+@prefix p: <http://www.wikidata.org/prop/> .
+@prefix pq: <http://www.wikidata.org/prop/qualifier/> .
+@prefix pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/> .
+@prefix pqv: <http://www.wikidata.org/prop/qualifier/value/> .
+@prefix pr: <http://www.wikidata.org/prop/reference/> .
+@prefix prn: <http://www.wikidata.org/prop/reference/value-normalized/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix prv: <http://www.wikidata.org/prop/reference/value/> .
+@prefix ps: <http://www.wikidata.org/prop/statement/> .
+@prefix psn: <http://www.wikidata.org/prop/statement/value-normalized/> .
+@prefix psv: <http://www.wikidata.org/prop/statement/value/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix wdno: <http://www.wikidata.org/prop/novalue/> .
+@prefix wdref: <http://www.wikidata.org/reference/> .
+@prefix wds: <http://www.wikidata.org/entity/statement/> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+@prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/> .
+@prefix wdv: <http://www.wikidata.org/value/> .
+@prefix wikibase: <http://wikiba.se/ontology#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+wd:P100023 a wikibase:Property ;
+    rdfs:label "violent crime"@en ;
+    schema:description "crime in which an offender uses or threatens force upon a victim"@en ;
+    schema:name "violent crime"@en ;
+    wikibase:claim p:P100023 ;
+    wikibase:directClaim wdt:P100023 ;
+    wikibase:directClaimNormalized wdtn:P100023 ;
+    wikibase:novalue wdno:P100023 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100023 ;
+    wikibase:qualifierValue pqv:P100023 ;
+    wikibase:qualifierValueNormalized pqn:P100023 ;
+    wikibase:reference pr:P100023 ;
+    wikibase:referenceValue prv:P100023 ;
+    wikibase:referenceValueNormalized prn:P100023 ;
+    wikibase:statementProperty ps:P100023 ;
+    wikibase:statementValue psv:P100023 ;
+    wikibase:statementValueNormalized psn:P100023 ;
+    skos:prefLabel "violent crime"@en ;
+    p:P31 wds:P100023-eddb7f10-1bc1-4fcc-97e9-a4028de2c773 .
+
+wd:P100024 a wikibase:Property ;
+    rdfs:label "Murder and nonnegligent manslaughter"@en ;
+    schema:description "unlawful killing of a human with malice aforethought"@en ;
+    schema:name "Murder and nonnegligent manslaughter"@en ;
+    wikibase:claim p:P100024 ;
+    wikibase:directClaim wdt:P100024 ;
+    wikibase:directClaimNormalized wdtn:P100024 ;
+    wikibase:novalue wdno:P100024 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100024 ;
+    wikibase:qualifierValue pqv:P100024 ;
+    wikibase:qualifierValueNormalized pqn:P100024 ;
+    wikibase:reference pr:P100024 ;
+    wikibase:referenceValue prv:P100024 ;
+    wikibase:referenceValueNormalized prn:P100024 ;
+    wikibase:statementProperty ps:P100024 ;
+    wikibase:statementValue psv:P100024 ;
+    wikibase:statementValueNormalized psn:P100024 ;
+    skos:prefLabel "Murder and nonnegligent manslaughter"@en ;
+    p:P31 wds:P100024-821aca44-4e98-43fb-b27f-fa87906ad554,
+        wds:P100024-dda2e609-9d5b-4e14-b639-3a6bc69ec3d6 .
+
+wd:P100025 a wikibase:Property ;
+    rdfs:label "rape (revised definition)"@en ;
+    schema:description "type of sexual assault"@en ;
+    schema:name "rape (revised definition)"@en ;
+    wikibase:claim p:P100025 ;
+    wikibase:directClaim wdt:P100025 ;
+    wikibase:directClaimNormalized wdtn:P100025 ;
+    wikibase:novalue wdno:P100025 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100025 ;
+    wikibase:qualifierValue pqv:P100025 ;
+    wikibase:qualifierValueNormalized pqn:P100025 ;
+    wikibase:reference pr:P100025 ;
+    wikibase:referenceValue prv:P100025 ;
+    wikibase:referenceValueNormalized prn:P100025 ;
+    wikibase:statementProperty ps:P100025 ;
+    wikibase:statementValue psv:P100025 ;
+    wikibase:statementValueNormalized psn:P100025 ;
+    skos:prefLabel "rape (revised definition)"@en ;
+    p:P31 wds:P100025-df8bed6d-9787-4b69-a261-16607ac55ec6 .
+
+wd:P100026 a wikibase:Property ;
+    rdfs:label "robbery"@en ;
+    schema:description "taking or attempting to take something of value by force or threat of force or by putting the victim in fear"@en ;
+    schema:name "robbery"@en ;
+    wikibase:claim p:P100026 ;
+    wikibase:directClaim wdt:P100026 ;
+    wikibase:directClaimNormalized wdtn:P100026 ;
+    wikibase:novalue wdno:P100026 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100026 ;
+    wikibase:qualifierValue pqv:P100026 ;
+    wikibase:qualifierValueNormalized pqn:P100026 ;
+    wikibase:reference pr:P100026 ;
+    wikibase:referenceValue prv:P100026 ;
+    wikibase:referenceValueNormalized prn:P100026 ;
+    wikibase:statementProperty ps:P100026 ;
+    wikibase:statementValue psv:P100026 ;
+    wikibase:statementValueNormalized psn:P100026 ;
+    skos:prefLabel "robbery"@en ;
+    p:P31 wds:P100026-ba8105c3-9481-4179-a6e7-c252cf511b5e .
+
+wd:P100027 a wikibase:Property ;
+    rdfs:label "aggravated assault"@en ;
+    schema:description "criminal act"@en ;
+    schema:name "aggravated assault"@en ;
+    wikibase:claim p:P100027 ;
+    wikibase:directClaim wdt:P100027 ;
+    wikibase:directClaimNormalized wdtn:P100027 ;
+    wikibase:novalue wdno:P100027 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100027 ;
+    wikibase:qualifierValue pqv:P100027 ;
+    wikibase:qualifierValueNormalized pqn:P100027 ;
+    wikibase:reference pr:P100027 ;
+    wikibase:referenceValue prv:P100027 ;
+    wikibase:referenceValueNormalized prn:P100027 ;
+    wikibase:statementProperty ps:P100027 ;
+    wikibase:statementValue psv:P100027 ;
+    wikibase:statementValueNormalized psn:P100027 ;
+    skos:prefLabel "aggravated assault"@en ;
+    p:P31 wds:P100027-2efa42fb-944a-490b-88e7-d4b403bcf686 .
+
+wd:P100028 a wikibase:Property ;
+    rdfs:label "property crime"@en ;
+    schema:description "crime to obtain money, property, or some other benefit"@en ;
+    schema:name "property crime"@en ;
+    wikibase:claim p:P100028 ;
+    wikibase:directClaim wdt:P100028 ;
+    wikibase:directClaimNormalized wdtn:P100028 ;
+    wikibase:novalue wdno:P100028 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100028 ;
+    wikibase:qualifierValue pqv:P100028 ;
+    wikibase:qualifierValueNormalized pqn:P100028 ;
+    wikibase:reference pr:P100028 ;
+    wikibase:referenceValue prv:P100028 ;
+    wikibase:referenceValueNormalized prn:P100028 ;
+    wikibase:statementProperty ps:P100028 ;
+    wikibase:statementValue psv:P100028 ;
+    wikibase:statementValueNormalized psn:P100028 ;
+    skos:prefLabel "property crime"@en ;
+    p:P31 wds:P100028-fadd1c1c-50c7-4cad-b98e-4742b11d860c .
+
+wd:P100029 a wikibase:Property ;
+    rdfs:label "burglary"@en ;
+    schema:description "crime of entering someone's property, often with the intent to steal from them"@en ;
+    schema:name "burglary"@en ;
+    wikibase:claim p:P100029 ;
+    wikibase:directClaim wdt:P100029 ;
+    wikibase:directClaimNormalized wdtn:P100029 ;
+    wikibase:novalue wdno:P100029 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100029 ;
+    wikibase:qualifierValue pqv:P100029 ;
+    wikibase:qualifierValueNormalized pqn:P100029 ;
+    wikibase:reference pr:P100029 ;
+    wikibase:referenceValue prv:P100029 ;
+    wikibase:referenceValueNormalized prn:P100029 ;
+    wikibase:statementProperty ps:P100029 ;
+    wikibase:statementValue psv:P100029 ;
+    wikibase:statementValueNormalized psn:P100029 ;
+    skos:prefLabel "burglary"@en ;
+    p:P31 wds:P100029-33589f39-f7cf-43cb-8d4b-0e068b2efd7b .
+
+wd:P100030 a wikibase:Property ;
+    rdfs:label "larceny theft"@en ;
+    schema:description "unlawful taking and carrying away of the personal property of another person"@en ;
+    schema:name "larceny theft"@en ;
+    wikibase:claim p:P100030 ;
+    wikibase:directClaim wdt:P100030 ;
+    wikibase:directClaimNormalized wdtn:P100030 ;
+    wikibase:novalue wdno:P100030 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100030 ;
+    wikibase:qualifierValue pqv:P100030 ;
+    wikibase:qualifierValueNormalized pqn:P100030 ;
+    wikibase:reference pr:P100030 ;
+    wikibase:referenceValue prv:P100030 ;
+    wikibase:referenceValueNormalized prn:P100030 ;
+    wikibase:statementProperty ps:P100030 ;
+    wikibase:statementValue psv:P100030 ;
+    wikibase:statementValueNormalized psn:P100030 ;
+    skos:prefLabel "larceny theft"@en ;
+    p:P31 wds:P100030-de60dc3d-ea3b-4cae-bc59-c65f5208c2fe .
+
+wd:P100031 a wikibase:Property ;
+    rdfs:label "motor vehicle theft"@en ;
+    schema:description "theft of vehicles"@en ;
+    schema:name "motor vehicle theft"@en ;
+    wikibase:claim p:P100031 ;
+    wikibase:directClaim wdt:P100031 ;
+    wikibase:directClaimNormalized wdtn:P100031 ;
+    wikibase:novalue wdno:P100031 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100031 ;
+    wikibase:qualifierValue pqv:P100031 ;
+    wikibase:qualifierValueNormalized pqn:P100031 ;
+    wikibase:reference pr:P100031 ;
+    wikibase:referenceValue prv:P100031 ;
+    wikibase:referenceValueNormalized prn:P100031 ;
+    wikibase:statementProperty ps:P100031 ;
+    wikibase:statementValue psv:P100031 ;
+    wikibase:statementValueNormalized psn:P100031 ;
+    skos:prefLabel "motor vehicle theft"@en ;
+    p:P31 wds:P100031-7b3f2d6a-bfc4-415e-848f-0444769e2bd3 .
+
+wd:P100032 a wikibase:Property ;
+    rdfs:label "arson"@en ;
+    schema:description "the criminal act of deliberately setting fire to property"@en ;
+    schema:name "arson"@en ;
+    wikibase:claim p:P100032 ;
+    wikibase:directClaim wdt:P100032 ;
+    wikibase:directClaimNormalized wdtn:P100032 ;
+    wikibase:novalue wdno:P100032 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100032 ;
+    wikibase:qualifierValue pqv:P100032 ;
+    wikibase:qualifierValueNormalized pqn:P100032 ;
+    wikibase:reference pr:P100032 ;
+    wikibase:referenceValue prv:P100032 ;
+    wikibase:referenceValueNormalized prn:P100032 ;
+    wikibase:statementProperty ps:P100032 ;
+    wikibase:statementValue psv:P100032 ;
+    wikibase:statementValueNormalized psn:P100032 ;
+    skos:prefLabel "arson"@en ;
+    p:P31 wds:P100032-eca6d59a-8645-4346-8ece-2d0ee78fc609 .
+
+wds:P100023-eddb7f10-1bc1-4fcc-97e9-a4028de2c773 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q1520311 .
+
+wds:P100024-821aca44-4e98-43fb-b27f-fa87906ad554 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q132821 .
+
+wds:P100024-dda2e609-9d5b-4e14-b639-3a6bc69ec3d6 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q3882220 .
+
+wds:P100025-df8bed6d-9787-4b69-a261-16607ac55ec6 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q47092 .
+
+wds:P100026-ba8105c3-9481-4179-a6e7-c252cf511b5e a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q53706 .
+
+wds:P100027-2efa42fb-944a-490b-88e7-d4b403bcf686 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q81672 .
+
+wds:P100028-fadd1c1c-50c7-4cad-b98e-4742b11d860c a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q857984 .
+
+wds:P100029-33589f39-f7cf-43cb-8d4b-0e068b2efd7b a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q329425 .
+
+wds:P100030-de60dc3d-ea3b-4cae-bc59-c65f5208c2fe a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q2727213 .
+
+wds:P100031-7b3f2d6a-bfc4-415e-848f-0444769e2bd3 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q548007 .
+
+wds:P100032-eca6d59a-8645-4346-8ece-2d0ee78fc609 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q327541 .
+

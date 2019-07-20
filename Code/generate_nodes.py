@@ -18,7 +18,7 @@ def model_data() -> None:
 	This function generates triples for user defined properties for uploading them to wikidata
 	:return:
 	"""
-	stream = open(Path.cwd().parent / "Datasets/data.worldbank.org/new_items_properties.yaml", 'r')
+	stream = open(Path.cwd().parent / "Datasets/FBI Data/fbi-property-indicators.yaml", 'r')
 	yaml_data = yaml.safe_load(stream)
 	# initialize
 	kg_schema = KGSchema()
@@ -88,10 +88,8 @@ def model_data() -> None:
 				elif property_type == "GlobeCoordinate":
 					value = GlobeCoordinate(item["latitude"], item["longitude"], item["precision"])
 
-				# if pnode == 'P1896':
 				p.add_statement(pnode, value)
-				# else:
-				# 	p.add_statement(pnode, Item(item['value']))
+
 		doc.kg.add_subject(p)
 
 	with open(Path.cwd().parent / "new_properties/result.ttl", "w") as f:

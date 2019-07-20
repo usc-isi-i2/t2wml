@@ -1,3 +1,168 @@
+P100001:
+  type: quantity
+  label: 
+    en:
+    - net ODA received
+  description:
+    en:
+    - Net official development assistance is disbursement flows (net of repayment of principal) that meet the DAC definition of ODA and are made to countries and territories on the DAC list of aid recipients.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/DT.ODA.ODAT.GI.ZS
+P100002:
+  type: quantity
+  label: 
+    en:
+    - access to electricity
+  description:
+    en:
+    - Access to electricity, urban is the percentage of urban population with access to electricity.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS
+P100003:
+  type: quantity
+  label: 
+    en:
+    - prevalence of undernourishment (% of population)
+  description:
+    en:
+    - Population below minimum level of dietary energy consumption (also referred to as prevalence of undernourishment) shows the percentage of the population whose food intake is insufficient to meet dietary energy requirements continuously. Data showing as 5 may signify a prevalence of undernourishment below 5%.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/SN.ITK.DEFC.ZS
+P100004:
+  type: quantity
+  label: 
+    en:
+    - military expenditure (% of general government expenditure)
+  description:
+    en:
+    - Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/MS.MIL.XPND.ZS
+P100005:
+  type: quantity
+  label: 
+    en:
+    - military expenditure (% of GDP)
+  description:
+    en:
+    - Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS
+P100006:
+  type: quantity
+  label: 
+    en:
+    - employment to population ratio, 15+, total (%) (national estimate)
+  description:
+    en:
+    - Employment to population ratio is the proportion of a country's population that is employed. Employment is defined as persons of working age who, during a short reference period, were engaged in any activity to produce goods or provide services for pay or profit, whether at work during the reference period (i.e. who worked in a job for at least one hour) or not at work due to temporary absence from a job, or to working-time arrangements. Ages 15 and older are generally considered the working-age population.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/SL.EMP.TOTL.SP.NE.ZS
+P100007:
+  type: quantity
+  label:
+    en:
+    - people using at least basic drinking water services (% of population)
+  description:
+    en:
+    - The percentage of people using at least basic water services.  This indicator encompasses both people using basic water services as well as those using safely managed water services.  Basic drinking water services is defined as drinking water from an improved source, provided collection time is not more than 30 minutes for a round trip.  Improved water sources include piped water, boreholes or tubewells, protected dug wells, protected springs, and packaged or delivered water.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/SH.H2O.BASW.ZS
+P100008:
+  type: quantity
+  label:
+    en:
+    - people using at least basic sanitation services (% of population)
+  description:
+    en:
+    - The percentage of people using at least basic sanitation services, that is, improved sanitation facilities that are not shared with other households.  This indicator encompasses both people using basic sanitation services as well as those using safely managed sanitation services.   Improved sanitation facilities include flush/pour flush to piped sewer systems, septic tanks or pit latrines; ventilated improved pit latrines, compositing toilets or pit latrines with slabs.
+  statements:
+    P31:                  # instance of
+    - value: Q19829914    # Wikidata property for places
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/SH.STA.BASS.ZS
+P100009:
+  type: quantity
+  label:
+    en:
+    - mortality rate, under-5 (per 1,000 live births)
+  description:
+    en:
+    - Under-five mortality rate is the probability per 1,000 that a newborn baby will die before reaching age five, if subject to age-specific mortality rates of the specified year.
+  statements:
+    P31:                  # instance of
+    - value: Q58702       # Mortality Rate
+    - value: Q19829914    # Wikidata property for places
+    - value: Q22984494    # Wikidata property related to demography
+    P1629:                # subject item of this property
+    - value: Q56726345    # Sustainable Development Goal Indicator
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/SH.DYN.MORT
+P100010:
+  type: quantity
+  label:
+    en:
+    - consumer price index (2010 = 100)
+  description:
+    en:
+    - Consumer price index reflects changes in the cost to the average consumer of acquiring a basket of goods and services that may be fixed or changed at specified intervals, such as yearly. The Laspeyres formula is generally used. Data are period averages.
+  statements:
+    P31:                  # instance of
+    - value: Q631360      # Price Index
+    - value: Q19829914    # Wikidata property for places
+    - value: Q21451178    # Wikidata property related to economics
+    P1629:                # subject item of this property
+    - value: Q180687      # Consumer Price Index
+    P1896:                # source website for the property
+    - value: https://data.worldbank.org/indicator/FP.CPI.TOTL
 P100011:
   type: quantity
   label: 
@@ -185,3 +350,114 @@ P100022:
     # - value: Q56726345    # Sustainable Development Goal Indicator
     P1896:                # source website for the property
     - value: https://fragilestatesindex.org/indicators/x1/  
+P100023:
+  type: quantity
+  label: 
+    en:
+    - violent crime
+  description:
+    en:
+    - crime in which an offender uses or threatens force upon a victim
+  statements:
+    P31:                  # instance of
+    - value: Q1520311     # Wikidata item for violent crime
+P100024:
+  type: quantity
+  label: 
+    en:
+    - Murder and nonnegligent manslaughter
+  description:
+    en:
+    - unlawful killing of a human with malice aforethought
+  statements:
+    P31:                  # instance of
+    - value: Q132821      # Wikidata item for murder
+    - value: Q3882220     # Wikidata item for manslaughter
+P100025:
+  type: quantity
+  label: 
+    en:
+    - rape (revised definition)
+  description:
+    en:
+    - type of sexual assault
+  statements:
+    P31:                  # instance of
+    - value: Q47092       # Wikidata item for raoe
+P100026:
+  type: quantity
+  label: 
+    en:
+    - robbery
+  description:
+    en:
+    - taking or attempting to take something of value by force or threat of force or by putting the victim in fear
+  statements:
+    P31:                # instance of
+    - value: Q53706     # Wikidata item for robbery
+P100027:
+  type: quantity
+  label: 
+    en:
+    - aggravated assault
+  description:
+    en:
+    - criminal act
+  statements:
+    P31:                  # instance of
+    - value: Q81672       # Wikidata item for assault
+P100028:
+  type: quantity
+  label: 
+    en:
+    - property crime
+  description:
+    en:
+    - crime to obtain money, property, or some other benefit
+  statements:
+    P31:                  # instance of
+    - value: Q857984      # Wikidata item for property crime
+P100029:
+  type: quantity
+  label:
+    en:
+    - burglary
+  description:
+    en:
+    - crime of entering someone's property, often with the intent to steal from them
+  statements:
+    P31:                  # instance of
+    - value: Q329425      # Wikidata item for burglary
+P100030:
+  type: quantity
+  label:
+    en:
+    - larceny theft
+  description:
+    en:
+    - unlawful taking and carrying away of the personal property of another person
+  statements:
+    P31:                  # instance of
+    - value: Q2727213    # Wikidata property for theft
+P100031:
+  type: quantity
+  label:
+    en:
+    - motor vehicle theft
+  description:
+    en:
+    - theft of vehicles
+  statements:
+    P31:                  # instance of
+    - value: Q548007      # Wikidata item for motor vehicle theft
+P100032:
+  type: quantity
+  label:
+    en:
+    - arson
+  description:
+    en:
+    - the criminal act of deliberately setting fire to property
+  statements:
+    P31:                  # instance of
+    - value: Q327541      # Wikidata item for arson

@@ -74,7 +74,7 @@ def get_property_type(wikidata_property: str) -> str:
 			wikibase:propertyType ?type .  
 		}"""
 
-		sparql = SPARQLWrapper("http://kg2018a.isi.edu:8888/bigdata/namespace/wdq/sparql")
+		sparql = SPARQLWrapper("http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql")
 		sparql.setQuery(query)
 		sparql.setReturnFormat(JSON)
 		results = sparql.query().convert()

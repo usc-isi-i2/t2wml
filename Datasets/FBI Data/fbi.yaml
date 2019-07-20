@@ -8,3 +8,9 @@ statementMapping:
     item: item(B/$row)
     property: item($col/6)
     value: value($col/$row)
+    qualifier:
+      - property: P585
+        value: 2016
+        calendar: Q1985727
+        precision: year
+        time_zone: 0 
