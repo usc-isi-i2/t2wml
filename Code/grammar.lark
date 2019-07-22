@@ -36,14 +36,14 @@ column_expression: column_variable (cell_operator cell_operator_argument)*
 row_expression: row_variable (cell_operator cell_operator_argument)*
 
 !cell_operator: "+" | "-"
-cell_operator_argument: NATURAL_NUMBER | VARIABLE
+cell_operator_argument: WHOLE_NUMBER | VARIABLE
 
 !column_variable: VARIABLE | "$col" | "$left" | "$right"
-!row_variable: NATURAL_NUMBER | "$row" | "$top" | "$bottom"
+!row_variable: WHOLE_NUMBER | "$row" | "$top" | "$bottom"
 
 
 VARIABLE: LETTER+
-NATURAL_NUMBER: ("1".."9")["0".."9"]+
+WHOLE_NUMBER: ("0".."9")+
 %import common.ESCAPED_STRING   -> STRING
 %import common.LETTER
 %import common.WS
