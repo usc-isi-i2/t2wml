@@ -208,7 +208,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	if filetype == 'json':
-		json_response = json.dumps(response)
+		json_response = json.dumps(response, indent=2)
 		return json_response
 	elif filetype == 'ttl':
 		try:
