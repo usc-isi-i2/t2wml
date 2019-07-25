@@ -60,10 +60,11 @@ def get_actual_cell_index(cell_index: tuple) -> str:
 	return col+row
 
 
-def get_property_type(wikidata_property: str) -> str:
+def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	"""
 	This functions queries the wikidata to find out the type of a wikidata property
 	:param wikidata_property:
+	:param sparql_endpoint:
 	:return:
 	"""
 	try:
@@ -74,7 +75,7 @@ def get_property_type(wikidata_property: str) -> str:
 			wikibase:propertyType ?type .  
 		}"""
 
-		sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+		sparql = SPARQLWrapper(sparql_endpoint)
 		sparql.setQuery(query)
 		sparql.setReturnFormat(JSON)
 		results = sparql.query().convert()

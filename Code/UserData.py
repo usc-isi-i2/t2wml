@@ -6,6 +6,7 @@ from Code.WikifierOutputData import WikifierOutputData
 class UserData:
 	def __init__(self, id: str):
 		self.id = id
+		self.sparql_endpoint = "https://query.wikidata.org/sparql"
 		self.excel_data = ExcelData()
 		self.yaml_data = YAMLData()
 		self.wikifier_output_data = WikifierOutputData()
@@ -16,6 +17,13 @@ class UserData:
 		:return:
 		"""
 		return self.id
+
+	def get_sparql_endpoint(self) -> str:
+		"""
+		This function returns the SPARQL endpoint
+		:return:
+		"""
+		return self.sparql_endpoint
 
 	def get_excel_data(self) -> ExcelData:
 		"""
@@ -37,6 +45,13 @@ class UserData:
 		:return:
 		"""
 		return self.wikifier_output_data
+
+	def set_sparql_endpoint(self, endpoint) -> None:
+		"""
+		This function sets the SPARQL endpoint
+		:return:
+		"""
+		self.sparql_endpoint = endpoint
 
 	def reset(self, attribute: str = None) -> None:
 		"""

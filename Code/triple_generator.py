@@ -10,11 +10,12 @@ from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_property_type, translate_precision_to_integer
 
 
-def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl') -> str:
+def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl') -> str:
 	"""
 	This function uses ETK to generate the RDF triples
 	:param user_id:
 	:param resolved_excel:
+	:param sparql_endpoint:
 	:param filetype:
 	:return:
 	"""
@@ -57,7 +58,7 @@ def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl') 
 			try:
 				property_type = property_type_cache[j["property"]]
 			except KeyError:
-				property_type = get_property_type(j["property"])
+				property_type = get_property_type(j["property"], sparql_endpoint)
 				property_type_cache[j["property"]] = property_type
 			if property_type == "WikibaseItem":
 				value = Item(str(j["value"]))

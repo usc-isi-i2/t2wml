@@ -197,7 +197,8 @@ def downloader():
 	template = user.get_yaml_data().get_template()
 	region = user.get_yaml_data().get_region()
 	item_table = user.get_wikifier_output_data().get_item_table()
-	return generate_download_file(user_id, item_table, excel_data_filepath, sheet_name, region, template, filetype)
+	sparql_endpoint = user.get_sparql_endpoint()
+	return generate_download_file(user_id, item_table, excel_data_filepath, sheet_name, region, template, filetype, sparql_endpoint)
 
 
 @app.route('/upload_wikifier_output', methods=['POST'])
@@ -220,6 +221,18 @@ def upload_wikified_output():
 		response['qnodes'] = item_table.serialize_cell_to_qnode()
 
 	return json.dumps(response)
+
+
+@app.route('/update_setting', methods=['POST'])
+def update_setting():
+	"""
+	This function uploads the wikifier output
+	:return:
+	"""
+	user_id = request.form["id"]
+	endpoint = request.form["endpoint"]
+	user = app.config['users'].get_user(user_id)
+	user.set_sparql_endpoint(endpoint)
 
 
 if __name__ == "__main__":

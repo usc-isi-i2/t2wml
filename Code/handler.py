@@ -178,7 +178,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	return json_data
 
 
-def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str):
+def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str):
 	"""
 	This function generates the download files based on the filetype
 	:param user_id:
@@ -188,8 +188,10 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	:param region_specification:
 	:param template:
 	:param filetype:
+	:param sparql_endpoint:
 	:return:
 	"""
+	print(sparql_endpoint)
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
 	response = []
@@ -212,7 +214,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 		return json_response
 	elif filetype == 'ttl':
 		try:
-			json_response = generate_triples(user_id, response, filetype)
+			json_response = generate_triples(user_id, response, sparql_endpoint, filetype)
 			return json_response
 		except Exception as e:
 			return str(e)
