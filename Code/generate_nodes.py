@@ -48,7 +48,7 @@ def model_data() -> None:
 	doc.kg.bind('skos', 'http://www.w3.org/2004/02/skos/core#')
 	doc.kg.bind('prov', 'http://www.w3.org/ns/prov#')
 	doc.kg.bind('schema', 'http://schema.org/')
-
+	sparql_endpoint = "https://query.wikidata.org/sparql"
 	type_map = {
 		'quantity': Datatype.QuantityValue,
 		'url': URLValue
@@ -67,7 +67,7 @@ def model_data() -> None:
 				try:
 					property_type = property_type_cache[pnode]
 				except KeyError:
-					property_type = get_property_type(pnode)
+					property_type = get_property_type(pnode, sparql_endpoint)
 					property_type_cache[pnode] = property_type
 				if property_type == "WikibaseItem":
 					value = Item(str(item['value']))

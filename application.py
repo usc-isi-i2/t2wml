@@ -226,7 +226,7 @@ def upload_wikified_output():
 @app.route('/update_setting', methods=['POST'])
 def update_setting():
 	"""
-	This function uploads the wikifier output
+	This function updates the settings from GUI
 	:return:
 	"""
 	user_id = request.form["id"]
