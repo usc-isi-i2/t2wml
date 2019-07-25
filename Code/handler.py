@@ -191,7 +191,6 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	:param sparql_endpoint:
 	:return:
 	"""
-	print(sparql_endpoint)
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
 	response = []
