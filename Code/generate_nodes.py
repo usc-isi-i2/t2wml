@@ -88,10 +88,8 @@ def model_data() -> None:
 				elif property_type == "GlobeCoordinate":
 					value = GlobeCoordinate(item["latitude"], item["longitude"], item["precision"])
 
-				# if pnode == 'P1896':
 				p.add_statement(pnode, value)
-				# else:
-				# 	p.add_statement(pnode, Item(item['value']))
+
 		doc.kg.add_subject(p)
 
 	with open(Path.cwd().parent / "new_properties/result.ttl", "w") as f:
