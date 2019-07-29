@@ -235,5 +235,17 @@ def update_setting():
 	user.set_sparql_endpoint(endpoint)
 
 
+@app.route('/wikify_region', methods=['POST'])
+def wikify_region():
+	"""
+	This function updates the settings from GUI
+	:return:
+	"""
+	json_data = request.get_json()
+	id = json_data["id"]
+	regions = json_data["regions"]
+	return "Successful"
+
+
 if __name__ == "__main__":
 	app.run()

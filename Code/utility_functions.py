@@ -3,6 +3,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import string
 import pyexcel
 import os
+import requests
 from Code.property_type_map import property_type_map
 
 
@@ -217,3 +218,17 @@ def delete_file(filepath: str) -> None:
 	:return:
 	"""
 	os.remove(filepath)
+
+
+def call_wikifiy_service():
+	files = {
+		'file': ('C:\\Users\\divij\\Desktop\\test.csv', open('C:\\Users\\divij\\Desktop\\test.csv', 'r')),
+		'format': (None, 'ISWC'),
+		'type': (None, 'text/csv')
+	}
+
+	response = requests.post('http://dsbox02.isi.edu:8396/wikify', files=files)
+	print(response)
+
+
+call_wikifiy_service()
