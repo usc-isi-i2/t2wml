@@ -18,7 +18,7 @@ def model_data() -> None:
 	This function generates triples for user defined properties for uploading them to wikidata
 	:return:
 	"""
-	stream = open(Path.cwd().parent / "Datasets/FBI Data/fbi-property-indicators.yaml", 'r')
+	stream = open(Path.cwd().parent / "Datasets/new-property-configuration.yaml", 'r', encoding='utf8')
 	yaml_data = yaml.safe_load(stream)
 	# initialize
 	kg_schema = KGSchema()
