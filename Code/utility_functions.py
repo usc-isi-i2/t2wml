@@ -8,7 +8,7 @@ import csv
 import re
 import uuid
 from pathlib import Path
-# from Code.property_type_map import property_type_map
+from Code.property_type_map import property_type_map
 
 
 def get_column_letter(n: int) -> str:
@@ -277,7 +277,6 @@ def call_wikifiy_service(csv_filepath):
 	data = response.content.decode("utf-8")
 	data = csv.reader(data.splitlines(), delimiter=',')
 	output = list(data)
-	print(output)
 	csv_index_qnode_map = dict()
 	for i in output:
 		csv_index_qnode_map[(i[0], i[1])] = i[2]
@@ -287,7 +286,6 @@ def call_wikifiy_service(csv_filepath):
 def wikify_region(region, excel_filepath, sheet_name=None):
 	file_path, cell_csv_index_map = create_temporary_csv_file(region, excel_filepath, sheet_name)
 	csv_index_qnode_map = call_wikifiy_service(file_path)
-	print(csv_index_qnode_map, cell_csv_index_map)
 	cell_qnode_map = dict()
 	for cell, csv_index in cell_csv_index_map.items():
 		if csv_index in csv_index_qnode_map:
