@@ -290,4 +290,3 @@ def wikify_region(region, excel_filepath, sheet_name=None):
 		cell_qnode_map[cell] = csv_index_qnode_map[csv_index]
 	return cell_qnode_map
 
-# wikify_region("A5:A13", "F:\\isi\\T2WML\\t2wml\\Datasets\\homicide_report_total_and_sex.xlsx", "table-1b")
