@@ -288,5 +288,6 @@ def wikify_region(region, excel_filepath, sheet_name=None):
 	cell_qnode_map = dict()
 	for cell, csv_index in cell_csv_index_map.items():
 		cell_qnode_map[cell] = csv_index_qnode_map[csv_index]
+	delete_file(file_path)
 	return cell_qnode_map
 
