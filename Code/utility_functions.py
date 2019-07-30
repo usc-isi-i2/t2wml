@@ -4,7 +4,11 @@ import string
 import pyexcel
 import os
 import requests
-from Code.property_type_map import property_type_map
+import csv
+import re
+import uuid
+from pathlib import Path
+# from Code.property_type_map import property_type_map
 
 
 def get_column_letter(n: int) -> str:
@@ -220,15 +224,70 @@ def delete_file(filepath: str) -> None:
 	os.remove(filepath)
 
 
-def call_wikifiy_service():
+def split_cell(cell):
+	x = re.search("[0-9]+", cell)
+	row_span = x.span()
+	col = cell[:row_span[0]]
+	row = cell[row_span[0]:]
+	return get_excel_column_index(col), get_excel_row_index(row)
+
+
+def parse_cell_range(cell_range):
+	cells = cell_range.split(":")
+	start_cell = split_cell(cells[0])
+	end_cell = split_cell(cells[1])
+	return start_cell, end_cell
+
+
+def create_temporary_csv_file(cell_range, excel_filepath, sheet_name=None):
+	iterator = parse_cell_range(cell_range)
+	try:
+		records = pyexcel.get_book(file_name=excel_filepath)
+		if not sheet_name:
+			excel_sheet = records[0]
+		else:
+			excel_sheet = records[sheet_name]
+	except IOError:
+		raise IOError('Excel File cannot be found or opened')
+
+	file_name = uuid.uuid4().hex + ".csv"
+	file_path = Path.cwd() / "temporary_files" / file_name
+	i = 0
+	cell_csv_index_map = dict()
+	with open(file_path, mode='w', newline='') as temporary_file:
+		csv_writer = csv.writer(temporary_file, delimiter=',')
+		csv_writer.writerow(['values'])
+		for col in range(iterator[0][0], iterator[1][0]+1):
+			for row in range(iterator[0][1], iterator[1][1]+1):
+				cell_value = excel_sheet[row, col]
+				if not check_if_empty(cell_value):
+					csv_writer.writerow([cell_value])
+					cell_csv_index_map[get_actual_cell_index((col,row))] = ('0', str(i))
+	return file_path, cell_csv_index_map
+
+
+def call_wikifiy_service(csv_filepath):
 	files = {
-		'file': ('C:\\Users\\divij\\Desktop\\test.csv', open('C:\\Users\\divij\\Desktop\\test.csv', 'r')),
+		'file': ('', open(csv_filepath, 'r')),
 		'format': (None, 'ISWC'),
 		'type': (None, 'text/csv')
 	}
-
 	response = requests.post('http://dsbox02.isi.edu:8396/wikify', files=files)
-	print(response)
+	data = response.content.decode("utf-8")
+	data = csv.reader(data.splitlines(), delimiter=',')
+	output = list(data)
+	csv_index_qnode_map = dict()
+	for i in output:
+		csv_index_qnode_map[(i[0],i[1])] = i[2]
+	return csv_index_qnode_map
 
 
-call_wikifiy_service()
+def wikify_region(region, excel_filepath, sheet_name=None):
+	file_path, cell_csv_index_map = create_temporary_csv_file(region, excel_filepath, sheet_name)
+	csv_index_qnode_map = call_wikifiy_service(file_path)
+	cell_qnode_map = dict()
+	for cell, csv_index in cell_csv_index_map.items():
+		cell_qnode_map[cell] = csv_index_qnode_map[csv_index]
+	return cell_qnode_map
+
+# wikify_region("A5:A13", "F:\\isi\\T2WML\\t2wml\\Datasets\\homicide_report_total_and_sex.xlsx", "table-1b")

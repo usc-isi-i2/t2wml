@@ -6,9 +6,9 @@ from pathlib import Path
 import os
 from Code.utility_functions import check_if_empty
 from Code.utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index, delete_file
-from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table
+from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.UserData import UserData
-
+from Code.ItemTable import ItemTable
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
@@ -124,9 +124,12 @@ def upload_excel():
 	excel_data_filepath = user.get_excel_data().get_file_location()
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 	if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
-		item_table = build_item_table(wikifier_output_filepath, excel_data_filepath, sheet_name)
-		user.get_wikifier_output_data().set_item_table(item_table)
-		response['qnodes'] = item_table.serialize_cell_to_qnode()
+		item_table = user.get_wikifier_output_data.get_item_table()
+		if not item_table:
+			item_table = ItemTable()
+			user.get_wikifier_output_data().set_item_table(item_table)
+		item_table = build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+		response['regions'] = item_table.region_items
 
 	return json.dumps(response)
 
@@ -216,9 +219,12 @@ def upload_wikified_output():
 	sheet_name = user.get_excel_data().get_sheet_name()
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 	if excel_data_filepath and excel_data_filepath:
-		item_table = build_item_table(wikifier_output_filepath, excel_data_filepath, sheet_name)
-		user.get_wikifier_output_data().set_item_table(item_table)
-		response['qnodes'] = item_table.serialize_cell_to_qnode()
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if not item_table:
+			item_table = ItemTable()
+			user.get_wikifier_output_data().set_item_table(item_table)
+		item_table = build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+		response['regions'] = item_table.region_items
 
 	return json.dumps(response)
 
@@ -237,14 +243,20 @@ def update_setting():
 
 @app.route('/wikify_region', methods=['POST'])
 def wikify_region():
-	"""
-	This function updates the settings from GUI
-	:return:
-	"""
-	json_data = request.get_json()
-	id = json_data["id"]
-	regions = json_data["regions"]
-	return "Successful"
+	user_id = request.form["id"]
+	action = request.form["action"]
+	region = request.form["region"]
+	user = app.config['users'].get_user(user_id)
+	data = ""
+	if action == "add_region":
+		excel_filepath = user.get_excel_data().get_file_location()
+		sheet_name = user.get_excel_data().get_sheet_name()
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if not excel_filepath:
+			data = "No excel file to wikify"
+		else:
+			data = wikifier(item_table, region, excel_filepath, sheet_name)
+	return json.dumps(data)
 
 
 if __name__ == "__main__":
