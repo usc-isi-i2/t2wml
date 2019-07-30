@@ -222,7 +222,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 def wikifier(item_table, region, excel_filepath, sheet_name):
 	if not item_table:
 		item_table = ItemTable()
-	cell_qnode_map = wikify_region(item_table, region, excel_filepath, sheet_name)
+	cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
 	item_table.add_region(region, cell_qnode_map)
 	item_table.check_other_for_common_cells(region)
 	return item_table.region_items

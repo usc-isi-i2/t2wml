@@ -263,6 +263,7 @@ def create_temporary_csv_file(cell_range, excel_filepath, sheet_name=None):
 				if not check_if_empty(cell_value):
 					csv_writer.writerow([cell_value])
 					cell_csv_index_map[get_actual_cell_index((col,row))] = ('0', str(i))
+					i+=1
 	return file_path, cell_csv_index_map
 
 
@@ -276,18 +277,21 @@ def call_wikifiy_service(csv_filepath):
 	data = response.content.decode("utf-8")
 	data = csv.reader(data.splitlines(), delimiter=',')
 	output = list(data)
+	print(output)
 	csv_index_qnode_map = dict()
 	for i in output:
-		csv_index_qnode_map[(i[0],i[1])] = i[2]
+		csv_index_qnode_map[(i[0], i[1])] = i[2]
 	return csv_index_qnode_map
 
 
 def wikify_region(region, excel_filepath, sheet_name=None):
 	file_path, cell_csv_index_map = create_temporary_csv_file(region, excel_filepath, sheet_name)
 	csv_index_qnode_map = call_wikifiy_service(file_path)
+	print(csv_index_qnode_map, cell_csv_index_map)
 	cell_qnode_map = dict()
 	for cell, csv_index in cell_csv_index_map.items():
-		cell_qnode_map[cell] = csv_index_qnode_map[csv_index]
+		if csv_index in csv_index_qnode_map:
+			cell_qnode_map[cell] = csv_index_qnode_map[csv_index]
 	delete_file(file_path)
 	return cell_qnode_map
 
