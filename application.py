@@ -220,11 +220,9 @@ def upload_wikified_output():
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 	if excel_data_filepath and excel_data_filepath:
 		item_table = user.get_wikifier_output_data().get_item_table()
-		print(item_table)
 		if not item_table:
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
-		print(user.get_wikifier_output_data().get_item_table().region_items)
 		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
 		response['regions'] = item_table.region_items
 
