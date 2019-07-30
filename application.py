@@ -124,7 +124,7 @@ def upload_excel():
 	excel_data_filepath = user.get_excel_data().get_file_location()
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 	if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
-		item_table = user.get_wikifier_output_data.get_item_table()
+		item_table = user.get_wikifier_output_data().get_item_table()
 		if not item_table:
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
