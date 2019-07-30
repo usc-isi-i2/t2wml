@@ -241,7 +241,7 @@ def update_setting():
 	user.set_sparql_endpoint(endpoint)
 
 
-@app.route('/wikify_region', methods=['POST'])
+@app.route('/wikifier', methods=['POST'])
 def wikify_region():
 	user_id = request.form["id"]
 	action = request.form["action"]
