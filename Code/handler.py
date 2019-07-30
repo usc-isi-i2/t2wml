@@ -241,7 +241,7 @@ def load_yaml_data(yaml_filepath: str):
 	return region, template
 
 
-def build_item_table(item_table:ItemTable, wikifier_output_filepath: str, excel_data_filepath: str, sheet_name: str) -> ItemTable:
+def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str, sheet_name: str) -> ItemTable:
 	item_table.generate_hash_tables(wikifier_output_filepath)
 	if excel_data_filepath:
 		item_table.populate_cell_to_qnode_using_cell_values(excel_data_filepath, sheet_name)

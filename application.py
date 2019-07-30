@@ -220,10 +220,12 @@ def upload_wikified_output():
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 	if excel_data_filepath and excel_data_filepath:
 		item_table = user.get_wikifier_output_data().get_item_table()
+		print(item_table)
 		if not item_table:
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
-		item_table = build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+		print(user.get_wikifier_output_data().get_item_table().region_items)
+		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
 		response['regions'] = item_table.region_items
 
 	return json.dumps(response)
@@ -252,10 +254,22 @@ def wikify_region():
 		excel_filepath = user.get_excel_data().get_file_location()
 		sheet_name = user.get_excel_data().get_sheet_name()
 		item_table = user.get_wikifier_output_data().get_item_table()
+		if not item_table:
+			item_table = ItemTable()
+			user.get_wikifier_output_data().set_item_table(item_table)
 		if not excel_filepath:
 			data = "No excel file to wikify"
 		else:
 			data = wikifier(item_table, region, excel_filepath, sheet_name)
+	return json.dumps(data)
+
+
+@app.route('/delete_user', methods=['POST'])
+def remove_user():
+	user_id = request.form["id"]
+	users = app.config['users']
+	users.delete_user(user_id)
+	data = {"User deleted successfully"}
 	return json.dumps(data)
 
 

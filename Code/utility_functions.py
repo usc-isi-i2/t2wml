@@ -256,7 +256,7 @@ def call_wikifiy_service(csv_filepath):
 		'format': (None, 'ISWC'),
 		'type': (None, 'text/csv')
 	}
-	response = requests.post('http://dsbox02.isi.edu:8396/wikify', files=files)
+	response = requests.post('http://dsbox02.isi.edu:8397/wikify', files=files)
 	data = response.content.decode("utf-8")
 	data = csv.reader(data.splitlines(), delimiter=',')
 	output = list(data)

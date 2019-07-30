@@ -1,6 +1,7 @@
 from typing import Union
 import csv
 import pyexcel
+import collections
 from Code.utility_functions import get_actual_cell_index, check_if_empty
 
 
@@ -76,7 +77,8 @@ class ItemTable:
 		for cell, value in self.cell_to_qnode.items():
 			cell = get_actual_cell_index(cell)
 			serialized_dict[cell] = value
-		return serialized_dict
+		serialized_sorted_dict = collections.OrderedDict(sorted(serialized_dict.items()))
+		return serialized_sorted_dict
 
 	def add_other_region(self):
 		self.region_items['Other'] = self.serialize_cell_to_qnode()
