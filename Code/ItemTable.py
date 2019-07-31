@@ -1,11 +1,13 @@
 from typing import Union
 import csv
 import pyexcel
+import collections
 from Code.utility_functions import get_actual_cell_index, check_if_empty
 
 
 class ItemTable:
 	def __init__(self):
+		self.region_items = dict()
 		self.cell_to_qnode = {}
 		self.value_to_qnode = {}
 
@@ -75,4 +77,24 @@ class ItemTable:
 		for cell, value in self.cell_to_qnode.items():
 			cell = get_actual_cell_index(cell)
 			serialized_dict[cell] = value
-		return serialized_dict
+		serialized_sorted_dict = collections.OrderedDict(sorted(serialized_dict.items()))
+		return serialized_sorted_dict
+
+	def add_other_region(self):
+		self.region_items['Other'] = self.serialize_cell_to_qnode()
+
+	def check_other_for_common_cells(self, region):
+		if 'Other' in self.region_items:
+			for key in self.region_items[region].keys():
+				if key in self.region_items['Other']:
+					del self.region_items['Other'][key]
+
+	def add_region(self, region, cell_qnode_map):
+		if region not in self.region_items:
+			self.region_items[region] = dict()
+		self.region_items[region] = cell_qnode_map
+
+	def check_all_regions_for_common_cells_with_other(self):
+		for region in self.region_items.keys():
+			if region != 'Other':
+				self.check_other_for_common_cells(region)

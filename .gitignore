@@ -107,3 +107,4 @@ venv.bak/
 .Code/RegionTestCase.py
 .DS_Store
 uploads/*
+temporary_files/*

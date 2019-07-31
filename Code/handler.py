@@ -5,7 +5,7 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty
+from Code.utility_functions import get_actual_cell_index, check_if_empty, wikify_region
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -219,6 +219,15 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 			return str(e)
 
 
+def wikifier(item_table, region, excel_filepath, sheet_name):
+	if not item_table:
+		item_table = ItemTable()
+	cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
+	item_table.add_region(region, cell_qnode_map)
+	item_table.check_other_for_common_cells(region)
+	return item_table.region_items
+
+
 def load_yaml_data(yaml_filepath: str):
 	"""
 	This function loads the YAML file data, parses different expressions and generates the statement
@@ -232,18 +241,11 @@ def load_yaml_data(yaml_filepath: str):
 	return region, template
 
 
-def build_item_table(wikifier_output_filepath: str, excel_data_filepath: str, sheet_name: str) -> ItemTable:
-	"""
-	This function builds up the item table
-	:param wikifier_output_filepath:
-	:param excel_data_filepath:
-	:param sheet_name:
-	:return:
-	"""
-	item_table = ItemTable()
+def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str, sheet_name: str) -> ItemTable:
 	item_table.generate_hash_tables(wikifier_output_filepath)
 	if excel_data_filepath:
 		item_table.populate_cell_to_qnode_using_cell_values(excel_data_filepath, sheet_name)
+		item_table.add_other_region()
 	return item_table
 
 
@@ -275,3 +277,4 @@ def evaluate_template(template: dict) -> dict:
 			else:
 				response[key] = value
 	return response
+

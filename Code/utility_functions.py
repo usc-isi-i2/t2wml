@@ -4,6 +4,10 @@ import string
 import pyexcel
 import os
 import requests
+import csv
+import re
+import uuid
+from pathlib import Path
 from Code.property_type_map import property_type_map
 
 
@@ -56,8 +60,8 @@ def get_actual_cell_index(cell_index: tuple) -> str:
 	:param cell_index: (col, row)
 	:return:
 	"""
-	col = get_column_letter(cell_index[0]+1)
-	row = str(cell_index[1] + 1)
+	col = get_column_letter(int(cell_index[0])+1)
+	row = str(int(cell_index[1]) + 1)
 	return col+row
 
 
@@ -220,15 +224,57 @@ def delete_file(filepath: str) -> None:
 	os.remove(filepath)
 
 
-def call_wikifiy_service():
+def split_cell(cell):
+	x = re.search("[0-9]+", cell)
+	row_span = x.span()
+	col = cell[:row_span[0]]
+	row = cell[row_span[0]:]
+	return get_excel_column_index(col), get_excel_row_index(row)
+
+
+def parse_cell_range(cell_range):
+	cells = cell_range.split(":")
+	start_cell = split_cell(cells[0])
+	end_cell = split_cell(cells[1])
+	return start_cell, end_cell
+
+
+def create_temporary_csv_file(cell_range, excel_filepath, sheet_name=None):
+	file_name = uuid.uuid4().hex + ".csv"
+	file_path = str(Path.cwd() / "temporary_files" / file_name)
+	try:
+		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, start_row=0, row_limit=cell_range[1][1] + 1, start_column=0, column_limit=cell_range[1][0] + 1)
+		pyexcel.save_as(array=sheet, dest_file_name=file_path)
+	except IOError:
+		raise IOError('Excel File cannot be found or opened')
+	return file_path
+
+
+def call_wikifiy_service(csv_filepath):
 	files = {
-		'file': ('C:\\Users\\divij\\Desktop\\test.csv', open('C:\\Users\\divij\\Desktop\\test.csv', 'r')),
+		'file': ('', open(csv_filepath, 'r')),
 		'format': (None, 'ISWC'),
 		'type': (None, 'text/csv')
 	}
+	response = requests.post('http://dsbox02.isi.edu:8397/wikify', files=files)
+	data = response.content.decode("utf-8")
+	data = csv.reader(data.splitlines(), delimiter=',')
+	output = list(data)
+	cell_qnode_map = dict()
+	for i in output:
+		cell_qnode_map[get_actual_cell_index((i[0], i[1]))] = i[2]
+	return cell_qnode_map
 
-	response = requests.post('http://dsbox02.isi.edu:8396/wikify', files=files)
-	print(response)
 
+def wikify_region(region, excel_filepath, sheet_name=None):
+	cell_range = parse_cell_range(region)
+	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
+	cell_qnode_map = call_wikifiy_service(file_path)
+	for col in range(cell_range[0][0], cell_range[1][0] + 1):
+		for row in range(0, cell_range[0][1]):
+			cell_index = get_actual_cell_index((col, row))
+			if cell_index in cell_qnode_map:
+				del cell_qnode_map[cell_index]
+	delete_file(file_path)
+	return cell_qnode_map
 
-call_wikifiy_service()

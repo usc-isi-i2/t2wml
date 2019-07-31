@@ -45,4 +45,4 @@ class WikifierOutputData:
 		if self.file_location:
 			os.remove(self.file_location)
 		self.file_location = None
-		self.item_table = None
+		# self.item_table = None
