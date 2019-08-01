@@ -270,7 +270,7 @@ def remove_user():
 	user_id = request.form["id"]
 	users = app.config['users']
 	users.delete_user(user_id)
-	data = {"User deleted successfully"}
+	data = "User deleted successfully"
 	return json.dumps(data, indent=3)
 
 

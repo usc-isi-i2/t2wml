@@ -72,7 +72,9 @@ class ItemTable:
 		self.check_other_for_common_cells(region)
 
 	def delete_region(self, region):
-		if region in self.region_qnodes['regions']:
+		if region == 'All':
+			self.region_qnodes = {'regions': dict(), 'qnodes': dict()}
+		elif region in self.region_qnodes['regions']:
 			for cell in self.region_qnodes['regions'][region]:
 				if cell in self.region_qnodes['qnodes']:
 					del self.region_qnodes['qnodes'][cell]
