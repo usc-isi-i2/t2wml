@@ -1,7 +1,7 @@
 from typing import Union
 import csv
 import pyexcel
-from Code.utility_functions import get_actual_cell_index, check_if_empty
+from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key
 
 
 class ItemTable:
@@ -64,9 +64,9 @@ class ItemTable:
 
 	def check_other_for_common_cells(self, region):
 		if 'Other' in self.region_qnodes['regions'] and region != 'Other':
-			self.region_qnodes['regions']['Other'] = sorted(list(set(self.region_qnodes['regions']['Other']) - set(self.region_qnodes['regions'][region])))
+			self.region_qnodes['regions']['Other'] = sorted(list(set(self.region_qnodes['regions']['Other']) - set(self.region_qnodes['regions'][region])), key=natural_sort_key)
 
 	def add_region(self, region, cell_qnode_map):
-		self.region_qnodes['regions'][region] = sorted(list(cell_qnode_map.keys()))
+		self.region_qnodes['regions'][region] = sorted(list(cell_qnode_map.keys()), key=natural_sort_key)
 		self.region_qnodes['qnodes'].update(cell_qnode_map)
 		self.check_other_for_common_cells(region)

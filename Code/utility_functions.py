@@ -8,6 +8,7 @@ import csv
 import re
 import uuid
 from pathlib import Path
+import re
 from Code.property_type_map import property_type_map
 
 
@@ -270,11 +271,22 @@ def wikify_region(region, excel_filepath, sheet_name=None):
 	cell_range = parse_cell_range(region)
 	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
 	cell_qnode_map = call_wikifiy_service(file_path)
-	for col in range(cell_range[0][0], cell_range[1][0] + 1):
+
+	# remove unneccessary cells from the cell qnode map
+	for col in range(0, cell_range[1][0] + 1):
 		for row in range(0, cell_range[0][1]):
+			cell_index = get_actual_cell_index((col, row))
+			if cell_index in cell_qnode_map:
+				del cell_qnode_map[cell_index]
+	for col in range(0, cell_range[0][0]):
+		for row in range(cell_range[0][1], cell_range[1][1] + 1):
 			cell_index = get_actual_cell_index((col, row))
 			if cell_index in cell_qnode_map:
 				del cell_qnode_map[cell_index]
 	delete_file(file_path)
 	return cell_qnode_map
 
+
+def natural_sort_key(s):
+	_nsre = re.compile('([0-9]+)')
+	return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]

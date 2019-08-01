@@ -1,4 +1,4 @@
-requests
+requests==2.21.0
 Werkzeug==0.14.1
 pyexcel==0.5.14
 Flask_Cors==3.0.7
