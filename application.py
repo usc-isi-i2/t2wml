@@ -258,6 +258,10 @@ def wikify_region():
 			data = "No excel file to wikify"
 		else:
 			data = wikifier(item_table, region, excel_filepath, sheet_name)
+	elif action == "delete_region":
+		item_table = user.get_wikifier_output_data().get_item_table()
+		item_table.delete_region(region)
+		data = item_table.region_qnodes
 	return json.dumps(data, indent=3)
 
 

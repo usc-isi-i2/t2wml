@@ -70,3 +70,10 @@ class ItemTable:
 		self.region_qnodes['regions'][region] = sorted(list(cell_qnode_map.keys()), key=natural_sort_key)
 		self.region_qnodes['qnodes'].update(cell_qnode_map)
 		self.check_other_for_common_cells(region)
+
+	def delete_region(self, region):
+		if region in self.region_qnodes[region]['regions']:
+			for cell in self.region_qnodes['regions'][region]:
+				if cell in self.region_qnodes['qnodes']:
+					del self.region_qnodes['qnodes'][cell]
+			del self.region_qnodes['regions'][region]
