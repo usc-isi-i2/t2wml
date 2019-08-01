@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/t2wml-gui/static/css/main.828b04b8.chunk.css",
-    "main.js": "/t2wml-gui/static/js/main.e34cc829.chunk.js",
-    "main.js.map": "/t2wml-gui/static/js/main.e34cc829.chunk.js.map",
+    "main.js": "/t2wml-gui/static/js/main.791231f9.chunk.js",
+    "main.js.map": "/t2wml-gui/static/js/main.791231f9.chunk.js.map",
     "runtime~main.js": "/t2wml-gui/static/js/runtime~main.8e7d7b30.js",
     "runtime~main.js.map": "/t2wml-gui/static/js/runtime~main.8e7d7b30.js.map",
     "static/css/2.6e35d814.chunk.css": "/t2wml-gui/static/css/2.6e35d814.chunk.css",
@@ -13,7 +13,7 @@
     "editor.worker.js": "/t2wml-gui/editor.worker.js",
     "editor.worker.js.map": "/t2wml-gui/editor.worker.js.map",
     "index.html": "/t2wml-gui/index.html",
-    "precache-manifest.3904e0638a53e42ca7e86dc8ee0b1021.js": "/t2wml-gui/precache-manifest.3904e0638a53e42ca7e86dc8ee0b1021.js",
+    "precache-manifest.6862a54187532035fcfc6230d0109f34.js": "/t2wml-gui/precache-manifest.6862a54187532035fcfc6230d0109f34.js",
     "service-worker.js": "/t2wml-gui/service-worker.js",
     "static/css/2.6e35d814.chunk.css.map": "/t2wml-gui/static/css/2.6e35d814.chunk.css.map",
     "static/css/main.828b04b8.chunk.css.map": "/t2wml-gui/static/css/main.828b04b8.chunk.css.map"
