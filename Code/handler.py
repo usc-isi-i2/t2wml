@@ -209,7 +209,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	if filetype == 'json':
-		json_response = json.dumps(response)
+		json_response = json.dumps(response, indent=3)
 		return json_response
 	elif filetype == 'ttl':
 		try:
@@ -224,8 +224,7 @@ def wikifier(item_table, region, excel_filepath, sheet_name):
 		item_table = ItemTable()
 	cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
 	item_table.add_region(region, cell_qnode_map)
-	item_table.check_other_for_common_cells(region)
-	return item_table.region_items
+	return item_table.region_qnodes
 
 
 def load_yaml_data(yaml_filepath: str):
@@ -242,10 +241,8 @@ def load_yaml_data(yaml_filepath: str):
 
 
 def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str, sheet_name: str) -> ItemTable:
-	item_table.generate_hash_tables(wikifier_output_filepath)
 	if excel_data_filepath:
-		item_table.populate_cell_to_qnode_using_cell_values(excel_data_filepath, sheet_name)
-		item_table.add_other_region()
+		item_table.generate_hash_tables(wikifier_output_filepath, excel_data_filepath, sheet_name)
 	return item_table
 
 

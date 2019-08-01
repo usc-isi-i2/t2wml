@@ -118,7 +118,7 @@ def upload_excel():
 
 	if is_new_upload:
 		user.reset('excel')
-
+	user.get_wikifier_output_data().reset_item_table()
 	os.makedirs("uploads", exist_ok=True)
 	response = excel_uploader(user, sheet_name)
 	excel_data_filepath = user.get_excel_data().get_file_location()
@@ -128,10 +128,10 @@ def upload_excel():
 		if not item_table:
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
-		item_table = build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response['regions'] = item_table.region_items
+		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+		response.update(item_table.region_qnodes)
 
-	return json.dumps(response)
+	return json.dumps(response, indent=3)
 
 
 @app.route('/upload_yaml', methods=['POST'])
@@ -165,7 +165,7 @@ def upload_yaml():
 		template = yaml_configuration.get_template()
 		response['region'] = highlight_region(item_table, excel_data_filepath, sheet_name, region, template)
 
-	return json.dumps(response)
+	return json.dumps(response, indent=3)
 
 
 @app.route('/resolve_cell', methods=['POST'])
@@ -224,9 +224,8 @@ def upload_wikified_output():
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
 		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response['regions'] = item_table.region_items
-
-	return json.dumps(response)
+		response = item_table.region_qnodes
+	return json.dumps(response, indent=3)
 
 
 @app.route('/update_setting', methods=['POST'])
@@ -259,7 +258,7 @@ def wikify_region():
 			data = "No excel file to wikify"
 		else:
 			data = wikifier(item_table, region, excel_filepath, sheet_name)
-	return json.dumps(data)
+	return json.dumps(data, indent=3)
 
 
 @app.route('/delete_user', methods=['POST'])
@@ -268,7 +267,7 @@ def remove_user():
 	users = app.config['users']
 	users.delete_user(user_id)
 	data = {"User deleted successfully"}
-	return json.dumps(data)
+	return json.dumps(data, indent=3)
 
 
 if __name__ == "__main__":
