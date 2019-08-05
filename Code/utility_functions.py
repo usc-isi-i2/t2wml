@@ -274,7 +274,7 @@ def wikify_region(region, excel_filepath, sheet_name=None):
 	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
 	cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
 
-	# remove unneccessary cells from the cell qnode map
+	# remove unnecessary cells from the cell qnode map
 	for col in range(0, cell_range[1][0] + 1):
 		for row in range(0, cell_range[0][1]):
 			cell_index = get_actual_cell_index((col, row))
