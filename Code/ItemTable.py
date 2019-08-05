@@ -1,14 +1,31 @@
 from typing import Union
 import csv
 import pyexcel
+from copy import deepcopy
 from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key
 
 
 class ItemTable:
 	def __init__(self):
-		self.cell_to_qnode = {}
-		self.value_to_qnode = {}
+		self.other = {'region': list(), 'qnodes': dict()}
 		self.region_qnodes = {'regions': dict(), 'qnodes': dict()}
+
+	def get_region_qnodes(self):
+		response = deepcopy(self.region_qnodes)
+		if self.other["region"]:
+			response["regions"]["Other"] = list()
+			redundant_cells = list()
+			for cell, qnode in self.other["qnodes"].items():
+				if cell not in response["qnodes"]:
+					response["regions"]["Other"].append(cell)
+					response["qnodes"][cell] = qnode
+				else:
+					redundant_cells.append(cell)
+			for cell in redundant_cells:
+				self.other["region"].remove(cell)
+				del self.other["qnodes"][cell]
+			response["regions"]["Other"] = sorted(list(response["regions"]["Other"]), key=natural_sort_key)
+		return response
 
 	def generate_hash_tables(self, file_path: str, excel_filepath: str, sheet_name: str = None, header: bool = True) -> None:
 		cell_to_qnode = dict()
@@ -26,16 +43,23 @@ class ItemTable:
 
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
 		for cell, qnode in cell_to_qnode.items():
-			cell_value = sheet[cell[1], cell[0]]
-			if cell_value not in value_to_qnode:
-				value_to_qnode[cell_value] = qnode
+			try:
+				cell_value = sheet[cell[1], cell[0]]
+				if not check_if_empty(cell_value) and cell_value not in value_to_qnode:
+					value_to_qnode[cell_value] = qnode
+			except IndexError:
+				pass
 
 		for row in range(len(sheet)):
 			for col in range(len(sheet[0])):
-				if value_to_qnode.get(sheet[row, col], None):
-					cell_to_qnode[(col, row)] = value_to_qnode[sheet[row, col]]
+				try:
+					if value_to_qnode.get(sheet[row, col], None):
+						cell_to_qnode[(col, row)] = value_to_qnode[sheet[row, col]]
+				except IndexError:
+					pass
 		cell_to_qnode = self.serialize_cell_to_qnode(cell_to_qnode)
-		self.add_region("Other", cell_to_qnode)
+		self.other["qnodes"] = cell_to_qnode
+		self.other["region"] = list(cell_to_qnode.keys())
 
 	def get_item(self, column: int, row: int) -> Union[str, Exception]:
 		"""
@@ -48,6 +72,8 @@ class ItemTable:
 		cell_index = get_actual_cell_index((column, row))
 		if self.region_qnodes['qnodes'].get(cell_index, None):
 			return self.region_qnodes['qnodes'][cell_index]
+		elif self.other.get(cell_index, None):
+			return self.other[cell_index]
 		else:
 			raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
 
@@ -64,16 +90,18 @@ class ItemTable:
 
 	def check_other_for_common_cells(self, region):
 		if 'Other' in self.region_qnodes['regions'] and region != 'Other':
-			self.region_qnodes['regions']['Other'] = sorted(list(set(self.region_qnodes['regions']['Other']) - set(self.region_qnodes['regions'][region])), key=natural_sort_key)
+			self.region_qnodes['regions']['Other'] = sorted(list(set(self.other.keys()) - set(self.region_qnodes['regions'][region])), key=natural_sort_key)
 
 	def add_region(self, region, cell_qnode_map):
 		self.region_qnodes['regions'][region] = sorted(list(cell_qnode_map.keys()), key=natural_sort_key)
 		self.region_qnodes['qnodes'].update(cell_qnode_map)
-		self.check_other_for_common_cells(region)
 
 	def delete_region(self, region):
 		if region == 'All':
 			self.region_qnodes = {'regions': dict(), 'qnodes': dict()}
+			self.other = dict()
+		elif region == "Other":
+			self.other = {'region': list(), 'qnodes': dict()}
 		elif region in self.region_qnodes['regions']:
 			for cell in self.region_qnodes['regions'][region]:
 				if cell in self.region_qnodes['qnodes']:

@@ -129,7 +129,7 @@ def upload_excel():
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
 		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response.update(item_table.region_qnodes)
+		response.update(item_table.get_region_qnodes())
 
 	return json.dumps(response, indent=3)
 
@@ -224,7 +224,7 @@ def upload_wikified_output():
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
 		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response = item_table.region_qnodes
+		response = item_table.get_region_qnodes()
 	return json.dumps(response, indent=3)
 
 
@@ -261,7 +261,7 @@ def wikify_region():
 	elif action == "delete_region":
 		item_table = user.get_wikifier_output_data().get_item_table()
 		item_table.delete_region(region)
-		data = item_table.region_qnodes
+		data = item_table.get_region_qnodes()
 	return json.dumps(data, indent=3)
 
 

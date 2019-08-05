@@ -244,33 +244,35 @@ def create_temporary_csv_file(cell_range, excel_filepath, sheet_name=None):
 	file_name = uuid.uuid4().hex + ".csv"
 	file_path = str(Path.cwd() / "temporary_files" / file_name)
 	try:
-		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, start_row=0, row_limit=cell_range[1][1] + 1, start_column=0, column_limit=cell_range[1][0] + 1)
+		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, start_row=cell_range[0][1], row_limit=cell_range[1][1] - cell_range[0][1] + 1, start_column=cell_range[0][0], column_limit=cell_range[1][0] - cell_range[0][0] + 1)
 		pyexcel.save_as(array=sheet, dest_file_name=file_path)
 	except IOError:
 		raise IOError('Excel File cannot be found or opened')
 	return file_path
 
 
-def call_wikifiy_service(csv_filepath):
+def call_wikifiy_service(csv_filepath, col_offset, row_offset):
+	cell_qnode_map = dict()
 	files = {
 		'file': ('', open(csv_filepath, 'r')),
 		'format': (None, 'ISWC'),
-		'type': (None, 'text/csv')
+		'type': (None, 'text/csv'),
+		'header': (None, 'False')
 	}
 	response = requests.post('http://dsbox02.isi.edu:8397/wikify', files=files)
-	data = response.content.decode("utf-8")
-	data = csv.reader(data.splitlines(), delimiter=',')
-	output = list(data)
-	cell_qnode_map = dict()
-	for i in output:
-		cell_qnode_map[get_actual_cell_index((i[0], i[1]))] = i[2]
+	if response.status_code == 200:
+		data = response.content.decode("utf-8")
+		data = csv.reader(data.splitlines(), delimiter=',')
+		output = list(data)
+		for i in output:
+			cell_qnode_map[get_actual_cell_index((int(i[0]) + col_offset, int(i[1]) + row_offset))] = i[2]
 	return cell_qnode_map
 
 
 def wikify_region(region, excel_filepath, sheet_name=None):
 	cell_range = parse_cell_range(region)
 	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
-	cell_qnode_map = call_wikifiy_service(file_path)
+	cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
 
 	# remove unneccessary cells from the cell qnode map
 	for col in range(0, cell_range[1][0] + 1):
@@ -283,6 +285,18 @@ def wikify_region(region, excel_filepath, sheet_name=None):
 			cell_index = get_actual_cell_index((col, row))
 			if cell_index in cell_qnode_map:
 				del cell_qnode_map[cell_index]
+
+	sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
+	for col in range(cell_range[0][0], cell_range[1][0]+1):
+		for row in range(cell_range[0][1], cell_range[1][1]):
+			try:
+				cell_index = get_actual_cell_index((col, row))
+				if check_if_empty(sheet[row, col]):
+					del cell_qnode_map[cell_index]
+			except IndexError:
+				pass
+			except KeyError:
+				pass
 	delete_file(file_path)
 	return cell_qnode_map
 

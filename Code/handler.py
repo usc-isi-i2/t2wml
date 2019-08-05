@@ -224,7 +224,7 @@ def wikifier(item_table, region, excel_filepath, sheet_name):
 		item_table = ItemTable()
 	cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
 	item_table.add_region(region, cell_qnode_map)
-	return item_table.region_qnodes
+	return item_table.get_region_qnodes()
 
 
 def load_yaml_data(yaml_filepath: str):
