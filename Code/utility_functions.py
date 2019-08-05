@@ -272,32 +272,20 @@ def wikify_region(region, excel_filepath, sheet_name=None):
 	cell_range = parse_cell_range(region)
 	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
 	cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
-
-	# remove unnecessary cells from the cell qnode map
-	for col in range(0, cell_range[1][0] + 1):
-		for row in range(0, cell_range[0][1]):
-			cell_index = get_actual_cell_index((col, row))
-			if cell_index in cell_qnode_map:
-				del cell_qnode_map[cell_index]
-	for col in range(0, cell_range[0][0]):
-		for row in range(cell_range[0][1], cell_range[1][1] + 1):
-			cell_index = get_actual_cell_index((col, row))
-			if cell_index in cell_qnode_map:
-				del cell_qnode_map[cell_index]
+	response = dict()
 
 	sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
 	for col in range(cell_range[0][0], cell_range[1][0]+1):
-		for row in range(cell_range[0][1], cell_range[1][1]):
+		for row in range(cell_range[0][1], cell_range[1][1] + 1):
 			try:
 				cell_index = get_actual_cell_index((col, row))
-				if check_if_empty(sheet[row, col]):
-					del cell_qnode_map[cell_index]
+				if not check_if_empty(sheet[row, col]):
+					response[cell_index] = cell_qnode_map[cell_index]
 			except IndexError:
 				pass
 			except KeyError:
 				pass
-	delete_file(file_path)
-	return cell_qnode_map
+	return response
 
 
 def natural_sort_key(s):
