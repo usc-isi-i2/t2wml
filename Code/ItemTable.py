@@ -72,8 +72,8 @@ class ItemTable:
 		cell_index = get_actual_cell_index((column, row))
 		if self.region_qnodes['qnodes'].get(cell_index, None):
 			return self.region_qnodes['qnodes'][cell_index]
-		elif self.other.get(cell_index, None):
-			return self.other[cell_index]
+		elif self.other["qnodes"].get(cell_index, None):
+			return self.other["qnodes"][cell_index]
 		else:
 			raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
 
