@@ -5,7 +5,6 @@ import pyexcel
 import os
 import requests
 import csv
-import re
 import uuid
 from pathlib import Path
 import re

@@ -118,6 +118,7 @@ def upload_excel():
 
 	if is_new_upload:
 		user.reset('excel')
+		user.get_wikifier_output_data().reset()
 	user.get_wikifier_output_data().reset_item_table()
 	os.makedirs("uploads", exist_ok=True)
 	response = excel_uploader(user, sheet_name)
