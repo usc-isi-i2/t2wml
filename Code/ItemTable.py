@@ -2,13 +2,14 @@ from typing import Union
 import csv
 import pyexcel
 from copy import deepcopy
+from collections import OrderedDict
 from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key, split_cell
 
 
 class ItemTable:
 	def __init__(self):
 		self.other = {'region': list(), 'qnodes': dict()}
-		self.region_qnodes = {'regions': dict(), 'qnodes': dict()}
+		self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
 
 	def get_region_qnodes(self):
 		response = deepcopy(self.region_qnodes)
@@ -98,7 +99,7 @@ class ItemTable:
 
 	def delete_region(self, region):
 		if region == 'All':
-			self.region_qnodes = {'regions': dict(), 'qnodes': dict()}
+			self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
 			self.other = {'region': list(), 'qnodes': dict()}
 		elif region == "Other":
 			self.other = {'region': list(), 'qnodes': dict()}
