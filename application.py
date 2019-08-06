@@ -263,6 +263,22 @@ def wikify_region():
 		item_table = user.get_wikifier_output_data().get_item_table()
 		item_table.delete_region(region)
 		data = item_table.get_region_qnodes()
+	elif action == "update_qnode":
+		cell = request.form["cell"]
+		qnode = request.form["qnode"]
+		apply_to = int(request.form["apply_to"])
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if apply_to == 0:
+			item_table.update_cell(region, cell, qnode)
+		elif apply_to == 1:
+			excel_filepath = user.get_excel_data().get_file_location()
+			sheet_name = user.get_excel_data().get_sheet_name()
+			item_table.update_all_cells_within_region(region, cell, qnode, excel_filepath, sheet_name)
+		elif apply_to == 2:
+			excel_filepath = user.get_excel_data().get_file_location()
+			sheet_name = user.get_excel_data().get_sheet_name()
+			item_table.update_all_cells_in_all_region(region, cell, qnode, excel_filepath, sheet_name)
+		data = item_table.get_region_qnodes()
 	return json.dumps(data, indent=3)
 
 

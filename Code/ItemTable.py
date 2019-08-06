@@ -2,7 +2,7 @@ from typing import Union
 import csv
 import pyexcel
 from copy import deepcopy
-from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key
+from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key, split_cell
 
 
 class ItemTable:
@@ -107,3 +107,36 @@ class ItemTable:
 				if cell in self.region_qnodes['qnodes']:
 					del self.region_qnodes['qnodes'][cell]
 			del self.region_qnodes['regions'][region]
+
+	def update_cell(self, region, cell, qnode):
+		if region == "Other":
+			self.other["qnodes"][cell] = qnode
+		elif region == "All":
+			if cell in self.region_qnodes["qnodes"]:
+				self.region_qnodes["qnodes"][cell] = qnode
+			elif cell in self.other["qnodes"]:
+				self.other["qnodes"][cell] = qnode
+		else:
+			self.region_qnodes["qnodes"][cell] = qnode
+
+	def update_all_cells_within_region(self, region, cell, qnode, excel_filepath, sheet_name):
+		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
+		cell_value = sheet[cell]
+		if region == "Other":
+			for index in self.other["region"]:
+				if sheet[index] == cell_value:
+					self.other["qnodes"][index] = qnode
+		else:
+			for index in self.region_qnodes["regions"][region]:
+				if sheet[index] == cell_value:
+					self.region_qnodes["qnodes"][index] = qnode
+
+	def update_all_cells_in_all_region(self, region, cell, qnode, excel_filepath, sheet_name):
+		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
+		cell_value = sheet[cell]
+		for key, value in self.other["qnodes"].items():
+			if sheet[key] == cell_value and key in self.other["qnodes"]:
+				self.other["qnodes"][key] = qnode
+		for key, value in self.region_qnodes["qnodes"].items():
+			if sheet[key] == cell_value and key in self.region_qnodes["qnodes"]:
+				self.region_qnodes["qnodes"][key] = qnode
