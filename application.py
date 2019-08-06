@@ -243,6 +243,11 @@ def update_setting():
 
 @app.route('/wikifier', methods=['POST'])
 def wikify_region():
+	"""
+	This function perfomas three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
+	and update the wikification result.
+	:return:
+	"""
 	user_id = request.form["id"]
 	action = request.form["action"]
 	region = request.form["region"]
@@ -277,13 +282,17 @@ def wikify_region():
 		elif apply_to == 2:
 			excel_filepath = user.get_excel_data().get_file_location()
 			sheet_name = user.get_excel_data().get_sheet_name()
-			item_table.update_all_cells_in_all_region(region, cell, qnode, excel_filepath, sheet_name)
+			item_table.update_all_cells_in_all_region(cell, qnode, excel_filepath, sheet_name)
 		data = item_table.get_region_qnodes()
 	return json.dumps(data, indent=3)
 
 
 @app.route('/delete_user', methods=['POST'])
 def remove_user():
+	"""
+	This function deletes the user data
+	:return:
+	"""
 	user_id = request.form["id"]
 	users = app.config['users']
 	users.delete_user(user_id)

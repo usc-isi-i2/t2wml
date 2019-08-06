@@ -11,7 +11,11 @@ class ItemTable:
 		self.other = {'region': list(), 'qnodes': dict()}
 		self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
 
-	def get_region_qnodes(self):
+	def get_region_qnodes(self) -> dict:
+		"""
+		This function combines self.region_qnodes and self.other and returns the output
+		:return:
+		"""
 		response = deepcopy(self.region_qnodes)
 		if self.other["region"]:
 			response["regions"]["Other"] = list()
@@ -29,6 +33,14 @@ class ItemTable:
 		return response
 
 	def generate_hash_tables(self, file_path: str, excel_filepath: str, sheet_name: str = None, header: bool = True) -> None:
+		"""
+		This function processes the wikified output file uploaded by the user to build self.other dictionary
+		:param file_path:
+		:param excel_filepath:
+		:param sheet_name:
+		:param header:
+		:return:
+		"""
 		cell_to_qnode = dict()
 		value_to_qnode = dict()
 		with open(file_path) as file:
@@ -78,7 +90,7 @@ class ItemTable:
 		else:
 			raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
 
-	def serialize_cell_to_qnode(self, cell_to_qnode):
+	def serialize_cell_to_qnode(self, cell_to_qnode: dict) -> dict:
 		"""
 		This function serializes the cell_to_qnode dictionary
 		:return:
@@ -89,15 +101,31 @@ class ItemTable:
 			serialized_dict[cell] = value
 		return serialized_dict
 
-	def check_other_for_common_cells(self, region):
+	def check_other_for_common_cells(self, region: str) -> None:
+		"""
+		This functuon removes the duplicates between region and self.other and removes them from self.other
+		:param region:
+		:return:
+		"""
 		if 'Other' in self.region_qnodes['regions'] and region != 'Other':
 			self.region_qnodes['regions']['Other'] = sorted(list(set(self.other.keys()) - set(self.region_qnodes['regions'][region])), key=natural_sort_key)
 
-	def add_region(self, region, cell_qnode_map):
+	def add_region(self, region: str, cell_qnode_map: dict) -> None:
+		"""
+		This function adds a region and it's respective qnodes in the self.region_qnodes
+		:param region:
+		:param cell_qnode_map:
+		:return:
+		"""
 		self.region_qnodes['regions'][region] = sorted(list(cell_qnode_map.keys()), key=natural_sort_key)
 		self.region_qnodes['qnodes'].update(cell_qnode_map)
 
-	def delete_region(self, region):
+	def delete_region(self, region: str) -> None:
+		"""
+		This function processes the delete request of a region
+		:param region:
+		:return:
+		"""
 		if region == 'All':
 			self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
 			self.other = {'region': list(), 'qnodes': dict()}
@@ -109,7 +137,14 @@ class ItemTable:
 					del self.region_qnodes['qnodes'][cell]
 			del self.region_qnodes['regions'][region]
 
-	def update_cell(self, region, cell, qnode):
+	def update_cell(self, region: str, cell: str, qnode: str) -> None:
+		"""
+		This function updates the qnode of a cell of the specified region
+		:param region:
+		:param cell:
+		:param qnode:
+		:return:
+		"""
 		if region == "Other":
 			self.other["qnodes"][cell] = qnode
 		elif region == "All":
@@ -120,7 +155,16 @@ class ItemTable:
 		else:
 			self.region_qnodes["qnodes"][cell] = qnode
 
-	def update_all_cells_within_region(self, region, cell, qnode, excel_filepath, sheet_name):
+	def update_all_cells_within_region(self, region: str, cell: str, qnode: str, excel_filepath: str, sheet_name: str) -> None:
+		"""
+		This function updates the qnodes of all the cells in a region which have the same value as the cell specified
+		:param region:
+		:param cell:
+		:param qnode:
+		:param excel_filepath:
+		:param sheet_name:
+		:return:
+		"""
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
 		cell_value = sheet[cell]
 		if region == "Other":
@@ -132,7 +176,15 @@ class ItemTable:
 				if sheet[index] == cell_value:
 					self.region_qnodes["qnodes"][index] = qnode
 
-	def update_all_cells_in_all_region(self, region, cell, qnode, excel_filepath, sheet_name):
+	def update_all_cells_in_all_region(self, cell, qnode: str, excel_filepath: str, sheet_name: str) -> None:
+		"""
+		This function updates the qnodes of all the cells in all the regions which have the same value as the cell specified
+		:param cell:
+		:param qnode:
+		:param excel_filepath:
+		:param sheet_name:
+		:return:
+		"""
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
 		cell_value = sheet[cell]
 		for key, value in self.other["qnodes"].items():

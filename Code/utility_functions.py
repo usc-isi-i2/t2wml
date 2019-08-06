@@ -3,11 +3,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import string
 import pyexcel
 import os
-import requests
-import csv
-import uuid
-from pathlib import Path
 import re
+from typing import Sequence
 from Code.property_type_map import property_type_map
 
 
@@ -224,7 +221,14 @@ def delete_file(filepath: str) -> None:
 	os.remove(filepath)
 
 
-def split_cell(cell):
+def split_cell(cell: str) -> Sequence[int]:
+	"""
+	This function parses excel cell indices to column and row indices supported by pyexcel
+	For eg: A4 to 0, 3
+	B5 to 1, 4
+	:param cell:
+	:return:
+	"""
 	x = re.search("[0-9]+", cell)
 	row_span = x.span()
 	col = cell[:row_span[0]]
@@ -232,64 +236,24 @@ def split_cell(cell):
 	return get_excel_column_index(col), get_excel_row_index(row)
 
 
-def parse_cell_range(cell_range):
+def parse_cell_range(cell_range: str) -> Sequence[tuple]:
+	"""
+	This function parses the cell range and returns the row and column indices supported by pyexcel
+	For eg: A4:B5 to (0, 3), (1, 4)
+	:param cell_range:
+	:return:
+	"""
 	cells = cell_range.split(":")
 	start_cell = split_cell(cells[0])
 	end_cell = split_cell(cells[1])
 	return start_cell, end_cell
 
 
-def create_temporary_csv_file(cell_range, excel_filepath, sheet_name=None):
-	file_name = uuid.uuid4().hex + ".csv"
-	file_path = str(Path.cwd() / "temporary_files" / file_name)
-	try:
-		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, start_row=cell_range[0][1], row_limit=cell_range[1][1] - cell_range[0][1] + 1, start_column=cell_range[0][0], column_limit=cell_range[1][0] - cell_range[0][0] + 1)
-		pyexcel.save_as(array=sheet, dest_file_name=file_path)
-	except IOError:
-		raise IOError('Excel File cannot be found or opened')
-	return file_path
-
-
-def call_wikifiy_service(csv_filepath, col_offset, row_offset):
-	cell_qnode_map = dict()
-	files = {
-		'file': ('', open(csv_filepath, 'r')),
-		'format': (None, 'ISWC'),
-		'type': (None, 'text/csv'),
-		'header': (None, 'False')
-	}
-	response = requests.post('http://dsbox02.isi.edu:8397/wikify', files=files)
-	if response.status_code == 200:
-		data = response.content.decode("utf-8")
-		data = csv.reader(data.splitlines(), delimiter=',')
-		output = list(data)
-		for i in output:
-			cell_qnode_map[get_actual_cell_index((int(i[0]) + col_offset, int(i[1]) + row_offset))] = i[2]
-	return cell_qnode_map
-
-
-def wikify_region(region, excel_filepath, sheet_name=None):
-	cell_range = parse_cell_range(region)
-	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
-	cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
-	response = dict()
-	sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
-	for col in range(cell_range[0][0], cell_range[1][0]+1):
-		for row in range(cell_range[0][1], cell_range[1][1] + 1):
-			try:
-				cell_index = get_actual_cell_index((col, row))
-				if not check_if_empty(sheet[row, col]):
-					if cell_index in cell_qnode_map:
-						response[cell_index] = cell_qnode_map[cell_index]
-					else:
-						response[cell_index] = ""
-			except IndexError:
-				pass
-			except KeyError:
-				pass
-	return response
-
-
 def natural_sort_key(s):
+	"""
+	This function generates the key for the natural sorting algorithm
+	:param s:
+	:return:
+	"""
 	_nsre = re.compile('([0-9]+)')
 	return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]

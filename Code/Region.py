@@ -166,5 +166,9 @@ class Region:
 				return None
 		return cell
 
-	def get_head(self):
+	def get_head(self) -> list:
+		"""
+		This function returns the head of the region
+		:return:
+		"""
 		return list(self.sheet.keys())[0]
