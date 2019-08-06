@@ -273,14 +273,16 @@ def wikify_region(region, excel_filepath, sheet_name=None):
 	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
 	cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
 	response = dict()
-
 	sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
 	for col in range(cell_range[0][0], cell_range[1][0]+1):
 		for row in range(cell_range[0][1], cell_range[1][1] + 1):
 			try:
 				cell_index = get_actual_cell_index((col, row))
 				if not check_if_empty(sheet[row, col]):
-					response[cell_index] = cell_qnode_map[cell_index]
+					if cell_index in cell_qnode_map:
+						response[cell_index] = cell_qnode_map[cell_index]
+					else:
+						response[cell_index] = ""
 			except IndexError:
 				pass
 			except KeyError:
