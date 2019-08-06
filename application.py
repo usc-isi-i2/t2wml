@@ -118,6 +118,7 @@ def upload_excel():
 
 	if is_new_upload:
 		user.reset('excel')
+		user.get_wikifier_output_data().reset()
 	user.get_wikifier_output_data().reset_item_table()
 	os.makedirs("uploads", exist_ok=True)
 	response = excel_uploader(user, sheet_name)
@@ -129,7 +130,7 @@ def upload_excel():
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
 		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response.update(item_table.region_qnodes)
+		response.update(item_table.get_region_qnodes())
 
 	return json.dumps(response, indent=3)
 
@@ -224,7 +225,7 @@ def upload_wikified_output():
 			item_table = ItemTable()
 			user.get_wikifier_output_data().set_item_table(item_table)
 		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response = item_table.region_qnodes
+		response = item_table.get_region_qnodes()
 	return json.dumps(response, indent=3)
 
 
@@ -258,6 +259,26 @@ def wikify_region():
 			data = "No excel file to wikify"
 		else:
 			data = wikifier(item_table, region, excel_filepath, sheet_name)
+	elif action == "delete_region":
+		item_table = user.get_wikifier_output_data().get_item_table()
+		item_table.delete_region(region)
+		data = item_table.get_region_qnodes()
+	elif action == "update_qnode":
+		cell = request.form["cell"]
+		qnode = request.form["qnode"]
+		apply_to = int(request.form["apply_to"])
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if apply_to == 0:
+			item_table.update_cell(region, cell, qnode)
+		elif apply_to == 1:
+			excel_filepath = user.get_excel_data().get_file_location()
+			sheet_name = user.get_excel_data().get_sheet_name()
+			item_table.update_all_cells_within_region(region, cell, qnode, excel_filepath, sheet_name)
+		elif apply_to == 2:
+			excel_filepath = user.get_excel_data().get_file_location()
+			sheet_name = user.get_excel_data().get_sheet_name()
+			item_table.update_all_cells_in_all_region(region, cell, qnode, excel_filepath, sheet_name)
+		data = item_table.get_region_qnodes()
 	return json.dumps(data, indent=3)
 
 
@@ -266,7 +287,7 @@ def remove_user():
 	user_id = request.form["id"]
 	users = app.config['users']
 	users.delete_user(user_id)
-	data = {"User deleted successfully"}
+	data = "User deleted successfully"
 	return json.dumps(data, indent=3)
 
 

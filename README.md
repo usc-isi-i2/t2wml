@@ -20,4 +20,4 @@ Once the server is set up, the GUI should run at `http://localhost:5000/` by def
 5. Click `Apply` of `YAML Editor`, and you'll see some regions in `Table Viewer` are highlighted
 6. Click cells in `Table Viewer`, and you'll see results in `Output`
 
-![t2wml-gui-demo](t2wml-gui-v1.2-demo.gif)
+![t2wml-gui-demo](demo/t2wml-gui-v1.2-demo.gif)
