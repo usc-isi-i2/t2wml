@@ -1,5 +1,4 @@
 import yaml
-from typing import Sequence
 from Code.t2wml_parser import parse_and_evaluate, generate_tree
 
 
@@ -8,7 +7,7 @@ class YAMLParser:
 		with open(yaml_file_path, 'r') as stream:
 			self.yaml_data = yaml.safe_load(stream)
 
-	def get_region(self) -> Sequence[str]:
+	def get_region(self) -> dict:
 		"""
 		This function parses the region specified in the YAML
 		:return:

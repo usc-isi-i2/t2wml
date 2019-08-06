@@ -46,5 +46,9 @@ class WikifierOutputData:
 			os.remove(self.file_location)
 		self.file_location = None
 
-	def reset_item_table(self):
+	def reset_item_table(self) -> None:
+		"""
+		This function resets the item table object
+		:return:
+		"""
 		self.item_table = None
