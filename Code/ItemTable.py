@@ -99,7 +99,7 @@ class ItemTable:
 	def delete_region(self, region):
 		if region == 'All':
 			self.region_qnodes = {'regions': dict(), 'qnodes': dict()}
-			self.other = dict()
+			self.other = {'region': list(), 'qnodes': dict()}
 		elif region == "Other":
 			self.other = {'region': list(), 'qnodes': dict()}
 		elif region in self.region_qnodes['regions']:
