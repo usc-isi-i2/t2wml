@@ -22,9 +22,8 @@ class ItemExpression:
 				re = cell_expression[1]
 			else:
 				raise ValueError("Invalid Row and Column values")
-		value = bindings['excel_sheet'][re, ce]
 		if bindings['item_table']:
-			return bindings["item_table"].get_item(ce, re, value)
+			return bindings["item_table"].get_item(ce, re)
 		else:
 			return None
 
@@ -60,5 +59,4 @@ class ItemExpression:
 				re = cell_expression[1]
 			else:
 				raise ValueError("Invalid row or column value")
-		value = bindings['excel_sheet'][re, ce]
-		return ce, re, bindings["item_table"].get_item(ce, re, value)
+		return ce, re, bindings["item_table"].get_item(ce, re)

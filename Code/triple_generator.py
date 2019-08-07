@@ -10,11 +10,12 @@ from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_property_type, translate_precision_to_integer
 
 
-def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl') -> str:
+def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl') -> str:
 	"""
 	This function uses ETK to generate the RDF triples
 	:param user_id:
 	:param resolved_excel:
+	:param sparql_endpoint:
 	:param filetype:
 	:return:
 	"""
@@ -53,6 +54,7 @@ def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl') 
 		s = item.add_statement(i["statement"]["property"], QuantityValue(i["statement"]["value"]))
 		doc.kg.add_subject(item)
 
+
 		if "qualifier" in i["statement"]:
 			for j in i["statement"]["qualifier"]:
 				try:
@@ -78,6 +80,7 @@ def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl') 
 					value = ExternalIdentifier(j["value"])
 				elif property_type == "GlobeCoordinate":
 					value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
+
 
 				s.add_qualifier(j["property"], value)
 		doc.kg.add_subject(s)

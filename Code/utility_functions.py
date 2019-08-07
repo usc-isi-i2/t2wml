@@ -3,6 +3,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import string
 import pyexcel
 import os
+import re
+from typing import Sequence
 from Code.property_type_map import property_type_map
 
 
@@ -55,15 +57,16 @@ def get_actual_cell_index(cell_index: tuple) -> str:
 	:param cell_index: (col, row)
 	:return:
 	"""
-	col = get_column_letter(cell_index[0]+1)
-	row = str(cell_index[1] + 1)
+	col = get_column_letter(int(cell_index[0])+1)
+	row = str(int(cell_index[1]) + 1)
 	return col+row
 
 
-def get_property_type(wikidata_property: str) -> str:
+def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	"""
 	This functions queries the wikidata to find out the type of a wikidata property
 	:param wikidata_property:
+	:param sparql_endpoint:
 	:return:
 	"""
 	try:
@@ -73,8 +76,7 @@ def get_property_type(wikidata_property: str) -> str:
 			wd:"""+wikidata_property+""" rdf:type wikibase:Property ;
 			wikibase:propertyType ?type .  
 		}"""
-
-		sparql = SPARQLWrapper("http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql")
+		sparql = SPARQLWrapper(sparql_endpoint)
 		sparql.setQuery(query)
 		sparql.setReturnFormat(JSON)
 		results = sparql.query().convert()
@@ -216,3 +218,41 @@ def delete_file(filepath: str) -> None:
 	:return:
 	"""
 	os.remove(filepath)
+
+
+def split_cell(cell: str) -> Sequence[int]:
+	"""
+	This function parses excel cell indices to column and row indices supported by pyexcel
+	For eg: A4 to 0, 3
+	B5 to 1, 4
+	:param cell:
+	:return:
+	"""
+	x = re.search("[0-9]+", cell)
+	row_span = x.span()
+	col = cell[:row_span[0]]
+	row = cell[row_span[0]:]
+	return get_excel_column_index(col), get_excel_row_index(row)
+
+
+def parse_cell_range(cell_range: str) -> Sequence[tuple]:
+	"""
+	This function parses the cell range and returns the row and column indices supported by pyexcel
+	For eg: A4:B5 to (0, 3), (1, 4)
+	:param cell_range:
+	:return:
+	"""
+	cells = cell_range.split(":")
+	start_cell = split_cell(cells[0])
+	end_cell = split_cell(cells[1])
+	return start_cell, end_cell
+
+
+def natural_sort_key(s):
+	"""
+	This function generates the key for the natural sorting algorithm
+	:param s:
+	:return:
+	"""
+	_nsre = re.compile('([0-9]+)')
+	return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]

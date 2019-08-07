@@ -6,9 +6,9 @@ from pathlib import Path
 import os
 from Code.utility_functions import check_if_empty
 from Code.utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index, delete_file
-from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table
+from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.UserData import UserData
-
+from Code.ItemTable import ItemTable
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
@@ -119,17 +119,21 @@ def upload_excel():
 	user.reset('yaml')
 	if is_new_upload:
 		user.reset('excel')
-
+		user.get_wikifier_output_data().reset()
+	user.get_wikifier_output_data().reset_item_table()
 	os.makedirs("uploads", exist_ok=True)
 	response = excel_uploader(user, sheet_name)
 	excel_data_filepath = user.get_excel_data().get_file_location()
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 	if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
-		item_table = build_item_table(wikifier_output_filepath, excel_data_filepath, sheet_name)
-		user.get_wikifier_output_data().set_item_table(item_table)
-		response['qnodes'] = item_table.serialize_cell_to_qnode()
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if not item_table:
+			item_table = ItemTable()
+			user.get_wikifier_output_data().set_item_table(item_table)
+		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+		response.update(item_table.get_region_qnodes())
 
-	return json.dumps(response)
+	return json.dumps(response, indent=3)
 
 
 @app.route('/upload_yaml', methods=['POST'])
@@ -163,7 +167,7 @@ def upload_yaml():
 		template = yaml_configuration.get_template()
 		response['region'] = highlight_region(item_table, excel_data_filepath, sheet_name, region, template)
 
-	return json.dumps(response)
+	return json.dumps(response, indent=3)
 
 
 @app.route('/resolve_cell', methods=['POST'])
@@ -202,7 +206,8 @@ def downloader():
 	template = user.get_yaml_data().get_template()
 	region = user.get_yaml_data().get_region()
 	item_table = user.get_wikifier_output_data().get_item_table()
-	return generate_download_file(user_id, item_table, excel_data_filepath, sheet_name, region, template, filetype)
+	sparql_endpoint = user.get_sparql_endpoint()
+	return generate_download_file(user_id, item_table, excel_data_filepath, sheet_name, region, template, filetype, sparql_endpoint)
 
 
 @app.route('/upload_wikifier_output', methods=['POST'])
@@ -220,11 +225,84 @@ def upload_wikified_output():
 	sheet_name = user.get_excel_data().get_sheet_name()
 	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 	if excel_data_filepath and excel_data_filepath:
-		item_table = build_item_table(wikifier_output_filepath, excel_data_filepath, sheet_name)
-		user.get_wikifier_output_data().set_item_table(item_table)
-		response['qnodes'] = item_table.serialize_cell_to_qnode()
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if not item_table:
+			item_table = ItemTable()
+			user.get_wikifier_output_data().set_item_table(item_table)
+		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+		response = item_table.get_region_qnodes()
+	return json.dumps(response, indent=3)
 
-	return json.dumps(response)
+
+@app.route('/update_setting', methods=['POST'])
+def update_setting():
+	"""
+	This function updates the settings from GUI
+	:return:
+	"""
+	user_id = request.form["id"]
+	endpoint = request.form["endpoint"]
+	user = app.config['users'].get_user(user_id)
+	user.set_sparql_endpoint(endpoint)
+
+
+@app.route('/wikifier', methods=['POST'])
+def wikify_region():
+	"""
+	This function perfomas three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
+	and update the wikification result.
+	:return:
+	"""
+	user_id = request.form["id"]
+	action = request.form["action"]
+	region = request.form["region"]
+	user = app.config['users'].get_user(user_id)
+	data = ""
+	if action == "add_region":
+		excel_filepath = user.get_excel_data().get_file_location()
+		sheet_name = user.get_excel_data().get_sheet_name()
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if not item_table:
+			item_table = ItemTable()
+			user.get_wikifier_output_data().set_item_table(item_table)
+		if not excel_filepath:
+			data = "No excel file to wikify"
+		else:
+			data = wikifier(item_table, region, excel_filepath, sheet_name)
+	elif action == "delete_region":
+		item_table = user.get_wikifier_output_data().get_item_table()
+		item_table.delete_region(region)
+		data = item_table.get_region_qnodes()
+	elif action == "update_qnode":
+		cell = request.form["cell"]
+		qnode = request.form["qnode"]
+		apply_to = int(request.form["apply_to"])
+		item_table = user.get_wikifier_output_data().get_item_table()
+		if apply_to == 0:
+			item_table.update_cell(region, cell, qnode)
+		elif apply_to == 1:
+			excel_filepath = user.get_excel_data().get_file_location()
+			sheet_name = user.get_excel_data().get_sheet_name()
+			item_table.update_all_cells_within_region(region, cell, qnode, excel_filepath, sheet_name)
+		elif apply_to == 2:
+			excel_filepath = user.get_excel_data().get_file_location()
+			sheet_name = user.get_excel_data().get_sheet_name()
+			item_table.update_all_cells_in_all_region(cell, qnode, excel_filepath, sheet_name)
+		data = item_table.get_region_qnodes()
+	return json.dumps(data, indent=3)
+
+
+@app.route('/delete_user', methods=['POST'])
+def remove_user():
+	"""
+	This function deletes the user data
+	:return:
+	"""
+	user_id = request.form["id"]
+	users = app.config['users']
+	users.delete_user(user_id)
+	data = "User deleted successfully"
+	return json.dumps(data, indent=3)
 
 
 if __name__ == "__main__":

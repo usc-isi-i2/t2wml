@@ -38,3 +38,13 @@ class Users:
 		if not self.user_list.get(user_id, None):
 			self.user_list[user_id] = UserData(user_id)
 			return self.user_list[user_id]
+
+	def delete_user(self, id: str) -> None:
+		"""
+		This function deletes the user data and then deletes the user from the memory
+		:param id:
+		:return:
+		"""
+		user = self.get_user(id)
+		user.reset()
+		del self.user_list[id]
