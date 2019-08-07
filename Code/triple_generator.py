@@ -60,7 +60,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 				try:
 					property_type = property_type_cache[j["property"]]
 				except KeyError:
-					property_type = get_property_type(j["property"])
+					property_type = get_property_type(j["property"], sparql_endpoint)
 					property_type_cache[j["property"]] = property_type
 				if property_type == "WikibaseItem":
 					value = Item(str(j["value"]))
