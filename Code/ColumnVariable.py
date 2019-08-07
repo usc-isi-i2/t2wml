@@ -14,7 +14,7 @@ class ColumnVariable:
         """
         try:
             value = bindings[self.value]
-            if value:
+            if value is not None:
                 return value
         except KeyError:
             return get_excel_column_index(self.value)

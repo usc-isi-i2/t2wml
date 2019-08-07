@@ -76,7 +76,6 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 			wd:"""+wikidata_property+""" rdf:type wikibase:Property ;
 			wikibase:propertyType ?type .  
 		}"""
-
 		sparql = SPARQLWrapper(sparql_endpoint)
 		sparql.setQuery(query)
 		sparql.setReturnFormat(JSON)

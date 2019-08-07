@@ -17,6 +17,6 @@ class ColumnExpression:
                 cv = cv+int(i['cell_operator_argument'].evaluate(bindings))
             elif i['cell_operator'] == '-':
                 cv = cv-int(i['cell_operator_argument'].evaluate(bindings))
-        if cv < 0:
+        if cv < -1:
             raise ValueError('Column value out of bound')
         return cv

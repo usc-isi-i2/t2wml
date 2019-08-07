@@ -54,34 +54,36 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 		s = item.add_statement(i["statement"]["property"], QuantityValue(i["statement"]["value"]))
 		doc.kg.add_subject(item)
 
-		for j in i["statement"]["qualifier"]:
-			try:
-				property_type = property_type_cache[j["property"]]
-			except KeyError:
-				property_type = get_property_type(j["property"], sparql_endpoint)
-				property_type_cache[j["property"]] = property_type
-			if property_type == "WikibaseItem":
-				value = Item(str(j["value"]))
-			elif property_type == "WikibaseProperty":
-				value = Property(j["value"])
-			elif property_type == "String":
-				value = StringValue(j["value"])
-			elif property_type == "Quantity":
-				value = QuantityValue(j["value"])
-			elif property_type == "Time":
-				value = TimeValue(str(j["value"]), Item(j["calendar"]), translate_precision_to_integer(j["precision"]), j["time_zone"])
-			elif property_type == "Url":
-				value = URLValue(j["value"])
-			elif property_type == "Monolingualtext":
-				value = MonolingualText(j["value"], j["lang"])
-			elif property_type == "ExternalId":
-				value = ExternalIdentifier(j["value"])
-			elif property_type == "GlobeCoordinate":
-				value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
 
-			s.add_qualifier(j["property"], value)
+		if "qualifier" in i["statement"]:
+			for j in i["statement"]["qualifier"]:
+				try:
+					property_type = property_type_cache[j["property"]]
+				except KeyError:
+					property_type = get_property_type(j["property"])
+					property_type_cache[j["property"]] = property_type
+				if property_type == "WikibaseItem":
+					value = Item(str(j["value"]))
+				elif property_type == "WikibaseProperty":
+					value = Property(j["value"])
+				elif property_type == "String":
+					value = StringValue(j["value"])
+				elif property_type == "Quantity":
+					value = QuantityValue(j["value"])
+				elif property_type == "Time":
+					value = TimeValue(str(j["value"]), Item(j["calendar"]), translate_precision_to_integer(j["precision"]), j["time_zone"])
+				elif property_type == "Url":
+					value = URLValue(j["value"])
+				elif property_type == "Monolingualtext":
+					value = MonolingualText(j["value"], j["lang"])
+				elif property_type == "ExternalId":
+					value = ExternalIdentifier(j["value"])
+				elif property_type == "GlobeCoordinate":
+					value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
+
+
+				s.add_qualifier(j["property"], value)
 		doc.kg.add_subject(s)
-
 	data = doc.kg.serialize(filetype)
 	# os.makedirs(Path.cwd() / "new_properties", exist_ok=True)
 	# results_file_name = user_id + "_results.ttl"

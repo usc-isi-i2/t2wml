@@ -17,6 +17,6 @@ class RowExpression:
                 rv = rv+int(i['cell_operator_argument'].evaluate(bindings))
             elif i['cell_operator'] == '-':
                 rv = rv-int(i['cell_operator_argument'].evaluate(bindings))
-        if rv < 0:
+        if rv < -1:
             raise ValueError('Row value out of bound')
         return rv

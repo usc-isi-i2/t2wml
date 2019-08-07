@@ -116,6 +116,7 @@ def upload_excel():
 	user = app.config['users'].get_user(user_id)
 	sheet_name = request.form.get("sheet_name")
 
+	user.reset('yaml')
 	if is_new_upload:
 		user.reset('excel')
 		user.get_wikifier_output_data().reset()
@@ -179,12 +180,16 @@ def get_cell_statement():
 	column = get_excel_column_index(request.form["col"])
 	row = get_excel_row_index(request.form["row"])
 	user = app.config['users'].get_user(user_id)
-	excel_data_filepath = user.get_excel_data().get_file_location()
-	sheet_name = user.get_excel_data().get_sheet_name()
-	template = user.get_yaml_data().get_template()
-	region = user.get_yaml_data().get_region()
-	item_table = user.get_wikifier_output_data().get_item_table()
-	return resolve_cell(item_table, excel_data_filepath, sheet_name, region, template, column, row)
+	if user.get_yaml_data().get_file_location():
+		excel_data_filepath = user.get_excel_data().get_file_location()
+		sheet_name = user.get_excel_data().get_sheet_name()
+		template = user.get_yaml_data().get_template()
+		region = user.get_yaml_data().get_region()
+		item_table = user.get_wikifier_output_data().get_item_table()
+		return resolve_cell(item_table, excel_data_filepath, sheet_name, region, template, column, row)
+	else:
+		data = {"error": "YAML file not found"}
+		return json.dumps(data)
 
 
 @app.route('/download', methods=['POST'])
