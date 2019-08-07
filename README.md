@@ -1,6 +1,7 @@
 # T2WML: A Cell-Based Language To Map Tables Into Wikidata Records
 
-### Installation:
+## Installation
+
 1. Clone the repository
 2. Open terminal/cmd in the project directory and type the following commands:
     ```sh
@@ -10,14 +11,32 @@
     ```
 3. Server is up and running
 
-### GUI Usage
+## GUI Usage
+
 Once the server is set up, the GUI should run at `http://localhost:5000/` by default
 
 1. Open the GUI
-2. Click `Open` of `Table Viewer` to upload a table file (.csv/.xls/.xlsx)
-3. Click `Load` of `Table Viewer` to upload a wikifier file (.csv)
-4. Click `Open` of `YAML Editor` to upload a YAML file (.yaml) or just type/paste in YAML code
-5. Click `Apply` of `YAML Editor`, and you'll see some regions in `Table Viewer` are highlighted
-6. Click cells in `Table Viewer`, and you'll see results in `Output`
+2. In **Table Viewer**
+	1. click **Open** to upload a table file (.csv/.xls/.xlsx)
+3. In **Wikifier**
+	1. type in and wikify the regions you need, and/or
+	2. click **Open** to upload a wikifier file (.csv)
+	3. correct mismatched qnode if necessary
+4. In **YAML Editor**
+	1. type/paste in T2WML code, or
+	2. click **Open** to upload a YAML file (.yaml)
+	3. click **Apply** to highlight some regions in **Table Viewer**
+5. In **Output**
+	1. preview result after clicking cell in **Table Viewer**, or
+	2. click **download** to get all results
 
-![t2wml-gui-demo](demo/t2wml-gui-v1.2-demo.gif)
+## Features
+
+⬇️ Wikify specific region
+![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_add.gif)
+
+⬇️ Modify qnode
+![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_update.gif)
+
+⬇️ Preview result
+![t2wml-gui-demo](demo/t2wml-gui-v1.3-output.gif)
