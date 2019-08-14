@@ -101,7 +101,7 @@ def upload_form():
 	This functions renders the GUI
 	:return:
 	"""
-	resp = app.make_response(render_template('index.html'))
+	resp = app.make_response(render_template('login.html'))
 	return resp
 
 
