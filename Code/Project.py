@@ -47,3 +47,9 @@ class Project:
 	def get_current_data_file(self) -> DataFile:
 		return self.get_data_file_by_id(self.__current_data_file_id)
 
+	def index_data_file(self, data_file: DataFile) -> None:
+		self.__data_files.index_data_file(data_file)
+
+	def reset(self, attribute:str = None) -> None:
+		if attribute == 'yaml':
+			self.__yaml_data.reset()

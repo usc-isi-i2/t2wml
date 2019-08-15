@@ -64,13 +64,13 @@ class YAMLData:
 		"""
 		self.__template = template
 
-	# def reset(self) -> None:
-	# 	"""
-	# 	This function deletes the YAML file and resets all the class members
-	# 	:return:
-	# 	"""
-	# 	if self.__file_location:
-	# 		os.remove(self.__file_location)
-	# 	self.__file_location = None
-	# 	self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None}
-	# 	self.__template = None
+	def reset(self) -> None:
+		"""
+		This function deletes the YAML file and resets all the class members
+		:return:
+		"""
+		if self.__file_location:
+			os.remove(self.__file_location)
+		self.__file_location = None
+		self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None}
+		self.__template = None

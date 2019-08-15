@@ -21,6 +21,8 @@ class User:
 		details = self.__projects.get_project_details(project_id)
 		return details
 
+	def get_project(self, project_id):
+		return self.__projects.get_project(project_id)
 
 	# def reset(self, attribute: str = None) -> None:
 	# 	"""

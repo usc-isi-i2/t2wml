@@ -27,6 +27,7 @@ class UserStore:
 		:param user_id:
 		:return:
 		"""
+		print(self.__user_list)
 		return self.__user_list.get(user_id, None)
 
 	def create_user(self, user_id: str) -> User:

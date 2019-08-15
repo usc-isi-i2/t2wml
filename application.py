@@ -8,6 +8,7 @@ from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.User import User
 from Code.ItemTable import ItemTable
+from Code.DataFile import DataFile
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
@@ -112,29 +113,36 @@ def upload_excel():
 	This function uploads the data file
 	:return:
 	"""
-	user_id = request.form["id"]
-	is_new_upload = True if request.form["is_new_upload"] == "True" else False
-	user = app.config['USER_STORE'].get_user(user_id)
-	sheet_name = request.form.get("sheet_name")
+	if 'uid' in session:
+		user_id = session['uid']
+		project_id = request.form['pid']
+		is_new_upload = bool(request.form["is_new_upload"])
+		user = app.config['USER_STORE'].get_user(user_id)
+		sheet_name = request.form.get("sheet_name")
+		project = user.get_project(project_id)
 
-	user.reset('yaml')
-	if is_new_upload:
-		user.reset('excel')
-		user.get_wikifier_output_data().reset()
-	user.get_wikifier_output_data().reset_item_table()
-	os.makedirs("uploads", exist_ok=True)
-	response = excel_uploader(user, sheet_name)
-	excel_data_filepath = user.get_excel_data().get_file_location()
-	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
-	if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
-		item_table = user.get_wikifier_output_data().get_item_table()
-		if not item_table:
-			item_table = ItemTable()
-			user.get_wikifier_output_data().set_item_table(item_table)
-		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response.update(item_table.get_region_qnodes())
+		project.reset('yaml')
+		if is_new_upload:
+			data_file = DataFile()
+			project.index_data_file(data_file)
+			user.reset('excel')
+			user.get_wikifier_output_data().reset()
+		user.get_wikifier_output_data().reset_item_table()
+		os.makedirs("uploads", exist_ok=True)
+		response = excel_uploader(user, sheet_name)
+		excel_data_filepath = user.get_excel_data().get_file_location()
+		wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
+		if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
+			item_table = user.get_wikifier_output_data().get_item_table()
+			if not item_table:
+				item_table = ItemTable()
+				user.get_wikifier_output_data().set_item_table(item_table)
+			build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+			response.update(item_table.get_region_qnodes())
 
-	return json.dumps(response, indent=3)
+		return json.dumps(response, indent=3)
+	else:
+		return redirect(url_for('index'))
 
 
 @app.route('/upload_yaml', methods=['POST'])
@@ -306,17 +314,18 @@ def remove_user():
 	return json.dumps(data, indent=3)
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST'])
 def login():
-	if 'token' in request.args:
-		token = request.args['token']
-		source = request.args['source']
+	if 'token' in request.form:
+		token = request.form['token']
+		# source = request.args['source']
+		source = "google"
 		user_id = verify_google_login(token)
 		if user_id:
 			user_id = add_login_source_in_user_id(user_id, source)
 			app.config['USER_STORE'].create_user(user_id)
 			session['uid'] = user_id
-			return redirect(url_for('project_home'))
+			return redirect(url_for('project_home'), code=302)
 		else:
 			return redirect(url_for('index'))
 	else:
@@ -326,7 +335,7 @@ def login():
 @app.route('/project/<string:pid>')
 def open_project(pid):
 	if 'uid' in session:
-		return app.make_response(render_template('project.html'), pid=pid)
+		return app.make_response(render_template('project.html', pid=pid))
 	else:
 		return redirect(url_for('index'))
 
@@ -335,8 +344,10 @@ def open_project(pid):
 def project_home():
 	if 'uid' in session:
 		project_details = app.config['USER_STORE'].get_user(session['uid']).get_details_of_all_projects()
+		project_details = [{'pid': '23456789', 'pname': 'xcvbn'}, {'pid': '23456789', 'pname': 'xcvbn'}, {'pid': '23456789', 'pname': 'xcvbn'}]
 		project_details_json = json.dumps(project_details)
-		return app.make_response(render_template('home.html'), uid=session['uid'], projects=project_details_json)
+		# return app.make_response(render_template('home.html', uid=session['uid'], projects=project_details_json))
+		return project_details_json
 	else:
 		return redirect(url_for('index'))
 
