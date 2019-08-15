@@ -4,19 +4,19 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/editor.worker.js"
   },
   {
-    "revision": "dcb4d39d583cdfb2eb413a4174337cc0",
+    "revision": "04577e21786d0e5aba2d642cb12eaede",
     "url": "/t2wml-gui/home.html"
   },
   {
-    "revision": "ad75bf3664013a1e12584a2dec44bff0",
+    "revision": "2ff78e7666ae1f7638f1f634122b6e70",
     "url": "/t2wml-gui/index.html"
   },
   {
-    "revision": "d5ff95d3cf73b51c02767166a8deafae",
+    "revision": "f9c2d2e748f67b00f501c6721db300fa",
     "url": "/t2wml-gui/login.html"
   },
   {
-    "revision": "4a04f68d516b16fb59e5502a9d624e6e",
+    "revision": "285c14c14d87585cf3c4780836c064f4",
     "url": "/t2wml-gui/project.html"
   },
   {
@@ -24,19 +24,19 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/css/1.335266ac.chunk.css"
   },
   {
-    "revision": "ef275c1eee577871aa6b",
+    "revision": "b7c7ed5b60b26315b82f",
     "url": "/t2wml-gui/static/css/home.fd555601.chunk.css"
   },
   {
-    "revision": "a1eb5ef41a678edaec69",
+    "revision": "62e4e2477e14767f2429",
     "url": "/t2wml-gui/static/css/index.828b04b8.chunk.css"
   },
   {
-    "revision": "aee488cd4df0b0b8ad3f",
+    "revision": "ef5663e3da21206e8cdb",
     "url": "/t2wml-gui/static/css/login.24ce8830.chunk.css"
   },
   {
-    "revision": "4c0200e3a12ab549918c",
+    "revision": "f6241f77d3ffd1c830ac",
     "url": "/t2wml-gui/static/css/project.828b04b8.chunk.css"
   },
   {
@@ -56,20 +56,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/js/2.0cc3d319.chunk.js"
   },
   {
-    "revision": "ef275c1eee577871aa6b",
-    "url": "/t2wml-gui/static/js/home.f9b0b0e6.chunk.js"
+    "revision": "b7c7ed5b60b26315b82f",
+    "url": "/t2wml-gui/static/js/home.ce570a80.chunk.js"
   },
   {
-    "revision": "a1eb5ef41a678edaec69",
-    "url": "/t2wml-gui/static/js/index.70702a7f.chunk.js"
+    "revision": "62e4e2477e14767f2429",
+    "url": "/t2wml-gui/static/js/index.cf596bf4.chunk.js"
   },
   {
-    "revision": "aee488cd4df0b0b8ad3f",
-    "url": "/t2wml-gui/static/js/login.e0b442c5.chunk.js"
+    "revision": "ef5663e3da21206e8cdb",
+    "url": "/t2wml-gui/static/js/login.2b4bb8a7.chunk.js"
   },
   {
-    "revision": "4c0200e3a12ab549918c",
-    "url": "/t2wml-gui/static/js/project.9702c4af.chunk.js"
+    "revision": "f6241f77d3ffd1c830ac",
+    "url": "/t2wml-gui/static/js/project.fe07b4e7.chunk.js"
   },
   {
     "revision": "48c1b1caa9e9cbaf05c5",
