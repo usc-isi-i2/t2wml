@@ -4,37 +4,37 @@ import copy
 
 class YAMLData:
 	def __init__(self):
-		self.file_location = None
-		self.region = {'left': None, 'right': None, 'top': None, 'bottom': None, 'region_object': None}
-		self.template = None
+		self.__file_location = None
+		self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None, 'region_object': None}
+		self.__template = None
 
 	def get_file_location(self) -> str:
 		"""
 		This function returns the file location of the YAML file
 		:return:
 		"""
-		return self.file_location
+		return self.__file_location
 
 	def get_region(self) -> dict:
 		"""
 		This function returns the region
 		:return:
 		"""
-		return self.region
+		return self.__region
 
 	def get_template(self) -> dict:
 		"""
 		This function returns the template
 		:return:
 		"""
-		return self.template
+		return self.__template
 
 	def get_template_copy(self) -> dict:
 		"""
 		This function returns the copy of the template
 		:return:
 		"""
-		return copy.deepcopy(self.template)
+		return copy.deepcopy(self.__template)
 
 	def set_file_location(self, file_location: str) -> None:
 		"""
@@ -42,7 +42,7 @@ class YAMLData:
 		:param file_location:
 		:return:
 		"""
-		self.file_location = file_location
+		self.__file_location = file_location
 
 	def set_region(self, region: dict) -> None:
 		"""
@@ -50,11 +50,11 @@ class YAMLData:
 		:param region:
 		:return:
 		"""
-		self.region['left'] = region['left']
-		self.region['right'] = region['right']
-		self.region['top'] = region['top']
-		self.region['bottom'] = region['bottom']
-		self.region['region_object'] = region['region_object']
+		self.__region['left'] = region['left']
+		self.__region['right'] = region['right']
+		self.__region['top'] = region['top']
+		self.__region['bottom'] = region['bottom']
+		self.__region['region_object'] = region['region_object']
 
 	def set_template(self, template: dict) -> None:
 		"""
@@ -62,15 +62,15 @@ class YAMLData:
 		:param template:
 		:return:
 		"""
-		self.template = template
+		self.__template = template
 
-	def reset(self) -> None:
-		"""
-		This function deletes the YAML file and resets all the class members
-		:return:
-		"""
-		if self.file_location:
-			os.remove(self.file_location)
-		self.file_location = None
-		self.region = {'left': None, 'right': None, 'top': None, 'bottom': None}
-		self.template = None
+	# def reset(self) -> None:
+	# 	"""
+	# 	This function deletes the YAML file and resets all the class members
+	# 	:return:
+	# 	"""
+	# 	if self.__file_location:
+	# 		os.remove(self.__file_location)
+	# 	self.__file_location = None
+	# 	self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None}
+	# 	self.__template = None

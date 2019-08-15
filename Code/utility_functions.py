@@ -4,6 +4,7 @@ import string
 import pyexcel
 import os
 import re
+from uuid import uuid4
 from typing import Sequence
 from Code.property_type_map import property_type_map
 
@@ -256,3 +257,56 @@ def natural_sort_key(s):
 	"""
 	_nsre = re.compile('([0-9]+)')
 	return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
+
+
+def generate_id() -> str:
+	"""
+	This function generate unique ids
+	:return:
+	"""
+	return uuid4().hex
+
+
+def add_login_source_in_user_id(user_id, login_source):
+	if login_source == "google":
+		return "G" + user_id
+
+
+def verify_google_login(tn: str):
+	# INCOMPLETE FUNCTION
+	print("inside google login")
+	from google.oauth2 import id_token
+	from google.auth.transport import requests
+
+	user_id = "dkmd"
+	try:
+		# Specify the CLIENT_ID of the app that accesses the backend:
+		client_id = '859571913012-79n4clvbq11q8tifboltfqdvttlh74vr.apps.googleusercontent.com'
+		request = requests.Request()
+		idinfo = id_token.verify_oauth2_token(tn, request)
+
+		# Or, if multiple clients access the backend server:
+		# idinfo = id_token.verify_oauth2_token(token, requests.Request())
+		# if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
+		#     raise ValueError('Could not verify audience.')
+		print(idinfo)
+
+		if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+			raise ValueError('Wrong issuer.')
+
+		# If auth request is from a G Suite domain:
+		# if idinfo['hd'] != GSUITE_DOMAIN_NAME:
+		#     raise ValueError('Wrong hosted domain.')
+
+		# ID token is valid. Get the user's Google Account ID from the decoded token.
+		user_id = idinfo['sub']
+	except ValueError as e:
+		print(str(e))
+		user_id = None
+	print(user_id)
+
+	return user_id
+
+
+# token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjYwZjQwNjBlNThkNzVmZDNmNzBiZWZmODhjNzk0YTc3NTMyN2FhMzEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiODU5NTcxOTEzMDEyLTc5bjRjbHZicTExcTh0aWZib2x0ZnFkdnR0bGg3NHZyLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiODU5NTcxOTEzMDEyLTc5bjRjbHZicTExcTh0aWZib2x0ZnFkdnR0bGg3NHZyLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAxNzgzMzQzODYxMzE5NTczNDg5IiwiZW1haWwiOiJqcy53dXV1dUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6IkJWOGthd0hpRVdFQXcxWENsazA3MGciLCJuYW1lIjoi5ZC05ZiJ55ubIiwicGljdHVyZSI6Imh0dHBzOi8vbGg1Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tOUs4dV9YVnVVV1UvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQUEvQUNIaTNyZl9id291TDdGMlRFV01GdWxFMDV1RVFMaUZtUS9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoi5ZiJ55ubIiwiZmFtaWx5X25hbWUiOiLlkLQiLCJsb2NhbGUiOiJ6aC1DTiIsImlhdCI6MTU2NTgyMzg5OSwiZXhwIjoxNTY1ODI3NDk5LCJqdGkiOiJmNTVjOTYxZWQ3MTE4NmYxZTMwYjRlMTU3YTIyNTY4ZGE4Nzc5YTUxIn0.pP599xnd0dGOv7V7zjnSf8aAsLnvTe65yDsvgT8XEBcAVJoPNZ-AJVeLZEf05mhV3IzwKHj48FUpqV5j-ciTj1jXg2dN2gAFUv-D7YNSwUuLJ5ioWsCXT6L_XG-z9P811peltFV3wgwKq2ZoKppnIHetbdHCbLirn2bpBeD4JZmfyugLScajMYmfTpjme4VSesA94WMKpoGS1oviKcPNMAmNWm3pKJzu7tzUF0vP800OKkDj4MluptXFWMdPumPYlFrfiyZ3fJwsySPKu9DwJaEuVePjh1MDhM-ptVZgZXuWSEepIzW6pJHRtJWOYVa9etpaD-Ld2Sh4PQ943ngwkQ".decode('utf8')
+# verify_google_login(token)

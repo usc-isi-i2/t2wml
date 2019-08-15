@@ -2,7 +2,7 @@ import os
 from Code.ItemTable import ItemTable
 
 
-class WikifierOutputData:
+class WikifiedRegion:
 	def __init__(self):
 		self.file_location = None
 		self.item_table = None

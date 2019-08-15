@@ -1,13 +1,12 @@
 from app_config import app
-from flask import request, render_template
+from flask import request, render_template, redirect, url_for, session, make_response
 from werkzeug.utils import secure_filename
 import json
 from pathlib import Path
 import os
-from Code.utility_functions import check_if_empty
-from Code.utility_functions import excel_to_json, read_file, get_excel_row_index, get_excel_column_index, delete_file
+from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_index, get_excel_column_index, verify_google_login, add_login_source_in_user_id
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
-from Code.UserData import UserData
+from Code.User import User
 from Code.ItemTable import ItemTable
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
@@ -32,7 +31,7 @@ def get_file_extension(filename: str):
 	return filename.split(".")[-1]
 
 
-def excel_uploader(user: UserData, sheet_name: str):
+def excel_uploader(user: User, sheet_name: str):
 	"""
 	This function helps in processing the data file
 	:param user:
@@ -70,7 +69,7 @@ def excel_uploader(user: UserData, sheet_name: str):
 	return data
 
 
-def wikified_output_uploader(user: UserData):
+def wikified_output_uploader(user: User):
 	"""
 	This function helps in processing the wikifier output file
 	:param user:
@@ -96,13 +95,15 @@ def wikified_output_uploader(user: UserData):
 
 
 @app.route('/')
-def upload_form():
+def index():
 	"""
 	This functions renders the GUI
 	:return:
 	"""
-	resp = app.make_response(render_template('login.html'))
-	return resp
+	if 'uid' in session:
+		return redirect(url_for('project_home'))
+	else:
+		return render_template('login.html')
 
 
 @app.route('/upload_excel', methods=['POST'])
@@ -113,7 +114,7 @@ def upload_excel():
 	"""
 	user_id = request.form["id"]
 	is_new_upload = True if request.form["is_new_upload"] == "True" else False
-	user = app.config['users'].get_user(user_id)
+	user = app.config['USER_STORE'].get_user(user_id)
 	sheet_name = request.form.get("sheet_name")
 
 	user.reset('yaml')
@@ -146,7 +147,7 @@ def upload_yaml():
 	yaml_data = request.values["yaml"]
 
 	os.makedirs("uploads", exist_ok=True)
-	user = app.config['users'].get_user(user_id)
+	user = app.config['USER_STORE'].get_user(user_id)
 	user.reset('yaml')
 	yaml_configuration = user.get_yaml_data()
 	excel_data_filepath = user.get_excel_data().get_file_location()
@@ -179,7 +180,7 @@ def get_cell_statement():
 	user_id = request.form["id"]
 	column = get_excel_column_index(request.form["col"])
 	row = get_excel_row_index(request.form["row"])
-	user = app.config['users'].get_user(user_id)
+	user = app.config['USER_STORE'].get_user(user_id)
 	if user.get_yaml_data().get_file_location():
 		excel_data_filepath = user.get_excel_data().get_file_location()
 		sheet_name = user.get_excel_data().get_sheet_name()
@@ -200,7 +201,7 @@ def downloader():
 	"""
 	user_id = request.form["id"]
 	filetype = request.form["type"]
-	user = app.config['users'].get_user(user_id)
+	user = app.config['USER_STORE'].get_user(user_id)
 	excel_data_filepath = user.get_excel_data().get_file_location()
 	sheet_name = user.get_excel_data().get_sheet_name()
 	template = user.get_yaml_data().get_template()
@@ -218,7 +219,7 @@ def upload_wikified_output():
 	"""
 	user_id = request.form["id"]
 	os.makedirs("uploads", exist_ok=True)
-	user = app.config['users'].get_user(user_id)
+	user = app.config['USER_STORE'].get_user(user_id)
 	user.reset('wikifier_output')
 	response = wikified_output_uploader(user)
 	excel_data_filepath = user.get_excel_data().get_file_location()
@@ -242,7 +243,7 @@ def update_setting():
 	"""
 	user_id = request.form["id"]
 	endpoint = request.form["endpoint"]
-	user = app.config['users'].get_user(user_id)
+	user = app.config['USER_STORE'].get_user(user_id)
 	user.set_sparql_endpoint(endpoint)
 
 
@@ -256,7 +257,7 @@ def wikify_region():
 	user_id = request.form["id"]
 	action = request.form["action"]
 	region = request.form["region"]
-	user = app.config['users'].get_user(user_id)
+	user = app.config['USER_STORE'].get_user(user_id)
 	data = ""
 	if action == "add_region":
 		excel_filepath = user.get_excel_data().get_file_location()
@@ -299,11 +300,46 @@ def remove_user():
 	:return:
 	"""
 	user_id = request.form["id"]
-	users = app.config['users']
+	users = app.config['USER_STORE']
 	users.delete_user(user_id)
 	data = "User deleted successfully"
 	return json.dumps(data, indent=3)
 
 
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+	if 'token' in request.args:
+		token = request.args['token']
+		source = request.args['source']
+		user_id = verify_google_login(token)
+		if user_id:
+			user_id = add_login_source_in_user_id(user_id, source)
+			app.config['USER_STORE'].create_user(user_id)
+			session['uid'] = user_id
+			return redirect(url_for('project_home'))
+		else:
+			return redirect(url_for('index'))
+	else:
+		return redirect(url_for('index'))
+
+
+@app.route('/project/<str:pid>')
+def open_project(pid):
+	if 'uid' in session:
+		return app.make_response(render_template('project.html'), pid=pid)
+	else:
+		return redirect(url_for('index'))
+
+
+@app.route('/project')
+def project_home():
+	if 'uid' in session:
+		project_details = app.config['USER_STORE'].get_user(session['uid']).get_details_of_all_projects()
+		project_details_json = json.dumps(project_details)
+		return app.make_response(render_template('home.html'), uid=session['uid'], projects=project_details_json)
+	else:
+		return redirect(url_for('index'))
+
+
 if __name__ == "__main__":
-	app.run()
+	app.run(threaded=True)
