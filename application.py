@@ -323,7 +323,7 @@ def login():
 		return redirect(url_for('index'))
 
 
-@app.route('/project/<str:pid>')
+@app.route('/project/<string:pid>')
 def open_project(pid):
 	if 'uid' in session:
 		return app.make_response(render_template('project.html'), pid=pid)
