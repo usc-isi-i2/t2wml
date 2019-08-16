@@ -344,10 +344,14 @@ def open_project(pid):
 def project_home():
 	if 'uid' in session:
 		project_details = app.config['USER_STORE'].get_user(session['uid']).get_details_of_all_projects()
-		project_details = [{'pid': '23456789', 'pname': 'xcvbn'}, {'pid': '23456789', 'pname': 'xcvbn'}, {'pid': '23456789', 'pname': 'xcvbn'}]
+		project_details = [
+			{'pid': '3333', 'ptitle': 'Project 3 - Cat & Coconut', 'mdate': 1565807259582},
+			{'pid': '2222', 'ptitle': 'Project 2 - Bat & Banana', 'mdate': 1565720859582},
+			{'pid': '1111', 'ptitle': 'Project 1 - Ant & Apple', 'mdate': 1563906459582}
+		]
 		project_details_json = json.dumps(project_details)
-		# return app.make_response(render_template('home.html', uid=session['uid'], projects=project_details_json))
-		return project_details_json
+		return app.make_response(render_template('home.html', uid=session['uid'], projects=project_details_json))
+		# return project_details_json
 	else:
 		return redirect(url_for('index'))
 
