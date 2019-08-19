@@ -319,7 +319,7 @@ def login():
 	response = {"vs": None}
 	if 'token' in request.form:
 		token = request.form['token']
-		source = request.args['source']
+		source = request.form['source']
 		user_info, error = verify_google_login(token)
 		if user_info:
 			if source == "Google":
