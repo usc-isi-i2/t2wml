@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/editor.worker.js"
   },
   {
-    "revision": "19fed927863f64afec39a197d1d6a24c",
+    "revision": "d049b4a0890beacc0aedcf0b46d6c333",
     "url": "/t2wml-gui/home.html"
   },
   {
@@ -12,7 +12,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/index.html"
   },
   {
-    "revision": "e0fcde1c15d85bcf69cb46cbec8b84e1",
+    "revision": "8d1389380ac711ed708207a158b657d7",
     "url": "/t2wml-gui/login.html"
   },
   {
@@ -24,7 +24,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/css/1.335266ac.chunk.css"
   },
   {
-    "revision": "e09e33354f5dddff065d",
+    "revision": "273ab0a133c130698194",
     "url": "/t2wml-gui/static/css/home.2fed2f2d.chunk.css"
   },
   {
@@ -32,7 +32,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/css/index.828b04b8.chunk.css"
   },
   {
-    "revision": "af9571c0a1ea972fea01",
+    "revision": "1d424107b483154f9d39",
     "url": "/t2wml-gui/static/css/login.24ce8830.chunk.css"
   },
   {
@@ -56,16 +56,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/js/2.0cc3d319.chunk.js"
   },
   {
-    "revision": "e09e33354f5dddff065d",
-    "url": "/t2wml-gui/static/js/home.b9d680d6.chunk.js"
+    "revision": "273ab0a133c130698194",
+    "url": "/t2wml-gui/static/js/home.9270f398.chunk.js"
   },
   {
     "revision": "635e7181f43d42307c7e",
     "url": "/t2wml-gui/static/js/index.22670936.chunk.js"
   },
   {
-    "revision": "af9571c0a1ea972fea01",
-    "url": "/t2wml-gui/static/js/login.118372e0.chunk.js"
+    "revision": "1d424107b483154f9d39",
+    "url": "/t2wml-gui/static/js/login.dd6fb09f.chunk.js"
   },
   {
     "revision": "6024e90839c1b1e3cf98",
