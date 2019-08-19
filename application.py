@@ -316,20 +316,31 @@ def remove_user():
 
 @app.route('/login', methods=['POST'])
 def login():
+	response = {"vs": None}
 	if 'token' in request.form:
 		token = request.form['token']
-		# source = request.args['source']
-		source = "google"
-		user_id = verify_google_login(token)
-		if user_id:
-			user_id = add_login_source_in_user_id(user_id, source)
-			app.config['USER_STORE'].create_user(user_id)
-			session['uid'] = user_id
-			return redirect(url_for('project_home'), code=302)
+		source = request.args['source']
+		user_info, error = verify_google_login(token)
+		if user_info:
+			if source == "Google":
+				user_id = add_login_source_in_user_id(user_info["sub"], source)
+				name = user_info["name"]
+				email = user_info["email"]
+				picture = user_info["picture"]
+				given_name = user_info["given_name"]
+				family_name = user_info["family_name"]
+				locale = user_info["locale"]
+				app.config['USER_STORE'].create_user(user_id, name, email, picture, given_name, family_name, locale)
+				session['uid'] = user_id
+			verification_status = True
 		else:
-			return redirect(url_for('index'))
+			verification_status = False
 	else:
-		return redirect(url_for('index'))
+		verification_status = False
+		error = "Invalid Request"
+	response["vs"] = verification_status
+	response["error"] = error
+	return json.dumps(response)
 
 
 @app.route('/project/<string:pid>')
@@ -343,17 +354,22 @@ def open_project(pid):
 @app.route('/project')
 def project_home():
 	if 'uid' in session:
-		project_details = app.config['USER_STORE'].get_user(session['uid']).get_details_of_all_projects()
-		project_details = [
-			{'pid': '3333', 'ptitle': 'Project 3 - Cat & Coconut', 'mdate': 1565807259582},
-			{'pid': '2222', 'ptitle': 'Project 2 - Bat & Banana', 'mdate': 1565720859582},
-			{'pid': '1111', 'ptitle': 'Project 1 - Ant & Apple', 'mdate': 1563906459582}
-		]
-		project_details_json = json.dumps(project_details)
-		return app.make_response(render_template('home.html', uid=session['uid'], projects=project_details_json))
-		# return project_details_json
+		user = app.config['USER_STORE'].get_user(session['uid'])
+		name, email, picture, given_name, family_name, locale = user.get_user_info()
+		return make_response(render_template('home.html', uid=session['uid'], name=name, email=email, picture=picture, given_name=given_name, family_name=family_name, locale=locale))
 	else:
 		return redirect(url_for('index'))
+
+
+@app.route('/project_meta')
+def project_meta():
+	if 'uid' in session:
+		user = app.config['USER_STORE'].get_user(session['uid'])
+		project_details = user.get_details_of_all_projects()
+	else:
+		project_details = None
+	project_details_json = json.dumps(project_details)
+	return project_details_json
 
 
 if __name__ == "__main__":

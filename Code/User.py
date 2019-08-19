@@ -2,8 +2,14 @@ from Code.ProjectStore import ProjectStore
 
 
 class User:
-	def __init__(self, id: str):
+	def __init__(self, id, name, email, picture, given_name, family_name, locale):
 		self.__id = id
+		self.__email = email
+		self.__name = name
+		self.__picture = picture
+		self.__given_name = given_name
+		self.__family_name = family_name
+		self.__locale = locale
 		self.__projects = ProjectStore()
 
 	def get_user_id(self) -> str:
@@ -23,6 +29,9 @@ class User:
 
 	def get_project(self, project_id):
 		return self.__projects.get_project(project_id)
+
+	def get_user_info(self):
+		return self.__name, self.__email, self.__picture, self.__given_name, self.__family_name, self.__locale
 
 	# def reset(self, attribute: str = None) -> None:
 	# 	"""

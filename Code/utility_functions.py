@@ -270,20 +270,23 @@ def generate_id() -> str:
 
 
 def add_login_source_in_user_id(user_id, login_source):
-	if login_source == "google":
+	if login_source == "Google":
 		return "G" + user_id
 
 
 def verify_google_login(tn: str):
+	error = None
 	try:
 		client_id = '859571913012-79n4clvbq11q8tifboltfqdvttlh74vr.apps.googleusercontent.com'
 		request = requests.Request()
-		id_info = id_token.verify_oauth2_token(tn, request, client_id)
+		user_info = id_token.verify_oauth2_token(tn, request, client_id)
 
-		if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-			raise ValueError('Wrong issuer.')
+		if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+			error = 'Wrong issuer'
+			user_info = None
 
-		user_id = id_info['sub']
 	except ValueError as e:
-		user_id = None
-	return user_id
+		user_info = None
+		error = str(e)
+
+	return user_info, error
