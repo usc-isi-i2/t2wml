@@ -33,6 +33,10 @@ class User:
 	def get_user_info(self):
 		return self.__name, self.__email, self.__picture, self.__given_name, self.__family_name, self.__locale
 
+	def create_project(self, title):
+		project_id = self.__projects.create_project(title)
+		return project_id
+
 	# def reset(self, attribute: str = None) -> None:
 	# 	"""
 	# 	This function deletes all the user files and resets all the class members

@@ -317,7 +317,7 @@ def remove_user():
 @app.route('/login', methods=['POST'])
 def login():
 	response = {"vs": None}
-	if 'token' in request.form:
+	if 'token' in request.form and 'source' in request.form:
 		token = request.form['token']
 		source = request.form['source']
 		user_info, error = verify_google_login(token)
@@ -370,6 +370,19 @@ def project_meta():
 		project_details = None
 	project_details_json = json.dumps(project_details)
 	return project_details_json
+
+
+@app.route('/new_project')
+def new_project():
+	response = None
+	if 'uid' in session:
+		user = app.config['USER_STORE'].get_user(session['uid'])
+		if 'title' in request.form:
+			title = request.form['title']
+			project_id = user.create_project(title)
+			response['pid'] = project_id
+	response_json = json.dumps(response)
+	return response_json
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ from Code.DataFile import DataFile
 class Project:
 	def __init__(self):
 		self.__id = None
-		self.__project_title = None
+		self.__title = None
 		self.__sparql_endpoint = "https://query.wikidata.org/sparql"
 		self.__yaml_data = YAMLData()
 		self.__data_files = DataFileStore()
@@ -18,10 +18,16 @@ class Project:
 	def get_project_details(self) -> dict:
 		details = dict()
 		details['project_id'] = self.__id
-		details['project_title'] = self.__project_title
+		details['project_title'] = self.__title
 		details['creation_time_stamp'] = self.__creation_time_stamp
 		details['last_modified_time_stamp'] = self.__last_modified_time_stamp
 		return details
+
+	def set_id(self, project_id):
+		self.__id = project_id
+
+	def set_title(self, project_title):
+		self.__title = project_title
 
 	def get_sparql_endpoint(self) -> str:
 		return self.__sparql_endpoint
@@ -50,6 +56,6 @@ class Project:
 	def index_data_file(self, data_file: DataFile) -> None:
 		self.__data_files.index_data_file(data_file)
 
-	def reset(self, attribute:str = None) -> None:
+	def reset(self, attribute: str = None) -> None:
 		if attribute == 'yaml':
 			self.__yaml_data.reset()
