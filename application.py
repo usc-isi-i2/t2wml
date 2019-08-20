@@ -343,7 +343,7 @@ def login():
 	return json.dumps(response)
 
 
-@app.route('/project/<string:pid>')
+@app.route('/project/<string:pid>', methods=['POST'])
 def open_project(pid):
 	if 'uid' in session:
 		return app.make_response(render_template('project.html', pid=pid))
@@ -351,7 +351,7 @@ def open_project(pid):
 		return redirect(url_for('index'))
 
 
-@app.route('/project')
+@app.route('/project', methods=['POST'])
 def project_home():
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
@@ -361,7 +361,7 @@ def project_home():
 		return redirect(url_for('index'))
 
 
-@app.route('/project_meta')
+@app.route('/project_meta', methods=['POST'])
 def project_meta():
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
@@ -372,7 +372,7 @@ def project_meta():
 	return project_details_json
 
 
-@app.route('/new_project')
+@app.route('/new_project', methods=['POST'])
 def new_project():
 	response = None
 	if 'uid' in session:
@@ -385,7 +385,7 @@ def new_project():
 	return response_json
 
 
-@app.route('/project_files')
+@app.route('/project_files', methods=['POST'])
 def project_files():
 	response = {
 				"data_file": None,
