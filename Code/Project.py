@@ -1,19 +1,20 @@
 from datetime import datetime
 from Code.DataFileStore import DataFileStore
-from Code.YAMLData import YAMLData
+from Code.YAMLFile import YAMLData
 from Code.DataFile import DataFile
+from Code.utility_functions import excel_to_json
 
 
 class Project:
 	def __init__(self):
 		self.__id = None
 		self.__title = None
-		self.__sparql_endpoint = "https://query.wikidata.org/sparql"
-		self.__yaml_data = YAMLData()
+		self.__sparql_endpoint = "http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql"
+		self.__yaml_files = YAMLData()
 		self.__data_files = DataFileStore()
 		self.__current_data_file_id = None
-		self.__creation_time_stamp = datetime.utcnow()
-		self.__last_modified_time_stamp = datetime.utcnow()
+		self.__creation_time_stamp = int(datetime.timestamp(datetime.utcnow()) * 1000)
+		self.__last_modified_time_stamp = int(datetime.timestamp(datetime.utcnow()) * 1000)
 
 	def get_project_details(self) -> dict:
 		details = dict()
@@ -55,6 +56,24 @@ class Project:
 
 	def index_data_file(self, data_file: DataFile) -> None:
 		self.__data_files.index_data_file(data_file)
+
+	def get_current_data_file_contents(self):
+		data_file = self.get_current_data_file()
+		if data_file:
+			file_path = data_file.get_file_location()
+			sheet_name = data_file.get_sheet_name()
+			file_content = excel_to_json(file_path, sheet_name, ignore_sheet_names=False)
+		else:
+			file_content = None
+		return file_content
+
+	def get_wikified_regions_of_current_data_file(self):
+		data_file = self.get_current_data_file()
+		if data_file:
+			region_qnodes = data_file.get_region_qnodes()
+		else:
+			region_qnodes = None
+		return region_qnodes
 
 	def reset(self, attribute: str = None) -> None:
 		if attribute == 'yaml':
