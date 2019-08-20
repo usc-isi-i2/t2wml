@@ -378,7 +378,7 @@ def new_project():
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
 		if 'ptitle' in request.form:
-			title = request.form['title']
+			title = request.form['ptitle']
 			project_id = user.create_project(title)
 			response['pid'] = project_id
 	response_json = json.dumps(response)
