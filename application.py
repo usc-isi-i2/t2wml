@@ -409,5 +409,12 @@ def project_files():
 	return response_json
 
 
+@app.route('/logout', methods=['GET'])
+def logout():
+	if 'uid' in session:
+		del session['uid']
+	return redirect(url_for('index'))
+
+
 if __name__ == "__main__":
 	app.run(threaded=True)
