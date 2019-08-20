@@ -1,4 +1,4 @@
-from datetime import datetime
+from time import time
 from Code.DataFileStore import DataFileStore
 from Code.YAMLFile import YAMLData
 from Code.DataFile import DataFile
@@ -13,8 +13,8 @@ class Project:
 		self.__yaml_files = YAMLData()
 		self.__data_files = DataFileStore()
 		self.__current_data_file_id = None
-		self.__creation_time_stamp = int(datetime.timestamp(datetime.utcnow()) * 1000)
-		self.__last_modified_time_stamp = int(datetime.timestamp(datetime.utcnow()) * 1000)
+		self.__creation_time_stamp = int(time() * 1000)
+		self.__last_modified_time_stamp = int(time() * 1000)
 
 	def get_project_details(self) -> dict:
 		details = dict()
