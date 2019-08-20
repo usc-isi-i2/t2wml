@@ -18,10 +18,10 @@ class Project:
 
 	def get_project_details(self) -> dict:
 		details = dict()
-		details['project_id'] = self.__id
-		details['project_title'] = self.__title
-		details['creation_time_stamp'] = self.__creation_time_stamp
-		details['last_modified_time_stamp'] = self.__last_modified_time_stamp
+		details['pid'] = self.__id
+		details['ptitle'] = self.__title
+		details['cdate'] = self.__creation_time_stamp
+		details['mdate'] = self.__last_modified_time_stamp
 		return details
 
 	def set_id(self, project_id):
