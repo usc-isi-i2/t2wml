@@ -346,7 +346,9 @@ def login():
 @app.route('/project/<string:pid>', methods=['GET'])
 def open_project(pid):
 	if 'uid' in session:
-		return app.make_response(render_template('project.html', pid=pid))
+		user = app.config['USER_STORE'].get_user(session['uid'])
+		name, email, picture, given_name, family_name, locale = user.get_user_info()
+		return app.make_response(render_template('project.html', pid=pid, uid=session['uid'], name=name, email=email, picture=picture, given_name=given_name, family_name=family_name, locale=locale))
 	else:
 		return redirect(url_for('index'))
 
