@@ -377,10 +377,30 @@ def new_project():
 	response = None
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
-		if 'title' in request.form:
+		if 'ptitle' in request.form:
 			title = request.form['title']
 			project_id = user.create_project(title)
 			response['pid'] = project_id
+	response_json = json.dumps(response)
+	return response_json
+
+
+@app.route('/project_files')
+def project_files():
+	response = {
+				"data_file": None,
+				"yaml_file": None,
+				"yaml_regions": None,
+				"wikified_regions": None,
+				"settings": {"endpoint": None}
+			}
+	if 'uid' in session:
+		user = app.config['USER_STORE'].get_user(session['uid'])
+		pid = request.form['pid']
+		project = user.get_project(pid)
+		response["data_file"] = project.get_current_data_file_contents()
+		response["settings"]["endpoint"] = project.get_sparql_endpoint()
+		response["wikified_regions"] = project.get_wikified_regions_of_current_data_file()
 	response_json = json.dumps(response)
 	return response_json
 
