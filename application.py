@@ -95,7 +95,7 @@ def wikified_output_uploader(user: User):
 	return data
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
 	"""
 	This functions renders the GUI
@@ -343,7 +343,7 @@ def login():
 	return json.dumps(response)
 
 
-@app.route('/project/<string:pid>', methods=['POST'])
+@app.route('/project/<string:pid>', methods=['GET'])
 def open_project(pid):
 	if 'uid' in session:
 		return app.make_response(render_template('project.html', pid=pid))
@@ -351,7 +351,7 @@ def open_project(pid):
 		return redirect(url_for('index'))
 
 
-@app.route('/project', methods=['POST'])
+@app.route('/project', methods=['GET'])
 def project_home():
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
