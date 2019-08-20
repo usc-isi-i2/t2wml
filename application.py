@@ -374,13 +374,15 @@ def project_meta():
 
 @app.route('/new_project', methods=['POST'])
 def new_project():
-	response = None
 	if 'uid' in session:
+		response = dict()
 		user = app.config['USER_STORE'].get_user(session['uid'])
 		if 'ptitle' in request.form:
 			title = request.form['ptitle']
 			project_id = user.create_project(title)
 			response['pid'] = project_id
+	else:
+		response = None
 	response_json = json.dumps(response)
 	return response_json
 
