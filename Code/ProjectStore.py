@@ -22,6 +22,7 @@ class ProjectStore:
 		details = list()
 		for project in self.__projects.values():
 			details.append(project.get_project_details())
+		details.sort(key=lambda x: x["mdate"], reverse=True)
 		return details
 
 	def get_project_details(self, project_id):
