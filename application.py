@@ -351,7 +351,7 @@ def login():
 def open_project(pid):
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
-		user_info = user.get_user_info()
+		user_info = json.dumps(user.get_user_info())
 		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info))
 	else:
 		return redirect(url_for('index'))
@@ -361,7 +361,7 @@ def open_project(pid):
 def project_home():
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
-		user_info = user.get_user_info()
+		user_info = json.dumps(user.get_user_info())
 		return make_response(render_template('home.html', userInfo=user_info))
 	else:
 		return redirect(url_for('index'))
