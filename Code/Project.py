@@ -1,7 +1,8 @@
 from time import time
 from Code.DataFileStore import DataFileStore
-from Code.YAMLFile import YAMLData
+from Code.YAMLFile import YAMLFile
 from Code.DataFile import DataFile
+from Code.YAMLFileStore import YAMLFileStore
 from Code.utility_functions import excel_to_json
 
 
@@ -10,7 +11,7 @@ class Project:
 		self.__id = None
 		self.__title = None
 		self.__sparql_endpoint = "http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql"
-		self.__yaml_files = YAMLData()
+		self.__yaml_file_store = YAMLFileStore()
 		self.__data_files = DataFileStore()
 		self.__current_data_file_id = None
 		self.__creation_time_stamp = int(time() * 1000)
@@ -39,7 +40,7 @@ class Project:
 	def get_yaml_data(self):
 		return self.__yaml_data
 
-	def set_yaml_date(self, yaml_data: YAMLData):
+	def set_yaml_date(self, yaml_data: YAMLFile):
 		self.__yaml_data = yaml_data
 
 	def get_data_file_by_id(self, file_id: str) -> DataFile:
@@ -74,6 +75,16 @@ class Project:
 		else:
 			region_qnodes = None
 		return region_qnodes
+
+	def get_yaml_file_of_current_data_file(self):
+		data_file = self.get_current_data_file()
+		if data_file:
+			data_file_id = data_file.get_id()
+			sheet_name = data_file.get_sheet_name()
+			yaml_file = self.__yaml_file_store.get_yaml_file_of_sheet(data_file_id, sheet_name)
+		else:
+			yaml_file = None
+		return yaml_file
 
 	def reset(self, attribute: str = None) -> None:
 		if attribute == 'yaml':

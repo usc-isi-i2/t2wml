@@ -9,5 +9,5 @@ class WikifiedRegionStore:
 	def index_region(self, sheet_name: str, wikified_region: WikifiedRegion):
 		self.wikified_regions[sheet_name] = wikified_region
 
-	def get_wikified_regions(self, sheet_name):
+	def get_wikified_region(self, sheet_name):
 		return self.wikified_regions.get(sheet_name, None)

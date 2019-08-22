@@ -44,11 +44,16 @@ class DataFile:
 		"""
 		self.__current_sheet_name = sheet_name
 
-	def get_wikified_regions(self, sheet_name: str = None):
+	def get_wikified_region(self, sheet_name: str = None):
 		if not sheet_name:
 			sheet_name = self.__current_sheet_name
-		return self.__wikified_region_store.get_wikified_regions(sheet_name)
+		return self.__wikified_region_store.get_wikified_region(sheet_name)
 
+	def get_region_qnodes(self, sheet_name: str = None):
+		return self.get_wikified_region(sheet_name).get_item_table().get_region_qnodes()
+
+	def get_item_table(self):
+		return self.get_wikified_region().get_item_table()
 
 	# def reset(self) -> None:
 	# 	"""

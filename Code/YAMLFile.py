@@ -1,8 +1,9 @@
 import os
 import copy
+from Code.utility_functions import read_file
 
 
-class YAMLData:
+class YAMLFile:
 	def __init__(self):
 		self.__file_location = None
 		self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None, 'region_object': None}
@@ -63,6 +64,10 @@ class YAMLData:
 		:return:
 		"""
 		self.__template = template
+
+	def read_file(self):
+		file_data = read_file(self.__file_location)
+		return file_data
 
 	def reset(self) -> None:
 		"""

@@ -31,7 +31,13 @@ class User:
 		return self.__projects.get_project(project_id)
 
 	def get_user_info(self):
-		return self.__name, self.__email, self.__picture, self.__given_name, self.__family_name, self.__locale
+		user_info = dict()
+		user_info["name"] = self.__name
+		user_info["email"] = self.__email
+		user_info["picture"] = self.__picture
+		user_info["givenName"] = self.__given_name
+		user_info["familyName"] = self.__family_name
+		return user_info
 
 	def create_project(self, title):
 		project_id = self.__projects.create_project(title)

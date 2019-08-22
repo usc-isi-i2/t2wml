@@ -8,6 +8,7 @@ from uuid import uuid4
 from typing import Sequence
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from pathlib import Path
 from Code.property_type_map import property_type_map
 
 
@@ -90,11 +91,12 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	return type
 
 
-def excel_to_json(file_path: str, sheet_name: str = None) -> str:
+def excel_to_json(file_path: str, sheet_name: str = None, ignore_sheet_names: bool = True) -> str:
 	"""
 	This function reads the excel file and converts it to JSON
 	:param file_path:
 	:param sheet_name:
+	:param ignore_sheet_names:
 	:return:
 	"""
 	book_dict = pyexcel.get_book_dict(file_name=file_path)
@@ -102,7 +104,7 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> str:
 	column_index_map = {}
 
 	file_path = file_path.lower()
-	is_first_excel = (False, True)[(file_path.endswith(".xls") or file_path.endswith(".xlsx")) and (sheet_name == None)]
+	is_first_excel = (False, True)[(file_path.endswith(".xls") or file_path.endswith(".xlsx")) and (not ignore_sheet_names or sheet_name is None)]
 
 	result = dict()
 	if not sheet_name:
@@ -290,3 +292,12 @@ def verify_google_login(tn: str):
 		error = str(e)
 
 	return user_info, error
+
+
+def create_project_directory(upload_directory: str, uid: str, pid: str = None):
+	if uid and pid:
+		Path(Path(upload_directory) / uid / pid / "df").mkdir(parents=True, exist_ok=True)
+		Path(Path(upload_directory) / uid / pid / "wf").mkdir(parents=True, exist_ok=True)
+		Path(Path(upload_directory) / uid / pid / "yf").mkdir(parents=True, exist_ok=True)
+	elif uid:
+		Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)

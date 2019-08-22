@@ -4,7 +4,8 @@ from werkzeug.utils import secure_filename
 import json
 from pathlib import Path
 import os
-from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_index, get_excel_column_index, verify_google_login, add_login_source_in_user_id
+from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_index, get_excel_column_index
+from Code.utility_functions import verify_google_login, add_login_source_in_user_id, create_project_directory
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.User import User
 from Code.ItemTable import ItemTable
@@ -32,19 +33,20 @@ def get_file_extension(filename: str):
 	return filename.split(".")[-1]
 
 
-def excel_uploader(user: User, sheet_name: str):
+def excel_uploader(pid:str, data_file: DataFile, sheet_name: str):
 	"""
 	This function helps in processing the data file
-	:param user:
+	:param pid:
+	:param data_file:
 	:param sheet_name:
 	:return:
 	"""
-	user_data = user.get_excel_data()
+	# user_data = user.get_excel_data()
 	data = {"error": ""}
-	if sheet_name and not check_if_empty(user_data.get_file_location()):
-		file_path = user_data.get_file_location()
+	if sheet_name and not check_if_empty(data_file.get_file_location()):
+		file_path = data_file.get_file_location()
 		data = excel_to_json(file_path, sheet_name)
-		user_data.set_sheet_name(sheet_name)
+		data_file.set_sheet_name(sheet_name)
 	else:
 		if 'file' not in request.files:
 			data["error"] = 'No file part'
@@ -54,8 +56,8 @@ def excel_uploader(user: User, sheet_name: str):
 				data["error"] = 'No file selected for uploading'
 			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
-				filename = user.get_user_id() + "_excel_file." + get_file_extension(filename)
-				file_path = str(Path(app.config['UPLOAD_FOLDER']) / filename)
+				filename = data_file.get_id() + "." + get_file_extension(filename)
+				file_path = str(Path(app.config['UPLOAD_FOLDER']) / session['uid'] / pid / "df" / filename)
 				file.save(file_path)
 				data = excel_to_json(file_path, sheet_name)
 				if not sheet_name:
@@ -63,8 +65,8 @@ def excel_uploader(user: User, sheet_name: str):
 						sheet_name = data['sheetNames'][0]
 					except KeyError:
 						sheet_name = None
-				user_data.set_file_location(file_path)
-				user_data.set_sheet_name(sheet_name)
+				data_file.set_file_location(file_path)
+				data_file.set_sheet_name(sheet_name)
 			else:
 				data["error"] = 'This file type is currently not supported'
 	return data
@@ -121,16 +123,18 @@ def upload_excel():
 		sheet_name = request.form.get("sheet_name")
 		project = user.get_project(project_id)
 
-		project.reset('yaml')
+		# project.reset('yaml')
 		if is_new_upload:
 			data_file = DataFile()
 			project.index_data_file(data_file)
-			user.reset('excel')
-			user.get_wikifier_output_data().reset()
-		user.get_wikifier_output_data().reset_item_table()
-		os.makedirs("uploads", exist_ok=True)
-		response = excel_uploader(user, sheet_name)
-		excel_data_filepath = user.get_excel_data().get_file_location()
+			project.set_current_data_file_id(data_file.get_id())
+		else:
+			data_file = project.get_current_data_file()
+			# user.reset('excel')
+			# user.get_wikifier_output_data().reset()
+		# user.get_wikifier_output_data().reset_item_table()
+		response = excel_uploader(project_id, data_file, sheet_name)
+		excel_data_filepath = data_file.get_file_location()
 		wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
 		if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
 			item_table = user.get_wikifier_output_data().get_item_table()
@@ -301,17 +305,17 @@ def wikify_region():
 	return json.dumps(data, indent=3)
 
 
-@app.route('/delete_user', methods=['POST'])
-def remove_user():
-	"""
-	This function deletes the user data
-	:return:
-	"""
-	user_id = request.form["id"]
-	users = app.config['USER_STORE']
-	users.delete_user(user_id)
-	data = "User deleted successfully"
-	return json.dumps(data, indent=3)
+# @app.route('/delete_user', methods=['POST'])
+# def remove_user():
+# 	"""
+# 	This function deletes the user data
+# 	:return:
+# 	"""
+# 	user_id = request.form["id"]
+# 	users = app.config['USER_STORE']
+# 	users.delete_user(user_id)
+# 	data = "User deleted successfully"
+# 	return json.dumps(data, indent=3)
 
 
 @app.route('/login', methods=['POST'])
@@ -347,8 +351,8 @@ def login():
 def open_project(pid):
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
-		name, email, picture, given_name, family_name, locale = user.get_user_info()
-		return app.make_response(render_template('project.html', pid=pid, uid=session['uid'], name=name, email=email, picture=picture, given_name=given_name, family_name=family_name, locale=locale))
+		user_info = user.get_user_info()
+		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info))
 	else:
 		return redirect(url_for('index'))
 
@@ -357,8 +361,8 @@ def open_project(pid):
 def project_home():
 	if 'uid' in session:
 		user = app.config['USER_STORE'].get_user(session['uid'])
-		name, email, picture, given_name, family_name, locale = user.get_user_info()
-		return make_response(render_template('home.html', uid=session['uid'], name=name, email=email, picture=picture, given_name=given_name, family_name=family_name, locale=locale))
+		user_info = user.get_user_info()
+		return make_response(render_template('home.html', userInfo=user_info))
 	else:
 		return redirect(url_for('index'))
 
@@ -383,6 +387,7 @@ def new_project():
 			title = request.form['ptitle']
 			project_id = user.create_project(title)
 			response['pid'] = project_id
+			create_project_directory(app.config['UPLOAD_FOLDER'], session['uid'], project_id)
 	else:
 		response = None
 	response_json = json.dumps(response)
@@ -405,6 +410,20 @@ def project_files():
 		response["data_file"] = project.get_current_data_file_contents()
 		response["settings"]["endpoint"] = project.get_sparql_endpoint()
 		response["wikified_regions"] = project.get_wikified_regions_of_current_data_file()
+		yaml_file = project.get_yaml_file_of_current_data_file()
+		if yaml_file:
+			yaml_file_content = yaml_file.read_file()
+			item_table = project.get_current_data_file().get_item_table()
+			data_filepath = project.get_current_data_file().get_file_location()
+			sheet_name = project.get_current_data_file().get_sheet_name()
+			region = yaml_file.get_region()
+			template = yaml_file.get_template()
+			yaml_regions = highlight_region(item_table, data_filepath, sheet_name, region, template)
+		else:
+			yaml_file_content = None
+			yaml_regions = None
+		response["yaml_regions"] = yaml_regions
+		response["yaml_file"] = yaml_file_content
 	response_json = json.dumps(response)
 	return response_json
 
