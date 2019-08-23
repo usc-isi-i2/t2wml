@@ -84,6 +84,8 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 			type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
 		except IndexError:
 			type = "Property Not Found"
+		except TypeError:
+			type = "Property Not Found"
 	return type
 
 
