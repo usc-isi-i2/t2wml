@@ -1,3 +1,5 @@
+from flask_cors import cross_origin
+
 from app_config import app
 from flask import request, render_template
 from werkzeug.utils import secure_filename
@@ -244,12 +246,13 @@ def update_setting():
 	endpoint = request.form["endpoint"]
 	user = app.config['users'].get_user(user_id)
 	user.set_sparql_endpoint(endpoint)
+	return json.dumps("Setting updated")
 
 
 @app.route('/wikifier', methods=['POST'])
 def wikify_region():
 	"""
-	This function perfomas three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
+	This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
 	and update the wikification result.
 	:return:
 	"""
