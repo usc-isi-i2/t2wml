@@ -98,7 +98,6 @@ def wikified_output_uploader(user: UserData):
 
 
 @app.route('/')
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def upload_form():
 	"""
 	This functions renders the GUI
@@ -109,7 +108,6 @@ def upload_form():
 
 
 @app.route('/upload_excel', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def upload_excel():
 	"""
 	This function uploads the data file
@@ -141,7 +139,6 @@ def upload_excel():
 
 
 @app.route('/upload_yaml', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def upload_yaml():
 	"""
 	This function process the yaml
@@ -176,7 +173,6 @@ def upload_yaml():
 
 
 @app.route('/resolve_cell', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def get_cell_statement():
 	"""
 	This function returns the statement of a particular cell
@@ -199,7 +195,6 @@ def get_cell_statement():
 
 
 @app.route('/download', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def downloader():
 	"""
 	This functions initiates the download
@@ -218,7 +213,6 @@ def downloader():
 
 
 @app.route('/upload_wikifier_output', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def upload_wikified_output():
 	"""
 	This function uploads the wikifier output
@@ -243,7 +237,6 @@ def upload_wikified_output():
 
 
 @app.route('/update_setting', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def update_setting():
 	"""
 	This function updates the settings from GUI
@@ -253,10 +246,10 @@ def update_setting():
 	endpoint = request.form["endpoint"]
 	user = app.config['users'].get_user(user_id)
 	user.set_sparql_endpoint(endpoint)
+	return json.dumps("Setting updated")
 
 
 @app.route('/wikifier', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def wikify_region():
 	"""
 	This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
@@ -303,7 +296,6 @@ def wikify_region():
 
 
 @app.route('/delete_user', methods=['POST'])
-@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
 def remove_user():
 	"""
 	This function deletes the user data
