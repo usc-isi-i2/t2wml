@@ -4,6 +4,8 @@ import string
 import pyexcel
 import os
 import re
+import json
+from time import time
 from uuid import uuid4
 from typing import Sequence
 from google.oauth2 import id_token
@@ -294,10 +296,43 @@ def verify_google_login(tn: str):
 	return user_info, error
 
 
-def create_project_directory(upload_directory: str, uid: str, pid: str = None):
+def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: str = None):
 	if uid and pid:
 		Path(Path(upload_directory) / uid / pid / "df").mkdir(parents=True, exist_ok=True)
 		Path(Path(upload_directory) / uid / pid / "wf").mkdir(parents=True, exist_ok=True)
 		Path(Path(upload_directory) / uid / pid / "yf").mkdir(parents=True, exist_ok=True)
+		with open(Path(upload_directory) / uid / pid / "project_config.json", "w") as file:
+			project_config = {
+								"pid": pid,
+								"ptitle": ptitle,
+								"cdate": int(time() * 1000),
+								"mdate": int(time() * 1000),
+								"currentDataFile": None,
+								"currentSheetName": None,
+								"yamlMapping": None,
+								"wikifierRegionMapping": None
+							}
+			json.dump(project_config, file, indent=3)
 	elif uid:
 		Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)
+
+
+def get_project_details(user_dir):
+	projects = list()
+	for project_dir in user_dir.iterdir():
+		if project_dir.is_dir():
+			with open(project_dir / "project_config.json", "r") as file:
+				project_config = json.load(file)
+				project_detail = dict()
+				project_detail["pid"] = project_config["pid"]
+				project_detail["ptitle"] = project_config["ptitle"]
+				project_detail["cdate"] = project_config["cdate"]
+				project_detail["mdate"] = project_config["mdate"]
+				projects.append(project_detail)
+	if projects:
+		return projects
+	else:
+		return None
+
+
+# get_project_details(Path("F:\\isi\\T2WML\\t2wml"))

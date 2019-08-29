@@ -6,7 +6,7 @@ from Code.UserStore import UserStore
 
 
 __CWD__ = os.getcwd()
-UPLOAD_FOLDER = str(Path.cwd() / "uploads")
+UPLOAD_FOLDER = str(Path.cwd() / "config" / "uploads")
 CODE_FOLDER = str(Path.cwd() / "Code")
 ETK_PATH = str(Path.cwd().parent / "etk")
 DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")

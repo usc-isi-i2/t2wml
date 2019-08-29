@@ -4,8 +4,8 @@ from werkzeug.utils import secure_filename
 import json
 from pathlib import Path
 import os
-from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_index, get_excel_column_index
-from Code.utility_functions import verify_google_login, add_login_source_in_user_id, create_project_directory
+from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_index, get_excel_column_index, \
+	get_project_details, create_directory, verify_google_login, add_login_source_in_user_id, generate_id
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.User import User
 from Code.ItemTable import ItemTable
@@ -33,7 +33,7 @@ def get_file_extension(filename: str):
 	return filename.split(".")[-1]
 
 
-def excel_uploader(pid:str, data_file: DataFile, sheet_name: str):
+def excel_uploader(pid: str, data_file: DataFile, sheet_name: str):
 	"""
 	This function helps in processing the data file
 	:param pid:
@@ -262,7 +262,7 @@ def update_setting():
 @app.route('/wikifier', methods=['POST'])
 def wikify_region():
 	"""
-	This function perfomas three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
+	This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
 	and update the wikification result.
 	:return:
 	"""
@@ -328,14 +328,9 @@ def login():
 		if user_info:
 			if source == "Google":
 				user_id = add_login_source_in_user_id(user_info["sub"], source)
-				name = user_info["name"]
-				email = user_info["email"]
-				picture = user_info["picture"]
-				given_name = user_info["given_name"]
-				family_name = user_info["family_name"]
-				locale = user_info["locale"]
-				app.config['USER_STORE'].create_user(user_id, name, email, picture, given_name, family_name, locale)
+				app.config['USER_STORE'].create_user(user_id, user_info)
 				session['uid'] = user_id
+				create_directory(app.config['UPLOAD_FOLDER'], session['uid'])
 			verification_status = True
 		else:
 			verification_status = False
@@ -350,9 +345,9 @@ def login():
 @app.route('/project/<string:pid>', methods=['GET'])
 def open_project(pid):
 	if 'uid' in session:
-		user = app.config['USER_STORE'].get_user(session['uid'])
-		user_info = json.dumps(user.get_user_info())
-		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info))
+		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
+		user_info_json = json.dumps(user_info)
+		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info_json))
 	else:
 		return redirect(url_for('index'))
 
@@ -360,9 +355,9 @@ def open_project(pid):
 @app.route('/project', methods=['GET'])
 def project_home():
 	if 'uid' in session:
-		user = app.config['USER_STORE'].get_user(session['uid'])
-		user_info = json.dumps(user.get_user_info())
-		return make_response(render_template('home.html', userInfo=user_info))
+		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
+		user_info_json = json.dumps(user_info)
+		return make_response(render_template('home.html', userInfo=user_info_json))
 	else:
 		return redirect(url_for('index'))
 
@@ -370,8 +365,8 @@ def project_home():
 @app.route('/project_meta', methods=['POST'])
 def project_meta():
 	if 'uid' in session:
-		user = app.config['USER_STORE'].get_user(session['uid'])
-		project_details = user.get_details_of_all_projects()
+		user_dir = Path(app.config['UPLOAD_FOLDER']) / session['uid']
+		project_details = get_project_details(user_dir)
 	else:
 		project_details = None
 	project_details_json = json.dumps(project_details)
@@ -382,12 +377,11 @@ def project_meta():
 def new_project():
 	if 'uid' in session:
 		response = dict()
-		user = app.config['USER_STORE'].get_user(session['uid'])
 		if 'ptitle' in request.form:
-			title = request.form['ptitle']
-			project_id = user.create_project(title)
+			project_title = request.form['ptitle']
+			project_id = generate_id()
 			response['pid'] = project_id
-			create_project_directory(app.config['UPLOAD_FOLDER'], session['uid'], project_id)
+			create_directory(app.config['UPLOAD_FOLDER'], session['uid'], project_id, project_title)
 	else:
 		response = None
 	response_json = json.dumps(response)

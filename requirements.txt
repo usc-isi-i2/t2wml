@@ -1,11 +1,12 @@
-google
-Werkzeug==0.14.1
-Flask_Cors==3.0.7
+google-api-python-client==1.7.11
 Flask==1.0.2
+Flask_Cors==3.0.7
 pyexcel==0.5.14
 lark_parser==0.7.1
 requests==2.21.0
+Werkzeug==0.14.1
 SPARQLWrapper==1.8.4
-typing==3.7.4
+oslo_concurrency==3.29.1
+typing==3.7.4.1
 PyYAML==5.1.2
 https://github.com/usc-isi-i2/etk/archive/development.zip
