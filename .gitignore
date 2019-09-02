@@ -110,3 +110,4 @@ config/uploads/*
 temporary_files/*
 /config/users.json
 /config/create_user
+config/*
