@@ -11,6 +11,7 @@ from typing import Sequence
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from pathlib import Path
+from oslo_concurrency import lockutils
 from Code.property_type_map import property_type_map
 
 
@@ -93,29 +94,27 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	return type
 
 
-def excel_to_json(file_path: str, sheet_name: str = None, ignore_sheet_names: bool = True) -> str:
+def excel_to_json(file_path: str, sheet_name: str = None) -> str:
 	"""
 	This function reads the excel file and converts it to JSON
 	:param file_path:
 	:param sheet_name:
-	:param ignore_sheet_names:
 	:return:
 	"""
-	book_dict = pyexcel.get_book_dict(file_name=file_path)
 	sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
 	column_index_map = {}
-
-	file_path = file_path.lower()
-	is_first_excel = (False, True)[(file_path.endswith(".xls") or file_path.endswith(".xlsx")) and (not ignore_sheet_names or sheet_name is None)]
-
 	result = dict()
 	if not sheet_name:
 		result['sheetNames'] = list()
+		book_dict = pyexcel.get_book_dict(file_name=file_path)
 		for sheet in book_dict.keys():
 			result['sheetNames'].append(sheet)
 		sheet_name = result['sheetNames'][0]
-
-	sheet = book_dict[sheet_name]
+		sheet = book_dict[sheet_name]
+	else:
+		result["sheetNames"] = None
+		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
+	result["currentSheetName"] = sheet_name
 	for i in range(len(sheet[0])):
 		column = get_column_letter(i+1)
 		column_index_map[i+1] = column
@@ -126,12 +125,8 @@ def excel_to_json(file_path: str, sheet_name: str = None, ignore_sheet_names: bo
 			r[column_index_map[col+1]] = str(sheet[row][col]).strip()
 		sheet_data['rowData'].append(r)
 
-	if is_first_excel:
-		result['sheetData'] = dict()
-		result['sheetData'][sheet_name] = sheet_data
-		return result
-	else:
-		return sheet_data
+	result['sheetData'] = sheet_data
+	return result
 
 
 def read_file(file_path: str) -> str:
@@ -309,8 +304,9 @@ def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: s
 								"mdate": int(time() * 1000),
 								"currentDataFile": None,
 								"currentSheetName": None,
-								"yamlMapping": None,
-								"wikifierRegionMapping": None
+								"dataFileMapping": dict(),
+								"yamlMapping": dict(),
+								"wikifierRegionMapping": dict()
 							}
 			json.dump(project_config, file, indent=3)
 	elif uid:
@@ -335,4 +331,25 @@ def get_project_details(user_dir):
 		return None
 
 
-# get_project_details(Path("F:\\isi\\T2WML\\t2wml"))
+def update_project_meta(uid: str, pid: str, project_meta: dict):
+	@lockutils.synchronized('create_user', fair=True, external=True, lock_path=str(Path.cwd() / "config" / uid / pid))
+	def save_project_meta():
+		file_path = str(Path.cwd() / "config"/ "uploads" / uid / pid / "project_config.json")
+		with open(file_path) as json_data:
+			data = json.load(json_data)
+			for k in project_meta.keys():
+				if k == "dataFileMapping":
+					data[k].update(project_meta[k])
+				else:
+					data[k] = project_meta[k]
+		with open(file_path, 'w') as project_config:
+			json.dump(data, project_config, indent=3)
+
+	save_project_meta()
+
+
+def get_current_file_name(uid, pid):
+	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "project_config.json")
+	with open(file_path) as json_data:
+		data = json.load(json_data)
+	return data["currentDataFile"]

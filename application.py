@@ -4,8 +4,10 @@ from werkzeug.utils import secure_filename
 import json
 from pathlib import Path
 import os
+from time import time
 from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_index, get_excel_column_index, \
-	get_project_details, create_directory, verify_google_login, add_login_source_in_user_id, generate_id
+	get_project_details, create_directory, verify_google_login, add_login_source_in_user_id, generate_id, \
+	update_project_meta, get_current_file_name
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.User import User
 from Code.ItemTable import ItemTable
@@ -33,43 +35,40 @@ def get_file_extension(filename: str):
 	return filename.split(".")[-1]
 
 
-def excel_uploader(pid: str, data_file: DataFile, sheet_name: str):
+def data_file_uploader(uid: str, pid: str, sheet_name: str=None):
 	"""
 	This function helps in processing the data file
+	:param uid:
 	:param pid:
-	:param data_file:
 	:param sheet_name:
 	:return:
 	"""
-	# user_data = user.get_excel_data()
-	data = {"error": ""}
-	if sheet_name and not check_if_empty(data_file.get_file_location()):
-		file_path = data_file.get_file_location()
-		data = excel_to_json(file_path, sheet_name)
-		data_file.set_sheet_name(sheet_name)
+	response = {"error": ""}
+	# if sheet_name and not check_if_empty(data_file.get_file_location()):
+	# 	file_path = data_file.get_file_location()
+	# 	data = excel_to_json(file_path, sheet_name)
+	# 	data_file.set_sheet_name(sheet_name)
+	# else:
+	if 'file' not in request.files:
+		response["error"] = 'No file part'
 	else:
-		if 'file' not in request.files:
-			data["error"] = 'No file part'
+		file = request.files['file']
+		if file.filename == '':
+			response["error"] = 'No file selected for uploading'
+		if file and allowed_file(file.filename):
+			file_extension = get_file_extension(file.filename)
+			file_id = generate_id()
+			new_filename = file_id + "." + file_extension
+			response["dataFileMapping"] = {new_filename: file.filename}
+			response["isCSV"] = True if file_extension.lower() == "csv" else False
+			response["currentDataFile"] = new_filename
+			file_path = str(Path(app.config['UPLOAD_FOLDER']) / session['uid'] / pid / "df" / new_filename)
+			file.save(file_path)
+			data = excel_to_json(file_path, sheet_name)
+			response.update(data)
 		else:
-			file = request.files['file']
-			if file.filename == '':
-				data["error"] = 'No file selected for uploading'
-			if file and allowed_file(file.filename):
-				filename = secure_filename(file.filename)
-				filename = data_file.get_id() + "." + get_file_extension(filename)
-				file_path = str(Path(app.config['UPLOAD_FOLDER']) / session['uid'] / pid / "df" / filename)
-				file.save(file_path)
-				data = excel_to_json(file_path, sheet_name)
-				if not sheet_name:
-					try:
-						sheet_name = data['sheetNames'][0]
-					except KeyError:
-						sheet_name = None
-				data_file.set_file_location(file_path)
-				data_file.set_sheet_name(sheet_name)
-			else:
-				data["error"] = 'This file type is currently not supported'
-	return data
+			response["error"] = 'This file type is currently not supported'
+	return response
 
 
 def wikified_output_uploader(user: User):
@@ -109,44 +108,83 @@ def index():
 		return render_template('login.html')
 
 
-@app.route('/upload_excel', methods=['POST'])
-def upload_excel():
+@app.route('/upload_data_file', methods=['POST'])
+def upload_data_file():
 	"""
 	This function uploads the data file
 	:return:
 	"""
 	if 'uid' in session:
+		response = {
+					"tableData": dict(),
+					"wikifierData": dict(),
+					"yamlData": dict(),
+					"error": None
+				}
+		project_meta = dict()
 		user_id = session['uid']
 		project_id = request.form['pid']
-		is_new_upload = bool(request.form["is_new_upload"])
-		user = app.config['USER_STORE'].get_user(user_id)
-		sheet_name = request.form.get("sheet_name")
-		project = user.get_project(project_id)
-
-		# project.reset('yaml')
-		if is_new_upload:
-			data_file = DataFile()
-			project.index_data_file(data_file)
-			project.set_current_data_file_id(data_file.get_id())
+		# project_id = "80a35f0f0d2f48a1a5852c57fcc933eb"
+		data = data_file_uploader(user_id, project_id)
+		if data["error"]:
+			response["error"] = data["error"]
 		else:
-			data_file = project.get_current_data_file()
-			# user.reset('excel')
-			# user.get_wikifier_output_data().reset()
-		# user.get_wikifier_output_data().reset_item_table()
-		response = excel_uploader(project_id, data_file, sheet_name)
-		excel_data_filepath = data_file.get_file_location()
-		wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
-		if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
-			item_table = user.get_wikifier_output_data().get_item_table()
-			if not item_table:
-				item_table = ItemTable()
-				user.get_wikifier_output_data().set_item_table(item_table)
-			build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-			response.update(item_table.get_region_qnodes())
-
+			table_data = response["tableData"]
+			curr_data_file_id = data["currentDataFile"]
+			project_meta["currentDataFile"] = curr_data_file_id
+			curr_data_file_name = data["dataFileMapping"][curr_data_file_id]
+			project_meta["dataFileMapping"] = data["dataFileMapping"]
+			project_meta["mdate"] = int(time() * 1000)
+			table_data["fileName"] = curr_data_file_name
+			table_data["isCSV"] = data["isCSV"]
+			if not table_data["isCSV"]:
+				table_data["sheetNames"] = data["sheetNames"]
+				table_data["currSheetName"] = data["currentSheetName"]
+				project_meta["currentSheetName"] = data["currentSheetName"]
+			else:
+				table_data["sheetNames"] = None
+				table_data["currSheetName"] = None
+				project_meta["currentSheetName"] = None
+			table_data["sheetData"] = data["sheetData"]
+		# wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
+		# if excel_data_filepath and excel_data_filepath and wikifier_output_filepath:
+		# 	item_table = user.get_wikifier_output_data().get_item_table()
+		# 	if not item_table:
+		# 		item_table = ItemTable()
+		# 		user.get_wikifier_output_data().set_item_table(item_table)
+		# 	build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
+		# 	response.update(item_table.get_region_qnodes())
+		update_project_meta(user_id, project_id, project_meta)
 		return json.dumps(response, indent=3)
 	else:
 		return redirect(url_for('index'))
+
+
+@app.route('/change_sheet', methods=['POST'])
+def change_sheet():
+	if 'uid' in session:
+		response = {
+					"tableData": dict(),
+					"wikifierData": dict(),
+					"yamlData": dict(),
+					"error": None
+				}
+		project_meta = dict()
+		user_id = session['uid']
+		sheet_name = request.form['sheet_name']
+		project_id = request.form['pid']
+		file_name = get_current_file_name(user_id, project_id)
+		file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
+		data = excel_to_json(file_path, sheet_name)
+		table_data = response["tableData"]
+		table_data["fileName"] = file_name
+		table_data["isCSV"] = False # because CSV don't have sheets
+		table_data["sheetNames"] = data["sheetNames"]
+		table_data["currSheetName"] = data["currentSheetName"]
+		table_data["sheetData"] = data["sheetData"]
+		project_meta["currentSheetName"] = data["currentSheetName"]
+		update_project_meta(user_id, project_id, project_meta)
+		return json.dumps(response, indent=3)
 
 
 @app.route('/upload_yaml', methods=['POST'])
@@ -374,7 +412,7 @@ def project_meta():
 
 
 @app.route('/new_project', methods=['POST'])
-def new_project():
+def create_project():
 	if 'uid' in session:
 		response = dict()
 		if 'ptitle' in request.form:
@@ -388,8 +426,8 @@ def new_project():
 	return response_json
 
 
-@app.route('/project_files', methods=['POST'])
-def project_files():
+@app.route('/get_project_files', methods=['POST'])
+def get_project_files():
 	response = {
 				"data_file": None,
 				"yaml_file": None,

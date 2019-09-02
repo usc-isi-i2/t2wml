@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 from oslo_concurrency import lockutils
 
+
 class UserStore:
 	__instance = None
 
