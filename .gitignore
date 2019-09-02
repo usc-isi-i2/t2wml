@@ -106,8 +106,5 @@ venv.bak/
 .idea/
 .Code/RegionTestCase.py
 .DS_Store
-config/uploads/*
 temporary_files/*
-/config/users.json
-/config/create_user
 config/*
