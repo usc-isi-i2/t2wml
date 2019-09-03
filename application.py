@@ -5,9 +5,7 @@ import json
 from pathlib import Path
 import os
 from time import time
-from Code.utility_functions import check_if_empty, excel_to_json, get_excel_row_index, get_excel_column_index, \
-	get_project_details, create_directory, verify_google_login, add_login_source_in_user_id, generate_id, \
-	update_project_meta, get_current_file_name
+from Code.utility_functions import *
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.User import User
 from Code.ItemTable import ItemTable
@@ -62,7 +60,7 @@ def data_file_uploader(uid: str, pid: str, sheet_name: str=None):
 			response["dataFileMapping"] = {new_filename: file.filename}
 			response["isCSV"] = True if file_extension.lower() == "csv" else False
 			response["currentDataFile"] = new_filename
-			file_path = str(Path(app.config['UPLOAD_FOLDER']) / session['uid'] / pid / "df" / new_filename)
+			file_path = str(Path(app.config['UPLOAD_FOLDER']) / uid / pid / "df" / new_filename)
 			file.save(file_path)
 			data = excel_to_json(file_path, sheet_name)
 			response.update(data)
@@ -71,13 +69,13 @@ def data_file_uploader(uid: str, pid: str, sheet_name: str=None):
 	return response
 
 
-def wikified_output_uploader(user: User):
+def wikified_output_uploader(uid, pid):
 	"""
 	This function helps in processing the wikifier output file
-	:param user:
+	:param uid:
+	:param pid:
 	:return:
 	"""
-	user_data = user.get_wikifier_output_data()
 	data = {"error": ""}
 	if 'wikifier_output' not in request.files:
 		data["error"] = 'No file part'
@@ -86,11 +84,8 @@ def wikified_output_uploader(user: User):
 		if file.filename == '':
 			data["error"] = 'No file selected for uploading'
 		if file and allowed_file(file.filename, "csv"):
-			filename = secure_filename(file.filename)
-			filename = user.get_user_id() + "." + get_file_extension(filename)
-			file_path = str(Path(app.config['UPLOAD_FOLDER']) / filename)
+			file_path = str(Path(app.config['UPLOAD_FOLDER']) / uid / pid / "wf" / "other.csv")
 			file.save(file_path)
-			user_data.set_file_location(file_path)
 		else:
 			data["error"] = 'This file type is currently not supported'
 	return data
@@ -124,7 +119,6 @@ def upload_data_file():
 		project_meta = dict()
 		user_id = session['uid']
 		project_id = request.form['pid']
-		# project_id = "80a35f0f0d2f48a1a5852c57fcc933eb"
 		data = data_file_uploader(user_id, project_id)
 		if data["error"]:
 			response["error"] = data["error"]
@@ -173,12 +167,12 @@ def change_sheet():
 		user_id = session['uid']
 		sheet_name = request.form['sheet_name']
 		project_id = request.form['pid']
-		file_name = get_current_file_name(user_id, project_id)
+		file_name, sheet = get_current_file(user_id, project_id)
 		file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
 		data = excel_to_json(file_path, sheet_name)
 		table_data = response["tableData"]
 		table_data["fileName"] = file_name
-		table_data["isCSV"] = False # because CSV don't have sheets
+		table_data["isCSV"] = False # because CSVs don't have sheets
 		table_data["sheetNames"] = data["sheetNames"]
 		table_data["currSheetName"] = data["currentSheetName"]
 		table_data["sheetData"] = data["sheetData"]
@@ -267,22 +261,30 @@ def upload_wikified_output():
 	This function uploads the wikifier output
 	:return:
 	"""
-	user_id = request.form["id"]
-	os.makedirs("uploads", exist_ok=True)
-	user = app.config['USER_STORE'].get_user(user_id)
-	user.reset('wikifier_output')
-	response = wikified_output_uploader(user)
-	excel_data_filepath = user.get_excel_data().get_file_location()
-	sheet_name = user.get_excel_data().get_sheet_name()
-	wikifier_output_filepath = user.get_wikifier_output_data().get_file_location()
-	if excel_data_filepath and excel_data_filepath:
-		item_table = user.get_wikifier_output_data().get_item_table()
-		if not item_table:
-			item_table = ItemTable()
-			user.get_wikifier_output_data().set_item_table(item_table)
-		build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
-		response = item_table.get_region_qnodes()
-	return json.dumps(response, indent=3)
+	if 'uid' in session:
+		response = {
+					"tableData": dict(),
+					"wikifierData": dict(),
+					"yamlData": dict(),
+					"error": None
+				}
+		project_meta = dict()
+		user_id = session['uid']
+		project_id = request.form['pid']
+		data = wikified_output_uploader(user_id, project_id)
+		file_name, sheet_name = get_current_file(user_id, project_id)
+		if file_name:
+			region_map, region_file_name = get_region_mapping(user_id, project_id, file_name, sheet_name)
+			if region_map:
+				item_table = ItemTable(region_map)
+			else:
+				item_table = ItemTable()
+			wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+			data_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
+			build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
+			response = item_table.get_region_qnodes()
+			update_wikifier_region_file(user_id, project_id, region_file_name, response)
+		return json.dumps(response, indent=3)
 
 
 @app.route('/update_setting', methods=['POST'])

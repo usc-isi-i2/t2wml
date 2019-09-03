@@ -332,13 +332,13 @@ def get_project_details(user_dir):
 
 
 def update_project_meta(uid: str, pid: str, project_meta: dict):
-	@lockutils.synchronized('create_user', fair=True, external=True, lock_path=str(Path.cwd() / "config" / uid / pid))
+	@lockutils.synchronized('save_project_meta', fair=True, external=True, lock_path=str(Path.cwd() / "config" / uid / pid))
 	def save_project_meta():
 		file_path = str(Path.cwd() / "config"/ "uploads" / uid / pid / "project_config.json")
 		with open(file_path) as json_data:
 			data = json.load(json_data)
 			for k in project_meta.keys():
-				if k == "dataFileMapping":
+				if k == "dataFileMapping" or k == "wikfierRegionMapping":
 					data[k].update(project_meta[k])
 				else:
 					data[k] = project_meta[k]
@@ -348,8 +348,45 @@ def update_project_meta(uid: str, pid: str, project_meta: dict):
 	save_project_meta()
 
 
-def get_current_file_name(uid, pid):
+def get_current_file(uid, pid):
 	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "project_config.json")
 	with open(file_path) as json_data:
 		data = json.load(json_data)
-	return data["currentDataFile"]
+	return data["currentDataFile"], data["currentSheetName"]
+
+
+def get_region_mapping(uid, pid, file_name, sheet_name):
+	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "project_config.json")
+	with open(file_path) as json_data:
+		data = json.load(json_data)
+	try:
+		if file_name[-3:].lower() == "csv":
+			region_file_name = data["wikifierRegionMapping"][file_name][file_name]
+		else:
+			region_file_name = data["wikifierRegionMapping"][file_name][sheet_name]
+		region_file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_file_name)
+		with open(region_file_path) as json_data:
+			region_map = json.load(json_data)
+	except KeyError:
+		region_map = None
+		region_file_name = generate_id() + ".csv"
+		if file_name not in data["wikifierRegionMapping"]:
+			data["wikifierRegionMapping"][file_name] = dict()
+		if file_name[-3:].lower() == "csv":
+			project_meta = {"wikifierRegionMapping": {file_name: {file_name: region_file_name}}}
+		else:
+			project_meta = {"wikifierRegionMapping": {file_name: {sheet_name: region_file_name}}}
+		update_project_meta(uid, pid, project_meta)
+	return region_map, region_file_name
+
+
+def update_wikifier_region_file(uid, pid, region_filename, region_qnodes):
+	file_path = str(Path.cwd() / "config" / uid / pid / "wf" / region_filename)
+
+	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True, lock_path=str(Path.cwd() / "config" / uid / pid / "wf"))
+	def update_wikifier_region_config():
+		with open(file_path, 'w') as wikifier_region_config:
+			json.dump(region_qnodes, wikifier_region_config, indent=3)
+
+	update_wikifier_region_config()
+
