@@ -330,11 +330,11 @@ def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int) ->
 		'type': (None, 'text/csv'),
 		'header': (None, 'False')
 	}
-	response = requests.post('http://dsbox02.isi.edu:8397/wikify', files=files)
+	response = requests.post('http://minds03.isi.edu:8396/wikify', files=files)
 	if response.status_code == 200:
 		data = response.content.decode("utf-8")
-		data = csv.reader(data.splitlines(), delimiter=',')
-		output = list(data)
+		data = json.loads(data)['data']
+		output = csv.reader(data.splitlines(), delimiter=',')
 		for i in output:
 			cell_qnode_map[get_actual_cell_index((int(i[0]) + col_offset, int(i[1]) + row_offset))] = i[2]
 	return cell_qnode_map
