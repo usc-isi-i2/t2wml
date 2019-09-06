@@ -325,10 +325,7 @@ def get_project_details(user_dir):
 				project_detail["cdate"] = project_config["cdate"]
 				project_detail["mdate"] = project_config["mdate"]
 				projects.append(project_detail)
-	if projects:
-		return projects
-	else:
-		return None
+	return projects
 
 
 def update_project_meta(uid: str, pid: str, project_meta: dict):
