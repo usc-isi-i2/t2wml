@@ -69,6 +69,8 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	:param sparql_endpoint:
 	:return:
 	"""
+	#temporary fix
+	sparql_endpoint = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
 	try:
 		type = property_type_map[wikidata_property]
 	except KeyError:
