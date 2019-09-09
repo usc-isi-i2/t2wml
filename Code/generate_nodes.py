@@ -97,9 +97,10 @@ def model_data() -> None:
 		f.write(data)
 
 
-model_data()
-with open(Path.cwd().parent / "new_properties/changes.tsv", "w") as fp:
-	serialize_change_record(fp)
+# model_data()
+# with open(Path.cwd().parent / "new_properties/changes.tsv", "w") as fp:
+# 	serialize_change_record(fp)
+
 
 
 
