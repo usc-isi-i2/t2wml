@@ -1,0 +1,33 @@
+{
+   "pid": "0132fa8b700d44fb875b0b73bc2ba02a",
+   "ptitle": "aa",
+   "cdate": 1568056166459,
+   "mdate": 1568063882817,
+   "currentDataFile": "dcfd32ad042449e9a4c311453bddafb7.xlsx",
+   "currentSheetName": "table-1a",
+   "dataFileMapping": {
+      "9e5bb2a0d59d4305aa3317462e1bd75c.xls": "DT.ODA.ODAT.GI.ZS.xls",
+      "13788763e20c40d983b8095bda2e88b9.xls": "EG.ELC.ACCS.ZS.xls",
+      "02ccd79922d144a78f4704e1a6962350.xlsx": "homicide_report_total_and_sex.xlsx",
+      "cbff9ded3da24233a650685d8efccadf.xlsx": "homicide_report_total_and_sex.xlsx",
+      "660866925e5b401ea7d7624c302823c2.xlsx": "homicide_report_total_and_sex.xlsx",
+      "baf1dbc7dd7f44c5ba35ba1c79c35b45.xlsx": "homicide_report_total_and_sex.xlsx",
+      "10e1dc8a59b94e10adc6cf234ba3526f.xlsx": "homicide_report_total_and_sex.xlsx",
+      "dcfd32ad042449e9a4c311453bddafb7.xlsx": "homicide_report_total_and_sex.xlsx"
+   },
+   "yamlMapping": {},
+   "wikifierRegionMapping": {
+      "660866925e5b401ea7d7624c302823c2.xlsx": {
+         "table-1a": "4791d31018224825b247b8ca839710a5.csv"
+      },
+      "baf1dbc7dd7f44c5ba35ba1c79c35b45.xlsx": {
+         "table-1a": "87a355f38103462c9876db894f33b335.csv"
+      },
+      "10e1dc8a59b94e10adc6cf234ba3526f.xlsx": {
+         "table-1a": "1397dee02ade4aa88eb6fdb3ced79a6a.csv"
+      },
+      "dcfd32ad042449e9a4c311453bddafb7.xlsx": {
+         "table-1a": "5eb2f856acfd4777af5383198e086f10.csv"
+      }
+   }
+}

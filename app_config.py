@@ -7,7 +7,7 @@ __CWD__ = os.getcwd()
 UPLOAD_FOLDER = str(Path.cwd() / "uploads")
 CODE_FOLDER = str(Path.cwd() / "Code")
 ETK_PATH = str(Path.cwd().parent / "etk")
-DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")
+DOWNLOAD_FOLDER = str(Path.cwd() / "new_properties")
 __users__ = Users.get_instance()
 
 app = Flask(__name__, template_folder="templates", static_folder="t2wml-gui")
