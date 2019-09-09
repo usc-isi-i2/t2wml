@@ -10,6 +10,8 @@ from Code.handler import highlight_region, resolve_cell, generate_download_file,
 from Code.User import User
 from Code.ItemTable import ItemTable
 from Code.DataFile import DataFile
+from Code.Project import Project
+
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
@@ -76,19 +78,19 @@ def wikified_output_uploader(uid, pid):
 	:param pid:
 	:return:
 	"""
-	data = {"error": ""}
+	error = None
 	if 'wikifier_output' not in request.files:
-		data["error"] = 'No file part'
+		error = 'No file part'
 	else:
 		file = request.files['wikifier_output']
 		if file.filename == '':
-			data["error"] = 'No file selected for uploading'
+			error = 'No file selected for uploading'
 		if file and allowed_file(file.filename, "csv"):
 			file_path = str(Path(app.config['UPLOAD_FOLDER']) / uid / pid / "wf" / "other.csv")
 			file.save(file_path)
 		else:
-			data["error"] = 'This file type is currently not supported'
-	return data
+			error = 'This file type is currently not supported'
+	return error
 
 
 @app.route('/', methods=['GET'])
@@ -101,6 +103,79 @@ def index():
 		return redirect(url_for('project_home'))
 	else:
 		return render_template('login.html')
+
+
+@app.route('/login', methods=['POST'])
+def login():
+	response = {"vs": None}
+	if 'token' in request.form and 'source' in request.form:
+		token = request.form['token']
+		source = request.form['source']
+		user_info, error = verify_google_login(token)
+		if user_info:
+			if source == "Google":
+				user_id = add_login_source_in_user_id(user_info["sub"], source)
+				app.config['USER_STORE'].create_user(user_id, user_info)
+				session['uid'] = user_id
+				create_directory(app.config['UPLOAD_FOLDER'], session['uid'])
+			verification_status = True
+		else:
+			verification_status = False
+	else:
+		verification_status = False
+		error = "Invalid Request"
+	response["vs"] = verification_status
+	response["error"] = error
+	return json.dumps(response)
+
+
+@app.route('/project/<string:pid>', methods=['GET'])
+def open_project(pid):
+	if 'uid' in session:
+		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
+		user_info_json = json.dumps(user_info)
+		project_config_path = get_project_config_path(session['uid'], pid)
+		project = Project(project_config_path)
+		project.update_mdate()
+		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info_json))
+	else:
+		return redirect(url_for('index'))
+
+
+@app.route('/project', methods=['GET'])
+def project_home():
+	if 'uid' in session:
+		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
+		user_info_json = json.dumps(user_info)
+		return make_response(render_template('home.html', userInfo=user_info_json))
+	else:
+		return redirect(url_for('index'))
+
+
+@app.route('/project_meta', methods=['POST'])
+def project_meta():
+	if 'uid' in session:
+		user_dir = Path(app.config['UPLOAD_FOLDER']) / session['uid']
+		project_details = get_project_details(user_dir)
+	else:
+		project_details = None
+	project_details_json = json.dumps(project_details)
+	return project_details_json
+
+
+@app.route('/new_project', methods=['POST'])
+def create_project():
+	if 'uid' in session:
+		response = dict()
+		if 'ptitle' in request.form:
+			project_title = request.form['ptitle']
+			project_id = generate_id()
+			response['pid'] = project_id
+			create_directory(app.config['UPLOAD_FOLDER'], session['uid'], project_id, project_title)
+	else:
+		response = None
+	response_json = json.dumps(response)
+	return response_json
 
 
 @app.route('/upload_data_file', methods=['POST'])
@@ -148,7 +223,10 @@ def upload_data_file():
 		# 		user.get_wikifier_output_data().set_item_table(item_table)
 		# 	build_item_table(item_table, wikifier_output_filepath, excel_data_filepath, sheet_name)
 		# 	response.update(item_table.get_region_qnodes())
-		update_project_meta(user_id, project_id, project_meta)
+		# update_project_meta(user_id, project_id, project_meta)
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
+		project.update_project_config(project_meta)
 		return json.dumps(response, indent=3)
 	else:
 		return redirect(url_for('index'))
@@ -167,7 +245,9 @@ def change_sheet():
 		user_id = session['uid']
 		sheet_name = request.form['sheet_name']
 		project_id = request.form['pid']
-		file_name, sheet = get_current_file(user_id, project_id)
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
+		file_name, sheet = project.get_current_file_and_sheet()
 		file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
 		data = excel_to_json(file_path, sheet_name)
 		table_data = response["tableData"]
@@ -177,7 +257,33 @@ def change_sheet():
 		table_data["currSheetName"] = data["currentSheetName"]
 		table_data["sheetData"] = data["sheetData"]
 		project_meta["currentSheetName"] = data["currentSheetName"]
-		update_project_meta(user_id, project_id, project_meta)
+		project.update_project_config(project_meta)
+		return json.dumps(response, indent=3)
+
+
+@app.route('/upload_wikifier_output', methods=['POST'])
+def upload_wikifier_output():
+	"""
+	This function uploads the wikifier output
+	:return:
+	"""
+	if 'uid' in session:
+		response = dict()
+		user_id = session['uid']
+		project_id = request.form['pid']
+		response["error"] = wikified_output_uploader(user_id, project_id)
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
+		file_name, sheet_name = project.get_current_file_and_sheet()
+		if file_name:
+			region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+			item_table = ItemTable(region_map)
+			wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+			data_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
+			build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
+			response.update(item_table.get_region_qnodes())
+			update_wikifier_region_file(user_id, project_id, region_file_name, response)
+
 		return json.dumps(response, indent=3)
 
 
@@ -255,38 +361,6 @@ def downloader():
 	return generate_download_file(user_id, item_table, excel_data_filepath, sheet_name, region, template, filetype, sparql_endpoint)
 
 
-@app.route('/upload_wikifier_output', methods=['POST'])
-def upload_wikified_output():
-	"""
-	This function uploads the wikifier output
-	:return:
-	"""
-	if 'uid' in session:
-		response = {
-					"tableData": dict(),
-					"wikifierData": dict(),
-					"yamlData": dict(),
-					"error": None
-				}
-		project_meta = dict()
-		user_id = session['uid']
-		project_id = request.form['pid']
-		data = wikified_output_uploader(user_id, project_id)
-		file_name, sheet_name = get_current_file(user_id, project_id)
-		if file_name:
-			region_map, region_file_name = get_region_mapping(user_id, project_id, file_name, sheet_name)
-			if region_map:
-				item_table = ItemTable(region_map)
-			else:
-				item_table = ItemTable()
-			wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
-			data_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
-			build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
-			response = item_table.get_region_qnodes()
-			update_wikifier_region_file(user_id, project_id, region_file_name, response)
-		return json.dumps(response, indent=3)
-
-
 @app.route('/update_setting', methods=['POST'])
 def update_setting():
 	"""
@@ -358,74 +432,6 @@ def wikify_region():
 # 	return json.dumps(data, indent=3)
 
 
-@app.route('/login', methods=['POST'])
-def login():
-	response = {"vs": None}
-	if 'token' in request.form and 'source' in request.form:
-		token = request.form['token']
-		source = request.form['source']
-		user_info, error = verify_google_login(token)
-		if user_info:
-			if source == "Google":
-				user_id = add_login_source_in_user_id(user_info["sub"], source)
-				app.config['USER_STORE'].create_user(user_id, user_info)
-				session['uid'] = user_id
-				create_directory(app.config['UPLOAD_FOLDER'], session['uid'])
-			verification_status = True
-		else:
-			verification_status = False
-	else:
-		verification_status = False
-		error = "Invalid Request"
-	response["vs"] = verification_status
-	response["error"] = error
-	return json.dumps(response)
-
-
-@app.route('/project/<string:pid>', methods=['GET'])
-def open_project(pid):
-	if 'uid' in session:
-		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
-		user_info_json = json.dumps(user_info)
-		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info_json))
-	else:
-		return redirect(url_for('index'))
-
-
-@app.route('/project', methods=['GET'])
-def project_home():
-	if 'uid' in session:
-		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
-		user_info_json = json.dumps(user_info)
-		return make_response(render_template('home.html', userInfo=user_info_json))
-	else:
-		return redirect(url_for('index'))
-
-
-@app.route('/project_meta', methods=['POST'])
-def project_meta():
-	if 'uid' in session:
-		user_dir = Path(app.config['UPLOAD_FOLDER']) / session['uid']
-		project_details = get_project_details(user_dir)
-	else:
-		project_details = None
-	project_details_json = json.dumps(project_details)
-	return project_details_json
-
-
-@app.route('/new_project', methods=['POST'])
-def create_project():
-	if 'uid' in session:
-		response = dict()
-		if 'ptitle' in request.form:
-			project_title = request.form['ptitle']
-			project_id = generate_id()
-			response['pid'] = project_id
-			create_directory(app.config['UPLOAD_FOLDER'], session['uid'], project_id, project_title)
-	else:
-		response = None
-	response_json = json.dumps(response)
-	return response_json
 
 
 @app.route('/get_project_files', methods=['POST'])
