@@ -50,15 +50,22 @@ class Project:
 			else:
 				region_file_name = self.__project_config["wikifierRegionMapping"][file_name][sheet_name]
 		except KeyError:
-			region_file_name = generate_id() + ".csv"
+			region_file_name = generate_id() + ".json"
 			if file_name not in self.__project_config["wikifierRegionMapping"]:
 				self.__project_config["wikifierRegionMapping"][file_name] = dict()
 			if file_name[-3:].lower() == "csv":
 				self.__project_config["wikifierRegionMapping"][file_name] = {file_name: region_file_name}
 			else:
 				self.__project_config["wikifierRegionMapping"][file_name] = {sheet_name: region_file_name}
-		self.update_project_config()
+			self.update_project_config()
 		return region_file_name
+
+	def add_yaml_file(self, data_file_name, sheet_name, yaml_file_name):
+		if data_file_name not in self.__project_config["yamlMapping"]:
+			self.__project_config["yamlMapping"][data_file_name] = dict()
+
+		self.__project_config["yamlMapping"][data_file_name][sheet_name] = yaml_file_name
+		self.update_project_config()
 
 # 	self.__id = None
 	# 	self.__title = None

@@ -81,7 +81,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 	region = region_specification['region_object']
 	remove_empty_and_invalid_cells(region)
 	head = region.get_head()
-	data = {"data_region": set(), "item": set(), "qualifier_region": set(), 'error': dict()}
+	data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
 	bindings["$col"] = head[0]
 	bindings["$row"] = head[1]
 	holes = []
@@ -114,7 +114,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 
 			if not row_be_skipped and not column_be_skipped and not cell_be_skipped:
 				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
-				data["data_region"].add(data_cell)
+				data["dataRegion"].add(data_cell)
 
 				if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
 					try:
@@ -134,7 +134,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 								qualifier_cells.add(qualifier_cell)
 							except AttributeError:
 								pass
-					data["qualifier_region"] |= qualifier_cells
+					data["qualifierRegion"] |= qualifier_cells
 			else:
 				holes.append((bindings["$row"], bindings["$col"]))
 		except Exception as e:
@@ -145,9 +145,9 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 
-	data['data_region'] = list(data['data_region'])
+	data['dataRegion'] = list(data['dataRegion'])
 	data['item'] = list(data['item'])
-	data['qualifier_region'] = list(data['qualifier_region'])
+	data['qualifierRegion'] = list(data['qualifierRegion'])
 
 	for cell_index in holes:
 		region.add_hole(cell_index[0], cell_index[1], cell_index[1])

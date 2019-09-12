@@ -1,0 +1,17 @@
+statementMapping:
+  region:
+    - left: D
+      right: Q
+      top: 1
+      bottom: 179
+  template:
+    item: item(A/$row)
+    property: item($col/1)
+    value: value($col/$row)
+    #unit: # need to define the units
+    qualifier:
+      - property: P585
+        value: value(B/$row)
+        calendar: Q1985727
+        precision: year
+        time_zone: 0

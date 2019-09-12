@@ -11,6 +11,7 @@ from Code.User import User
 from Code.ItemTable import ItemTable
 from Code.DataFile import DataFile
 from Code.Project import Project
+from Code.YAMLFile import YAMLFile
 
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
@@ -152,7 +153,7 @@ def project_home():
 		return redirect(url_for('index'))
 
 
-@app.route('/project_meta', methods=['POST'])
+@app.route('/get_project_meta', methods=['POST'])
 def project_meta():
 	if 'uid' in session:
 		user_dir = Path(app.config['UPLOAD_FOLDER']) / session['uid']
@@ -163,7 +164,7 @@ def project_meta():
 	return project_details_json
 
 
-@app.route('/new_project', methods=['POST'])
+@app.route('/create_project', methods=['POST'])
 def create_project():
 	if 'uid' in session:
 		response = dict()
@@ -271,7 +272,7 @@ def upload_wikifier_output():
 		response = dict()
 		user_id = session['uid']
 		project_id = request.form['pid']
-		response["error"] = wikified_output_uploader(user_id, project_id)
+		error = wikified_output_uploader(user_id, project_id)
 		project_config_path = get_project_config_path(user_id, project_id)
 		project = Project(project_config_path)
 		file_name, sheet_name = project.get_current_file_and_sheet()
@@ -283,7 +284,7 @@ def upload_wikifier_output():
 			build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
 			response.update(item_table.get_region_qnodes())
 			update_wikifier_region_file(user_id, project_id, region_file_name, response)
-
+		response['error'] = error
 		return json.dumps(response, indent=3)
 
 
@@ -293,30 +294,37 @@ def upload_yaml():
 	This function process the yaml
 	:return:
 	"""
-	user_id = request.form["id"]
-	yaml_data = request.values["yaml"]
-
-	os.makedirs("uploads", exist_ok=True)
-	user = app.config['USER_STORE'].get_user(user_id)
-	user.reset('yaml')
-	yaml_configuration = user.get_yaml_data()
-	excel_data_filepath = user.get_excel_data().get_file_location()
-	response = dict()
+	user_id = session['uid']
+	project_id = request.form['pid']
+	yaml_data = request.form["yaml"]
+	project_config_path = get_project_config_path(user_id, project_id)
+	project = Project(project_config_path)
+	data_file_name, sheet_name = project.get_current_file_and_sheet()
+	yaml_configuration = YAMLFile()
+	data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+	response = {'error': None}
 	if check_if_empty(yaml_data):
 		response['error'] = "YAML file is either empty or not valid"
 	else:
-		sheet_name = user.get_excel_data().get_sheet_name()
-		filename = str(Path(app.config['UPLOAD_FOLDER']) / user_id) + ".yaml"
-		with open(filename, "w") as f:
+		yaml_file_id = generate_id()
+		yaml_file_name = yaml_file_id + ".yaml"
+		yaml_config_file_name = yaml_file_id + ".pickle"
+		yaml_config_file_path = yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+		yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
+		with open(yaml_file_path, "w") as f:
 			f.write(yaml_data)
-			yaml_configuration.set_file_location(filename)
-		region, template = load_yaml_data(filename)
+			yaml_configuration.set_file_location(yaml_file_path)
+		region, template = load_yaml_data(yaml_file_path)
 		yaml_configuration.set_region(region)
 		yaml_configuration.set_template(template)
+		project.add_yaml_file(data_file_name, sheet_name, yaml_file_id)
+		save_yaml_config(yaml_config_file_path, yaml_configuration)
 
-		item_table = user.get_wikifier_output_data().get_item_table()
+		wikifier_config_file_name = project.get_wikifier_region_filname()
+		wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
+		item_table = ItemTable(wikifier_config)
 		template = yaml_configuration.get_template()
-		response['region'] = highlight_region(item_table, excel_data_filepath, sheet_name, region, template)
+		response['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
 
 	return json.dumps(response, indent=3)
 

@@ -5,6 +5,7 @@ import pyexcel
 import os
 import re
 import json
+import pickle
 from time import time
 from uuid import uuid4
 from typing import Sequence
@@ -358,7 +359,7 @@ def get_region_mapping(uid, pid, project):
 
 
 def update_wikifier_region_file(uid, pid, region_filename, region_qnodes):
-	file_path = str(Path.cwd() / "config" / uid / pid / "wf" / region_filename)
+	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
 
 	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True, lock_path=str(Path.cwd() / "config" / uid / pid / "wf"))
 	def update_wikifier_region_config():
@@ -368,5 +369,24 @@ def update_wikifier_region_file(uid, pid, region_filename, region_qnodes):
 	update_wikifier_region_config()
 
 
+def deserialize_wikifier_config(uid, pid, region_filename):
+	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
+	print(file_path)
+	with open(file_path, 'r') as wikifier_region_config:
+		wikifier_config = json.load(wikifier_region_config)
+	return wikifier_config
+
+
 def get_project_config_path(uid, pid):
 	return str(Path.cwd() / "config" / "uploads" / uid / pid / "project_config.json")
+
+
+def save_yaml_config(yaml_config_file_path, yaml_config):
+	with open(yaml_config_file_path, 'wb') as config_file:
+		pickle.dump(yaml_config, config_file)
+
+
+def load_yaml_config(yaml_config_file_path):
+	with open(yaml_config_file_path, 'rb') as config_file:
+		yaml_config = pickle.load(config_file)
+	return yaml_config
