@@ -95,6 +95,9 @@ class Project:
 		self.__project_config["sparqlEndpoint"] = sparql_endpoint
 		self.update_project_config()
 
+	def update_project_title(self, ptitle):
+		self.__project_config["ptitle"] = ptitle
+		self.update_project_config()
 # 	self.__id = None
 	# 	self.__title = None
 	# 	self.__sparql_endpoint = "http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql"

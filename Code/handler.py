@@ -181,7 +181,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	return data
 
 
-def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str) -> str:
+def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str):
 	"""
 	This function generates the download files based on the filetype
 	:param user_id:
@@ -196,7 +196,8 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
-	response = []
+	response = dict()
+	data = []
 	error = []
 	head = region.get_head()
 	bindings["$col"] = head[0]
@@ -204,7 +205,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			statement = evaluate_template(template)
-			response.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
+			data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
 		except Exception as e:
 			error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
 		if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
@@ -212,14 +213,17 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	if filetype == 'json':
-		json_response = json.dumps(response, indent=3)
-		return json_response
+		response["data"] = data
+		response["error"] = None
+		return response
 	elif filetype == 'ttl':
 		try:
-			json_response = generate_triples(user_id, response, sparql_endpoint, filetype)
-			return json_response
+			response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype)
+			response["error"] = None
+			return response
 		except Exception as e:
-			return str(e)
+			response = {'error': str(e)}
+			return response
 
 
 def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str) -> dict:

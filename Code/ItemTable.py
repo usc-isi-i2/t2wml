@@ -12,11 +12,14 @@ class ItemTable:
 			self.other = {'region': list(), 'qnodes': dict()}
 			self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
 		else:
-			self.other = {'region': region_qnodes['regions']['Other'], 'qnodes': dict()}
-			del region_qnodes['regions']['Other']
-			for i in self.other['region']:
-				self.other['qnodes'][i] = region_qnodes['qnodes'][i]
-				del region_qnodes['qnodes'][i]
+			if 'Other' in region_qnodes['regions']:
+				self.other = {'region': region_qnodes['regions']['Other'], 'qnodes': dict()}
+				del region_qnodes['regions']['Other']
+				for i in self.other['region']:
+					self.other['qnodes'][i] = region_qnodes['qnodes'][i]
+					del region_qnodes['qnodes'][i]
+			else:
+				self.other = {'region': list(), 'qnodes': dict()}
 			self.region_qnodes = region_qnodes
 
 	def get_region_qnodes(self) -> dict:

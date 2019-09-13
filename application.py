@@ -12,7 +12,7 @@ from Code.ItemTable import ItemTable
 from Code.DataFile import DataFile
 from Code.Project import Project
 from Code.YAMLFile import YAMLFile
-
+import shutil
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
@@ -221,13 +221,17 @@ def upload_data_file():
 		project = Project(project_config_path)
 		project.update_project_config(project_meta)
 
-		# wikifier_config_file_name = project.get_wikifier_region_filename()
-		# if wikifier_config_file_name:
-		# 	wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
-		# 	item_table = ItemTable(wikifier_config)
-		# 	region_qnodes = item_table.get_region_qnodes()
-		# 	response["wikifierData"] = region_qnodes
+		data_file_name, sheet_name = project.get_current_file_and_sheet()
+		region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+		item_table = ItemTable(region_map)
+		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
 
+		if Path(wikifier_output_filepath).exists():
+			build_item_table(item_table, wikifier_output_filepath, data_file_path, sheet_name)
+		region_qnodes = item_table.get_region_qnodes()
+		response["wikifierData"] = region_qnodes
+		update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
 		return json.dumps(response, indent=3)
 	else:
 		return redirect(url_for('index'))
@@ -244,21 +248,30 @@ def change_sheet():
 				}
 		project_meta = dict()
 		user_id = session['uid']
-		sheet_name = request.form['sheet_name']
+		new_sheet_name = request.form['sheet_name']
 		project_id = request.form['pid']
 		project_config_path = get_project_config_path(user_id, project_id)
 		project = Project(project_config_path)
-		file_name, sheet = project.get_current_file_and_sheet()
-		file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
-		data = excel_to_json(file_path, sheet_name)
+		data_file_id, current_sheet_name = project.get_current_file_and_sheet()
+		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_id)
+		data = excel_to_json(data_file_path, new_sheet_name)
 		table_data = response["tableData"]
-		table_data["fileName"] = file_name
+		table_data["fileName"] = project.get_file_name_by_id(data_file_id)
 		table_data["isCSV"] = False # because CSVs don't have sheets
 		table_data["sheetNames"] = data["sheetNames"]
 		table_data["currSheetName"] = data["currSheetName"]
 		table_data["sheetData"] = data["sheetData"]
 		project_meta["currentSheetName"] = data["currSheetName"]
 		project.update_project_config(project_meta)
+
+		region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+		item_table = ItemTable(region_map)
+		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+		if Path(wikifier_output_filepath).exists():
+			build_item_table(item_table, wikifier_output_filepath, data_file_path, new_sheet_name)
+		region_qnodes = item_table.get_region_qnodes()
+		response["wikifierData"] = region_qnodes
+		update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
 		return json.dumps(response, indent=3)
 
 
@@ -369,16 +382,26 @@ def downloader():
 	This functions initiates the download
 	:return:
 	"""
-	user_id = request.form["id"]
+	user_id = session["uid"]
 	filetype = request.form["type"]
-	user = app.config['USER_STORE'].get_user(user_id)
-	excel_data_filepath = user.get_excel_data().get_file_location()
-	sheet_name = user.get_excel_data().get_sheet_name()
-	template = user.get_yaml_data().get_template()
-	region = user.get_yaml_data().get_region()
-	item_table = user.get_wikifier_output_data().get_item_table()
-	sparql_endpoint = user.get_sparql_endpoint()
-	return generate_download_file(user_id, item_table, excel_data_filepath, sheet_name, region, template, filetype, sparql_endpoint)
+	project_id = request.form["pid"]
+	project_config_path = get_project_config_path(user_id, project_id)
+	project = Project(project_config_path)
+	data_file_name, sheet_name = project.get_current_file_and_sheet()
+	data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+
+	yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
+	yaml_config_file_name = yaml_file_id + ".pickle"
+	yaml_config_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+	yaml_config = load_yaml_config(yaml_config_file_path)
+	template = yaml_config.get_template()
+	region = yaml_config.get_region()
+
+	region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+	item_table = ItemTable(region_map)
+	sparql_endpoint = project.get_sparql_endpoint()
+	response = generate_download_file(user_id, item_table, data_file_path, sheet_name, region, template, filetype, sparql_endpoint)
+	return json.dumps(response, indent=3)
 
 
 @app.route('/update_setting', methods=['POST'])
@@ -387,10 +410,13 @@ def update_setting():
 	This function updates the settings from GUI
 	:return:
 	"""
-	user_id = request.form["id"]
+	user_id = session["uid"]
+	project_id = request.form["pid"]
 	endpoint = request.form["endpoint"]
-	user = app.config['USER_STORE'].get_user(user_id)
-	user.set_sparql_endpoint(endpoint)
+	project_config_path = get_project_config_path(user_id, project_id)
+	project = Project(project_config_path)
+	project.update_sparql_endpoint(endpoint)
+	return json.dumps(None)
 
 
 @app.route('/call_wikifier_service', methods=['POST'])
@@ -505,6 +531,43 @@ def logout():
 	if 'uid' in session:
 		del session['uid']
 	return redirect(url_for('index'))
+
+
+@app.route('/rename_project', methods=['POST'])
+def rename_project():
+	if 'uid' in session:
+		user_id = session['uid']
+		project_id = request.form["pid"]
+		ptitle = request.form["ptitle"]
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
+		project.update_project_title(ptitle)
+		user_dir = Path(app.config['UPLOAD_FOLDER']) / user_id
+		project_details = get_project_details(user_dir)
+	else:
+		project_details = None
+	project_details_json = json.dumps(project_details)
+	return project_details_json
+
+
+@app.route('/delete_project', methods=['POST'])
+def delete_project():
+	if 'uid' in session:
+		user_id = session['uid']
+		project_id = request.form["pid"]
+		project_directory = Path(app.config['UPLOAD_FOLDER']) / session['uid'] / project_id
+		# project_directory.unlink()
+		shutil.rmtree(project_directory)
+
+		# project_config_path = get_project_config_path(user_id, project_id)
+		# project = Project(project_config_path)
+		# project.update_project_title(ptitle)
+		user_dir = Path(app.config['UPLOAD_FOLDER']) / user_id
+		project_details = get_project_details(user_dir)
+	else:
+		project_details = None
+	project_details_json = json.dumps(project_details)
+	return project_details_json
 
 
 if __name__ == "__main__":
