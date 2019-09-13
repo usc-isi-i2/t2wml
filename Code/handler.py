@@ -155,7 +155,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 	return data
 
 
-def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: str, row: str) -> str:
+def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: int, row: int) -> str:
 	"""
 	This cell resolve the statement for a particular cell
 	:param item_table:
@@ -175,11 +175,10 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			statement = evaluate_template(template)
-			data = {'statement': statement}
+			data = {'statement': statement, 'error': None}
 		except Exception as e:
 			data = {'error': str(e)}
-	json_data = json.dumps(data)
-	return json_data
+	return data
 
 
 def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str) -> str:
@@ -330,11 +329,11 @@ def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int) ->
 		'type': (None, 'text/csv'),
 		'header': (None, 'False')
 	}
-	response = requests.post('http://dsbox02.isi.edu:8397/wikify', files=files)
+	response = requests.post('http://minds03.isi.edu:8396/wikify', files=files)
 	if response.status_code == 200:
 		data = response.content.decode("utf-8")
-		data = csv.reader(data.splitlines(), delimiter=',')
-		output = list(data)
+		data = json.loads(data)['data']
+		output = csv.reader(data.splitlines(), delimiter=',')
 		for i in output:
 			cell_qnode_map[get_actual_cell_index((int(i[0]) + col_offset, int(i[1]) + row_offset))] = i[2]
 	return cell_qnode_map

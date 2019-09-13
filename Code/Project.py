@@ -42,7 +42,10 @@ class Project:
 	def get_current_file_and_sheet(self):
 		return self.__project_config["currentDataFile"], self.__project_config["currentSheetName"]
 
-	def get_wikifier_region_filname(self):
+	def get_file_name_by_id(self, file_id):
+		return self.__project_config["dataFileMapping"][file_id]
+
+	def get_or_create_wikifier_region_filename(self):
 		file_name, sheet_name = self.get_current_file_and_sheet()
 		try:
 			if file_name[-3:].lower() == "csv":
@@ -60,11 +63,36 @@ class Project:
 			self.update_project_config()
 		return region_file_name
 
+	def get_wikifier_region_filename(self):
+		file_name, sheet_name = self.get_current_file_and_sheet()
+		try:
+			if file_name[-3:].lower() == "csv":
+				region_file_name = self.__project_config["wikifierRegionMapping"][file_name][file_name]
+			else:
+				region_file_name = self.__project_config["wikifierRegionMapping"][file_name][sheet_name]
+		except KeyError:
+			region_file_name = None
+		return region_file_name
+
 	def add_yaml_file(self, data_file_name, sheet_name, yaml_file_name):
 		if data_file_name not in self.__project_config["yamlMapping"]:
 			self.__project_config["yamlMapping"][data_file_name] = dict()
 
 		self.__project_config["yamlMapping"][data_file_name][sheet_name] = yaml_file_name
+		self.update_project_config()
+
+	def get_yaml_file_id(self, data_file_name, sheet_name):
+		try:
+			yaml_file_id = self.__project_config["yamlMapping"][data_file_name][sheet_name]
+		except KeyError:
+			yaml_file_id = None
+		return yaml_file_id
+
+	def get_sparql_endpoint(self):
+		return self.__project_config["sparqlEndpoint"]
+
+	def update_sparql_endpoint(self, sparql_endpoint):
+		self.__project_config["sparqlEndpoint"] = sparql_endpoint
 		self.update_project_config()
 
 # 	self.__id = None

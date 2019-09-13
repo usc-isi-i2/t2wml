@@ -115,7 +115,7 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> str:
 	else:
 		result["sheetNames"] = None
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
-	result["currentSheetName"] = sheet_name
+	result["currSheetName"] = sheet_name
 	for i in range(len(sheet[0])):
 		column = get_column_letter(i+1)
 		column_index_map[i+1] = column
@@ -303,6 +303,7 @@ def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: s
 								"ptitle": ptitle,
 								"cdate": int(time() * 1000),
 								"mdate": int(time() * 1000),
+								"sparqlEndpoint": "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql",
 								"currentDataFile": None,
 								"currentSheetName": None,
 								"dataFileMapping": dict(),
@@ -347,7 +348,7 @@ def get_project_details(user_dir):
 
 
 def get_region_mapping(uid, pid, project):
-	file_name = project.get_wikifier_region_filname()
+	file_name = project.get_or_create_wikifier_region_filename()
 	region_file_path = Path.cwd() / "config" / "uploads" / uid / pid / "wf" / file_name
 	region_file_path.touch(exist_ok=True)
 	with open(region_file_path) as json_data:
@@ -371,7 +372,6 @@ def update_wikifier_region_file(uid, pid, region_filename, region_qnodes):
 
 def deserialize_wikifier_config(uid, pid, region_filename):
 	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
-	print(file_path)
 	with open(file_path, 'r') as wikifier_region_config:
 		wikifier_config = json.load(wikifier_region_config)
 	return wikifier_config
