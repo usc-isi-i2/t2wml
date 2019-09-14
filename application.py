@@ -232,6 +232,27 @@ def upload_data_file():
 		region_qnodes = item_table.get_region_qnodes()
 		response["wikifierData"] = region_qnodes
 		update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
+
+		yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
+		if yaml_file_id:
+			response["yamlData"] = dict()
+			yaml_file_name = yaml_file_id + ".yaml"
+			yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
+			response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
+			if data_file_name:
+				yaml_config_file_name = yaml_file_id + ".pickle"
+				yaml_config_file_path = str(
+					Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
+
+				yaml_config = load_yaml_config(yaml_config_file_path)
+				template = yaml_config.get_template()
+				region = yaml_config.get_region()
+				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
+		else:
+			response["yamlData"] = None
+
+
 		return json.dumps(response, indent=3)
 	else:
 		return redirect(url_for('index'))
@@ -272,6 +293,26 @@ def change_sheet():
 		region_qnodes = item_table.get_region_qnodes()
 		response["wikifierData"] = region_qnodes
 		update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
+
+		yaml_file_id = project.get_yaml_file_id(data_file_id, new_sheet_name)
+		if yaml_file_id:
+			response["yamlData"] = dict()
+			yaml_file_name = yaml_file_id + ".yaml"
+			yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
+			response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
+			if data_file_id:
+				yaml_config_file_name = yaml_file_id + ".pickle"
+				yaml_config_file_path = str(
+					Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
+
+				yaml_config = load_yaml_config(yaml_config_file_path)
+				template = yaml_config.get_template()
+				region = yaml_config.get_region()
+				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, new_sheet_name, region, template)
+		else:
+			response["yamlData"] = None
+
 		return json.dumps(response, indent=3)
 
 
@@ -326,7 +367,7 @@ def upload_yaml():
 		yaml_config_file_name = yaml_file_id + ".pickle"
 		yaml_config_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
 		yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
-		with open(yaml_file_path, "w") as f:
+		with open(yaml_file_path, "w", newline='') as f:
 			f.write(yaml_data)
 			yaml_configuration.set_file_location(yaml_file_path)
 		region, template = load_yaml_data(yaml_file_path)
@@ -493,7 +534,6 @@ def get_project_files():
 				response["tableData"]["sheetNames"] = None
 		else:
 			response["tableData"] = None
-
 		wikifier_config_file_name = project.get_wikifier_region_filename()
 		if wikifier_config_file_name:
 			wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)

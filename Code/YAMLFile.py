@@ -55,6 +55,9 @@ class YAMLFile:
 		self.__region['right'] = region['right']
 		self.__region['top'] = region['top']
 		self.__region['bottom'] = region['bottom']
+		self.__region['skip_row'] = region['skip_row']
+		self.__region['skip_column'] = region['skip_column']
+		self.__region['skip_cell'] = region['skip_cell']
 		self.__region['region_object'] = region['region_object']
 
 	def set_template(self, template: dict) -> None:
