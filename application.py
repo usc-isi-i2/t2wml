@@ -445,8 +445,8 @@ def downloader():
 	return json.dumps(response, indent=3)
 
 
-@app.route('/update_setting', methods=['POST'])
-def update_setting():
+@app.route('/update_settings', methods=['POST'])
+def update_settings():
 	"""
 	This function updates the settings from GUI
 	:return:
