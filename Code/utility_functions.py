@@ -95,7 +95,7 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	return type
 
 
-def excel_to_json(file_path: str, sheet_name: str = None) -> str:
+def excel_to_json(file_path: str, sheet_name: str = None, want_sheetNames=None) -> str:
 	"""
 	This function reads the excel file and converts it to JSON
 	:param file_path:
@@ -105,7 +105,7 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> str:
 	sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
 	column_index_map = {}
 	result = dict()
-	if not sheet_name:
+	if not sheet_name or want_sheetNames:
 		result['sheetNames'] = list()
 		book_dict = pyexcel.get_book_dict(file_name=file_path)
 		for sheet in book_dict.keys():

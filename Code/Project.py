@@ -65,12 +65,15 @@ class Project:
 
 	def get_wikifier_region_filename(self):
 		file_name, sheet_name = self.get_current_file_and_sheet()
-		try:
-			if file_name[-3:].lower() == "csv":
-				region_file_name = self.__project_config["wikifierRegionMapping"][file_name][file_name]
-			else:
-				region_file_name = self.__project_config["wikifierRegionMapping"][file_name][sheet_name]
-		except KeyError:
+		if file_name:
+			try:
+				if file_name[-3:].lower() == "csv":
+					region_file_name = self.__project_config["wikifierRegionMapping"][file_name][file_name]
+				else:
+					region_file_name = self.__project_config["wikifierRegionMapping"][file_name][sheet_name]
+			except KeyError:
+				region_file_name = None
+		else:
 			region_file_name = None
 		return region_file_name
 

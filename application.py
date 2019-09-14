@@ -487,7 +487,7 @@ def get_project_files():
 			response["tableData"]["isCSV"] = True if file_extension.lower() == "csv" else False
 			response["tableData"]["filename"] = project.get_file_name_by_id(data_file_id)
 			data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
-			response["tableData"].update(excel_to_json(data_file_path, sheet_name))
+			response["tableData"].update(excel_to_json(data_file_path, sheet_name, True))
 			if response["tableData"]["isCSV"]:
 				response["tableData"]["currSheetName"] = None
 				response["tableData"]["sheetNames"] = None
