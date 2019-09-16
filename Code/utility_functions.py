@@ -215,7 +215,7 @@ def translate_precision_to_integer(precision: str) -> int:
 
 def delete_file(filepath: str) -> None:
 	"""
-	This function delets a file at the filepath
+	This function deletes a file at the filepath
 	:param filepath:
 	:return:
 	"""

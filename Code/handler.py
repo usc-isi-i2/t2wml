@@ -9,7 +9,7 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range
+from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range, delete_file
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -305,7 +305,9 @@ def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: 
 	:return:
 	"""
 	file_name = uuid.uuid4().hex + ".csv"
-	file_path = str(Path.cwd() / "temporary_files" / file_name)
+	temp_folder_path = Path.cwd() / "temporary_files"
+	temp_folder_path.mkdir(parents=True, exist_ok=True)
+	file_path = str(temp_folder_path / file_name)
 	try:
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, start_row=cell_range[0][1], row_limit=cell_range[1][1] - cell_range[0][1] + 1, start_column=cell_range[0][0], column_limit=cell_range[1][0] - cell_range[0][0] + 1)
 		pyexcel.save_as(array=sheet, dest_file_name=file_path)
@@ -367,4 +369,5 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None) -> d
 				pass
 			except KeyError:
 				pass
+	delete_file(file_path)
 	return response
