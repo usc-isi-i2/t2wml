@@ -596,7 +596,7 @@ def delete_project():
 		user_id = session['uid']
 		project_id = request.form["pid"]
 		project_directory = Path(app.config['UPLOAD_FOLDER']) / session['uid'] / project_id
-		# project_directory.unlink()
+
 		shutil.rmtree(project_directory)
 
 		# project_config_path = get_project_config_path(user_id, project_id)

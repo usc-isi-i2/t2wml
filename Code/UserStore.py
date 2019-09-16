@@ -1,6 +1,8 @@
 # from Code.User import User
 from pathlib import Path
 import json
+
+from dill.pointers import parents
 from oslo_concurrency import lockutils
 
 
@@ -22,8 +24,10 @@ class UserStore:
 			raise Exception("This class is a singleton!")
 		else:
 			UserStore.__instance = self
-			self.file_path = Path.cwd() / "config" / "users.json"
-			self.file_path.touch(exist_ok=True)
+			config_folder_path = Path.cwd() / "config"
+			config_folder_path.mkdir(parents=True, exist_ok=True)
+			self.file_path = config_folder_path / "users.json"
+			self.file_path.touch(exist_ok=False)
 			with open(self.file_path) as json_data:
 				try:
 					self.__user_list = json.load(json_data)
