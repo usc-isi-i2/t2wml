@@ -27,7 +27,7 @@ class UserStore:
 			config_folder_path = Path.cwd() / "config"
 			config_folder_path.mkdir(parents=True, exist_ok=True)
 			self.file_path = config_folder_path / "users.json"
-			self.file_path.touch(exist_ok=False)
+			self.file_path.touch(exist_ok=True)
 			with open(self.file_path) as json_data:
 				try:
 					self.__user_list = json.load(json_data)
