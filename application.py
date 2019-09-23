@@ -199,7 +199,7 @@ def upload_data_file():
 			curr_data_file_name = data["dataFileMapping"][curr_data_file_id]
 			project_meta["dataFileMapping"] = data["dataFileMapping"]
 			project_meta["mdate"] = int(time() * 1000)
-			table_data["fileName"] = curr_data_file_name
+			table_data["filename"] = curr_data_file_name
 			table_data["isCSV"] = data["isCSV"]
 			if not table_data["isCSV"]:
 				table_data["sheetNames"] = data["sheetNames"]
@@ -278,7 +278,7 @@ def change_sheet():
 		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_id)
 		data = excel_to_json(data_file_path, new_sheet_name)
 		table_data = response["tableData"]
-		table_data["fileName"] = project.get_file_name_by_id(data_file_id)
+		table_data["filename"] = project.get_file_name_by_id(data_file_id)
 		table_data["isCSV"] = False # because CSVs don't have sheets
 		table_data["sheetNames"] = data["sheetNames"]
 		table_data["currSheetName"] = data["currSheetName"]
