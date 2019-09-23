@@ -348,8 +348,8 @@ def get_project_details(user_dir):
 # 	save_project_meta()
 
 
-def get_region_mapping(uid, pid, project):
-	file_name = project.get_or_create_wikifier_region_filename()
+def get_region_mapping(uid, pid, project, data_file_name=None, sheet_name=None):
+	file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
 	region_file_path = Path.cwd() / "config" / "uploads" / uid / pid / "wf" / file_name
 	region_file_path.touch(exist_ok=True)
 	with open(region_file_path) as json_data:
@@ -363,7 +363,7 @@ def get_region_mapping(uid, pid, project):
 def update_wikifier_region_file(uid, pid, region_filename, region_qnodes):
 	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
 
-	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True, lock_path=str(Path.cwd() / "config" / uid / pid / "wf"))
+	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True, lock_path=str(Path.cwd() / "config"/ "uploads" / uid / pid / "wf"))
 	def update_wikifier_region_config():
 		with open(file_path, 'w') as wikifier_region_config:
 			json.dump(region_qnodes, wikifier_region_config, indent=3)

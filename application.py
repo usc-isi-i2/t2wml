@@ -14,6 +14,7 @@ from Code.Project import Project
 from Code.YAMLFile import YAMLFile
 import shutil
 
+
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
 
@@ -154,7 +155,7 @@ def project_home():
 
 
 @app.route('/get_project_meta', methods=['POST'])
-def project_meta():
+def get_project_meta():
 	if 'uid' in session:
 		user_dir = Path(app.config['UPLOAD_FOLDER']) / session['uid']
 		project_details = get_project_details(user_dir)
@@ -214,15 +215,16 @@ def upload_data_file():
 			else:
 				table_data["sheetNames"] = None
 				table_data["currSheetName"] = None
-				project_meta["currentSheetName"] = None
+				project_meta["currentSheetName"] = curr_data_file_id
 			table_data["sheetData"] = data["sheetData"]
 
 		project_config_path = get_project_config_path(user_id, project_id)
 		project = Project(project_config_path)
-		project.update_project_config(project_meta)
 
-		data_file_name, sheet_name = project.get_current_file_and_sheet()
-		region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+		# data_file_name, sheet_name = project.get_current_file_and_sheet()
+		data_file_name = curr_data_file_id
+		sheet_name = project_meta["currentSheetName"]
+		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_name, sheet_name)
 		item_table = ItemTable(region_map)
 		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
 		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
@@ -231,6 +233,9 @@ def upload_data_file():
 			build_item_table(item_table, wikifier_output_filepath, data_file_path, sheet_name)
 		region_qnodes = item_table.get_region_qnodes()
 		response["wikifierData"] = region_qnodes
+		project_meta["wikifierRegionMapping"] = dict()
+		project_meta["wikifierRegionMapping"][data_file_name] = dict()
+		project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
 		update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
 
 		yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
@@ -243,16 +248,19 @@ def upload_data_file():
 				yaml_config_file_name = yaml_file_id + ".pickle"
 				yaml_config_file_path = str(
 					Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
-				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
+				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_name)
 
 				yaml_config = load_yaml_config(yaml_config_file_path)
 				template = yaml_config.get_template()
 				region = yaml_config.get_region()
 				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
+				project_meta["yamlMapping"] = dict()
+				project_meta["yamlMapping"][data_file_name] = dict()
+				project_meta["yamlMapping"][data_file_name][data["currSheetName"]] = yaml_file_id
 		else:
 			response["yamlData"] = None
 
-
+		project.update_project_config(project_meta)
 		return json.dumps(response, indent=3)
 	else:
 		return redirect(url_for('index'))
@@ -283,15 +291,17 @@ def change_sheet():
 		table_data["currSheetName"] = data["currSheetName"]
 		table_data["sheetData"] = data["sheetData"]
 		project_meta["currentSheetName"] = data["currSheetName"]
-		project.update_project_config(project_meta)
 
-		region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_id, new_sheet_name)
 		item_table = ItemTable(region_map)
 		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
 		if Path(wikifier_output_filepath).exists():
 			build_item_table(item_table, wikifier_output_filepath, data_file_path, new_sheet_name)
 		region_qnodes = item_table.get_region_qnodes()
 		response["wikifierData"] = region_qnodes
+		project_meta["wikifierRegionMapping"] = dict()
+		project_meta["wikifierRegionMapping"][data_file_id] = dict()
+		project_meta["wikifierRegionMapping"][data_file_id][new_sheet_name] = region_file_name
 		update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
 
 		yaml_file_id = project.get_yaml_file_id(data_file_id, new_sheet_name)
@@ -310,9 +320,13 @@ def change_sheet():
 				template = yaml_config.get_template()
 				region = yaml_config.get_region()
 				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, new_sheet_name, region, template)
+				project_meta["yamlMapping"] = dict()
+				project_meta["yamlMapping"][data_file_id] = dict()
+				project_meta["yamlMapping"][data_file_id][data["currSheetName"]] = yaml_file_id
 		else:
 			response["yamlData"] = None
 
+		project.update_project_config(project_meta)
 		return json.dumps(response, indent=3)
 
 
@@ -326,18 +340,22 @@ def upload_wikifier_output():
 		response = dict()
 		user_id = session['uid']
 		project_id = request.form['pid']
+		project_meta = dict()
 		error = wikified_output_uploader(user_id, project_id)
 		project_config_path = get_project_config_path(user_id, project_id)
 		project = Project(project_config_path)
 		file_name, sheet_name = project.get_current_file_and_sheet()
 		if file_name:
-			region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+			region_map, region_file_name = get_region_mapping(user_id, project_id, project, file_name, sheet_name)
 			item_table = ItemTable(region_map)
 			wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
 			data_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
 			build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
 			response.update(item_table.get_region_qnodes())
 			update_wikifier_region_file(user_id, project_id, region_file_name, response)
+			project_meta["wikifierRegionMapping"] = dict()
+			project_meta["wikifierRegionMapping"][file_name] = dict()
+			project_meta["wikifierRegionMapping"][file_name][sheet_name] = region_file_name
 		response['error'] = error
 		return json.dumps(response, indent=3)
 
@@ -351,6 +369,7 @@ def upload_yaml():
 	user_id = session['uid']
 	project_id = request.form['pid']
 	yaml_data = request.form["yaml"]
+	project_meta = dict()
 	project_config_path = get_project_config_path(user_id, project_id)
 	project = Project(project_config_path)
 	data_file_name, sheet_name = project.get_current_file_and_sheet()
@@ -377,11 +396,15 @@ def upload_yaml():
 		save_yaml_config(yaml_config_file_path, yaml_configuration)
 
 		if data_file_name:
-			wikifier_config_file_name = project.get_or_create_wikifier_region_filename()
+			wikifier_config_file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
 			wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
 			item_table = ItemTable(wikifier_config)
 			template = yaml_configuration.get_template()
 			response['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
+			project_meta["yamlMapping"] = dict()
+			project_meta["yamlMapping"][data_file_name] = dict()
+			project_meta["yamlMapping"][data_file_name][sheet_name] = yaml_file_id
+			project.update_project_config(project_meta)
 		else:
 			response['yamlRegions'] = None
 			response['error'] = "Upload data file before applying YAML."
@@ -478,6 +501,7 @@ def wikify_region():
 	region_map, region_file_name = get_region_mapping(user_id, project_id, project)
 	item_table = ItemTable(region_map)
 	data = dict()
+
 	if action == "add_region":
 		if not data_file_path:
 			data['error'] = "No excel file to wikify"
@@ -505,6 +529,11 @@ def wikify_region():
 		update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
 	if 'error' not in data:
 		data['error'] = None
+	project_meta = dict()
+	project_meta["wikifierRegionMapping"] = dict()
+	project_meta["wikifierRegionMapping"][data_file_name] = dict()
+	project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
+	project.update_project_config(project_meta)
 	return json.dumps(data, indent=3)
 
 

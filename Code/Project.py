@@ -23,8 +23,13 @@ class Project:
 	def update_project_config(self, new_config: dict = None):
 		if new_config:
 			for k in new_config.keys():
-				if k == "dataFileMapping" or k == "wikfierRegionMapping":
+				if k == "dataFileMapping":
 					self.__project_config[k].update(new_config[k])
+				elif k == "wikifierRegionMapping" or k == "yamlMapping":
+					for key in new_config[k].keys():
+						if key not in self.__project_config[k]:
+							self.__project_config[k][key] = dict()
+						self.__project_config[k][key].update(new_config[k][key])
 				else:
 					self.__project_config[k] = new_config[k]
 
@@ -45,8 +50,9 @@ class Project:
 	def get_file_name_by_id(self, file_id):
 		return self.__project_config["dataFileMapping"][file_id]
 
-	def get_or_create_wikifier_region_filename(self):
-		file_name, sheet_name = self.get_current_file_and_sheet()
+	def get_or_create_wikifier_region_filename(self, file_name=None, sheet_name=None):
+		if not file_name and not sheet_name:
+			file_name, sheet_name = self.get_current_file_and_sheet()
 		try:
 			if file_name[-3:].lower() == "csv":
 				region_file_name = self.__project_config["wikifierRegionMapping"][file_name][file_name]
@@ -57,9 +63,9 @@ class Project:
 			if file_name not in self.__project_config["wikifierRegionMapping"]:
 				self.__project_config["wikifierRegionMapping"][file_name] = dict()
 			if file_name[-3:].lower() == "csv":
-				self.__project_config["wikifierRegionMapping"][file_name] = {file_name: region_file_name}
+				self.__project_config["wikifierRegionMapping"][file_name].update({file_name: region_file_name})
 			else:
-				self.__project_config["wikifierRegionMapping"][file_name] = {sheet_name: region_file_name}
+				self.__project_config["wikifierRegionMapping"][file_name].update({sheet_name: region_file_name})
 			self.update_project_config()
 		return region_file_name
 
