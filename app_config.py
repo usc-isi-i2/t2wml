@@ -2,9 +2,11 @@ from flask import Flask
 import os
 from flask_cors import CORS
 from pathlib import Path
-from Code.Users import Users
+from Code.UserStore import UserStore
+
+
 __CWD__ = os.getcwd()
-UPLOAD_FOLDER = str(Path.cwd() / "uploads")
+UPLOAD_FOLDER = str(Path.cwd() / "config" / "uploads")
 CODE_FOLDER = str(Path.cwd() / "Code")
 ETK_PATH = str(Path.cwd().parent / "etk")
 DOWNLOAD_FOLDER = str(Path.cwd() / "new_properties")
@@ -19,5 +21,5 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['CODE_FOLDER'] = CODE_FOLDER
 app.config['ETK_PATH'] = ETK_PATH
 app.config['downloads'] = DOWNLOAD_FOLDER
-app.config['users'] = __users__
+app.config['USER_STORE'] = __user_store__
 
