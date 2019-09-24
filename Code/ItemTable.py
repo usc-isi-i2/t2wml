@@ -7,20 +7,9 @@ from Code.utility_functions import get_actual_cell_index, check_if_empty, natura
 
 
 class ItemTable:
-	def __init__(self, region_qnodes=None):
-		if not region_qnodes:
-			self.other = {'region': list(), 'qnodes': dict()}
-			self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
-		else:
-			if 'Other' in region_qnodes['regions']:
-				self.other = {'region': region_qnodes['regions']['Other'], 'qnodes': dict()}
-				del region_qnodes['regions']['Other']
-				for i in self.other['region']:
-					self.other['qnodes'][i] = region_qnodes['qnodes'][i]
-					del region_qnodes['qnodes'][i]
-			else:
-				self.other = {'region': list(), 'qnodes': dict()}
-			self.region_qnodes = region_qnodes
+	def __init__(self):
+		self.other = {'region': list(), 'qnodes': dict()}
+		self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
 
 	def get_region_qnodes(self) -> dict:
 		"""

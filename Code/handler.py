@@ -81,7 +81,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 	region = region_specification['region_object']
 	remove_empty_and_invalid_cells(region)
 	head = region.get_head()
-	data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
+	data = {"data_region": set(), "item": set(), "qualifier_region": set(), 'error': dict()}
 	bindings["$col"] = head[0]
 	bindings["$row"] = head[1]
 	holes = []
@@ -114,7 +114,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 
 			if not row_be_skipped and not column_be_skipped and not cell_be_skipped:
 				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
-				data["dataRegion"].add(data_cell)
+				data["data_region"].add(data_cell)
 
 				if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
 					try:
@@ -134,7 +134,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 								qualifier_cells.add(qualifier_cell)
 							except AttributeError:
 								pass
-					data["qualifierRegion"] |= qualifier_cells
+					data["qualifier_region"] |= qualifier_cells
 			else:
 				holes.append((bindings["$row"], bindings["$col"]))
 		except Exception as e:
@@ -145,9 +145,9 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 
-	data['dataRegion'] = list(data['dataRegion'])
+	data['data_region'] = list(data['data_region'])
 	data['item'] = list(data['item'])
-	data['qualifierRegion'] = list(data['qualifierRegion'])
+	data['qualifier_region'] = list(data['qualifier_region'])
 
 	for cell_index in holes:
 		region.add_hole(cell_index[0], cell_index[1], cell_index[1])
@@ -155,7 +155,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 	return data
 
 
-def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: int, row: int) -> str:
+def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: str, row: str) -> str:
 	"""
 	This cell resolve the statement for a particular cell
 	:param item_table:
@@ -175,13 +175,14 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			statement = evaluate_template(template)
-			data = {'statement': statement, 'error': None}
+			data = {'statement': statement}
 		except Exception as e:
 			data = {'error': str(e)}
-	return data
+	json_data = json.dumps(data)
+	return json_data
 
 
-def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str):
+def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str) -> str:
 	"""
 	This function generates the download files based on the filetype
 	:param user_id:
@@ -196,8 +197,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
-	response = dict()
-	data = []
+	response = []
 	error = []
 	head = region.get_head()
 	bindings["$col"] = head[0]
@@ -205,7 +205,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			statement = evaluate_template(template)
-			data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
+			response.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
 		except Exception as e:
 			error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
 		if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
@@ -213,17 +213,14 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	if filetype == 'json':
-		response["data"] = json.dumps(data, indent=3)
-		response["error"] = None
-		return response
+		json_response = json.dumps(response, indent=3)
+		return json_response
 	elif filetype == 'ttl':
 		try:
-			response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype)
-			response["error"] = None
-			return response
+			json_response = generate_triples(user_id, response, sparql_endpoint, filetype)
+			return json_response
 		except Exception as e:
-			response = {'error': str(e)}
-			return response
+			return str(e)
 
 
 def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str) -> dict:
