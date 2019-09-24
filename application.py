@@ -470,9 +470,10 @@ def update_settings():
 	user_id = session["uid"]
 	project_id = request.form["pid"]
 	endpoint = request.form["endpoint"]
-	user = app.config['users'].get_user(user_id)
-	user.set_sparql_endpoint(endpoint)
-	return json.dumps("Setting updated")
+	project_config_path = get_project_config_path(user_id, project_id)
+	project = Project(project_config_path)
+	project.update_sparql_endpoint(endpoint)
+	return json.dumps(None)
 
 
 @app.route('/call_wikifier_service', methods=['POST'])
