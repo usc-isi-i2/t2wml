@@ -9,10 +9,8 @@ __CWD__ = os.getcwd()
 UPLOAD_FOLDER = str(Path.cwd() / "config" / "uploads")
 CODE_FOLDER = str(Path.cwd() / "Code")
 ETK_PATH = str(Path.cwd().parent / "etk")
-
 DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")
 __user_store__ = UserStore.get_instance()
-
 
 app = Flask(__name__, template_folder="templates", static_folder="t2wml-gui")
 CORS(app)
