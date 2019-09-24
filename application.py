@@ -1,3 +1,5 @@
+from flask_cors import cross_origin
+
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from Code.utility_functions import *
@@ -470,10 +472,12 @@ def update_settings():
 	user_id = session["uid"]
 	project_id = request.form["pid"]
 	endpoint = request.form["endpoint"]
+
 	project_config_path = get_project_config_path(user_id, project_id)
 	project = Project(project_config_path)
 	project.update_sparql_endpoint(endpoint)
 	return json.dumps(None)
+
 
 
 @app.route('/call_wikifier_service', methods=['POST'])

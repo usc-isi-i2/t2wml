@@ -96,10 +96,11 @@ def model_data() -> None:
 		data = doc.kg.serialize('ttl')
 		f.write(data)
 
-#
+
 # model_data()
 # with open(Path.cwd().parent / "new_properties/changes.tsv", "w") as fp:
 # 	serialize_change_record(fp)
+
 
 
 

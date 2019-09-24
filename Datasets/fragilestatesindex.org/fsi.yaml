@@ -3,7 +3,7 @@ statementMapping:
     - left: D
       right: Q
       top: 1
-      bottom: 180
+      bottom: 148
   template:
     item: item(A/$row)
     property: item($col/1)

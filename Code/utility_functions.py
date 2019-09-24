@@ -92,6 +92,8 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 			type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
 		except IndexError:
 			type = "Property Not Found"
+		except TypeError:
+			type = "Property Not Found"
 	return type
 
 
@@ -217,7 +219,7 @@ def translate_precision_to_integer(precision: str) -> int:
 
 def delete_file(filepath: str) -> None:
 	"""
-	This function delets a file at the filepath
+	This function deletes a file at the filepath
 	:param filepath:
 	:return:
 	"""
