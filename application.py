@@ -475,6 +475,7 @@ def update_settings():
 	return json.dumps("Setting updated")
 
 
+
 @app.route('/call_wikifier_service', methods=['POST'])
 def wikify_region():
 	"""
