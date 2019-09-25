@@ -9,7 +9,7 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range, delete_file
+from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -67,7 +67,7 @@ def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: 
 	bindings["item_table"] = item_table
 
 
-def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict) -> str:
+def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict) -> dict:
 	"""
 	This function add holes in the region_object and builds up the list of data_region, item_region and qualifier_region
 	:param item_table:
@@ -81,7 +81,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 	region = region_specification['region_object']
 	remove_empty_and_invalid_cells(region)
 	head = region.get_head()
-	data = {"data_region": set(), "item": set(), "qualifier_region": set(), 'error': dict()}
+	data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
 	bindings["$col"] = head[0]
 	bindings["$row"] = head[1]
 	holes = []
@@ -114,7 +114,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 
 			if not row_be_skipped and not column_be_skipped and not cell_be_skipped:
 				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
-				data["data_region"].add(data_cell)
+				data["dataRegion"].add(data_cell)
 
 				if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
 					try:
@@ -134,7 +134,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 								qualifier_cells.add(qualifier_cell)
 							except AttributeError:
 								pass
-					data["qualifier_region"] |= qualifier_cells
+					data["qualifierRegion"] |= qualifier_cells
 			else:
 				holes.append((bindings["$row"], bindings["$col"]))
 		except Exception as e:
@@ -145,17 +145,16 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 
-	data['data_region'] = list(data['data_region'])
+	data['dataRegion'] = list(data['dataRegion'])
 	data['item'] = list(data['item'])
-	data['qualifier_region'] = list(data['qualifier_region'])
+	data['qualifierRegion'] = list(data['qualifierRegion'])
 
 	for cell_index in holes:
 		region.add_hole(cell_index[0], cell_index[1], cell_index[1])
-
 	return data
 
 
-def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: str, row: str) -> str:
+def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: int, row: int) -> dict:
 	"""
 	This cell resolve the statement for a particular cell
 	:param item_table:
@@ -175,14 +174,13 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			statement = evaluate_template(template)
-			data = {'statement': statement}
+			data = {'statement': statement, 'error': None}
 		except Exception as e:
 			data = {'error': str(e)}
-	json_data = json.dumps(data)
-	return json_data
+	return data
 
 
-def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str) -> str:
+def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str) -> dict:
 	"""
 	This function generates the download files based on the filetype
 	:param user_id:
@@ -197,7 +195,8 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
-	response = []
+	response = dict()
+	data = []
 	error = []
 	head = region.get_head()
 	bindings["$col"] = head[0]
@@ -205,7 +204,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
 			statement = evaluate_template(template)
-			response.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
+			data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
 		except Exception as e:
 			error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
 		if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
@@ -213,14 +212,17 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 		else:
 			bindings["$col"], bindings["$row"] = None, None
 	if filetype == 'json':
-		json_response = json.dumps(response, indent=3)
-		return json_response
+		response["data"] = json.dumps(data, indent=3)
+		response["error"] = None
+		return response
 	elif filetype == 'ttl':
 		try:
-			json_response = generate_triples(user_id, response, sparql_endpoint, filetype)
-			return json_response
+			response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype)
+			response["error"] = None
+			return response
 		except Exception as e:
-			return str(e)
+			response = {'error': str(e)}
+			return response
 
 
 def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str) -> dict:
@@ -305,9 +307,7 @@ def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: 
 	:return:
 	"""
 	file_name = uuid.uuid4().hex + ".csv"
-	temp_folder_path = Path.cwd() / "temporary_files"
-	temp_folder_path.mkdir(parents=True, exist_ok=True)
-	file_path = str(temp_folder_path / file_name)
+	file_path = str(Path.cwd() / "temporary_files" / file_name)
 	try:
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, start_row=cell_range[0][1], row_limit=cell_range[1][1] - cell_range[0][1] + 1, start_column=cell_range[0][0], column_limit=cell_range[1][0] - cell_range[0][0] + 1)
 		pyexcel.save_as(array=sheet, dest_file_name=file_path)
@@ -369,5 +369,4 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None) -> d
 				pass
 			except KeyError:
 				pass
-	delete_file(file_path)
 	return response

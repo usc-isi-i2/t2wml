@@ -1,0 +1,941 @@
+@prefix : <http://isi.edu/> .
+@prefix p: <http://www.wikidata.org/prop/> .
+@prefix pq: <http://www.wikidata.org/prop/qualifier/> .
+@prefix pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/> .
+@prefix pqv: <http://www.wikidata.org/prop/qualifier/value/> .
+@prefix pr: <http://www.wikidata.org/prop/reference/> .
+@prefix prn: <http://www.wikidata.org/prop/reference/value-normalized/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix prv: <http://www.wikidata.org/prop/reference/value/> .
+@prefix ps: <http://www.wikidata.org/prop/statement/> .
+@prefix psn: <http://www.wikidata.org/prop/statement/value-normalized/> .
+@prefix psv: <http://www.wikidata.org/prop/statement/value/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix wdno: <http://www.wikidata.org/prop/novalue/> .
+@prefix wdref: <http://www.wikidata.org/reference/> .
+@prefix wds: <http://www.wikidata.org/entity/statement/> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+@prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/> .
+@prefix wdv: <http://www.wikidata.org/value/> .
+@prefix wikibase: <http://wikiba.se/ontology#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+wd:P100001 a wikibase:Property ;
+    rdfs:label "net ODA received"@en ;
+    schema:description "Net official development assistance is disbursement flows (net of repayment of principal) that meet the DAC definition of ODA and are made to countries and territories on the DAC list of aid recipients."@en ;
+    schema:name "net ODA received"@en ;
+    wikibase:claim p:P100001 ;
+    wikibase:directClaim wdt:P100001 ;
+    wikibase:directClaimNormalized wdtn:P100001 ;
+    wikibase:novalue wdno:P100001 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100001 ;
+    wikibase:qualifierValue pqv:P100001 ;
+    wikibase:qualifierValueNormalized pqn:P100001 ;
+    wikibase:reference pr:P100001 ;
+    wikibase:referenceValue prv:P100001 ;
+    wikibase:referenceValueNormalized prn:P100001 ;
+    wikibase:statementProperty ps:P100001 ;
+    wikibase:statementValue psv:P100001 ;
+    wikibase:statementValueNormalized psn:P100001 ;
+    skos:prefLabel "net ODA received"@en ;
+    p:P1629 wds:P100001-edaa20bc-fe3d-4308-b7fa-d33bbba156ef ;
+    p:P1896 wds:P100001-91224c20-d54e-4481-8b44-cf5a0a2af6c4 ;
+    p:P31 wds:P100001-28062694-85ad-4802-98d9-c763164878cf,
+        wds:P100001-9d374598-3e57-4397-be72-4c15fef1d894,
+        wds:P100001-e5112ede-7f76-4bc2-94be-a30610ab0fab .
+
+wd:P100002 a wikibase:Property ;
+    rdfs:label "access to electricity"@en ;
+    schema:description "Access to electricity, urban is the percentage of urban population with access to electricity."@en ;
+    schema:name "access to electricity"@en ;
+    wikibase:claim p:P100002 ;
+    wikibase:directClaim wdt:P100002 ;
+    wikibase:directClaimNormalized wdtn:P100002 ;
+    wikibase:novalue wdno:P100002 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100002 ;
+    wikibase:qualifierValue pqv:P100002 ;
+    wikibase:qualifierValueNormalized pqn:P100002 ;
+    wikibase:reference pr:P100002 ;
+    wikibase:referenceValue prv:P100002 ;
+    wikibase:referenceValueNormalized prn:P100002 ;
+    wikibase:statementProperty ps:P100002 ;
+    wikibase:statementValue psv:P100002 ;
+    wikibase:statementValueNormalized psn:P100002 ;
+    skos:prefLabel "access to electricity"@en ;
+    p:P1629 wds:P100002-fc021b4f-5ef8-4a25-b1fd-199b28d582a7 ;
+    p:P1896 wds:P100002-1a39b8f7-578c-4ee9-af35-c41c0115ae3e ;
+    p:P31 wds:P100002-26514c90-1e01-4491-a4f6-24b42a204d48,
+        wds:P100002-a2a8b229-7d41-4d15-b335-26d7d3ca9bb5,
+        wds:P100002-b1c5d281-e016-422c-8705-52d5a566e20d .
+
+wd:P100003 a wikibase:Property ;
+    rdfs:label "prevalence of undernourishment (% of population)"@en ;
+    schema:description "Population below minimum level of dietary energy consumption (also referred to as prevalence of undernourishment) shows the percentage of the population whose food intake is insufficient to meet dietary energy requirements continuously. Data showing as 5 may signify a prevalence of undernourishment below 5%."@en ;
+    schema:name "prevalence of undernourishment (% of population)"@en ;
+    wikibase:claim p:P100003 ;
+    wikibase:directClaim wdt:P100003 ;
+    wikibase:directClaimNormalized wdtn:P100003 ;
+    wikibase:novalue wdno:P100003 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100003 ;
+    wikibase:qualifierValue pqv:P100003 ;
+    wikibase:qualifierValueNormalized pqn:P100003 ;
+    wikibase:reference pr:P100003 ;
+    wikibase:referenceValue prv:P100003 ;
+    wikibase:referenceValueNormalized prn:P100003 ;
+    wikibase:statementProperty ps:P100003 ;
+    wikibase:statementValue psv:P100003 ;
+    wikibase:statementValueNormalized psn:P100003 ;
+    skos:prefLabel "prevalence of undernourishment (% of population)"@en ;
+    p:P1629 wds:P100003-05c4d620-cf11-4437-8907-2b5839ae58fd ;
+    p:P1896 wds:P100003-167d2425-a857-43ad-a5ac-36a0df8d94c1 ;
+    p:P31 wds:P100003-2a00ca0b-a8df-45b7-bd46-dbf08d9a1671,
+        wds:P100003-550b5dfb-c687-4dc0-b248-efedf289d5a1,
+        wds:P100003-e882ca65-6d3b-4d1e-83e2-c292c04f676d .
+
+wd:P100004 a wikibase:Property ;
+    rdfs:label "military expenditure (% of general government expenditure)"@en ;
+    schema:description "Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)"@en ;
+    schema:name "military expenditure (% of general government expenditure)"@en ;
+    wikibase:claim p:P100004 ;
+    wikibase:directClaim wdt:P100004 ;
+    wikibase:directClaimNormalized wdtn:P100004 ;
+    wikibase:novalue wdno:P100004 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100004 ;
+    wikibase:qualifierValue pqv:P100004 ;
+    wikibase:qualifierValueNormalized pqn:P100004 ;
+    wikibase:reference pr:P100004 ;
+    wikibase:referenceValue prv:P100004 ;
+    wikibase:referenceValueNormalized prn:P100004 ;
+    wikibase:statementProperty ps:P100004 ;
+    wikibase:statementValue psv:P100004 ;
+    wikibase:statementValueNormalized psn:P100004 ;
+    skos:prefLabel "military expenditure (% of general government expenditure)"@en ;
+    p:P1629 wds:P100004-4c8709a1-4285-4212-a225-fa0806af25c7 ;
+    p:P1896 wds:P100004-e074aeb8-4bdf-4780-859b-24b202185829 ;
+    p:P31 wds:P100004-718f3f96-31cc-4b60-835a-af9303afabe0,
+        wds:P100004-eee21bf7-7d3a-45b0-a458-538294a1458a .
+
+wd:P100005 a wikibase:Property ;
+    rdfs:label "military expenditure (% of GDP)"@en ;
+    schema:description "Military expenditures data from SIPRI are derived from the NATO definition, which includes all current and capital expenditures on the armed forces, including peacekeeping forces; defense ministries and other government agencies engaged in defense projects; paramilitary forces, if these are judged to be trained and equipped for military operations; and military space activities. Such expenditures include military and civil personnel, including retirement pensions of military personnel and social services for personnel; operation and maintenance; procurement; military research and development; and military aid (in the military expenditures of the donor country). Excluded are civil defense and current expenditures for previous military activities, such as for veterans' benefits, demobilization, conversion, and destruction of weapons. This definition cannot be applied for all countries, however, since that would require much more detailed information than is available about what is included in military budgets and off-budget military expenditure items. (For example, military budgets might or might not cover civil defense, reserves and auxiliary forces, police and paramilitary forces, dual-purpose forces such as military and civilian police, military grants in kind, pensions for military personnel, and social security contributions paid by one part of government to another.)"@en ;
+    schema:name "military expenditure (% of GDP)"@en ;
+    wikibase:claim p:P100005 ;
+    wikibase:directClaim wdt:P100005 ;
+    wikibase:directClaimNormalized wdtn:P100005 ;
+    wikibase:novalue wdno:P100005 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100005 ;
+    wikibase:qualifierValue pqv:P100005 ;
+    wikibase:qualifierValueNormalized pqn:P100005 ;
+    wikibase:reference pr:P100005 ;
+    wikibase:referenceValue prv:P100005 ;
+    wikibase:referenceValueNormalized prn:P100005 ;
+    wikibase:statementProperty ps:P100005 ;
+    wikibase:statementValue psv:P100005 ;
+    wikibase:statementValueNormalized psn:P100005 ;
+    skos:prefLabel "military expenditure (% of GDP)"@en ;
+    p:P1629 wds:P100005-1f42f842-6187-4db9-96d4-8121762866fb ;
+    p:P1896 wds:P100005-74240597-eb6f-4b1e-baa7-82403f167f8d ;
+    p:P31 wds:P100005-b77e70f9-d528-40cc-8e30-e54d64e7310d,
+        wds:P100005-e8468ad4-4ed3-40f7-93fe-ca72f40b9699 .
+
+wd:P100006 a wikibase:Property ;
+    rdfs:label "employment to population ratio, 15+, total (%) (national estimate)"@en ;
+    schema:description "Employment to population ratio is the proportion of a country's population that is employed. Employment is defined as persons of working age who, during a short reference period, were engaged in any activity to produce goods or provide services for pay or profit, whether at work during the reference period (i.e. who worked in a job for at least one hour) or not at work due to temporary absence from a job, or to working-time arrangements. Ages 15 and older are generally considered the working-age population."@en ;
+    schema:name "employment to population ratio, 15+, total (%) (national estimate)"@en ;
+    wikibase:claim p:P100006 ;
+    wikibase:directClaim wdt:P100006 ;
+    wikibase:directClaimNormalized wdtn:P100006 ;
+    wikibase:novalue wdno:P100006 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100006 ;
+    wikibase:qualifierValue pqv:P100006 ;
+    wikibase:qualifierValueNormalized pqn:P100006 ;
+    wikibase:reference pr:P100006 ;
+    wikibase:referenceValue prv:P100006 ;
+    wikibase:referenceValueNormalized prn:P100006 ;
+    wikibase:statementProperty ps:P100006 ;
+    wikibase:statementValue psv:P100006 ;
+    wikibase:statementValueNormalized psn:P100006 ;
+    skos:prefLabel "employment to population ratio, 15+, total (%) (national estimate)"@en ;
+    p:P1629 wds:P100006-d44979ee-a275-4bc9-a4bf-9baa2dc30cdd ;
+    p:P1896 wds:P100006-1c21fa7c-a975-4f64-8fb2-9fa4213d2b6f ;
+    p:P31 wds:P100006-2b4d54b5-a8c5-4e0b-bd7a-23394130a1e9,
+        wds:P100006-752a1092-5b71-4f32-ad74-4ce3e28d880e .
+
+wd:P100007 a wikibase:Property ;
+    rdfs:label "people using at least basic drinking water services (% of population)"@en ;
+    schema:description "The percentage of people using at least basic water services.  This indicator encompasses both people using basic water services as well as those using safely managed water services.  Basic drinking water services is defined as drinking water from an improved source, provided collection time is not more than 30 minutes for a round trip.  Improved water sources include piped water, boreholes or tubewells, protected dug wells, protected springs, and packaged or delivered water."@en ;
+    schema:name "people using at least basic drinking water services (% of population)"@en ;
+    wikibase:claim p:P100007 ;
+    wikibase:directClaim wdt:P100007 ;
+    wikibase:directClaimNormalized wdtn:P100007 ;
+    wikibase:novalue wdno:P100007 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100007 ;
+    wikibase:qualifierValue pqv:P100007 ;
+    wikibase:qualifierValueNormalized pqn:P100007 ;
+    wikibase:reference pr:P100007 ;
+    wikibase:referenceValue prv:P100007 ;
+    wikibase:referenceValueNormalized prn:P100007 ;
+    wikibase:statementProperty ps:P100007 ;
+    wikibase:statementValue psv:P100007 ;
+    wikibase:statementValueNormalized psn:P100007 ;
+    skos:prefLabel "people using at least basic drinking water services (% of population)"@en ;
+    p:P1629 wds:P100007-49199168-a5e2-46f3-9d92-38f5f6a8a3e9 ;
+    p:P1896 wds:P100007-9274e614-8ad2-49c2-91e2-0fa0832a132a ;
+    p:P31 wds:P100007-3a98d8fd-5930-4314-bb57-e6d06786d678,
+        wds:P100007-d8dbafa5-9da9-4022-9f1b-7386ae25102d .
+
+wd:P100008 a wikibase:Property ;
+    rdfs:label "people using at least basic sanitation services (% of population)"@en ;
+    schema:description "The percentage of people using at least basic sanitation services, that is, improved sanitation facilities that are not shared with other households.  This indicator encompasses both people using basic sanitation services as well as those using safely managed sanitation services.   Improved sanitation facilities include flush/pour flush to piped sewer systems, septic tanks or pit latrines; ventilated improved pit latrines, compositing toilets or pit latrines with slabs."@en ;
+    schema:name "people using at least basic sanitation services (% of population)"@en ;
+    wikibase:claim p:P100008 ;
+    wikibase:directClaim wdt:P100008 ;
+    wikibase:directClaimNormalized wdtn:P100008 ;
+    wikibase:novalue wdno:P100008 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100008 ;
+    wikibase:qualifierValue pqv:P100008 ;
+    wikibase:qualifierValueNormalized pqn:P100008 ;
+    wikibase:reference pr:P100008 ;
+    wikibase:referenceValue prv:P100008 ;
+    wikibase:referenceValueNormalized prn:P100008 ;
+    wikibase:statementProperty ps:P100008 ;
+    wikibase:statementValue psv:P100008 ;
+    wikibase:statementValueNormalized psn:P100008 ;
+    skos:prefLabel "people using at least basic sanitation services (% of population)"@en ;
+    p:P1629 wds:P100008-b74d238f-3eec-492a-8c68-6fbe63db51e5 ;
+    p:P1896 wds:P100008-468ddb05-abd4-4f61-9227-e117d78c6941 ;
+    p:P31 wds:P100008-1b5355bf-4f2f-473b-b655-8c81c09fa6b2,
+        wds:P100008-43c0d8d5-8513-4b4b-939a-aac25b2ed1da .
+
+wd:P100009 a wikibase:Property ;
+    rdfs:label "mortality rate, under-5 (per 1,000 live births)"@en ;
+    schema:description "Under-five mortality rate is the probability per 1,000 that a newborn baby will die before reaching age five, if subject to age-specific mortality rates of the specified year."@en ;
+    schema:name "mortality rate, under-5 (per 1,000 live births)"@en ;
+    wikibase:claim p:P100009 ;
+    wikibase:directClaim wdt:P100009 ;
+    wikibase:directClaimNormalized wdtn:P100009 ;
+    wikibase:novalue wdno:P100009 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100009 ;
+    wikibase:qualifierValue pqv:P100009 ;
+    wikibase:qualifierValueNormalized pqn:P100009 ;
+    wikibase:reference pr:P100009 ;
+    wikibase:referenceValue prv:P100009 ;
+    wikibase:referenceValueNormalized prn:P100009 ;
+    wikibase:statementProperty ps:P100009 ;
+    wikibase:statementValue psv:P100009 ;
+    wikibase:statementValueNormalized psn:P100009 ;
+    skos:prefLabel "mortality rate, under-5 (per 1,000 live births)"@en ;
+    p:P1629 wds:P100009-cb13f2bd-7d79-4a7c-9237-fbeaae9f35b6 ;
+    p:P1896 wds:P100009-ec9fe18c-94c4-4830-afae-60482633013d ;
+    p:P31 wds:P100009-29f5c409-41d4-4c61-be0e-7b2cd99edf2c,
+        wds:P100009-df2abbe0-4adf-469e-8bbf-992d8e996c85,
+        wds:P100009-dffb4ab4-e85c-400b-b72d-a125430209de .
+
+wd:P100010 a wikibase:Property ;
+    rdfs:label "consumer price index (2010 = 100)"@en ;
+    schema:description "Consumer price index reflects changes in the cost to the average consumer of acquiring a basket of goods and services that may be fixed or changed at specified intervals, such as yearly. The Laspeyres formula is generally used. Data are period averages."@en ;
+    schema:name "consumer price index (2010 = 100)"@en ;
+    wikibase:claim p:P100010 ;
+    wikibase:directClaim wdt:P100010 ;
+    wikibase:directClaimNormalized wdtn:P100010 ;
+    wikibase:novalue wdno:P100010 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100010 ;
+    wikibase:qualifierValue pqv:P100010 ;
+    wikibase:qualifierValueNormalized pqn:P100010 ;
+    wikibase:reference pr:P100010 ;
+    wikibase:referenceValue prv:P100010 ;
+    wikibase:referenceValueNormalized prn:P100010 ;
+    wikibase:statementProperty ps:P100010 ;
+    wikibase:statementValue psv:P100010 ;
+    wikibase:statementValueNormalized psn:P100010 ;
+    skos:prefLabel "consumer price index (2010 = 100)"@en ;
+    p:P1629 wds:P100010-fd835c6e-6882-41cf-ad00-daacc3a440a2 ;
+    p:P1896 wds:P100010-ec2762ad-7bc6-41cb-adf0-86b0e252f325 ;
+    p:P31 wds:P100010-a24c1f85-3c39-479f-ae59-04a5f913766e,
+        wds:P100010-b9362184-4f08-4d74-a117-219d776fb84f,
+        wds:P100010-d91c2b17-ba2e-4a18-89b5-3680439d19e8 .
+
+wd:P100011 a wikibase:Property ;
+    rdfs:label "security apparatus"@en ;
+    schema:description "The Security Apparatus indicator considers the security threats to a state, such as bombings, attacks and battle-related deaths, rebel movements, mutinies, coups, or terrorism. The Security Apparatus also takes into account serious criminal factors, such as organized crime and homicides, and perceived trust of citizens in domestic security. In some instances, the security apparatus may extend beyond traditional military or police forces to include state-sponsored or state-supported private militias that terrorize political opponents, suspected “enemies,” or civilians seen to be sympathetic to the opposition. In other instances, the security apparatus of a state can include a “deep state”, that may consist of secret intelligence units, or other irregular security forces, that serve the interests of a political leader or clique. As a counter example, the indicator will also take into account armed resistance to a governing authority, particularly the manifestation of violent uprisings and insurgencies, proliferation of independent militias, vigilantes, or mercenary groups that challenge the state’s monopoly of the use of force."@en ;
+    schema:name "security apparatus"@en ;
+    wikibase:claim p:P100011 ;
+    wikibase:directClaim wdt:P100011 ;
+    wikibase:directClaimNormalized wdtn:P100011 ;
+    wikibase:novalue wdno:P100011 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100011 ;
+    wikibase:qualifierValue pqv:P100011 ;
+    wikibase:qualifierValueNormalized pqn:P100011 ;
+    wikibase:reference pr:P100011 ;
+    wikibase:referenceValue prv:P100011 ;
+    wikibase:referenceValueNormalized prn:P100011 ;
+    wikibase:statementProperty ps:P100011 ;
+    wikibase:statementValue psv:P100011 ;
+    wikibase:statementValueNormalized psn:P100011 ;
+    skos:prefLabel "security apparatus"@en ;
+    p:P1896 wds:P100011-867ae7ae-e754-4f24-a3a7-fec76b16a4f3 ;
+    p:P31 wds:P100011-3279d3eb-02ef-486b-91c0-495de960c5e9 .
+
+wd:P100012 a wikibase:Property ;
+    rdfs:label "factionalized elites"@en ;
+    schema:description "The Factionalized Elites indicator considers the fragmentation of state institutions along ethnic, class, clan, racial or religious lines, as well as and brinksmanship and gridlock between ruling elites. It also factors the use of nationalistic political rhetoric by ruling elites, often in terms of nationalism, xenophobia, communal irredentism (e.g., a “greater Serbia”) or of communal solidarity (e.g., “ethnic cleansing” or “defending the faith”). In extreme cases, it can be representative of the absence of legitimate leadership widely accepted as representing the entire citizenry. The Factionalized Elites indicator measures power struggles, political competition, political transitions, and where elections occur will factor in the credibility of electoral processes (or in their absence, the perceived legitimacy of the ruling class)."@en ;
+    schema:name "factionalized elites"@en ;
+    wikibase:claim p:P100012 ;
+    wikibase:directClaim wdt:P100012 ;
+    wikibase:directClaimNormalized wdtn:P100012 ;
+    wikibase:novalue wdno:P100012 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100012 ;
+    wikibase:qualifierValue pqv:P100012 ;
+    wikibase:qualifierValueNormalized pqn:P100012 ;
+    wikibase:reference pr:P100012 ;
+    wikibase:referenceValue prv:P100012 ;
+    wikibase:referenceValueNormalized prn:P100012 ;
+    wikibase:statementProperty ps:P100012 ;
+    wikibase:statementValue psv:P100012 ;
+    wikibase:statementValueNormalized psn:P100012 ;
+    skos:prefLabel "factionalized elites"@en ;
+    p:P1896 wds:P100012-fb0c2ab9-5e4d-4171-b241-aab881a62215 ;
+    p:P31 wds:P100012-8f9dd822-b848-4540-a7c7-033bca594e9f .
+
+wd:P100013 a wikibase:Property ;
+    rdfs:label "group grievance"@en ;
+    schema:description "The Group Grievance Indicator focuses on divisions and schisms between different groups in society – particularly divisions based on social or political characteristics – and their role in access to services or resources, and inclusion in the political process. Group Grievance may also have a historical component, where aggrieved communal groups cite injustices of the past, sometimes going back centuries, that influence and shape that group’s role in society and relationships with other groups. This history may in turn be shaped by patterns of real or perceived atrocities or “crimes” committed with apparent impunity against communal groups. Groups may also feel aggrieved because they are denied autonomy, self-determination or political independence to which they believe they are entitled. The Indicator also considers where specific groups are singled out by state authorities, or by dominant groups, for persecution or repression, or where there is public scapegoating of groups believed to have acquired wealth, status or power “illegitimately”, which may manifest itself in the emergence of fiery rhetoric, such as through “hate” radio, pamphleteering, and stereotypical or nationalistic political speech."@en ;
+    schema:name "group grievance"@en ;
+    wikibase:claim p:P100013 ;
+    wikibase:directClaim wdt:P100013 ;
+    wikibase:directClaimNormalized wdtn:P100013 ;
+    wikibase:novalue wdno:P100013 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100013 ;
+    wikibase:qualifierValue pqv:P100013 ;
+    wikibase:qualifierValueNormalized pqn:P100013 ;
+    wikibase:reference pr:P100013 ;
+    wikibase:referenceValue prv:P100013 ;
+    wikibase:referenceValueNormalized prn:P100013 ;
+    wikibase:statementProperty ps:P100013 ;
+    wikibase:statementValue psv:P100013 ;
+    wikibase:statementValueNormalized psn:P100013 ;
+    skos:prefLabel "group grievance"@en ;
+    p:P1896 wds:P100013-3e03c5d6-37fa-4d7a-8d25-9a03c47fc7a5 ;
+    p:P31 wds:P100013-d0717711-ded9-4384-898f-6d77a575dd68,
+        wds:P100013-dee402a6-f0c3-46b2-9d6d-edb29dfdcd82 .
+
+wd:P100014 a wikibase:Property ;
+    rdfs:label "economic decline and poverty"@en ;
+    schema:description "The Economic Decline Indicator considers factors related to economic decline within a country. For example, the Indicator looks at patterns of progressive economic decline of the society as a whole as measured by per capita income, Gross National Product, unemployment rates, inflation, productivity, debt, poverty levels, or business failures. It also takes into account sudden drops in commodity prices, trade revenue, or foreign investment, and any collapse or devaluation of the national currency. The Economic Decline Indicator further considers the responses to economic conditions and their consequences, such as extreme social hardship imposed by economic austerity programs, or perceived increasing group inequalities. The Economic Decline Indicator is focused on the formal economy – as well as illicit trade, including the drug and human trafficking, and capital flight, or levels of corruption and illicit transactions such as money laundering or embezzlement."@en ;
+    schema:name "economic decline and poverty"@en ;
+    wikibase:claim p:P100014 ;
+    wikibase:directClaim wdt:P100014 ;
+    wikibase:directClaimNormalized wdtn:P100014 ;
+    wikibase:novalue wdno:P100014 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100014 ;
+    wikibase:qualifierValue pqv:P100014 ;
+    wikibase:qualifierValueNormalized pqn:P100014 ;
+    wikibase:reference pr:P100014 ;
+    wikibase:referenceValue prv:P100014 ;
+    wikibase:referenceValueNormalized prn:P100014 ;
+    wikibase:statementProperty ps:P100014 ;
+    wikibase:statementValue psv:P100014 ;
+    wikibase:statementValueNormalized psn:P100014 ;
+    skos:prefLabel "economic decline and poverty"@en ;
+    p:P1629 wds:P100014-77467a04-b9b6-4b63-8012-af1a41bce6b5 ;
+    p:P1896 wds:P100014-9fe87687-92be-4ac8-8c24-3ad8743db650 ;
+    p:P31 wds:P100014-47b0efea-fa8a-4ed1-816a-20fa00860bf9,
+        wds:P100014-668dbc79-8a3e-4bfa-b788-8f2f9568e038 .
+
+wd:P100015 a wikibase:Property ;
+    rdfs:label "uneven economic development"@en ;
+    schema:description "The Uneven Economic Development Indicator considers inequality within the economy, irrespective of the actual performance of an economy. For example, the Indicator looks at structural inequality that is based on group (such as racial, ethnic, religious, or other identity group) or based on education, economic status, or region (such as urban-rural divide). The Indicator considers not only actual inequality, but also perceptions of inequality, recognizing that perceptions of economic inequality can fuel grievance as much as real inequality, and can reinforce communal tensions or nationalistic rhetoric. Further to measuring economic inequality, the Indicator also takes into account the opportunities for groups to improve their economic status, such as through access to employment, education, or job training such that even if there is economic inequality present, to what degree it is structural and reinforcing."@en ;
+    schema:name "uneven economic development"@en ;
+    wikibase:claim p:P100015 ;
+    wikibase:directClaim wdt:P100015 ;
+    wikibase:directClaimNormalized wdtn:P100015 ;
+    wikibase:novalue wdno:P100015 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100015 ;
+    wikibase:qualifierValue pqv:P100015 ;
+    wikibase:qualifierValueNormalized pqn:P100015 ;
+    wikibase:reference pr:P100015 ;
+    wikibase:referenceValue prv:P100015 ;
+    wikibase:referenceValueNormalized prn:P100015 ;
+    wikibase:statementProperty ps:P100015 ;
+    wikibase:statementValue psv:P100015 ;
+    wikibase:statementValueNormalized psn:P100015 ;
+    skos:prefLabel "uneven economic development"@en ;
+    p:P1629 wds:P100015-557c0e2b-b272-4509-aa1d-4337ded297d3 ;
+    p:P1896 wds:P100015-baa7d248-4822-4ad2-91f5-ce68bcbab0d3 ;
+    p:P31 wds:P100015-2d498116-9d5d-44fa-85ad-cfb2c1d71689,
+        wds:P100015-79b9f0ab-19be-43d7-96d0-cabe9b2f7f8d .
+
+wd:P100016 a wikibase:Property ;
+    rdfs:label "human flight and brain drain"@en ;
+    schema:description "The Human Flight and Brain Drain Indicator considers the economic impact of human displacement (for economic or political reasons) and the consequences this may have on a country’s development. On the one hand, this may involve the voluntary emigration of the middle class – particularly economically productive segments of the population, such as entrepreneurs, or skilled workers such as physicians – due to economic deterioration in their home country and the hope of better opportunities farther afield. On the other hand, it may involve the forced displacement of professionals or intellectuals who are fleeing their country due to actual or feared persecution or repression, and specifically the economic impact that displacement may wreak on an economy through the loss of productive, skilled professional labor."@en ;
+    schema:name "human flight and brain drain"@en ;
+    wikibase:claim p:P100016 ;
+    wikibase:directClaim wdt:P100016 ;
+    wikibase:directClaimNormalized wdtn:P100016 ;
+    wikibase:novalue wdno:P100016 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100016 ;
+    wikibase:qualifierValue pqv:P100016 ;
+    wikibase:qualifierValueNormalized pqn:P100016 ;
+    wikibase:reference pr:P100016 ;
+    wikibase:referenceValue prv:P100016 ;
+    wikibase:referenceValueNormalized prn:P100016 ;
+    wikibase:statementProperty ps:P100016 ;
+    wikibase:statementValue psv:P100016 ;
+    wikibase:statementValueNormalized psn:P100016 ;
+    skos:prefLabel "human flight and brain drain"@en ;
+    p:P1629 wds:P100016-115fad19-ce69-47a7-9850-8e50878aa319 ;
+    p:P1896 wds:P100016-4f006f19-8aac-4254-8904-fffb3d5e17b1 ;
+    p:P31 wds:P100016-8820d9b7-46dd-41f4-89c7-1e3edee607c5,
+        wds:P100016-edd54472-4bb2-4008-b61a-5508779510d4 .
+
+wd:P100017 a wikibase:Property ;
+    rdfs:label "state legitimacy"@en ;
+    schema:description "The State Legitimacy Indicator considers the representativeness and openness of government and its relationship with its citizenry. The Indicator looks at the population’s level of confidence in state institutions and processes, and assesses the effects where that confidence is absent, manifested through mass public demonstrations, sustained civil disobedience, or the rise of armed insurgencies. Though the State Legitimacy indicator does not necessarily make a judgment on democratic governance, it does consider the integrity of elections where they take place (such as flawed or boycotted elections), the nature of political transitions, and where there is an absence of democratic elections, the degree to which the government is representative of the population of which it governs. The Indicator takes into account openness of government, specifically the openness of ruling elites to transparency, accountability and political representation, or conversely the levels of corruption, profiteering, and marginalizing, persecuting, or otherwise excluding opposition groups. The Indicator also considers the ability of a state to exercise basic functions that infer a population’s confidence in its government and institutions, such as through the ability to collect taxes."@en ;
+    schema:name "state legitimacy"@en ;
+    wikibase:claim p:P100017 ;
+    wikibase:directClaim wdt:P100017 ;
+    wikibase:directClaimNormalized wdtn:P100017 ;
+    wikibase:novalue wdno:P100017 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100017 ;
+    wikibase:qualifierValue pqv:P100017 ;
+    wikibase:qualifierValueNormalized pqn:P100017 ;
+    wikibase:reference pr:P100017 ;
+    wikibase:referenceValue prv:P100017 ;
+    wikibase:referenceValueNormalized prn:P100017 ;
+    wikibase:statementProperty ps:P100017 ;
+    wikibase:statementValue psv:P100017 ;
+    wikibase:statementValueNormalized psn:P100017 ;
+    skos:prefLabel "state legitimacy"@en ;
+    p:P1896 wds:P100017-f48cad16-e0a3-40fb-9de8-8fc0116881dc ;
+    p:P31 wds:P100017-9c50b174-2d99-4427-9471-e2256ace1f4a .
+
+wd:P100018 a wikibase:Property ;
+    rdfs:label "public services"@en ;
+    schema:description "The Public Services Indicator refers to the presence of basic state functions that serve the people. On the one hand, this may include the provision of essential services, such as health, education, water and sanitation, transport infrastructure, electricity and power, and internet and connectivity. On the other hand, it may include the state’s ability to protect its citizens, such as from terrorism and violence, through perceived effective policing. Further, even where basic state functions and services are provided, the Indicator further considers to whom – whether the state narrowly serves the ruling elites, such as security agencies, presidential staff, the central bank, or the diplomatic service, while failing to provide comparable levels of service to the general populace – such as rural versus urban populations. The Indicator also considers the level and maintenance of general infrastructure to the extent that its absence would negatively affect the country’s actual or potential development."@en ;
+    schema:name "public services"@en ;
+    wikibase:claim p:P100018 ;
+    wikibase:directClaim wdt:P100018 ;
+    wikibase:directClaimNormalized wdtn:P100018 ;
+    wikibase:novalue wdno:P100018 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100018 ;
+    wikibase:qualifierValue pqv:P100018 ;
+    wikibase:qualifierValueNormalized pqn:P100018 ;
+    wikibase:reference pr:P100018 ;
+    wikibase:referenceValue prv:P100018 ;
+    wikibase:referenceValueNormalized prn:P100018 ;
+    wikibase:statementProperty ps:P100018 ;
+    wikibase:statementValue psv:P100018 ;
+    wikibase:statementValueNormalized psn:P100018 ;
+    skos:prefLabel "public services"@en ;
+    p:P1896 wds:P100018-b87ac3cf-8d7a-4f74-afca-690d9fcdcc1d ;
+    p:P31 wds:P100018-4e228402-3684-472b-9b49-bef6863264fb .
+
+wd:P100019 a wikibase:Property ;
+    rdfs:label "human rights and rule of law"@en ;
+    schema:description "The Human Rights and Rule of Law Indicator considers the relationship between the state and its population insofar as fundamental human rights are protected and freedoms are observed and respected. The Indicator looks at whether there is widespread abuse of legal, political and social rights, including those of individuals, groups and institutions (e.g. harassment of the press, politicization of the judiciary, internal use of military for political ends, repression of political opponents). The Indicator also considers outbreaks of politically inspired (as opposed to criminal) violence perpetrated against civilians. It also looks at factors such as denial of due process consistent with international norms and practices for political prisoners or dissidents, and whether there is current or emerging authoritarian, dictatorial or military rule in which constitutional and democratic institutions and processes are suspended or manipulated."@en ;
+    schema:name "human rights and rule of law"@en ;
+    wikibase:claim p:P100019 ;
+    wikibase:directClaim wdt:P100019 ;
+    wikibase:directClaimNormalized wdtn:P100019 ;
+    wikibase:novalue wdno:P100019 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100019 ;
+    wikibase:qualifierValue pqv:P100019 ;
+    wikibase:qualifierValueNormalized pqn:P100019 ;
+    wikibase:reference pr:P100019 ;
+    wikibase:referenceValue prv:P100019 ;
+    wikibase:referenceValueNormalized prn:P100019 ;
+    wikibase:statementProperty ps:P100019 ;
+    wikibase:statementValue psv:P100019 ;
+    wikibase:statementValueNormalized psn:P100019 ;
+    skos:prefLabel "human rights and rule of law"@en ;
+    p:P1896 wds:P100019-27257fa8-38c8-4049-a597-0ddc6f1fedc5 ;
+    p:P31 wds:P100019-6a900d6a-f6fd-4b9d-9925-5f725d33b8d2,
+        wds:P100019-d1d9f102-bf6a-4887-bd8e-ceec33d10b57 .
+
+wd:P100020 a wikibase:Property ;
+    rdfs:label "demographic pressures"@en ;
+    schema:description "The Demographic Pressures Indicator considers pressures upon the state deriving from the population itself or the environment around it. For example, the Indicator measures population pressures related to food supply, access to safe water, and other life-sustaining resources, or health, such as prevalence of disease and epidemics. The Indicator considers demographic characteristics, such as pressures from high population growth rates or skewed population distributions, such as a “youth or age bulge,” or sharply divergent rates of population growth among competing communal groups, recognizing that such effects can have profound social, economic, and political effects. Beyond the population, the Indicator also takes into account pressures stemming from natural disasters (hurricanes, earthquakes, floods or drought), and pressures upon the population from environmental hazards."@en ;
+    schema:name "demographic pressures"@en ;
+    wikibase:claim p:P100020 ;
+    wikibase:directClaim wdt:P100020 ;
+    wikibase:directClaimNormalized wdtn:P100020 ;
+    wikibase:novalue wdno:P100020 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100020 ;
+    wikibase:qualifierValue pqv:P100020 ;
+    wikibase:qualifierValueNormalized pqn:P100020 ;
+    wikibase:reference pr:P100020 ;
+    wikibase:referenceValue prv:P100020 ;
+    wikibase:referenceValueNormalized prn:P100020 ;
+    wikibase:statementProperty ps:P100020 ;
+    wikibase:statementValue psv:P100020 ;
+    wikibase:statementValueNormalized psn:P100020 ;
+    skos:prefLabel "demographic pressures"@en ;
+    p:P1896 wds:P100020-fa9970a8-b447-4c0e-8eaf-aeb7ba7a698a ;
+    p:P31 wds:P100020-b8d393bf-3b7c-47af-88d2-d64aefc5c23a,
+        wds:P100020-e39d63b1-49ef-4d0f-be65-4b7a673f8272 .
+
+wd:P100021 a wikibase:Property ;
+    rdfs:label "refugees and idps"@en ;
+    schema:description "The Refugees and Internally Displaced Persons Indicator measures the pressure upon states caused by the forced displacement of large communities as a result of social, political, environmental or other causes, measuring displacement within countries, as well as refugee flows into others. The indicator measures refugees by country of Asylum, recognizing that population inflows can put additional pressure on public services, and can sometimes create broader humanitarian and security challenges for the receiving state, if that state does not have the absorption capacity and adequate resources. The Indicator also measures the Internally Displaced Persons (IDP) and Refugees by country of origin, which signifies internal state pressures as a result of violence, environmental or other factors such as health epidemics. These measures are considered within the context of the state’s population (per capita) and human development trajectory, and over time (year on year spikes), recognizing that some IDPs or refugees for example, may have been displaced for long periods of time."@en ;
+    schema:name "refugees and idps"@en ;
+    wikibase:claim p:P100021 ;
+    wikibase:directClaim wdt:P100021 ;
+    wikibase:directClaimNormalized wdtn:P100021 ;
+    wikibase:novalue wdno:P100021 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100021 ;
+    wikibase:qualifierValue pqv:P100021 ;
+    wikibase:qualifierValueNormalized pqn:P100021 ;
+    wikibase:reference pr:P100021 ;
+    wikibase:referenceValue prv:P100021 ;
+    wikibase:referenceValueNormalized prn:P100021 ;
+    wikibase:statementProperty ps:P100021 ;
+    wikibase:statementValue psv:P100021 ;
+    wikibase:statementValueNormalized psn:P100021 ;
+    skos:prefLabel "refugees and idps"@en ;
+    p:P1896 wds:P100021-0d3bb901-7868-47da-b152-537e0557402f ;
+    p:P31 wds:P100021-450b8e71-1dee-4583-aa54-7302dd27bfbc .
+
+wd:P100022 a wikibase:Property ;
+    rdfs:label "external intervention"@en ;
+    schema:description "The External Intervention Indicator considers the influence and impact of external actors in the functioning – particularly security and economic – of a state. On the one hand, External Intervention focuses on security aspects of engagement from external actors, both covert and overt, in the internal affairs of a state at risk by governments, armies, intelligence services, identity groups, or other entities that may affect the balance of power (or resolution of a conflict) within a state. On the other hand, External Intervention also focuses on economic engagement by outside actors, including multilateral organizations, through large-scale loans, development projects, or foreign aid, such as ongoing budget support, control of finances, or management of the state’s economic policy, creating economic dependency. External Intervention also takes into account humanitarian intervention, such as the deployment of an international peacekeeping mission."@en ;
+    schema:name "external intervention"@en ;
+    wikibase:claim p:P100022 ;
+    wikibase:directClaim wdt:P100022 ;
+    wikibase:directClaimNormalized wdtn:P100022 ;
+    wikibase:novalue wdno:P100022 ;
+    wikibase:propertyType wikibase:Quantity ;
+    wikibase:qualifier pq:P100022 ;
+    wikibase:qualifierValue pqv:P100022 ;
+    wikibase:qualifierValueNormalized pqn:P100022 ;
+    wikibase:reference pr:P100022 ;
+    wikibase:referenceValue prv:P100022 ;
+    wikibase:referenceValueNormalized prn:P100022 ;
+    wikibase:statementProperty ps:P100022 ;
+    wikibase:statementValue psv:P100022 ;
+    wikibase:statementValueNormalized psn:P100022 ;
+    skos:prefLabel "external intervention"@en ;
+    p:P1896 wds:P100022-51e36add-d6b1-4912-aff3-880caae3570d ;
+    p:P31 wds:P100022-8d738bce-c514-4020-8771-0a92922a9876,
+        wds:P100022-eb54cb01-3811-4aba-acca-7b89e1df8225 .
+
+wds:P100001-28062694-85ad-4802-98d9-c763164878cf a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100001-91224c20-d54e-4481-8b44-cf5a0a2af6c4 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/DT.ODA.ODAT.GI.ZS> .
+
+wds:P100001-9d374598-3e57-4397-be72-4c15fef1d894 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100001-e5112ede-7f76-4bc2-94be-a30610ab0fab a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100001-edaa20bc-fe3d-4308-b7fa-d33bbba156ef a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100002-1a39b8f7-578c-4ee9-af35-c41c0115ae3e a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS> .
+
+wds:P100002-26514c90-1e01-4491-a4f6-24b42a204d48 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100002-a2a8b229-7d41-4d15-b335-26d7d3ca9bb5 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100002-b1c5d281-e016-422c-8705-52d5a566e20d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100002-fc021b4f-5ef8-4a25-b1fd-199b28d582a7 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100003-05c4d620-cf11-4437-8907-2b5839ae58fd a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100003-167d2425-a857-43ad-a5ac-36a0df8d94c1 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/SN.ITK.DEFC.ZS> .
+
+wds:P100003-2a00ca0b-a8df-45b7-bd46-dbf08d9a1671 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100003-550b5dfb-c687-4dc0-b248-efedf289d5a1 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100003-e882ca65-6d3b-4d1e-83e2-c292c04f676d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100004-4c8709a1-4285-4212-a225-fa0806af25c7 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100004-718f3f96-31cc-4b60-835a-af9303afabe0 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100004-e074aeb8-4bdf-4780-859b-24b202185829 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/MS.MIL.XPND.ZS> .
+
+wds:P100004-eee21bf7-7d3a-45b0-a458-538294a1458a a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100005-1f42f842-6187-4db9-96d4-8121762866fb a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100005-74240597-eb6f-4b1e-baa7-82403f167f8d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/MS.MIL.XPND.GD.ZS> .
+
+wds:P100005-b77e70f9-d528-40cc-8e30-e54d64e7310d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100005-e8468ad4-4ed3-40f7-93fe-ca72f40b9699 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100006-1c21fa7c-a975-4f64-8fb2-9fa4213d2b6f a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/SL.EMP.TOTL.SP.NE.ZS> .
+
+wds:P100006-2b4d54b5-a8c5-4e0b-bd7a-23394130a1e9 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100006-752a1092-5b71-4f32-ad74-4ce3e28d880e a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100006-d44979ee-a275-4bc9-a4bf-9baa2dc30cdd a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100007-3a98d8fd-5930-4314-bb57-e6d06786d678 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100007-49199168-a5e2-46f3-9d92-38f5f6a8a3e9 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100007-9274e614-8ad2-49c2-91e2-0fa0832a132a a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/SH.H2O.BASW.ZS> .
+
+wds:P100007-d8dbafa5-9da9-4022-9f1b-7386ae25102d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100008-1b5355bf-4f2f-473b-b655-8c81c09fa6b2 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100008-43c0d8d5-8513-4b4b-939a-aac25b2ed1da a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100008-468ddb05-abd4-4f61-9227-e117d78c6941 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/SH.STA.BASS.ZS> .
+
+wds:P100008-b74d238f-3eec-492a-8c68-6fbe63db51e5 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100009-29f5c409-41d4-4c61-be0e-7b2cd99edf2c a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100009-cb13f2bd-7d79-4a7c-9237-fbeaae9f35b6 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q56726345 .
+
+wds:P100009-df2abbe0-4adf-469e-8bbf-992d8e996c85 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100009-dffb4ab4-e85c-400b-b72d-a125430209de a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q58702 .
+
+wds:P100009-ec9fe18c-94c4-4830-afae-60482633013d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/SH.DYN.MORT> .
+
+wds:P100010-a24c1f85-3c39-479f-ae59-04a5f913766e a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q631360 .
+
+wds:P100010-b9362184-4f08-4d74-a117-219d776fb84f a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100010-d91c2b17-ba2e-4a18-89b5-3680439d19e8 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100010-ec2762ad-7bc6-41cb-adf0-86b0e252f325 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://data.worldbank.org/indicator/FP.CPI.TOTL> .
+
+wds:P100010-fd835c6e-6882-41cf-ad00-daacc3a440a2 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q180687 .
+
+wds:P100011-3279d3eb-02ef-486b-91c0-495de960c5e9 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100011-867ae7ae-e754-4f24-a3a7-fec76b16a4f3 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/c1/> .
+
+wds:P100012-8f9dd822-b848-4540-a7c7-033bca594e9f a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100012-fb0c2ab9-5e4d-4171-b241-aab881a62215 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/c2/> .
+
+wds:P100013-3e03c5d6-37fa-4d7a-8d25-9a03c47fc7a5 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/c3/> .
+
+wds:P100013-d0717711-ded9-4384-898f-6d77a575dd68 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100013-dee402a6-f0c3-46b2-9d6d-edb29dfdcd82 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100014-47b0efea-fa8a-4ed1-816a-20fa00860bf9 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100014-668dbc79-8a3e-4bfa-b788-8f2f9568e038 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100014-77467a04-b9b6-4b63-8012-af1a41bce6b5 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q1167393 .
+
+wds:P100014-9fe87687-92be-4ac8-8c24-3ad8743db650 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/e1/> .
+
+wds:P100015-2d498116-9d5d-44fa-85ad-cfb2c1d71689 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100015-557c0e2b-b272-4509-aa1d-4337ded297d3 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q1167393 .
+
+wds:P100015-79b9f0ab-19be-43d7-96d0-cabe9b2f7f8d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100015-baa7d248-4822-4ad2-91f5-ce68bcbab0d3 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/e2/> .
+
+wds:P100016-115fad19-ce69-47a7-9850-8e50878aa319 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1629 wd:Q1167393 .
+
+wds:P100016-4f006f19-8aac-4254-8904-fffb3d5e17b1 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/e3/> .
+
+wds:P100016-8820d9b7-46dd-41f4-89c7-1e3edee607c5 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
+wds:P100016-edd54472-4bb2-4008-b61a-5508779510d4 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100017-9c50b174-2d99-4427-9471-e2256ace1f4a a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100017-f48cad16-e0a3-40fb-9de8-8fc0116881dc a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/p1/> .
+
+wds:P100018-4e228402-3684-472b-9b49-bef6863264fb a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100018-b87ac3cf-8d7a-4f74-afca-690d9fcdcc1d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/p2/> .
+
+wds:P100019-27257fa8-38c8-4049-a597-0ddc6f1fedc5 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/p3/> .
+
+wds:P100019-6a900d6a-f6fd-4b9d-9925-5f725d33b8d2 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q8458 .
+
+wds:P100019-d1d9f102-bf6a-4887-bd8e-ceec33d10b57 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100020-b8d393bf-3b7c-47af-88d2-d64aefc5c23a a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q22984494 .
+
+wds:P100020-e39d63b1-49ef-4d0f-be65-4b7a673f8272 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100020-fa9970a8-b447-4c0e-8eaf-aeb7ba7a698a a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/s1/> .
+
+wds:P100021-0d3bb901-7868-47da-b152-537e0557402f a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/s2/> .
+
+wds:P100021-450b8e71-1dee-4583-aa54-7302dd27bfbc a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100022-51e36add-d6b1-4912-aff3-880caae3570d a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P1896 <https://fragilestatesindex.org/indicators/x1/> .
+
+wds:P100022-8d738bce-c514-4020-8771-0a92922a9876 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q19829914 .
+
+wds:P100022-eb54cb01-3811-4aba-acca-7b89e1df8225 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml> ;
+    ps:P31 wd:Q21451178 .
+
