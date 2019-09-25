@@ -15,7 +15,11 @@ class User:
 		"""
 		return self.__id
 
-	def get_user_info(self):
+	def get_user_info(self) -> dict:
+		"""
+		This function returns the user information
+		:return:
+		"""
 		user_info = dict()
 		user_info["name"] = self.__name
 		user_info["email"] = self.__email

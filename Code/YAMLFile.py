@@ -1,6 +1,6 @@
 import os
 import copy
-from Code.utility_functions import read_file
+import Code.utility_functions as uf
 
 
 class YAMLFile:
@@ -69,7 +69,7 @@ class YAMLFile:
 		self.__template = template
 
 	def read_file(self):
-		file_data = read_file(self.__file_location)
+		file_data = uf.read_file(self.__file_location)
 		return file_data
 
 	def reset(self) -> None:

@@ -43,7 +43,7 @@ class UserStore:
 		return self.__user_list.get(user_id, None)
 
 	@lockutils.synchronized('create_user', fair=True, external=True, lock_path=str(Path.cwd() / "config"))
-	def create_user(self, user_id: str, user_info: dict):
+	def create_user(self, user_id: str, user_info: dict) -> None:
 		"""
 		This function creates a new user
 		:param user_id:
@@ -63,17 +63,11 @@ class UserStore:
 			with open(self.file_path, 'w') as users_json:
 				json.dump(self.__user_list, users_json, indent=3)
 
-	def get_user_info(self, user_id):
+	def get_user_info(self, user_id: str) -> dict:
+		"""
+		This function returns the details of a user viz. Name, email, picture, etc.
+		:param user_id:
+		:return:
+		"""
 		user_info = self.__user_list.get(user_id, None)
 		return user_info
-
-
-	# def delete_user(self, user_id: str) -> None:
-	# 	"""
-	# 	This function deletes the user data and then deletes the user from the memory
-	# 	:param user_id:
-	# 	:return:
-	# 	"""
-	# 	user = self.get_user(user_id)
-	# 	user.reset()
-	# 	del self.__user_list[user_id]

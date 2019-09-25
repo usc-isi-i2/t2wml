@@ -1,4 +1,3 @@
-from typing import Union
 from SPARQLWrapper import SPARQLWrapper, JSON
 import string
 import pyexcel
@@ -8,11 +7,13 @@ import json
 import pickle
 from time import time
 from uuid import uuid4
-from typing import Sequence
+from typing import Sequence, Union, Tuple, List, Dict, Any
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from pathlib import Path
 from oslo_concurrency import lockutils
+from Code.Project import Project
+from Code.YAMLFile import YAMLFile
 from Code.property_type_map import property_type_map
 
 
@@ -77,8 +78,6 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	:param sparql_endpoint:
 	:return:
 	"""
-	# temporary fix
-	sparql_endpoint = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
 	try:
 		type = property_type_map[wikidata_property]
 	except KeyError:
@@ -97,17 +96,18 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	return type
 
 
-def excel_to_json(file_path: str, sheet_name: str = None, want_sheetNames=False) -> str:
+def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool = False) -> dict:
 	"""
 	This function reads the excel file and converts it to JSON
 	:param file_path:
 	:param sheet_name:
+	:param want_sheet_names:
 	:return:
 	"""
 	sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
 	column_index_map = {}
 	result = dict()
-	if not sheet_name or want_sheetNames:
+	if not sheet_name or want_sheet_names:
 		result['sheetNames'] = list()
 		book_dict = pyexcel.get_book_dict(file_name=file_path)
 		for sheet in book_dict.keys():
@@ -153,12 +153,11 @@ def write_file(filepath: str, data: str) -> None:
 	"""
 	with open(filepath, "w") as f:
 		f.write(data)
-		f.close()
 
 
 def check_special_characters(text: str) -> bool:
 	"""
-	This funtion checks if the text is made up of only special characters
+	This function checks if the text is made up of only special characters
 	:param text:
 	:return:
 	"""
@@ -219,7 +218,7 @@ def translate_precision_to_integer(precision: str) -> int:
 
 def delete_file(filepath: str) -> None:
 	"""
-	This function delets a file at the filepath
+	This function deletes a file at the filepath
 	:param filepath:
 	:return:
 	"""
@@ -241,7 +240,7 @@ def split_cell(cell: str) -> Sequence[int]:
 	return get_excel_column_index(col), get_excel_row_index(row)
 
 
-def parse_cell_range(cell_range: str) -> Sequence[tuple]:
+def parse_cell_range(cell_range: str) -> Tuple[Sequence[int], Sequence[int]]:
 	"""
 	This function parses the cell range and returns the row and column indices supported by pyexcel
 	For eg: A4:B5 to (0, 3), (1, 4)
@@ -254,7 +253,7 @@ def parse_cell_range(cell_range: str) -> Sequence[tuple]:
 	return start_cell, end_cell
 
 
-def natural_sort_key(s):
+def natural_sort_key(s: str) -> list:
 	"""
 	This function generates the key for the natural sorting algorithm
 	:param s:
@@ -272,12 +271,23 @@ def generate_id() -> str:
 	return uuid4().hex
 
 
-def add_login_source_in_user_id(user_id, login_source):
+def add_login_source_in_user_id(user_id: str, login_source: str) -> str:
+	"""
+	This function appends the login_source key to the user id and returns the new id.
+	:param user_id:
+	:param login_source:
+	:return:
+	"""
 	if login_source == "Google":
 		return "G" + user_id
 
 
-def verify_google_login(tn: str):
+def verify_google_login(tn: str) -> Tuple[dict, int]:
+	"""
+	This function verifies the oauth token by sending a request to Google's server.
+	:param tn:
+	:return:
+	"""
 	error = None
 	try:
 		client_id = '859571913012-79n4clvbq11q8tifboltfqdvttlh74vr.apps.googleusercontent.com'
@@ -295,7 +305,24 @@ def verify_google_login(tn: str):
 	return user_info, error
 
 
-def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: str = None):
+def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: str = None) -> None:
+	"""
+	This function creates the project directory along with the project_config.json
+	current_working_directory
+						    |__config/
+							    	|__uploads/
+										     |__<user_id>/
+													    |__<project_id>/
+																	   |__df/
+																	   |__wf/
+																	   |__yf/
+																	   |__project_config.json
+	:param upload_directory:
+	:param uid:
+	:param pid:
+	:param ptitle:
+	:return:
+	"""
 	if uid and pid:
 		Path(Path(upload_directory) / uid / pid / "df").mkdir(parents=True, exist_ok=True)
 		Path(Path(upload_directory) / uid / pid / "wf").mkdir(parents=True, exist_ok=True)
@@ -318,7 +345,12 @@ def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: s
 		Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)
 
 
-def get_project_details(user_dir):
+def get_project_details(user_dir: Path) -> List[Dict[str, Any]]:
+	"""
+	This function iterates all the project directories in the user_directory and fetches the project details from the project_config.json
+	:param user_dir:
+	:return:
+	"""
 	projects = list()
 	for project_dir in user_dir.iterdir():
 		if project_dir.is_dir():
@@ -333,24 +365,16 @@ def get_project_details(user_dir):
 	return projects
 
 
-# def update_project_meta(uid: str, pid: str, project_meta: dict):
-# 	@lockutils.synchronized('save_project_meta', fair=True, external=True, lock_path=str(Path.cwd() / "config" / uid / pid))
-# 	def save_project_meta():
-# 		file_path = str(Path.cwd() / "config"/ "uploads" / uid / pid / "project_config.json")
-# 		with open(file_path) as json_data:
-# 			data = json.load(json_data)
-# 			for k in project_meta.keys():
-# 				if k == "dataFileMapping" or k == "wikfierRegionMapping":
-# 					data[k].update(project_meta[k])
-# 				else:
-# 					data[k] = project_meta[k]
-# 		with open(file_path, 'w') as project_config:
-# 			json.dump(data, project_config, indent=3)
-#
-# 	save_project_meta()
-
-
-def get_region_mapping(uid, pid, project, data_file_name=None, sheet_name=None):
+def get_region_mapping(uid: str, pid: str, project: Project, data_file_name=None, sheet_name=None) -> Tuple[dict, int]:
+	"""
+	This function reads (and creates if it doesn't exist) and deserialize the respective wikifier config file
+	:param uid:
+	:param pid:
+	:param project:
+	:param data_file_name:
+	:param sheet_name:
+	:return:
+	"""
 	file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
 	region_file_path = Path.cwd() / "config" / "uploads" / uid / pid / "wf" / file_name
 	region_file_path.touch(exist_ok=True)
@@ -362,34 +386,70 @@ def get_region_mapping(uid, pid, project, data_file_name=None, sheet_name=None):
 	return region_map, file_name
 
 
-def update_wikifier_region_file(uid, pid, region_filename, region_qnodes):
+def update_wikifier_region_file(uid: str, pid: str, region_filename: str, region_qnodes: dict) -> None:
+	"""
+	This function updates the wikifier config file. It locks the file while updating to maintain concurrency.
+	:param uid:
+	:param pid:
+	:param region_filename:
+	:param region_qnodes:
+	:return:
+	"""
 	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
 
 	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True, lock_path=str(Path.cwd() / "config"/ "uploads" / uid / pid / "wf"))
-	def update_wikifier_region_config():
+	def update_wikifier_region_config() -> None:
+		"""
+		This function writes the file
+		:return:
+		"""
 		with open(file_path, 'w') as wikifier_region_config:
 			json.dump(region_qnodes, wikifier_region_config, indent=3)
 
 	update_wikifier_region_config()
 
 
-def deserialize_wikifier_config(uid, pid, region_filename):
+def deserialize_wikifier_config(uid: str, pid: str, region_filename: str) -> dict:
+	"""
+	This function reads and deserialize the wikifier config file
+	:param uid:
+	:param pid:
+	:param region_filename:
+	:return:
+	"""
 	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
 	with open(file_path, 'r') as wikifier_region_config:
 		wikifier_config = json.load(wikifier_region_config)
 	return wikifier_config
 
 
-def get_project_config_path(uid, pid):
+def get_project_config_path(uid: str, pid: str) -> str:
+	"""
+	This function returns the path of the respective project config file
+	:param uid:
+	:param pid:
+	:return:
+	"""
 	return str(Path.cwd() / "config" / "uploads" / uid / pid / "project_config.json")
 
 
-def save_yaml_config(yaml_config_file_path, yaml_config):
+def save_yaml_config(yaml_config_file_path: Union[str, Path], yaml_config: YAMLFile) -> None:
+	"""
+	This function saves the YAMLFile object in a pickle file
+	:param yaml_config_file_path:
+	:param yaml_config:
+	:return:
+	"""
 	with open(yaml_config_file_path, 'wb') as config_file:
 		pickle.dump(yaml_config, config_file)
 
 
-def load_yaml_config(yaml_config_file_path):
+def load_yaml_config(yaml_config_file_path: Union[str, Path]) -> YAMLFile:
+	"""
+	This function loads the pickle file and deserialize the contents into a YAMLFile object
+	:param yaml_config_file_path:
+	:return:
+	"""
 	with open(yaml_config_file_path, 'rb') as config_file:
 		yaml_config = pickle.load(config_file)
 	return yaml_config

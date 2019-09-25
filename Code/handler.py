@@ -67,7 +67,7 @@ def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: 
 	bindings["item_table"] = item_table
 
 
-def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict) -> str:
+def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict) -> dict:
 	"""
 	This function add holes in the region_object and builds up the list of data_region, item_region and qualifier_region
 	:param item_table:
@@ -151,11 +151,10 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 
 	for cell_index in holes:
 		region.add_hole(cell_index[0], cell_index[1], cell_index[1])
-
 	return data
 
 
-def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: int, row: int) -> str:
+def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: int, row: int) -> dict:
 	"""
 	This cell resolve the statement for a particular cell
 	:param item_table:
@@ -181,7 +180,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	return data
 
 
-def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str):
+def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, filetype: str, sparql_endpoint: str) -> dict:
 	"""
 	This function generates the download files based on the filetype
 	:param user_id:

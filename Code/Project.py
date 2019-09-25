@@ -1,22 +1,33 @@
 from time import time
-from Code.utility_functions import generate_id
 import json
+from typing import Sequence
 from oslo_concurrency import lockutils
 from pathlib import Path
+import Code.utility_functions as uf
 
 
 class Project:
 	def __init__(self, file_path):
 		self.file_path = file_path
 		self.__project_config = self.read_project_config()
+		self.update_mdate()
 
-	def read_project_config(self):
+	def read_project_config(self) -> dict:
+		"""
+		This function reads the project config.json and returns the deserialized version
+		:return:
+		"""
 		with open(self.file_path) as pconfig:
 			data = pconfig.read()
 			json_data = json.loads(data)
 			return json_data
 
-	def update_project_config(self, new_config: dict = None):
+	def update_project_config(self, new_config: dict = None) -> None:
+		"""
+		This function updates the project_config.json by locking the file
+		:param new_config:
+		:return:
+		"""
 		if new_config:
 			for k in new_config.keys():
 				if k == "dataFileMapping":
@@ -30,23 +41,47 @@ class Project:
 					self.__project_config[k] = new_config[k]
 
 		@lockutils.synchronized('update_project_config', fair=True, external=True, lock_path=Path(self.file_path).parents[0])
-		def write_file():
+		def write_file() -> None:
+			"""
+			This function writes the file
+			:return:
+			"""
 			with open(self.file_path, "w") as pconfig:
 				json.dump(self.__project_config, pconfig, indent=3)
 
 		write_file()
 
-	def update_mdate(self):
+	def update_mdate(self) -> None:
+		"""
+		This function updates the modified date attribute of the project
+		:return:
+		"""
 		self.__project_config['mdate'] = int(time() * 1000)
 		self.update_project_config()
 
-	def get_current_file_and_sheet(self):
+	def get_current_file_and_sheet(self) -> Sequence[str]:
+		"""
+		This function returns the current data file name(backend name and not actual name) and the current sheet name
+		In case of csv files, sheet name = file name
+		:return:
+		"""
 		return self.__project_config["currentDataFile"], self.__project_config["currentSheetName"]
 
-	def get_file_name_by_id(self, file_id):
+	def get_file_name_by_id(self, file_id: str) -> str:
+		"""
+		This function returns the actual file name of the data file associated with the file_id
+		:param file_id:
+		:return:
+		"""
 		return self.__project_config["dataFileMapping"][file_id]
 
-	def get_or_create_wikifier_region_filename(self, file_name=None, sheet_name=None):
+	def get_or_create_wikifier_region_filename(self, file_name: str = None, sheet_name: str = None) -> str:
+		"""
+		This function fetches or creates the wikifier config file and return its name.
+		:param file_name:
+		:param sheet_name:
+		:return:
+		"""
 		if not file_name and not sheet_name:
 			file_name, sheet_name = self.get_current_file_and_sheet()
 		try:
@@ -55,7 +90,7 @@ class Project:
 			else:
 				region_file_name = self.__project_config["wikifierRegionMapping"][file_name][sheet_name]
 		except KeyError:
-			region_file_name = generate_id() + ".json"
+			region_file_name = uf.generate_id() + ".json"
 			if file_name not in self.__project_config["wikifierRegionMapping"]:
 				self.__project_config["wikifierRegionMapping"][file_name] = dict()
 			if file_name[-3:].lower() == "csv":
@@ -65,7 +100,11 @@ class Project:
 			self.update_project_config()
 		return region_file_name
 
-	def get_wikifier_region_filename(self):
+	def get_wikifier_region_filename(self) -> str:
+		"""
+		This function returns the wikifier config file name associated with the current file and sheet.
+		:return:
+		"""
 		file_name, sheet_name = self.get_current_file_and_sheet()
 		if file_name:
 			try:
@@ -79,108 +118,54 @@ class Project:
 			region_file_name = None
 		return region_file_name
 
-	def add_yaml_file(self, data_file_name, sheet_name, yaml_file_name):
+	def add_yaml_file(self, data_file_name: str, sheet_name: str, yaml_file_name: str) -> None:
+		"""
+		This function associates a yaml file with a sheet of a data file
+		:param data_file_name:
+		:param sheet_name:
+		:param yaml_file_name:
+		:return:
+		"""
 		if data_file_name not in self.__project_config["yamlMapping"]:
 			self.__project_config["yamlMapping"][data_file_name] = dict()
 
 		self.__project_config["yamlMapping"][data_file_name][sheet_name] = yaml_file_name
 		self.update_project_config()
 
-	def get_yaml_file_id(self, data_file_name, sheet_name):
+	def get_yaml_file_id(self, data_file_name: str, sheet_name: str) -> str:
+		"""
+		This function fetches the yaml file name associated with a sheet of a data file
+		:param data_file_name:
+		:param sheet_name:
+		:return:
+		"""
 		try:
 			yaml_file_id = self.__project_config["yamlMapping"][data_file_name][sheet_name]
 		except KeyError:
 			yaml_file_id = None
 		return yaml_file_id
 
-	def get_sparql_endpoint(self):
+	def get_sparql_endpoint(self) -> str:
+		"""
+		This function fetches the sparql endpoint of a project (self)
+		:return:
+		"""
 		return self.__project_config["sparqlEndpoint"]
 
-	def update_sparql_endpoint(self, sparql_endpoint):
+	def update_sparql_endpoint(self, sparql_endpoint: str) -> None:
+		"""
+		This function updates the sparql endpoint of the project (self)
+		:param sparql_endpoint:
+		:return:
+		"""
 		self.__project_config["sparqlEndpoint"] = sparql_endpoint
 		self.update_project_config()
 
-	def update_project_title(self, ptitle):
+	def update_project_title(self, ptitle: str) -> None:
+		"""
+		This function updates the project title of the project (self)
+		:param ptitle:
+		:return:
+		"""
 		self.__project_config["ptitle"] = ptitle
 		self.update_project_config()
-# 	self.__id = None
-	# 	self.__title = None
-	# 	self.__sparql_endpoint = "http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql"
-	# 	self.__yaml_file_store = YAMLFileStore()
-	# 	self.__data_files = DataFileStore()
-	# 	self.__current_data_file_id = None
-	# 	self.__creation_time_stamp = int(time() * 1000)
-	# 	self.__last_modified_time_stamp = int(time() * 1000)
-	#
-	# def get_project_details(self) -> dict:
-	# 	details = dict()
-	# 	details['pid'] = self.__id
-	# 	details['ptitle'] = self.__title
-	# 	details['cdate'] = self.__creation_time_stamp
-	# 	details['mdate'] = self.__last_modified_time_stamp
-	# 	return details
-	#
-	# def set_id(self, project_id):
-	# 	self.__id = project_id
-	#
-	# def set_title(self, project_title):
-	# 	self.__title = project_title
-	#
-	# def get_sparql_endpoint(self) -> str:
-	# 	return self.__sparql_endpoint
-	#
-	# def set_sparql_endpoint(self, new_sparql_endpoint: str) -> None:
-	# 	self.__sparql_endpoint = new_sparql_endpoint
-	#
-	# def get_yaml_data(self):
-	# 	return self.__yaml_data
-	#
-	# def set_yaml_date(self, yaml_data: YAMLFile):
-	# 	self.__yaml_data = yaml_data
-	#
-	# def get_data_file_by_id(self, file_id: str) -> DataFile:
-	# 	return self.__data_files.get_data_file_by_id(file_id)
-	#
-	# def set_current_data_file_id(self, file_id: str) -> None:
-	# 	self.__current_data_file_id = file_id
-	#
-	# def get_current_data_file_id(self) -> str:
-	# 	return self.__current_data_file_id
-	#
-	# def get_current_data_file(self) -> DataFile:
-	# 	return self.get_data_file_by_id(self.__current_data_file_id)
-	#
-	# def index_data_file(self, data_file: DataFile) -> None:
-	# 	self.__data_files.index_data_file(data_file)
-	#
-	# def get_current_data_file_contents(self):
-	# 	data_file = self.get_current_data_file()
-	# 	if data_file:
-	# 		file_path = data_file.get_file_location()
-	# 		sheet_name = data_file.get_sheet_name()
-	# 		file_content = excel_to_json(file_path, sheet_name, ignore_sheet_names=False)
-	# 	else:
-	# 		file_content = None
-	# 	return file_content
-	#
-	# def get_wikified_regions_of_current_data_file(self):
-	# 	data_file = self.get_current_data_file()
-	# 	if data_file:
-	# 		region_qnodes = data_file.get_region_qnodes()
-	# 	else:
-	# 		region_qnodes = None
-	# 	return region_qnodes
-	#
-	# def get_yaml_file_of_current_data_file(self):
-	# 	data_file = self.get_current_data_file()
-	# 	if data_file:
-	# 		data_file_id = data_file.get_id()
-	# 		sheet_name = data_file.get_sheet_name()
-	# 		yaml_file = self.__yaml_file_store.get_yaml_file_of_sheet(data_file_id, sheet_name)
-	# 	else:
-	# 		yaml_file = None
-	# 	return yaml_file
-	#
-	# def reset(self, attribute: str = None) -> None:
-	# 	if attribute == 'yaml':
-	# 		self.__yaml_data.reset()

@@ -11,7 +11,7 @@ import shutil
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 
 
-def allowed_file(filename: str, file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
+def allowed_file(filename: str, file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS) -> bool:
 	"""
 	This function checks if the file extension is present in the list of allowed file extensions
 	:param filename:
@@ -21,29 +21,24 @@ def allowed_file(filename: str, file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in file_extensions
 
 
-def get_file_extension(filename: str):
+def get_file_extension(filename: str) -> str:
 	"""
-	THis function returns the file extension of a file
+	This function returns the file extension of a file
 	:param filename:
 	:return:
 	"""
 	return filename.split(".")[-1]
 
 
-def data_file_uploader(uid: str, pid: str, sheet_name: str=None):
+def data_file_uploader(uid: str, pid: str, sheet_name: str = None) -> dict:
 	"""
-	This function helps in processing the data file
+	This function helps in processing the data file upload request
 	:param uid:
 	:param pid:
 	:param sheet_name:
 	:return:
 	"""
 	response = {"error": ""}
-	# if sheet_name and not check_if_empty(data_file.get_file_location()):
-	# 	file_path = data_file.get_file_location()
-	# 	data = excel_to_json(file_path, sheet_name)
-	# 	data_file.set_sheet_name(sheet_name)
-	# else:
 	if 'file' not in request.files:
 		response["error"] = 'No file part'
 	else:
@@ -66,9 +61,9 @@ def data_file_uploader(uid: str, pid: str, sheet_name: str=None):
 	return response
 
 
-def wikified_output_uploader(uid, pid):
+def wikified_output_uploader(uid: str, pid: str) -> str:
 	"""
-	This function helps in processing the wikifier output file
+	This function helps in processing the wikifier output file upload request
 	:param uid:
 	:param pid:
 	:return:
@@ -102,6 +97,10 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
+	"""
+	This function verifies the oath token and returns the authorization response
+	:return:
+	"""
 	response = {"vs": None}
 	if 'token' in request.form and 'source' in request.form:
 		token = request.form['token']
@@ -125,13 +124,17 @@ def login():
 
 
 @app.route('/project/<string:pid>', methods=['GET'])
-def open_project(pid):
+def open_project(pid: str):
+	"""
+	This route opens the project and displays data file viewer, YAML viewer and Wikified output file viewer cards.
+	:param pid:
+	:return:
+	"""
 	if 'uid' in session:
 		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
 		user_info_json = json.dumps(user_info)
 		project_config_path = get_project_config_path(session['uid'], pid)
 		project = Project(project_config_path)
-		project.update_mdate()
 		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info_json))
 	else:
 		return redirect(url_for('index'))
@@ -139,6 +142,10 @@ def open_project(pid):
 
 @app.route('/project', methods=['GET'])
 def project_home():
+	"""
+	This route displays the list of projects with thier details and gives user the option to rename, delete and download the project.
+	:return:
+	"""
 	if 'uid' in session:
 		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
 		user_info_json = json.dumps(user_info)
@@ -149,6 +156,10 @@ def project_home():
 
 @app.route('/get_project_meta', methods=['POST'])
 def get_project_meta():
+	"""
+	This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
+	:return:
+	"""
 	if 'uid' in session:
 		user_dir = Path(app.config['UPLOAD_FOLDER']) / session['uid']
 		project_details = get_project_details(user_dir)
@@ -160,6 +171,10 @@ def get_project_meta():
 
 @app.route('/create_project', methods=['POST'])
 def create_project():
+	"""
+	This route creates a project by generating a unique id and creating a upload directory for that project
+	:return:
+	"""
 	if 'uid' in session:
 		response = dict()
 		if 'ptitle' in request.form:
@@ -214,7 +229,6 @@ def upload_data_file():
 		project_config_path = get_project_config_path(user_id, project_id)
 		project = Project(project_config_path)
 
-		# data_file_name, sheet_name = project.get_current_file_and_sheet()
 		data_file_name = curr_data_file_id
 		sheet_name = project_meta["currentSheetName"]
 		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_name, sheet_name)
@@ -261,6 +275,10 @@ def upload_data_file():
 
 @app.route('/change_sheet', methods=['POST'])
 def change_sheet():
+	"""
+	This route is used when a user switches a sheet in an excel data file.
+	:return:
+	"""
 	if 'uid' in session:
 		response = {
 					"tableData": dict(),
@@ -532,6 +550,10 @@ def wikify_region():
 
 @app.route('/get_project_files', methods=['POST'])
 def get_project_files():
+	"""
+	This function fetches the last session of the last opened files in a project when that project is reopened later.
+	:return:
+	"""
 	response = {
 				"tableData": None,
 				"yamlData": None,
@@ -590,6 +612,10 @@ def get_project_files():
 
 @app.route('/logout', methods=['GET'])
 def logout():
+	"""
+	This function initiate request to end a user's session and logs them out.
+	:return:
+	"""
 	if 'uid' in session:
 		del session['uid']
 	return redirect(url_for('index'))
@@ -597,6 +623,10 @@ def logout():
 
 @app.route('/rename_project', methods=['POST'])
 def rename_project():
+	"""
+	This route is used to rename a project.
+	:return:
+	"""
 	if 'uid' in session:
 		user_id = session['uid']
 		project_id = request.form["pid"]
@@ -614,16 +644,16 @@ def rename_project():
 
 @app.route('/delete_project', methods=['POST'])
 def delete_project():
+	"""
+	This route is used to delete a project.
+	:return:
+	"""
 	if 'uid' in session:
 		user_id = session['uid']
 		project_id = request.form["pid"]
 		project_directory = Path(app.config['UPLOAD_FOLDER']) / session['uid'] / project_id
 
 		shutil.rmtree(project_directory)
-
-		# project_config_path = get_project_config_path(user_id, project_id)
-		# project = Project(project_config_path)
-		# project.update_project_title(ptitle)
 		user_dir = Path(app.config['UPLOAD_FOLDER']) / user_id
 		project_details = get_project_details(user_dir)
 	else:
