@@ -453,3 +453,14 @@ def load_yaml_config(yaml_config_file_path: Union[str, Path]) -> YAMLFile:
 	with open(yaml_config_file_path, 'rb') as config_file:
 		yaml_config = pickle.load(config_file)
 	return yaml_config
+
+
+def get_first_sheet_name(file_path: str):
+	"""
+	This function returns the first sheet name of the excel file
+	:param file_path:
+	:return:
+	"""
+	book_dict = pyexcel.get_book_dict(file_name=file_path)
+	for sheet in book_dict.keys():
+		return sheet
