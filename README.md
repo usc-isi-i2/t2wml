@@ -11,6 +11,43 @@
     ```
 3. Server is up and running
 
+## Usage Within Code
+```
+from driver import run_t2wml
+run_t2wml(data_file_path,  wikified_output_path, t2wml_spec, output_directory, sheet_name, sparql_endpoint)
+```
+Arguments:
+```
+Mandatory Arguments:
+    data_file_path: string
+    wikified_output_path: string 
+    t2wml_spec: string
+    output_directory: string 
+Optional Arguments:
+    sheet_name: string
+    sparql_endpoint: string
+```
+
+Default Values:
+``` 
+    sparql_endpoint = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
+```
+Output:
+
+The function will create a directory structure in the output directory which will have the results.ttl and changes.tsv files.
+
+Output Directory Structure:
+```
+output_directory/
+├── excel_file_name/
+│   └── sheet_name/
+|       ├── results.ttl
+|       └── changes.tsv
+└── csv_file_name/
+    ├── results.ttl
+    └── changes.tsv
+```
+
 ## GUI Usage
 
 Once the server is set up, the GUI should run at the following port by default:
