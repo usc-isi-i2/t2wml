@@ -12,8 +12,8 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from pathlib import Path
 from oslo_concurrency import lockutils
-from Code.Project import Project
-from Code.YAMLFile import YAMLFile
+# from Code.Project import Project
+# from Code.YAMLFile import YAMLFile
 from Code.property_type_map import property_type_map
 
 
@@ -365,12 +365,12 @@ def get_project_details(user_dir: Path) -> List[Dict[str, Any]]:
 	return projects
 
 
-def get_region_mapping(uid: str, pid: str, project: Project, data_file_name=None, sheet_name=None) -> Tuple[dict, int]:
+def get_region_mapping(uid: str, pid: str, project, data_file_name=None, sheet_name=None) -> Tuple[dict, int]:
 	"""
 	This function reads (and creates if it doesn't exist) and deserialize the respective wikifier config file
 	:param uid:
 	:param pid:
-	:param project:
+	:param project: Project
 	:param data_file_name:
 	:param sheet_name:
 	:return:
@@ -433,22 +433,22 @@ def get_project_config_path(uid: str, pid: str) -> str:
 	return str(Path.cwd() / "config" / "uploads" / uid / pid / "project_config.json")
 
 
-def save_yaml_config(yaml_config_file_path: Union[str, Path], yaml_config: YAMLFile) -> None:
+def save_yaml_config(yaml_config_file_path: Union[str, Path], yaml_config) -> None:
 	"""
 	This function saves the YAMLFile object in a pickle file
 	:param yaml_config_file_path:
-	:param yaml_config:
+	:param yaml_config: YAMLFile
 	:return:
 	"""
 	with open(yaml_config_file_path, 'wb') as config_file:
 		pickle.dump(yaml_config, config_file)
 
 
-def load_yaml_config(yaml_config_file_path: Union[str, Path]) -> YAMLFile:
+def load_yaml_config(yaml_config_file_path: Union[str, Path]):
 	"""
 	This function loads the pickle file and deserialize the contents into a YAMLFile object
 	:param yaml_config_file_path:
-	:return:
+	:return: YAMLFile
 	"""
 	with open(yaml_config_file_path, 'rb') as config_file:
 		yaml_config = pickle.load(config_file)
