@@ -27,7 +27,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 	doc = etk.create_document({}, doc_id="http://isi.edu/default-ns/projects")
 
 	# bind prefixes
-	doc.kg.bind('wikibase', 'http://wikiba.se/ontology#')
+	doc.kg.bind('wikibase', 'http://wikibase/ontology#')
 	doc.kg.bind('wd', 'http://www.wikidata.org/entity/')
 	doc.kg.bind('wdt', 'http://www.wikidata.org/prop/direct/')
 	doc.kg.bind('wdtn', 'http://www.wikidata.org/prop/direct-normalized/')
