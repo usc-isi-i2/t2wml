@@ -1,9 +1,12 @@
+from typing import Union
+
+
 class AndExpression:
 	def __init__(self):
 		self.expression = []
 		self.operator = None
 
-	def evaluate(self, bindings: dict) -> bool:
+	def evaluate(self, bindings: dict) -> Union[bool, Exception]:
 		"""
 		This function evaluates all the expressions using boolean AND operator
 		:param bindings:
@@ -11,25 +14,57 @@ class AndExpression:
 		"""
 		evaluated_expression = []
 		for i in range(len(self.expression)):
-			evaluated_expression.append(str(self.expression[i].evaluate(bindings)))
-
+			evaluated_expression.append(self.expression[i].evaluate(bindings))
 		if self.operator:
 			if self.operator == "=":
-				return evaluated_expression[0] == evaluated_expression[1]
+				if isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					for i in evaluated_expression[0]:
+						if i != evaluated_expression[1]:
+							return False
+					return True
+				elif not isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					return str(evaluated_expression[0]) == str(evaluated_expression[1])
 			elif self.operator == "!=":
-				return evaluated_expression[0] != evaluated_expression[1]
+				if isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					for i in evaluated_expression[0]:
+						if i == evaluated_expression[1]:
+							return False
+					return True
+				elif not isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					return str(evaluated_expression[0]) != str(evaluated_expression[1])
 			elif self.operator == "contains":
-				if evaluated_expression[1] in evaluated_expression[0]:
+				if isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					for i in evaluated_expression[0]:
+						if evaluated_expression[1] not in i:
+							return False
 					return True
-				return False
+				elif not isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					if evaluated_expression[1] in evaluated_expression[0]:
+						return True
+					return False
 			elif self.operator == "starts_with":
-				if evaluated_expression[0].startswith(evaluated_expression[1]):
+				if isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					for i in evaluated_expression[0]:
+						if not i.startswith(evaluated_expression[1]):
+							return False
 					return True
-				return False
+				elif not isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					if str(evaluated_expression[0]).startswith(str(evaluated_expression[1])):
+						return True
+					return False
 			elif self.operator == "ends_with":
-				if evaluated_expression[0].endswith(evaluated_expression[1]):
+				if isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					for i in evaluated_expression[0]:
+						if not i.endswith(evaluated_expression[1]):
+							return False
 					return True
-				return False
+				elif not isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
+					if str(evaluated_expression[0]).endswith(str(evaluated_expression[1])):
+						return True
+					return False
+			else:
+				# Report error that this expression is semantically incorrect
+				return Exception('This Expression is semantically incorrect')
 		else:
 			if evaluated_expression[0] is not None and evaluated_expression[0] != "":
 				return True

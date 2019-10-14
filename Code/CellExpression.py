@@ -5,6 +5,8 @@ class CellExpression:
     def __init__(self) -> None:
         self.column_expression = None
         self.row_expression = None
+        self.column_range_expression = None
+        self.row_range_expression = None
 
     def evaluate(self, bindings: dict) -> Sequence[int]:
         """
@@ -13,6 +15,14 @@ class CellExpression:
         :param bindings:
         :return: column and row indices of type int
         """
-        re = self.row_expression.evaluate(bindings)
-        ce = self.column_expression.evaluate(bindings)
+        if self.row_expression:
+            re = self.row_expression.evaluate(bindings)
+        else:
+            re = self.row_range_expression.evaluate(bindings)
+
+        if self.column_expression:
+            ce = self.column_expression.evaluate(bindings)
+        else:
+            ce = self.column_range_expression.evaluate(bindings)
+
         return ce, re

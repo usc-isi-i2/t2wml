@@ -5,7 +5,7 @@ class ColumnVariable:
     def __init__(self) -> None:
         self.value = None
 
-    def evaluate(self, bindings: dict) -> str:
+    def evaluate(self, bindings: dict) -> int:
         """
         This function checks if the column variable exists in the bindings dictionary
         If yes, then returns the value from the dictionary else it returns the column variable as is.

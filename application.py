@@ -1,7 +1,7 @@
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from Code.utility_functions import *
-from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
+from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier, add_excel_file_to_bindings
 from Code.ItemTable import ItemTable
 from Code.Project import Project
 from Code.YAMLFile import YAMLFile
@@ -236,6 +236,9 @@ def upload_data_file():
 		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
 		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
 
+		add_excel_file_to_bindings(data_file_path, sheet_name)
+
+
 		if Path(wikifier_output_filepath).exists():
 			build_item_table(item_table, wikifier_output_filepath, data_file_path, sheet_name)
 		region_qnodes = item_table.get_region_qnodes()
@@ -302,6 +305,8 @@ def change_sheet():
 		table_data["currSheetName"] = data["currSheetName"]
 		table_data["sheetData"] = data["sheetData"]
 		project_meta["currentSheetName"] = data["currSheetName"]
+
+		add_excel_file_to_bindings(data_file_path, new_sheet_name)
 
 		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_id, new_sheet_name)
 		item_table = ItemTable(region_map)

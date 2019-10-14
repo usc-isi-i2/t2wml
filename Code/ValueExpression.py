@@ -13,16 +13,31 @@ class ValueExpression:
         :param bindings:
         :return: value of a cell in the excel file
         """
+        response = None
+        # print('excel', bindings['excel_sheet'])
         if self.cell_expression:
             ce, re = self.cell_expression.evaluate(bindings)
+            print(ce, re)
+            if isinstance(ce, tuple) and isinstance(re, int):
+                response = list()
+                for i in range(ce[0], ce[1] + 1):
+                    print(bindings['excel_sheet'][re, i])
+                    response.append(str(bindings['excel_sheet'][re, i]))
+            elif isinstance(re, tuple) and isinstance(ce, int):
+                response = list()
+                for i in range(re[0], re[1] + 1):
+                    response.append(str(bindings['excel_sheet'][i, ce]))
+            elif isinstance(ce, int) and isinstance(re, int):
+                response = str(bindings['excel_sheet'][re, ce])
         else:
             cell_expression = self.boolean_equation.evaluate(bindings)
             if cell_expression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
+                response = str(bindings['excel_sheet'][re, ce])
             else:
                 raise ValueError("Invalid Row and Column values")
-        return str(bindings['excel_sheet'][re, ce])
+        return response
 
     def get_cell(self, bindings: dict) -> tuple:
         """
@@ -47,13 +62,25 @@ class ValueExpression:
         :param bindings:
         :return:
         """
+        response = None
         if self.cell_expression:
             ce, re = self.cell_expression.evaluate(bindings)
+            if isinstance(ce, tuple) and isinstance(re, int):
+                response = list()
+                for i in range(ce[0], ce[1] + 1):
+                    response.append(str(bindings['excel_sheet'][re, i]))
+            elif isinstance(re, tuple) and isinstance(ce, int):
+                response = list()
+                for i in range(re[0], re[1] + 1):
+                    response.append(str(bindings['excel_sheet'][i, ce]))
+            elif isinstance(ce, int) and isinstance(re, int):
+                response = str(bindings['excel_sheet'][re, ce])
         else:
             cell_expression = self.boolean_equation.evaluate(bindings)
             if cell_expression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
+                response = str(bindings['excel_sheet'][re, ce])
             else:
                 raise ValueError("Invalid Row and Column values")
-        return ce, re, str(bindings['excel_sheet'][re, ce])
+        return ce, re, response
