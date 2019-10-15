@@ -17,6 +17,7 @@ from Code.ValueExpression import ValueExpression
 from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
+from etk.wikidata.utils import parse_datetime_string
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
@@ -287,6 +288,18 @@ def evaluate_template(template: dict) -> dict:
 						temp_dict['cell'] = get_actual_cell_index((col, row))
 					else:
 						temp_dict[k] = v
+				print(temp_dict)
+				if "property" in temp_dict and temp_dict["property"] == "P585":
+					if "format" in temp_dict:
+						try:
+							print(str(temp_dict["value"]), [temp_dict["format"]])
+							datetime_string, precision = parse_datetime_string(str(temp_dict["value"]), additional_formats=[temp_dict["format"]])
+						except Exception as e:
+							print(e)
+						print(datetime_string, precision)
+						if "precision" not in temp_dict:
+							temp_dict["precision"] = precision
+						temp_dict["value"] = datetime_string
 				response[key].append(temp_dict)
 		else:
 			if isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
