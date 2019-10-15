@@ -16,7 +16,6 @@ class YAMLParser:
 		right = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['right']))
 		top = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['top']))
 		bottom = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
-		print(bottom)
 		if 'skip_row' in self.yaml_data['statementMapping']['region'][0]:
 			skip_row = list()
 			for i in range(len(self.yaml_data['statementMapping']['region'][0]['skip_row'])):
