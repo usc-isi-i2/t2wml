@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 CWD = os.getcwd()
 from Code.utility_functions import get_property_type, translate_precision_to_integer
-# sys.path.insert(0, Path(CWD + "/etk"))
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
 from etk.etk_module import ETKModule
