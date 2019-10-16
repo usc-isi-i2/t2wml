@@ -168,6 +168,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
+	remove_empty_and_invalid_cells(region)
 	bindings["$col"] = column
 	bindings["$row"] = row
 	data = {}
@@ -195,6 +196,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	"""
 	update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 	region = region_specification['region_object']
+	remove_empty_and_invalid_cells(region)
 	response = dict()
 	data = []
 	error = []
