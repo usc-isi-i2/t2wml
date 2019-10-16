@@ -1,7 +1,8 @@
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from Code.utility_functions import *
-from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
+from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, \
+	wikifier, remove_empty_and_invalid_cells
 from Code.ItemTable import ItemTable
 from Code.Project import Project
 from Code.YAMLFile import YAMLFile
