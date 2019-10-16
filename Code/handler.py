@@ -9,7 +9,8 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range
+from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range, \
+	translate_precision_to_integer
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -290,18 +291,17 @@ def evaluate_template(template: dict) -> dict:
 						temp_dict['cell'] = get_actual_cell_index((col, row))
 					else:
 						temp_dict[k] = v
-				print(temp_dict)
 				if "property" in temp_dict and temp_dict["property"] == "P585":
 					if "format" in temp_dict:
 						try:
-							print(str(temp_dict["value"]), [temp_dict["format"]])
-							datetime_string, precision = parse_datetime_string(str(temp_dict["value"]), additional_formats=[temp_dict["format"]])
+							datetime_string, precision = parse_datetime_string(temp_dict["value"], additional_formats=[temp_dict["format"]])
+							if "precision" not in temp_dict:
+								temp_dict["precision"] = int(precision.value.__str__())
+							else:
+								temp_dict["precision"] = translate_precision_to_integer(temp_dict["precision"])
+							temp_dict["value"] = datetime_string
 						except Exception as e:
-							print(e)
-						print(datetime_string, precision)
-						if "precision" not in temp_dict:
-							temp_dict["precision"] = precision
-						temp_dict["value"] = datetime_string
+							raise e
 				response[key].append(temp_dict)
 		else:
 			if isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
