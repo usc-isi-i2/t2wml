@@ -48,6 +48,15 @@ def remove_empty_and_invalid_cells(region: Region) -> None:
 				region.add_hole(row, col, col)
 
 
+def reset_variables_in_bindings():
+	bindings["variables"] = {}
+
+
+def init_variables_in_bindings(variables: set):
+	for i in variables:
+		bindings["variables"][i] = 0
+
+
 def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: str = None, sheet_name: str = None) -> None:
 	"""
 	This function updates the bindings dictionary with the region, excel_file and item_table

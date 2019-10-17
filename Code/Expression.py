@@ -10,6 +10,20 @@ class Expression:
 		self.string = None
 		self.cell_expression = None
 
+	def get_variable_cell_operator_arguments(self) -> set:
+		variables = set()
+		if self.value_expression:
+			variables = self.value_expression.get_variable_cell_operator_arguments()
+		elif self.item_expression:
+			variables = self.item_expression.get_variable_cell_operator_arguments()
+		elif self.column_expression:
+			variables = self.column_expression.get_variable_cell_operator_arguments()
+		elif self.row_expression:
+			variables = self.row_expression.get_variable_cell_operator_arguments()
+		elif self.cell_expression:
+			variables = self.cell_expression.get_variable_cell_operator_arguments()
+		return variables
+
 	def evaluate(self, bindings: dict) -> Union[str, int]:
 		"""
 		This function returns the evaluated value of the not null members

@@ -5,6 +5,13 @@ class OrExpression:
 	def __init__(self):
 		self.and_expression = []
 
+	def get_variable_cell_operator_arguments(self) -> set:
+		variables = set()
+		if self.and_expression:
+			for i in self.and_expression:
+				variables |= i.get_variable_cell_operator_arguments()
+		return variables
+
 	def evaluate(self, bindings: dict) -> bool:
 		"""
 		This function evaluates all the and expressions using boolean OR operator

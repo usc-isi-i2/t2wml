@@ -2,6 +2,13 @@ class BooleanExpression:
 	def __init__(self):
 		self.or_expression = []
 
+	def get_variable_cell_operator_arguments(self) -> set:
+		variables = set()
+		if self.or_expression:
+			for i in self.or_expression:
+				variables |= i.get_variable_cell_operator_arguments()
+		return variables
+
 	def evaluate(self, bindings: dict) -> bool:
 		"""
 		This function returns evaluates the or_expressions using operators.

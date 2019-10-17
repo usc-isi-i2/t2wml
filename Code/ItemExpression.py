@@ -6,6 +6,14 @@ class ItemExpression:
 		self.cell_expression = None
 		self.boolean_equation = None
 
+	def get_variable_cell_operator_arguments(self) -> set:
+		variables = set()
+		if self.cell_expression:
+			variables = self.cell_expression.get_variable_cell_operator_arguments()
+		elif self.boolean_equation:
+			variables = self.cell_expression.get_variable_cell_operator_arguments()
+		return variables
+
 	def evaluate(self, bindings: dict) -> Union[str, int, list,  None]:
 		"""
 		This function calls evaluate function of its respective not null members

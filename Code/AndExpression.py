@@ -6,6 +6,13 @@ class AndExpression:
 		self.expression = []
 		self.operator = None
 
+	def get_variable_cell_operator_arguments(self) -> set:
+		variables = set()
+		if self.expression:
+			for i in self.expression:
+				variables |= i.get_variable_cell_operator_arguments()
+		return variables
+
 	def evaluate(self, bindings: dict) -> Union[bool, Exception]:
 		"""
 		This function evaluates all the expressions using boolean AND operator

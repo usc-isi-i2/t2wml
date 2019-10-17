@@ -2,7 +2,15 @@ class RowExpression:
     def __init__(self) -> None:
         self.row_variable = None
         self.operations = []
-    
+
+    def get_variables_cell_operator_arguments(self):
+        variables = set()
+        if self.operations:
+            for i in self.operations:
+                if i['cell_operator_argument'].isalpha():
+                    variables.add(i['cell_operator_argument'])
+        return variables
+
     def evaluate(self, bindings: dict) -> int:
         """
         This function evaluates the row variable and find its respective index in the excel file.

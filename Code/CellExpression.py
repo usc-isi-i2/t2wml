@@ -8,6 +8,15 @@ class CellExpression:
         self.column_range_expression = None
         self.row_range_expression = None
 
+    def get_variable_cell_operator_arguments(self):
+        column_variables = set()
+        row_variables = set()
+        if self.column_expression:
+            column_variables = self.column_expression.get_variable_cell_operator_arguments()
+        if self.row_expression:
+            row_variables = self.row_expression.get_variable_cell_operator_arguments()
+        return column_variables | row_variables
+
     def evaluate(self, bindings: dict) -> Sequence[int]:
         """
         This function evaluates the row and column expressions and returns the respective row and column indices
