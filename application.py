@@ -453,6 +453,7 @@ def get_cell_statement():
 		data = resolve_cell(item_table, data_file_path, sheet_name, region, template, column, row)
 	else:
 		data = {"error": "YAML file not found"}
+	print(data)
 	return json.dumps(data)
 
 

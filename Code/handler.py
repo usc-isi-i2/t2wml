@@ -291,19 +291,92 @@ def evaluate_template(template: dict) -> dict:
 			for i in range(len(template[key])):
 				temp_dict = dict()
 				for k, v in template[key][i].items():
-					if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
-						col, row, temp_dict[k] = v.evaluate_and_get_cell(bindings)
-						temp_dict['cell'] = get_actual_cell_index((col, row))
+					if isinstance(v, (ItemExpression, ValueExpression)):
+						if value.variables:
+							num_of_variables = len(v.variables)
+							if num_of_variables == 1:
+								bindings["variables"][v.variables[0]] = 0
+								while not v.evaluate_and_get_cell(bindings)[2]:
+									bindings["variables"][v.variables[0]] += 1
+								col, row, temp_dict[k] = v.evaluate_and_get_cell(bindings)
+								temp_dict['cell'] = get_actual_cell_index((col, row))
+								del bindings["variables"][v.variables[0]]
+					# else:
+					# 	response[key] = value
+					elif isinstance(v, BooleanEquation):
+						# print(v.variables)
+						if v.variables:
+							num_of_variables = len(v.variables)
+							if num_of_variables == 1:
+								bindings["variables"][v.variables[0]] = 0
+								while not v.evaluate(bindings):
+									bindings["variables"][v.variables[0]] += 1
+								temp_dict[key] = v.evaluate(bindings)
+								del bindings["variables"][v.variables[0]]
+						# elif num_of_variables >=2:
+						# 	bindings[value.variables[0]] = 0
+						# 	bindings[value.variables[1]] = 0
+						# 	while not value.evaluate_and_get_cell(bindings)[2]:
+						# 		bindings[value.variables[0]] += 1
+						# 	col, row, response[key] = value.evaluate_and_get_cell(bindings)
+						# 	del bindings[value.variables[0]]
+
 					else:
 						temp_dict[k] = v
+					# if key == "item" and row and col:
+					# 	response['cell'] = get_actual_cell_index((col, row))
+					# else:
+					# 	temp_dict[k] = v
+
+
+
+
+					# if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
+					# 	col, row, temp_dict[k] = v.evaluate_and_get_cell(bindings)
+					# 	temp_dict['cell'] = get_actual_cell_index((col, row))
+					# else:
+					# 	temp_dict[k] = v
 				response[key].append(temp_dict)
 		else:
-			if isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
+			if isinstance(value, (ItemExpression, ValueExpression)):
+				if value.variables:
+					num_of_variables = len(value.variables)
+					if num_of_variables == 1:
+						bindings["variables"][value.variables[0]] = 0
+						while not value.evaluate_and_get_cell(bindings)[2]:
+							bindings["variables"][value.variables[0]] += 1
+						col, row, response[key] = value.evaluate_and_get_cell(bindings)
+						del bindings["variables"][value.variables[0]]
 				col, row, response[key] = value.evaluate_and_get_cell(bindings)
 				if key == "item":
 					response['cell'] = get_actual_cell_index((col, row))
+			# else:
+			# 	response[key] = value
+			elif isinstance(value, BooleanEquation):
+				# print(value.variables)
+				if value.variables:
+					num_of_variables = len(value.variables)
+					if num_of_variables == 1:
+						bindings["variables"][value.variables[0]] = 0
+						while not value.evaluate(bindings):
+							bindings["variables"][value.variables[0]] += 1
+						response[key] = value.evaluate(bindings)
+						del bindings["variables"][value.variables[0]]
+					# elif num_of_variables >=2:
+					# 	bindings[value.variables[0]] = 0
+					# 	bindings[value.variables[1]] = 0
+					# 	while not value.evaluate_and_get_cell(bindings)[2]:
+					# 		bindings[value.variables[0]] += 1
+					# 	col, row, response[key] = value.evaluate_and_get_cell(bindings)
+					# 	del bindings[value.variables[0]]
+
+				else:
+					response[key] = value.evaluate(bindings)
+				# if key == "item" and row and col:
+				# 	response['cell'] = get_actual_cell_index((col, row))
 			else:
 				response[key] = value
+
 	return response
 
 

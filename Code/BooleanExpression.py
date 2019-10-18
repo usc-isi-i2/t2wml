@@ -1,13 +1,15 @@
 class BooleanExpression:
 	def __init__(self):
 		self.or_expression = []
+		self.variables = None
 
 	def get_variable_cell_operator_arguments(self) -> set:
 		variables = set()
 		if self.or_expression:
 			for i in self.or_expression:
 				variables |= i.get_variable_cell_operator_arguments()
-		return variables
+		self.variables = variables
+		return self.variables
 
 	def evaluate(self, bindings: dict) -> bool:
 		"""

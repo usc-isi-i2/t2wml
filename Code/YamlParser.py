@@ -94,6 +94,8 @@ class YAMLParser:
 		if template_item:
 			if not template_item.isalnum():
 				template['item'] = generate_tree(template_item)
+				template['item'].get_variable_cell_operator_arguments()
+
 			else:
 				template['item'] = template_item
 
@@ -102,6 +104,7 @@ class YAMLParser:
 		if template_property:
 			if template_property and not template_property.isalnum():
 				template['property'] = generate_tree(template_property)
+				template['property'].get_variable_cell_operator_arguments()
 			else:
 				template['property'] = template_property
 
@@ -110,6 +113,7 @@ class YAMLParser:
 		if template_value:
 			if not template_value.isalnum():
 				template["value"] = generate_tree(template_value)
+				template["value"].get_variable_cell_operator_arguments()
 			else:
 				template["value"] = template_value
 
@@ -119,6 +123,8 @@ class YAMLParser:
 				if qualifier_value:
 					if not qualifier_value.isalnum():
 						template['qualifier'][i]['value'] = generate_tree(qualifier_value)
+						var = template['qualifier'][i]['value'].get_variable_cell_operator_arguments()
+						print("YAML PARSER: ",var)
 					else:
 						template['qualifier'][i]['value'] = qualifier_value
 

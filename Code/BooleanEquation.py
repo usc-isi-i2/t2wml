@@ -5,6 +5,7 @@ class BooleanEquation:
 	def __init__(self):
 		self.boolean_expression = None
 		self.expression = None
+		self.variables = None
 
 	def get_variable_cell_operator_arguments(self) -> set:
 		boolean_expression_variables = set()
@@ -13,7 +14,8 @@ class BooleanEquation:
 			boolean_expression_variables = self.boolean_expression.get_variable_cell_operator_arguments()
 		if self.expression:
 			expression_variables = self.expression.get_variable_cell_operator_arguments()
-		return boolean_expression_variables | expression_variables
+		self.variables = boolean_expression_variables | expression_variables
+		return self.variables
 
 	def evaluate(self, bindings: dict) -> Union[str, int, None]:
 		"""

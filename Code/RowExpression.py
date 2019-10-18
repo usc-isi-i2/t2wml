@@ -3,7 +3,7 @@ class RowExpression:
         self.row_variable = None
         self.operations = []
 
-    def get_variables_cell_operator_arguments(self):
+    def get_variable_cell_operator_arguments(self):
         variables = set()
         if self.operations:
             for i in self.operations:
@@ -20,6 +20,7 @@ class RowExpression:
         :return: row variable of type int
         """
         rv = self.row_variable.evaluate(bindings)
+        # print(bindings)
         for i in self.operations:
             if i['cell_operator'] == '+':
                 rv = rv+int(i['cell_operator_argument'].evaluate(bindings))
