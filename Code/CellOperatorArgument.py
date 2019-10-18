@@ -9,7 +9,8 @@ class CellOperatorArgument:
         :param bindings:
         :return: cell operator argument of type str
         """
-        if str(self.value).isalpha():
-            return self.value
-        else:
-            return bindings.get(self.value, self.value)
+        # if str(self.value).isalpha():
+        #     return self.value
+        # else:
+
+        return bindings.get(self.value, self.value)

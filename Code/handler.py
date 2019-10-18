@@ -47,14 +47,14 @@ def remove_empty_and_invalid_cells(region: Region) -> None:
 			if check_if_empty(str(bindings['excel_sheet'][row, col])):
 				region.add_hole(row, col, col)
 
-
-def reset_variables_in_bindings():
-	bindings["variables"] = {}
-
-
-def init_variables_in_bindings(variables: set):
-	for i in variables:
-		bindings["variables"][i] = 0
+#
+# def reset_variables_in_bindings():
+# 	bindings["variables"] = {}
+#
+#
+# def init_variables_in_bindings(variables: set):
+# 	for i in variables:
+# 		bindings["variables"][i] = 0
 
 
 def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: str = None, sheet_name: str = None) -> None:
@@ -292,27 +292,29 @@ def evaluate_template(template: dict) -> dict:
 				temp_dict = dict()
 				for k, v in template[key][i].items():
 					if isinstance(v, (ItemExpression, ValueExpression)):
-						if value.variables:
-							num_of_variables = len(v.variables)
+						if v.variables:
+							variables = list(v.variables)
+							num_of_variables = len(variables)
 							if num_of_variables == 1:
-								bindings["variables"][v.variables[0]] = 0
+								bindings[variables[0]] = 0
 								while not v.evaluate_and_get_cell(bindings)[2]:
-									bindings["variables"][v.variables[0]] += 1
+									bindings[variables[0]] += 1
 								col, row, temp_dict[k] = v.evaluate_and_get_cell(bindings)
 								temp_dict['cell'] = get_actual_cell_index((col, row))
-								del bindings["variables"][v.variables[0]]
+								del bindings[variables[0]]
 					# else:
 					# 	response[key] = value
 					elif isinstance(v, BooleanEquation):
 						# print(v.variables)
 						if v.variables:
-							num_of_variables = len(v.variables)
+							variables = list(v.variables)
+							num_of_variables = len(variables)
 							if num_of_variables == 1:
-								bindings["variables"][v.variables[0]] = 0
+								bindings[variables[0]] = 0
 								while not v.evaluate(bindings):
-									bindings["variables"][v.variables[0]] += 1
+									bindings[variables[0]] += 1
 								temp_dict[key] = v.evaluate(bindings)
-								del bindings["variables"][v.variables[0]]
+								del bindings[variables[0]]
 						# elif num_of_variables >=2:
 						# 	bindings[value.variables[0]] = 0
 						# 	bindings[value.variables[1]] = 0
@@ -340,40 +342,31 @@ def evaluate_template(template: dict) -> dict:
 		else:
 			if isinstance(value, (ItemExpression, ValueExpression)):
 				if value.variables:
-					num_of_variables = len(value.variables)
+					variables = list(value.variables)
+					num_of_variables = len(variables)
 					if num_of_variables == 1:
-						bindings["variables"][value.variables[0]] = 0
+						bindings[variables[0]] = 0
 						while not value.evaluate_and_get_cell(bindings)[2]:
-							bindings["variables"][value.variables[0]] += 1
+							bindings[variables[0]] += 1
 						col, row, response[key] = value.evaluate_and_get_cell(bindings)
-						del bindings["variables"][value.variables[0]]
+						del bindings[variables[0]]
 				col, row, response[key] = value.evaluate_and_get_cell(bindings)
 				if key == "item":
 					response['cell'] = get_actual_cell_index((col, row))
 			# else:
 			# 	response[key] = value
 			elif isinstance(value, BooleanEquation):
-				# print(value.variables)
 				if value.variables:
-					num_of_variables = len(value.variables)
+					variables = list(value.variables)
+					num_of_variables = len(variables)
 					if num_of_variables == 1:
-						bindings["variables"][value.variables[0]] = 0
+						bindings[variables[0]] = 0
 						while not value.evaluate(bindings):
-							bindings["variables"][value.variables[0]] += 1
+							bindings[variables[0]] += 1
 						response[key] = value.evaluate(bindings)
-						del bindings["variables"][value.variables[0]]
-					# elif num_of_variables >=2:
-					# 	bindings[value.variables[0]] = 0
-					# 	bindings[value.variables[1]] = 0
-					# 	while not value.evaluate_and_get_cell(bindings)[2]:
-					# 		bindings[value.variables[0]] += 1
-					# 	col, row, response[key] = value.evaluate_and_get_cell(bindings)
-					# 	del bindings[value.variables[0]]
-
+						del bindings[variables[0]]
 				else:
 					response[key] = value.evaluate(bindings)
-				# if key == "item" and row and col:
-				# 	response['cell'] = get_actual_cell_index((col, row))
 			else:
 				response[key] = value
 

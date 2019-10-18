@@ -5,7 +5,6 @@ bindings = {
     "$right": None,
     "$top": None,
     "$bottom": None,
-    "variables": {},
     "excel_sheet": None,
     "item_table": None
 }

@@ -7,8 +7,8 @@ class RowExpression:
         variables = set()
         if self.operations:
             for i in self.operations:
-                if i['cell_operator_argument'].isalpha():
-                    variables.add(i['cell_operator_argument'])
+                if str(i['cell_operator_argument'].value).isalpha():
+                    variables.add(i['cell_operator_argument'].value)
         return variables
 
     def evaluate(self, bindings: dict) -> int:
@@ -20,7 +20,6 @@ class RowExpression:
         :return: row variable of type int
         """
         rv = self.row_variable.evaluate(bindings)
-        # print(bindings)
         for i in self.operations:
             if i['cell_operator'] == '+':
                 rv = rv+int(i['cell_operator_argument'].evaluate(bindings))

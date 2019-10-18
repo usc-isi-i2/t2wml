@@ -99,7 +99,8 @@ class ItemTable:
 		elif self.other["qnodes"].get(cell_index, None):
 			return self.other["qnodes"][cell_index]
 		else:
-			raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
+			return None
+			# raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
 
 	def serialize_cell_to_qnode(self, cell_to_qnode: dict) -> dict:
 		"""

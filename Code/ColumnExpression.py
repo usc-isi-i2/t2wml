@@ -7,8 +7,8 @@ class ColumnExpression:
         variables = set()
         if self.operations:
             for i in self.operations:
-                if str(i['cell_operator_argument']).isalpha():
-                    variables.add(i['cell_operator_argument'])
+                if str(i['cell_operator_argument'].value).isalpha():
+                    variables.add(i['cell_operator_argument'].value)
         return variables
 
     def evaluate(self, bindings: dict) -> int:
