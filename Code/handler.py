@@ -9,7 +9,8 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range
+from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range, \
+	translate_precision_to_integer
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -17,6 +18,7 @@ from Code.ValueExpression import ValueExpression
 from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
+from etk.wikidata.utils import parse_datetime_string
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
@@ -289,6 +291,17 @@ def evaluate_template(template: dict) -> dict:
 						temp_dict['cell'] = get_actual_cell_index((col, row))
 					else:
 						temp_dict[k] = v
+				if "property" in temp_dict and temp_dict["property"] == "P585":
+					if "format" in temp_dict:
+						try:
+							datetime_string, precision = parse_datetime_string(temp_dict["value"], additional_formats=[temp_dict["format"]])
+							if "precision" not in temp_dict:
+								temp_dict["precision"] = int(precision.value.__str__())
+							else:
+								temp_dict["precision"] = translate_precision_to_integer(temp_dict["precision"])
+							temp_dict["value"] = datetime_string
+						except Exception as e:
+							raise e
 				response[key].append(temp_dict)
 		else:
 			if isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
