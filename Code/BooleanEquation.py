@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Tuple
 
 
 class BooleanEquation:
@@ -29,4 +29,18 @@ class BooleanEquation:
 		expression = self.expression.evaluate(bindings)
 		if boolean_expression:
 			return expression
+		return None
+
+	def evaluate_and_get_cell(self, bindings: dict) -> Tuple[int, int, Union[str,int]]:
+		"""
+		This function will evaluate the boolean expression and expression.
+		If evaluated value of boolean expression is true then evaluated value of expression will be returned
+		otherwise None will be returned
+		:param bindings:
+		:return: evaluated value of expression or None
+		"""
+		boolean_expression = self.boolean_expression.evaluate(bindings)
+		col, row, expression = self.expression.evaluate_and_get_cell(bindings)
+		if boolean_expression:
+			return col, row, expression
 		return None

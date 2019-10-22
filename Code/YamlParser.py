@@ -15,19 +15,19 @@ class YAMLParser:
 		This function parses the region specified in the YAML
 		:return:
 		"""
-		left_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['left']))
-		left_tree.get_variable_cell_operator_arguments()
-		right_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['right']))
-		right_tree.get_variable_cell_operator_arguments()
-		top_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['top']))
-		top_tree.get_variable_cell_operator_arguments()
-		bottom_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
-		bottom_tree.get_variable_cell_operator_arguments()
+		# left_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['left']))
+		# left_tree.get_variable_cell_operator_arguments()
+		# right_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['right']))
+		# right_tree.get_variable_cell_operator_arguments()
+		# top_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['top']))
+		# top_tree.get_variable_cell_operator_arguments()
+		# bottom_tree = generate_tree(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
+		# bottom_tree.get_variable_cell_operator_arguments()
 
-		# left = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['left']))
-		# right = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['right']))
-		# top = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['top']))
-		# bottom = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
+		left = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['left']))
+		right = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['right']))
+		top = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['top']))
+		bottom = parse_and_evaluate(str(self.yaml_data['statementMapping']['region'][0]['bottom']))
 		if 'skip_row' in self.yaml_data['statementMapping']['region'][0]:
 			skip_row = list()
 			for i in range(len(self.yaml_data['statementMapping']['region'][0]['skip_row'])):

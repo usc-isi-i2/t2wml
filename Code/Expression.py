@@ -43,4 +43,22 @@ class Expression:
 		else:
 			return str(self.string)[1:-1]
 
+	def evaluate_and_get_cell(self, bindings: dict) -> Union[str, int]:
+		"""
+		This function returns the evaluated value of the not null members
+		:param bindings:
+		:return: str or int based on the type of expression
+		"""
+		if self.value_expression:
+			return self.value_expression.evaluate_and_get_cell(bindings)
+		elif self.item_expression:
+			return self.item_expression.evaluate_and_get_cell(bindings)
+		elif self.column_expression:
+			return None, None, self.column_expression.evaluate(bindings)
+		elif self.row_expression:
+			return None, None, self.row_expression.evaluate(bindings)
+		elif self.cell_expression:
+			return self.cell_expression.evaluate(bindings), None
+		else:
+			return None, None, str(self.string)[1:-1]
 
