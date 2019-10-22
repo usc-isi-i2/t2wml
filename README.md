@@ -48,7 +48,7 @@ output_directory/
     └── changes.tsv
 ```
 
-## GUI Usage
+## Usage with GUI
 
 Once the server is set up, the GUI should run at the following port by default:
 ```
@@ -82,3 +82,17 @@ http://localhost:5000/
 
 <span id="preview_result"></span>⬇️ Preview result
 ![t2wml-gui-demo](demo/t2wml-gui-v1.3-output.gif)
+
+## FAQs
+
+* **Python package problems related with `etk`?**
+
+	Please do not use `pip install etk`.
+	
+	Usually `pip uninstall etk` and redo from `pip install -r requirements.txt` would solve this issue.
+
+* **Login failed or Google said `Error 400 (OAuth2 Error)`?**
+
+	Please do not use `http://127.0.0.1:5000/`.
+	
+	Instead, use `http://localhost:5000/`.
