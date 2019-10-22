@@ -8,6 +8,10 @@
 
 <span id="installation"></span>
 ## Installation
+<table>
+  <tr><td><b>Operating system:</b></td><td>macOS / OS X, Linux, Windows</td></tr>
+  <tr><td><b>Python version:</b></td><td>Python 3.6+</td></tr>
+</table>
 
 1. Clone the repository
 2. Open terminal/cmd in the project directory and type the following commands:
@@ -16,7 +20,7 @@
     python -m spacy download en_core_web_sm
     python application.py
     ```
-3. Server is up and running
+3. Server is up and running at `http://localhost:5000`
 
 <span id="usage_within_code"></span>
 ## Usage Within Code
@@ -96,14 +100,18 @@ http://localhost:5000/
 <span id="faqs"></span>
 ## FAQs
 
-* **Python package problems related with `etk`?**
+* **Installation failed due to `etk`?**
 
-	Please do not use `pip install etk`.
-	
-	Usually `pip uninstall etk` and redo from `pip install -r requirements.txt` would solve this issue.
+    Run the following commands in terminal/cmd:
+    ```
+    pip uninstall etk
+    pip install https://github.com/usc-isi-i2/etk/archive/development.zip
+    ```
 
-* **Login failed or Google said `Error 400 (OAuth2 Error)`?**
-
-	Please do not use `http://127.0.0.1:5000/`.
-	
-	Instead, use `http://localhost:5000/`.
+* **Login failed or encountered an authentication error like `400 (OAuth2 Error)`?**
+    
+    Access T2WML at `http://localhost:5000/` instead of `http://127.0.0.1:5000`.
+    
+* **Encountered any other error not mentioned in the FAQs?**
+    
+    Post the issue in the T2WML repository along with a detailed description.
