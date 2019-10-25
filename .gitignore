@@ -108,3 +108,4 @@ venv.bak/
 .DS_Store
 temporary_files/*
 config/*
+/Datasets/WDI_scripts_data/
