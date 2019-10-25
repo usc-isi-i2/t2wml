@@ -81,7 +81,7 @@ output_directory/
 <span id="features"></span>
 ## Features
 
-> Note: All screenshots below are captured in GUI v1.3. Minor inconsistency may appear.
+> Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
 <span id="wikify_region"></span>⬇️ Wikify region
 ![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_add.gif)
