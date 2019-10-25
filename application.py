@@ -1,8 +1,7 @@
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from Code.utility_functions import *
-from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, \
-	wikifier, remove_empty_and_invalid_cells
+from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, wikifier
 from Code.ItemTable import ItemTable
 from Code.Project import Project
 from Code.YAMLFile import YAMLFile
@@ -446,7 +445,8 @@ def get_cell_statement():
 		region = yaml_config.get_region()
 		region_map, region_file_name = get_region_mapping(user_id, project_id, project)
 		item_table = ItemTable(region_map)
-		data = resolve_cell(item_table, data_file_path, sheet_name, region, template, column, row)
+		sparql_endpoint = project.get_sparql_endpoint()
+		data = resolve_cell(item_table, data_file_path, sheet_name, region, template, column, row, sparql_endpoint)
 	else:
 		data = {"error": "YAML file not found"}
 	return json.dumps(data)

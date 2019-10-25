@@ -98,7 +98,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 				elif property_type == "Quantity":
 					value = QuantityValue(j["value"])
 				elif property_type == "Time":
-					value = TimeValue(str(j["value"]), Item(j["calendar"]), translate_precision_to_integer(j["precision"]), j["time_zone"])
+					value = TimeValue(str(j["value"]), Item(j["calendar"]), j["precision"], j["time_zone"])
 				elif property_type == "Url":
 					value = URLValue(j["value"])
 				elif property_type == "Monolingualtext":
