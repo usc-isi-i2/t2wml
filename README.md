@@ -20,7 +20,7 @@
     python -m spacy download en_core_web_sm
     python application.py
     ```
-3. Server is up and running at `http://localhost:5000`
+3. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)
 
 <span id="usage_within_code"></span>
 ## Usage Within Code
@@ -62,11 +62,6 @@ output_directory/
 
 <span id="usage_with_gui"></span>
 ## Usage with GUI
-
-Once the server is set up, the GUI should run at the following port by default:
-```
-http://localhost:5000/
-```
 
 1. Open the GUI
 2. In **Table Viewer**,
