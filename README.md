@@ -20,7 +20,7 @@
     python -m spacy download en_core_web_sm
     python application.py
     ```
-3. Server is up and running at `http://localhost:5000`
+3. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)
 
 <span id="usage_within_code"></span>
 ## Usage Within Code
@@ -63,11 +63,6 @@ output_directory/
 <span id="usage_with_gui"></span>
 ## Usage with GUI
 
-Once the server is set up, the GUI should run at the following port by default:
-```
-http://localhost:5000/
-```
-
 1. Open the GUI
 2. In **Table Viewer**,
 	1. click **Upload** to open a table file (.csv/.xls/.xlsx)
@@ -86,7 +81,7 @@ http://localhost:5000/
 <span id="features"></span>
 ## Features
 
-> Note: All screenshots below are captured in GUI v1.3. Minor inconsistency may appear.
+> Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
 <span id="wikify_region"></span>⬇️ Wikify region
 ![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_add.gif)

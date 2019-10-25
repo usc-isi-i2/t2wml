@@ -4,15 +4,15 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/editor.worker.js"
   },
   {
-    "revision": "78dc9eb80af57b925d0a0b860f65f362",
+    "revision": "91c643460d14987c2ef7b1139d7b2fd7",
     "url": "/t2wml-gui/home.html"
   },
   {
-    "revision": "401d6a899af09e2643e3d31f5dbee29d",
+    "revision": "bb6310550c8e59baed09412153ba3e02",
     "url": "/t2wml-gui/index.html"
   },
   {
-    "revision": "62f2ef959db6a047d1baf554a5f3dfe0",
+    "revision": "94bcea8bf04e845306db184a231f7506",
     "url": "/t2wml-gui/login.html"
   },
   {
@@ -24,16 +24,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/css/10.2de5122b.chunk.css"
   },
   {
-    "revision": "eab4dddbfca29c970922",
-    "url": "/t2wml-gui/static/css/home.1eeb8b93.chunk.css"
+    "revision": "9a41e314f34ce2c8f845",
+    "url": "/t2wml-gui/static/css/home.3fdad7a7.chunk.css"
   },
   {
-    "revision": "71e8c5941be737961869",
-    "url": "/t2wml-gui/static/css/index.828b04b8.chunk.css"
+    "revision": "d7d9876401bdd2337fb1",
+    "url": "/t2wml-gui/static/css/index.cfeafc43.chunk.css"
   },
   {
-    "revision": "b762ff076bf84e85b3bf",
-    "url": "/t2wml-gui/static/css/login.24ce8830.chunk.css"
+    "revision": "cc3c6cfa741c6e0fe100",
+    "url": "/t2wml-gui/static/css/login.d511ff5b.chunk.css"
   },
   {
     "revision": "3d912b123678cec97a03",
@@ -56,15 +56,15 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/t2wml-gui/static/js/11.5eea102c.chunk.js"
   },
   {
-    "revision": "eab4dddbfca29c970922",
+    "revision": "9a41e314f34ce2c8f845",
     "url": "/t2wml-gui/static/js/home.7ba1411f.chunk.js"
   },
   {
-    "revision": "71e8c5941be737961869",
+    "revision": "d7d9876401bdd2337fb1",
     "url": "/t2wml-gui/static/js/index.34bad422.chunk.js"
   },
   {
-    "revision": "b762ff076bf84e85b3bf",
+    "revision": "cc3c6cfa741c6e0fe100",
     "url": "/t2wml-gui/static/js/login.812760ab.chunk.js"
   },
   {
