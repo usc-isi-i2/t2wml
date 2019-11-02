@@ -2,7 +2,15 @@ class RowExpression:
     def __init__(self) -> None:
         self.row_variable = None
         self.operations = []
-    
+
+    def get_variable_cell_operator_arguments(self):
+        variables = set()
+        if self.operations:
+            for i in self.operations:
+                if str(i['cell_operator_argument'].value).isalpha():
+                    variables.add(i['cell_operator_argument'].value)
+        return variables
+
     def evaluate(self, bindings: dict) -> int:
         """
         This function evaluates the row variable and find its respective index in the excel file.
@@ -20,3 +28,24 @@ class RowExpression:
         if rv < -1:
             raise ValueError('Row value out of bound')
         return rv
+
+    def check_for_top(self) -> bool:
+        """
+        this function checks if $top is present as a column variable at any leaf
+        :return:
+        """
+        if self.row_variable:
+            return self.row_variable.check_for_top()
+        else:
+            return False
+
+    def check_for_bottom(self) -> bool:
+        """
+        this function checks if $bottom is present as a column variable at any leaf
+        :return:
+        """
+        if self.row_variable:
+            return self.row_variable.check_for_bottom()
+        else:
+            return False
+

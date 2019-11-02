@@ -1,22 +1,22 @@
 statementMapping:
   region:
-    - left: B
+    - left: C
       right: E
-      top: 5
-      bottom: 17
+      top: 4
+      bottom: 25
       skip_row:
-        - value(A:B/$row) = "" and value(C:D/$row) != ""
+        - value(B:D/$row) = "" and value(A/$row) != ""
   template:
-    item: item(A/$row)
+    item: item(A/$row-n)
     property: C3002 # murder
     value: value($col/$row)
     qualifier:
       - property: P585 #point in time
-        value: value(A:B/$row-n) = "" and value(C:D/$row-n) != "" -> value($col/$row-n)
+        value: value(A/$row-n) != "" and value(B:D/$row-n) = "" -> value(A/$row-n)
         calendar: Q1985727
         precision: year
         time_zone: 0 
       - property: P6001 # applies to people
-        value: item($col/4)
+        value: item(C/$row)
       - property: P123 #source
         value: item(B/$row)

@@ -2,10 +2,11 @@ statementMapping:
   region:
     - left: B
       right: E
-      top: 5
-      bottom: 17
+      top: 3
+      bottom: 19
       skip_row:
         - value(A:B/$row) = "" and value(C:D/$row) != ""
+        - value(B/$row) contains "year"
   template:
     item: item(A/$row)
     property: C3002 # murder
@@ -17,6 +18,6 @@ statementMapping:
         precision: year
         time_zone: 0 
       - property: P6001 # applies to people
-        value: item($col/4)
+        value: item($col/2)
       - property: P123 #source
         value: item(B/$row)

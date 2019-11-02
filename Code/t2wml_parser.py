@@ -8,11 +8,13 @@ from Code.ValueExpression import ValueExpression
 from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
+from Code.ColumnRangeExpression import ColumnRangeExpression
+from Code.RowRangeExpression import RowRangeExpression
 from pathlib import Path
 __CWD__ = os.getcwd()
 
 # instantiate Lark Parser
-parser = Lark(open(Path.cwd() / 'Code/grammar.lark'))
+parser = Lark(open(str(Path.cwd() / 'Code/grammar.lark')))
 
 
 def generate_tree(program: str) -> Union[ValueExpression]:
@@ -52,14 +54,43 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
         root.row_expression = node
         for i in instruction.children:
             create_class_tree(i, root.row_expression)
+    elif instruction.data == "row_range_expression":
+        node = class_dictionary[instruction.data]()
+        root.row_range_expression = node
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.row_range_expression)
+    elif instruction.data == "column_range_expression":
+        node = class_dictionary[instruction.data]()
+        root.column_range_expression = node
+        for i in instruction.children:
+            if isinstance(i, Tree):
+                create_class_tree(i, root.column_range_expression)
     elif instruction.data == "column_variable":
         node = class_dictionary[instruction.data]()
-        root.column_variable = node
-        root.column_variable.value = instruction.children[0]
+        if isinstance(root, ColumnRangeExpression):
+            if root.from_column_variable:
+                root.to_column_variable = node
+                root.to_column_variable.value = instruction.children[0]
+            else:
+                root.from_column_variable = node
+                root.from_column_variable.value = instruction.children[0]
+        else:
+            root.column_variable = node
+            root.column_variable.value = instruction.children[0]
     elif instruction.data == "row_variable":
         node = class_dictionary[instruction.data]()
-        root.row_variable = node
-        root.row_variable.value = instruction.children[0]
+        if isinstance(root, RowRangeExpression):
+            if root.from_row_variable:
+                root.to_row_variable = node
+                root.to_row_variable.value = instruction.children[0]
+            else:
+                root.from_row_variable = node
+                root.from_row_variable.value = instruction.children[0]
+        else:
+            root.row_variable = node
+            root.row_variable = node
+            root.row_variable.value = instruction.children[0]
     elif instruction.data == "cell_operator":
         root.operations.append({"cell_operator": instruction.children[0][0]})
     elif instruction.data == "cell_operator_argument":
