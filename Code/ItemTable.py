@@ -54,7 +54,7 @@ class ItemTable:
 		"""
 		cell_to_qnode = dict()
 		value_to_qnode = dict()
-		with open(file_path) as file:
+		with open(file_path, encoding='utf-8') as file:
 			csv_reader = csv.reader(file, delimiter=',')
 			for row in csv_reader:
 				if header:

@@ -28,20 +28,18 @@ def run_t2wml(data_file_path: str,  wikified_output_path: str, t2wml_spec: str, 
 	filetype = "ttl"
 
 	response = generate_download_file(None, item_table, data_file_path, sheet_name, region, template, filetype, sparql_endpoint)
-
 	file_name = Path(data_file_path).name
-	result_directory = file_name.split(".")[0]
+	result_directory = '.'.join(file_name.split(".")[:-1])
 	try:
-		file_extension = file_name.split(".")[1]
+		file_extension = file_name.split(".")[-1]
 	except:
 		logging.error("Data file has no extension")
 		return
 
 	output_path = Path()
-
-	if file_extension == ".csv":
+	if file_extension == "csv":
 		output_path = Path(output_directory)/result_directory
-	elif file_extension == ".xls" or file_extension == "xlsx":
+	elif file_extension == "xls" or file_extension == "xlsx":
 		if not sheet_name:
 			sheet_name = get_first_sheet_name(data_file_path)
 		output_path = Path(output_directory)/result_directory / sheet_name

@@ -9,7 +9,8 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range
+from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range, \
+	translate_precision_to_integer, get_property_type
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.ItemExpression import ItemExpression
@@ -17,6 +18,7 @@ from Code.ValueExpression import ValueExpression
 from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
+from etk.wikidata.utils import parse_datetime_string
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
@@ -191,7 +193,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 	return data
 
 
-def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: int, row: int) -> dict:
+def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict, template: dict, column: int, row: int, sparql_endpoint: str) -> dict:
 	"""
 	This cell resolve the statement for a particular cell
 	:param item_table:
@@ -211,7 +213,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 	data = {}
 	if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
-			statement = evaluate_template(template)
+			statement = evaluate_template(template, sparql_endpoint)
 			data = {'statement': statement, 'error': None}
 		except Exception as e:
 			data = {'error': str(e)}
@@ -242,7 +244,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
 	bindings["$row"] = head[1]
 	while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
 		try:
-			statement = evaluate_template(template)
+			statement = evaluate_template(template, sparql_endpoint)
 			data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
 		except Exception as e:
 			error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
@@ -308,7 +310,7 @@ def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel
 	return item_table
 
 
-def evaluate_template(template: dict) -> dict:
+def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
 	"""
 	This function resolves the template by parsing the T2WML expressions
 	and replacing them by the class trees of those expressions
@@ -352,6 +354,17 @@ def evaluate_template(template: dict) -> dict:
 							temp_dict['cell'] = get_actual_cell_index((col, row))
 					else:
 						temp_dict[k] = v
+				if "property" in temp_dict and get_property_type(temp_dict["property"], sparql_endpoint) == "Time":
+					if "format" in temp_dict:
+						try:
+							datetime_string, precision = parse_datetime_string(temp_dict["value"], additional_formats=[temp_dict["format"]])
+							if "precision" not in temp_dict:
+								temp_dict["precision"] = int(precision.value.__str__())
+							else:
+								temp_dict["precision"] = translate_precision_to_integer(temp_dict["precision"])
+							temp_dict["value"] = datetime_string
+						except Exception as e:
+							raise e
 				response[key].append(temp_dict)
 		else:
 			if isinstance(value, (ItemExpression, ValueExpression)):
@@ -385,6 +398,17 @@ def evaluate_template(template: dict) -> dict:
 			else:
 				response[key] = value
 
+	if get_property_type(response["property"], sparql_endpoint) == "Time":
+		if "format" in response:
+			try:
+				datetime_string, precision = parse_datetime_string(response["value"], additional_formats=[response["format"]])
+				if "precision" not in response:
+					response["precision"] = int(precision.value.__str__())
+				else:
+					response["precision"] = translate_precision_to_integer(response["precision"])
+				response["value"] = datetime_string
+			except Exception as e:
+				raise e
 	return response
 
 
