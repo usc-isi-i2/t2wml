@@ -28,3 +28,24 @@ class RowExpression:
         if rv < -1:
             raise ValueError('Row value out of bound')
         return rv
+
+    def check_for_top(self) -> bool:
+        """
+        this function checks if $top is present as a column variable at any leaf
+        :return:
+        """
+        if self.row_variable:
+            return self.row_variable.check_for_top()
+        else:
+            return False
+
+    def check_for_bottom(self) -> bool:
+        """
+        this function checks if $bottom is present as a column variable at any leaf
+        :return:
+        """
+        if self.row_variable:
+            return self.row_variable.check_for_bottom()
+        else:
+            return False
+

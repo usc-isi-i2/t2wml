@@ -47,15 +47,6 @@ def remove_empty_and_invalid_cells(region: Region) -> None:
 			if check_if_empty(str(bindings['excel_sheet'][row, col])):
 				region.add_hole(row, col, col)
 
-#
-# def reset_variables_in_bindings():
-# 	bindings["variables"] = {}
-#
-#
-# def init_variables_in_bindings(variables: set):
-# 	for i in variables:
-# 		bindings["variables"][i] = 0
-
 
 def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: str = None, sheet_name: str = None) -> None:
 	"""
@@ -124,8 +115,26 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 			if not row_be_skipped and not column_be_skipped and not cell_be_skipped:
 				data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
 				data["dataRegion"].add(data_cell)
-
-				if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+				if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation)):
+					try:
+						if item.variables:
+							variables = list(item.variables)
+							num_of_variables = len(variables)
+							if num_of_variables == 1:
+								bindings[variables[0]] = 0
+								while not item.evaluate(bindings):
+									bindings[variables[0]] += 1
+								col, row, value = item.evaluate_and_get_cell(bindings)
+								item_cell = get_actual_cell_index((col, row))
+								data["item"].add(item_cell)
+								del bindings[variables[0]]
+						else:
+							item_cell = get_cell(item)
+							item_cell = get_actual_cell_index(item_cell)
+							data["item"].add(item_cell)
+					except AttributeError:
+						pass
+				elif item and isinstance(item, (ColumnExpression, RowExpression)):
 					try:
 						item_cell = get_cell(item)
 						item_cell = get_actual_cell_index(item_cell)
@@ -136,7 +145,26 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 				if qualifiers:
 					qualifier_cells = set()
 					for qualifier in qualifiers:
-						if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression)):
+						if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation)):
+							try:
+								if qualifier["value"].variables:
+									variables = list(qualifier["value"].variables)
+									num_of_variables = len(variables)
+									if num_of_variables == 1:
+										bindings[variables[0]] = 0
+										while not qualifier["value"].evaluate(bindings):
+											bindings[variables[0]] += 1
+										col, row, value = qualifier["value"].evaluate_and_get_cell(bindings)
+										qualifier_cell = get_actual_cell_index((col, row))
+										qualifier_cells.add(qualifier_cell)
+										del bindings[variables[0]]
+								else:
+									qualifier_cell = get_cell(qualifier["value"])
+									qualifier_cell = get_actual_cell_index(qualifier_cell)
+									qualifier_cells.add(qualifier_cell)
+							except AttributeError:
+								pass
+						elif isinstance(qualifier["value"], (ColumnExpression, RowExpression)):
 							try:
 								qualifier_cell = get_cell(qualifier["value"])
 								qualifier_cell = get_actual_cell_index(qualifier_cell)
@@ -252,14 +280,15 @@ def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name
 	return item_table.get_region_qnodes()
 
 
-def load_yaml_data(yaml_filepath: str) -> Sequence[dict]:
+def load_yaml_data(yaml_filepath: str, item_table: ItemTable, data_file_path: str, sheet_name: str) -> Sequence[dict]:
 	"""
 	This function loads the YAML file data, parses different expressions and generates the statement
 	:param yaml_filepath:
 	:return:
 	"""
 	yaml_parser = YAMLParser(yaml_filepath)
-	region = yaml_parser.get_region()
+	update_bindings(item_table, None, data_file_path, sheet_name)
+	region = yaml_parser.get_region(bindings)
 	region['region_object'] = Region(region["left"], region["right"], region["top"], region["bottom"])
 	template = yaml_parser.get_template()
 	return region, template
@@ -308,7 +337,6 @@ def evaluate_template(template: dict) -> dict:
 							col, row, temp_dict['value'] = v.evaluate_and_get_cell(bindings)
 							temp_dict['cell'] = get_actual_cell_index((col, row))
 					elif isinstance(v, BooleanEquation):
-						# print(v.variables)
 						if v.variables:
 							variables = list(v.variables)
 							num_of_variables = len(variables)
@@ -322,29 +350,8 @@ def evaluate_template(template: dict) -> dict:
 						else:
 							col, row, temp_dict['value'] = v.evaluate_and_get_cell(bindings)
 							temp_dict['cell'] = get_actual_cell_index((col, row))
-						# elif num_of_variables >=2:
-						# 	bindings[value.variables[0]] = 0
-						# 	bindings[value.variables[1]] = 0
-						# 	while not value.evaluate_and_get_cell(bindings)[2]:
-						# 		bindings[value.variables[0]] += 1
-						# 	col, row, response[key] = value.evaluate_and_get_cell(bindings)
-						# 	del bindings[value.variables[0]]
-
 					else:
 						temp_dict[k] = v
-					# if key == "item" and row and col:
-					# 	response['cell'] = get_actual_cell_index((col, row))
-					# else:
-					# 	temp_dict[k] = v
-
-
-
-
-					# if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
-					# 	col, row, temp_dict[k] = v.evaluate_and_get_cell(bindings)
-					# 	temp_dict['cell'] = get_actual_cell_index((col, row))
-					# else:
-					# 	temp_dict[k] = v
 				response[key].append(temp_dict)
 		else:
 			if isinstance(value, (ItemExpression, ValueExpression)):
@@ -361,8 +368,6 @@ def evaluate_template(template: dict) -> dict:
 					col, row, response[key] = value.evaluate_and_get_cell(bindings)
 				if key == "item":
 					response['cell'] = get_actual_cell_index((col, row))
-			# else:
-			# 	response[key] = value
 			elif isinstance(value, BooleanEquation):
 				if value.variables:
 					variables = list(value.variables)

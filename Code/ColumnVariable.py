@@ -18,3 +18,23 @@ class ColumnVariable:
                 return value
         except KeyError:
             return get_excel_column_index(self.value)
+
+    def check_for_left(self) -> bool:
+        """
+        this function checks if $left is present as a column variable at any leaf
+        :return:
+        """
+        if self.value and self.value == "$left":
+            return True
+        else:
+            return False
+
+    def check_for_right(self) -> bool:
+        """
+        this function checks if $right is present as a column variable at any leaf
+        :return:
+        """
+        if self.value and self.value == "$right":
+            return True
+        else:
+            return False

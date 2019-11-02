@@ -95,3 +95,51 @@ class ItemExpression:
 				else:
 					raise ValueError("Invalid Row and Column values")
 		return ce, re, response
+
+	def check_for_left(self) -> bool:
+		"""
+		this function checks if $left is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_left()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_left()
+		else:
+			return False
+
+	def check_for_right(self) -> bool:
+		"""
+		this function checks if $right is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_right()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_right()
+		else:
+			return False
+
+	def check_for_top(self) -> bool:
+		"""
+		this function checks if $top is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_top()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_top()
+		else:
+			return False
+
+	def check_for_bottom(self) -> bool:
+		"""
+		this function checks if $bottom is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_bottom()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_bottom()
+		else:
+			return False

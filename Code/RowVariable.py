@@ -18,3 +18,23 @@ class RowVariable:
                 return value
         except KeyError:
             return get_excel_row_index(self.value)
+
+    def check_for_top(self) -> bool:
+        """
+        this function checks if $top is present as a column variable at any leaf
+        :return:
+        """
+        if self.value and self.value == "$top":
+            return True
+        else:
+            return False
+
+    def check_for_bottom(self) -> bool:
+        """
+        this function checks if $bottom is present as a column variable at any leaf
+        :return:
+        """
+        if self.value and self.value == "$bottom":
+            return True
+        else:
+            return False

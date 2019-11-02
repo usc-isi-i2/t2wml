@@ -405,16 +405,16 @@ def upload_yaml():
 		with open(yaml_file_path, "w", newline='') as f:
 			f.write(yaml_data)
 			yaml_configuration.set_file_location(yaml_file_path)
-		region, template = load_yaml_data(yaml_file_path)
-		yaml_configuration.set_region(region)
-		yaml_configuration.set_template(template)
 		project.add_yaml_file(data_file_name, sheet_name, yaml_file_id)
-		save_yaml_config(yaml_config_file_path, yaml_configuration)
 
 		if data_file_name:
 			wikifier_config_file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
 			wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
 			item_table = ItemTable(wikifier_config)
+			region, template = load_yaml_data(yaml_file_path, item_table, data_file_path, sheet_name)
+			yaml_configuration.set_region(region)
+			yaml_configuration.set_template(template)
+			save_yaml_config(yaml_config_file_path, yaml_configuration)
 			template = yaml_configuration.get_template()
 			response['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
 			project_meta["yamlMapping"] = dict()
@@ -453,7 +453,6 @@ def get_cell_statement():
 		data = resolve_cell(item_table, data_file_path, sheet_name, region, template, column, row)
 	else:
 		data = {"error": "YAML file not found"}
-	print(data)
 	return json.dumps(data)
 
 

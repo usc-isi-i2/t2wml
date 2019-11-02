@@ -28,3 +28,24 @@ class ColumnExpression:
         if cv < -1:
             raise ValueError('Column value out of bound')
         return cv
+
+    def check_for_left(self) -> bool:
+        """
+        this function checks if $left is present as a column variable at any leaf
+        :return:
+        """
+        if self.column_variable:
+            return self.column_variable.check_for_left()
+        else:
+            return False
+
+    def check_for_right(self) -> bool:
+        """
+        this function checks if $right is present as a column variable at any leaf
+        :return:
+        """
+        if self.column_variable:
+            return self.column_variable.check_for_right()
+        else:
+            return False
+

@@ -44,3 +44,55 @@ class BooleanEquation:
 		if boolean_expression:
 			return col, row, expression
 		return None
+
+	def check_for_left(self) -> bool:
+		"""
+		this function checks if $left is present as a column variable at any leaf
+		:return:
+		"""
+		boolean_expression_has_left = False
+		expression_has_left = False
+		if self.boolean_expression:
+			boolean_expression_has_left = self.boolean_expression.check_for_left()
+		if self.expression:
+			expression_has_left = self.expression.check_for_left()
+		return boolean_expression_has_left or expression_has_left
+
+	def check_for_right(self) -> bool:
+		"""
+		this function checks if $right is present as a column variable at any leaf
+		:return:
+		"""
+		boolean_expression_has_right = False
+		expression_has_right = False
+		if self.boolean_expression:
+			boolean_expression_has_right = self.boolean_expression.check_for_right()
+		if self.expression:
+			expression_has_right = self.expression.check_for_right()
+		return boolean_expression_has_right or expression_has_right
+
+	def check_for_top(self) -> bool:
+		"""
+		this function checks if $top is present as a column variable at any leaf
+		:return:
+		"""
+		boolean_expression_has_top = False
+		expression_has_top = False
+		if self.boolean_expression:
+			boolean_expression_has_top = self.boolean_expression.check_for_top()
+		if self.expression:
+			expression_has_top = self.expression.check_for_top()
+		return boolean_expression_has_top or expression_has_top
+
+	def check_for_bottom(self) -> bool:
+		"""
+		this function checks if $bottom is present as a column variable at any leaf
+		:return:
+		"""
+		boolean_expression_has_bottom = False
+		expression_has_bottom = False
+		if self.boolean_expression:
+			boolean_expression_has_bottom = self.boolean_expression.check_for_bottom()
+		if self.expression:
+			expression_has_bottom = self.expression.check_for_bottom()
+		return boolean_expression_has_bottom or expression_has_bottom

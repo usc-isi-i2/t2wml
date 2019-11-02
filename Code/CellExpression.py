@@ -35,3 +35,51 @@ class CellExpression:
             ce = self.column_range_expression.evaluate(bindings)
 
         return ce, re
+
+    def check_for_left(self) -> bool:
+        """
+        this function checks if $left is present as a column variable at any leaf
+        :return:
+        """
+        if self.column_expression:
+            return self.column_expression.check_for_left()
+        elif self.column_range_expression:
+            return self.column_range_expression.check_for_left()
+        else:
+            return False
+
+    def check_for_right(self) -> bool:
+        """
+        this function checks if $right is present as a column variable at any leaf
+        :return:
+        """
+        if self.column_expression:
+            return self.column_expression.check_for_right()
+        elif self.column_range_expression:
+            return self.column_range_expression.check_for_right()
+        else:
+            return False
+
+    def check_for_top(self) -> bool:
+        """
+        this function checks if $top is present as a column variable at any leaf
+        :return:
+        """
+        if self.row_expression:
+            return self.row_expression.check_for_top()
+        elif self.row_range_expression:
+            return self.row_range_expression.check_for_top()
+        else:
+            return False
+
+    def check_for_bottom(self) -> bool:
+        """
+        this function checks if $bottom is present as a column variable at any leaf
+        :return:
+        """
+        if self.row_expression:
+            return self.row_expression.check_for_bottom()
+        elif self.row_range_expression:
+            return self.row_range_expression.check_for_bottom()
+        else:
+            return False

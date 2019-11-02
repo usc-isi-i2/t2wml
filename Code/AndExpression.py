@@ -76,3 +76,47 @@ class AndExpression:
 			if evaluated_expression[0] is not None and evaluated_expression[0] != "":
 				return True
 			return False
+
+	def check_for_left(self) -> bool:
+		"""
+		this function checks if $left is present as a column variable
+		:return:
+		"""
+		has_left = False
+		if self.expression:
+			for i in self.expression:
+				has_left = has_left or i.check_for_left()
+		return has_left
+
+	def check_for_right(self) -> bool:
+		"""
+		this function checks if $right is present as a column variable
+		:return:
+		"""
+		has_right = False
+		if self.expression:
+			for i in self.expression:
+				has_right = has_right or i.check_for_right()
+		return has_right
+
+	def check_for_top(self) -> bool:
+		"""
+		this function checks if $top is present as a column variable
+		:return:
+		"""
+		has_top = False
+		if self.expression:
+			for i in self.expression:
+				has_top = has_top or i.check_for_top()
+		return has_top
+
+	def check_for_bottom(self) -> bool:
+		"""
+		this function checks if $bottom is present as a column variable
+		:return:
+		"""
+		has_bottom = False
+		if self.expression:
+			for i in self.expression:
+				has_bottom = has_bottom or i.check_for_bottom()
+		return has_bottom

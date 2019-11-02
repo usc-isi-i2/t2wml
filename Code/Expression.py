@@ -43,7 +43,7 @@ class Expression:
 		else:
 			return str(self.string)[1:-1]
 
-	def evaluate_and_get_cell(self, bindings: dict) -> Union[str, int]:
+	def evaluate_and_get_cell(self, bindings: dict) -> tuple:
 		"""
 		This function returns the evaluated value of the not null members
 		:param bindings:
@@ -62,3 +62,66 @@ class Expression:
 		else:
 			return None, None, str(self.string)[1:-1]
 
+	def check_for_left(self) -> bool:
+		"""
+		this function checks if $left is present as a column variable at any leaf
+		:return:
+		"""
+		has_left = False
+		if self.value_expression:
+			has_left = self.value_expression.check_for_left()
+		elif self.item_expression:
+			has_left = self.item_expression.check_for_left()
+		elif self.column_expression:
+			has_left = self.column_expression.check_for_left()
+		elif self.cell_expression:
+			has_left = self.cell_expression.check_for_left()
+		return has_left
+
+	def check_for_right(self) -> bool:
+		"""
+		this function checks if $right is present as a column variable at any leaf
+		:return:
+		"""
+		has_right = False
+		if self.value_expression:
+			has_right = self.value_expression.check_for_right()
+		elif self.item_expression:
+			has_right = self.item_expression.check_for_right()
+		elif self.column_expression:
+			has_right = self.column_expression.check_for_right()
+		elif self.cell_expression:
+			has_right = self.cell_expression.check_for_right()
+		return has_right
+
+	def check_for_top(self) -> bool:
+		"""
+		this function checks if $top is present as a column variable at any leaf
+		:return:
+		"""
+		has_top = False
+		if self.value_expression:
+			has_top = self.value_expression.check_for_top()
+		elif self.item_expression:
+			has_top = self.item_expression.check_for_top()
+		elif self.row_expression:
+			has_top = self.row_expression.check_for_top()
+		elif self.cell_expression:
+			has_top = self.cell_expression.check_for_top()
+		return has_top
+
+	def check_for_bottom(self) -> bool:
+		"""
+		this function checks if $bottom is present as a column variable at any leaf
+		:return:
+		"""
+		has_bottom = False
+		if self.value_expression:
+			has_bottom = self.value_expression.check_for_bottom()
+		elif self.item_expression:
+			has_bottom = self.item_expression.check_for_bottom()
+		elif self.row_expression:
+			has_bottom = self.row_expression.check_for_bottom()
+		elif self.cell_expression:
+			has_bottom = self.cell_expression.check_for_bottom()
+		return has_bottom
