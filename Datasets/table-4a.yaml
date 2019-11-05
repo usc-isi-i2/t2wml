@@ -10,10 +10,11 @@ statementMapping:
     value: value($col/$row)
     qualifier:
       - property: P585 #point in time
-        value: value($col/3-n)
+        value: value($col-n/3)
         calendar: Q1985727
         precision: year
-        time_zone: 0 
+        time_zone: 0
+        format: "%Y"
       - property: P6001 # applies to people
         value: item($col/4)
       - property: P123 #source

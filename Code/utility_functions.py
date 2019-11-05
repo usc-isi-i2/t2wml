@@ -96,6 +96,21 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	return type
 
 
+def add_row_in_data_file(file_path: str, sheet_name: str):
+	"""
+	This function adds a new blank row at the end of the excel file
+	:param file_path:
+	:param sheet_name:
+	:return:
+	"""
+	book = pyexcel.get_book(file_name=file_path)
+	num_of_cols = len(book[sheet_name][0])
+	blank_row = [" "] * num_of_cols
+	if book[sheet_name].row[-1] != blank_row:
+		book[sheet_name].row += blank_row
+	book.save_as(file_path)
+
+
 def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool = False) -> dict:
 	"""
 	This function reads the excel file and converts it to JSON
@@ -114,11 +129,11 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
 			result['sheetNames'].append(sheet)
 		if not sheet_name:
 			sheet_name = result['sheetNames'][0]
-		sheet = book_dict[sheet_name]
 	else:
 		result["sheetNames"] = None
-		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
 	result["currSheetName"] = sheet_name
+	add_row_in_data_file(file_path, sheet_name)
+	sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
 	for i in range(len(sheet[0])):
 		column = get_column_letter(i+1)
 		column_index_map[i+1] = column

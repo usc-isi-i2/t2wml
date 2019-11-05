@@ -27,19 +27,19 @@ class ValueExpression:
             if isinstance(ce, tuple) and isinstance(re, int):
                 response = list()
                 for i in range(ce[0], ce[1] + 1):
-                    response.append(str(bindings['excel_sheet'][re, i]))
+                    response.append(str(bindings['excel_sheet'][re, i]).strip())
             elif isinstance(re, tuple) and isinstance(ce, int):
                 response = list()
                 for i in range(re[0], re[1] + 1):
                     response.append(str(bindings['excel_sheet'][i, ce]))
             elif isinstance(ce, int) and isinstance(re, int):
-                response = str(bindings['excel_sheet'][re, ce])
+                response = str(bindings['excel_sheet'][re, ce]).strip()
         else:
             cell_expression = self.boolean_equation.evaluate(bindings)
             if cell_expression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
-                response = str(bindings['excel_sheet'][re, ce])
+                response = str(bindings['excel_sheet'][re, ce]).strip()
             else:
                 raise ValueError("Invalid Row and Column values")
         return response
@@ -73,19 +73,19 @@ class ValueExpression:
             if isinstance(ce, tuple) and isinstance(re, int):
                 response = list()
                 for i in range(ce[0], ce[1] + 1):
-                    response.append(str(bindings['excel_sheet'][re, i]))
+                    response.append(str(bindings['excel_sheet'][re, i]).strip())
             elif isinstance(re, tuple) and isinstance(ce, int):
                 response = list()
                 for i in range(re[0], re[1] + 1):
                     response.append(str(bindings['excel_sheet'][i, ce]))
             elif isinstance(ce, int) and isinstance(re, int):
-                response = str(bindings['excel_sheet'][re, ce])
+                response = str(bindings['excel_sheet'][re, ce]).strip()
         else:
             cell_expression = self.boolean_equation.evaluate(bindings)
             if cell_expression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
-                response = str(bindings['excel_sheet'][re, ce])
+                response = str(bindings['excel_sheet'][re, ce]).strip()
             else:
                 raise ValueError("Invalid Row and Column values")
         return ce, re, response
