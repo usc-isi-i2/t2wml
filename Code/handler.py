@@ -19,6 +19,7 @@ from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
 from etk.wikidata.utils import parse_datetime_string
+import pandas as pd
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
@@ -484,3 +485,19 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None) -> d
 			except KeyError:
 				pass
 	return response
+
+
+def process_wikified_output_file(file_path: str, item_table: ItemTable, context=None):
+	df = pd.read_csv(file_path)
+	if not context:
+		df = df[df.context.isnull()]
+	else:
+		df = df[df.context == context]
+
+	no_col_row = df[df.row.isnull() & df.col.isnull()]
+	only_col = df[~df.row.isnull() & df.col.isnull()]
+	only_row = df[df.row.isnull() & ~df.col.isnull()]
+	both_row_col = df[~df.row.isnull() & ~df.col.isnull()]
+
+
+process_wikified_output_file("temp.csv", None, None)
