@@ -3,24 +3,157 @@ import csv
 import pyexcel
 from copy import deepcopy
 from collections import OrderedDict
-from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key, split_cell
+from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key, split_cell, \
+	get_column_letter, query_wikidata_for_label_and_description
+from collections import defaultdict
 
 
 class ItemTable:
 	def __init__(self, region_qnodes=None):
-		if not region_qnodes:
-			self.other = {'region': list(), 'qnodes': dict()}
-			self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
-		else:
-			if 'Other' in region_qnodes['regions']:
-				self.other = {'region': region_qnodes['regions']['Other'], 'qnodes': dict()}
-				del region_qnodes['regions']['Other']
-				for i in self.other['region']:
-					self.other['qnodes'][i] = region_qnodes['qnodes'][i]
-					del region_qnodes['qnodes'][i]
-			else:
-				self.other = {'region': list(), 'qnodes': dict()}
-			self.region_qnodes = region_qnodes
+		self.table = defaultdict(dict)
+		# self.table = { (col, row): {value:value, context1:item, context2: item}}}
+		self.item_wiki = dict()
+		# self.item_wiki = {qnode1: {'label': label, 'desc': desc}, qnode2: {'label': label, 'desc': desc}}
+
+		# if not region_qnodes:
+		# 	self.other = {'region': list(), 'qnodes': dict()}
+		# 	self.region_qnodes = {'regions': OrderedDict(), 'qnodes': dict()}
+		# else:
+		# 	if 'Other' in region_qnodes['regions']:
+		# 		self.other = {'region': region_qnodes['regions']['Other'], 'qnodes': dict()}
+		# 		del region_qnodes['regions']['Other']
+		# 		for i in self.other['region']:
+		# 			self.other['qnodes'][i] = region_qnodes['qnodes'][i]
+		# 			del region_qnodes['qnodes'][i]
+		# 	else:
+		# 		self.other = {'region': list(), 'qnodes': dict()}
+		# 	self.region_qnodes = region_qnodes
+
+	def update_table(self, data_frame, data_filepath: str, sheet_name: str = None):
+		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=data_filepath)
+
+		# update all cells
+		no_col_row = data_frame[data_frame.row.isnull() & data_frame.col.isnull()]
+		item_value_map = dict()
+		# generate item_value_map
+		# item_value_map = {value: {context: item}}
+		for row in no_col_row.itertuples(index=False):
+			if row['value'] not in item_value_map:
+				item_value_map[row['value']] = dict()
+			if not row['context']:
+				row['context'] = '__NO_CONTEXT__'
+			item_value_map[row['value']][row['context']] = row['item']
+
+		for row in range(len(sheet)):
+			for col in range(len(sheet[0])):
+				try:
+					value = sheet[row, col]
+					if value in item_value_map:
+						for context, item in item_value_map[value].items():
+							if (col, row) not in self.table:
+								self.table[(col, row)] = {'value': value}
+							self.table[(col, row)][context] = item
+				except IndexError:
+					pass
+
+		# update cells by col
+		only_col = data_frame[~data_frame.row.isnull() & data_frame.col.isnull()]
+		col_values = data_frame.column.unique()
+		item_value_map = dict()
+		# item_value_map = { col: {value: {context: item}}}
+		for row in only_col.itertuples(index=False):
+			if row['column'] not in item_value_map:
+				item_value_map[row['column']] = {row['value']: dict()}
+			if not row['context']:
+				row['context'] = '__NO_CONTEXT__'
+			item_value_map[row['column']][row['value']][row['context']] = row['item']
+		for col in col_values:
+			for row in range(len(sheet)):
+				try:
+					value = sheet[row, col]
+					if value in item_value_map[col]:
+						if (col, row) not in self.table:
+							self.table[(col, row)] = {'value': value}
+						for context, item in item_value_map[col][value].items():
+							self.table[(col, row)][context] = item
+				except IndexError:
+					pass
+
+		# update cells by row
+		only_row = data_frame[data_frame.row.isnull() & ~data_frame.col.isnull()]
+		row_values = data_frame.row.unique()
+		item_value_map = dict()
+		# item_value_map = { row: {value: {context: item}}}
+		for row in only_row.itertuples(index=False):
+			if row['row'] not in item_value_map:
+				item_value_map[row['row']] = {row['value']: dict()}
+			if not row['context']:
+				row['context'] = '__NO_CONTEXT__'
+			item_value_map[row['row']][row['value']][row['context']] = row['item']
+		for row in row_values:
+			for col in range(len(sheet[0])):
+				try:
+					value = sheet[row, col]
+					if value in item_value_map[col]:
+						if (col, row) not in self.table:
+							self.table[(col, row)] = {'value': value}
+						for context, item in item_value_map[col][value].items():
+							self.table[(col, row)][context] = item
+				except IndexError:
+					pass
+
+		# update specific cells
+		both_row_col = data_frame[~data_frame.row.isnull() & ~data_frame.col.isnull()]
+		for row in both_row_col.itertuples(index=False):
+			try:
+				value = sheet[row['row'], row['column']]
+				if not row['context']:
+					row['context'] = '__NO_CONTEXT__'
+				if (row['column'], row['row']) not in self.table:
+					self.table[(row['column'], row['row'])] = {'value': value}
+				if not row['context']:
+					row['context'] = '__NO_CONTEXT__'
+				self.table[(row['column'], row['row'])][row['context']] = row['item']
+			except IndexError:
+				pass
+
+	def serialize_table(self, sparql_endpoint: str):
+		serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
+		items_not_in_wiki = set()
+		for cell, desc in self.table.items():
+			col = get_column_letter(int(cell[0]) + 1)
+			row = str(int(cell[1]) + 1)
+			cell = col+row
+			value = desc['value']
+			for context, item in desc.items():
+				if context != 'value':
+					if context == '__NO_CONTEXT__':
+						context = ''
+					serialized_table['qnodes'][cell][context] = item
+					row_data = {
+						'context': context,
+						'col': col,
+						'row': row,
+						'value': value,
+						'item': item
+					}
+					if item in self.item_wiki:
+						row_data['label'] = self.item_wiki[item]['label']
+						row_data['desc'] = self.item_wiki[item]['desc']
+					else:
+						items_not_in_wiki.add(item)
+					serialized_table['rowData'].append(row_data)
+		items_not_in_wiki = ' '.join(items_not_in_wiki)
+		self.item_wiki.update(query_wikidata_for_label_and_description(items_not_in_wiki, sparql_endpoint))
+
+		# add label and descriptions for items whose label and desc were not in wiki earlier
+		for i in range(len(serialized_table['rowData'])):
+			if serialized_table['rowData'][i]['item'] in self.item_wiki:
+				serialized_table['rowData'][i]['label'] = self.item_wiki[serialized_table['rowData'][i]['item']]['label']
+				serialized_table['rowData'][i]['desc'] = self.item_wiki[serialized_table['rowData'][i]['item']]['desc']
+
+		serialized_table['rowData'] = sorted(serialized_table['rowData'], key=lambda x: (x['context'], x['col'], x['row']))
+		return serialized_table
 
 	def get_region_qnodes(self) -> dict:
 		"""

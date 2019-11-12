@@ -44,8 +44,8 @@ def get_excel_column_index(column: str) -> int:
 	column = column.upper()
 	column = column[::-1]
 	for i in range(len(column)):
-		index += ((ord(column[i]) % 65 + 1)*(26**i))
-	return index-1
+		index += ((ord(column[i]) % 65 + 1) * (26 ** i))
+	return index - 1
 
 
 def get_excel_row_index(row: Union[str, int]) -> int:
@@ -56,7 +56,7 @@ def get_excel_row_index(row: Union[str, int]) -> int:
 	:param row:
 	:return: row index of type int
 	"""
-	return int(row)-1
+	return int(row) - 1
 
 
 def get_actual_cell_index(cell_index: tuple) -> str:
@@ -66,9 +66,9 @@ def get_actual_cell_index(cell_index: tuple) -> str:
 	:param cell_index: (col, row)
 	:return:
 	"""
-	col = get_column_letter(int(cell_index[0])+1)
+	col = get_column_letter(int(cell_index[0]) + 1)
 	row = str(int(cell_index[1]) + 1)
-	return col+row
+	return col + row
 
 
 def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
@@ -82,7 +82,7 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 		type = property_type_map[wikidata_property]
 	except KeyError:
 		query = """SELECT ?type WHERE {
-			wd:"""+wikidata_property+""" rdf:type wikibase:Property ;
+			wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
 			wikibase:propertyType ?type .  
 		}"""
 		sparql = SPARQLWrapper(sparql_endpoint)
@@ -120,13 +120,13 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
 	result["currSheetName"] = sheet_name
 	for i in range(len(sheet[0])):
-		column = get_column_letter(i+1)
-		column_index_map[i+1] = column
+		column = get_column_letter(i + 1)
+		column_index_map[i + 1] = column
 		sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
 	for row in range(len(sheet)):
 		r = {'^': str(row + 1)}
 		for col in range(len(sheet[row])):
-			r[column_index_map[col+1]] = str(sheet[row][col]).strip()
+			r[column_index_map[col + 1]] = str(sheet[row][col]).strip()
 		sheet_data['rowData'].append(r)
 
 	result['sheetData'] = sheet_data
@@ -329,17 +329,17 @@ def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: s
 		Path(Path(upload_directory) / uid / pid / "yf").mkdir(parents=True, exist_ok=True)
 		with open(Path(upload_directory) / uid / pid / "project_config.json", "w") as file:
 			project_config = {
-								"pid": pid,
-								"ptitle": ptitle,
-								"cdate": int(time() * 1000),
-								"mdate": int(time() * 1000),
-								"sparqlEndpoint": "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql",
-								"currentDataFile": None,
-								"currentSheetName": None,
-								"dataFileMapping": dict(),
-								"yamlMapping": dict(),
-								"wikifierRegionMapping": dict()
-							}
+				"pid": pid,
+				"ptitle": ptitle,
+				"cdate": int(time() * 1000),
+				"mdate": int(time() * 1000),
+				"sparqlEndpoint": "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql",
+				"currentDataFile": None,
+				"currentSheetName": None,
+				"dataFileMapping": dict(),
+				"yamlMapping": dict(),
+				"wikifierRegionMapping": dict()
+			}
 			json.dump(project_config, file, indent=3)
 	elif uid:
 		Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)
@@ -397,7 +397,8 @@ def update_wikifier_region_file(uid: str, pid: str, region_filename: str, region
 	"""
 	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
 
-	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True, lock_path=str(Path.cwd() / "config"/ "uploads" / uid / pid / "wf"))
+	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True,
+	                        lock_path=str(Path.cwd() / "config" / "uploads" / uid / pid / "wf"))
 	def update_wikifier_region_config() -> None:
 		"""
 		This function writes the file
@@ -464,3 +465,32 @@ def get_first_sheet_name(file_path: str):
 	book_dict = pyexcel.get_book_dict(file_name=file_path)
 	for sheet in book_dict.keys():
 		return sheet
+
+
+def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
+	query = """PREFIX wd: <http://www.wikidata.org/entity/>
+			PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+			PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+			SELECT ?qnode (MIN(?label) AS ?label) (MIN(?desc) AS ?desc) WHERE { 
+			  VALUES ?qnode {""" + items + """} 
+			  ?qnode rdfs:label ?label; <http://schema.org/description> ?desc.
+			  FILTER (langMatches(lang(?label),"EN"))
+			  FILTER (langMatches(lang(?desc),"EN"))
+			}
+			GROUP BY ?qnode
+			#LIMIT 10"""
+
+	sparql = SPARQLWrapper(sparql_endpoint)
+	sparql.setQuery(query)
+	sparql.setReturnFormat(JSON)
+	results = sparql.query().convert()
+	response = dict()
+	try:
+		for i in range(len(results["results"]["bindings"])):
+			qnode = results["results"]["bindings"][i]["qnode"]["value"].split("/")[-1]
+			label = results["results"]["bindings"][i]["label"]["value"]
+			desc = results["results"]["bindings"][i]["desc"]["value"]
+			response[qnode] = {'label': label, 'desc': desc}
+	except IndexError:
+		pass
+	return response
