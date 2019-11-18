@@ -446,7 +446,7 @@ def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int) ->
 		'type': (None, 'text/csv'),
 		'header': (None, 'False')
 	}
-	response = requests.post('http://minds03.isi.edu:8396/wikify', files=files)
+	response = requests.post('http://kg2018a.isi.edu/wikifier/wikify', files=files)
 	if response.status_code == 200:
 		data = response.content.decode("utf-8")
 		data = json.loads(data)['data']
