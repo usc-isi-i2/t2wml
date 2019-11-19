@@ -6,9 +6,15 @@ from Code.ItemTable import ItemTable
 from Code.Project import Project
 from Code.YAMLFile import YAMLFile
 import shutil
+import sys
 
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
+debug_mode = False
+
+
+def get_template_path(filename: str):
+	return (filename if not debug_mode else '{}_dev'.format(filename)) + '.html'
 
 
 def allowed_file(filename: str, file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS) -> bool:
@@ -92,7 +98,7 @@ def index():
 	if 'uid' in session:
 		return redirect(url_for('project_home'))
 	else:
-		return render_template('login.html')
+		return render_template(get_template_path('login'))
 
 
 @app.route('/login', methods=['POST'])
@@ -135,7 +141,7 @@ def open_project(pid: str):
 		user_info_json = json.dumps(user_info)
 		project_config_path = get_project_config_path(session['uid'], pid)
 		project = Project(project_config_path)
-		return app.make_response(render_template('project.html', pid=pid, userInfo=user_info_json))
+		return app.make_response(render_template(get_template_path('project'), pid=pid, userInfo=user_info_json))
 	else:
 		return redirect(url_for('index'))
 
@@ -149,7 +155,7 @@ def project_home():
 	if 'uid' in session:
 		user_info = app.config['USER_STORE'].get_user_info(session['uid'])
 		user_info_json = json.dumps(user_info)
-		return make_response(render_template('home.html', userInfo=user_info_json))
+		return make_response(render_template(get_template_path('home'), userInfo=user_info_json))
 	else:
 		return redirect(url_for('index'))
 
@@ -669,4 +675,8 @@ def delete_project():
 
 
 if __name__ == "__main__":
+	if len(sys.argv) > 0:
+		if sys.argv[1] == '--debug':
+			debug_mode = True
+			print('Debug mode is on!')
 	app.run(threaded=True)
