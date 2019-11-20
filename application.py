@@ -675,7 +675,7 @@ def delete_project():
 
 
 if __name__ == "__main__":
-	if len(sys.argv) > 0:
+	if len(sys.argv) > 1:
 		if sys.argv[1] == '--debug':
 			debug_mode = True
 			print('Debug mode is on!')
