@@ -6,14 +6,18 @@ from collections import OrderedDict
 from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key, split_cell, \
 	get_column_letter, query_wikidata_for_label_and_description
 from collections import defaultdict
-
+import json
 
 class ItemTable:
-	def __init__(self, region_qnodes=None):
-		self.table = defaultdict(dict)
-		# self.table = { (col, row): {value:value, context1:item, context2: item}}}
-		self.item_wiki = dict()
-		# self.item_wiki = {qnode1: {'label': label, 'desc': desc}, qnode2: {'label': label, 'desc': desc}}
+	def __init__(self, region_map=None):
+		if region_map:
+			self.table = defaultdict(region_map['table'])
+			self.item_wiki = region_map['item_wiki']
+		else:
+			self.table = defaultdict(dict)
+			# self.table = { (col, row): {value:value, context1:item, context2: item}}}
+			self.item_wiki = dict()
+			# self.item_wiki = {qnode1: {'label': label, 'desc': desc}, qnode2: {'label': label, 'desc': desc}}
 
 		# if not region_qnodes:
 		# 	self.other = {'region': list(), 'qnodes': dict()}
@@ -117,6 +121,10 @@ class ItemTable:
 			except IndexError:
 				pass
 
+	def to_json(self):
+		json_object = {'table': self.table, 'item_wiki': self.item_wiki}
+		return json.dumps(json_object, indent=3)
+
 	def serialize_table(self, sparql_endpoint: str):
 		serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
 		items_not_in_wiki = set()
@@ -144,13 +152,14 @@ class ItemTable:
 						items_not_in_wiki.add(item)
 					serialized_table['rowData'].append(row_data)
 		items_not_in_wiki = ' '.join(items_not_in_wiki)
-		self.item_wiki.update(query_wikidata_for_label_and_description(items_not_in_wiki, sparql_endpoint))
+		if sparql_endpoint:
+			self.item_wiki.update(query_wikidata_for_label_and_description(items_not_in_wiki, sparql_endpoint))
 
-		# add label and descriptions for items whose label and desc were not in wiki earlier
-		for i in range(len(serialized_table['rowData'])):
-			if serialized_table['rowData'][i]['item'] in self.item_wiki:
-				serialized_table['rowData'][i]['label'] = self.item_wiki[serialized_table['rowData'][i]['item']]['label']
-				serialized_table['rowData'][i]['desc'] = self.item_wiki[serialized_table['rowData'][i]['item']]['desc']
+			# add label and descriptions for items whose label and desc were not in wiki earlier
+			for i in range(len(serialized_table['rowData'])):
+				if serialized_table['rowData'][i]['item'] in self.item_wiki:
+					serialized_table['rowData'][i]['label'] = self.item_wiki[serialized_table['rowData'][i]['item']]['label']
+					serialized_table['rowData'][i]['desc'] = self.item_wiki[serialized_table['rowData'][i]['item']]['desc']
 
 		serialized_table['rowData'] = sorted(serialized_table['rowData'], key=lambda x: (x['context'], x['col'], x['row']))
 		return serialized_table

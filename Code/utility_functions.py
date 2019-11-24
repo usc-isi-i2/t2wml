@@ -365,7 +365,7 @@ def get_project_details(user_dir: Path) -> List[Dict[str, Any]]:
 	return projects
 
 
-def get_region_mapping(uid: str, pid: str, project, data_file_name=None, sheet_name=None) -> Tuple[dict, int]:
+def get_region_mapping(uid: str, pid: str, project, data_file_name=None, sheet_name=None) -> Tuple[dict, str]:
 	"""
 	This function reads (and creates if it doesn't exist) and deserialize the respective wikifier config file
 	:param uid:
@@ -386,7 +386,7 @@ def get_region_mapping(uid: str, pid: str, project, data_file_name=None, sheet_n
 	return region_map, file_name
 
 
-def update_wikifier_region_file(uid: str, pid: str, region_filename: str, region_qnodes: dict) -> None:
+def update_wikifier_region_file(uid: str, pid: str, region_filename: str, item_table_as_json: str) -> None:
 	"""
 	This function updates the wikifier config file. It locks the file while updating to maintain concurrency.
 	:param uid:
@@ -405,7 +405,8 @@ def update_wikifier_region_file(uid: str, pid: str, region_filename: str, region
 		:return:
 		"""
 		with open(file_path, 'w') as wikifier_region_config:
-			json.dump(region_qnodes, wikifier_region_config, indent=3)
+			wikifier_region_config.write(item_table_as_json)
+			# json.dump(region_qnodes, wikifier_region_config, indent=3)
 
 	update_wikifier_region_config()
 

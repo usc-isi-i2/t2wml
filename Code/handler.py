@@ -487,17 +487,11 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None) -> d
 	return response
 
 
-def process_wikified_output_file(file_path: str, item_table: ItemTable, context=None):
+def csv_to_dataframe(file_path):
 	df = pd.read_csv(file_path)
-	# if not context:
-	# 	df = df[df.context.isnull()]
-	# else:
-	# 	df = df[df.context == context]
-	#
-	# no_col_row = df[df.row.isnull() & df.col.isnull()]
-	# only_col = df[~df.row.isnull() & df.col.isnull()]
-	# only_row = df[df.row.isnull() & ~df.col.isnull()]
-	# both_row_col = df[~df.row.isnull() & ~df.col.isnull()]
+	return df
 
 
-process_wikified_output_file("temp.csv", None, None)
+def process_wikified_output_file(file_path: str, item_table: ItemTable, data_filepath, sheet_name, context=None):
+	df = csv_to_dataframe(file_path)
+	item_table.update_table(df, data_filepath, sheet_name)
