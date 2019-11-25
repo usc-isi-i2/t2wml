@@ -59,6 +59,11 @@ def get_excel_row_index(row: Union[str, int]) -> int:
 	return int(row) - 1
 
 
+def get_excel_cell_index(cell: str):
+	column = re.search('[a-zA-Z]+', cell).group(0)
+	row = re.search('[0-9]+', cell).group(0)
+	return get_excel_column_index(column), get_excel_row_index(row)
+
 def get_actual_cell_index(cell_index: tuple) -> str:
 	"""
 	This function converts the cell notation used by pyexcel package to the cell notation used by excel
@@ -478,9 +483,7 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
 			  FILTER (langMatches(lang(?label),"EN"))
 			  FILTER (langMatches(lang(?desc),"EN"))
 			}
-			GROUP BY ?qnode
-			#LIMIT 10"""
-
+			GROUP BY ?qnode"""
 	sparql = SPARQLWrapper(sparql_endpoint)
 	sparql.setQuery(query)
 	sparql.setReturnFormat(JSON)

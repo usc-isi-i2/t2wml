@@ -582,6 +582,7 @@ def get_project_files():
 		project_id = request.form['pid']
 		project_config_path = get_project_config_path(user_id, project_id)
 		project = Project(project_config_path)
+		sparql_endpoint = project.get_sparql_endpoint()
 		data_file_id, sheet_name = project.get_current_file_and_sheet()
 		if data_file_id:
 			file_extension = get_file_extension(data_file_id)
@@ -599,8 +600,8 @@ def get_project_files():
 		if wikifier_config_file_name:
 			wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
 			item_table = ItemTable(wikifier_config)
-			region_qnodes = item_table.get_region_qnodes()
-			response["wikifierData"] = region_qnodes
+			serialized_item_table = item_table.serialize_table(sparql_endpoint)
+			response["wikifierData"] = serialized_item_table
 		else:
 			response["wikifierData"] = None
 			item_table = ItemTable()
