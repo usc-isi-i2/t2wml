@@ -52,65 +52,69 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 	# property_type_cache = {}
 	is_error = False
 	for i in resolved_excel:
-		item = WDItem(i["statement"]["item"],  creator='http://www.isi.edu/t2wml')
-		try:
-			property_type = property_type_map[i["statement"]["property"]]
-		except KeyError:
-			property_type = get_property_type(i["statement"]["property"], sparql_endpoint)
-			property_type_map[i["statement"]["property"]] = property_type
-		if property_type == "WikibaseItem":
-			value = Item(str(i["statement"]["value"]))
-		elif property_type == "WikibaseProperty":
-			value = Property(i["statement"]["value"])
-		elif property_type == "String":
-			value = StringValue(i["statement"]["value"])
-		elif property_type == "Quantity":
-			value = QuantityValue(i["statement"]["value"])
-		elif property_type == "Time":
-			value = TimeValue(str(i["statement"]["value"]), Item(i["statement"]["calendar"]), translate_precision_to_integer(i["statement"]["precision"]), i["statement"]["time_zone"])
-		elif property_type == "Url":
-			value = URLValue(i["statement"]["value"])
-		elif property_type == "Monolingualtext":
-			value = MonolingualText(i["statement"]["value"], i["statement"]["lang"])
-		elif property_type == "ExternalId":
-			value = ExternalIdentifier(i["statement"]["value"])
-		elif property_type == "GlobeCoordinate":
-			value = GlobeCoordinate(i["statement"]["latitude"], i["statement"]["longitude"], i["statement"]["precision"])
-		elif property_type == "Property Not Found":
-			is_error = True
-			break
-		s = item.add_statement(i["statement"]["property"], value)
-		doc.kg.add_subject(item)
+		_item = i["statement"]["item"]
+		if _item is not None:
+			item = WDItem(_item,  creator='http://www.isi.edu/t2wml')
+			try:
+				property_type = property_type_map[i["statement"]["property"]]
+			except KeyError:
+				property_type = get_property_type(i["statement"]["property"], sparql_endpoint)
+				property_type_map[i["statement"]["property"]] = property_type
+			if property_type == "WikibaseItem":
+				value = Item(str(i["statement"]["value"]))
+			elif property_type == "WikibaseProperty":
+				value = Property(i["statement"]["value"])
+			elif property_type == "String":
+				value = StringValue(i["statement"]["value"])
+			elif property_type == "Quantity":
+				_value = i["statement"]["value"]
+				_value = str(_value).replace(',', '')
+				value = QuantityValue(_value)
+			elif property_type == "Time":
+				value = TimeValue(str(i["statement"]["value"]), Item(i["statement"]["calendar"]), translate_precision_to_integer(i["statement"]["precision"]), i["statement"]["time_zone"])
+			elif property_type == "Url":
+				value = URLValue(i["statement"]["value"])
+			elif property_type == "Monolingualtext":
+				value = MonolingualText(i["statement"]["value"], i["statement"]["lang"])
+			elif property_type == "ExternalId":
+				value = ExternalIdentifier(i["statement"]["value"])
+			elif property_type == "GlobeCoordinate":
+				value = GlobeCoordinate(i["statement"]["latitude"], i["statement"]["longitude"], i["statement"]["precision"])
+			elif property_type == "Property Not Found":
+				is_error = True
+				break
+			s = item.add_statement(i["statement"]["property"], value)
+			doc.kg.add_subject(item)
 
-		if "qualifier" in i["statement"]:
-			for j in i["statement"]["qualifier"]:
-				try:
-					property_type = property_type_map[j["property"]]
-				except KeyError:
-					property_type = get_property_type(j["property"], sparql_endpoint)
-					property_type_map[j["property"]] = property_type
-				if property_type == "WikibaseItem":
-					value = Item(str(j["value"]))
-				elif property_type == "WikibaseProperty":
-					value = Property(j["value"])
-				elif property_type == "String":
-					value = StringValue(j["value"])
-				elif property_type == "Quantity":
-					value = QuantityValue(j["value"])
-				elif property_type == "Time":
-					value = TimeValue(str(j["value"]), Item(j["calendar"]), j["precision"], j["time_zone"])
-				elif property_type == "Url":
-					value = URLValue(j["value"])
-				elif property_type == "Monolingualtext":
-					value = MonolingualText(j["value"], j["lang"])
-				elif property_type == "ExternalId":
-					value = ExternalIdentifier(j["value"])
-				elif property_type == "GlobeCoordinate":
-					value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
-				elif property_type == "Property Not Found":
-					is_error = True
-				s.add_qualifier(j["property"], value)
-		doc.kg.add_subject(s)
+			if "qualifier" in i["statement"]:
+				for j in i["statement"]["qualifier"]:
+					try:
+						property_type = property_type_map[j["property"]]
+					except KeyError:
+						property_type = get_property_type(j["property"], sparql_endpoint)
+						property_type_map[j["property"]] = property_type
+					if property_type == "WikibaseItem":
+						value = Item(str(j["value"]))
+					elif property_type == "WikibaseProperty":
+						value = Property(j["value"])
+					elif property_type == "String":
+						value = StringValue(j["value"])
+					elif property_type == "Quantity":
+						value = QuantityValue(j["value"])
+					elif property_type == "Time":
+						value = TimeValue(str(j["value"]), Item(j["calendar"]), j["precision"], j["time_zone"])
+					elif property_type == "Url":
+						value = URLValue(j["value"])
+					elif property_type == "Monolingualtext":
+						value = MonolingualText(j["value"], j["lang"])
+					elif property_type == "ExternalId":
+						value = ExternalIdentifier(j["value"])
+					elif property_type == "GlobeCoordinate":
+						value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
+					elif property_type == "Property Not Found":
+						is_error = True
+					s.add_qualifier(j["property"], value)
+			doc.kg.add_subject(s)
 	if not is_error:
 		data = doc.kg.serialize(filetype)
 	else:
