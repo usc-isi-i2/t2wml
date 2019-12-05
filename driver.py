@@ -8,15 +8,6 @@ import logging
 
 
 def run_t2wml(data_file_path: str,  wikified_output_path: str, t2wml_spec: str, output_directory: str, sheet_name: str = None, sparql_endpoint: str = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"):
-	try:
-		yaml_configuration = YAMLFile()
-		yaml_configuration.set_file_location(t2wml_spec)
-		region, template = load_yaml_data(t2wml_spec)
-		yaml_configuration.set_region(region)
-		yaml_configuration.set_template(template)
-	except:
-		logging.error("Invalid YAML File")
-		return
 
 	try:
 		item_table = ItemTable()
@@ -24,6 +15,19 @@ def run_t2wml(data_file_path: str,  wikified_output_path: str, t2wml_spec: str, 
 	except:
 		logging.error("Invalid Wikfied Output File")
 		return
+
+	try:
+		yaml_configuration = YAMLFile()
+		yaml_configuration.set_file_location(t2wml_spec)
+		region, template = load_yaml_data(t2wml_spec, item_table, data_file_path, sheet_name)
+		yaml_configuration.set_region(region)
+		yaml_configuration.set_template(template)
+	except Exception as e:
+		print(e)
+		logging.error("Invalid YAML File")
+		return
+
+
 
 	filetype = "ttl"
 
