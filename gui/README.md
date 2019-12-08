@@ -25,10 +25,10 @@ GUI of [T2WML: A Cell-Based Language To Map Tables Into Wikidata Records](https:
 4. Run `npm run build` to build this app in `/gui/build`.
 5. Move all files in `/gui/build` to backend:
     * Manually
-        * Move all `*.html` to [`/t2wml/templates`](https://github.com/usc-isi-i2/t2wml/tree/master/templates).
-        * Move other files to [`/t2wml/t2wml-gui`](https://github.com/usc-isi-i2/t2wml/tree/master/t2wml-gui).
+        * Move all `*.html` to [`/templates`](https://github.com/usc-isi-i2/t2wml/tree/master/templates).
+        * Move other files to [`/t2wml-gui`](https://github.com/usc-isi-i2/t2wml/tree/master/t2wml-gui).
     * Automatically *(by default)*
-        * Update [`/t2wml-gui/package.json`](https://github.com/JiashengWu/t2wml-gui/blob/master/package.json) as
+        * Update [`/gui/package.json`](https://github.com/usc-isi-i2/t2wml/blob/master/gui/package.json) as
             ```
             {
                 ...,
@@ -40,4 +40,4 @@ GUI of [T2WML: A Cell-Based Language To Map Tables Into Wikidata Records](https:
                 ...
             }
             ```
-        * Then [`/t2wml-gui/deploy.sh`](https://github.com/JiashengWu/t2wml-gui/blob/master/deploy.sh) would be called automatically after `npm run build`. (You might need to change the parameters of paths in this script.)
+        * Then [`/gui/deploy.sh`](https://github.com/usc-isi-i2/t2wml/blob/master/gui/deploy.sh) would be called automatically after `npm run build`.
