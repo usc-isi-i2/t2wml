@@ -85,7 +85,7 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
+    "build": "node scripts/build.js && sh deploy.sh",
     "test": "node scripts/test.js",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
@@ -105,7 +105,7 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "http://dsbox02.isi.edu/t2wml-gui",
+  "homepage": "/t2wml-gui",
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
