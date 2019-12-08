@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # paths of frontend @react
-BUILD_FOLDER="/Users/jiasheng/GitHub/usc-isi-i2/t2wml/gui/build"
+BUILD_FOLDER="./build"
 
 # paths of backend @flask
-STATIC_FOLDER="/Users/jiasheng/GitHub/usc-isi-i2/t2wml/t2wml-gui"
-TEMPLATE_FOLDER="/Users/jiasheng/GitHub/usc-isi-i2/t2wml/templates"
+STATIC_FOLDER="../t2wml-gui"
+TEMPLATE_FOLDER="../templates"
 
 # remove previous files
 rm -rf $STATIC_FOLDER/*
