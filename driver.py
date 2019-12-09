@@ -5,9 +5,10 @@ from pathlib import Path
 from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_first_sheet_name
 import logging
+from app_config import DEFAULT_SPARQL_ENDPOINT
 
 
-def run_t2wml(data_file_path: str,  wikified_output_path: str, t2wml_spec: str, output_directory: str, sheet_name: str = None, sparql_endpoint: str = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"):
+def run_t2wml(data_file_path: str,  wikified_output_path: str, t2wml_spec: str, output_directory: str, sheet_name: str = None, sparql_endpoint: str = DEFAULT_SPARQL_ENDPOINT):
 
 	try:
 		item_table = ItemTable()

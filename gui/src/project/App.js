@@ -255,7 +255,7 @@ class App extends React.Component {
   renderSettings() {
     const { showSettings } = this.state;
     const sparqlEndpoints = [
-      "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql",
+      DEFAULT_SPARQL_ENDPOINT,
       "https://query.wikidata.org/sparql"
     ];
     return (

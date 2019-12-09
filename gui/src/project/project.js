@@ -5,7 +5,7 @@ import App from './App';
 import * as serviceWorker from '../serviceWorker';
 
 // Change mode as "deploy" / "develop"
-const mode = "develop";
+const mode = "deploy";
 
 let pid, userData;
 if (mode === "deploy") {

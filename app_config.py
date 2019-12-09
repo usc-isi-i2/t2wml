@@ -23,3 +23,5 @@ app.config['ETK_PATH'] = ETK_PATH
 app.config['downloads'] = DOWNLOAD_FOLDER
 app.config['USER_STORE'] = __user_store__
 
+DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
+GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
