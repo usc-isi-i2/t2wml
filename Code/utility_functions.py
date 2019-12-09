@@ -305,7 +305,7 @@ def verify_google_login(tn: str) -> Tuple[dict, int]:
 	"""
 	error = None
 	try:
-		client_id = '859571913012-79n4clvbq11q8tifboltfqdvttlh74vr.apps.googleusercontent.com'
+		client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
 		request = requests.Request()
 		user_info = id_token.verify_oauth2_token(tn, request, client_id)
 
