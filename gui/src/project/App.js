@@ -1521,7 +1521,7 @@ class Wikifier extends React.Component {
     // cache qnode
     if (qnodes.length === 0) return;
     this.setState({ showSpinner: true });
-    const api = window.sparqlEndpoint + "?format=json&query=SELECT%20%3Fqnode%20%28MIN%28%3Flabel%29%20AS%20%3Flabel%29%20%28MIN%28%3Fdesc%29%20AS%20%3Fdesc%29%20WHERE%20%7B%0A%20%20VALUES%20%3Fqnode%20%7B%20wd%3A" + qnodes.join("%20wd%3A") + "%7D%0A%20%20%3Fqnode%20rdfs%3Alabel%20%3Flabel%3B%20<http%3A%2F%2Fschema.org%2Fdescription>%20%3Fdesc.%0A%20%20FILTER%20%28langMatches%28lang%28%3Flabel%29%2C%22EN%22%29%29%0A%20%20FILTER%20%28langMatches%28lang%28%3Fdesc%29%2C%22EN%22%29%29%0A%7D%0AGROUP%20BY%20%3Fqnode";
+    const api = window.sparqlEndpoint + "?format=json&query=SELECT%20%3Fqnode%20%28MIN%28%3Flabel%29%20AS%20%3Flabel_%29%20%28MIN%28%3Fdesc%29%20AS%20%3Fdesc_%29%20WHERE%20%7B%0A%20%20VALUES%20%3Fqnode%20%7B%20wd%3A" + qnodes.join("%20wd%3A") + "%7D%0A%20%20%3Fqnode%20rdfs%3Alabel%20%3Flabel%3B%20<http%3A%2F%2Fschema.org%2Fdescription>%20%3Fdesc.%0A%20%20FILTER%20%28langMatches%28lang%28%3Flabel%29%2C%22EN%22%29%29%0A%20%20FILTER%20%28langMatches%28lang%28%3Fdesc%29%2C%22EN%22%29%29%0A%7D%0AGROUP%20BY%20%3Fqnode";
     fetch(api)
       .then(response => response.json())
       .then(json => {
@@ -1534,8 +1534,8 @@ class Wikifier extends React.Component {
         const bindings = json["results"]["bindings"];
         for (let i = 0, len = bindings.length; i < len; i++) {
           const qnode = json["results"]["bindings"][i]["qnode"]["value"].match(/[QP]\d+$/)[0];
-          const label = json["results"]["bindings"][i]["label"]["value"];
-          const description = json["results"]["bindings"][i]["desc"]["value"];
+          const label = json["results"]["bindings"][i]["label_"]["value"];
+          const description = json["results"]["bindings"][i]["desc_"]["value"];
           cacheOfQnodes[qnode] = { "label": label, "description": description };
         }
 
