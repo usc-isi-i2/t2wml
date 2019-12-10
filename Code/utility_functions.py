@@ -15,6 +15,7 @@ from oslo_concurrency import lockutils
 # from Code.Project import Project
 # from Code.YAMLFile import YAMLFile
 from Code.property_type_map import property_type_map
+from app_config import GOOGLE_CLIENT_ID, DEFAULT_SPARQL_ENDPOINT
 
 
 def get_column_letter(n: int) -> str:
@@ -92,7 +93,7 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
         try:
             type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
         except IndexError:
-            type = "Property Not Found: {}".format(wikidata_property)
+            type = "Property Not Found"
     return type
 
 
@@ -305,7 +306,7 @@ def verify_google_login(tn: str) -> Tuple[dict, int]:
     """
     error = None
     try:
-        client_id = '859571913012-79n4clvbq11q8tifboltfqdvttlh74vr.apps.googleusercontent.com'
+        client_id = GOOGLE_CLIENT_ID
         request = requests.Request()
         user_info = id_token.verify_oauth2_token(tn, request, client_id)
 
@@ -348,7 +349,7 @@ def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: s
                 "ptitle": ptitle,
                 "cdate": int(time() * 1000),
                 "mdate": int(time() * 1000),
-                "sparqlEndpoint": "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql",
+                "sparqlEndpoint": DEFAULT_SPARQL_ENDPOINT,
                 "currentDataFile": None,
                 "currentSheetName": None,
                 "dataFileMapping": dict(),
