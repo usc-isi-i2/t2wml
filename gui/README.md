@@ -10,11 +10,11 @@ GUI of [T2WML: A Cell-Based Language To Map Tables Into Wikidata Records](https:
 
 ## Before Development/Deployment
 
-1. Run `cd gui` (skip if you are already in `gun` folder).
+1. Run `cd gui` (skip if you are already in `gui` folder).
 2. Run `npm install` to install dependencies.
 3. Configs:
-    * `/t2wml-gui/src/config.js`
-    * `/t2wml-gui/src/privacy.js`
+    * `./src/config.js`
+    * `./src/privacy.js`
 
 ## Development
 
@@ -22,13 +22,13 @@ GUI of [T2WML: A Cell-Based Language To Map Tables Into Wikidata Records](https:
 
 ## Deployment
 
-4. Run `npm run build` to build this app in `/gui/build`.
-5. Move all files in `/gui/build` to backend:
+4. Run `npm run build` to build this app in `./build`.
+5. Move all files in `./build` to backend:
     * Manually
-        * Move all `*.html` to [`/templates`](https://github.com/usc-isi-i2/t2wml/tree/master/templates).
-        * Move other files to [`/t2wml-gui`](https://github.com/usc-isi-i2/t2wml/tree/master/t2wml-gui).
+        * Move all `*.html` to [`../templates`](https://github.com/usc-isi-i2/t2wml/tree/master/templates).
+        * Move other files to [`../t2wml-gui`](https://github.com/usc-isi-i2/t2wml/tree/master/t2wml-gui).
     * Automatically *(by default)*
-        * Update [`/gui/package.json`](https://github.com/usc-isi-i2/t2wml/blob/master/gui/package.json) as
+        * Update [`./package.json`](https://github.com/usc-isi-i2/t2wml/blob/master/gui/package.json) as
             ```
             {
                 ...,
@@ -40,4 +40,5 @@ GUI of [T2WML: A Cell-Based Language To Map Tables Into Wikidata Records](https:
                 ...
             }
             ```
-        * Then [`/gui/deploy.sh`](https://github.com/usc-isi-i2/t2wml/blob/master/gui/deploy.sh) would be called automatically after `npm run build`.
+        * Then [`./deploy.sh`](https://github.com/usc-isi-i2/t2wml/blob/master/gui/deploy.sh) would be called automatically after `npm run build`.
+
