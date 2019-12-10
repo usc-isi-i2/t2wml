@@ -9,7 +9,7 @@ from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue,
     ExternalIdentifier, GlobeCoordinate
 from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_property_type, translate_precision_to_integer
-from Code.property_type_map import property_type_map
+from Code.property_type_map import property_type_map as property_type_dict
 
 
 def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl',
@@ -27,6 +27,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
     kg_schema.add_schema('@prefix : <http://isi.edu/> .', 'ttl')
     etk = ETK(kg_schema=kg_schema, modules=ETKModule)
     doc = etk.create_document({}, doc_id="http://isi.edu/default-ns/projects")
+    property_type_map = property_type_dict
 
     # bind prefixes
     doc.kg.bind('wikibase', 'http://wikiba.se/ontology#')
@@ -61,7 +62,8 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                 property_type = property_type_map[i["statement"]["property"]]
             except KeyError:
                 property_type = get_property_type(i["statement"]["property"], sparql_endpoint)
-                property_type_map[i["statement"]["property"]] = property_type
+                if property_type != "Property Not Found":
+                    property_type_map[i["statement"]["property"]] = property_type
             if property_type == "WikibaseItem":
                 value = Item(str(i["statement"]["value"]))
             elif property_type == "WikibaseProperty":
@@ -98,7 +100,8 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 
                     except KeyError:
                         property_type = get_property_type(j["property"], sparql_endpoint)
-                        property_type_map[j["property"]] = property_type
+                        if property_type != "Property Not Found":
+                            property_type_map[i["statement"]["property"]] = property_type
                     if property_type == "WikibaseItem":
                         value = Item(str(j["value"]))
                     elif property_type == "WikibaseProperty":
@@ -126,12 +129,5 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
     else:
         # data = "Property Not Found"
         raise Exception('data exception while generating triples')
-    # os.makedirs(Path.cwd() / "new_properties", exist_ok=True)
-    # results_file_name = user_id + "_results.ttl"
-    # changes_file_name = user_id + "_changes.tsv"
 
-    # with open(Path(app.config['downloads']) / results_file_name, "w") as fp:
-    # 	fp.write(data)
-    # with open(Path(app.config['downloads']) / changes_file_name, "w") as fp:
-    # 	serialize_change_record(fp)
     return data
