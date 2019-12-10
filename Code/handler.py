@@ -225,7 +225,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 
 
 def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str,
-                           region_specification: dict, template: dict, filetype: str, sparql_endpoint: str) -> dict:
+                           region_specification: dict, template: dict, filetype: str, sparql_endpoint: str, created_by:str = 't2wml') -> dict:
     """
     This function generates the download files based on the filetype
     :param user_id:
@@ -239,9 +239,11 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
     :return:
     """
     update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
+
     region = region_specification['region_object']
     remove_empty_and_invalid_cells(region)
     response = dict()
+
     data = []
     error = []
     head = region.get_head()
@@ -263,10 +265,11 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
         return response
     elif filetype == 'ttl':
         try:
-            response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype)
+            response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype, created_by=created_by)
             response["error"] = None
             return response
         except Exception as e:
+            print(e)
             response = {'error': str(e)}
             return response
 
@@ -298,7 +301,8 @@ def load_yaml_data(yaml_filepath: str, item_table: ItemTable, data_file_path: st
     region = yaml_parser.get_region(bindings)
     region['region_object'] = Region(region["left"], region["right"], region["top"], region["bottom"])
     template = yaml_parser.get_template()
-    return region, template
+    created_by = yaml_parser.get_created_by()
+    return region, template, created_by
 
 
 def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str,
