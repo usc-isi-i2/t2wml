@@ -151,6 +151,9 @@ def create_class_tree(instruction: Tree, root: Union[ValueExpression]) -> None:
         for i in instruction.children:
             if isinstance(i, Tree):
                 create_class_tree(i, root.item_expression)
+    elif instruction.data == "context":
+        if instruction.children:
+            root.context = instruction.children[0]
 
 
 def parse_and_evaluate(text_to_parse: str) -> Union[str, int]:

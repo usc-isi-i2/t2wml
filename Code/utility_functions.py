@@ -487,7 +487,10 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
 	sparql = SPARQLWrapper(sparql_endpoint)
 	sparql.setQuery(query)
 	sparql.setReturnFormat(JSON)
-	results = sparql.query().convert()
+	try:
+		results = sparql.query().convert()
+	except:
+		return None
 	response = dict()
 	try:
 		for i in range(len(results["results"]["bindings"])):

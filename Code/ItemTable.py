@@ -27,6 +27,8 @@ class ItemTable:
 		index_of = {val: index for index, val in enumerate(col_names)}
 
 		data_frame[['context']] = data_frame[['context']].fillna(value='__NO_CONTEXT__')
+		import numpy as np
+
 		# update all cells
 		no_col_row = data_frame[data_frame.row.isnull() & data_frame.column.isnull()]
 		item_value_map = dict()
@@ -52,19 +54,26 @@ class ItemTable:
 					pass
 
 		# update cells by col
-		only_col = data_frame[~data_frame.row.isnull() & data_frame.column.isnull()]
-		col_values = data_frame.column.unique()
+		only_col = data_frame[data_frame.row.isnull() & ~data_frame.column.isnull()]
+		only_col['column'] = only_col['column'].apply(np.int64)
+
+		col_values = only_col.column.unique()
+		# only_col['row'] = only_col['row'].apply(np.int64)
 		item_value_map = dict()
 		# item_value_map = { col: {value: {context: item}}}
 		for row in only_col.itertuples(index=False):
 			if row[index_of['column']] not in item_value_map:
-				item_value_map[row[index_of['column']]] = {row[index_of['value']]: dict()}
+				item_value_map[int(row[index_of['column']])] = {row[index_of['value']]: dict()}
+			else:
+				item_value_map[int(row[index_of['column']])][row[index_of['value']]] = dict()
 			# if not row[index_of['context']] or (isinstance(row[index_of['context']], float) and (str(row[index_of['context']]).lower() == 'nan')):
 			# 	row[index_of['context']] = '__NO_CONTEXT__'
+			print(item_value_map)
 			item_value_map[row[index_of['column']]][row[index_of['value']]][row[index_of['context']]] = row[index_of['item']]
 		for col in col_values:
 			for row in range(len(sheet)):
 				try:
+					col = int(col)
 					value = sheet[row, col]
 					if value in item_value_map[col]:
 						if (col, row) not in self.table:
@@ -75,8 +84,11 @@ class ItemTable:
 					pass
 
 		# update cells by row
-		only_row = data_frame[data_frame.row.isnull() & ~data_frame.column.isnull()]
-		row_values = data_frame.row.unique()
+		only_row = data_frame[~data_frame.row.isnull() & data_frame.column.isnull()]
+		only_row['row'] = only_row['row'].apply(np.int64)
+
+		row_values = only_row.row.unique()
+		# only_row['column'] = only_row['column'].apply(np.int64)
 		item_value_map = dict()
 		# item_value_map = { row: {value: {context: item}}}
 		for row in only_row.itertuples(index=False):
@@ -89,7 +101,7 @@ class ItemTable:
 			for col in range(len(sheet[0])):
 				try:
 					value = sheet[row, col]
-					if value in item_value_map[col]:
+					if value in item_value_map[row]:
 						if (col, row) not in self.table:
 							self.table[(col, row)] = {'__CELL_VALUE': value}
 						for context, item in item_value_map[col][value].items():
@@ -99,6 +111,9 @@ class ItemTable:
 
 		# update specific cells
 		both_row_col = data_frame[~data_frame.row.isnull() & ~data_frame.column.isnull()]
+		both_row_col['column'] = both_row_col['column'].apply(np.int64)
+		both_row_col['row'] = both_row_col['row'].apply(np.int64)
+
 		for row in both_row_col.itertuples(index=False):
 			try:
 				value = sheet[row[index_of['row']], row[index_of['column']]]
@@ -131,7 +146,7 @@ class ItemTable:
 				if context != '__CELL_VALUE__':
 					if context == '__NO_CONTEXT__':
 						context = ''
-					serialized_table['qnodes'][cell][context] = item
+					serialized_table['qnodes'][cell][context] = {"item": item}
 					row_data = {
 						'context': context,
 						'col': col,
@@ -146,15 +161,22 @@ class ItemTable:
 						items_not_in_wiki.add('wd:' + item)
 					serialized_table['rowData'].append(row_data)
 		items_not_in_wiki = ' '.join(items_not_in_wiki)
-		if sparql_endpoint:
-			self.item_wiki.update(query_wikidata_for_label_and_description(items_not_in_wiki, sparql_endpoint))
+		if sparql_endpoint and items_not_in_wiki:
+			labels_and_descriptions = query_wikidata_for_label_and_description(items_not_in_wiki, sparql_endpoint)
 
-			# add label and descriptions for items whose label and desc were not in wiki earlier
-			for i in range(len(serialized_table['rowData'])):
-				if serialized_table['rowData'][i]['item'] in self.item_wiki:
-					serialized_table['rowData'][i]['label'] = self.item_wiki[serialized_table['rowData'][i]['item']]['label']
-					serialized_table['rowData'][i]['desc'] = self.item_wiki[serialized_table['rowData'][i]['item']]['desc']
+			if labels_and_descriptions:
+				self.item_wiki.update(labels_and_descriptions)
 
+				# add label and descriptions for items whose label and desc were not in wiki earlier
+				for i in range(len(serialized_table['rowData'])):
+					if serialized_table['rowData'][i]['item'] in self.item_wiki:
+						serialized_table['rowData'][i]['label'] = self.item_wiki[serialized_table['rowData'][i]['item']]['label']
+						serialized_table['rowData'][i]['desc'] = self.item_wiki[serialized_table['rowData'][i]['item']]['desc']
+
+				for cell, desc in serialized_table["qnodes"].items():
+					for context, context_desc in desc.items():
+						serialized_table['qnodes'][cell][context]['label'] = self.item_wiki[context_desc['item']]['label']
+						serialized_table['qnodes'][cell][context]['desc'] = self.item_wiki[context_desc['item']]['desc']
 		serialized_table['rowData'] = sorted(serialized_table['rowData'], key=lambda x: (x['context'], x['col'], x['row']))
 		return serialized_table
 
@@ -221,23 +243,24 @@ class ItemTable:
 	# 	self.other["qnodes"] = cell_to_qnode
 	# 	self.other["region"] = list(cell_to_qnode.keys())
 	#
-	def get_item(self, column: int, row: int) -> Union[defaultdict, Exception]:
-		"""
-		This function searches return the qnode of the value found at (column, row) cell.
-		The catch here is that cell_to_qnode hash table is given preference over value_to_qnode dictionary.
-		:param column:
-		:param row:
-		:return: qnode or exception
-		"""
+	def get_item(self, column: int, row: int, context: str) -> Union[defaultdict, Exception]:
+
 		# cell_index = get_actual_cell_index((column, row))
-		temp_table = None
 		if (column, row) in self.table:
-			temp_table = self.table[(column, row)]
-			if "__NO_CONTEXT__" in temp_table:
-				temp_table[""] = temp_table["__NO_CONTEXT__"]
-				del temp_table["__NO_CONTEXT__"]
-			del temp_table['__CELL_VALUE__']
-		return temp_table
+			if not context:
+				context = "__NO_CONTEXT__"
+			if context in self.table[(column, row)]:
+				return self.table[(column,row)][context]
+		# temp_table = None
+		# if (column, row) in self.table:
+		# 	temp_table = self.table[(column, row)]
+		# 	if "__NO_CONTEXT__" in temp_table:
+		# 		temp_table[""] = temp_table["__NO_CONTEXT__"]
+		# 		del temp_table["__NO_CONTEXT__"]
+		# 	del temp_table['__CELL_VALUE__']
+		# return temp_table
+
+
 		# 	return self.region_qnodes['qnodes'][cell_index]
 		# elif self.other["qnodes"].get(cell_index, None):
 		# 	return self.other["qnodes"][cell_index]
