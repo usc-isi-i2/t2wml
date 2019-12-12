@@ -63,12 +63,12 @@ class ItemTable:
 				if not check_if_empty(row[0]) and not check_if_empty(row[1]):
 					cell_to_qnode[(int(row[0]), int(row[1]))] = row[3]
 				if row[2] is not None:
-					value_to_qnode[row[2]] = row[3]
+					value_to_qnode[str(row[2]).strip()] = row[3]
 
 		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
 		for cell, qnode in cell_to_qnode.items():
 			try:
-				cell_value = sheet[cell[1], cell[0]]
+				cell_value = str(sheet[cell[1], cell[0]]).strip()
 				if not check_if_empty(cell_value) and cell_value not in value_to_qnode:
 					value_to_qnode[cell_value] = qnode
 			except IndexError:
@@ -77,8 +77,9 @@ class ItemTable:
 		for row in range(len(sheet)):
 			for col in range(len(sheet[0])):
 				try:
-					if value_to_qnode.get(sheet[row, col], None):
-						cell_to_qnode[(col, row)] = value_to_qnode[sheet[row, col]]
+					cell_value = str(sheet[row, col]).strip()
+					if value_to_qnode.get(cell_value, None):
+						cell_to_qnode[(col, row)] = value_to_qnode[cell_value]
 				except IndexError:
 					pass
 		cell_to_qnode = self.serialize_cell_to_qnode(cell_to_qnode)
@@ -99,7 +100,8 @@ class ItemTable:
 		elif self.other["qnodes"].get(cell_index, None):
 			return self.other["qnodes"][cell_index]
 		else:
-			raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
+			return None
+			# raise Exception('No QNode Exists for the cell: ', get_actual_cell_index((column, row)))
 
 	def serialize_cell_to_qnode(self, cell_to_qnode: dict) -> dict:
 		"""

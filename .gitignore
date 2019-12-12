@@ -109,3 +109,7 @@ venv.bak/
 temporary_files/*
 config/*
 /Datasets/WDI_scripts_data/
+
+# gui
+/gui/node_modules/*
+/gui/build/*

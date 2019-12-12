@@ -31,6 +31,11 @@ boolean_expression: or_expression ("or" or_expression)*
 !operator: "=" | "!=" | "contains" | "starts_with" | "ends_with"
 
 !cell_expression: column_expression "/" row_expression
+                | column_range_expression "/" row_expression
+                | column_expression "/" row_range_expression
+
+!column_range_expression: column_variable ":" column_variable
+!row_range_expression: row_variable ":" row_variable
 
 column_expression: column_variable (cell_operator cell_operator_argument)*
 row_expression: row_variable (cell_operator cell_operator_argument)*

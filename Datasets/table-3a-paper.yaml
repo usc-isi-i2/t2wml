@@ -12,7 +12,8 @@ statementMapping:
       - property: P585 # point in time
         value: value($col/4)
         precision: year
-        time_zone: 0 
+        time_zone: 0
+        format: "%Y"
       - property: P6001 # applies to people
         value: item($col-n/3)
       - property: P248 # stated in

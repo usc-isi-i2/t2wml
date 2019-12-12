@@ -3,6 +3,14 @@ class ColumnExpression:
         self.column_variable = None
         self.operations = []
 
+    def get_variable_cell_operator_arguments(self):
+        variables = set()
+        if self.operations:
+            for i in self.operations:
+                if str(i['cell_operator_argument'].value).isalpha():
+                    variables.add(i['cell_operator_argument'].value)
+        return variables
+
     def evaluate(self, bindings: dict) -> int:
         """
         This function evaluates the column variable and find its respective index in the excel file.
@@ -20,3 +28,24 @@ class ColumnExpression:
         if cv < -1:
             raise ValueError('Column value out of bound')
         return cv
+
+    def check_for_left(self) -> bool:
+        """
+        this function checks if $left is present as a column variable at any leaf
+        :return:
+        """
+        if self.column_variable:
+            return self.column_variable.check_for_left()
+        else:
+            return False
+
+    def check_for_right(self) -> bool:
+        """
+        this function checks if $right is present as a column variable at any leaf
+        :return:
+        """
+        if self.column_variable:
+            return self.column_variable.check_for_right()
+        else:
+            return False
+

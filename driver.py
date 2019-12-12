@@ -5,49 +5,55 @@ from pathlib import Path
 from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_first_sheet_name
 import logging
+from app_config import DEFAULT_SPARQL_ENDPOINT
 
 
-def run_t2wml(data_file_path: str,  wikified_output_path: str, t2wml_spec: str, output_directory: str, sheet_name: str = None, sparql_endpoint: str = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"):
-	try:
-		yaml_configuration = YAMLFile()
-		yaml_configuration.set_file_location(t2wml_spec)
-		region, template = load_yaml_data(t2wml_spec)
-		yaml_configuration.set_region(region)
-		yaml_configuration.set_template(template)
-	except:
-		logging.error("Invalid YAML File")
-		return
+def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
+              sheet_name: str = None,
+              sparql_endpoint: str = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"):
+    try:
+        item_table = ItemTable()
+        build_item_table(item_table, wikified_output_path, data_file_path, sheet_name)
+    except Exception as e:
+        print(e)
+        logging.error("Invalid Wikfied Output File")
+        return
 
-	try:
-		item_table = ItemTable()
-		build_item_table(item_table, wikified_output_path, data_file_path, sheet_name)
-	except:
-		logging.error("Invalid Wikfied Output File")
-		return
+    try:
+        yaml_configuration = YAMLFile()
+        yaml_configuration.set_file_location(t2wml_spec)
+        region, template, created_by = load_yaml_data(t2wml_spec, item_table, data_file_path, sheet_name)
+        yaml_configuration.set_region(region)
+        yaml_configuration.set_template(template)
+    except Exception as e:
+        print(e)
+        logging.error("Invalid YAML File")
+        return
 
-	filetype = "ttl"
+    filetype = "ttl"
 
-	response = generate_download_file(None, item_table, data_file_path, sheet_name, region, template, filetype, sparql_endpoint)
-	file_name = Path(data_file_path).name
-	result_directory = '.'.join(file_name.split(".")[:-1])
-	try:
-		file_extension = file_name.split(".")[-1]
-	except:
-		logging.error("Data file has no extension")
-		return
+    response = generate_download_file(None, item_table, data_file_path, sheet_name, region, template, filetype,
+                                      sparql_endpoint, created_by=created_by)
+    file_name = Path(data_file_path).name
+    result_directory = '.'.join(file_name.split(".")[:-1])
+    try:
+        file_extension = file_name.split(".")[-1]
+    except:
+        logging.error("Data file has no extension")
+        return
 
-	output_path = Path()
-	if file_extension == "csv":
-		output_path = Path(output_directory)/result_directory
-	elif file_extension == "xls" or file_extension == "xlsx":
-		if not sheet_name:
-			sheet_name = get_first_sheet_name(data_file_path)
-		output_path = Path(output_directory)/result_directory / sheet_name
+    output_path = Path()
+    if file_extension == "csv":
+        output_path = Path(output_directory) / result_directory
+    elif file_extension == "xls" or file_extension == "xlsx":
+        if not sheet_name:
+            sheet_name = get_first_sheet_name(data_file_path)
+        output_path = Path(output_directory) / result_directory / sheet_name
 
-	Path.mkdir(output_path, parents=True, exist_ok=True)
+    Path.mkdir(output_path, parents=True, exist_ok=True)
 
-	with open(str(output_path / "results.ttl"), "w") as fp:
-		fp.write(response["data"])
+    with open(str(output_path / "results.ttl"), "w") as fp:
+        fp.write(response["data"])
 
-	with open(str(output_path / "changes.tsv"), "w") as fp:
-		serialize_change_record(fp)
+    with open(str(output_path / "changes.tsv"), "w") as fp:
+        serialize_change_record(fp)

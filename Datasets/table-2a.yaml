@@ -14,7 +14,8 @@ statementMapping:
         value: value($col-1/$row)
         calendar: Q1985727
         precision: year
-        time_zone: 0 
+        time_zone: 0
+        format: "%Y"
       - property: P6001 # applies to people
         value: item(B/$row)
       - property: P123 #source

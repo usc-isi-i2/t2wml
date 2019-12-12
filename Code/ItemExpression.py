@@ -5,27 +5,47 @@ class ItemExpression:
 	def __init__(self) -> None:
 		self.cell_expression = None
 		self.boolean_equation = None
+		self.variables = None
 
-	def evaluate(self, bindings: dict) -> Union[str, int]:
+	def get_variable_cell_operator_arguments(self) -> set:
+		if self.cell_expression:
+			self.variables = self.cell_expression.get_variable_cell_operator_arguments()
+		elif self.boolean_equation:
+			self.variables = self.cell_expression.get_variable_cell_operator_arguments()
+		return self.variables
+
+	def evaluate(self, bindings: dict) -> Union[str, int, list,  None]:
 		"""
 		This function calls evaluate function of its respective not null members
 		and then finds the respective Q or Pnode redenoted by the value of that cell in the excel file
 		:param bindings:
 		:return: value of a cell in the excel file
 		"""
-		if self.cell_expression:
-			ce, re = self.cell_expression.evaluate(bindings)
-		else:
-			cell_expression = self.boolean_equation.evaluate(bindings)
-			if cell_expression:
-				ce = cell_expression[0]
-				re = cell_expression[1]
-			else:
-				raise ValueError("Invalid Row and Column values")
-		if bindings['item_table']:
-			return bindings["item_table"].get_item(ce, re)
-		else:
+		if not bindings['item_table']:
 			return None
+		else:
+			response = None
+			if self.cell_expression:
+				ce, re = self.cell_expression.evaluate(bindings)
+				if isinstance(ce, tuple) and isinstance(re, int):
+					response = list()
+					for i in ce:
+						response.append(bindings["item_table"].get_item(i, re))
+				elif isinstance(re, tuple) and isinstance(ce, int):
+					response = list()
+					for i in re:
+						response.append(bindings["item_table"].get_item(ce, i))
+				elif isinstance(ce, int) and isinstance(re, int):
+					response = bindings["item_table"].get_item(ce, re)
+			else:
+				cell_expression = self.boolean_equation.evaluate(bindings)
+				if cell_expression:
+					ce = cell_expression[0]
+					re = cell_expression[1]
+					response = bindings["item_table"].get_item(ce, re)
+				else:
+					raise ValueError("Invalid Row and Column values")
+			return response
 
 	def get_cell(self, bindings: dict) -> tuple:
 		"""
@@ -50,13 +70,76 @@ class ItemExpression:
 		:param bindings:
 		:return:
 		"""
-		if self.cell_expression:
-			ce, re = self.cell_expression.evaluate(bindings)
+		if not bindings['item_table']:
+			return None
 		else:
-			cell_expression = self.boolean_equation.evaluate(bindings)
-			if cell_expression:
-				ce = cell_expression[0]
-				re = cell_expression[1]
+			response = None
+			if self.cell_expression:
+				ce, re = self.cell_expression.evaluate(bindings)
+				if isinstance(ce, tuple) and isinstance(re, int):
+					response = list()
+					for i in ce:
+						response.append(bindings["item_table"].get_item(i, re))
+				elif isinstance(re, tuple) and isinstance(ce, int):
+					response = list()
+					for i in re:
+						response.append(bindings["item_table"].get_item(ce, i))
+				elif isinstance(ce, int) and isinstance(re, int):
+					response = bindings["item_table"].get_item(ce, re)
 			else:
-				raise ValueError("Invalid row or column value")
-		return ce, re, bindings["item_table"].get_item(ce, re)
+				cell_expression = self.boolean_equation.evaluate(bindings)
+				if cell_expression:
+					ce = cell_expression[0]
+					re = cell_expression[1]
+					response = bindings["item_table"].get_item(ce, re)
+				else:
+					raise ValueError("Invalid Row and Column values")
+		return ce, re, response
+
+	def check_for_left(self) -> bool:
+		"""
+		this function checks if $left is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_left()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_left()
+		else:
+			return False
+
+	def check_for_right(self) -> bool:
+		"""
+		this function checks if $right is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_right()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_right()
+		else:
+			return False
+
+	def check_for_top(self) -> bool:
+		"""
+		this function checks if $top is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_top()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_top()
+		else:
+			return False
+
+	def check_for_bottom(self) -> bool:
+		"""
+		this function checks if $bottom is present as a column variable at any leaf
+		:return:
+		"""
+		if self.cell_expression:
+			return self.cell_expression.check_for_bottom()
+		elif self.boolean_equation:
+			return self.boolean_equation.check_for_bottom()
+		else:
+			return False

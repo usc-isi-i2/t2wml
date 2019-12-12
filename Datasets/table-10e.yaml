@@ -2,8 +2,8 @@ statementMapping:
   region:
     - left: B
       right: E
-      top: 19
-      bottom: 31
+      top: 5
+      bottom: 17
       skip_row:
         - value(A:B/$row) = "" and value(C:D/$row) != ""
   template:
@@ -15,8 +15,9 @@ statementMapping:
         value: value(A:B/$row-n) = "" and value(C:D/$row-n) != "" -> value($col/$row-n)
         calendar: Q1985727
         precision: year
-        time_zone: 0 
+        time_zone: 0
+        format: "%Y"
       - property: P6001 # applies to people
-        value: item($col/18)
+        value: item($col/4)
       - property: P123 #source
         value: item(B/$row)

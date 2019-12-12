@@ -1504,7 +1504,8 @@ property_type_map = {
 	"P111471": "Quantity",
 	"P111472": "Quantity",
 	"P111473": "Quantity",
-	"P111474": "Quantity"
+	"P111474": "Quantity",
+	"P7482": "WikibaseItem"
 }
 
 

@@ -11,7 +11,8 @@ from Code.OrExpression import OrExpression
 from Code.AndExpression import AndExpression
 from Code.Expression import Expression
 from Code.ItemExpression import ItemExpression
-
+from Code.ColumnRangeExpression import ColumnRangeExpression
+from Code.RowRangeExpression import RowRangeExpression
 
 class_dictionary = {
     'value_expression': ValueExpression,
@@ -26,5 +27,7 @@ class_dictionary = {
     'or_expression': OrExpression,
     'and_expression': AndExpression,
     'expression': Expression,
-    'item_expression': ItemExpression
+    'item_expression': ItemExpression,
+    'column_range_expression': ColumnRangeExpression,
+    'row_range_expression': RowRangeExpression
 }
