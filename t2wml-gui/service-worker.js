@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/t2wml-gui/precache-manifest.70b36ff5cf6dadd5b16e0a69e7e6a292.js"
+  "/t2wml-gui/precache-manifest.5a765fcf965415c8b5ad58f0544ce14a.js"
 );
 
 self.addEventListener('message', (event) => {

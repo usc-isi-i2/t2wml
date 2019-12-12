@@ -1852,7 +1852,7 @@ class Wikifier extends React.Component {
               background: "whitesmoke",
               border: "1px solid lightgray",
               overflowX: "hidden",
-              overflowY: "scroll",
+              overflowY: "auto",
               whiteSpace: "nowrap",
               zIndex: "200"
             }}
