@@ -522,6 +522,8 @@ def wikify_region():
 	project_id = request.form["pid"]
 	action = request.form["action"]
 	region = request.form["region"]
+	context = request.form["context"]
+	flag = int(request.form["flag"])
 	project_config_path = get_project_config_path(user_id, project_id)
 	project = Project(project_config_path)
 	data_file_name, sheet_name = project.get_current_file_and_sheet()
@@ -529,32 +531,41 @@ def wikify_region():
 	region_map, region_file_name = get_region_mapping(user_id, project_id, project)
 	item_table = ItemTable(region_map)
 	data = dict()
-
-	if action == "add_region":
+	sparql_endpoint = project.get_sparql_endpoint()
+	if action == "wikify_region":
 		if not data_file_path:
 			data['error'] = "No excel file to wikify"
 		else:
-			data = wikifier(item_table, region, data_file_path, sheet_name)
+			wikifier(item_table, region, data_file_path, sheet_name, flag, context, sparql_endpoint)
+			item_table_as_json = item_table.to_json()
 			wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
-			update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
-	elif action == "delete_region":
-		item_table.delete_region(region)
-		data = item_table.get_region_qnodes()
-		wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
-		update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
-	elif action == "update_qnode":
-		cell = request.form["cell"]
-		qnode = request.form["qnode"]
-		apply_to = int(request.form["apply_to"])
-		if apply_to == 0:
-			item_table.update_cell(region, cell, qnode)
-		elif apply_to == 1:
-			item_table.update_all_cells_within_region(region, cell, qnode, data_file_path, sheet_name)
-		elif apply_to == 2:
-			item_table.update_all_cells_in_all_region(cell, qnode, data_file_path, sheet_name)
-		data = item_table.get_region_qnodes()
-		wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
-		update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
+			update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, item_table_as_json)
+			data = item_table.serialize_table(sparql_endpoint)
+	# if action == "add_region":
+	# 	if not data_file_path:
+	# 		data['error'] = "No excel file to wikify"
+	# 	else:
+	# 		data = wikifier(item_table, region, data_file_path, sheet_name)
+	# 		wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
+	# 		update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
+	# elif action == "delete_region":
+	# 	item_table.delete_region(region)
+	# 	data = item_table.get_region_qnodes()
+	# 	wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
+	# 	update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
+	# elif action == "update_qnode":
+	# 	cell = request.form["cell"]
+	# 	qnode = request.form["qnode"]
+	# 	apply_to = int(request.form["apply_to"])
+	# 	if apply_to == 0:
+	# 		item_table.update_cell(region, cell, qnode)
+	# 	elif apply_to == 1:
+	# 		item_table.update_all_cells_within_region(region, cell, qnode, data_file_path, sheet_name)
+	# 	elif apply_to == 2:
+	# 		item_table.update_all_cells_in_all_region(cell, qnode, data_file_path, sheet_name)
+	# 	data = item_table.get_region_qnodes()
+	# 	wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
+	# 	update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
 	if 'error' not in data:
 		data['error'] = None
 	project_meta = dict()
