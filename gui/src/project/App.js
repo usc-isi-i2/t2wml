@@ -2,8 +2,8 @@ import React from 'react';
 import './App.css';
 import './ag-grid.css'
 import './ag-theme-balham.css'
-import { DEFAULT_BACKEND_SERVER, DEFAULT_SPARQL_ENDPOINT } from '../config.js';
 import * as utils from '../utils'
+import { DEFAULT_BACKEND_SERVER, DEFAULT_SPARQL_ENDPOINT } from '../config';
 import T2WMLLogo from '../index/T2WMLLogo'
 
 // icons
@@ -192,7 +192,7 @@ class App extends React.Component {
 
       // load wikifier data
       if (wikifierData !== null) {
-        window.TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.regions);
+        window.TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
         window.TableViewer.updateQnodeCells(); // reset
       }
@@ -371,7 +371,7 @@ class App extends React.Component {
 
         {/* content */}
         <div>
-          <SplitPane className="p-3" split="vertical" defaultSize="60%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+          <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
             <TableViewer />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />
@@ -538,7 +538,7 @@ class TableViewer extends React.Component {
 
       // load wikifier data
       if (wikifierData !== null) {
-        this.updateQnodeCells(wikifierData.qnodes, wikifierData.regions);
+        this.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
         this.updateQnodeCells(); // reset
       }
@@ -605,8 +605,8 @@ class TableViewer extends React.Component {
       }
 
       // else, success
-      const { qnodes, regions } = json;
-      this.updateQnodeCells(qnodes, regions);
+      const { qnodes, rowData } = json;
+      this.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
       this.setState({
@@ -750,7 +750,7 @@ class TableViewer extends React.Component {
 
       // load wikifier data
       if (wikifierData !== null) {
-        this.updateQnodeCells(wikifierData.qnodes, wikifierData.regions);
+        this.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
         this.updateQnodeCells(); // reset
       }
@@ -778,7 +778,7 @@ class TableViewer extends React.Component {
     });
   }
 
-  updateQnodeCells(qnodeData = null, regionData = null) {
+  updateQnodeCells(qnodeData = null, rowData = null) {
     if (qnodeData === null) {
       // reset qnode cells
       const qnodes = Object.keys(window.Wikifier.state.qnodeData);
@@ -794,7 +794,8 @@ class TableViewer extends React.Component {
 
     } else {
       // update qnode cells
-      const qnodes = Object.keys(Object.fromEntries(Object.entries(qnodeData).filter(([k, v]) => v !== "")));
+      // const qnodes = Object.keys(Object.fromEntries(Object.entries(qnodeData).filter(([k, v]) => v !== "")));
+      const qnodes = Object.keys(qnodeData);
       const cells = { qnode: qnodes };
       const presets = {
         qnode: { color: "hsl(200, 100%, 30%)" }
@@ -802,7 +803,7 @@ class TableViewer extends React.Component {
       this.updateStyleByDict(cells, presets);
 
       // update wikifier data
-      window.Wikifier.updateWikifier(qnodeData, regionData);
+      window.Wikifier.updateWikifier(qnodeData, rowData);
     }
   }
 
@@ -969,56 +970,45 @@ class TableViewer extends React.Component {
 
     // get qnode according to cell index, e.g. "Q967"
     const { selectedCell } = this.state;
-    if (selectedCell === null) return;
+    if (selectedCell === null || selectedCell.col === null || selectedCell.row === null) return;
     const selectedCellIndex = String(selectedCell.col) + String(selectedCell.row);
-    const qnode = qnodeData[selectedCellIndex];
-    if (qnode === undefined || qnode === "") return;
+
+    // fill in data
+    if (qnodeData[selectedCellIndex] === undefined) return;
+    const contexts = Object.keys(qnodeData[selectedCellIndex]);
+    if (contexts.length === 0) return;
+    let items = [], labels = [], descs = [];
+    for (let i = 0; i < contexts.length; i++) {
+      items.push(qnodeData[selectedCellIndex][contexts[i]]["item"]);
+      labels.push(qnodeData[selectedCellIndex][contexts[i]]["label"]);
+      descs.push(qnodeData[selectedCellIndex][contexts[i]]["desc"]);
+    }
 
     // render qnode
-    const qnodeHtml = (
+    let itemHref;
+    const itemType = items[0].match(/[a-z]+|\d+/gi)[0];
+    if (itemType.charAt(itemType.length - 1) === "Q") {
+      itemHref = "https://www.wikidata.org/wiki/" + items[0];
+    } else {
+      itemHref = "https://www.wikidata.org/wiki/Property:" + items[0];
+    }
+
+    const itemHtml = (
       <a
-        href={"https://www.wikidata.org/wiki/" + qnode}
+        href={itemHref}
         target="_blank"
         rel="noopener noreferrer"
         style={{ "color": "hsl(200, 100%, 30%)" }}
-      >{qnode}</a>
+      >{items[0]}</a>
     );
 
-    // get cacheOfQnodes from wikifier, e.g. { "Q967": { "label": "Burundi", "description": "country in Africa" } }
-    let { cacheOfQnodes } = window.Wikifier.state;
-    if (cacheOfQnodes[qnode] === undefined || cacheOfQnodes[qnode]["label"] === "-") {
-      // if not in cache, query to Wikidata
-      const api = window.sparqlEndpoint + "?format=json&query=SELECT%20%3Flabel%20%3Fdesc%20WHERE%20%7B%0A%20%20wd%3A" + qnode + "%20rdfs%3Alabel%20%3Flabel%20%3B%0A%20%20%20%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fschema.org%2Fdescription%3E%20%3Fdesc%20.%0A%20%20FILTER%20(langMatches(%20lang(%3Flabel)%2C%20%22EN%22%20)%20)%20%0A%20%20FILTER%20(langMatches(%20lang(%3Fdesc)%2C%20%22EN%22%20)%20)%20%0A%7D%0ALIMIT%201";
-      fetch(api)
-        .then(response => response.json())
-        .then(json => {
-          try {
-            const label = json["results"]["bindings"][0]["label"]["value"];
-            const description = json["results"]["bindings"][0]["desc"]["value"];
-            cacheOfQnodes[qnode] = { "label": label, "description": description };
-            window.Wikifier.setState({ cacheOfQnodes: cacheOfQnodes }); // add to cache
-            this.setState({ showToast0: true }); // force update component
-          } catch (error) {
-            console.log(error)
-          }
-        });
-      return (
-        <Toast.Body>
-          <strong>{selectedCell.value}</strong>&nbsp;({qnodeHtml})
-        </Toast.Body>
-      );
-    } else {
-      // qnode in cache
-      const label = cacheOfQnodes[qnode]["label"];
-      const description = cacheOfQnodes[qnode]["description"];
-      return (
-        <Toast.Body>
-          <strong>{label}</strong>&nbsp;({qnodeHtml})<br />
-          <br />
-          {description}
-        </Toast.Body>
-      );
-    }
+    return (
+      <Toast.Body>
+        <strong>{labels[0]}</strong>&nbsp;({itemHtml})<br />
+        <br />
+        {descs[0]}
+      </Toast.Body>
+    );
   }
 
   render() {
@@ -1308,14 +1298,15 @@ class Wikifier extends React.Component {
       showSpinner: false,
 
       // wikifier data (from backend)
-      qnodeData: {},  // e.g. { "A1": "Q111", "A2": "Q222", ... }
-      regionData: {}, // e.g. { "A1:A9": [ "A1", "A2", ... ], ... }
+      qnodeData: {},  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
+      rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in Africa" }]
 
-      // wikifier data used to render
-      currRegion: "All",
-      rowData: [], // e.g. [{ "cell": "A1", "value": "Burundi", "qnode": "Q967", "label": "Burundi", "description": "country in Africa" }]
+      // call wikifier service
+      showCallWikifier: false,
+      flag: 0,
+
+      // qnode editor
       scope: 0,
-      cacheOfQnodes: {}, // e.g. { "Q967": { "label": "Burundi", "description": "country in Africa"}, ... }
 
     };
   }
@@ -1326,85 +1317,154 @@ class Wikifier extends React.Component {
     this.gridColumnApi = params.columnApi;
     // console.log("<Wikifier> inited ag-grid and retrieved its API");
 
-    // for test only
-    // const qnodeData = { "A1": "Q966", "B1": "Q967", "C1": "Q968", "A4": "Q969", "A5": "Q970" };
-    // const regionData = { "A1:Z1": ["A1", "B1", "C1"], "Other": ["A4", "A5"] };
-    // this.updateWikifier(qnodeData, regionData);
+    // FOR TEST ONLY
+    // const qnodeData = { "A1": { "Context 1": { "item": "Q967", "label": "label", "desc": "dsc" }, "Context 2": { "item": "Q971", "label": "label", "desc": "dsc" } }, "B1": { "Context 1": { "item": "Q97", "label": "label", "desc": "dsc" }, "Context 2": { "item": "Q67", "label": "label", "desc": "dsc" } }, "C1": { "Context 1": { "item": "Q9", "label": "label", "desc": "dsc" } }, "D1": { "Context 3": { "item": "Q967", "label": "label", "desc": "dsc" } } };
+    // const rowData = [{ "context": "country", "col": "A", "row": "148989", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "country", "col": "B", "row": "1", "value": "Bundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "", "col": "D", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "city", "col": "C", "row": "1", "value": "Bu", "item": "Q967", "label": "Burundi", "desc": "country in ..." }];
+    // this.updateWikifier(qnodeData, rowData);
 
     this.gridApi.sizeColumnsToFit();
+
+    // default sort
+    const defaultSortModel = [
+      { colId: "col", sort: "asc" },
+      { colId: "row", sort: "asc" }
+    ];
+    params.api.setSortModel(defaultSortModel);
   }
 
-  handleAddRegion() {
-    let tempNewRegion = this.refs.tempNewRegion.value.trim();
+  // handleAddRegion() {
+  //   let tempNewRegion = this.refs.tempNewRegion.value.trim();
+
+  //   // validate input
+  //   if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(tempNewRegion) || !utils.isValidRegion(tempNewRegion)) {
+  //     alert("Error: Invalid region.\n\nRegion must:\n* be defined as A1:B2, etc.\n* start from top left cell and end in bottom right cell.");
+  //     return;
+  //   }
+
+  //   // before sending request
+  //   this.setState({ showSpinner: true });
+
+  //   // send request
+  //   console.log("<Wikifier> -> %c/call_wikifier_service%c to add region: %c" + tempNewRegion, LOG.link, LOG.default, LOG.highlight);
+  //   let formData = new FormData();
+  //   formData.append("pid", window.pid);
+  //   formData.append("action", "add_region");
+  //   formData.append("region", tempNewRegion);
+  //   fetch(window.server + "/call_wikifier_service", {
+  //     mode: "cors",
+  //     body: formData,
+  //     method: "POST"
+  //   }).then((response) => {
+  //     if (!response.ok) throw Error(response.statusText);
+  //     return response;
+  //   }).then((response) => {
+  //     return response.json();
+  //   }).then((json) => {
+  //     console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
+  //     console.log(json);
+
+  //     // do something here
+  //     const { error } = json;
+
+  //     // if failure
+  //     if (error !== null) {
+  //       throw Error(error);
+  //     }
+
+  //     // else, success
+  //     const { qnodes, rowData } = json;
+  //     window.TableViewer.updateQnodeCells(qnodes, rowData);
+  //     // FUTURE: the following line is unstable
+  //     this.handleSelectRegion(tempNewRegion);
+
+  //     // follow-ups (success)
+  //     this.setState({
+  //       showSpinner: false
+  //     });
+  //     this.refs.tempNewRegion.value = "";
+
+  //   }).catch((error) => {
+  //     console.log(error);
+
+  //     // follow-ups (failure)
+  //     window.TableViewer.updateQnodeCells();
+  //     this.setState({ showSpinner: false });
+  //   });
+  // }
+
+  // handleDeleteRegion(region) {
+
+  //   // before sending request
+  //   this.setState({ showSpinner: true });
+
+  //   // send request
+  //   console.log("<Wikifier> -> %c/call_wikifier_service%c to delete region: %c" + region, LOG.link, LOG.default, LOG.highlight);
+  //   let formData = new FormData();
+  //   formData.append("pid", window.pid);
+  //   formData.append("action", "delete_region");
+  //   formData.append("region", region);
+  //   fetch(window.server + "/call_wikifier_service", {
+  //     mode: "cors",
+  //     body: formData,
+  //     method: "POST"
+  //   }).then((response) => {
+  //     if (!response.ok) throw Error(response.statusText);
+  //     return response;
+  //   }).then((response) => {
+  //     return response.json();
+  //   }).then((json) => {
+  //     console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
+  //     console.log(json);
+
+  //     // do something here
+  //     const { error } = json;
+
+  //     // if failure
+  //     if (error !== null) {
+  //       throw Error(error);
+  //     }
+
+  //     // else, success
+  //     const { qnodes, rowData } = json;
+  //     window.TableViewer.updateQnodeCells(qnodes, rowData);
+
+  //     // follow-ups (success)
+  //     this.setState({ showSpinner: false });
+
+  //   }).catch((error) => {
+  //     console.log(error);
+
+  //     // follow-ups (failure)
+  //     window.TableViewer.updateQnodeCells();
+  //     this.setState({ showSpinner: false });
+  //   });
+  // }
+
+  handleDoCall(event) {
+    const region = this.refs.tempWikifyRegion.value.trim();
+    const flag = this.refs.tempWikifyFlag.value;
+    const context = this.refs.tempWikifyContext.value.trim();
 
     // validate input
-    if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(tempNewRegion) || !utils.isValidRegion(tempNewRegion)) {
+    if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(region) || !utils.isValidRegion(region)) {
       alert("Error: Invalid region.\n\nRegion must:\n* be defined as A1:B2, etc.\n* start from top left cell and end in bottom right cell.");
       return;
     }
 
     // before sending request
-    this.setState({ showSpinner: true });
-
-    // send request
-    console.log("<Wikifier> -> %c/call_wikifier_service%c to add region: %c" + tempNewRegion, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
-    formData.append("pid", window.pid);
-    formData.append("action", "add_region");
-    formData.append("region", tempNewRegion);
-    fetch(window.server + "/call_wikifier_service", {
-      mode: "cors",
-      body: formData,
-      method: "POST"
-    }).then((response) => {
-      if (!response.ok) throw Error(response.statusText);
-      return response;
-    }).then((response) => {
-      return response.json();
-    }).then((json) => {
-      console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      const { error } = json;
-
-      // if failure
-      if (error !== null) {
-        throw Error(error);
-      }
-
-      // else, success
-      const { qnodes, regions } = json;
-      window.TableViewer.updateQnodeCells(qnodes, regions);
-      // FUTURE: the following line is unstable
-      this.handleSelectRegion(tempNewRegion);
-
-      // follow-ups (success)
-      this.setState({
-        showSpinner: false
-      });
-      this.refs.tempNewRegion.value = "";
-
-    }).catch((error) => {
-      console.log(error);
-
-      // follow-ups (failure)
-      window.TableViewer.updateQnodeCells();
-      this.setState({ showSpinner: false });
+    this.setState({
+      showSpinner: true,
+      showCallWikifier: false
     });
-  }
-
-  handleDeleteRegion(region) {
-
-    // before sending request
-    this.setState({ showSpinner: true });
 
     // send request
-    console.log("<Wikifier> -> %c/call_wikifier_service%c to delete region: %c" + region, LOG.link, LOG.default, LOG.highlight);
+    console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("pid", window.pid);
-    formData.append("action", "delete_region");
+    formData.append("action", "wikify_region");
     formData.append("region", region);
+    formData.append("context", context);
+    formData.append("flag", flag);
     fetch(window.server + "/call_wikifier_service", {
       mode: "cors",
       body: formData,
@@ -1427,8 +1487,8 @@ class Wikifier extends React.Component {
       }
 
       // else, success
-      const { qnodes, regions } = json;
-      window.TableViewer.updateQnodeCells(qnodes, regions);
+      const { qnodes, rowData } = json;
+      window.TableViewer.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
@@ -1442,299 +1502,372 @@ class Wikifier extends React.Component {
     });
   }
 
-  handleSelectRegion(region) {
-    if (region === this.state.currRegion) return;
+  // handleSelectRegion(region) {
+  //   if (region === this.state.currRegion) return;
 
-    // switch region
-    console.log("<Wikifier> selected region: %c" + region, LOG.highlight);
-    this.setState({ currRegion: region });
+  //   // switch region
+  //   console.log("<Wikifier> selected region: %c" + region, LOG.highlight);
+  //   this.setState({ currRegion: region });
 
-    // update wikifier output
-    this.updateRowData(region);
+  //   // update wikifier output
+  //   this.updateRowData(region);
+  // }
+
+  // handleUpdateQnode(params) {
+  //   const { cell, qnode } = params["data"];
+  //   let { currRegion, scope } = this.state;
+
+  //   // before sending request
+  //   this.setState({ showSpinner: true });
+
+  //   // send request
+  //   console.log("<Wikifier> -> %c/call_wikifier_service%c to update qnode: %c" + cell + " (" + qnode + ")", LOG.link, LOG.default, LOG.highlight);
+  //   let formData = new FormData();
+  //   formData.append("pid", window.pid);
+  //   formData.append("action", "update_qnode");
+  //   formData.append("region", currRegion);
+  //   formData.append("cell", cell);
+  //   formData.append("qnode", qnode);
+  //   formData.append("apply_to", scope);
+  //   fetch(window.server + "/call_wikifier_service", {
+  //     mode: "cors",
+  //     body: formData,
+  //     method: "POST"
+  //   }).then((response) => {
+  //     if (!response.ok) throw Error(response.statusText);
+  //     return response;
+  //   }).then((response) => {
+  //     return response.json();
+  //   }).then((json) => {
+  //     console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
+  //     console.log(json);
+
+  //     // do something here
+  //     const { error } = json;
+
+  //     // if failure
+  //     if (error !== null) {
+  //       throw Error(error);
+  //     }
+
+  //     // else, success
+  //     const { qnodes, rowData } = json;
+  //     window.TableViewer.updateQnodeCells(qnodes, rowData);
+  //     this.handleSelectRegion(currRegion);
+
+  //     // follow-ups (success)
+  //     this.setState({ showSpinner: false });
+
+  //   }).catch((error) => {
+  //     console.log(error);
+
+  //     // follow-ups (failure)
+  //     window.TableViewer.updateQnodeCells();
+  //     this.setState({ showSpinner: false });
+  //   });
+  // }
+
+  tableColComparator(col1, col2) {
+    const col1Idx = utils.colName2colIdx(col1);
+    const col2Idx = utils.colName2colIdx(col2);
+    return col1Idx - col2Idx;
   }
 
-  handleUpdateQnode(params) {
-    const { cell, qnode } = params["data"];
-    let { currRegion, scope } = this.state;
+  tableRowComparator(row1, row2) {
+    const row1Idx = parseInt(row1);
+    const row2Idx = parseInt(row2);
+    return row1Idx - row2Idx;
+  }
 
-    // before sending request
-    this.setState({ showSpinner: true });
+  // updateCacheQnode(qnodes = null) {
+  //   // param: qnodes, e.g. ["Q111", "Q222", "Q333", ...]
 
-    // send request
-    console.log("<Wikifier> -> %c/call_wikifier_service%c to update qnode: %c" + cell + " (" + qnode + ")", LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
-    formData.append("pid", window.pid);
-    formData.append("action", "update_qnode");
-    formData.append("region", currRegion);
-    formData.append("cell", cell);
-    formData.append("qnode", qnode);
-    formData.append("apply_to", scope);
-    fetch(window.server + "/call_wikifier_service", {
-      mode: "cors",
-      body: formData,
-      method: "POST"
-    }).then((response) => {
-      if (!response.ok) throw Error(response.statusText);
-      return response;
-    }).then((response) => {
-      return response.json();
-    }).then((json) => {
-      console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
-      console.log(json);
+  //   // if no input, cache all qnodes
+  //   if (qnodes === null) qnodes = Object.values(this.state.qnodeData);
+  //   qnodes = Array.from(new Set(qnodes));
 
-      // do something here
-      const { error } = json;
+  //   // remove qnodes that already cached
+  //   const cached = Object.keys(this.state.cacheOfQnodes);
+  //   qnodes = qnodes.filter(function (x) { return cached.indexOf(x) === -1 });
 
-      // if failure
-      if (error !== null) {
-        throw Error(error);
-      }
+  //   // cache qnode
+  //   if (qnodes.length === 0) return;
+  //   this.setState({ showSpinner: true });
+  //   const api = window.sparqlEndpoint + "?format=json&query=SELECT%20%3Fqnode%20%28MIN%28%3Flabel%29%20AS%20%3Flabel%29%20%28MIN%28%3Fdesc%29%20AS%20%3Fdesc%29%20WHERE%20%7B%0A%20%20VALUES%20%3Fqnode%20%7B%20wd%3A" + qnodes.join("%20wd%3A") + "%7D%0A%20%20%3Fqnode%20rdfs%3Alabel%20%3Flabel%3B%20<http%3A%2F%2Fschema.org%2Fdescription>%20%3Fdesc.%0A%20%20FILTER%20%28langMatches%28lang%28%3Flabel%29%2C%22EN%22%29%29%0A%20%20FILTER%20%28langMatches%28lang%28%3Fdesc%29%2C%22EN%22%29%29%0A%7D%0AGROUP%20BY%20%3Fqnode";
+  //   fetch(api)
+  //     .then(response => response.json())
+  //     .then(json => {
+  //       console.log("<Wikifier> updated %cqnode cache", LOG.highlight);
+  //       console.log(json);
 
-      // else, success
-      const { qnodes, regions } = json;
-      window.TableViewer.updateQnodeCells(qnodes, regions);
-      this.handleSelectRegion(currRegion);
+  //       let { cacheOfQnodes } = this.state;
 
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
+  //       // update qnode by query results from sparql endpoint
+  //       const bindings = json["results"]["bindings"];
+  //       for (let i = 0, len = bindings.length; i < len; i++) {
+  //         const qnode = json["results"]["bindings"][i]["qnode"]["value"].match(/[QP]\d+$/)[0];
+  //         const label = json["results"]["bindings"][i]["label"]["value"];
+  //         const description = json["results"]["bindings"][i]["desc"]["value"];
+  //         cacheOfQnodes[qnode] = { "label": label, "description": description };
+  //       }
 
-    }).catch((error) => {
-      console.log(error);
+  //       // update mismatched qnodes (for clear qnode cache feature)
+  //       for (let i = 0, len = qnodes.length; i < len; i++) {
+  //         const qnode = qnodes[i];
+  //         if (cacheOfQnodes[qnode] === undefined) {
+  //           cacheOfQnodes[qnode] = { "label": "-", "description": "-" };
+  //         }
+  //       }
 
-      // follow-ups (failure)
-      window.TableViewer.updateQnodeCells();
-      this.setState({ showSpinner: false });
+  //       // update state
+  //       this.setState({ cacheOfQnodes: cacheOfQnodes });
+  //       this.updateRowData();
+
+  //       // follow-ups (success)
+  //       console.log(cacheOfQnodes);
+  //       this.setState({ showSpinner: false });
+
+  //     }).catch((error) => {
+  //       console.log(error);
+
+  //       // follow-ups (failure)
+  //       this.setState({ showSpinner: false });
+  //     });
+  // }
+
+  // updateRowData(region = null) {
+  //   const { qnodeData, regionData, currRegion, cacheOfQnodes } = this.state;
+  //   if (region === null) region = currRegion;
+  //   const tableData = window.TableViewer.state.rowData;
+
+  //   // get cell list shown in first col
+  //   let cells;
+  //   if (region === "All") {
+  //     cells = utils.sortCells(Object.keys(qnodeData));
+  //   } else {
+  //     cells = regionData[region];
+  //   }
+
+  //   // fill table
+  //   let rowData = new Array(cells.length);
+  //   for (let i = 0; i < cells.length; i++) {
+  //     const cell = cells[i];
+  //     const [col, row] = cell.match(/[a-z]+|[^a-z]+/gi);
+  //     const value = tableData[parseInt(row) - 1][col];
+  //     const qnode = qnodeData[cell];
+
+  //     // one-row data
+  //     let rowDatum = {
+  //       "cell": cell,
+  //       "value": value,
+  //       "qnode": qnode,
+  //       "label": "...",
+  //       "description": "..."
+  //     };
+  //     if (qnode === "") {
+  //       rowDatum["label"] = "";
+  //       rowDatum["description"] = "";
+  //     }
+  //     if (cacheOfQnodes[qnode] !== undefined) {
+  //       rowDatum["label"] = cacheOfQnodes[qnode]["label"];
+  //       rowDatum["description"] = cacheOfQnodes[qnode]["description"];
+  //     }
+
+  //     // appand this one-row data
+  //     rowData[i] = rowDatum;
+  //   }
+  //   this.setState({ rowData: rowData });
+
+  //   if (rowData.length === 0) {
+  //     this.gridApi.sizeColumnsToFit();
+  //   } else {
+  //     this.gridApi.sizeColumnsToFit();
+  //     // this.gridColumnApi.autoSizeAllColumns();
+  //   }
+  // }
+
+  updateWikifier(qnodeData = {}, rowData = []) {
+    // update
+    this.setState({
+      qnodeData: qnodeData,
+      rowData: rowData,
     });
   }
 
-  updateCacheQnode(qnodes = null) {
-    // param: qnodes, e.g. ["Q111", "Q222", "Q333", ...]
+  renderCallWikifier() {
+    return (
+      <Modal show={this.state.showCallWikifier} onHide={() => { /* do nothing */ }}>
 
-    // if no input, cache all qnodes
-    if (qnodes === null) qnodes = Object.values(this.state.qnodeData);
-    qnodes = Array.from(new Set(qnodes));
+        {/* header */}
+        <Modal.Header style={{ background: "whitesmoke" }}>
+          <Modal.Title>Wikify region</Modal.Title>
+        </Modal.Header>
 
-    // remove qnodes that already cached
-    const cached = Object.keys(this.state.cacheOfQnodes);
-    qnodes = qnodes.filter(function (x) { return cached.indexOf(x) === -1 });
+        {/* body */}
+        <Modal.Body>
+          <Form className="container">
 
-    // cache qnode
-    if (qnodes.length === 0) return;
-    this.setState({ showSpinner: true });
-    const api = window.sparqlEndpoint + "?format=json&query=SELECT%20%3Fqnode%20%28MIN%28%3Flabel%29%20AS%20%3Flabel_%29%20%28MIN%28%3Fdesc%29%20AS%20%3Fdesc_%29%20WHERE%20%7B%0A%20%20VALUES%20%3Fqnode%20%7B%20wd%3A" + qnodes.join("%20wd%3A") + "%7D%0A%20%20%3Fqnode%20rdfs%3Alabel%20%3Flabel%3B%20<http%3A%2F%2Fschema.org%2Fdescription>%20%3Fdesc.%0A%20%20FILTER%20%28langMatches%28lang%28%3Flabel%29%2C%22EN%22%29%29%0A%20%20FILTER%20%28langMatches%28lang%28%3Fdesc%29%2C%22EN%22%29%29%0A%7D%0AGROUP%20BY%20%3Fqnode";
-    fetch(api)
-      .then(response => response.json())
-      .then(json => {
-        console.log("<Wikifier> updated %cqnode cache", LOG.highlight);
-        console.log(json);
+            {/* region */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+                Region
+              </Form.Label>
+              <Col xs="9" md="9" className="pr-0">
+                <Form.Control
+                  type="text"
+                  ref="tempWikifyRegion"
+                  placeholder="e.g. A1:A10"
+                />
+              </Col>
+            </Form.Group>
 
-        let { cacheOfQnodes } = this.state;
+            {/* flag */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+                Flag
+              </Form.Label>
+              <Col xs="9" md="9" className="pr-0">
+                <Form.Control
+                  as="select"
+                  ref="tempWikifyFlag"
+                >
+                  <option value="0">{"record col & row"}</option>
+                  <option value="1">{"record col"}</option>
+                  <option value="2">{"record row"}</option>
+                  <option value="3">{"don't record"}</option>
+                </Form.Control>
+              </Col>
+            </Form.Group>
 
-        // update qnode by query results from sparql endpoint
-        const bindings = json["results"]["bindings"];
-        for (let i = 0, len = bindings.length; i < len; i++) {
-          const qnode = json["results"]["bindings"][i]["qnode"]["value"].match(/[QP]\d+$/)[0];
-          const label = json["results"]["bindings"][i]["label_"]["value"];
-          const description = json["results"]["bindings"][i]["desc_"]["value"];
-          cacheOfQnodes[qnode] = { "label": label, "description": description };
-        }
+            {/* context */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+                Context
+              </Form.Label>
+              <Col xs="9" md="9" className="pr-0">
+                <Form.Control
+                  type="text"
+                  ref="tempWikifyContext"
+                  placeholder="(optional)"
+                />
+              </Col>
+            </Form.Group>
 
-        // update mismatched qnodes (for clear qnode cache feature)
-        for (let i = 0, len = qnodes.length; i < len; i++) {
-          const qnode = qnodes[i];
-          if (cacheOfQnodes[qnode] === undefined) {
-            cacheOfQnodes[qnode] = { "label": "-", "description": "-" };
-          }
-        }
+          </Form>
+        </Modal.Body>
 
-        // update state
-        this.setState({ cacheOfQnodes: cacheOfQnodes });
-        this.updateRowData();
-
-        // follow-ups (success)
-        console.log(cacheOfQnodes);
-        this.setState({ showSpinner: false });
-
-      }).catch((error) => {
-        console.log(error);
-
-        // follow-ups (failure)
-        this.setState({ showSpinner: false });
-      });
-  }
-
-  updateRowData(region = null) {
-    const { qnodeData, regionData, currRegion, cacheOfQnodes } = this.state;
-    if (region === null) region = currRegion;
-    const tableData = window.TableViewer.state.rowData;
-
-    // get cell list shown in first col
-    let cells;
-    if (region === "All") {
-      cells = utils.sortCells(Object.keys(qnodeData));
-    } else {
-      cells = regionData[region];
-    }
-
-    // fill table
-    let rowData = new Array(cells.length);
-    for (let i = 0; i < cells.length; i++) {
-      const cell = cells[i];
-      const [col, row] = cell.match(/[a-z]+|[^a-z]+/gi);
-      const value = tableData[parseInt(row) - 1][col];
-      const qnode = qnodeData[cell];
-
-      // one-row data
-      let rowDatum = {
-        "cell": cell,
-        "value": value,
-        "qnode": qnode,
-        "label": "...",
-        "description": "..."
-      };
-      if (qnode === "") {
-        rowDatum["label"] = "";
-        rowDatum["description"] = "";
-      }
-      if (cacheOfQnodes[qnode] !== undefined) {
-        rowDatum["label"] = cacheOfQnodes[qnode]["label"];
-        rowDatum["description"] = cacheOfQnodes[qnode]["description"];
-      }
-
-      // appand this one-row data
-      rowData[i] = rowDatum;
-    }
-    this.setState({ rowData: rowData });
-
-    if (rowData.length === 0) {
-      this.gridApi.sizeColumnsToFit();
-    } else {
-      this.gridApi.sizeColumnsToFit();
-      // this.gridColumnApi.autoSizeAllColumns();
-    }
-  }
-
-  updateWikifier(qnodeData = null, regionData = null) {
-    if (qnodeData === null) {
-      // reset
-      this.setState({
-        qnodeData: {},
-        regionData: {},
-        currRegion: "All",
-        rowData: [],
-      });
-    } else {
-      // update
-      this.updateCacheQnode(Object.values(qnodeData));
-      this.setState({
-        qnodeData: qnodeData,
-        regionData: regionData,
-        currRegion: "All",
-        rowData: [],
-      });
-      this.updateRowData();
-    }
-  }
-
-  renderRegionSelector() {
-    const { regionData, currRegion } = this.state;
-    const regions = Object.keys(regionData);
-
-    let regionSelectorHtml = [];
-
-    // all
-    regionSelectorHtml.push(
-      <RegionTab
-        key="All"
-        region="All"
-        selected={(currRegion === "All") ? true : false}
-        handleSelectRegion={() => this.handleSelectRegion("All")}
-        handleDeleteRegion={(event) => {
-          event.stopPropagation(); // prevent selecting deleted region
-          this.handleDeleteRegion("All");
-        }}
-      />
+        {/* footer */}
+        <Modal.Footer style={{ background: "whitesmoke" }}>
+          <Button variant="outline-dark" onClick={() => this.setState({ showCallWikifier: false })}>
+            Cancel
+          </Button>
+          <Button variant="dark" onClick={this.handleDoCall.bind(this)}>
+            Wikify
+          </Button>
+        </Modal.Footer>
+      </Modal >
     );
-
-    // regions
-    for (let i = 0, len = regions.length; i < len; i++) {
-      regionSelectorHtml.push(
-        <RegionTab
-          key={regions[i]}
-          region={regions[i]}
-          selected={(regions[i] === currRegion) ? true : false}
-          handleSelectRegion={() => this.handleSelectRegion(regions[i])}
-          handleDeleteRegion={(event) => {
-            event.stopPropagation(); // prevent selecting deleted region
-            this.handleDeleteRegion(regions[i]);
-          }}
-        />
-      );
-    }
-
-    // add region
-    regionSelectorHtml.push(
-      <div
-        key="Add"
-        className="w-100"
-        style={{
-          height: "32px",
-          position: "relative",
-          borderBottom: "1px solid lightgray"
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            padding: "0px 10px 0px 8px",
-            position: "absolute",
-            top: "50%",
-            msTransform: "translateY(-50%)",
-            transform: "translateY(-50%)",
-            fontSize: "12px"
-          }}
-        >
-          <input
-            ref="tempNewRegion"
-            type="text"
-            style={{
-              display: "inline-block",
-              width: "calc(100% - 17px)"
-            }}
-            // value={this.state.input}
-            placeholder="e.g. A1:B2"
-            readOnly={this.state.showSpinner}
-            // onChange={(event) => {
-            //   this.setState({ input: event.target.value });
-            // }}
-            onKeyPress={(event) => {
-              if (event.key === "Enter") {
-                // if press enter (13), then do add region
-                event.preventDefault();
-                this.handleAddRegion();
-              }
-            }}
-          />
-          <span
-            className="myTextButton"
-            style={{
-              display: "inline-block",
-              width: "10px",
-              cursor: "pointer",
-              marginLeft: "5px",
-              // fontWeight: "bold",
-              fontSize: "14px",
-              color: "hsl(150, 50%, 40%)"
-            }}
-            title="Add region"
-            onClick={this.handleAddRegion.bind(this)}
-          >＋</span>
-        </div>
-      </div>
-    );
-
-    return regionSelectorHtml;
   }
+
+  // renderRegionSelector() {
+  //   const { regionData, currRegion } = this.state;
+  //   const regions = Object.keys(regionData);
+
+  //   let regionSelectorHtml = [];
+
+  //   // all
+  //   regionSelectorHtml.push(
+  //     <RegionTab
+  //       key="All"
+  //       region="All"
+  //       selected={(currRegion === "All") ? true : false}
+  //       handleSelectRegion={() => this.handleSelectRegion("All")}
+  //       handleDeleteRegion={(event) => {
+  //         event.stopPropagation(); // prevent selecting deleted region
+  //         this.handleDeleteRegion("All");
+  //       }}
+  //     />
+  //   );
+
+  //   // regions
+  //   for (let i = 0, len = regions.length; i < len; i++) {
+  //     regionSelectorHtml.push(
+  //       <RegionTab
+  //         key={regions[i]}
+  //         region={regions[i]}
+  //         selected={(regions[i] === currRegion) ? true : false}
+  //         handleSelectRegion={() => this.handleSelectRegion(regions[i])}
+  //         handleDeleteRegion={(event) => {
+  //           event.stopPropagation(); // prevent selecting deleted region
+  //           this.handleDeleteRegion(regions[i]);
+  //         }}
+  //       />
+  //     );
+  //   }
+
+  //   // add region
+  //   regionSelectorHtml.push(
+  //     <div
+  //       key="Add"
+  //       className="w-100"
+  //       style={{
+  //         height: "32px",
+  //         position: "relative",
+  //         borderBottom: "1px solid lightgray"
+  //       }}
+  //     >
+  //       <div
+  //         style={{
+  //           width: "100%",
+  //           padding: "0px 10px 0px 8px",
+  //           position: "absolute",
+  //           top: "50%",
+  //           msTransform: "translateY(-50%)",
+  //           transform: "translateY(-50%)",
+  //           fontSize: "12px"
+  //         }}
+  //       >
+  //         <input
+  //           ref="tempNewRegion"
+  //           type="text"
+  //           style={{
+  //             display: "inline-block",
+  //             width: "calc(100% - 17px)"
+  //           }}
+  //           // value={this.state.input}
+  //           placeholder="e.g. A1:B2"
+  //           readOnly={this.state.showSpinner}
+  //           // onChange={(event) => {
+  //           //   this.setState({ input: event.target.value });
+  //           // }}
+  //           onKeyPress={(event) => {
+  //             if (event.key === "Enter") {
+  //               // if press enter (13), then do add region
+  //               event.preventDefault();
+  //               this.handleAddRegion();
+  //             }
+  //           }}
+  //         />
+  //         <span
+  //           className="myTextButton"
+  //           style={{
+  //             display: "inline-block",
+  //             width: "10px",
+  //             cursor: "pointer",
+  //             marginLeft: "5px",
+  //             // fontWeight: "bold",
+  //             fontSize: "14px",
+  //             color: "hsl(150, 50%, 40%)"
+  //           }}
+  //           title="Add region"
+  //           onClick={this.handleAddRegion.bind(this)}
+  //         >＋</span>
+  //       </div>
+  //     </div>
+  //   );
+
+  //   return regionSelectorHtml;
+  // }
 
   renderWikifierOutput() {
     const { rowData } = this.state;
@@ -1746,23 +1879,32 @@ class Wikifier extends React.Component {
         }}
         columnDefs={[
           {
+            headerName: "",
+            children: [
+              { headerName: "context", field: "context", width: 60 }
+            ]
+          },
+          {
             headerName: "Table",
             children: [
-              { headerName: "cell", field: "cell", width: 40 },
-              { headerName: "value", field: "value", width: 70 },
+              { headerName: "col", field: "col", width: 60, comparator: this.tableColComparator, sortable: true },
+              { headerName: "row", field: "row", width: 60, comparator: this.tableRowComparator, sortable: true },
+              { headerName: "value", field: "value", width: 80 },
             ]
           },
           {
             headerName: "Wikidata",
             children: [
               {
-                headerName: "item", field: "qnode", width: 70, // just show as "item"
+                headerName: "item", field: "item", width: 60,
                 cellStyle: { color: "hsl(200, 100%, 30%)" },
-                editable: true, cellEditor: "qnodeEditor",
-                onCellValueChanged: (params) => { this.handleUpdateQnode(params) }
+                // **** QNODE EDITOR ************************************************
+                // editable: true, cellEditor: "qnodeEditor",
+                // onCellValueChanged: (params) => { this.handleUpdateQnode(params) }
+                // ******************************************************************
               },
-              { headerName: "label", field: "label", width: 70 },
-              { headerName: "description", field: "description", width: 140 }
+              { headerName: "label", field: "label", width: 80 },
+              { headerName: "description", field: "desc", width: 160 }
             ]
           }
         ]}
@@ -1799,6 +1941,7 @@ class Wikifier extends React.Component {
         className="w-100 shadow-sm"
         style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
       >
+        {this.renderCallWikifier()}
 
         {/* header */}
         <Card.Header
@@ -1809,7 +1952,8 @@ class Wikifier extends React.Component {
           {/* title */}
           <div
             className="text-white font-weight-bold d-inline-block text-truncate"
-            style={{ width: "calc(100% - 75px)", cursor: "default" }}
+            // style={{ width: "calc(100% - 75px)", cursor: "default" }}
+            style={{ width: "calc(100% - 150px)", cursor: "default" }}
           >
             Wikifier
           </div>
@@ -1827,6 +1971,16 @@ class Wikifier extends React.Component {
             </Button>
           </OverlayTrigger>
 
+          <Button
+            className="d-inline-block float-right"
+            variant="outline-light"
+            size="sm"
+            style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
+            onClick={() => { this.setState({ showCallWikifier: true }) }}
+          >
+            Wikify
+          </Button>
+
         </Card.Header>
 
         {/* wikifier */}
@@ -1843,29 +1997,11 @@ class Wikifier extends React.Component {
             <Spinner animation="border" />
           </div>
 
-          {/* region selector */}
-          <div
-            className="h-100 shadow-sm"
-            style={{
-              display: "inline-block",
-              width: "128px",
-              background: "whitesmoke",
-              border: "1px solid lightgray",
-              overflowX: "hidden",
-              overflowY: "auto",
-              whiteSpace: "nowrap",
-              zIndex: "200"
-            }}
-          >
-            {this.renderRegionSelector()}
-          </div>
-
           {/* wikifier output */}
           <div
-            className="ag-theme-balham h-100"
+            className="ag-theme-balham w-100 h-100"
             style={{
               display: "inline-block",
-              width: "calc(100% - 128px)",
               overflow: "hidden"
             }}
           >
@@ -1892,75 +2028,6 @@ class Wikifier extends React.Component {
 
       </Card >
     );
-  }
-}
-
-class RegionTab extends React.Component {
-  render() {
-    const verticalCenteredHtml = (
-      <div
-        style={{
-          width: "100%",
-          padding: "0px 10px",
-          position: "absolute",
-          top: "50%",
-          msTransform: "translateY(-50%)",
-          transform: "translateY(-50%)",
-          fontSize: "12px"
-        }}
-      >
-        <span
-          title={this.props.region}
-          style={{
-            display: "inline-block",
-            width: "calc(100% - 15px)",
-            cursor: "default"
-          }}
-        >{this.props.region}</span>
-        <span
-          className="myTextButton"
-          style={{
-            display: "inline-block",
-            width: "10px",
-            cursor: "pointer",
-            marginLeft: "5px",
-            // fontWeight: "bold",
-            color: "hsl(0, 100%, 30%)"
-          }}
-          title="Delete region"
-          onClick={(event) => this.props.handleDeleteRegion(event)}
-        >✕</span>
-      </div>
-    );
-
-    let regionTabHtml;
-    if (this.props.selected) {
-      regionTabHtml = (
-        <div
-          className="w-100"
-          style={{
-            height: "32px",
-            position: "relative",
-            borderBottom: "1px solid lightgray",
-            background: "hsl(200, 100%, 90%)"
-          }}
-          onClick={this.props.handleSelectRegion}
-        >{verticalCenteredHtml}</div>
-      );
-    } else {
-      regionTabHtml = (
-        <div
-          className="w-100"
-          style={{
-            height: "32px",
-            position: "relative",
-            borderBottom: "1px solid lightgray"
-          }}
-          onClick={this.props.handleSelectRegion}
-        >{verticalCenteredHtml}</div>
-      );
-    }
-    return regionTabHtml;
   }
 }
 
