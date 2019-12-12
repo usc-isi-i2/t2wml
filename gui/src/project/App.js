@@ -2796,34 +2796,67 @@ class Output extends React.Component {
     const api = window.sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
     // console.log("<Output> made query to Wikidata: " + api);
 
-    this.setState({ showSpinner: true });
-    fetch(api)
-      .then(response => response.json())
-      .then(json => {
-        try {
-          const name = json["results"]["bindings"][0]["label"]["value"];
-          if (field === "itemName") {
-            this.setState({ itemName: name });
-          } else if (field === "propertyName") {
-            this.setState({ propertyName: name });
-          } else if (field === "qualifiers") {
-            let qualifiers = this.state.qualifiers;
-            if (subfield === "propertyName") {
-              qualifiers[index]["propertyName"] = name;
-            } else if (subfield === "valueName") {
-              qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
-              qualifiers[index]["valueName"] = name;
+    try {
+      this.setState({ showSpinner: true });
+      fetch(api, {
+        mode: "no-cors"
+      }).then(response => response.json())
+        .then(json => {
+          try {
+            const name = json["results"]["bindings"][0]["label"]["value"];
+            if (field === "itemName") {
+              this.setState({ itemName: name });
+            } else if (field === "propertyName") {
+              this.setState({ propertyName: name });
+            } else if (field === "qualifiers") {
+              let qualifiers = this.state.qualifiers;
+              if (subfield === "propertyName") {
+                qualifiers[index]["propertyName"] = name;
+              } else if (subfield === "valueName") {
+                qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
+                qualifiers[index]["valueName"] = name;
+              }
+              this.setState({ qualifiers: qualifiers });
             }
-            this.setState({ qualifiers: qualifiers });
+            let cache = this.state.cache;
+            cache[node] = name;
+            this.setState({ cache: cache, showSpinner: false });
+          } catch (error) {
+            // console.log(error)
+            this.setState({ showSpinner: false });
           }
-          let cache = this.state.cache;
-          cache[node] = name;
-          this.setState({ cache: cache, showSpinner: false });
-        } catch (error) {
-          // console.log(error)
-          this.setState({ showSpinner: false });
-        }
-      });
+        });
+    }
+    catch (e) {
+      this.setState({ showSpinner: true });
+      fetch(api)
+        .then(response => response.json())
+        .then(json => {
+          try {
+            const name = json["results"]["bindings"][0]["label"]["value"];
+            if (field === "itemName") {
+              this.setState({ itemName: name });
+            } else if (field === "propertyName") {
+              this.setState({ propertyName: name });
+            } else if (field === "qualifiers") {
+              let qualifiers = this.state.qualifiers;
+              if (subfield === "propertyName") {
+                qualifiers[index]["propertyName"] = name;
+              } else if (subfield === "valueName") {
+                qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
+                qualifiers[index]["valueName"] = name;
+              }
+              this.setState({ qualifiers: qualifiers });
+            }
+            let cache = this.state.cache;
+            cache[node] = name;
+            this.setState({ cache: cache, showSpinner: false });
+          } catch (error) {
+            // console.log(error)
+            this.setState({ showSpinner: false });
+          }
+        });
+    }
   }
 
   renderDownload() {
