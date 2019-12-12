@@ -62,7 +62,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                 property_type = property_type_map[i["statement"]["property"]]
             except KeyError:
                 property_type = get_property_type(i["statement"]["property"], sparql_endpoint)
-                if property_type != "Property Not Found":
+                if property_type != "Property Not Found" and i["statement"]["property"] not in property_type_map:
                     property_type_map[i["statement"]["property"]] = property_type
             if property_type == "WikibaseItem":
                 value = Item(str(i["statement"]["value"]))
@@ -100,7 +100,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 
                     except KeyError:
                         property_type = get_property_type(j["property"], sparql_endpoint)
-                        if property_type != "Property Not Found":
+                        if property_type != "Property Not Found" and i["statement"]["property"] not in property_type_map:
                             property_type_map[i["statement"]["property"]] = property_type
                     if property_type == "WikibaseItem":
                         value = Item(str(j["value"]))
