@@ -127,13 +127,21 @@ class ItemTable:
 			no_col_row = data_frame[data_frame.row.isnull() & data_frame.column.isnull()]
 		else:
 			no_col_row = data_frame
+		print(no_col_row)
 		# generate item_value_map
 		# item_value_map = {value: {context: item}}
 		item_value_map = dict()
+
 		for row in no_col_row.itertuples(index=False):
-			if sheet[row.row, row.column] not in item_value_map:
-				item_value_map[sheet[row.row, row.column]] = dict()
-			item_value_map[sheet[row.row, row.column]][row.context] = row.item
+			try:
+				value = sheet[row.row, row.column]
+			except AttributeError:
+				value = row.value
+			except IndexError:
+				value = row.value
+			if value not in item_value_map:
+				item_value_map[value] = dict()
+			item_value_map[value][row.context] = row.item
 
 		for row in range(len(sheet)):
 			for col in range(len(sheet[0])):
