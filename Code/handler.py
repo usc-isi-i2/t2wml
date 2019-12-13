@@ -9,7 +9,7 @@ from Code.ItemTable import ItemTable
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
-from Code.utility_functions import get_actual_cell_index, check_if_empty, parse_cell_range, \
+from Code.utility_functions import get_actual_cell_index, check_if_string_is_invalid, parse_cell_range, \
     translate_precision_to_integer, get_property_type
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
@@ -37,18 +37,6 @@ def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
 
     except IOError:
         raise IOError('Excel File cannot be found or opened')
-
-
-def remove_empty_and_invalid_cells(region: Region) -> None:
-    """
-    This functions searches for empty or invalid strings in the region and remove those cells from the region
-    :param region:
-    :return:
-    """
-    for col in range(bindings["$left"] + 1, bindings["$right"]):
-        for row in range(bindings["$top"] + 1, bindings["$bottom"]):
-            if check_if_empty(str(bindings['excel_sheet'][row, col])):
-                region.add_hole(row, col, col)
 
 
 def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: str = None,
@@ -84,12 +72,10 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
     """
     update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
     region = region_specification['region_object']
-    remove_empty_and_invalid_cells(region)
     head = region.get_head()
     data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
     bindings["$col"] = head[0]
     bindings["$row"] = head[1]
-    holes = []
     try:
         item = template['item']
     except KeyError:
@@ -102,83 +88,65 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 
     while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
         try:
-            row_be_skipped = False
-            column_be_skipped = False
-            cell_be_skipped = False
-            if region_specification['skip_row']:
-                for i in range(len(region_specification['skip_row'])):
-                    row_be_skipped = row_be_skipped or region_specification['skip_row'][i].evaluate(bindings)
-
-            if region_specification['skip_column']:
-                for i in range(len(region_specification['skip_column'])):
-                    column_be_skipped = column_be_skipped or region_specification['skip_column'][i].evaluate(bindings)
-
-            if region_specification['skip_cell']:
-                for i in range(len(region_specification['skip_cell'])):
-                    cell_be_skipped = cell_be_skipped or region_specification['skip_cell'][i].evaluate(bindings)
-
-            if not row_be_skipped and not column_be_skipped and not cell_be_skipped:
-                data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
-                data["dataRegion"].add(data_cell)
-                if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation)):
-                    try:
-                        if item.variables:
-                            variables = list(item.variables)
-                            num_of_variables = len(variables)
-                            if num_of_variables == 1:
-                                bindings[variables[0]] = 0
-                                while not item.evaluate(bindings):
-                                    bindings[variables[0]] += 1
-                                col, row, value = item.evaluate_and_get_cell(bindings)
-                                item_cell = get_actual_cell_index((col, row))
-                                data["item"].add(item_cell)
-                                del bindings[variables[0]]
-                        else:
-                            item_cell = get_cell(item)
-                            item_cell = get_actual_cell_index(item_cell)
+            data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
+            data["dataRegion"].add(data_cell)
+            if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation)):
+                try:
+                    if item.variables:
+                        variables = list(item.variables)
+                        num_of_variables = len(variables)
+                        if num_of_variables == 1:
+                            bindings[variables[0]] = 0
+                            while not item.evaluate(bindings):
+                                bindings[variables[0]] += 1
+                            col, row, value = item.evaluate_and_get_cell(bindings)
+                            item_cell = get_actual_cell_index((col, row))
                             data["item"].add(item_cell)
-                    except AttributeError:
-                        pass
-                elif item and isinstance(item, (ColumnExpression, RowExpression)):
-                    try:
+                            del bindings[variables[0]]
+                    else:
                         item_cell = get_cell(item)
                         item_cell = get_actual_cell_index(item_cell)
                         data["item"].add(item_cell)
-                    except AttributeError:
-                        pass
+                except AttributeError:
+                    pass
+            elif item and isinstance(item, (ColumnExpression, RowExpression)):
+                try:
+                    item_cell = get_cell(item)
+                    item_cell = get_actual_cell_index(item_cell)
+                    data["item"].add(item_cell)
+                except AttributeError:
+                    pass
 
-                if qualifiers:
-                    qualifier_cells = set()
-                    for qualifier in qualifiers:
-                        if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation)):
-                            try:
-                                if qualifier["value"].variables:
-                                    variables = list(qualifier["value"].variables)
-                                    num_of_variables = len(variables)
-                                    if num_of_variables == 1:
-                                        bindings[variables[0]] = 0
-                                        while not qualifier["value"].evaluate(bindings):
-                                            bindings[variables[0]] += 1
-                                        col, row, value = qualifier["value"].evaluate_and_get_cell(bindings)
-                                        qualifier_cell = get_actual_cell_index((col, row))
-                                        qualifier_cells.add(qualifier_cell)
-                                        del bindings[variables[0]]
-                                else:
-                                    qualifier_cell = get_cell(qualifier["value"])
-                                    qualifier_cell = get_actual_cell_index(qualifier_cell)
+            if qualifiers:
+                qualifier_cells = set()
+                for qualifier in qualifiers:
+                    if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation)):
+                        try:
+                            if qualifier["value"].variables:
+                                variables = list(qualifier["value"].variables)
+                                num_of_variables = len(variables)
+                                if num_of_variables == 1:
+                                    bindings[variables[0]] = 0
+                                    while not qualifier["value"].evaluate(bindings):
+                                        bindings[variables[0]] += 1
+                                    col, row, value = qualifier["value"].evaluate_and_get_cell(bindings)
+                                    qualifier_cell = get_actual_cell_index((col, row))
                                     qualifier_cells.add(qualifier_cell)
-                            except AttributeError:
-                                pass
-                        elif isinstance(qualifier["value"], (ColumnExpression, RowExpression)):
-                            try:
+                                    del bindings[variables[0]]
+                            else:
                                 qualifier_cell = get_cell(qualifier["value"])
                                 qualifier_cell = get_actual_cell_index(qualifier_cell)
                                 qualifier_cells.add(qualifier_cell)
-                            except AttributeError:
-                                pass
-                    data["qualifierRegion"] |= qualifier_cells
-            else:
-                holes.append((bindings["$row"], bindings["$col"]))
+                        except AttributeError:
+                            pass
+                    elif isinstance(qualifier["value"], (ColumnExpression, RowExpression)):
+                        try:
+                            qualifier_cell = get_cell(qualifier["value"])
+                            qualifier_cell = get_actual_cell_index(qualifier_cell)
+                            qualifier_cells.add(qualifier_cell)
+                        except AttributeError:
+                            pass
+                data["qualifierRegion"] |= qualifier_cells
         except Exception as e:
             data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = str(e)
 
@@ -190,9 +158,6 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
     data['dataRegion'] = list(data['dataRegion'])
     data['item'] = list(data['item'])
     data['qualifierRegion'] = list(data['qualifierRegion'])
-
-    for cell_index in holes:
-        region.add_hole(cell_index[0], cell_index[1], cell_index[1])
     return data
 
 
@@ -211,7 +176,6 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
     """
     update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
     region = region_specification['region_object']
-    remove_empty_and_invalid_cells(region)
     bindings["$col"] = column
     bindings["$row"] = row
     data = {}
@@ -241,7 +205,6 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
     update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
 
     region = region_specification['region_object']
-    remove_empty_and_invalid_cells(region)
     response = dict()
 
     data = []
@@ -299,7 +262,7 @@ def load_yaml_data(yaml_filepath: str, item_table: ItemTable, data_file_path: st
     yaml_parser = YAMLParser(yaml_filepath)
     update_bindings(item_table, None, data_file_path, sheet_name)
     region = yaml_parser.get_region(bindings)
-    region['region_object'] = Region(region["left"], region["right"], region["top"], region["bottom"])
+    region['region_object'] = Region(region, item_table, data_file_path, sheet_name)
     template = yaml_parser.get_template()
     created_by = yaml_parser.get_created_by()
     return region, template, created_by
@@ -489,7 +452,7 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None) -> d
         for row in range(cell_range[0][1], cell_range[1][1] + 1):
             try:
                 cell_index = get_actual_cell_index((col, row))
-                if not check_if_empty(sheet[row, col]):
+                if not check_if_string_is_invalid(sheet[row, col]):
                     if cell_index in cell_qnode_map:
                         response[cell_index] = cell_qnode_map[cell_index]
                     else:
