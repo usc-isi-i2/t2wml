@@ -3,7 +3,7 @@ import csv
 import pyexcel
 from copy import deepcopy
 from collections import OrderedDict
-from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key, split_cell
+from Code.utility_functions import get_actual_cell_index, check_if_string_is_invalid, natural_sort_key, split_cell
 
 
 class ItemTable:
@@ -60,7 +60,7 @@ class ItemTable:
 				if header:
 					header = False
 					continue
-				if not check_if_empty(row[0]) and not check_if_empty(row[1]):
+				if not check_if_string_is_invalid(row[0]) and not check_if_string_is_invalid(row[1]):
 					cell_to_qnode[(int(row[0]), int(row[1]))] = row[3]
 				if row[2] is not None:
 					value_to_qnode[str(row[2]).strip()] = row[3]
@@ -69,7 +69,7 @@ class ItemTable:
 		for cell, qnode in cell_to_qnode.items():
 			try:
 				cell_value = str(sheet[cell[1], cell[0]]).strip()
-				if not check_if_empty(cell_value) and cell_value not in value_to_qnode:
+				if not check_if_string_is_invalid(cell_value) and cell_value not in value_to_qnode:
 					value_to_qnode[cell_value] = qnode
 			except IndexError:
 				pass
