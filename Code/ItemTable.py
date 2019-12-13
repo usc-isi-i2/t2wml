@@ -127,7 +127,6 @@ class ItemTable:
 			no_col_row = data_frame[data_frame.row.isnull() & data_frame.column.isnull()]
 		else:
 			no_col_row = data_frame
-		print(no_col_row)
 		# generate item_value_map
 		# item_value_map = {value: {context: item}}
 		item_value_map = dict()
