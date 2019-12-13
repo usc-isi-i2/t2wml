@@ -42,8 +42,11 @@ Optional Arguments:
 
 Default Values:
 ``` 
-    sparql_endpoint = "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
+    sparql_endpoint = "https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
 ```
+
+> Edit in [/app_config.py](https://github.com/usc-isi-i2/t2wml/blob/master/app_config.py)
+
 Output:
 
 The function will create a directory structure in the output directory which will have the results.ttl and changes.tsv files.
@@ -104,9 +107,9 @@ output_directory/
     ```
 
 * **Login failed or encountered an authentication error like `400 (OAuth2 Error)`?**
-    
+  
     Access T2WML at `http://localhost:5000/` instead of `http://127.0.0.1:5000`.
     
 * **Encountered any other error not mentioned in the FAQs?**
-    
+  
     Post the issue in the T2WML repository along with a detailed description.

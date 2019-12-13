@@ -16,7 +16,8 @@ statementMapping:
         value: value(C/$row)
         calendar: Q1985727
         precision: year
-        time_zone: 0 
+        time_zone: 0
+        format: "%Y"
       - property: P6001 # applies to people
         value: value(A/$row-n) != "" and value(B:D/$row-n) = "" -> item(A/$row-n)
         # value: item(A/$row-n).instance_of Q48277 -> item(A/$row-n)

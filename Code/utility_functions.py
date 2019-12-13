@@ -15,6 +15,7 @@ from oslo_concurrency import lockutils
 # from Code.Project import Project
 # from Code.YAMLFile import YAMLFile
 from Code.property_type_map import property_type_map
+from app_config import GOOGLE_CLIENT_ID, DEFAULT_SPARQL_ENDPOINT
 
 
 def get_column_letter(n: int) -> str:
@@ -64,6 +65,7 @@ def get_excel_cell_index(cell: str):
 	row = re.search('[0-9]+', cell).group(0)
 	return get_excel_column_index(column), get_excel_row_index(row)
 
+
 def get_actual_cell_index(cell_index: tuple) -> str:
 	"""
 	This function converts the cell notation used by pyexcel package to the cell notation used by excel
@@ -90,15 +92,32 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 			wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
 			wikibase:propertyType ?type .  
 		}"""
-		sparql = SPARQLWrapper(sparql_endpoint)
-		sparql.setQuery(query)
-		sparql.setReturnFormat(JSON)
-		results = sparql.query().convert()
-		try:
-			type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
-		except IndexError:
-			type = "Property Not Found"
+	sparql = SPARQLWrapper(sparql_endpoint)
+	sparql.setQuery(query)
+	sparql.setReturnFormat(JSON)
+	results = sparql.query().convert()
+	try:
+		type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+	except IndexError:
+		type = "Property Not Found"
+
+
 	return type
+
+
+def add_row_in_data_file(file_path: str, sheet_name: str):
+	"""
+	This function adds a new blank row at the end of the excel file
+	:param file_path:
+	:param sheet_name:
+	:return:
+	"""
+	book = pyexcel.get_book(file_name=file_path)
+	num_of_cols = len(book[sheet_name][0])
+	blank_row = [" "] * num_of_cols
+	if book[sheet_name].row[-1] != blank_row:
+		book[sheet_name].row += blank_row
+	book.save_as(file_path)
 
 
 def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool = False) -> dict:
@@ -169,13 +188,13 @@ def check_special_characters(text: str) -> bool:
 	return all(char in string.punctuation for char in str(text))
 
 
-def check_if_empty(text: str) -> bool:
+def check_if_string_is_invalid(text: str) -> bool:
 	"""
 	This function checks if the text is empty or has only special characters
 	:param text:
 	:return:
 	"""
-	if text is None or str(text).strip() == "" or check_special_characters(text):
+	if text is None or str(text).strip() == "" or check_special_characters(text) or str(text).strip().lower() == '#n/a':
 		return True
 	return False
 
@@ -411,7 +430,8 @@ def update_wikifier_region_file(uid: str, pid: str, region_filename: str, item_t
 		"""
 		with open(file_path, 'w') as wikifier_region_config:
 			wikifier_region_config.write(item_table_as_json)
-			# json.dump(region_qnodes, wikifier_region_config, indent=3)
+
+	# json.dump(region_qnodes, wikifier_region_config, indent=3)
 
 	update_wikifier_region_config()
 

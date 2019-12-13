@@ -778,6 +778,7 @@ class TableViewer extends React.Component {
     });
   }
 
+
   updateQnodeCells(qnodeData = null, rowData = null) {
     if (qnodeData === null) {
       // reset qnode cells
@@ -794,6 +795,7 @@ class TableViewer extends React.Component {
 
     } else {
       // update qnode cells
+
       // const qnodes = Object.keys(Object.fromEntries(Object.entries(qnodeData).filter(([k, v]) => v !== "")));
       const qnodes = Object.keys(qnodeData);
       const cells = { qnode: qnodes };
@@ -803,6 +805,7 @@ class TableViewer extends React.Component {
       this.updateStyleByDict(cells, presets);
 
       // update wikifier data
+
       window.Wikifier.updateWikifier(qnodeData, rowData);
     }
   }
@@ -970,6 +973,7 @@ class TableViewer extends React.Component {
 
     // get qnode according to cell index, e.g. "Q967"
     const { selectedCell } = this.state;
+
     if (selectedCell === null || selectedCell.col === null || selectedCell.row === null) return;
     const selectedCellIndex = String(selectedCell.col) + String(selectedCell.row);
 
@@ -1298,6 +1302,7 @@ class Wikifier extends React.Component {
       showSpinner: false,
 
       // wikifier data (from backend)
+
       qnodeData: {},  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in Africa" }]
 
@@ -1452,6 +1457,7 @@ class Wikifier extends React.Component {
     }
 
     // before sending request
+
     this.setState({
       showSpinner: true,
       showCallWikifier: false
@@ -1487,6 +1493,7 @@ class Wikifier extends React.Component {
       }
 
       // else, success
+
       const { qnodes, rowData } = json;
       window.TableViewer.updateQnodeCells(qnodes, rowData);
 
@@ -1501,6 +1508,7 @@ class Wikifier extends React.Component {
       this.setState({ showSpinner: false });
     });
   }
+
 
   // handleSelectRegion(region) {
   //   if (region === this.state.currRegion) return;
@@ -1879,6 +1887,7 @@ class Wikifier extends React.Component {
         }}
         columnDefs={[
           {
+
             headerName: "",
             children: [
               { headerName: "context", field: "context", width: 60 }
@@ -1896,6 +1905,7 @@ class Wikifier extends React.Component {
             headerName: "Wikidata",
             children: [
               {
+
                 headerName: "item", field: "item", width: 60,
                 cellStyle: { color: "hsl(200, 100%, 30%)" },
                 // **** QNODE EDITOR ************************************************
@@ -1941,6 +1951,7 @@ class Wikifier extends React.Component {
         className="w-100 shadow-sm"
         style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
       >
+
         {this.renderCallWikifier()}
 
         {/* header */}
@@ -1952,6 +1963,7 @@ class Wikifier extends React.Component {
           {/* title */}
           <div
             className="text-white font-weight-bold d-inline-block text-truncate"
+
             // style={{ width: "calc(100% - 75px)", cursor: "default" }}
             style={{ width: "calc(100% - 150px)", cursor: "default" }}
           >
@@ -1970,6 +1982,7 @@ class Wikifier extends React.Component {
               Upload
             </Button>
           </OverlayTrigger>
+
 
           <Button
             className="d-inline-block float-right"
@@ -1996,6 +2009,7 @@ class Wikifier extends React.Component {
           <div className="mySpinner" hidden={!this.state.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
             <Spinner animation="border" />
           </div>
+
 
           {/* wikifier output */}
           <div
@@ -2030,6 +2044,7 @@ class Wikifier extends React.Component {
     );
   }
 }
+
 
 class QnodeEditor extends React.Component {
   constructor(props) {

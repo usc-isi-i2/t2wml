@@ -8,6 +8,7 @@ class YAMLFile:
 		self.__file_location = None
 		self.__region = {'left': None, 'right': None, 'top': None, 'bottom': None, 'region_object': None}
 		self.__template = None
+		self.__created_by = 't2wml'
 
 	def get_file_location(self) -> str:
 		"""
@@ -36,6 +37,9 @@ class YAMLFile:
 		:return:
 		"""
 		return copy.deepcopy(self.__template)
+
+	def get_created_by(self) -> str:
+		return self.__created_by
 
 	def set_file_location(self, file_location: str) -> None:
 		"""
@@ -67,6 +71,9 @@ class YAMLFile:
 		:return:
 		"""
 		self.__template = template
+
+	def set_created_by(self, created_by:str) -> None:
+		self.__created_by = created_by
 
 	def read_file(self):
 		file_data = uf.read_file(self.__file_location)

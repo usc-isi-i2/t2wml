@@ -1,6 +1,7 @@
 from typing import Union
 import pyexcel
-from Code.utility_functions import get_actual_cell_index, check_if_empty, natural_sort_key, split_cell, \
+
+from Code.utility_functions import get_actual_cell_index, check_if_string_is_invalid, natural_sort_key, split_cell, \
 	get_column_letter, query_wikidata_for_label_and_description, get_excel_cell_index
 from collections import defaultdict
 import json

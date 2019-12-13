@@ -1,5 +1,5 @@
 Run these commands in terminal
 Commands to upload user defined properties or t2wml output files on wikdata:
 
-python -m etk wd_upload -e http://dsbox02.isi.edu:8888/admin/bigdata/namespace/wdq/sparql --user <username> --passwd <password> -f <ttl file name>.ttl
-python -m etk wd_update_truthy -e http://dsbox02.isi.edu:8888/admin/bigdata/namespace/wdq/sparql --user <username> --passwd <password> -f <changes file name>.tsv
+python -m etk wd_upload -e https://dsbox02.isi.edu:8888/admin/bigdata/namespace/wdq/sparql --user <username> --passwd <password> -f <ttl file name>.ttl
+python -m etk wd_update_truthy -e https://dsbox02.isi.edu:8888/admin/bigdata/namespace/wdq/sparql --user <username> --passwd <password> -f <changes file name>.tsv
