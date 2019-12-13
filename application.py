@@ -319,7 +319,7 @@ def change_sheet():
 		item_table = ItemTable(region_map)
 		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
 		if Path(wikifier_output_filepath).exists():
-			build_item_table(item_table, wikifier_output_filepath, data_file_path, new_sheet_name)
+			# build_item_table(item_table, wikifier_output_filepath, data_file_path, new_sheet_name)
 
 			process_wikified_output_file(wikifier_output_filepath, item_table, data_file_path, new_sheet_name)
 		# region_qnodes = item_table.get_region_qnodes()
