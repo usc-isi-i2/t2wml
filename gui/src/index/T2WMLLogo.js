@@ -12,7 +12,7 @@ class T2WMLLogo extends React.Component {
     // init state
     this.state = {
       logo: "T2WML GUI",
-      version: "v1.4 (beta)",
+      version: "v1.5 (beta)",
       homeUrl: server + "/",
     }
   }

@@ -16,9 +16,9 @@ start: value_expression
                 | "value" "(" boolean_equation ")"
                 
 
-!item_expression:  "item" "(" cell_expression ")"
-                | "item" "(" boolean_equation ")"
-                
+!item_expression:  "item" "(" cell_expression ["," "\"" context "\""] ")"
+                | "item" "(" boolean_equation ["," "\"" context "\""] ")"
+
 
 !boolean_equation: boolean_expression "->" expression
 
@@ -42,6 +42,7 @@ row_expression: row_variable (cell_operator cell_operator_argument)*
 
 !cell_operator: "+" | "-"
 cell_operator_argument: WHOLE_NUMBER | VARIABLE
+context: VARIABLE |
 
 !column_variable: VARIABLE | "$col" | "$left" | "$right"
 !row_variable: WHOLE_NUMBER | "$row" | "$top" | "$bottom"

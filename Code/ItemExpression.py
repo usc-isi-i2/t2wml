@@ -6,6 +6,7 @@ class ItemExpression:
 		self.cell_expression = None
 		self.boolean_equation = None
 		self.variables = None
+		self.context = None
 
 	def get_variable_cell_operator_arguments(self) -> set:
 		if self.cell_expression:
@@ -30,19 +31,19 @@ class ItemExpression:
 				if isinstance(ce, tuple) and isinstance(re, int):
 					response = list()
 					for i in ce:
-						response.append(bindings["item_table"].get_item(i, re))
+						response.append(bindings["item_table"].get_item(i, re, self.context))
 				elif isinstance(re, tuple) and isinstance(ce, int):
 					response = list()
 					for i in re:
-						response.append(bindings["item_table"].get_item(ce, i))
+						response.append(bindings["item_table"].get_item(ce, i, self.context))
 				elif isinstance(ce, int) and isinstance(re, int):
-					response = bindings["item_table"].get_item(ce, re)
+					response = bindings["item_table"].get_item(ce, re, self.context)
 			else:
 				cell_expression = self.boolean_equation.evaluate(bindings)
 				if cell_expression:
 					ce = cell_expression[0]
 					re = cell_expression[1]
-					response = bindings["item_table"].get_item(ce, re)
+					response = bindings["item_table"].get_item(ce, re, self.context)
 				else:
 					raise ValueError("Invalid Row and Column values")
 			return response
@@ -79,19 +80,19 @@ class ItemExpression:
 				if isinstance(ce, tuple) and isinstance(re, int):
 					response = list()
 					for i in ce:
-						response.append(bindings["item_table"].get_item(i, re))
+						response.append(bindings["item_table"].get_item(i, re, self.context))
 				elif isinstance(re, tuple) and isinstance(ce, int):
 					response = list()
 					for i in re:
-						response.append(bindings["item_table"].get_item(ce, i))
+						response.append(bindings["item_table"].get_item(ce, i, self.context))
 				elif isinstance(ce, int) and isinstance(re, int):
-					response = bindings["item_table"].get_item(ce, re)
+					response = bindings["item_table"].get_item(ce, re, self.context)
 			else:
 				cell_expression = self.boolean_equation.evaluate(bindings)
 				if cell_expression:
 					ce = cell_expression[0]
 					re = cell_expression[1]
-					response = bindings["item_table"].get_item(ce, re)
+					response = bindings["item_table"].get_item(ce, re, self.context)
 				else:
 					raise ValueError("Invalid Row and Column values")
 		return ce, re, response

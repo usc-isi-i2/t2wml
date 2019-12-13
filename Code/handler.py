@@ -19,7 +19,7 @@ from Code.BooleanEquation import BooleanEquation
 from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
 from etk.wikidata.utils import parse_datetime_string
-
+import pandas as pd
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
@@ -237,20 +237,25 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
             return response
 
 
-def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str) -> dict:
-    """
-    This function processes the calls to the wikifier service and adds the output to the ItemTable object
-    :param item_table:
-    :param region:
-    :param excel_filepath:
-    :param sheet_name:
-    :return:
-    """
-    if not item_table:
-        item_table = ItemTable()
-    cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
-    item_table.add_region(region, cell_qnode_map)
-    return item_table.get_region_qnodes()
+
+def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str, flag, context, sparql_endpoint) -> dict:
+	"""
+	This function processes the calls to the wikifier service and adds the output to the ItemTable object
+	:param item_table:
+	:param region:
+	:param excel_filepath:
+	:param sheet_name:
+	:return:
+	"""
+	if not item_table:
+		item_table = ItemTable()
+	cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
+	if not context:
+		context = '__NO_CONTEXT__'
+	cell_qnode_map['context'] = context
+	item_table.update_table(cell_qnode_map, excel_filepath, sheet_name, flag)
+	# item_table.add_region(region, cell_qnode_map)
+	return item_table.serialize_table(sparql_endpoint)
 
 
 def load_yaml_data(yaml_filepath: str, item_table: ItemTable, data_file_path: str, sheet_name: str) -> Sequence[dict]:
@@ -407,58 +412,71 @@ def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: 
     return file_path
 
 
-def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int) -> dict:
-    """
-    This function calls the wikifier service and creates a cell to qnode dictionary based on the response
-    cell to qnode dictionary = { 'A4': 'Q383', 'B5': 'Q6892' }
-    :param csv_filepath:
-    :param col_offset:
-    :param row_offset:
-    :return:
-    """
-    cell_qnode_map = dict()
-    files = {
-        'file': ('', open(csv_filepath, 'r')),
-        'format': (None, 'ISWC'),
-        'type': (None, 'text/csv'),
-        'header': (None, 'False')
-    }
+def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int):
+	"""
+	This function calls the wikifier service and creates a cell to qnode dictionary based on the response
+	cell to qnode dictionary = { 'A4': 'Q383', 'B5': 'Q6892' }
+	:param csv_filepath:
+	:param col_offset:
+	:param row_offset:
+	:return:
+	"""
+	cell_qnode_map = dict()
+	files = {
+		'file': ('', open(csv_filepath, 'r')),
+		'format': (None, 'ISWC'),
+		'type': (None, 'text/csv'),
+		'header': (None, 'False')
+	}
+	response = requests.post('http://sitaware.isi.edu:7805/wikify', files=files)
+	output = None
+	if response.status_code == 200:
+		data = response.content.decode("utf-8")
+		data = json.loads(data)['data']
+		data = [x.split(",") for x in data]
+		output = pd.DataFrame(data, columns=["column", "row", "item"])
+		for index in range(output.shape[0]):
+			output.at[index, 'column'] = int(output.at[index, 'column']) + col_offset
+			output.at[index, 'row'] = int(output.at[index, 'row']) + row_offset
+	return output
 
-    response = requests.post('http://sitaware.isi.edu:7805/wikify', files=files)
-    if response.status_code == 200:
-        data = response.content.decode("utf-8")
-        data = json.loads(data)['data']
-        for line in data:
-            i = line.split(',')
-            cell_qnode_map[get_actual_cell_index((int(i[0]) + col_offset, int(i[1]) + row_offset))] = i[2]
-    return cell_qnode_map
+
+def wikify_region(region: str, excel_filepath: str, sheet_name: str = None):
+	"""
+	This function parses the cell range, creates the temporary csv file and calls the wikifier service on that csv
+	to get the cell qnode map. cell qnode map is then processed to omit non empty cells and is then returned.
+	:param region:
+	:param excel_filepath:
+	:param sheet_name:
+	:return:
+	"""
+	cell_range = parse_cell_range(region)
+	file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
+	cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
+	return cell_qnode_map
+	# response = dict()
+	# sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
+	# for col in range(cell_range[0][0], cell_range[1][0]+1):
+	# 	for row in range(cell_range[0][1], cell_range[1][1] + 1):
+	# 		try:
+	# 			cell_index = get_actual_cell_index((col, row))
+	# 			if not check_if_empty(sheet[row, col]):
+	# 				if cell_index in cell_qnode_map:
+	# 					response[cell_index] = cell_qnode_map[cell_index]
+	# 				else:
+	# 					response[cell_index] = ""
+	# 		except IndexError:
+	# 			pass
+	# 		except KeyError:
+	# 			pass
+	# return response
 
 
-def wikify_region(region: str, excel_filepath: str, sheet_name: str = None) -> dict:
-    """
-    This function parses the cell range, creates the temporary csv file and calls the wikifier service on that csv
-    to get the cell qnode map. cell qnode map is then processed to omit non empty cells and is then returned.
-    :param region:
-    :param excel_filepath:
-    :param sheet_name:
-    :return:
-    """
-    cell_range = parse_cell_range(region)
-    file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
-    cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
-    response = dict()
-    sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath)
-    for col in range(cell_range[0][0], cell_range[1][0] + 1):
-        for row in range(cell_range[0][1], cell_range[1][1] + 1):
-            try:
-                cell_index = get_actual_cell_index((col, row))
-                if not check_if_string_is_invalid(sheet[row, col]):
-                    if cell_index in cell_qnode_map:
-                        response[cell_index] = cell_qnode_map[cell_index]
-                    else:
-                        response[cell_index] = ""
-            except IndexError:
-                pass
-            except KeyError:
-                pass
-    return response
+def csv_to_dataframe(file_path):
+	df = pd.read_csv(file_path)
+	return df
+
+
+def process_wikified_output_file(file_path: str, item_table: ItemTable, data_filepath, sheet_name, context=None):
+	df = csv_to_dataframe(file_path)
+	item_table.update_table(df, data_filepath, sheet_name)

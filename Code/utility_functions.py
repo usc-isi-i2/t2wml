@@ -34,55 +34,60 @@ def get_column_letter(n: int) -> str:
 
 
 def get_excel_column_index(column: str) -> int:
-    """
-    This function converts an excel column to its respective column index as used by pyexcel package.
-    viz. 'A' to 0
-    'AZ' to 51
-    :param column:
-    :return: column index of type int
-    """
-    index = 0
-    column = column.upper()
-    column = column[::-1]
-    for i in range(len(column)):
-        index += ((ord(column[i]) % 65 + 1) * (26 ** i))
-    return index - 1
+	"""
+	This function converts an excel column to its respective column index as used by pyexcel package.
+	viz. 'A' to 0
+	'AZ' to 51
+	:param column:
+	:return: column index of type int
+	"""
+	index = 0
+	column = column.upper()
+	column = column[::-1]
+	for i in range(len(column)):
+		index += ((ord(column[i]) % 65 + 1) * (26 ** i))
+	return index - 1
 
 
 def get_excel_row_index(row: Union[str, int]) -> int:
-    """
-    This function converts an excel row to its respective row index as used by pyexcel package.
-    viz. '5' to 1
-    10 to 9
-    :param row:
-    :return: row index of type int
-    """
-    return int(row) - 1
+	"""
+	This function converts an excel row to its respective row index as used by pyexcel package.
+	viz. '5' to 1
+	10 to 9
+	:param row:
+	:return: row index of type int
+	"""
+	return int(row) - 1
 
+
+def get_excel_cell_index(cell: str):
+	column = re.search('[a-zA-Z]+', cell).group(0)
+	row = re.search('[0-9]+', cell).group(0)
+	return get_excel_column_index(column), get_excel_row_index(row)
 
 def get_actual_cell_index(cell_index: tuple) -> str:
-    """
-    This function converts the cell notation used by pyexcel package to the cell notation used by excel
-    Eg: (0,5) to A6
-    :param cell_index: (col, row)
-    :return:
-    """
-    col = get_column_letter(int(cell_index[0]) + 1)
-    row = str(int(cell_index[1]) + 1)
-    return col + row
+	"""
+	This function converts the cell notation used by pyexcel package to the cell notation used by excel
+	Eg: (0,5) to A6
+	:param cell_index: (col, row)
+	:return:
+	"""
+	col = get_column_letter(int(cell_index[0]) + 1)
+	row = str(int(cell_index[1]) + 1)
+	return col + row
 
 
 def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
-    """
-    This functions queries the wikidata to find out the type of a wikidata property
-    :param wikidata_property:
-    :param sparql_endpoint:
-    :return:
-    """
-    try:
-        type = property_type_map[wikidata_property]
-    except KeyError:
-        query = """SELECT ?type WHERE {
+	"""
+	This functions queries the wikidata to find out the type of a wikidata property
+	:param wikidata_property:
+	:param sparql_endpoint:
+	:return:
+	"""
+	try:
+		type = property_type_map[wikidata_property]
+	except KeyError:
+		query = """SELECT ?type WHERE {
 			wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
 			wikibase:propertyType ?type .  
 		}"""
@@ -113,40 +118,41 @@ def add_row_in_data_file(file_path: str, sheet_name: str):
 
 
 def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool = False) -> dict:
-    """
-    This function reads the excel file and converts it to JSON
-    :param file_path:
-    :param sheet_name:
-    :param want_sheet_names:
-    :return:
-    """
-    sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
-    column_index_map = {}
-    result = dict()
-    if not sheet_name or want_sheet_names:
-        result['sheetNames'] = list()
-        book_dict = pyexcel.get_book_dict(file_name=file_path)
-        for sheet in book_dict.keys():
-            result['sheetNames'].append(sheet)
-        if not sheet_name:
-            sheet_name = result['sheetNames'][0]
-    else:
-        result["sheetNames"] = None
-    result["currSheetName"] = sheet_name
-    add_row_in_data_file(file_path, sheet_name)
-    sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
-    for i in range(len(sheet[0])):
-        column = get_column_letter(i + 1)
-        column_index_map[i + 1] = column
-        sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
-    for row in range(len(sheet)):
-        r = {'^': str(row + 1)}
-        for col in range(len(sheet[row])):
-            r[column_index_map[col + 1]] = str(sheet[row][col]).strip()
-        sheet_data['rowData'].append(r)
 
-    result['sheetData'] = sheet_data
-    return result
+	"""
+	This function reads the excel file and converts it to JSON
+	:param file_path:
+	:param sheet_name:
+	:param want_sheet_names:
+	:return:
+	"""
+	sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
+	column_index_map = {}
+	result = dict()
+	if not sheet_name or want_sheet_names:
+		result['sheetNames'] = list()
+		book_dict = pyexcel.get_book_dict(file_name=file_path)
+		for sheet in book_dict.keys():
+			result['sheetNames'].append(sheet)
+		if not sheet_name:
+			sheet_name = result['sheetNames'][0]
+		sheet = book_dict[sheet_name]
+	else:
+		result["sheetNames"] = None
+		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
+	result["currSheetName"] = sheet_name
+	for i in range(len(sheet[0])):
+		column = get_column_letter(i + 1)
+		column_index_map[i + 1] = column
+		sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
+	for row in range(len(sheet)):
+		r = {'^': str(row + 1)}
+		for col in range(len(sheet[row])):
+			r[column_index_map[col + 1]] = str(sheet[row][col]).strip()
+		sheet_data['rowData'].append(r)
+
+	result['sheetData'] = sheet_data
+	return result
 
 
 def read_file(file_path: str) -> str:
@@ -299,16 +305,16 @@ def add_login_source_in_user_id(user_id: str, login_source: str) -> str:
 
 
 def verify_google_login(tn: str) -> Tuple[dict, int]:
-    """
-    This function verifies the oauth token by sending a request to Google's server.
-    :param tn:
-    :return:
-    """
-    error = None
-    try:
-        client_id = GOOGLE_CLIENT_ID
-        request = requests.Request()
-        user_info = id_token.verify_oauth2_token(tn, request, client_id)
+	"""
+	This function verifies the oauth token by sending a request to Google's server.
+	:param tn:
+	:return:
+	"""
+	error = None
+	try:
+		client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
+		request = requests.Request()
+		user_info = id_token.verify_oauth2_token(tn, request, client_id)
 
         if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             error = 'Wrong issuer'
@@ -322,43 +328,43 @@ def verify_google_login(tn: str) -> Tuple[dict, int]:
 
 
 def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: str = None) -> None:
-    """
-    This function creates the project directory along with the project_config.json
-    current_working_directory
-                            |__config/
-                                    |__uploads/
-                                             |__<user_id>/
-                                                        |__<project_id>/
-                                                                       |__df/
-                                                                       |__wf/
-                                                                       |__yf/
-                                                                       |__project_config.json
-    :param upload_directory:
-    :param uid:
-    :param pid:
-    :param ptitle:
-    :return:
-    """
-    if uid and pid:
-        Path(Path(upload_directory) / uid / pid / "df").mkdir(parents=True, exist_ok=True)
-        Path(Path(upload_directory) / uid / pid / "wf").mkdir(parents=True, exist_ok=True)
-        Path(Path(upload_directory) / uid / pid / "yf").mkdir(parents=True, exist_ok=True)
-        with open(Path(upload_directory) / uid / pid / "project_config.json", "w") as file:
-            project_config = {
-                "pid": pid,
-                "ptitle": ptitle,
-                "cdate": int(time() * 1000),
-                "mdate": int(time() * 1000),
-                "sparqlEndpoint": DEFAULT_SPARQL_ENDPOINT,
-                "currentDataFile": None,
-                "currentSheetName": None,
-                "dataFileMapping": dict(),
-                "yamlMapping": dict(),
-                "wikifierRegionMapping": dict()
-            }
-            json.dump(project_config, file, indent=3)
-    elif uid:
-        Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)
+	"""
+	This function creates the project directory along with the project_config.json
+	current_working_directory
+						    |__config/
+							    	|__uploads/
+										     |__<user_id>/
+													    |__<project_id>/
+																	   |__df/
+																	   |__wf/
+																	   |__yf/
+																	   |__project_config.json
+	:param upload_directory:
+	:param uid:
+	:param pid:
+	:param ptitle:
+	:return:
+	"""
+	if uid and pid:
+		Path(Path(upload_directory) / uid / pid / "df").mkdir(parents=True, exist_ok=True)
+		Path(Path(upload_directory) / uid / pid / "wf").mkdir(parents=True, exist_ok=True)
+		Path(Path(upload_directory) / uid / pid / "yf").mkdir(parents=True, exist_ok=True)
+		with open(Path(upload_directory) / uid / pid / "project_config.json", "w") as file:
+			project_config = {
+				"pid": pid,
+				"ptitle": ptitle,
+				"cdate": int(time() * 1000),
+				"mdate": int(time() * 1000),
+				"sparqlEndpoint": "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql",
+				"currentDataFile": None,
+				"currentSheetName": None,
+				"dataFileMapping": dict(),
+				"yamlMapping": dict(),
+				"wikifierRegionMapping": dict()
+			}
+			json.dump(project_config, file, indent=3)
+	elif uid:
+		Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)
 
 
 def get_project_details(user_dir: Path) -> List[Dict[str, Any]]:
@@ -381,49 +387,50 @@ def get_project_details(user_dir: Path) -> List[Dict[str, Any]]:
     return projects
 
 
-def get_region_mapping(uid: str, pid: str, project, data_file_name=None, sheet_name=None) -> Tuple[dict, int]:
-    """
-    This function reads (and creates if it doesn't exist) and deserialize the respective wikifier config file
-    :param uid:
-    :param pid:
-    :param project: Project
-    :param data_file_name:
-    :param sheet_name:
-    :return:
-    """
-    file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
-    region_file_path = Path.cwd() / "config" / "uploads" / uid / pid / "wf" / file_name
-    region_file_path.touch(exist_ok=True)
-    with open(region_file_path) as json_data:
-        try:
-            region_map = json.load(json_data)
-        except json.decoder.JSONDecodeError:
-            region_map = None
-    return region_map, file_name
+def get_region_mapping(uid: str, pid: str, project, data_file_name=None, sheet_name=None) -> Tuple[dict, str]:
+	"""
+	This function reads (and creates if it doesn't exist) and deserialize the respective wikifier config file
+	:param uid:
+	:param pid:
+	:param project: Project
+	:param data_file_name:
+	:param sheet_name:
+	:return:
+	"""
+	file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
+	region_file_path = Path.cwd() / "config" / "uploads" / uid / pid / "wf" / file_name
+	region_file_path.touch(exist_ok=True)
+	with open(region_file_path) as json_data:
+		try:
+			region_map = json.load(json_data)
+		except json.decoder.JSONDecodeError:
+			region_map = None
+	return region_map, file_name
 
 
-def update_wikifier_region_file(uid: str, pid: str, region_filename: str, region_qnodes: dict) -> None:
-    """
-    This function updates the wikifier config file. It locks the file while updating to maintain concurrency.
-    :param uid:
-    :param pid:
-    :param region_filename:
-    :param region_qnodes:
-    :return:
-    """
-    file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
+def update_wikifier_region_file(uid: str, pid: str, region_filename: str, item_table_as_json: str) -> None:
+	"""
+	This function updates the wikifier config file. It locks the file while updating to maintain concurrency.
+	:param uid:
+	:param pid:
+	:param region_filename:
+	:param region_qnodes:
+	:return:
+	"""
+	file_path = str(Path.cwd() / "config" / "uploads" / uid / pid / "wf" / region_filename)
 
-    @lockutils.synchronized('update_wikifier_region_config', fair=True, external=True,
-                            lock_path=str(Path.cwd() / "config" / "uploads" / uid / pid / "wf"))
-    def update_wikifier_region_config() -> None:
-        """
-        This function writes the file
-        :return:
-        """
-        with open(file_path, 'w') as wikifier_region_config:
-            json.dump(region_qnodes, wikifier_region_config, indent=3)
+	@lockutils.synchronized('update_wikifier_region_config', fair=True, external=True,
+	                        lock_path=str(Path.cwd() / "config" / "uploads" / uid / pid / "wf"))
+	def update_wikifier_region_config() -> None:
+		"""
+		This function writes the file
+		:return:
+		"""
+		with open(file_path, 'w') as wikifier_region_config:
+			wikifier_region_config.write(item_table_as_json)
+			# json.dump(region_qnodes, wikifier_region_config, indent=3)
 
-    update_wikifier_region_config()
+	update_wikifier_region_config()
 
 
 def deserialize_wikifier_config(uid: str, pid: str, region_filename: str) -> dict:
@@ -473,11 +480,41 @@ def load_yaml_config(yaml_config_file_path: Union[str, Path]):
 
 
 def get_first_sheet_name(file_path: str):
-    """
-    This function returns the first sheet name of the excel file
-    :param file_path:
-    :return:
-    """
-    book_dict = pyexcel.get_book_dict(file_name=file_path)
-    for sheet in book_dict.keys():
-        return sheet
+	"""
+	This function returns the first sheet name of the excel file
+	:param file_path:
+	:return:
+	"""
+	book_dict = pyexcel.get_book_dict(file_name=file_path)
+	for sheet in book_dict.keys():
+		return sheet
+
+
+def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
+	query = """PREFIX wd: <http://www.wikidata.org/entity/>
+			PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+			PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+			SELECT ?qnode (MIN(?label) AS ?label) (MIN(?desc) AS ?desc) WHERE { 
+			  VALUES ?qnode {""" + items + """} 
+			  ?qnode rdfs:label ?label; <http://schema.org/description> ?desc.
+			  FILTER (langMatches(lang(?label),"EN"))
+			  FILTER (langMatches(lang(?desc),"EN"))
+			}
+			GROUP BY ?qnode"""
+	sparql = SPARQLWrapper(sparql_endpoint)
+	sparql.setQuery(query)
+	sparql.setReturnFormat(JSON)
+	try:
+		results = sparql.query().convert()
+	except:
+		return None
+	response = dict()
+	try:
+		for i in range(len(results["results"]["bindings"])):
+			qnode = results["results"]["bindings"][i]["qnode"]["value"].split("/")[-1]
+			label = results["results"]["bindings"][i]["label"]["value"]
+			desc = results["results"]["bindings"][i]["desc"]["value"]
+			response[qnode] = {'label': label, 'desc': desc}
+	except IndexError:
+		pass
+	return response

@@ -2,7 +2,7 @@ from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from Code.utility_functions import *
 from Code.handler import highlight_region, resolve_cell, generate_download_file, load_yaml_data, build_item_table, \
-    wikifier, add_excel_file_to_bindings
+	wikifier, add_excel_file_to_bindings, process_wikified_output_file
 from Code.ItemTable import ItemTable
 from Code.Project import Project
 from Code.YAMLFile import YAMLFile
@@ -196,192 +196,200 @@ def create_project():
 
 @app.route('/upload_data_file', methods=['POST'])
 def upload_data_file():
-    """
-    This function uploads the data file
-    :return:
-    """
-    if 'uid' in session:
-        response = {
-            "tableData": dict(),
-            "wikifierData": dict(),
-            "yamlData": dict(),
-            "error": None
-        }
-        project_meta = dict()
-        user_id = session['uid']
-        project_id = request.form['pid']
-        data = data_file_uploader(user_id, project_id)
-        if data["error"]:
-            response["error"] = data["error"]
-        else:
-            table_data = response["tableData"]
-            curr_data_file_id = data["currentDataFile"]
-            project_meta["currentDataFile"] = curr_data_file_id
-            curr_data_file_name = data["dataFileMapping"][curr_data_file_id]
-            project_meta["dataFileMapping"] = data["dataFileMapping"]
-            project_meta["mdate"] = int(time() * 1000)
-            table_data["filename"] = curr_data_file_name
-            table_data["isCSV"] = data["isCSV"]
-            if not table_data["isCSV"]:
-                table_data["sheetNames"] = data["sheetNames"]
-                table_data["currSheetName"] = data["currSheetName"]
-                project_meta["currentSheetName"] = data["currSheetName"]
-            else:
-                table_data["sheetNames"] = None
-                table_data["currSheetName"] = None
-                project_meta["currentSheetName"] = curr_data_file_id
-            table_data["sheetData"] = data["sheetData"]
+	"""
+	This function uploads the data file
+	:return:
+	"""
+	if 'uid' in session:
+		response = {
+					"tableData": dict(),
+					"wikifierData": dict(),
+					"yamlData": dict(),
+					"error": None
+				}
+		project_meta = dict()
+		user_id = session['uid']
+		project_id = request.form['pid']
+		data = data_file_uploader(user_id, project_id)
+		if data["error"]:
+			response["error"] = data["error"]
+		else:
+			table_data = response["tableData"]
+			curr_data_file_id = data["currentDataFile"]
+			project_meta["currentDataFile"] = curr_data_file_id
+			curr_data_file_name = data["dataFileMapping"][curr_data_file_id]
+			project_meta["dataFileMapping"] = data["dataFileMapping"]
+			project_meta["mdate"] = int(time() * 1000)
+			table_data["filename"] = curr_data_file_name
+			table_data["isCSV"] = data["isCSV"]
+			if not table_data["isCSV"]:
+				table_data["sheetNames"] = data["sheetNames"]
+				table_data["currSheetName"] = data["currSheetName"]
+				project_meta["currentSheetName"] = data["currSheetName"]
+			else:
+				table_data["sheetNames"] = None
+				table_data["currSheetName"] = None
+				project_meta["currentSheetName"] = curr_data_file_id
+			table_data["sheetData"] = data["sheetData"]
 
-        project_config_path = get_project_config_path(user_id, project_id)
-        project = Project(project_config_path)
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
 
-        data_file_name = curr_data_file_id
-        sheet_name = project_meta["currentSheetName"]
-        region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_name, sheet_name)
-        item_table = ItemTable(region_map)
-        wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
-        data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+		data_file_name = curr_data_file_id
+		sheet_name = project_meta["currentSheetName"]
+		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_name, sheet_name)
+		item_table = ItemTable(region_map)
+		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+		add_excel_file_to_bindings(data_file_path, sheet_name)
 
-        add_excel_file_to_bindings(data_file_path, sheet_name)
+		if Path(wikifier_output_filepath).exists():
+			# build_item_table(item_table, wikifier_output_filepath, data_file_path, sheet_name)
+			process_wikified_output_file(wikifier_output_filepath, item_table, data_file_path, sheet_name)
+		sparql_endpoint = project.get_sparql_endpoint()
+		serialized_table = item_table.serialize_table(sparql_endpoint)
+		response["wikifierData"] = serialized_table
+		project_meta["wikifierRegionMapping"] = dict()
+		project_meta["wikifierRegionMapping"][data_file_name] = dict()
+		project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
+		item_table_as_json = item_table.to_json()
+		update_wikifier_region_file(user_id, project_id, region_file_name, item_table_as_json)
 
-        if Path(wikifier_output_filepath).exists():
-            build_item_table(item_table, wikifier_output_filepath, data_file_path, sheet_name)
-        region_qnodes = item_table.get_region_qnodes()
-        response["wikifierData"] = region_qnodes
-        project_meta["wikifierRegionMapping"] = dict()
-        project_meta["wikifierRegionMapping"][data_file_name] = dict()
-        project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
-        update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
+		yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
+		if yaml_file_id:
+			response["yamlData"] = dict()
+			yaml_file_name = yaml_file_id + ".yaml"
+			yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
+			response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
+			if data_file_name:
+				yaml_config_file_name = yaml_file_id + ".pickle"
+				yaml_config_file_path = str(
+					Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_name)
 
-        yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
-        if yaml_file_id:
-            response["yamlData"] = dict()
-            yaml_file_name = yaml_file_id + ".yaml"
-            yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
-            response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
-            if data_file_name:
-                yaml_config_file_name = yaml_file_id + ".pickle"
-                yaml_config_file_path = str(
-                    Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
-                data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_name)
+				yaml_config = load_yaml_config(yaml_config_file_path)
+				template = yaml_config.get_template()
+				region = yaml_config.get_region()
+				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
+				project_meta["yamlMapping"] = dict()
+				project_meta["yamlMapping"][data_file_name] = dict()
+				project_meta["yamlMapping"][data_file_name][data["currSheetName"]] = yaml_file_id
+		else:
+			response["yamlData"] = None
 
-                yaml_config = load_yaml_config(yaml_config_file_path)
-                template = yaml_config.get_template()
-                region = yaml_config.get_region()
-                response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region,
-                                                                       template)
-                project_meta["yamlMapping"] = dict()
-                project_meta["yamlMapping"][data_file_name] = dict()
-                project_meta["yamlMapping"][data_file_name][data["currSheetName"]] = yaml_file_id
-        else:
-            response["yamlData"] = None
-
-        project.update_project_config(project_meta)
-        return json.dumps(response, indent=3)
-    else:
-        return redirect(url_for('index'))
+		project.update_project_config(project_meta)
+		return json.dumps(response, indent=3)
+	else:
+		return redirect(url_for('index'))
 
 
 @app.route('/change_sheet', methods=['POST'])
 def change_sheet():
-    """
-    This route is used when a user switches a sheet in an excel data file.
-    :return:
-    """
-    if 'uid' in session:
-        response = {
-            "tableData": dict(),
-            "wikifierData": dict(),
-            "yamlData": dict(),
-            "error": None
-        }
-        project_meta = dict()
-        user_id = session['uid']
-        new_sheet_name = request.form['sheet_name']
-        project_id = request.form['pid']
-        project_config_path = get_project_config_path(user_id, project_id)
-        project = Project(project_config_path)
-        data_file_id, current_sheet_name = project.get_current_file_and_sheet()
-        data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_id)
-        data = excel_to_json(data_file_path, new_sheet_name)
-        table_data = response["tableData"]
-        table_data["filename"] = project.get_file_name_by_id(data_file_id)
-        table_data["isCSV"] = False  # because CSVs don't have sheets
-        table_data["sheetNames"] = data["sheetNames"]
-        table_data["currSheetName"] = data["currSheetName"]
-        table_data["sheetData"] = data["sheetData"]
-        project_meta["currentSheetName"] = data["currSheetName"]
+	"""
+	This route is used when a user switches a sheet in an excel data file.
+	:return:
+	"""
+	if 'uid' in session:
+		response = {
+					"tableData": dict(),
+					"wikifierData": dict(),
+					"yamlData": dict(),
+					"error": None
+				}
+		project_meta = dict()
+		user_id = session['uid']
+		new_sheet_name = request.form['sheet_name']
+		project_id = request.form['pid']
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
+		data_file_id, current_sheet_name = project.get_current_file_and_sheet()
+		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_id)
+		data = excel_to_json(data_file_path, new_sheet_name)
+		table_data = response["tableData"]
+		table_data["filename"] = project.get_file_name_by_id(data_file_id)
+		table_data["isCSV"] = False # because CSVs don't have sheets
+		table_data["sheetNames"] = data["sheetNames"]
+		table_data["currSheetName"] = data["currSheetName"]
+		table_data["sheetData"] = data["sheetData"]
+		project_meta["currentSheetName"] = data["currSheetName"]
 
-        add_excel_file_to_bindings(data_file_path, new_sheet_name)
+		add_excel_file_to_bindings(data_file_path, new_sheet_name)
 
-        region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_id, new_sheet_name)
-        item_table = ItemTable(region_map)
-        wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
-        if Path(wikifier_output_filepath).exists():
-            build_item_table(item_table, wikifier_output_filepath, data_file_path, new_sheet_name)
-        region_qnodes = item_table.get_region_qnodes()
-        response["wikifierData"] = region_qnodes
-        project_meta["wikifierRegionMapping"] = dict()
-        project_meta["wikifierRegionMapping"][data_file_id] = dict()
-        project_meta["wikifierRegionMapping"][data_file_id][new_sheet_name] = region_file_name
-        update_wikifier_region_file(user_id, project_id, region_file_name, region_qnodes)
+		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_id, new_sheet_name)
+		item_table = ItemTable(region_map)
+		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+		if Path(wikifier_output_filepath).exists():
+			build_item_table(item_table, wikifier_output_filepath, data_file_path, new_sheet_name)
 
-        yaml_file_id = project.get_yaml_file_id(data_file_id, new_sheet_name)
-        if yaml_file_id:
-            response["yamlData"] = dict()
-            yaml_file_name = yaml_file_id + ".yaml"
-            yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
-            response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
-            if data_file_id:
-                yaml_config_file_name = yaml_file_id + ".pickle"
-                yaml_config_file_path = str(
-                    Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
-                data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
+			process_wikified_output_file(wikifier_output_filepath, item_table, data_file_path, new_sheet_name)
+		# region_qnodes = item_table.get_region_qnodes()
+		sparql_endpoint = project.get_sparql_endpoint()
+		serialized_table = item_table.serialize_table(sparql_endpoint)
+		response["wikifierData"] = serialized_table
+		project_meta["wikifierRegionMapping"] = dict()
+		project_meta["wikifierRegionMapping"][data_file_id] = dict()
+		project_meta["wikifierRegionMapping"][data_file_id][new_sheet_name] = region_file_name
+		item_table_as_json = item_table.to_json()
+		update_wikifier_region_file(user_id, project_id, region_file_name, item_table_as_json)
 
-                yaml_config = load_yaml_config(yaml_config_file_path)
-                template = yaml_config.get_template()
-                region = yaml_config.get_region()
-                response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, new_sheet_name,
-                                                                       region, template)
-                project_meta["yamlMapping"] = dict()
-                project_meta["yamlMapping"][data_file_id] = dict()
-                project_meta["yamlMapping"][data_file_id][data["currSheetName"]] = yaml_file_id
-        else:
-            response["yamlData"] = None
+		yaml_file_id = project.get_yaml_file_id(data_file_id, new_sheet_name)
+		if yaml_file_id:
+			response["yamlData"] = dict()
+			yaml_file_name = yaml_file_id + ".yaml"
+			yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
+			response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
+			if data_file_id:
+				yaml_config_file_name = yaml_file_id + ".pickle"
+				yaml_config_file_path = str(
+					Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
 
-        project.update_project_config(project_meta)
-        return json.dumps(response, indent=3)
+				yaml_config = load_yaml_config(yaml_config_file_path)
+				template = yaml_config.get_template()
+				region = yaml_config.get_region()
+				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, new_sheet_name, region, template)
+				project_meta["yamlMapping"] = dict()
+				project_meta["yamlMapping"][data_file_id] = dict()
+				project_meta["yamlMapping"][data_file_id][data["currSheetName"]] = yaml_file_id
+		else:
+			response["yamlData"] = None
+
+		project.update_project_config(project_meta)
+		return json.dumps(response, indent=3)
 
 
 @app.route('/upload_wikifier_output', methods=['POST'])
 def upload_wikifier_output():
-    """
-    This function uploads the wikifier output
-    :return:
-    """
-    if 'uid' in session:
-        response = dict()
-        user_id = session['uid']
-        project_id = request.form['pid']
-        project_meta = dict()
-        error = wikified_output_uploader(user_id, project_id)
-        project_config_path = get_project_config_path(user_id, project_id)
-        project = Project(project_config_path)
-        file_name, sheet_name = project.get_current_file_and_sheet()
-        if file_name:
-            region_map, region_file_name = get_region_mapping(user_id, project_id, project, file_name, sheet_name)
-            item_table = ItemTable(region_map)
-            wikifier_output_filepath = str(
-                Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
-            data_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
-            build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
-            response.update(item_table.get_region_qnodes())
-            update_wikifier_region_file(user_id, project_id, region_file_name, response)
-            project_meta["wikifierRegionMapping"] = dict()
-            project_meta["wikifierRegionMapping"][file_name] = dict()
-            project_meta["wikifierRegionMapping"][file_name][sheet_name] = region_file_name
-        response['error'] = error
-        return json.dumps(response, indent=3)
+	"""
+	This function uploads the wikifier output
+	:return:
+	"""
+	if 'uid' in session:
+		response = dict()
+		user_id = session['uid']
+		project_id = request.form['pid']
+		project_meta = dict()
+		error = wikified_output_uploader(user_id, project_id)
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
+		file_name, sheet_name = project.get_current_file_and_sheet()
+		sparql_endpoint = project.get_sparql_endpoint()
+		if file_name:
+			region_map, region_file_name = get_region_mapping(user_id, project_id, project, file_name, sheet_name)
+			item_table = ItemTable(region_map)
+			wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+			data_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
+			# build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
+			process_wikified_output_file(wikifier_output_filepath, item_table, data_filepath, sheet_name)
+
+			response.update(item_table.serialize_table(sparql_endpoint))
+			item_table_as_json = item_table.to_json()
+			update_wikifier_region_file(user_id, project_id, region_file_name, item_table_as_json)
+			project_meta["wikifierRegionMapping"] = dict()
+			project_meta["wikifierRegionMapping"][file_name] = dict()
+			project_meta["wikifierRegionMapping"][file_name][sheet_name] = region_file_name
+		response['error'] = error
+		return json.dumps(response, indent=3)
 
 
 @app.route('/upload_yaml', methods=['POST'])
@@ -515,120 +523,130 @@ def update_settings():
 
 @app.route('/call_wikifier_service', methods=['POST'])
 def wikify_region():
-    """
-    This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
-    and update the wikification result.
-    :return:
-    """
-    user_id = session["uid"]
-    project_id = request.form["pid"]
-    action = request.form["action"]
-    region = request.form["region"]
-    project_config_path = get_project_config_path(user_id, project_id)
-    project = Project(project_config_path)
-    data_file_name, sheet_name = project.get_current_file_and_sheet()
-    data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
-    region_map, region_file_name = get_region_mapping(user_id, project_id, project)
-    item_table = ItemTable(region_map)
-    data = dict()
-
-    if action == "add_region":
-        if not data_file_path:
-            data['error'] = "No excel file to wikify"
-        else:
-            data = wikifier(item_table, region, data_file_path, sheet_name)
-            wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
-            update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
-    elif action == "delete_region":
-        item_table.delete_region(region)
-        data = item_table.get_region_qnodes()
-        wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
-        update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
-    elif action == "update_qnode":
-        cell = request.form["cell"]
-        qnode = request.form["qnode"]
-        apply_to = int(request.form["apply_to"])
-        if apply_to == 0:
-            item_table.update_cell(region, cell, qnode)
-        elif apply_to == 1:
-            item_table.update_all_cells_within_region(region, cell, qnode, data_file_path, sheet_name)
-        elif apply_to == 2:
-            item_table.update_all_cells_in_all_region(cell, qnode, data_file_path, sheet_name)
-        data = item_table.get_region_qnodes()
-        wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
-        update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
-    if 'error' not in data:
-        data['error'] = None
-    project_meta = dict()
-    project_meta["wikifierRegionMapping"] = dict()
-    project_meta["wikifierRegionMapping"][data_file_name] = dict()
-    project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
-    project.update_project_config(project_meta)
-    return json.dumps(data, indent=3)
+	"""
+	This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
+	and update the wikification result.
+	:return:
+	"""
+	user_id = session["uid"]
+	project_id = request.form["pid"]
+	action = request.form["action"]
+	region = request.form["region"]
+	context = request.form["context"]
+	flag = int(request.form["flag"])
+	project_config_path = get_project_config_path(user_id, project_id)
+	project = Project(project_config_path)
+	data_file_name, sheet_name = project.get_current_file_and_sheet()
+	data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+	region_map, region_file_name = get_region_mapping(user_id, project_id, project)
+	item_table = ItemTable(region_map)
+	data = dict()
+	sparql_endpoint = project.get_sparql_endpoint()
+	if action == "wikify_region":
+		if not data_file_path:
+			data['error'] = "No excel file to wikify"
+		else:
+			wikifier(item_table, region, data_file_path, sheet_name, flag, context, sparql_endpoint)
+			item_table_as_json = item_table.to_json()
+			wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
+			update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, item_table_as_json)
+			data = item_table.serialize_table(sparql_endpoint)
+	# if action == "add_region":
+	# 	if not data_file_path:
+	# 		data['error'] = "No excel file to wikify"
+	# 	else:
+	# 		data = wikifier(item_table, region, data_file_path, sheet_name)
+	# 		wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
+	# 		update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
+	# elif action == "delete_region":
+	# 	item_table.delete_region(region)
+	# 	data = item_table.get_region_qnodes()
+	# 	wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
+	# 	update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
+	# elif action == "update_qnode":
+	# 	cell = request.form["cell"]
+	# 	qnode = request.form["qnode"]
+	# 	apply_to = int(request.form["apply_to"])
+	# 	if apply_to == 0:
+	# 		item_table.update_cell(region, cell, qnode)
+	# 	elif apply_to == 1:
+	# 		item_table.update_all_cells_within_region(region, cell, qnode, data_file_path, sheet_name)
+	# 	elif apply_to == 2:
+	# 		item_table.update_all_cells_in_all_region(cell, qnode, data_file_path, sheet_name)
+	# 	data = item_table.get_region_qnodes()
+	# 	wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
+	# 	update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, data)
+	if 'error' not in data:
+		data['error'] = None
+	project_meta = dict()
+	project_meta["wikifierRegionMapping"] = dict()
+	project_meta["wikifierRegionMapping"][data_file_name] = dict()
+	project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
+	project.update_project_config(project_meta)
+	return json.dumps(data, indent=3)
 
 
 @app.route('/get_project_files', methods=['POST'])
 def get_project_files():
-    """
-    This function fetches the last session of the last opened files in a project when that project is reopened later.
-    :return:
-    """
-    response = {
-        "tableData": None,
-        "yamlData": None,
-        "wikifierData": None,
-        "settings": {"endpoint": None}
-    }
-    if 'uid' in session:
-        user_id = session["uid"]
-        project_id = request.form['pid']
-        project_config_path = get_project_config_path(user_id, project_id)
-        project = Project(project_config_path)
-        data_file_id, sheet_name = project.get_current_file_and_sheet()
-        if data_file_id:
-            file_extension = get_file_extension(data_file_id)
-            response["tableData"] = dict()
-            response["tableData"]["isCSV"] = True if file_extension.lower() == "csv" else False
-            response["tableData"]["filename"] = project.get_file_name_by_id(data_file_id)
-            data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
-            response["tableData"].update(excel_to_json(data_file_path, sheet_name, True))
-            if response["tableData"]["isCSV"]:
-                response["tableData"]["currSheetName"] = None
-                response["tableData"]["sheetNames"] = None
-        else:
-            response["tableData"] = None
-        wikifier_config_file_name = project.get_wikifier_region_filename()
-        if wikifier_config_file_name:
-            wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
-            item_table = ItemTable(wikifier_config)
-            region_qnodes = item_table.get_region_qnodes()
-            response["wikifierData"] = region_qnodes
-        else:
-            response["wikifierData"] = None
-            item_table = ItemTable()
+	"""
+	This function fetches the last session of the last opened files in a project when that project is reopened later.
+	:return:
+	"""
+	response = {
+				"tableData": None,
+				"yamlData": None,
+				"wikifierData": None,
+				"settings": {"endpoint": None}
+			}
+	if 'uid' in session:
+		user_id = session["uid"]
+		project_id = request.form['pid']
+		project_config_path = get_project_config_path(user_id, project_id)
+		project = Project(project_config_path)
+		sparql_endpoint = project.get_sparql_endpoint()
+		data_file_id, sheet_name = project.get_current_file_and_sheet()
+		if data_file_id:
+			file_extension = get_file_extension(data_file_id)
+			response["tableData"] = dict()
+			response["tableData"]["isCSV"] = True if file_extension.lower() == "csv" else False
+			response["tableData"]["filename"] = project.get_file_name_by_id(data_file_id)
+			data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
+			response["tableData"].update(excel_to_json(data_file_path, sheet_name, True))
+			if response["tableData"]["isCSV"]:
+				response["tableData"]["currSheetName"] = None
+				response["tableData"]["sheetNames"] = None
+		else:
+			response["tableData"] = None
+		wikifier_config_file_name = project.get_wikifier_region_filename()
+		if wikifier_config_file_name:
+			wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
+			item_table = ItemTable(wikifier_config)
+			serialized_item_table = item_table.serialize_table(sparql_endpoint)
+			response["wikifierData"] = serialized_item_table
+		else:
+			response["wikifierData"] = None
+			item_table = ItemTable()
 
-        yaml_file_id = project.get_yaml_file_id(data_file_id, sheet_name)
-        if yaml_file_id:
-            response["yamlData"] = dict()
-            yaml_file_name = yaml_file_id + ".yaml"
-            yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
-            response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
-            if data_file_id:
-                yaml_config_file_name = yaml_file_id + ".pickle"
-                yaml_config_file_path = str(
-                    Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
-                data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
+		yaml_file_id = project.get_yaml_file_id(data_file_id, sheet_name)
+		if yaml_file_id:
+			response["yamlData"] = dict()
+			yaml_file_name = yaml_file_id + ".yaml"
+			yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
+			response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
+			if data_file_id:
+				yaml_config_file_name = yaml_file_id + ".pickle"
+				yaml_config_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_id)
 
-                yaml_config = load_yaml_config(yaml_config_file_path)
-                template = yaml_config.get_template()
-                region = yaml_config.get_region()
-                response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region,
-                                                                       template)
-        else:
-            response["yamlData"] = None
-        response["settings"]["endpoint"] = project.get_sparql_endpoint()
-    response_json = json.dumps(response)
-    return response_json
+				yaml_config = load_yaml_config(yaml_config_file_path)
+				template = yaml_config.get_template()
+				region = yaml_config.get_region()
+				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
+		else:
+			response["yamlData"] = None
+		response["settings"]["endpoint"] = project.get_sparql_endpoint()
+	response_json = json.dumps(response)
+	return response_json
 
 
 @app.route('/logout', methods=['GET'])
