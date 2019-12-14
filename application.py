@@ -400,7 +400,7 @@ def upload_yaml():
     yaml_configuration = YAMLFile()
     data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
     response = {'error': None}
-    if check_if_empty(yaml_data):
+    if check_if_string_is_invalid(yaml_data):
         response['error'] = "YAML file is either empty or not valid"
     else:
         yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
