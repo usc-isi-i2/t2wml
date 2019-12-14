@@ -58,7 +58,10 @@ def model_data(properties_file_path, output_file_path) -> None:
     }
     property_type_cache = {}
     for k, v in yaml_data.items():
-        p = WDProperty(k, type_map[v['type']], creator='http://www.isi.edu/t2wml')
+        if k.startswith('Q'):
+            p = WDItem(k, creator='http://www.isi.edu/t2wml')
+        elif k.startswith('P'):
+            p = WDProperty(k, type_map[v['type']], creator='http://www.isi.edu/t2wml')
         for lang, value in v['label'].items():
             if not isinstance(value, list):
                 value = [value]
@@ -84,7 +87,7 @@ def model_data(properties_file_path, output_file_path) -> None:
                     values = item['value']
                     if not isinstance(values, list):
                         values = [values]
-                    value = [Item(v) for v in values]
+                    value = [Item(v) for v in values if v is not None]
                 elif property_type == "WikibaseProperty":
                     value = Property(item['value'])
                 elif property_type == "String":
@@ -117,5 +120,5 @@ def model_data(properties_file_path, output_file_path) -> None:
         f.write(data)
 
 
-model_data('/Users/amandeep/Github/ethiopia-experiment/restricted/linked_cpi/new_properties.yaml',
-           '/Users/amandeep/Github/ethiopia-experiment/restricted/linked_cpi/new_properties.ttl')
+model_data('/Users/amandeep/Github/ethiopia-experiment/restricted/food_prices/food_prices_qnodes.yaml',
+           '/Users/amandeep/Github/ethiopia-experiment/restricted/food_prices/food_prices_qnodes.ttl')

@@ -6,6 +6,7 @@ from etk.wikidata import serialize_change_record
 from Code.utility_functions import get_first_sheet_name
 import logging
 from app_config import DEFAULT_SPARQL_ENDPOINT
+import traceback
 
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
@@ -26,7 +27,7 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         yaml_configuration.set_region(region)
         yaml_configuration.set_template(template)
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         logging.error("Invalid YAML File")
         return
 

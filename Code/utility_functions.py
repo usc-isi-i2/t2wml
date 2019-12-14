@@ -186,7 +186,7 @@ def check_if_empty(text: str) -> bool:
     :param text:
     :return:
     """
-    if text is None or str(text).strip() == "" or check_special_characters(text) or str(text).strip().lower() == '#n/a':
+    if text is None or str(text).strip() == "" or check_special_characters(text) or str(text).strip().lower() == '#n/a' or str(text).strip().lower() == 'none':
         return True
     return False
 

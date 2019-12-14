@@ -122,7 +122,10 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                         value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
                     elif property_type == "Property Not Found":
                         is_error = True
-                    s.add_qualifier(j["property"], value)
+                    if value is None:
+                        continue
+                    else:
+                        s.add_qualifier(j["property"], value)
             doc.kg.add_subject(s)
     if not is_error:
         data = doc.kg.serialize(filetype)
