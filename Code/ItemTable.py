@@ -190,7 +190,6 @@ class ItemTable:
 		items_not_in_wiki = ' '.join(items_not_in_wiki)
 		if sparql_endpoint and items_not_in_wiki:
 			labels_and_descriptions = query_wikidata_for_label_and_description(items_not_in_wiki, sparql_endpoint)
-
 			if labels_and_descriptions:
 				self.item_wiki.update(labels_and_descriptions)
 
@@ -202,8 +201,9 @@ class ItemTable:
 
 				for cell, desc in serialized_table["qnodes"].items():
 					for context, context_desc in desc.items():
-						serialized_table['qnodes'][cell][context]['label'] = self.item_wiki[context_desc['item']]['label']
-						serialized_table['qnodes'][cell][context]['desc'] = self.item_wiki[context_desc['item']]['desc']
+						if context_desc['item'] in self.item_wiki:
+							serialized_table['qnodes'][cell][context]['label'] = self.item_wiki[context_desc['item']]['label']
+							serialized_table['qnodes'][cell][context]['desc'] = self.item_wiki[context_desc['item']]['desc']
 		return serialized_table
 
 	def get_item(self, column: int, row: int, context: str) -> Union[defaultdict, Exception]:
@@ -211,4 +211,4 @@ class ItemTable:
 			if not context:
 				context = "__NO_CONTEXT__"
 			if context in self.table[(column, row)]:
-				return self.table[(column,row)][context]
+				return self.table[(column, row)][context]
