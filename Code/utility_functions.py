@@ -90,7 +90,7 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	except KeyError:
 		query = """SELECT ?type WHERE {
 			wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
-			wikibase:propertyType ?type .  
+			wikibase:propertyType ?type .
 		}"""
 		sparql = SPARQLWrapper(sparql_endpoint)
 		sparql.setQuery(query)
@@ -98,6 +98,7 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 		results = sparql.query().convert()
 		try:
 			type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+			property_type_map[wikidata_property] = type
 		except IndexError:
 			type = "Property Not Found"
 	return type
