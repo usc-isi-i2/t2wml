@@ -134,8 +134,8 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                     if value:
                         s.add_qualifier(j["property"], value)
                     else:
+                        print("Invalid numeric value '{}' in cell {}".format(j["value"], j["cell"]))
                         print("Skipping qualifier {} for cell {}".format(j["property"], i["cell"]))
-                        print("Invalid numeric value '{}' in cell {}".format(j["value"], i["cell"]))
                         
             doc.kg.add_subject(s)
     if not is_error:
