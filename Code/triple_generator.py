@@ -109,7 +109,16 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                     elif property_type == "String":
                         value = StringValue(j["value"])
                     elif property_type == "Quantity":
-                        value = QuantityValue(j["value"])
+                        # Quick hack to avoid generating empty or bad qualifiers for quantities
+                        _value = j["value"]
+                        _value = str(_value).replace(',', '')
+                        _value_no_decimal = _value.replace('.', '')
+                        if _value == "":
+                            value = None
+                        elif _value_no_decimal.isnumeric():
+                          value = QuantityValue(_value)
+                        else:
+                            value = None
                     elif property_type == "Time":
                         value = TimeValue(str(j["value"]), Item(j["calendar"]), j["precision"], j["time_zone"])
                     elif property_type == "Url":
@@ -122,7 +131,12 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                         value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
                     elif property_type == "Property Not Found":
                         is_error = True
-                    s.add_qualifier(j["property"], value)
+                    if value:
+                        s.add_qualifier(j["property"], value)
+                    else:
+                        print("Skipping qualifier {} for cell {}".format(j["property"], i["cell"]))
+                        print("Invalid numeric value '{}' in cell {}".format(j["value"], i["cell"]))
+                        
             doc.kg.add_subject(s)
     if not is_error:
         data = doc.kg.serialize(filetype)
