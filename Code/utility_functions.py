@@ -135,7 +135,8 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
         result["sheetNames"] = None
     result["currSheetName"] = sheet_name
     add_row_in_data_file(file_path, sheet_name)
-    sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
+    book = pyexcel.get_book(file_name=file_path)
+    sheet = book[sheet_name]
     for i in range(len(sheet[0])):
         column = get_column_letter(i + 1)
         column_index_map[i + 1] = column
@@ -143,10 +144,12 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
     for row in range(len(sheet)):
         r = {'^': str(row + 1)}
         for col in range(len(sheet[row])):
-            r[column_index_map[col + 1]] = str(sheet[row][col]).strip()
+            sheet[row, col] = str(sheet[row, col]).strip()
+            r[column_index_map[col + 1]] = sheet[row, col]
         sheet_data['rowData'].append(r)
 
     result['sheetData'] = sheet_data
+    book.save_as(file_path)
     return result
 
 
