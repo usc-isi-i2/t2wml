@@ -141,7 +141,8 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
 		result["sheetNames"] = None
 	result["currSheetName"] = sheet_name
 	add_row_in_data_file(file_path, sheet_name)
-	sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_path)
+	book = pyexcel.get_book(file_name=file_path)
+	sheet = book[sheet_name]
 	for i in range(len(sheet[0])):
 		column = get_column_letter(i + 1)
 		column_index_map[i + 1] = column
@@ -149,10 +150,12 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
 	for row in range(len(sheet)):
 		r = {'^': str(row + 1)}
 		for col in range(len(sheet[row])):
-			r[column_index_map[col + 1]] = str(sheet[row][col]).strip()
+			sheet[row, col] = str(sheet[row, col]).strip()
+			r[column_index_map[col + 1]] = sheet[row, col]
 		sheet_data['rowData'].append(r)
 
 	result['sheetData'] = sheet_data
+	book.save_as(file_path)
 	return result
 
 
@@ -313,9 +316,9 @@ def verify_google_login(tn: str) -> Tuple[dict, int]:
 	"""
 	error = None
 	try:
-		client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
+		# client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
 		request = requests.Request()
-		user_info = id_token.verify_oauth2_token(tn, request, client_id)
+		user_info = id_token.verify_oauth2_token(tn, request, GOOGLE_CLIENT_ID)
 
 		if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
 			error = 'Wrong issuer'
@@ -356,7 +359,7 @@ def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: s
 				"ptitle": ptitle,
 				"cdate": int(time() * 1000),
 				"mdate": int(time() * 1000),
-				"sparqlEndpoint": "http://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql",
+				"sparqlEndpoint": DEFAULT_SPARQL_ENDPOINT,
 				"currentDataFile": None,
 				"currentSheetName": None,
 				"dataFileMapping": dict(),
