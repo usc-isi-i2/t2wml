@@ -8,7 +8,6 @@ from Code.Project import Project
 from Code.YAMLFile import YAMLFile
 import shutil
 import sys
-
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False
 
@@ -241,6 +240,7 @@ def upload_data_file():
 		item_table = ItemTable(region_map)
 		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
 		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+		serialized_wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "result.csv")
 		add_excel_file_to_bindings(data_file_path, sheet_name)
 
 		if Path(wikifier_output_filepath).exists():
@@ -248,7 +248,9 @@ def upload_data_file():
 			process_wikified_output_file(wikifier_output_filepath, item_table, data_file_path, sheet_name)
 		sparql_endpoint = project.get_sparql_endpoint()
 		serialized_table = item_table.serialize_table(sparql_endpoint)
+		save_wikified_result(serialized_table['rowData'], serialized_wikifier_output_filepath)
 		response["wikifierData"] = serialized_table
+		response['wikifiedOutputFilepath'] = serialized_wikifier_output_filepath
 		project_meta["wikifierRegionMapping"] = dict()
 		project_meta["wikifierRegionMapping"][data_file_name] = dict()
 		project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
@@ -314,10 +316,11 @@ def change_sheet():
 		project_meta["currentSheetName"] = data["currSheetName"]
 
 		add_excel_file_to_bindings(data_file_path, new_sheet_name)
-
 		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_id, new_sheet_name)
 		item_table = ItemTable(region_map)
 		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+		serialized_wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "result.csv")
+
 		if Path(wikifier_output_filepath).exists():
 			# build_item_table(item_table, wikifier_output_filepath, data_file_path, new_sheet_name)
 
@@ -325,7 +328,9 @@ def change_sheet():
 		# region_qnodes = item_table.get_region_qnodes()
 		sparql_endpoint = project.get_sparql_endpoint()
 		serialized_table = item_table.serialize_table(sparql_endpoint)
+		save_wikified_result(serialized_table['rowData'], serialized_wikifier_output_filepath)
 		response["wikifierData"] = serialized_table
+		response['wikifiedOutputFilepath'] = serialized_wikifier_output_filepath
 		project_meta["wikifierRegionMapping"] = dict()
 		project_meta["wikifierRegionMapping"][data_file_id] = dict()
 		project_meta["wikifierRegionMapping"][data_file_id][new_sheet_name] = region_file_name
@@ -353,7 +358,6 @@ def change_sheet():
 				project_meta["yamlMapping"][data_file_id][data["currSheetName"]] = yaml_file_id
 		else:
 			response["yamlData"] = None
-
 		project.update_project_config(project_meta)
 		return json.dumps(response, indent=3)
 
@@ -379,12 +383,16 @@ def upload_wikifier_output():
 			item_table = ItemTable(region_map)
 			wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
 			data_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / file_name)
+			serialized_wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "result.csv")
+
 			# build_item_table(item_table, wikifier_output_filepath, data_filepath, sheet_name)
 			process_wikified_output_file(wikifier_output_filepath, item_table, data_filepath, sheet_name)
-
-			response.update(item_table.serialize_table(sparql_endpoint))
+			serialized_table = item_table.serialize_table(sparql_endpoint)
+			response.update(serialized_table)
 			item_table_as_json = item_table.to_json()
 			update_wikifier_region_file(user_id, project_id, region_file_name, item_table_as_json)
+			save_wikified_result(serialized_table['rowData'], serialized_wikifier_output_filepath)
+			response['wikifiedOutputFilepath'] = serialized_wikifier_output_filepath
 			project_meta["wikifierRegionMapping"] = dict()
 			project_meta["wikifierRegionMapping"][file_name] = dict()
 			project_meta["wikifierRegionMapping"][file_name][sheet_name] = region_file_name
@@ -551,6 +559,10 @@ def wikify_region():
 			wikifier_region_file_name = project.get_or_create_wikifier_region_filename()
 			update_wikifier_region_file(user_id, project_id, wikifier_region_file_name, item_table_as_json)
 			data = item_table.serialize_table(sparql_endpoint)
+			serialized_wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "result.csv")
+			save_wikified_result(data['rowData'], serialized_wikifier_output_filepath)
+			data['wikifiedOutputFilepath'] = serialized_wikifier_output_filepath
+
 	# if action == "add_region":
 	# 	if not data_file_path:
 	# 		data['error'] = "No excel file to wikify"
@@ -623,6 +635,8 @@ def get_project_files():
 			item_table = ItemTable(wikifier_config)
 			serialized_item_table = item_table.serialize_table(sparql_endpoint)
 			response["wikifierData"] = serialized_item_table
+			serialized_wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "result.csv")
+			response['wikifiedOutputFilepath'] = serialized_wikifier_output_filepath
 		else:
 			response["wikifierData"] = None
 			item_table = ItemTable()

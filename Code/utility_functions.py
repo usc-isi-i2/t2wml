@@ -12,6 +12,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from pathlib import Path
 from oslo_concurrency import lockutils
+import csv
 # from Code.Project import Project
 # from Code.YAMLFile import YAMLFile
 from Code.property_type_map import property_type_map
@@ -523,3 +524,12 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
 	except IndexError:
 		pass
 	return response
+
+
+def save_wikified_result(serialized_row_data: List[dict], filepath: str):
+	keys = ['context', 'col', 'row', 'value', 'item', 'label', 'desc']
+	serialized_row_data.sort(key=lambda x: [x['context'], natural_sort_key(x['col']), natural_sort_key(x['row'])])
+	with open(filepath, 'w', newline='') as output_file:
+		dict_writer = csv.DictWriter(output_file, keys)
+		dict_writer.writeheader()
+		dict_writer.writerows(serialized_row_data)
