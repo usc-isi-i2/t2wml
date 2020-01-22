@@ -105,9 +105,10 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 	return type
 
 
-def add_row_in_data_file(file_path: str, sheet_name: str):
+def add_row_in_data_file(file_path: str, sheet_name: str, destination_path: str = None):
 	"""
 	This function adds a new blank row at the end of the excel file
+	:param destination_path:
 	:param file_path:
 	:param sheet_name:
 	:return:
@@ -117,7 +118,10 @@ def add_row_in_data_file(file_path: str, sheet_name: str):
 	blank_row = [" "] * num_of_cols
 	if book[sheet_name].row[-1] != blank_row:
 		book[sheet_name].row += blank_row
-	book.save_as(file_path)
+	if not destination_path:
+		book.save_as(file_path)
+	else:
+		book.save_as(destination_path)
 
 
 def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool = False) -> dict:
@@ -533,3 +537,9 @@ def save_wikified_result(serialized_row_data: List[dict], filepath: str):
 		dict_writer = csv.DictWriter(output_file, keys)
 		dict_writer.writeheader()
 		dict_writer.writerows(serialized_row_data)
+
+
+def item_exists(item_table, col, row, context):
+	if (col, row) in item_table.table and context in item_table.table[(col,row)]:
+		return True
+	return False
