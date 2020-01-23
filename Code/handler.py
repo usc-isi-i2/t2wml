@@ -182,7 +182,10 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
     if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
         try:
             statement = evaluate_template(template, sparql_endpoint)
-            data = {'statement': statement, 'error': None}
+            if statement:
+                data = {'statement': statement, 'error': None}
+            else:
+                data = {'statement': None, 'error': 'Item doesn\'t exist'}
         except Exception as e:
             data = {'error': str(e)}
     return data
@@ -215,7 +218,8 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
     while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
         try:
             statement = evaluate_template(template, sparql_endpoint)
-            data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
+            if statement:
+                data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
         except Exception as e:
             error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
         if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
@@ -300,6 +304,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
         if key == 'qualifier':
             response[key] = []
             for i in range(len(template[key])):
+                skip_qualifier = False
                 temp_dict = dict()
                 for k, v in template[key][i].items():
                     if isinstance(v, (ItemExpression, ValueExpression)):
@@ -310,12 +315,20 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                 bindings[variables[0]] = 0
                                 while not v.evaluate_and_get_cell(bindings)[2]:
                                     bindings[variables[0]] += 1
-                                col, row, temp_dict['value'] = v.evaluate_and_get_cell(bindings)
-                                temp_dict['cell'] = get_actual_cell_index((col, row))
+                                col, row, _value = v.evaluate_and_get_cell(bindings)
+                                if _value:
+                                    temp_dict['cell'] = get_actual_cell_index((col, row))
+                                    temp_dict['value'] = _value
+                                else:
+                                    skip_qualifier = True
                                 del bindings[variables[0]]
                         else:
-                            col, row, temp_dict['value'] = v.evaluate_and_get_cell(bindings)
-                            temp_dict['cell'] = get_actual_cell_index((col, row))
+                            col, row, _value = v.evaluate_and_get_cell(bindings)
+                            if _value:
+                                temp_dict['cell'] = get_actual_cell_index((col, row))
+                                temp_dict['value'] = _value
+                            else:
+                                skip_qualifier = True
                     elif isinstance(v, BooleanEquation):
                         if v.variables:
                             variables = list(v.variables)
@@ -324,27 +337,38 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                 bindings[variables[0]] = 0
                                 while not v.evaluate(bindings):
                                     bindings[variables[0]] += 1
-                                col, row, temp_dict['value'] = v.evaluate_and_get_cell(bindings)
-                                temp_dict['cell'] = get_actual_cell_index((col, row))
+                                col, row, _value = v.evaluate_and_get_cell(bindings)
+                                if _value:
+                                    temp_dict['value'] = _value
+                                    temp_dict['cell'] = get_actual_cell_index((col, row))
+                                else:
+                                    skip_qualifier = True
                                 del bindings[variables[0]]
                         else:
-                            col, row, temp_dict['value'] = v.evaluate_and_get_cell(bindings)
-                            temp_dict['cell'] = get_actual_cell_index((col, row))
+                            col, row, _value = v.evaluate_and_get_cell(bindings)
+                            if _value:
+                                temp_dict['value'] = _value
+                                temp_dict['cell'] = get_actual_cell_index((col, row))
+                            else:
+                                skip_qualifier = True
                     else:
                         temp_dict[k] = v
-                if "property" in temp_dict and get_property_type(temp_dict["property"], sparql_endpoint) == "Time":
-                    if "format" in temp_dict:
-                        try:
-                            datetime_string, precision = parse_datetime_string(temp_dict["value"],
-                                                                               additional_formats=[temp_dict["format"]])
-                            if "precision" not in temp_dict:
-                                temp_dict["precision"] = int(precision.value.__str__())
-                            else:
-                                temp_dict["precision"] = translate_precision_to_integer(temp_dict["precision"])
-                            temp_dict["value"] = datetime_string
-                        except Exception as e:
-                            raise e
-                response[key].append(temp_dict)
+                if skip_qualifier:
+                    temp_dict = None
+                else:
+                    if "property" in temp_dict and get_property_type(temp_dict["property"], sparql_endpoint) == "Time":
+                        if "format" in temp_dict:
+                            try:
+                                datetime_string, precision = parse_datetime_string(temp_dict["value"],
+                                                                                   additional_formats=[temp_dict["format"]])
+                                if "precision" not in temp_dict:
+                                    temp_dict["precision"] = int(precision.value.__str__())
+                                else:
+                                    temp_dict["precision"] = translate_precision_to_integer(temp_dict["precision"])
+                                temp_dict["value"] = datetime_string
+                            except Exception as e:
+                                raise e
+                    response[key].append(temp_dict)
         else:
             if isinstance(value, (ItemExpression, ValueExpression)):
                 if value.variables:
@@ -354,12 +378,16 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                         bindings[variables[0]] = 0
                         while not value.evaluate_and_get_cell(bindings)[2]:
                             bindings[variables[0]] += 1
-                        col, row, response[key] = value.evaluate_and_get_cell(bindings)
+                        col, row, _value = value.evaluate_and_get_cell(bindings)
                         del bindings[variables[0]]
                 else:
-                    col, row, response[key] = value.evaluate_and_get_cell(bindings)
+                    col, row, _value = value.evaluate_and_get_cell(bindings)
                 if key == "item":
                     response['cell'] = get_actual_cell_index((col, row))
+                if not _value:
+                    return None
+                else:
+                    response[key] = _value
             elif isinstance(value, BooleanEquation):
                 if value.variables:
                     variables = list(value.variables)
@@ -368,12 +396,18 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                         bindings[variables[0]] = 0
                         while not value.evaluate(bindings):
                             bindings[variables[0]] += 1
-                        col, row, response[key] = value.evaluate_and_get_cell(bindings)
+                        col, row, _value = value.evaluate_and_get_cell(bindings)
                         response['cell'] = get_actual_cell_index((col, row))
                         del bindings[variables[0]]
                 else:
-                    col, row, response[key] = value.evaluate_and_get_cell(bindings)
+                    col, row, _value = value.evaluate_and_get_cell(bindings)
                     response['cell'] = get_actual_cell_index((col, row))
+                if key == "item":
+                    response['cell'] = get_actual_cell_index((col, row))
+                if not _value:
+                    return None
+                else:
+                    response[key] = _value
             else:
                 response[key] = value
 
