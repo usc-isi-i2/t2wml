@@ -30,7 +30,12 @@ class AndExpression:
 							return False
 					return True
 				elif not isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
-					return str(evaluated_expression[0]) == str(evaluated_expression[1])
+					if str(evaluated_expression[1]) == "":
+						if evaluated_expression[0]:
+							return False
+						return True
+					else:
+						return str(evaluated_expression[0]) == str(evaluated_expression[1])
 			elif self.operator == "!=":
 				if isinstance(evaluated_expression[0], list) and not isinstance(evaluated_expression[1], list):
 					for i in evaluated_expression[0]:
