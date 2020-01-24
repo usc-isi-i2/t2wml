@@ -86,7 +86,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                 value = ExternalIdentifier(i["statement"]["value"])
             elif property_type == "GlobeCoordinate":
                 value = GlobeCoordinate(i["statement"]["latitude"], i["statement"]["longitude"],
-                                        i["statement"]["precision"])
+                                        i["statement"]["precision"], globe=StringValue('Earth'))
             elif property_type == "Property Not Found":
                 is_error = True
                 break
@@ -100,7 +100,8 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 
                     except KeyError:
                         property_type = get_property_type(j["property"], sparql_endpoint)
-                        if property_type != "Property Not Found" and i["statement"]["property"] not in property_type_map:
+                        if property_type != "Property Not Found" and i["statement"][
+                            "property"] not in property_type_map:
                             property_type_map[i["statement"]["property"]] = property_type
                     if property_type == "WikibaseItem":
                         value = Item(str(j["value"]))
@@ -116,7 +117,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                         if _value == "":
                             value = None
                         elif _value_no_decimal.isnumeric():
-                          value = QuantityValue(_value)
+                            value = QuantityValue(_value)
                         else:
                             value = None
                     elif property_type == "Time":
@@ -128,7 +129,8 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                     elif property_type == "ExternalId":
                         value = ExternalIdentifier(j["value"])
                     elif property_type == "GlobeCoordinate":
-                        value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"])
+                        value = GlobeCoordinate(j["latitude"], j["longitude"], j["precision"],
+                                                globe=StringValue('Earth'))
                     elif property_type == "Property Not Found":
                         is_error = True
                     if value:
@@ -136,7 +138,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                     else:
                         print("Invalid numeric value '{}' in cell {}".format(j["value"], j["cell"]))
                         print("Skipping qualifier {} for cell {}".format(j["property"], i["cell"]))
-                        
+
             doc.kg.add_subject(s)
     if not is_error:
         data = doc.kg.serialize(filetype)

@@ -318,7 +318,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                 col, row, _value = v.evaluate_and_get_cell(bindings)
                                 if _value:
                                     temp_dict['cell'] = get_actual_cell_index((col, row))
-                                    temp_dict['value'] = _value
+                                    temp_dict[k] = _value
                                 else:
                                     skip_qualifier = True
                                 del bindings[variables[0]]
@@ -326,7 +326,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                             col, row, _value = v.evaluate_and_get_cell(bindings)
                             if _value:
                                 temp_dict['cell'] = get_actual_cell_index((col, row))
-                                temp_dict['value'] = _value
+                                temp_dict[k] = _value
                             else:
                                 skip_qualifier = True
                     elif isinstance(v, BooleanEquation):
@@ -339,7 +339,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                     bindings[variables[0]] += 1
                                 col, row, _value = v.evaluate_and_get_cell(bindings)
                                 if _value:
-                                    temp_dict['value'] = _value
+                                    temp_dict[k] = _value
                                     temp_dict['cell'] = get_actual_cell_index((col, row))
                                 else:
                                     skip_qualifier = True
@@ -347,7 +347,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                         else:
                             col, row, _value = v.evaluate_and_get_cell(bindings)
                             if _value:
-                                temp_dict['value'] = _value
+                                temp_dict[k] = _value
                                 temp_dict['cell'] = get_actual_cell_index((col, row))
                             else:
                                 skip_qualifier = True
@@ -462,7 +462,7 @@ def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int):
         'type': (None, 'text/csv'),
         'header': (None, 'False')
     }
-    response = requests.post('http://sitaware.isi.edu:7805/wikify', files=files)
+    response = requests.post('https://dsbox02.isi.edu:8888/wikifier/wikify', files=files)
     output = None
     if response.status_code == 200:
         data = response.content.decode("utf-8")

@@ -177,13 +177,17 @@ class YAMLParser:
 
         if template.get('qualifier', None):
             for i in range(len(template['qualifier'])):
-                qualifier_value = str(template['qualifier'][i]['value'])
-                if qualifier_value:
-                    if not qualifier_value.isalnum():
-                        template['qualifier'][i]['value'] = generate_tree(qualifier_value)
-                        var = template['qualifier'][i]['value'].get_variable_cell_operator_arguments()
-                    else:
-                        template['qualifier'][i]['value'] = qualifier_value
+                qualifier_keys = list(template['qualifier'][i])
+                for qualifier_key in qualifier_keys:
+                    # if qualifier_key != 'property' and qualifier_key != 'format':
+                    if qualifier_key == 'value':
+                        qualifier_value = str(template['qualifier'][i][qualifier_key])
+                        if qualifier_value:
+                            if not qualifier_value.isalnum():
+                                template['qualifier'][i][qualifier_key] = generate_tree(qualifier_value)
+                                var = template['qualifier'][i]['value'].get_variable_cell_operator_arguments()
+                            else:
+                                template['qualifier'][i][qualifier_key] = qualifier_value
 
     def get_template(self) -> dict:
         """
