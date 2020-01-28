@@ -53,7 +53,7 @@ class ItemTable:
 		both_row_col['row'] = both_row_col['row'].apply(np.int64)
 		for row in both_row_col.itertuples():
 			try:
-				value = sheet[row.row, row.column]
+				value = str(sheet[row.row, row.column]).strip()
 				if not row.context:
 					both_row_col.at[row.Index, 'context'] = '__NO_CONTEXT__'
 				if (row.column, row.row) not in self.table:
@@ -73,13 +73,14 @@ class ItemTable:
 		item_value_map = dict()
 
 		for row in only_row.itertuples(index=False):
+			cell_value = str(sheet[row.row, row.column]).strip()
 			if row.row not in item_value_map:
-				item_value_map[row.row] = {sheet[row.row, row.column]: dict()}
-			item_value_map[row.row][sheet[row.row, row.column]][row.context] = row.item
+				item_value_map[row.row] = {cell_value: dict()}
+			item_value_map[row.row][cell_value][row.context] = row.item
 		for row in row_values:
 			for col in range(len(sheet[0])):
 				try:
-					value = sheet[row, col]
+					value = str(sheet[row, col]).strip()
 					if value in item_value_map[row]:
 						if (col, row) not in self.table:
 							self.table[(col, row)] = {'__CELL_VALUE__': value}
@@ -101,9 +102,9 @@ class ItemTable:
 
 		for row in only_col.itertuples(index=False):
 			try:
-				value = sheet[row.row, row.column]
+				value = str(sheet[row.row, row.column]).strip()
 			except IndexError:
-				value = row.value
+				value = str(row.value).strip()
 			if row.column not in item_value_map:
 				item_value_map[row.column] = {value: dict()}
 			else:
@@ -113,7 +114,7 @@ class ItemTable:
 			for row in range(len(sheet)):
 				try:
 					col = col
-					value = sheet[row, col]
+					value = str(sheet[row, col]).strip()
 					if value in item_value_map[col]:
 						if (col, row) not in self.table:
 							self.table[(col, row)] = {'__CELL_VALUE__': value}
@@ -133,11 +134,11 @@ class ItemTable:
 
 		for row in no_col_row.itertuples(index=False):
 			try:
-				value = sheet[row.row, row.column]
+				value = str(sheet[row.row, row.column]).strip()
 			except AttributeError:
-				value = row.value
+				value = str(row.value).strip()
 			except IndexError:
-				value = row.value
+				value = str(row.value).strip()
 			if value not in item_value_map:
 				item_value_map[value] = dict()
 			item_value_map[value][row.context] = row.item
@@ -145,7 +146,7 @@ class ItemTable:
 		for row in range(len(sheet)):
 			for col in range(len(sheet[0])):
 				try:
-					value = sheet[row, col]
+					value = str(sheet[row, col]).strip()
 					if value in item_value_map:
 						for context, item in item_value_map[value].items():
 							if (col, row) not in self.table:
