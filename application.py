@@ -148,7 +148,7 @@ def open_project(pid: str):
 @app.route('/project', methods=['GET'])
 def project_home():
     """
-    This route displays the list of projects with thier details and gives user the option to rename, delete and download the project.
+    This route displays the list of projects with their details and gives user the option to rename, delete and download the project.
     :return:
     """
     if 'uid' in session:
@@ -231,55 +231,55 @@ def upload_data_file():
 				project_meta["currentSheetName"] = curr_data_file_id
 			table_data["sheetData"] = data["sheetData"]
 
-		project_config_path = get_project_config_path(user_id, project_id)
-		project = Project(project_config_path)
+			project_config_path = get_project_config_path(user_id, project_id)
+			project = Project(project_config_path)
 
-		data_file_name = curr_data_file_id
-		sheet_name = project_meta["currentSheetName"]
-		region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_name, sheet_name)
-		item_table = ItemTable(region_map)
-		wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
-		data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
-		serialized_wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "result.csv")
-		add_excel_file_to_bindings(data_file_path, sheet_name)
+			data_file_name = curr_data_file_id
+			sheet_name = project_meta["currentSheetName"]
+			region_map, region_file_name = get_region_mapping(user_id, project_id, project, data_file_name, sheet_name)
+			item_table = ItemTable(region_map)
+			wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "other.csv")
+			data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+			serialized_wikifier_output_filepath = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "wf" / "result.csv")
+			add_excel_file_to_bindings(data_file_path, sheet_name)
 
-		if Path(wikifier_output_filepath).exists():
-			# build_item_table(item_table, wikifier_output_filepath, data_file_path, sheet_name)
-			process_wikified_output_file(wikifier_output_filepath, item_table, data_file_path, sheet_name)
-		sparql_endpoint = project.get_sparql_endpoint()
-		serialized_table = item_table.serialize_table(sparql_endpoint)
-		save_wikified_result(serialized_table['rowData'], serialized_wikifier_output_filepath)
-		response["wikifierData"] = serialized_table
-		response['wikifiedOutputFilepath'] = serialized_wikifier_output_filepath
-		project_meta["wikifierRegionMapping"] = dict()
-		project_meta["wikifierRegionMapping"][data_file_name] = dict()
-		project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
-		item_table_as_json = item_table.to_json()
-		update_wikifier_region_file(user_id, project_id, region_file_name, item_table_as_json)
+			if Path(wikifier_output_filepath).exists():
+				# build_item_table(item_table, wikifier_output_filepath, data_file_path, sheet_name)
+				process_wikified_output_file(wikifier_output_filepath, item_table, data_file_path, sheet_name)
+			sparql_endpoint = project.get_sparql_endpoint()
+			serialized_table = item_table.serialize_table(sparql_endpoint)
+			save_wikified_result(serialized_table['rowData'], serialized_wikifier_output_filepath)
+			response["wikifierData"] = serialized_table
+			response['wikifiedOutputFilepath'] = serialized_wikifier_output_filepath
+			project_meta["wikifierRegionMapping"] = dict()
+			project_meta["wikifierRegionMapping"][data_file_name] = dict()
+			project_meta["wikifierRegionMapping"][data_file_name][sheet_name] = region_file_name
+			item_table_as_json = item_table.to_json()
+			update_wikifier_region_file(user_id, project_id, region_file_name, item_table_as_json)
 
-		yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
-		if yaml_file_id:
-			response["yamlData"] = dict()
-			yaml_file_name = yaml_file_id + ".yaml"
-			yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
-			response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
-			if data_file_name:
-				yaml_config_file_name = yaml_file_id + ".pickle"
-				yaml_config_file_path = str(
-					Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
-				data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_name)
+			yaml_file_id = project.get_yaml_file_id(data_file_name, sheet_name)
+			if yaml_file_id:
+				response["yamlData"] = dict()
+				yaml_file_name = yaml_file_id + ".yaml"
+				yaml_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_file_name)
+				response["yamlData"]["yamlFileContent"] = read_file(yaml_file_path)
+				if data_file_name:
+					yaml_config_file_name = yaml_file_id + ".pickle"
+					yaml_config_file_path = str(
+						Path.cwd() / "config" / "uploads" / user_id / project_id / "yf" / yaml_config_file_name)
+					data_file_path = str(Path(app.config['UPLOAD_FOLDER']) / user_id / project_id / "df" / data_file_name)
 
-				yaml_config = load_yaml_config(yaml_config_file_path)
-				template = yaml_config.get_template()
-				region = yaml_config.get_region()
-				response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
-				project_meta["yamlMapping"] = dict()
-				project_meta["yamlMapping"][data_file_name] = dict()
-				project_meta["yamlMapping"][data_file_name][data["currSheetName"]] = yaml_file_id
-		else:
-			response["yamlData"] = None
+					yaml_config = load_yaml_config(yaml_config_file_path)
+					template = yaml_config.get_template()
+					region = yaml_config.get_region()
+					response["yamlData"]['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
+					project_meta["yamlMapping"] = dict()
+					project_meta["yamlMapping"][data_file_name] = dict()
+					project_meta["yamlMapping"][data_file_name][data["currSheetName"]] = yaml_file_id
+			else:
+				response["yamlData"] = None
 
-		project.update_project_config(project_meta)
+			project.update_project_config(project_meta)
 		return json.dumps(response, indent=3)
 	else:
 		return redirect(url_for('index'))
