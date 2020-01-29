@@ -54,6 +54,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 
     # property_type_cache = {}
     is_error = False
+    error_statement = None
     for i in resolved_excel:
         _item = i["statement"]["item"]
         if _item is not None:
@@ -89,6 +90,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                                         i["statement"]["precision"], globe=StringValue('Earth'))
             elif property_type == "Property Not Found":
                 is_error = True
+                error_statement = "Type of property " + i["statement"]["property"] + " not found"
                 break
             s = item.add_statement(i["statement"]["property"], value)
             doc.kg.add_subject(item)
@@ -133,6 +135,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                                                 globe=StringValue('Earth'))
                     elif property_type == "Property Not Found":
                         is_error = True
+                        error_statement = "Type of property " + j["property"] + " not found"
                     if value:
                         s.add_qualifier(j["property"], value)
                     else:
@@ -144,6 +147,6 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
         data = doc.kg.serialize(filetype)
     else:
         # data = "Property Not Found"
-        raise Exception('data exception while generating triples')
+        raise Exception(error_statement)
 
     return data
