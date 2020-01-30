@@ -10,8 +10,7 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
               sheet_name: str = None,
-              sparql_endpoint: str = DEFAULT_SPARQL_ENDPOINT):
-
+              sparql_endpoint: str = DEFAULT_SPARQL_ENDPOINT, debug=False):
     try:
         if not sheet_name:
             sheet_name = get_first_sheet_name(data_file_path)
@@ -51,7 +50,7 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
     filetype = "ttl"
 
     response = generate_download_file(None, item_table, new_file_path, sheet_name, region, template, filetype,
-                                      sparql_endpoint, created_by=created_by)
+                                      sparql_endpoint, created_by=created_by, debug=debug)
     result_directory = '.'.join(file_name.split(".")[:-1])
 
     output_path = Path()

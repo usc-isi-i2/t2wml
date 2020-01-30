@@ -13,7 +13,7 @@ from Code.property_type_map import property_type_map as property_type_dict
 
 
 def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl',
-                     created_by: str = 't2wml') -> str:
+                     created_by: str = 't2wml', debug=False) -> str:
     """
     This function uses ETK to generate the RDF triples
     :param user_id:
@@ -55,6 +55,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
     # property_type_cache = {}
     is_error = False
     error_statement = None
+    statement_id = 0
     for i in resolved_excel:
         _item = i["statement"]["item"]
         if _item is not None:
@@ -92,7 +93,12 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                 is_error = True
                 error_statement = "Type of property " + i["statement"]["property"] + " not found"
                 break
-            s = item.add_statement(i["statement"]["property"], value)
+            if debug:
+                s = item.add_statement(i["statement"]["property"], value,
+                                       statement_id='debugging-{}'.format(statement_id))
+                statement_id += 1
+            else:
+                s = item.add_statement(i["statement"]["property"], value)
             doc.kg.add_subject(item)
 
             if "qualifier" in i["statement"]:

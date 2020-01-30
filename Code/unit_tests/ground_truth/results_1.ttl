@@ -1,0 +1,99 @@
+@prefix : <http://isi.edu/> .
+@prefix p: <http://www.wikidata.org/prop/> .
+@prefix pq: <http://www.wikidata.org/prop/qualifier/> .
+@prefix pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/> .
+@prefix pqv: <http://www.wikidata.org/prop/qualifier/value/> .
+@prefix pr: <http://www.wikidata.org/prop/reference/> .
+@prefix prn: <http://www.wikidata.org/prop/reference/value-normalized/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix prv: <http://www.wikidata.org/prop/reference/value/> .
+@prefix ps: <http://www.wikidata.org/prop/statement/> .
+@prefix psn: <http://www.wikidata.org/prop/statement/value-normalized/> .
+@prefix psv: <http://www.wikidata.org/prop/statement/value/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix wdno: <http://www.wikidata.org/prop/novalue/> .
+@prefix wdref: <http://www.wikidata.org/reference/> .
+@prefix wds: <http://www.wikidata.org/entity/statement/> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+@prefix wdtn: <http://www.wikidata.org/prop/direct-normalized/> .
+@prefix wdv: <http://www.wikidata.org/value/> .
+@prefix wikibase: <http://wikiba.se/ontology#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+wd:Q142613 a wikibase:Item ;
+    p:P54 wds:Q142613-debugging-2,
+        wds:Q142613-debugging-5 .
+
+wd:Q3520045 a wikibase:Item ;
+    p:P54 wds:Q3520045-debugging-1,
+        wds:Q3520045-debugging-4 .
+
+wd:Q9488 a wikibase:Item ;
+    p:P54 wds:Q9488-debugging-0,
+        wds:Q9488-debugging-3 .
+
+wds:Q142613-debugging-2 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml_unittests> ;
+    pq:P569 "1988-01-25T00:00:00"^^xsd:dateTime ;
+    pqv:P569 wdv:Timec1988-01-25T000000cQc11c0 ;
+    ps:P54 wd:Q1181758 .
+
+wds:Q142613-debugging-5 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml_unittests> ;
+    pq:P569 "1988-01-25T00:00:00"^^xsd:dateTime ;
+    pqv:P569 wdv:Timec1988-01-25T000000cQc11c0 ;
+    ps:P54 wd:Q1181758 .
+
+wds:Q3520045-debugging-1 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml_unittests> ;
+    pq:P569 "1987-04-30T00:00:00"^^xsd:dateTime ;
+    pqv:P569 wdv:Timec1987-04-30T000000cQc11c0 ;
+    ps:P54 wd:Q1195237 .
+
+wds:Q3520045-debugging-4 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml_unittests> ;
+    pq:P569 "1987-04-30T00:00:00"^^xsd:dateTime ;
+    pqv:P569 wdv:Timec1987-04-30T000000cQc11c0 ;
+    ps:P54 wd:Q1195237 .
+
+wds:Q9488-debugging-0 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml_unittests> ;
+    pq:P569 "1973-04-24T00:00:00"^^xsd:dateTime ;
+    pqv:P569 wdv:Timec1973-04-24T000000cQc11c0 ;
+    ps:P54 wd:Q1195237 .
+
+wds:Q9488-debugging-3 a wikibase:Statement ;
+    wikibase:rank wikibase:NormalRank ;
+    <http://www.isi.edu/etk/createdBy> <http://www.isi.edu/t2wml_unittests> ;
+    pq:P569 "1973-04-24T00:00:00"^^xsd:dateTime ;
+    pqv:P569 wdv:Timec1973-04-24T000000cQc11c0 ;
+    ps:P54 wd:Q1195237 .
+
+wdv:Timec1973-04-24T000000cQc11c0 a wikibase:Time ;
+    wikibase:timeCalendarModel wd:Q1985727 ;
+    wikibase:timePrecision 11 ;
+    wikibase:timeTimezone 0 ;
+    wikibase:timeValue "1973-04-24T00:00:00"^^xsd:dateTime .
+
+wdv:Timec1987-04-30T000000cQc11c0 a wikibase:Time ;
+    wikibase:timeCalendarModel wd:Q1985727 ;
+    wikibase:timePrecision 11 ;
+    wikibase:timeTimezone 0 ;
+    wikibase:timeValue "1987-04-30T00:00:00"^^xsd:dateTime .
+
+wdv:Timec1988-01-25T000000cQc11c0 a wikibase:Time ;
+    wikibase:timeCalendarModel wd:Q1985727 ;
+    wikibase:timePrecision 11 ;
+    wikibase:timeTimezone 0 ;
+    wikibase:timeValue "1988-01-25T00:00:00"^^xsd:dateTime .
+

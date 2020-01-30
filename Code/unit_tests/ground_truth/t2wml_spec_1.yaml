@@ -1,0 +1,18 @@
+statementMapping:
+  created_by: t2wml_unittests
+  region:
+    - left: A
+      right: D
+      top: 1
+      bottom: 15
+  template:
+    item: item(A/$row)
+    property: P54 # member of sports team
+    value: item(B/$row)
+    qualifier:
+      - property: P569 #date of birth
+        value: value(C/$row)
+        calendar: Q1985727
+        precision: day
+        time_zone: 0
+        format: "%d/%m/%Y"
