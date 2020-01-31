@@ -7,8 +7,9 @@ statementMapping:
       bottom: 15
   template:
     item: item(A/$row)
-    property: P54 # member of sports team
-    value: item(B/$row)
+    property: P2067 # weight
+    value: value(C/$row)
+    unit: Q100995 # lbs
     qualifier:
       - property: P569 #date of birth
         value: value(D/$row)

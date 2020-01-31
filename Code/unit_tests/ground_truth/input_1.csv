@@ -1,14 +1,14 @@
-cricketers,teams,dob
-Virat Kohli,royal challengers bangalore,05/11/88
-Tendulkar,mumbai indians,24/04/1973
-Dhoni,chennai super kings,07/07/81
-Jasprit Bumrah,mumbai indians,06/12/93
-Ajinkya Rahane, rajasthan royals,06/06/88
-Rohit Sharma,mumbai indians,30/04/1987
-Bhuvneshwar Kumar,deccan chargers,05/02/90
-Ravindra Jadeja,chennai super kings,06/12/88
-Rishabh Pant,delhi capitals,04/08/97
-Shikhar Dhawan,delhi capitals,05/12/85
-Cheteshwar Pujara,deccan chargers,25/01/1988
-Ishant Sharma,delhi capitals,02/09/88
-Mohammad Shami,kings XI punjab,03/09/90
+cricketers,teams,weight,dob
+Virat Kohli,royal challengers bangalore,152,5/11/88
+Tendulkar,mumbai indians,137,24/04/1973
+Dhoni,chennai super kings,154,7/7/81
+Jasprit Bumrah,mumbai indians,154,6/12/93
+Ajinkya Rahane, rajasthan royals,134,6/6/88
+Rohit Sharma,mumbai indians,159,30/04/1987
+Bhuvneshwar Kumar,deccan chargers,154,5/2/90
+Ravindra Jadeja,chennai super kings,132,6/12/88
+Rishabh Pant,delhi capitals,136,4/8/97
+Shikhar Dhawan,delhi capitals,157,5/12/85
+Cheteshwar Pujara,deccan chargers,157,25/01/1988
+Ishant Sharma,delhi capitals,168,2/9/88
+Mohammad Shami,kings XI punjab,152,3/9/90
