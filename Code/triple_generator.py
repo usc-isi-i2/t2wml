@@ -75,7 +75,10 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
             elif property_type == "Quantity":
                 _value = i["statement"]["value"]
                 _value = str(_value).replace(',', '')
-                value = QuantityValue(_value)
+                if 'unit' in i['statement'] and i['statement']['unit'] is not None:
+                    value = QuantityValue(_value, Item(i['statement']['unit']))
+                else:
+                    value = QuantityValue(_value)
             elif property_type == "Time":
                 value = TimeValue(str(i["statement"]["value"]), Item(i["statement"]["calendar"]),
                                   translate_precision_to_integer(i["statement"]["precision"]),
@@ -125,7 +128,10 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                         if _value == "":
                             value = None
                         elif _value_no_decimal.isnumeric():
-                            value = QuantityValue(_value)
+                            if 'unit' in i['statement'] and i['statement']['unit'] is not None:
+                                value = QuantityValue(_value, Item(i['statement']['unit']))
+                            else:
+                                value = QuantityValue(_value)
                         else:
                             value = None
                     elif property_type == "Time":
