@@ -13,4 +13,5 @@ class T2WMLException(enum.Enum):
 	CellResolutionWithoutYAMLFile = "Cannot resolve cell without the YAML file"
 	WikifyWithoutDataFile = "Wikification cannot be done without the data file"
 	FileTooLarge = "File exceeds the permitted file size"
-	MissingArgumentsInYAMLFile = "YAML file template has missing arguments"
+	KeyErrorInYAMLFile = "Key not found in the YAML specification"
+	ValueErrorInYAMLFile = "Value of a key in the YAML specification is not appropriate"
