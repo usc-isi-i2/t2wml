@@ -179,8 +179,7 @@ class YAMLParser:
             for i in range(len(template['qualifier'])):
                 qualifier_keys = list(template['qualifier'][i])
                 for qualifier_key in qualifier_keys:
-                    # if qualifier_key != 'property' and qualifier_key != 'format':
-                    if qualifier_key == 'value':
+                    if qualifier_key != 'property' and qualifier_key != 'format':
                         qualifier_value = str(template['qualifier'][i][qualifier_key])
                         if qualifier_value:
                             if not qualifier_value.isalnum():
