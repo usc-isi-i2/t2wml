@@ -547,6 +547,68 @@ def item_exists(item_table, col, row, context):
 	return False
 
 
+def validate_yaml_parameters_based_on_property_type(object: dict, location_of_object_in_yaml_file: str, sparql_endpoint):
+	template_property = str(object['property'])
+	errors = list()
+	if template_property in property_type_map:
+		property_type = property_type_map[template_property]
+	else:
+		property_type = get_property_type(template_property, sparql_endpoint)
+		property_type_map[template_property] = property_type
+	if property_type == 'Time':
+		if 'calendar' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"calendar\" not found (" + location_of_object_in_yaml_file + " -> calendar)"
+			errors.append(error)
+		if 'precision' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"precision\" not found (" + location_of_object_in_yaml_file + " -> precision)"
+			errors.append(error)
+		if 'time_zone' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"time_zone\" not found (" + location_of_object_in_yaml_file + " -> time_zone)"
+			errors.append(error)
+		if 'format' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"format\" not found (" + location_of_object_in_yaml_file + " -> format)"
+			errors.append(error)
+	elif property_type == 'Monolingualtext':
+		if 'lang' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"lang\" not found (" + location_of_object_in_yaml_file + " -> lang)"
+			errors.append(error)
+	elif property_type == 'GlobeCoordinate':
+		if 'latitude' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"latitude\" not found (" + location_of_object_in_yaml_file + " -> latitude)"
+			errors.append(error)
+		if 'longitude' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"longitude\" not found (" + location_of_object_in_yaml_file + " -> longitude)"
+			errors.append(error)
+		if 'precision' not in object:
+			error = dict()
+			error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key \"precision\" not found (" + location_of_object_in_yaml_file + " -> precision)"
+			errors.append(error)
+	return errors
+
+
 def validate_yaml(yaml_file_path, sparql_endpoint):
 	with open(yaml_file_path, 'r') as stream:
 		yaml_file_data = yaml.safe_load(stream)
@@ -678,37 +740,11 @@ def validate_yaml(yaml_file_path, sparql_endpoint):
 						"errorDescription"] = "Key \"property\" not found (statementMapping -> template -> property)"
 					errors.append(error)
 				else:
-					template_property = str(yaml_file_data['statementMapping']['template']['property'])
-					if template_property in property_type_map:
-						property_type = property_type_map[template_property]
-					else:
-						property_type = get_property_type(template_property, sparql_endpoint)
-						property_type_map[template_property] = property_type
-					if property_type == 'Time':
-						if 'calendar' not in yaml_file_data['statementMapping']['template']:
-							error = dict()
-							error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
-							error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
-							error["errorDescription"] = "Key \"calendar\" not found (statementMapping -> template -> calendar)"
-							errors.append(error)
-						if 'precision' not in yaml_file_data['statementMapping']['template']:
-							error = dict()
-							error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
-							error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
-							error["errorDescription"] = "Key \"precision\" not found (statementMapping -> template -> precision)"
-							errors.append(error)
-						if 'time_zone' not in yaml_file_data['statementMapping']['template']:
-							error = dict()
-							error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
-							error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
-							error["errorDescription"] = "Key \"time_zone\" not found (statementMapping -> template -> time_zone)"
-							errors.append(error)
-						if 'format' not in yaml_file_data['statementMapping']['template']:
-							error = dict()
-							error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
-							error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
-							error["errorDescription"] = "Key \"format\" not found (statementMapping -> template -> format)"
-							errors.append(error)
+					object = yaml_file_data['statementMapping']['template']
+					location_of_object_in_yaml_file = "statementMapping -> template"
+					error = validate_yaml_parameters_based_on_property_type(object, location_of_object_in_yaml_file, sparql_endpoint)
+					if error:
+						errors += error
 				if 'value' not in yaml_file_data['statementMapping']['template']:
 					error = dict()
 					error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
@@ -716,7 +752,22 @@ def validate_yaml(yaml_file_path, sparql_endpoint):
 					error[
 						"errorDescription"] = "Key \"value\" not found (statementMapping -> template -> value)"
 					errors.append(error)
-				#check for qualifiers
+				if 'qualifier' in yaml_file_data['statementMapping']['template']:
+					if yaml_file_data['statementMapping']['template']['qualifier']:
+						qualifiers = yaml_file_data['statementMapping']['template']['qualifier']
+						for i in range(len(qualifiers)):
+							object = qualifiers[i]
+							location_of_object_in_yaml_file = "statementMapping -> template -> qualifier[" + str(i) + "]"
+							error = validate_yaml_parameters_based_on_property_type(object, location_of_object_in_yaml_file, sparql_endpoint)
+							if error:
+								errors += error
+					else:
+						error = dict()
+						error["errorCode"] = T2WMLException.ValueErrorInYAMLFile
+						error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+						error[
+							"errorDescription"] = "Value of key \"qualifier\" (statementMapping -> template -> qualifier -> X) cannot be empty"
+						errors.append(error)
 			else:
 				error = dict()
 				error["errorCode"] = T2WMLException.KeyErrorInYAMLFile
@@ -730,3 +781,4 @@ def validate_yaml(yaml_file_path, sparql_endpoint):
 			error["errorDescription"] = "Key \"statementMapping\" not found"
 			errors.append(error)
 		return errors
+
