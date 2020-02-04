@@ -1,0 +1,14 @@
+statementMapping:
+  created_by: t2wml_unittests
+  region:
+    - left: A
+      right: F
+      top: 1
+      bottom: 9
+  template:
+    item: item(B/$row)
+    property: P5140 # geo coordinates
+    value: value(E/$row)
+    latitude: value(C/$row)
+    longitude: value(D/$row)
+    precision: '0'

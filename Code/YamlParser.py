@@ -175,6 +175,16 @@ class YAMLParser:
             else:
                 template["value"] = template_value
 
+        _template = self.yaml_data['statementMapping']['template']
+        for key in _template:
+            if key not in ('item', 'property', 'value', 'qualifier'):
+                if not _template[key].isalnum():
+                    template[key] = generate_tree(_template[key])
+                    template[key].get_variable_cell_operator_arguments()
+
+                else:
+                    template[key] = _template[key]
+
         if template.get('qualifier', None):
             for i in range(len(template['qualifier'])):
                 qualifier_keys = list(template['qualifier'][i])
