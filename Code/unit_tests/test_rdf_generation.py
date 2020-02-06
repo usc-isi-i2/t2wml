@@ -7,22 +7,24 @@ import unittest
 
 output_directory = '/tmp'
 
+_path = Path(__file__).parent
 
 class TestRDFGeneration(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.input_file_path_1 = './ground_truth/input_1.csv'
-        self.input_file_path_3 = './ground_truth/input_3.csv'
-        self.wikifier_path = './ground_truth/wikifier_1.csv'
-        self.sparql_endpoint = 'https://dsbox02.isi.edu:8899/bigdata/namespace/wdq/sparql'
-        self.results_path_1 = './ground_truth/results_1.ttl'
-        self.results_path_2 = './ground_truth/results_2.ttl'
-        self.results_path_3 = './ground_truth/results_3.ttl'
-        self.results_path_4 = './ground_truth/results_4.ttl'
-        self.t2wml_spec_path_1 = './ground_truth/t2wml_spec_1.yaml'
-        self.t2wml_spec_path_2 = './ground_truth/t2wml_spec_2.yaml'
-        self.t2wml_spec_path_3 = './ground_truth/t2wml_spec_3.yaml'
-        self.t2wml_spec_path_4 = './ground_truth/t2wml_spec_4.yaml'
+        self.input_file_path_1 = '{}/ground_truth/input_1.csv'.format(_path)
+        self.input_file_path_3 = '{}/ground_truth/input_3.csv'.format(_path)
+        self.wikifier_path = '{}/ground_truth/wikifier_1.csv'.format(_path)
+        # self.sparql_endpoint = 'http://dsbox02.isi.edu:8899/bigdata/namespace/wdq/sparql'
+        self.sparql_endpoint = 'http://sitaware.isi.edu:8888/bigdata/namespace/wdq/sparql'
+        self.results_path_1 = '{}/ground_truth/results_1.ttl'.format(_path)
+        self.results_path_2 = '{}/ground_truth/results_2.ttl'.format(_path)
+        self.results_path_3 = '{}/ground_truth/results_3.ttl'.format(_path)
+        self.results_path_4 = '{}/ground_truth/results_4.ttl'.format(_path)
+        self.t2wml_spec_path_1 = '{}/ground_truth/t2wml_spec_1.yaml'.format(_path)
+        self.t2wml_spec_path_2 = '{}/ground_truth/t2wml_spec_2.yaml'.format(_path)
+        self.t2wml_spec_path_3 = '{}/ground_truth/t2wml_spec_3.yaml'.format(_path)
+        self.t2wml_spec_path_4 = '{}/ground_truth/t2wml_spec_4.yaml'.format(_path)
 
     def test_rdf_generation(self, sheet_name: str = None):
         results = open(self.results_path_1).read()
