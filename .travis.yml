@@ -6,6 +6,7 @@ install:
 - sudo apt-get update
 - pip install -r requirements.txt
 script:
+- python -m spacy download en_core_web_sm
 - python -W ignore -m unittest discover
 notifications:
   slack:
