@@ -10,7 +10,7 @@ output_directory = '/tmp'
 _path = Path(__file__).parent
 
 class TestRDFGeneration(unittest.TestCase):
-
+    maxDiff = None
     def setUp(self) -> None:
         self.input_file_path_1 = '{}/ground_truth/input_1.csv'.format(_path)
         self.input_file_path_3 = '{}/ground_truth/input_3.csv'.format(_path)
