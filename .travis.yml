@@ -5,7 +5,7 @@ python:
 before_install:
   - env
   - openssl version
-  - python -c "import ssl; print(ssl.OPENSSL_VERSION)"
+  - python -c "import ssl; print('SSSSSSSSSL', ssl.OPENSSL_VERSION)"
 install:
 - sudo apt-get update
 - pip install -r requirements.txt
