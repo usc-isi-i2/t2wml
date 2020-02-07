@@ -1,7 +1,11 @@
 sudo: required
 language: python
 python:
-- 3.7
+- 3.6.6
+before_install:
+  - env
+  - openssl version
+  - python -c "import ssl; print(ssl.OPENSSL_VERSION)"
 install:
 - sudo apt-get update
 - pip install -r requirements.txt
