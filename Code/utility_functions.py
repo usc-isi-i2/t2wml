@@ -96,12 +96,15 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
 		sparql = SPARQLWrapper(sparql_endpoint)
 		sparql.setQuery(query)
 		sparql.setReturnFormat(JSON)
-		results = sparql.query().convert()
+
 		try:
+			results = sparql.query().convert()
 			type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
 			property_type_map[wikidata_property] = type
 		except IndexError:
 			type = "Property Not Found"
+		except Exception as e:
+			print('EEEEXXCEPTION', e)
 	return type
 
 
