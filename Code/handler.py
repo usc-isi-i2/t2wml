@@ -165,6 +165,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
                  template: dict, column: int, row: int, sparql_endpoint: str) -> dict:
     """
     This cell resolve the statement for a particular cell
+    :param sparql_endpoint:
     :param item_table:
     :param excel_data_filepath:
     :param sheet_name:
@@ -185,7 +186,7 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
             if statement:
                 data = {'statement': statement, 'error': None}
             else:
-                data = {'statement': None, 'error': 'Item doesn\'t exist'}
+                data = {'statement': None, 'error': "Item doesn't exist"}
         except Exception as e:
             data = {'error': str(e)}
     return data
@@ -195,6 +196,7 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
                            region_specification: dict, template: dict, filetype: str, sparql_endpoint: str, created_by:str = 't2wml') -> dict:
     """
     This function generates the download files based on the filetype
+    :param created_by:
     :param user_id:
     :param item_table:
     :param excel_data_filepath:
@@ -245,6 +247,7 @@ def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name
              sparql_endpoint) -> dict:
     """
     This function processes the calls to the wikifier service and adds the output to the ItemTable object
+    :param sparql_endpoint:
     :param item_table:
     :param region:
     :param excel_filepath:
@@ -277,25 +280,26 @@ def load_yaml_data(yaml_filepath: str, item_table: ItemTable, data_file_path: st
     return region, template, created_by
 
 
-def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str,
-                     sheet_name: str) -> ItemTable:
-    """
-    This function builds the ItemTable using the wikified output file uploaded by the user
-    :param item_table:
-    :param wikifier_output_filepath:
-    :param excel_data_filepath:
-    :param sheet_name:
-    :return:
-    """
-    if excel_data_filepath:
-        item_table.generate_hash_tables(wikifier_output_filepath, excel_data_filepath, sheet_name)
-    return item_table
+# def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str,
+#                      sheet_name: str) -> ItemTable:
+#     """
+#     This function builds the ItemTable using the wikified output file uploaded by the user
+#     :param item_table:
+#     :param wikifier_output_filepath:
+#     :param excel_data_filepath:
+#     :param sheet_name:
+#     :return:
+#     """
+#     if excel_data_filepath:
+#         item_table.generate_hash_tables(wikifier_output_filepath, excel_data_filepath, sheet_name)
+#     return item_table
 
 
 def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
     """
     This function resolves the template by parsing the T2WML expressions
     and replacing them by the class trees of those expressions
+    :param sparql_endpoint:
     :param template:
     :return:
     """

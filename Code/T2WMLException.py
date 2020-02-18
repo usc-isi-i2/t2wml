@@ -1,10 +1,10 @@
-import enum
+from enum import Enum
 
 
-class T2WMLException(enum.Enum):
+class T2WMLException(str, Enum):
 	InvalidRequest = "Resource requested without appropriate arguments"
-	ProjectsNotFound = "Existing projects might have been deleted manually"
-	NoFilePart = "Missing file argument in the upload request"
+	ProjectsNotFound = "No projects found"
+	NoFilePart = "Missing file parameter in the upload request"
 	BlankFileName = "Resource not selected for uploading"
 	FileTypeNotSupported = "This file type is currently not supported"
 	InvalidYAMLFile = "YAML file is either empty or not valid"
@@ -15,3 +15,4 @@ class T2WMLException(enum.Enum):
 	FileTooLarge = "File exceeds the permitted file size"
 	KeyErrorInYAMLFile = "Key not found in the YAML specification"
 	ValueErrorInYAMLFile = "Value of a key in the YAML specification is not appropriate"
+	AuthenticationFailure = "Authentication failed"
