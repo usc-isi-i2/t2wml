@@ -460,32 +460,38 @@ def upload_yaml():
         project.add_yaml_file(data_file_name, sheet_name, yaml_file_id)
         sparql_endpoint = project.get_sparql_endpoint()
         validation_response = validate_yaml(yaml_file_path, sparql_endpoint)
-        if not validation_response:
-            if data_file_name:
-                wikifier_config_file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
-                wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
-                item_table = ItemTable(wikifier_config)
-                region, template, created_by = load_yaml_data(yaml_file_path, item_table, data_file_path, sheet_name)
-                yaml_configuration.set_region(region)
-                yaml_configuration.set_template(template)
-                yaml_configuration.set_created_by(created_by)
-                save_yaml_config(yaml_config_file_path, yaml_configuration)
-                template = yaml_configuration.get_template()
-                response['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
-                project_meta["yamlMapping"] = dict()
-                project_meta["yamlMapping"][data_file_name] = dict()
-                project_meta["yamlMapping"][data_file_name][sheet_name] = yaml_file_id
-                project.update_project_config(project_meta)
+        try:
+            if not validation_response:
+                if data_file_name:
+                    wikifier_config_file_name = project.get_or_create_wikifier_region_filename(data_file_name, sheet_name)
+                    wikifier_config = deserialize_wikifier_config(user_id, project_id, wikifier_config_file_name)
+                    item_table = ItemTable(wikifier_config)
+                    region, template, created_by = load_yaml_data(yaml_file_path, item_table, data_file_path, sheet_name)
+                    yaml_configuration.set_region(region)
+                    yaml_configuration.set_template(template)
+                    yaml_configuration.set_created_by(created_by)
+                    save_yaml_config(yaml_config_file_path, yaml_configuration)
+                    template = yaml_configuration.get_template()
+                    response['yamlRegions'] = highlight_region(item_table, data_file_path, sheet_name, region, template)
+                    project_meta["yamlMapping"] = dict()
+                    project_meta["yamlMapping"][data_file_name] = dict()
+                    project_meta["yamlMapping"][data_file_name][sheet_name] = yaml_file_id
+                    project.update_project_config(project_meta)
+                else:
+                    response['yamlRegions'] = None
+                    error = dict()
+                    error["errorCode"] = "T2WMLException.YAMLEvaluatedWithoutDataFile"
+                    error["errorTitle"] = T2WMLException.YAMLEvaluatedWithoutDataFile.value
+                    error["errorDescription"] = "Upload data file before applying YAML."
+                    response['error'] = error
             else:
                 response['yamlRegions'] = None
-                error = dict()
-                error["errorCode"] = "T2WMLException.YAMLEvaluatedWithoutDataFile"
-                error["errorTitle"] = T2WMLException.YAMLEvaluatedWithoutDataFile.value
-                error["errorDescription"] = "Upload data file before applying YAML."
-                response['error'] = error
-        else:
+                response["error"] = validation_response
+        except Exception as exception:
             response['yamlRegions'] = None
-            response["error"] = validation_response
+            error = dict()
+            error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
+            response["error"] = error
     return json.dumps(response, indent=3)
 
 

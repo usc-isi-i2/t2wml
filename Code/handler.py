@@ -6,6 +6,7 @@ import uuid
 import csv
 from typing import Sequence
 from Code.ItemTable import ItemTable
+from Code.T2WMLException import T2WMLException
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
@@ -147,8 +148,10 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
                         except AttributeError:
                             pass
                 data["qualifierRegion"] |= qualifier_cells
-        except Exception as e:
-            data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = str(e)
+        except Exception as exception:
+            error = dict()
+            error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
+            data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = error
 
         if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
             bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
@@ -187,8 +190,10 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
                 data = {'statement': statement, 'error': None}
             else:
                 data = {'statement': None, 'error': "Item doesn't exist"}
-        except Exception as e:
-            data = {'error': str(e)}
+        except Exception as exception:
+            error = dict()
+            error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
+            data = {'error': error}
     return data
 
 
@@ -389,7 +394,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                 if key == "item":
                     response['cell'] = get_actual_cell_index((col, row))
                 if not _value:
-                    return None
+                    raise Exception("T2WMLException.ItemNotFound", T2WMLException.ItemNotFound.value, "Couldn't find item for cell " + get_actual_cell_index((col, row)))
                 else:
                     response[key] = _value
             elif isinstance(value, BooleanEquation):
@@ -409,7 +414,8 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                 if key == "item":
                     response['cell'] = get_actual_cell_index((col, row))
                 if not _value:
-                    return None
+                    raise Exception("T2WMLException.ItemNotFound", T2WMLException.ItemNotFound.value,
+                                    "Couldn't find item for cell " + get_actual_cell_index((col, row)))
                 else:
                     response[key] = _value
             else:

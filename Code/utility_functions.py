@@ -564,6 +564,14 @@ def item_exists(item_table, col, row, context):
 	return False
 
 
+def get_cell_value(bindings, row, column):
+	try:
+		value = str(bindings['excel_sheet'][row, column]).strip()
+	except IndexError:
+		raise Exception("T2WMLException.ValueOutOfBound", T2WMLException.ValueOutOfBound.value, "Cell " + get_actual_cell_index((column, row)) + " is outside the bounds of the current data file")
+	return value
+
+
 def validate_yaml_parameters_based_on_property_type(object: dict, location_of_object_in_yaml_file: str, sparql_endpoint: str, is_checking_for_qualifier: bool):
 	template_property = str(object['property'])
 	errors = list()

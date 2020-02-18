@@ -16,3 +16,7 @@ class T2WMLException(str, Enum):
 	KeyErrorInYAMLFile = "Key not found in the YAML specification"
 	ValueErrorInYAMLFile = "Value of a key in the YAML specification is not appropriate"
 	AuthenticationFailure = "Authentication failed"
+	InvalidOperator = "Invalid operator in found in YAML specification"
+	ValueOutOfBound = "Value is outside the permissible limits"
+	ItemNotFound = "Couldn't find item in item table"
+	InvalidT2WMLExpression = "Invalid T2WML expression found"
