@@ -1,4 +1,6 @@
 from typing import Union
+from Code.utility_functions import get_cell_value
+from Code.T2WMLException import T2WMLException
 
 
 class ValueExpression:
@@ -27,21 +29,22 @@ class ValueExpression:
             if isinstance(ce, tuple) and isinstance(re, int):
                 response = list()
                 for i in range(ce[0], ce[1] + 1):
-                    response.append(str(bindings['excel_sheet'][re, i]).strip())
+                    response.append(get_cell_value(bindings, re, i))
             elif isinstance(re, tuple) and isinstance(ce, int):
                 response = list()
                 for i in range(re[0], re[1] + 1):
-                    response.append(str(bindings['excel_sheet'][i, ce]).strip())
+                    response.append(get_cell_value(bindings, i, ce))
             elif isinstance(ce, int) and isinstance(re, int):
-                response = str(bindings['excel_sheet'][re, ce]).strip()
+                response = get_cell_value(bindings, re, ce)
         else:
             cell_expression = self.boolean_equation.evaluate(bindings)
             if cell_expression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
-                response = str(bindings['excel_sheet'][re, ce]).strip()
+                response = get_cell_value(bindings, re, ce)
             else:
-                raise ValueError("Invalid Row and Column values")
+                raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+                                "Boolean Equation inside the Value Expression evaluates to an invalid ouput. It should return a cell expression.")
         return response
 
     def get_cell(self, bindings: dict) -> tuple:
@@ -58,7 +61,8 @@ class ValueExpression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
             else:
-                raise ValueError("Invalid Row and Column values")
+                raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+                                "Boolean Equation inside the Value Expression evaluates to an invalid ouput. It should return a cell expression.")
         return ce, re
 
     def evaluate_and_get_cell(self, bindings: dict) -> tuple:
@@ -73,21 +77,22 @@ class ValueExpression:
             if isinstance(ce, tuple) and isinstance(re, int):
                 response = list()
                 for i in range(ce[0], ce[1] + 1):
-                    response.append(str(bindings['excel_sheet'][re, i]).strip())
+                    response.append(get_cell_value(bindings, re, i))
             elif isinstance(re, tuple) and isinstance(ce, int):
                 response = list()
                 for i in range(re[0], re[1] + 1):
-                    response.append(str(bindings['excel_sheet'][i, ce]).strip())
+                    response.append(get_cell_value(bindings, i, ce))
             elif isinstance(ce, int) and isinstance(re, int):
-                response = str(bindings['excel_sheet'][re, ce]).strip()
+                response = get_cell_value(bindings, re, ce)
         else:
             cell_expression = self.boolean_equation.evaluate(bindings)
             if cell_expression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
-                response = str(bindings['excel_sheet'][re, ce]).strip()
+                response = get_cell_value(bindings, re, ce)
             else:
-                raise ValueError("Invalid Row and Column values")
+                raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+                                "Boolean Equation inside the Value Expression evaluates to an invalid ouput. It should return a cell expression.")
         return ce, re, response
 
     def check_for_left(self) -> bool:

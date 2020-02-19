@@ -7,6 +7,7 @@ from Code.ItemExpression import ItemExpression
 from Code.RowExpression import RowExpression
 from Code.ValueExpression import ValueExpression
 from Code.bindings import bindings
+from Code.T2WMLException import T2WMLException
 from Code.BooleanEquation import BooleanEquation
 from Code.t2wml_parser import parse_and_evaluate, generate_tree
 
@@ -35,7 +36,12 @@ class YAMLParser:
         has_top = bottom.check_for_top()
         has_bottom = top.check_for_bottom()
 
-        if not (has_left and has_right):
+        left_has_left = left.check_for_left()
+        right_has_right = right.check_for_right()
+        top_has_top = top.check_for_top()
+        bottom_has_bottom = bottom.check_for_bottom()
+
+        if not (has_left and has_right) and not left_has_left and not right_has_right:
             if has_left and not has_right:
                 left = self.iterate_on_variables(left, bindings)
                 bindings['$left'] = left
@@ -52,9 +58,12 @@ class YAMLParser:
                 bindings['$left'] = left
                 bindings['$right'] = right
         else:
-            return {'error': 'Recursive definition of left and right region parameters'}
+            raise Exception("T2WMLException.ConstraintViolationError", T2WMLException.ConstraintViolationError.value, "Recursive definition of left and right region parameters.")
 
-        if not (has_top and has_bottom):
+        if bindings['$left'] > bindings['$right']:
+            raise Exception("T2WMLException.ConstraintViolationError", T2WMLException.ConstraintViolationError.value, "Value of left should be less than or equal to right")
+
+        if not (has_top and has_bottom) and not top_has_top and not bottom_has_bottom:
             if has_top and not has_bottom:
                 top = self.iterate_on_variables(top, bindings)
                 bindings['$top'] = top
@@ -71,7 +80,10 @@ class YAMLParser:
                 bindings['$top'] = top
                 bindings['$bottom'] = bottom
         else:
-            return {'error': 'Recursive definition of top and bottom region parameters'}
+            raise Exception("T2WMLException.ConstraintViolationError", T2WMLException.ConstraintViolationError.value, "Recursive definition of top and bottom region parameters.")
+
+        if bindings['$top'] > bindings['$bottom']:
+            raise Exception("T2WMLException.ConstraintViolationError", T2WMLException.ConstraintViolationError.value, "Value of top should be less than or equal to bottom")
 
         if 'skip_row' in self.yaml_data['statementMapping']['region'][0]:
             skip_row = list()

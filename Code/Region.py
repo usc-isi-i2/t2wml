@@ -3,7 +3,7 @@ import pyexcel
 from Code.RegionNode import RegionNode
 from collections import OrderedDict
 from Code.ItemTable import ItemTable
-from Code.utility_functions import check_if_string_is_invalid
+from Code.utility_functions import check_if_string_is_invalid, get_cell_value
 
 
 class Region:
@@ -39,7 +39,7 @@ class Region:
 				cell_be_skipped = False
 				is_cell_value_invalid = False
 
-				if check_if_string_is_invalid(str(temp_bindings['excel_sheet'][row, column])):
+				if check_if_string_is_invalid(get_cell_value(temp_bindings, row, column)):
 					is_cell_value_invalid = True
 
 				if self.skip_row:

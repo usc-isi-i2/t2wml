@@ -1,5 +1,7 @@
 from typing import Union
 
+from Code.T2WMLException import T2WMLException
+
 
 class ItemExpression:
 	def __init__(self) -> None:
@@ -45,7 +47,7 @@ class ItemExpression:
 					re = cell_expression[1]
 					response = bindings["item_table"].get_item(ce, re, self.context)
 				else:
-					raise ValueError("Invalid Row and Column values")
+					raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value, "Boolean Equation inside the Item Expression evaluates to an invalid ouput. It should return a cell expression.")
 			return response
 
 	def get_cell(self, bindings: dict) -> tuple:
@@ -62,7 +64,9 @@ class ItemExpression:
 				ce = cell_expression[0]
 				re = cell_expression[1]
 			else:
-				raise ValueError("Invalid Row and Column values")
+				raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+				                "Boolean Equation inside the Item Expression evaluates to an invalid ouput. It should return a cell expression.")
+
 		return ce, re
 
 	def evaluate_and_get_cell(self, bindings: dict) -> tuple:
@@ -94,7 +98,8 @@ class ItemExpression:
 					re = cell_expression[1]
 					response = bindings["item_table"].get_item(ce, re, self.context)
 				else:
-					raise ValueError("Invalid Row and Column values")
+					raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+					                "Boolean Equation inside the Item Expression evaluates to an invalid ouput. It should return a cell expression.")
 		return ce, re, response
 
 	def check_for_left(self) -> bool:

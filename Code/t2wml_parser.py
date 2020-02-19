@@ -1,7 +1,10 @@
 from lark import Lark
 from lark.tree import Tree
+from lark.exceptions import UnexpectedCharacters
 import os
 from typing import Union
+
+from Code.T2WMLException import T2WMLException
 from Code.dictionary import class_dictionary
 from Code.bindings import bindings
 from Code.ValueExpression import ValueExpression
@@ -24,7 +27,10 @@ def generate_tree(program: str) -> Union[ValueExpression]:
     :param program:
     :return: root of the tree
     """
-    parse_tree = parser.parse(program)
+    try:
+        parse_tree = parser.parse(program)
+    except UnexpectedCharacters as exception:
+        raise Exception("T2WMLException.InvalidT2WMLExpression", T2WMLException.InvalidT2WMLExpression.value, str(exception))
     root = class_dictionary[parse_tree.children[0].data]()
     for instruction in parse_tree.children[0].children:
         if isinstance(instruction, Tree):

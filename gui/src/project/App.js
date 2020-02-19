@@ -120,31 +120,37 @@ class App extends React.Component {
 
       // do something here
       if (json !== null) {
-        let projectData = json;
-
-        // sort
-        projectData.sort(function (p1, p2) {
-          if (p1['mdate'] < p2['mdate']) return 1;
-          else if (p1['mdate'] > p2['mdate']) return -1;
-          else return 0;
-        });
-
-        // update state
-        this.setState({ projectData: projectData });
-
-        // update document title
-        let ptitle = null;
-        for (let i = 0, len = projectData.length; i < len; i++) {
-          if (projectData[i].pid === window.pid) {
-            ptitle = projectData[i].ptitle;
-            break;
+          if (json['error'] !== null){
+              console.log(json['error'])
           }
-        }
-        if (ptitle !== null) {
-          document.title = ptitle;
-        } else {
-          throw Error("No matched pid");
-        }
+          else{
+              let projectData = json['projects'];
+
+              // sort
+              projectData.sort(function (p1, p2) {
+                  if (p1['mdate'] < p2['mdate']) return 1;
+                  else if (p1['mdate'] > p2['mdate']) return -1;
+                  else return 0;
+              });
+
+              // update state
+              this.setState({ projectData: projectData });
+
+              // update document title
+              let ptitle = null;
+              for (let i = 0, len = projectData.length; i < len; i++) {
+                  if (projectData[i].pid === window.pid) {
+                      ptitle = projectData[i].ptitle;
+                      break;
+                  }
+              }
+              if (ptitle !== null) {
+                  document.title = ptitle;
+              } else {
+                  throw Error("No matched pid");
+              }
+          }
+
 
       } else {
         throw Error("No project meta");
@@ -2403,17 +2409,23 @@ class YamlEditor extends React.Component {
 
       // if failure
       if (error !== null) {
-        throw Error(error);
+          this.setState({
+              yamlJson: null,
+              isValidYaml: false,
+              errMsg: "⚠️There was an error applying YAML. Check browser console for details.",
+              errStack: null,
+          });
+        // throw Error(error);
       }
 
-      // else, success
-      const { yamlRegions } = json;
-      window.TableViewer.updateYamlRegions(yamlRegions);
+          // else, success
+          const { yamlRegions } = json;
+          window.TableViewer.updateYamlRegions(yamlRegions);
 
-      // follow-ups (success)
-      window.TableViewer.setState({ showSpinner: false });
-      window.Output.setState({ isDownloadDisabled: false });
-      window.isCellSelectable = true;
+          // follow-ups (success)
+          window.TableViewer.setState({ showSpinner: false });
+          window.Output.setState({ isDownloadDisabled: false });
+          window.isCellSelectable = true;
 
     }).catch((error) => {
       console.log(error);

@@ -13,6 +13,8 @@ from google.auth.transport import requests
 from pathlib import Path
 from oslo_concurrency import lockutils
 import csv
+import yaml
+from Code.T2WMLException import T2WMLException
 # from Code.Project import Project
 # from Code.YAMLFile import YAMLFile
 from Code.property_type_map import property_type_map
@@ -314,87 +316,105 @@ def add_login_source_in_user_id(user_id: str, login_source: str) -> str:
         return "G" + user_id
 
 
-def verify_google_login(tn: str) -> Tuple[dict, int]:
-    """
-    This function verifies the oauth token by sending a request to Google's server.
-    :param tn:
-    :return:
-    """
-    error = None
-    try:
-        # client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
-        request = requests.Request()
-        user_info = id_token.verify_oauth2_token(tn, request, GOOGLE_CLIENT_ID)
 
-        if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            error = 'Wrong issuer'
-            user_info = None
+def verify_google_login(tn: str) -> Tuple[dict, dict]:
+	"""
+	This function verifies the oauth token by sending a request to Google's server.
+	:param tn:
+	:return:
+	"""
+	error = None
+	try:
+		# client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
+		request = requests.Request()
+		user_info = id_token.verify_oauth2_token(tn, request, GOOGLE_CLIENT_ID)
 
-    except ValueError as e:
-        user_info = None
-        error = str(e)
+		if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+			error = dict()
+			error["errorCode"] = "T2WMLException.AuthenticationFailure"
+			error["errorTitle"] = T2WMLException.AuthenticationFailure.value
+			error["errorDescription"] = "Token issued by an invalid issuer"
+			user_info = None
 
-    return user_info, error
+	except ValueError as exception:
+		user_info = None
+		error = dict()
+		error["errorCode"] = "T2WMLException.AuthenticationFailure"
+		error["errorTitle"] = T2WMLException.AuthenticationFailure.value
+		error["errorDescription"] = str(exception)
+
+  return user_info, error
 
 
 def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: str = None) -> None:
-    """
-    This function creates the project directory along with the project_config.json
-    current_working_directory
-                            |__config/
-                                    |__uploads/
-                                             |__<user_id>/
-                                                        |__<project_id>/
-                                                                       |__df/
-                                                                       |__wf/
-                                                                       |__yf/
-                                                                       |__project_config.json
-    :param upload_directory:
-    :param uid:
-    :param pid:
-    :param ptitle:
-    :return:
-    """
-    if uid and pid:
-        Path(Path(upload_directory) / uid / pid / "df").mkdir(parents=True, exist_ok=True)
-        Path(Path(upload_directory) / uid / pid / "wf").mkdir(parents=True, exist_ok=True)
-        Path(Path(upload_directory) / uid / pid / "yf").mkdir(parents=True, exist_ok=True)
-        with open(Path(upload_directory) / uid / pid / "project_config.json", "w") as file:
-            project_config = {
-                "pid": pid,
-                "ptitle": ptitle,
-                "cdate": int(time() * 1000),
-                "mdate": int(time() * 1000),
-                "sparqlEndpoint": DEFAULT_SPARQL_ENDPOINT,
-                "currentDataFile": None,
-                "currentSheetName": None,
-                "dataFileMapping": dict(),
-                "yamlMapping": dict(),
-                "wikifierRegionMapping": dict()
-            }
-            json.dump(project_config, file, indent=3)
-    elif uid:
-        Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)
+	"""
+	This function creates the project directory along with the project_config.json
+	current_working_directory
+	    |__config/
+	        |__uploads/
+		        |__<user_id>/
+				    |__<project_id>/
+					   |__df/
+					   |__wf/
+					   |__yf/
+					   |__project_config.json
+	:param upload_directory:
+	:param uid:
+	:param pid:
+	:param ptitle:
+	:return:
+	"""
+	if uid and pid:
+		Path(Path(upload_directory) / uid / pid / "df").mkdir(parents=True, exist_ok=True)
+		Path(Path(upload_directory) / uid / pid / "wf").mkdir(parents=True, exist_ok=True)
+		Path(Path(upload_directory) / uid / pid / "yf").mkdir(parents=True, exist_ok=True)
+		with open(Path(upload_directory) / uid / pid / "project_config.json", "w") as file:
+			project_config = {
+				"pid": pid,
+				"ptitle": ptitle,
+				"cdate": int(time() * 1000),
+				"mdate": int(time() * 1000),
+				"sparqlEndpoint": DEFAULT_SPARQL_ENDPOINT,
+				"currentDataFile": None,
+				"currentSheetName": None,
+				"dataFileMapping": dict(),
+				"yamlMapping": dict(),
+				"wikifierRegionMapping": dict()
+			}
+			json.dump(project_config, file, indent=3)
+	elif uid:
+		Path(Path(upload_directory) / uid).mkdir(parents=True, exist_ok=True)
 
 
-def get_project_details(user_dir: Path) -> List[Dict[str, Any]]:
-    """
-    This function iterates all the project directories in the user_directory and fetches the project details from the project_config.json
-    :param user_dir:
-    :return:
-    """
-    projects = list()
-    for project_dir in user_dir.iterdir():
-        if project_dir.is_dir():
-            with open(project_dir / "project_config.json", "r") as file:
-                project_config = json.load(file)
-                project_detail = dict()
-                project_detail["pid"] = project_config["pid"]
-                project_detail["ptitle"] = project_config["ptitle"]
-                project_detail["cdate"] = project_config["cdate"]
-                project_detail["mdate"] = project_config["mdate"]
-                projects.append(project_detail)
-    return projects
+def get_project_details(user_dir: Path) -> dict:
+	"""
+	This function iterates all the project directories in the user_directory and fetches the project details from the project_config.json
+	:param user_dir:
+	:return:
+	"""
+	data = dict()
+	if user_dir.exists():
+		projects = list()
+		error = None
+		for project_dir in user_dir.iterdir():
+			if project_dir.is_dir():
+				with open(str(project_dir / "project_config.json"), "r") as file:
+					project_config = json.load(file)
+					project_detail = dict()
+					project_detail["pid"] = project_config["pid"]
+					project_detail["ptitle"] = project_config["ptitle"]
+					project_detail["cdate"] = project_config["cdate"]
+					project_detail["mdate"] = project_config["mdate"]
+					projects.append(project_detail)
+	else:
+		projects = None
+		error = dict()
+		error["errorCode"] = "T2WMLException.ProjectsNotFound"
+		error["errorTitle"] = T2WMLException.ProjectsNotFound.value
+		error['errorDescription'] = "Project directory might have been deleted manually"
+	data['projects'] = projects
+	data['error'] = error
+	return data
 
 
 def get_region_mapping(uid: str, pid: str, project, data_file_name=None, sheet_name=None) -> Tuple[dict, str]:
@@ -541,6 +561,414 @@ def save_wikified_result(serialized_row_data: List[dict], filepath: str):
 
 
 def item_exists(item_table, col, row, context):
-    if (col, row) in item_table.table and context in item_table.table[(col, row)]:
-        return True
-    return False
+	if (col, row) in item_table.table and context in item_table.table[(col,row)]:
+		return True
+	return False
+
+
+def get_cell_value(bindings, row, column):
+	try:
+		value = str(bindings['excel_sheet'][row, column]).strip()
+	except IndexError:
+		raise Exception("T2WMLException.ValueOutOfBound", T2WMLException.ValueOutOfBound.value, "Cell " + get_actual_cell_index((column, row)) + " is outside the bounds of the current data file")
+	return value
+
+
+def validate_yaml_parameters_based_on_property_type(object: dict, location_of_object_in_yaml_file: str, sparql_endpoint: str, is_checking_for_qualifier: bool):
+	template_property = str(object['property'])
+	errors = list()
+	if template_property in property_type_map:
+		property_type = property_type_map[template_property]
+	else:
+		property_type = get_property_type(template_property, sparql_endpoint)
+		property_type_map[template_property] = property_type
+	if property_type == 'Time':
+		if is_checking_for_qualifier:
+			valid_keys = {'property', 'value', 'calendar', 'precision', 'time_zone', 'format', 'unit'}
+		else:
+			valid_keys = {'property', 'value', 'calendar', 'precision', 'time_zone', 'format', 'item', 'qualifier', 'unit'}
+		for key in object.keys():
+			if key not in valid_keys:
+				error = dict()
+				error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+				error["errorDescription"] = "Unrecognized key '" + key + "' (" + location_of_object_in_yaml_file + " -> " + key + ") found"
+				errors.append(error)
+
+		if 'calendar' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'calendar' not found (" + location_of_object_in_yaml_file + " -> calendar)"
+			errors.append(error)
+		else:
+			if not object['calendar'] or not isinstance(object['calendar'], str):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'calendar' (" + location_of_object_in_yaml_file + " -> calendar) must be a string"
+				errors.append(error)
+
+		if 'precision' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'precision' not found (" + location_of_object_in_yaml_file + " -> precision)"
+			errors.append(error)
+		else:
+			if not object['precision'] or not isinstance(object['precision'], (str, int)):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'precision' (" + location_of_object_in_yaml_file + " -> precision) must be a string or an integer"
+				errors.append(error)
+
+		if 'time_zone' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'time_zone' not found (" + location_of_object_in_yaml_file + " -> time_zone)"
+			errors.append(error)
+		else:
+			print(str(object['time_zone']).isdigit())
+			if object['time_zone'] is None or not str(object['time_zone']).isdigit() or not isinstance(object['format'], (str, int)):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'time_zone' (" + location_of_object_in_yaml_file + " -> time_zone) must be an integer"
+				errors.append(error)
+
+		if 'format' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'format' not found (" + location_of_object_in_yaml_file + " -> format)"
+			errors.append(error)
+		else:
+			if not object['format'] or not isinstance(object['format'], str):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'format' (" + location_of_object_in_yaml_file + " -> format) must be a string"
+				errors.append(error)
+
+	elif property_type == 'Monolingualtext':
+		if is_checking_for_qualifier:
+			valid_keys = {'property', 'value','lang', 'unit'}
+		else:
+			valid_keys = {'property', 'value', 'lang', 'item', 'qualifier', 'unit'}
+		for key in object.keys():
+			if key not in valid_keys:
+				error = dict()
+				error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+				error["errorDescription"] = "Unrecognized key '" + key + "' (" + location_of_object_in_yaml_file + " -> " + key + ") found"
+				errors.append(error)
+
+		if 'lang' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'lang' not found (" + location_of_object_in_yaml_file + " -> lang)"
+			errors.append(error)
+		else:
+			if not object['lang'] or not isinstance(object['lang'], str):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'lang' (" + location_of_object_in_yaml_file + " -> format) must be a lang"
+				errors.append(error)
+
+	elif property_type == 'GlobeCoordinate':
+		if is_checking_for_qualifier:
+			valid_keys = {'property', 'value', 'latitude', 'longitude', 'precision', 'unit'}
+		else:
+			valid_keys = {'property', 'value', 'latitude', 'longitude', 'precision', 'item', 'qualifier', 'unit'}
+		for key in object.keys():
+			if key not in valid_keys:
+				error = dict()
+				error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+				error["errorDescription"] = "Unrecognized key '" + key + "' (" + location_of_object_in_yaml_file + " -> " + key + ") found"
+				errors.append(error)
+
+		if 'latitude' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'latitude' not found (" + location_of_object_in_yaml_file + " -> latitude)"
+			errors.append(error)
+		else:
+			if not object['latitude'] or not isinstance(object['latitude'], (str, int)):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'latitude' (" + location_of_object_in_yaml_file + " -> latitude) must be a string or an integer"
+				errors.append(error)
+
+		if 'longitude' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'longitude' not found (" + location_of_object_in_yaml_file + " -> longitude)"
+			errors.append(error)
+		else:
+			if not object['longitude'] or not isinstance(object['longitude'], (str, int)):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'longitude' (" + location_of_object_in_yaml_file + " -> longitude) must be a string or an integer"
+				errors.append(error)
+
+		if 'precision' not in object:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'precision' not found (" + location_of_object_in_yaml_file + " -> precision)"
+			errors.append(error)
+		else:
+			if not object['precision'] or not isinstance(object['precision'], (str, int)):
+				error = dict()
+				error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+				error["errorDescription"] = "Value of  key 'precision' (" + location_of_object_in_yaml_file + " -> precision) must be a string or an integer"
+				errors.append(error)
+	else:
+		if is_checking_for_qualifier:
+			valid_keys = {'property', 'value', 'unit'}
+		else:
+			valid_keys = {'property', 'value', 'item', 'qualifier', 'unit'}
+		for key in object.keys():
+			if key not in valid_keys:
+				error = dict()
+				error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+				error["errorDescription"] = "Unrecognized key '" + key + "' (" + location_of_object_in_yaml_file + " -> " + key + ") found"
+				errors.append(error)
+	return errors
+
+
+def validate_yaml(yaml_file_path, sparql_endpoint):
+	with open(yaml_file_path, 'r') as stream:
+		yaml_file_data = yaml.safe_load(stream)
+		errors = list()
+		for key in yaml_file_data.keys():
+			if key != 'statementMapping':
+				error = dict()
+				error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+				error["errorDescription"] = "Unrecognized key '" + key + "' found"
+				errors.append(error)
+
+		if 'statementMapping' in yaml_file_data:
+			for key in yaml_file_data['statementMapping'].keys():
+				if key not in {'region', 'template', 'created_by'}:
+					error = dict()
+					error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+					error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+					error["errorDescription"] = "Unrecognized key '" + key + "' (statementMapping -> " + key + ") found"
+					errors.append(error)
+
+			if 'created_by' in yaml_file_data['statementMapping']:
+				if not yaml_file_data['statementMapping']['created_by']:
+					error = dict()
+					error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+					error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+					error["errorDescription"] = "Value of key 'created_by' (statementMapping -> created_by) cannot be empty"
+					errors.append(error)
+
+			if 'region' in yaml_file_data['statementMapping']:
+				if yaml_file_data['statementMapping']['region']:
+					if isinstance(yaml_file_data['statementMapping']['region'], list):
+						for i in range(len(yaml_file_data['statementMapping']['region'])):
+							for key in yaml_file_data['statementMapping']['region'][i].keys():
+								if key not in {'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
+									error = dict()
+									error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+									error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+									error["errorDescription"] = "Unrecognized key '" + key + "' (statementMapping -> region[" + str(i) + "] -> " + key + ") found"
+									errors.append(error)
+
+							if 'left' not in yaml_file_data['statementMapping']['region'][i]:
+								error = dict()
+								error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+								error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+								error["errorDescription"] = "Key 'left' (statementMapping -> region[" + str(i) + "] -> X) not found"
+								errors.append(error)
+
+							if 'right' not in yaml_file_data['statementMapping']['region'][i]:
+								error = dict()
+								error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+								error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+								error["errorDescription"] = "Key 'right' not found (" \
+								                            "statementMapping -> region[" + str(i) + "] -> X) "
+								errors.append(error)
+
+							if 'top' not in yaml_file_data['statementMapping']['region'][i]:
+								error = dict()
+								error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+								error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+								error["errorDescription"] = "Key 'top' (statementMapping -> region[" + str(i) + "] -> X) not found"
+								errors.append(error)
+
+							if 'bottom' not in yaml_file_data['statementMapping']['region'][i]:
+								error = dict()
+								error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+								error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+								error["errorDescription"] = "Key 'bottom' not found (" \
+								                            "statementMapping -> region[" + str(i) + "] -> X) "
+								errors.append(error)
+
+							if 'skip_row' in yaml_file_data['statementMapping']['region'][i]:
+								if not yaml_file_data['statementMapping']['region'][i]['skip_row'] or not isinstance(yaml_file_data['statementMapping']['region'][i]['skip_row'], list):
+									error = dict()
+									error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+									error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+									error["errorDescription"] = "Value of key 'skip_row' (statementMapping -> region[" + str(i) + "] -> skip_row) is not appropriate. Value should be a list of T2WML expressions."
+									errors.append(error)
+
+							if 'skip_column' in yaml_file_data['statementMapping']['region'][i]:
+								if not yaml_file_data['statementMapping']['region'][i]['skip_column'] or not isinstance(yaml_file_data['statementMapping']['region'][i]['skip_column'], list):
+									error = dict()
+									error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+									error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+									error["errorDescription"] = "Value of key 'skip_column' (statementMapping -> region[" + str(i) + "] -> skip_column) is not appropriate. Value should be a list of T2WML expressions."
+									errors.append(error)
+
+							if 'skip_cell' in yaml_file_data['statementMapping']['region'][i]:
+								if not yaml_file_data['statementMapping']['region'][i]['skip_cell'] or not isinstance(yaml_file_data['statementMapping']['region'][i]['skip_cell'], list):
+									error = dict()
+									error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+									error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+									error["errorDescription"] = "Value of key 'skip_cell' (statementMapping -> region[" + str(i) + "] -> skip_cell) is not appropriate. Value should be a list of T2WML expressions."
+									errors.append(error)
+					else:
+						error = dict()
+						error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+						error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+						error["errorDescription"] = "Value of  key 'region' (statementMapping -> region) must be a list"
+						errors.append(error)
+				else:
+					error = dict()
+					error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+					error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+					error["errorDescription"] = "Value of key 'region' (statementMapping -> region) cannot be empty"
+					errors.append(error)
+			else:
+				error = dict()
+				error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+				error["errorDescription"] = "Key 'region' (statementMapping -> X) not found"
+				errors.append(error)
+
+			if 'template' in yaml_file_data['statementMapping']:
+				if isinstance(yaml_file_data['statementMapping']['template'], dict):
+					for key in yaml_file_data['statementMapping']['template'].keys():
+						if key not in {'item', 'property', 'value', 'qualifier', 'calendar', 'precision', 'time_zone', 'format', 'lang', 'longitude', 'latitude', 'unit'}:
+							error = dict()
+							error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+							error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+							error["errorDescription"] = "Unrecognized key '" + key + "' (statementMapping -> template -> " + key + ") found"
+							errors.append(error)
+
+					if 'item' not in yaml_file_data['statementMapping']['template']:
+						error = dict()
+						error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+						error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+						error["errorDescription"] = "Key 'item' (statementMapping -> template -> X) not found"
+						errors.append(error)
+
+					if 'property' not in yaml_file_data['statementMapping']['template']:
+						error = dict()
+						error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+						error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+						error["errorDescription"] = "Key 'property' (statementMapping -> template -> X) not found"
+						errors.append(error)
+
+					if 'value' not in yaml_file_data['statementMapping']['template']:
+						error = dict()
+						error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+						error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+						error["errorDescription"] = "Key 'value' (statementMapping -> template -> X) not found"
+						errors.append(error)
+
+					if 'qualifier' in yaml_file_data['statementMapping']['template']:
+						if yaml_file_data['statementMapping']['template']['qualifier']:
+							if isinstance(yaml_file_data['statementMapping']['template']['qualifier'], list):
+								qualifiers = yaml_file_data['statementMapping']['template']['qualifier']
+								for i in range(len(qualifiers)):
+									object = qualifiers[i]
+									if object and isinstance(object, dict):
+										for key in object.keys():
+											if key not in {'property', 'value', 'qualifier', 'calendar',
+											               'precision', 'time_zone', 'format', 'lang', 'longitude',
+											               'latitude', 'unit'}:
+												error = dict()
+												error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+												error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+												error["errorDescription"] = "Unrecognized key '" + key + "' (statementMapping -> template -> qualifier[" + str(i) + "] -> " + key + ") found"
+												errors.append(error)
+									else:
+										error = dict()
+										error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+										error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+										error["errorDescription"] = "Value of  key 'qualifier[" + str(i) + "]' (statementMapping -> template -> qualifier[" + str(i) + "]) must be a dictionary"
+										errors.append(error)
+							else:
+								error = dict()
+								error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+								error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+								error["errorDescription"] = "Value of  key 'qualifier' (statementMapping -> template -> qualifier) must be a list"
+								errors.append(error)
+						else:
+							error = dict()
+							error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+							error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+							error["errorDescription"] = "Value of key 'qualifier' (statementMapping -> template -> qualifier) cannot be empty"
+							errors.append(error)
+				else:
+					error = dict()
+					error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+					error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+					error["errorDescription"] = "Value of  key 'template' (statementMapping -> template) must be a dictionary"
+					errors.append(error)
+			else:
+				error = dict()
+				error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+				error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+				error["errorDescription"] = "Key 'template' (statementMapping -> X) not found"
+				errors.append(error)
+		else:
+			error = dict()
+			error["errorCode"] = "T2WMLException.KeyErrorInYAMLFile"
+			error["errorTitle"] = T2WMLException.KeyErrorInYAMLFile.value
+			error["errorDescription"] = "Key 'statementMapping' not found"
+			errors.append(error)
+		return errors
+
+
+# def json_validator():
+	# if is_left_valid and is_right_valid:
+	# 	left_value = str(yaml_file_data['statementMapping']['region'][i]['left'])
+	# 	right_value = str(yaml_file_data['statementMapping']['region'][i]['right'])
+	# 	values = sorted([left_value, right_value], key=natural_sort_key)
+	# 	if values != [left_value, right_value]:
+	# 		error = dict()
+	# 		error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+	# 		error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+	# 		error["errorDescription"] = "Value of keys 'left' and 'right' (statementMapping -> region[" + str(
+	# 			i) + "] -> left/right) are not appropriate. They should satisfy the condition left <= right "
+	# 		errors.append(error)
+	#
+	# if is_top_valid and is_bottom_valid:
+	# 	top_value = str(yaml_file_data['statementMapping']['region'][i]['top'])
+	# 	bottom_value = str(yaml_file_data['statementMapping']['region'][i]['bottom'])
+	# 	values = sorted([top_value, bottom_value], key=natural_sort_key)
+	# 	if values != [top_value, bottom_value]:
+	# 		error = dict()
+	# 		error["errorCode"] = "T2WMLException.ValueErrorInYAMLFile"
+	# 		error["errorTitle"] = T2WMLException.ValueErrorInYAMLFile.value
+	# 		error["errorDescription"] = "Value of keys 'top' and 'bottom' (statementMapping -> region[" + str(
+	# 			i) + "] -> top/bottom) are not appropriate. They should satisfy the condition top <= bottom "
+	# 		errors.append(error)
+

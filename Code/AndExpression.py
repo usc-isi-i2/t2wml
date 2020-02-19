@@ -1,5 +1,7 @@
 from typing import Union
 
+from Code.T2WMLException import T2WMLException
+
 
 class AndExpression:
 	def __init__(self):
@@ -75,8 +77,7 @@ class AndExpression:
 						return True
 					return False
 			else:
-				# Report error that this expression is semantically incorrect
-				return Exception('This Expression is semantically incorrect')
+				raise Exception("T2WMLException.InvalidOperator", T2WMLException.InvalidOperator.value, "Unrecognized operator '" + self.operator +"' found." )
 		else:
 			if evaluated_expression[0] is not None and evaluated_expression[0] != "":
 				return True

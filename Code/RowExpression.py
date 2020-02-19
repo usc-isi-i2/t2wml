@@ -1,3 +1,6 @@
+from Code.T2WMLException import T2WMLException
+
+
 class RowExpression:
     def __init__(self) -> None:
         self.row_variable = None
@@ -20,13 +23,17 @@ class RowExpression:
         :return: row variable of type int
         """
         rv = self.row_variable.evaluate(bindings)
+        if not isinstance(rv, int):
+            raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value, "Invalid row value found. Row_value = "+ str(rv))
+
         for i in self.operations:
             if i['cell_operator'] == '+':
                 rv = rv+int(i['cell_operator_argument'].evaluate(bindings))
             elif i['cell_operator'] == '-':
                 rv = rv-int(i['cell_operator_argument'].evaluate(bindings))
         if rv < -1:
-            raise ValueError('Row value out of bound')
+            raise Exception("T2WMLException.ValueOutOfBound", T2WMLException.ValueOutOfBound.value,
+                            "Row value is outside the bounds of the data file")
         return rv
 
     def check_for_top(self) -> bool:
