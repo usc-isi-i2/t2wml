@@ -342,8 +342,7 @@ def verify_google_login(tn: str) -> Tuple[dict, dict]:
 		error["errorCode"] = "T2WMLException.AuthenticationFailure"
 		error["errorTitle"] = T2WMLException.AuthenticationFailure.value
 		error["errorDescription"] = str(exception)
-
-  return user_info, error
+	return user_info, error
 
 
 def create_directory(upload_directory: str, uid: str, pid: str = None, ptitle: str = None) -> None:
