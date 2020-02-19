@@ -20,3 +20,4 @@ class T2WMLException(str, Enum):
 	ValueOutOfBound = "Value is outside the permissible limits"
 	ItemNotFound = "Couldn't find item in item table"
 	InvalidT2WMLExpression = "Invalid T2WML expression found"
+	ConstraintViolationError = "Constraint on a given set of values have been violated"
