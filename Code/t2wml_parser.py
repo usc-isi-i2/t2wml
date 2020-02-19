@@ -14,10 +14,11 @@ from Code.RowExpression import RowExpression
 from Code.ColumnRangeExpression import ColumnRangeExpression
 from Code.RowRangeExpression import RowRangeExpression
 from pathlib import Path
+
 __CWD__ = os.getcwd()
 
 # instantiate Lark Parser
-parser = Lark(open(str(Path.cwd() / 'Code/grammar.lark')))
+parser = Lark(open(str(Path(__file__).parent.absolute() / 'grammar.lark')))
 
 
 def generate_tree(program: str) -> Union[ValueExpression]:

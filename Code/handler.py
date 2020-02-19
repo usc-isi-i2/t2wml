@@ -21,6 +21,7 @@ from Code.ColumnExpression import ColumnExpression
 from Code.RowExpression import RowExpression
 from etk.wikidata.utils import parse_datetime_string
 import pandas as pd
+
 __WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
 
 
@@ -198,7 +199,8 @@ def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: st
 
 
 def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str,
-                           region_specification: dict, template: dict, filetype: str, sparql_endpoint: str, created_by:str = 't2wml') -> dict:
+                           region_specification: dict, template: dict, filetype: str, sparql_endpoint: str,
+                           created_by: str = 't2wml', debug=False) -> dict:
     """
     This function generates the download files based on the filetype
     :param created_by:
@@ -226,7 +228,8 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
         try:
             statement = evaluate_template(template, sparql_endpoint)
             if statement:
-                data.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
+                data.append(
+                    {'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
         except Exception as e:
             error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
         if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
@@ -239,7 +242,8 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
         return response
     elif filetype == 'ttl':
         try:
-            response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype, created_by=created_by)
+            response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype, created_by=created_by,
+                                                debug=debug)
             response["error"] = None
             return response
         except Exception as e:
@@ -327,7 +331,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                 col, row, _value = v.evaluate_and_get_cell(bindings)
                                 if _value:
                                     temp_dict['cell'] = get_actual_cell_index((col, row))
-                                    temp_dict['value'] = _value
+                                    temp_dict[k] = _value
                                 else:
                                     skip_qualifier = True
                                 del bindings[variables[0]]
@@ -335,7 +339,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                             col, row, _value = v.evaluate_and_get_cell(bindings)
                             if _value:
                                 temp_dict['cell'] = get_actual_cell_index((col, row))
-                                temp_dict['value'] = _value
+                                temp_dict[k] = _value
                             else:
                                 skip_qualifier = True
                     elif isinstance(v, BooleanEquation):
@@ -348,7 +352,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                     bindings[variables[0]] += 1
                                 col, row, _value = v.evaluate_and_get_cell(bindings)
                                 if _value:
-                                    temp_dict['value'] = _value
+                                    temp_dict[k] = _value
                                     temp_dict['cell'] = get_actual_cell_index((col, row))
                                 else:
                                     skip_qualifier = True
@@ -356,7 +360,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                         else:
                             col, row, _value = v.evaluate_and_get_cell(bindings)
                             if _value:
-                                temp_dict['value'] = _value
+                                temp_dict[k] = _value
                                 temp_dict['cell'] = get_actual_cell_index((col, row))
                             else:
                                 skip_qualifier = True
@@ -369,7 +373,8 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                         if "format" in temp_dict:
                             try:
                                 datetime_string, precision = parse_datetime_string(temp_dict["value"],
-                                                                                   additional_formats=[temp_dict["format"]])
+                                                                                   additional_formats=[
+                                                                                       temp_dict["format"]])
                                 if "precision" not in temp_dict:
                                     temp_dict["precision"] = int(precision.value.__str__())
                                 else:
@@ -472,7 +477,7 @@ def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int):
         'type': (None, 'text/csv'),
         'header': (None, 'False')
     }
-    response = requests.post('http://sitaware.isi.edu:7805/wikify', files=files)
+    response = requests.post('https://dsbox02.isi.edu:8888/wikifier/wikify', files=files)
     output = None
     if response.status_code == 200:
         data = response.content.decode("utf-8")
