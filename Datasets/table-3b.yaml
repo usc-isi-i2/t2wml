@@ -18,3 +18,5 @@ statementMapping:
         format: "%Y"
       - property: P6001 # applies to people
         value: item($col-n/4)
+      - property: P123 #source
+        value: item(B/$row)

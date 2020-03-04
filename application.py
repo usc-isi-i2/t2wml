@@ -438,6 +438,7 @@ def upload_yaml():
     data_file_name, sheet_name = project.get_current_file_and_sheet()
     yaml_configuration = YAMLFile()
     data_file_path = str(Path.cwd() / "config" / "uploads" / user_id / project_id / "df" / data_file_name)
+    add_row_in_data_file(data_file_path, sheet_name)
     response = {'error': None}
     if check_if_string_is_invalid(yaml_data):
         error = dict()
