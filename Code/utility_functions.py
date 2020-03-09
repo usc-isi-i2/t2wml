@@ -163,7 +163,6 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
 		sheet_data['rowData'].append(r)
 
 	result['sheetData'] = sheet_data
-	book.save_as(file_path)
 	return result
 
 

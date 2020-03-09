@@ -16,6 +16,8 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                      created_by: str = 't2wml', debug=False) -> str:
     """
     This function uses ETK to generate the RDF triples
+    :param debug:
+    :param created_by:
     :param user_id:
     :param resolved_excel:
     :param sparql_endpoint:
