@@ -1,6 +1,6 @@
 from typing import Union
 
-from Code.T2WMLException import T2WMLException
+from Code import T2WMLExceptions
 
 
 class ItemExpression:
@@ -47,7 +47,7 @@ class ItemExpression:
 					re = cell_expression[1]
 					response = bindings["item_table"].get_item(ce, re, self.context)
 				else:
-					raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value, "Boolean Equation inside the Item Expression evaluates to an invalid ouput. It should return a cell expression.")
+					raise T2WMLExceptions.ValueErrorInYAMLFileException("Boolean Equation inside the Item Expression evaluates to an invalid ouput. It should return a cell expression.")
 			return response
 
 	def get_cell(self, bindings: dict) -> tuple:
@@ -64,7 +64,7 @@ class ItemExpression:
 				ce = cell_expression[0]
 				re = cell_expression[1]
 			else:
-				raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+				raise T2WMLExceptions.ValueErrorInYAMLFileException(
 				                "Boolean Equation inside the Item Expression evaluates to an invalid ouput. It should return a cell expression.")
 
 		return ce, re
@@ -98,7 +98,7 @@ class ItemExpression:
 					re = cell_expression[1]
 					response = bindings["item_table"].get_item(ce, re, self.context)
 				else:
-					raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+					raise T2WMLExceptions.ValueErrorInYAMLFileException(
 					                "Boolean Equation inside the Item Expression evaluates to an invalid ouput. It should return a cell expression.")
 		return ce, re, response
 

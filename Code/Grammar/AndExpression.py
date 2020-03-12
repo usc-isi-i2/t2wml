@@ -1,6 +1,6 @@
 from typing import Union
 
-from Code.T2WMLException import T2WMLException
+from Code import T2WMLExceptions
 
 
 class AndExpression:
@@ -77,7 +77,7 @@ class AndExpression:
 						return True
 					return False
 			else:
-				raise Exception("T2WMLException.InvalidOperator", T2WMLException.InvalidOperator.value, "Unrecognized operator '" + self.operator +"' found." )
+				raise T2WMLExceptions.InvalidOperatorException("Unrecognized operator '" + self.operator +"' found." )
 		else:
 			if evaluated_expression[0] is not None and evaluated_expression[0] != "":
 				return True

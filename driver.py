@@ -1,9 +1,10 @@
+import os
 from Code.ItemTable import ItemTable
 from Code.handler import generate_download_file, load_yaml_data, process_wikified_output_file
-from Code.YAMLFile import YAMLFile
+from models import YamlObject
 from pathlib import Path
 from etk.wikidata import serialize_change_record
-from Code.utility_functions import get_first_sheet_name, add_row_in_data_file, delete_file
+from Code.utility_functions import get_first_sheet_name, add_row_in_data_file
 import logging
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
@@ -38,11 +39,10 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         return
 
     try:
-        yaml_configuration = YAMLFile()
-        yaml_configuration.set_file_location(t2wml_spec)
+        yaml_configuration = YamlObject()
         region, template, created_by = load_yaml_data(t2wml_spec, item_table, new_file_path, sheet_name)
-        yaml_configuration.set_region(region)
-        yaml_configuration.set_template(template)
+        yaml_configuration.region=region
+        yaml_configuration.template=template
     except Exception as e:
         logging.error("Invalid YAML File")
         return
@@ -67,4 +67,4 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
     with open(str(output_path / "changes.tsv"), "w") as fp:
         serialize_change_record(fp)
 
-    delete_file(new_file_path)
+    os.remove(new_file_path)

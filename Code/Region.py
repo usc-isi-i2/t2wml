@@ -1,10 +1,17 @@
 import pyexcel
-
-from Code.RegionNode import RegionNode
 from collections import OrderedDict
 from Code.ItemTable import ItemTable
 from Code.utility_functions import check_if_string_is_invalid, get_cell_value
 
+
+class RegionNode:
+    def __init__(self):
+        self.left = None
+        self.right = None
+        self.top = None
+        self.bottom = None
+        self.next = None
+        self.previous = None
 
 class Region:
 	def __init__(self, region_params: dict, item_table: ItemTable, data_file_path: str, sheet_name: str):

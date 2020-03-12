@@ -6,7 +6,7 @@ import uuid
 import csv
 from typing import Sequence
 from Code.ItemTable import ItemTable
-from Code.T2WMLException import T2WMLException
+from Code import T2WMLExceptions
 from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
@@ -14,16 +14,9 @@ from Code.utility_functions import get_actual_cell_index, check_if_string_is_inv
     translate_precision_to_integer, get_property_type
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
-from Code.ItemExpression import ItemExpression
-from Code.ValueExpression import ValueExpression
-from Code.BooleanEquation import BooleanEquation
-from Code.ColumnExpression import ColumnExpression
-from Code.RowExpression import RowExpression
+from Code.Grammar import ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression
 from etk.wikidata.utils import parse_datetime_string
 import pandas as pd
-
-__WIKIFIED_RESULT__ = str(Path.cwd() / "Datasets/data.worldbank.org/wikifier.csv")
-
 
 def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
     """
@@ -399,7 +392,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                 if key == "item":
                     response['cell'] = get_actual_cell_index((col, row))
                 if not _value:
-                    raise Exception("T2WMLException.ItemNotFound", T2WMLException.ItemNotFound.value, "Couldn't find item for cell " + get_actual_cell_index((col, row)))
+                    raise T2WMLExceptions.ItemNotFoundException("Couldn't find item for cell " + get_actual_cell_index((col, row)))
                 else:
                     response[key] = _value
             elif isinstance(value, BooleanEquation):
@@ -419,8 +412,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                 if key == "item":
                     response['cell'] = get_actual_cell_index((col, row))
                 if not _value:
-                    raise Exception("T2WMLException.ItemNotFound", T2WMLException.ItemNotFound.value,
-                                    "Couldn't find item for cell " + get_actual_cell_index((col, row)))
+                    raise T2WMLExceptions.ItemNotFoundException( "Couldn't find item for cell " + get_actual_cell_index((col, row)))
                 else:
                     response[key] = _value
             else:

@@ -1,6 +1,6 @@
 from typing import Union
 from Code.utility_functions import get_cell_value
-from Code.T2WMLException import T2WMLException
+from Code import T2WMLExceptions
 
 
 class ValueExpression:
@@ -43,7 +43,7 @@ class ValueExpression:
                 re = cell_expression[1]
                 response = get_cell_value(bindings, re, ce)
             else:
-                raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+                raise T2WMLExceptions.ValueErrorInYAMLFileException(
                                 "Boolean Equation inside the Value Expression evaluates to an invalid ouput. It should return a cell expression.")
         return response
 
@@ -61,7 +61,7 @@ class ValueExpression:
                 ce = cell_expression[0]
                 re = cell_expression[1]
             else:
-                raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+                raise T2WMLExceptions.ValueErrorInYAMLFileException(
                                 "Boolean Equation inside the Value Expression evaluates to an invalid ouput. It should return a cell expression.")
         return ce, re
 
@@ -91,7 +91,7 @@ class ValueExpression:
                 re = cell_expression[1]
                 response = get_cell_value(bindings, re, ce)
             else:
-                raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value,
+                raise T2WMLExceptions.ValueErrorInYAMLFileException(
                                 "Boolean Equation inside the Value Expression evaluates to an invalid ouput. It should return a cell expression.")
         return ce, re, response
 

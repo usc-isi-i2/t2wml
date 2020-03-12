@@ -1,4 +1,4 @@
-from Code.T2WMLException import T2WMLException
+from Code import T2WMLExceptions
 
 
 class ColumnExpression:
@@ -25,7 +25,7 @@ class ColumnExpression:
         cv = self.column_variable.evaluate(bindings)
 
         if not isinstance(cv, int):
-            raise Exception("T2WMLException.ValueErrorInYAMLFile", T2WMLException.ValueErrorInYAMLFile.value, "Invalid column value found. Column_value = "+ str(cv))
+            raise T2WMLExceptions.ValueErrorInYAMLFileException("Invalid column value found. Column_value = "+ str(cv))
 
         for i in self.operations:
             if i['cell_operator'] == '+':
@@ -34,7 +34,7 @@ class ColumnExpression:
                 cv = cv-int(i['cell_operator_argument'].evaluate(bindings))
 
         if cv < -1:
-            raise Exception("T2WMLException.ValueOutOfBound", T2WMLException.ValueOutOfBound.value, "Column value is outside the bounds of the data file")
+            raise T2WMLExceptions.ValueOutOfBoundException("Column value is outside the bounds of the data file")
         return cv
 
     def check_for_left(self) -> bool:
