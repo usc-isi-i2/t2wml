@@ -18,9 +18,12 @@
     ```sh
     pip install -r requirements.txt
     python -m spacy download en_core_web_sm
-    python application.py
     ```
-3. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)
+3. Setup the database: 
+   ```python flask db init```
+4. Run server:
+   ```python application.py```
+5. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)
 
 <span id="usage_within_code"></span>
 ## Usage Within Code
