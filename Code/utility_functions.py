@@ -83,7 +83,7 @@ def get_sheet_names(file_path):
     first_sheet_name=sheet_names[0]
     return sheet_names, first_sheet_name
 
-def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool = False) -> dict:
+def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     """
     This function reads the excel file and converts it to JSON
     :param file_path:
@@ -93,12 +93,8 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
     """
     sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
     column_index_map = {}
-    result = { 'sheetNames': None }
-    if not sheet_name or want_sheet_names:
-        result['sheetNames'], first_sheet_name=get_sheet_names(file_path)
-        if not sheet_name:
-            sheet_name=first_sheet_name
-    result["currSheetName"] = sheet_name
+    if not sheet_name:
+        sheet_name=get_first_sheet_name(file_path)
     add_row_in_data_file(file_path, sheet_name)
     book = pyexcel.get_book(file_name=file_path)
     sheet = book[sheet_name]
@@ -113,9 +109,8 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
             r[column_index_map[col + 1]] = sheet[row, col]
         sheet_data['rowData'].append(r)
 
-    result['sheetData'] = sheet_data
     book.save_as(file_path)
-    return result
+    return sheet_data
 
 
 def check_special_characters(text: str) -> bool:

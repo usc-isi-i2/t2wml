@@ -249,17 +249,15 @@ class ProjectFile(db.Model):
         self.modify()
     
     def tableData(self):
-        data=self.excel_to_json(self.current_sheet_name)
+        data=excel_to_json(self.filepath, self.current_sheet_name)
         return {
             "filename":self.name,
             "isCSV":self.is_csv,
             "sheetNames": self.sheet_names,
             "currSheetName": self.current_sheet_name,
-            "sheetData": data["sheetData"]
+            "sheetData": data
         }
 
-    def excel_to_json(self, sheet_name):
-        return excel_to_json(self.filepath, sheet_name)
     
 class ProjectSheet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
