@@ -1,4 +1,4 @@
-from Code.utility_functions import get_excel_column_index
+from Code.CellConversions import get_excel_column_index
 
 
 class ColumnVariable:

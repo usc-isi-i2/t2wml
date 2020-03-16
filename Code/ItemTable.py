@@ -1,8 +1,9 @@
 from typing import Union
 import pyexcel
 
-from Code.utility_functions import get_actual_cell_index, check_if_string_is_invalid, natural_sort_key, split_cell, \
-	get_column_letter, query_wikidata_for_label_and_description, get_excel_cell_index
+from Code.utility_functions import check_if_string_is_invalid, natural_sort_key,  \
+	 query_wikidata_for_label_and_description
+from Code.CellConversions import split_cell, get_column_letter, get_excel_cell_index, get_actual_cell_index
 from collections import defaultdict
 import json
 import numpy as np

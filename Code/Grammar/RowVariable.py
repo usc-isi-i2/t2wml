@@ -1,4 +1,4 @@
-from Code.utility_functions import get_excel_row_index
+from Code.CellConversions import get_excel_row_index
 
 
 class RowVariable:
