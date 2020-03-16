@@ -38,6 +38,8 @@ class User(db.Model):
     def get_or_create(uid, given_name=None, family_name=None, email=None, *args, **kwargs):
         try:
             u=User.query.get(uid)
+            if u is None:
+                raise ValueError("user not found") 
             return u
         except:
             if email is None:

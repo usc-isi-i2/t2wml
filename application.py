@@ -25,8 +25,9 @@ def get_user():
     user_id = session['uid']
     try:
         u=User.get_or_create(user_id)
+        assert isinstance(u, User) #safety guard against weirdness
         return u
-    except ValueError:
+    except:
         del session['uid']
         raise UserNotFoundException
 
@@ -98,9 +99,10 @@ def index():
     This functions renders the GUI
     :return:
     """
-    if 'uid' in session:
+    try:
+        get_user()
         return redirect(url_for('project_home'))
-    else:
+    except:
         return render_template(get_template_path('login'))
 
 
@@ -120,8 +122,8 @@ def login():
             if user_info:
                 if source == "Google":
                     user_id = "G"+user_info["sub"]
-                    User.get_or_create(user_id, **user_info)
-                    session['uid'] = user_id
+                    u=User.get_or_create(user_id, **user_info)
+                    session['uid'] = u.uid
                     verification_status = True
         else:
             if 'token' in request.form and 'source' not in request.form:
