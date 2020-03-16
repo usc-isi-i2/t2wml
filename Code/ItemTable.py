@@ -3,7 +3,7 @@ import pyexcel
 
 from Code.utility_functions import check_if_string_is_invalid, natural_sort_key,  \
 	 query_wikidata_for_label_and_description
-from Code.CellConversions import split_cell, get_column_letter, get_excel_cell_index, get_actual_cell_index
+from Code.CellConversions import column_index_to_letter, cell_xlsx_to_pyexcel, cell_pyexcel_to_xlsx
 from collections import defaultdict
 import json
 import numpy as np
@@ -14,7 +14,7 @@ class ItemTable:
 		if region_map:
 			self.table = defaultdict(dict)
 			for key, value in region_map['table'].items():
-				self.table[get_excel_cell_index(key)] = value
+				self.table[cell_xlsx_to_pyexcel(key)] = value
 			self.item_wiki = region_map['item_wiki']
 		else:
 			# self.table = { (col, row): {value:value, context1:item, context2: item}}}
@@ -159,7 +159,7 @@ class ItemTable:
 	def to_json(self):
 		temp_table = dict()
 		for key, value in self.table.items():
-			temp_table[get_actual_cell_index(key)] = value
+			temp_table[cell_pyexcel_to_xlsx(key)] = value
 		json_object = {'table': temp_table, 'item_wiki': self.item_wiki}
 		return json.dumps(json_object, indent=3)
 
@@ -167,7 +167,7 @@ class ItemTable:
 		serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
 		items_not_in_wiki = set()
 		for cell, desc in self.table.items():
-			col = get_column_letter(int(cell[0]) + 1)
+			col = column_index_to_letter(int(cell[0]))
 			row = str(int(cell[1]) + 1)
 			cell = col+row
 			value = desc['__CELL_VALUE__']

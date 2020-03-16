@@ -15,7 +15,7 @@ import yaml
 from Code import T2WMLExceptions
 from Code.property_type_map import property_type_map
 from app_config import GOOGLE_CLIENT_ID
-from Code.CellConversions import  get_column_letter, get_actual_cell_index
+from Code.CellConversions import column_index_to_letter, cell_pyexcel_to_xlsx
 
 
 
@@ -103,7 +103,7 @@ def excel_to_json(file_path: str, sheet_name: str = None, want_sheet_names: bool
     book = pyexcel.get_book(file_name=file_path)
     sheet = book[sheet_name]
     for i in range(len(sheet[0])):
-        column = get_column_letter(i + 1)
+        column = column_index_to_letter(i)
         column_index_map[i + 1] = column
         sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
     for row in range(len(sheet)):
@@ -264,7 +264,7 @@ def get_cell_value(bindings, row, column):
     try:
         value = str(bindings['excel_sheet'][row, column]).strip()
     except IndexError:
-        raise T2WMLExceptions.ValueOutOfBoundException("Cell " + get_actual_cell_index((column, row)) + " is outside the bounds of the current data file")
+        raise T2WMLExceptions.ValueOutOfBoundException("Cell " + cell_pyexcel_to_xlsx((column, row)) + " is outside the bounds of the current data file")
     return value
 
 

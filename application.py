@@ -5,7 +5,7 @@ from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from models import User, Project, ProjectFile, ProjectSheet, YamlFile, WikiRegionFile
 from Code.utility_functions import verify_google_login, check_if_string_is_invalid, validate_yaml
-from Code.CellConversions import  get_excel_column_index, get_excel_row_index
+from Code.CellConversions import  column_letter_to_index, one_index_to_zero_index
 from Code.handler import generate_download_file, wikifier
 from Code import T2WMLExceptions
 from Code.T2WMLExceptions import make_frontend_err_dict, T2WMLException
@@ -345,8 +345,8 @@ def get_cell_statement():
     This function returns the statement of a particular cell
     :return:
     """
-    column = get_excel_column_index(request.form["col"])
-    row = get_excel_row_index(request.form["row"])
+    column = column_letter_to_index(request.form["col"])
+    row = one_index_to_zero_index(request.form["row"])
     data={}
     try:
         project = get_project()

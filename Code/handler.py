@@ -11,7 +11,7 @@ from Code.bindings import bindings
 from Code.YamlParser import YAMLParser
 from Code.Region import Region
 from Code.utility_functions import check_if_string_is_invalid, translate_precision_to_integer, get_property_type
-from Code.CellConversions import parse_cell_range, get_actual_cell_index
+from Code.CellConversions import cell_range_xlsx_to_pyexcel, cell_pyexcel_to_xlsx
 from Code.t2wml_parser import get_cell
 from Code.triple_generator import generate_triples
 from Code.Grammar import ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression
@@ -83,7 +83,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 
     while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
         try:
-            data_cell = get_actual_cell_index((bindings["$col"], bindings["$row"]))
+            data_cell = cell_pyexcel_to_xlsx((bindings["$col"], bindings["$row"]))
             data["dataRegion"].add(data_cell)
             if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation)):
                 try:
@@ -95,19 +95,19 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
                             while not item.evaluate(bindings):
                                 bindings[variables[0]] += 1
                             col, row, value = item.evaluate_and_get_cell(bindings)
-                            item_cell = get_actual_cell_index((col, row))
+                            item_cell = cell_pyexcel_to_xlsx((col, row))
                             data["item"].add(item_cell)
                             del bindings[variables[0]]
                     else:
                         item_cell = get_cell(item)
-                        item_cell = get_actual_cell_index(item_cell)
+                        item_cell = cell_pyexcel_to_xlsx(item_cell)
                         data["item"].add(item_cell)
                 except AttributeError:
                     pass
             elif item and isinstance(item, (ColumnExpression, RowExpression)):
                 try:
                     item_cell = get_cell(item)
-                    item_cell = get_actual_cell_index(item_cell)
+                    item_cell = cell_pyexcel_to_xlsx(item_cell)
                     data["item"].add(item_cell)
                 except AttributeError:
                     pass
@@ -125,19 +125,19 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
                                     while not qualifier["value"].evaluate(bindings):
                                         bindings[variables[0]] += 1
                                     col, row, value = qualifier["value"].evaluate_and_get_cell(bindings)
-                                    qualifier_cell = get_actual_cell_index((col, row))
+                                    qualifier_cell = cell_pyexcel_to_xlsx((col, row))
                                     qualifier_cells.add(qualifier_cell)
                                     del bindings[variables[0]]
                             else:
                                 qualifier_cell = get_cell(qualifier["value"])
-                                qualifier_cell = get_actual_cell_index(qualifier_cell)
+                                qualifier_cell = cell_pyexcel_to_xlsx(qualifier_cell)
                                 qualifier_cells.add(qualifier_cell)
                         except AttributeError:
                             pass
                     elif isinstance(qualifier["value"], (ColumnExpression, RowExpression)):
                         try:
                             qualifier_cell = get_cell(qualifier["value"])
-                            qualifier_cell = get_actual_cell_index(qualifier_cell)
+                            qualifier_cell = cell_pyexcel_to_xlsx(qualifier_cell)
                             qualifier_cells.add(qualifier_cell)
                         except AttributeError:
                             pass
@@ -145,7 +145,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
         except Exception as exception:
             error = dict()
             error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
-            data['error'][get_actual_cell_index((bindings["$col"], bindings["$row"]))] = error
+            data['error'][cell_pyexcel_to_xlsx((bindings["$col"], bindings["$row"]))] = error
 
         if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
             bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
@@ -222,9 +222,9 @@ def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filep
             statement = evaluate_template(template, sparql_endpoint)
             if statement:
                 data.append(
-                    {'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'statement': statement})
+                    {'cell': cell_pyexcel_to_xlsx((bindings["$col"], bindings["$row"])), 'statement': statement})
         except Exception as e:
-            error.append({'cell': get_actual_cell_index((bindings["$col"], bindings["$row"])), 'error': str(e)})
+            error.append({'cell': cell_pyexcel_to_xlsx((bindings["$col"], bindings["$row"])), 'error': str(e)})
         if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
             bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
         else:
@@ -323,7 +323,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                     bindings[variables[0]] += 1
                                 col, row, _value = v.evaluate_and_get_cell(bindings)
                                 if _value:
-                                    temp_dict['cell'] = get_actual_cell_index((col, row))
+                                    temp_dict['cell'] = cell_pyexcel_to_xlsx((col, row))
                                     temp_dict[k] = _value
                                 else:
                                     skip_qualifier = True
@@ -331,7 +331,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                         else:
                             col, row, _value = v.evaluate_and_get_cell(bindings)
                             if _value:
-                                temp_dict['cell'] = get_actual_cell_index((col, row))
+                                temp_dict['cell'] = cell_pyexcel_to_xlsx((col, row))
                                 temp_dict[k] = _value
                             else:
                                 skip_qualifier = True
@@ -346,7 +346,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                                 col, row, _value = v.evaluate_and_get_cell(bindings)
                                 if _value:
                                     temp_dict[k] = _value
-                                    temp_dict['cell'] = get_actual_cell_index((col, row))
+                                    temp_dict['cell'] = cell_pyexcel_to_xlsx((col, row))
                                 else:
                                     skip_qualifier = True
                                 del bindings[variables[0]]
@@ -354,7 +354,7 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                             col, row, _value = v.evaluate_and_get_cell(bindings)
                             if _value:
                                 temp_dict[k] = _value
-                                temp_dict['cell'] = get_actual_cell_index((col, row))
+                                temp_dict['cell'] = cell_pyexcel_to_xlsx((col, row))
                             else:
                                 skip_qualifier = True
                     else:
@@ -390,9 +390,9 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                 else:
                     col, row, _value = value.evaluate_and_get_cell(bindings)
                 if key == "item":
-                    response['cell'] = get_actual_cell_index((col, row))
+                    response['cell'] = cell_pyexcel_to_xlsx((col, row))
                 if not _value:
-                    raise T2WMLExceptions.ItemNotFoundException("Couldn't find item for cell " + get_actual_cell_index((col, row)))
+                    raise T2WMLExceptions.ItemNotFoundException("Couldn't find item for cell " + cell_pyexcel_to_xlsx((col, row)))
                 else:
                     response[key] = _value
             elif isinstance(value, BooleanEquation):
@@ -404,15 +404,15 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
                         while not value.evaluate(bindings):
                             bindings[variables[0]] += 1
                         col, row, _value = value.evaluate_and_get_cell(bindings)
-                        response['cell'] = get_actual_cell_index((col, row))
+                        response['cell'] = cell_pyexcel_to_xlsx((col, row))
                         del bindings[variables[0]]
                 else:
                     col, row, _value = value.evaluate_and_get_cell(bindings)
-                    response['cell'] = get_actual_cell_index((col, row))
+                    response['cell'] = cell_pyexcel_to_xlsx((col, row))
                 if key == "item":
-                    response['cell'] = get_actual_cell_index((col, row))
+                    response['cell'] = cell_pyexcel_to_xlsx((col, row))
                 if not _value:
-                    raise T2WMLExceptions.ItemNotFoundException( "Couldn't find item for cell " + get_actual_cell_index((col, row)))
+                    raise T2WMLExceptions.ItemNotFoundException( "Couldn't find item for cell " + cell_pyexcel_to_xlsx((col, row)))
                 else:
                     response[key] = _value
             else:
@@ -444,8 +444,10 @@ def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: 
     file_name = uuid.uuid4().hex + ".csv"
     file_path = str(Path.cwd() / "temporary_files" / file_name)
     try:
-        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, start_row=cell_range[0][1],
-                                  row_limit=cell_range[1][1] - cell_range[0][1] + 1, start_column=cell_range[0][0],
+        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, 
+                                  start_row=cell_range[0][1],
+                                  row_limit=cell_range[1][1] - cell_range[0][1] + 1, 
+                                  start_column=cell_range[0][0],
                                   column_limit=cell_range[1][0] - cell_range[0][0] + 1)
         pyexcel.save_as(array=sheet, dest_file_name=file_path)
     except IOError:
@@ -491,7 +493,7 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None):
     :param sheet_name:
     :return:
     """
-    cell_range = parse_cell_range(region)
+    cell_range = cell_range_xlsx_to_pyexcel(region)
     file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
     cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
     return cell_qnode_map

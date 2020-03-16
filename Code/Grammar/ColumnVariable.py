@@ -1,4 +1,4 @@
-from Code.CellConversions import get_excel_column_index
+from Code.CellConversions import column_letter_to_index
 
 
 class ColumnVariable:
@@ -17,7 +17,7 @@ class ColumnVariable:
             if value is not None:
                 return value
         except KeyError:
-            return get_excel_column_index(self.value)
+            return column_letter_to_index(self.value)
 
     def check_for_left(self) -> bool:
         """

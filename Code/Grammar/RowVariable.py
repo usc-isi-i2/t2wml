@@ -1,4 +1,4 @@
-from Code.CellConversions import get_excel_row_index
+from Code.CellConversions import one_index_to_zero_index
 
 
 class RowVariable:
@@ -17,7 +17,7 @@ class RowVariable:
             if value is not None:
                 return value
         except KeyError:
-            return get_excel_row_index(self.value)
+            return one_index_to_zero_index(self.value)
 
     def check_for_top(self) -> bool:
         """
