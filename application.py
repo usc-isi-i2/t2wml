@@ -453,10 +453,10 @@ def get_project_files():
             item_table=project_file.current_sheet.get_item_table()
             serialized_item_table = item_table.serialize_table(project.sparql_endpoint)
             response["wikifierData"] = serialized_item_table
+			
 
-            yaml_file=project_file.current_sheet.yaml_file
-            if yaml_file:
-                response["yamlData"] = yaml_file.handle()
+            y=YamlFile.get_handler(project_file.current_sheet)
+            response["yamlData"]=y
 
     response_json = json.dumps(response)
     return response_json

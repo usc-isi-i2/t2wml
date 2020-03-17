@@ -7,6 +7,7 @@ from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
 from Code.utility_functions import get_sheet_names, save_wikified_result, excel_to_json
 from Code.ItemTable import ItemTable
 from Code.handler import resolve_cell, load_yaml_data, highlight_region, add_excel_file_to_bindings,  process_wikified_output_file
+from Code.T2WMLExceptions import T2WMLException
 
 def generate_id() -> str:
     """
@@ -380,9 +381,11 @@ class YamlFile(db.Model):
     @staticmethod
     def get_handler(sheet):
         if sheet.yaml_file:
-            return sheet.yaml_file.handle()
-        return {"yamlData":None}
-
+            try:
+                return sheet.yaml_file.handle()
+            except Exception as e:
+                return None #TODO: can't return a better error here yet, it breaks the frontend
+        return None
     @property
     def yaml_file_name(self): 
         return str(self.id) + ".yaml"
