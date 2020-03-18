@@ -4,8 +4,8 @@ statementMapping:
     # region (a region per country) by binding $left, $right based on a predicate.
     - left: value($col/3) != "" -> $col
       right: $left+2
-      top: 4
-      bottom: 11
+      top: 5
+      bottom: 10
   template:
     item: item($left/3)
     property: C3002 # murder

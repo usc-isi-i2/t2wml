@@ -1,9 +1,9 @@
 statementMapping:
   region:
-    - left: C
-      right: G
-      top: 3
-      bottom: 10
+    - left: D
+      right: F
+      top: 4
+      bottom: 9
   template:
     item: item(A/$row)
     property: P100024 # murder

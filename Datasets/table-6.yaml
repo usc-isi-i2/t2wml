@@ -1,9 +1,9 @@
 statementMapping:
   region:
-    - left: B
-      right: K
-      top: 5
-      bottom: 9
+    - left: C
+      right: J
+      top: 6
+      bottom: 8
       skip_column:
         - value($col/5) = "Source"
   template:

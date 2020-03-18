@@ -1,9 +1,9 @@
 statementMapping:
   region:
-    - left: B
-      right: E
-      top: 19
-      bottom: 31
+    - left: C
+      right: D
+      top: 20
+      bottom: 30
       # in addition to skipping, we name the row years, there will be
       # multiple rows named years. % symbol assigns a name to the row
       # one could also specify % years[B:D] to name a range of cells

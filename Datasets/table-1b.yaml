@@ -1,9 +1,9 @@
 statementMapping:
   region:
-    - left: C
-      right: G
-      top: 4
-      bottom: 14 # value(B:/$) = ""
+    - left: D
+      right: F
+      top: 5
+      bottom: 13 # value(B:/$) = ""
       skip_row:
         - value(C/$row) = "Total"
       skip_cell:

@@ -1,8 +1,8 @@
 statementMapping:
   region:
-    - left: B
-      right: E
-      top: 3
+    - left: C
+      right: D
+      top: 4
       bottom: value(A:D/$top+n) = "" -> $top+n-1
       skip_row:
         - value(A:B/$row) = "" and value(C:D/$row) != ""
