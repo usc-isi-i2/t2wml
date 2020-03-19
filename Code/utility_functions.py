@@ -95,7 +95,6 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     column_index_map = {}
     if not sheet_name:
         sheet_name=get_first_sheet_name(file_path)
-    add_row_in_data_file(file_path, sheet_name)
     book = pyexcel.get_book(file_name=file_path)
     sheet = book[sheet_name]
     for i in range(len(sheet[0])):
