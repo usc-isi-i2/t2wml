@@ -44,6 +44,8 @@ def one_index_to_zero_index(row: Union[str, int]) -> int:
 
     return int(row) - 1
 
+def zero_index_to_one_index(cell_index: int):
+    return cell_index+ 1
 
 def cell_pyexcel_to_xlsx(cell_index: tuple) -> str:
     """
@@ -54,7 +56,7 @@ def cell_pyexcel_to_xlsx(cell_index: tuple) -> str:
     :return:
     """
     col = column_index_to_letter(int(cell_index[0]))
-    row = str(int(cell_index[1]) + 1)
+    row = str(zero_index_to_one_index(int(cell_index[1])))
     return col + row
 
 

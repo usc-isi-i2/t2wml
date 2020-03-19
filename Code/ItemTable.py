@@ -3,7 +3,7 @@ import pyexcel
 
 from Code.utility_functions import check_if_string_is_invalid, natural_sort_key,  \
 	 query_wikidata_for_label_and_description
-from Code.CellConversions import column_index_to_letter, cell_xlsx_to_pyexcel, cell_pyexcel_to_xlsx
+from Code.CellConversions import column_index_to_letter, cell_xlsx_to_pyexcel, cell_pyexcel_to_xlsx, zero_index_to_one_index
 from collections import defaultdict
 import json
 import numpy as np
@@ -168,8 +168,8 @@ class ItemTable:
 		items_not_in_wiki = set()
 		for cell, desc in self.table.items():
 			col = column_index_to_letter(int(cell[0]))
-			row = str(int(cell[1]) + 1)
-			cell = col+row
+			row = zero_index_to_one_index(int(cell[1]))
+			cell = cell_pyexcel_to_xlsx(cell)
 			value = desc['__CELL_VALUE__']
 			for context, item in desc.items():
 				if context != '__CELL_VALUE__':
