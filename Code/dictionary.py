@@ -1,18 +1,7 @@
-from Code.ValueExpression import ValueExpression
-from Code.CellExpression import CellExpression
-from Code.ColumnExpression import ColumnExpression
-from Code.RowExpression import RowExpression
-from Code.ColumnVariable import ColumnVariable
-from Code.RowVariable import RowVariable
-from Code.CellOperatorArgument import CellOperatorArgument
-from Code.BooleanEquation import BooleanEquation
-from Code.BooleanExpression import BooleanExpression
-from Code.OrExpression import OrExpression
-from Code.AndExpression import AndExpression
-from Code.Expression import Expression
-from Code.ItemExpression import ItemExpression
-from Code.ColumnRangeExpression import ColumnRangeExpression
-from Code.RowRangeExpression import RowRangeExpression
+from Code.Grammar import ValueExpression, CellExpression, ColumnExpression, RowExpression,\
+    ColumnVariable, RowVariable, CellOperatorArgument, BooleanEquation, BooleanExpression, OrExpression,\
+        AndExpression, Expression, ItemExpression, ColumnRangeExpression, RowRangeExpression
+
 
 class_dictionary = {
     'value_expression': ValueExpression,

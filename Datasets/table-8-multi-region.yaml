@@ -1,7 +1,7 @@
 statementMapping:
   region:
-    - left: B
-      right: E
+    - left: C
+      right: D
       # this formula will bind multiple times: top = 4, 8, 12 
       # bottom is not specified, so the system should set bottom as
       # far bottom as it can without going below the next top.

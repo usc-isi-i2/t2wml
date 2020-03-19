@@ -1,9 +1,9 @@
 statementMapping:
   region:
-    - left: B
-      right: I
-      top: 4
-      bottom: 8
+    - left: C
+      right: H
+      top: 5
+      bottom: 7
   template:
     item: item(A/$row)
     property: C3002 # murder
@@ -18,3 +18,5 @@ statementMapping:
         format: "%Y"
       - property: P6001 # applies to people
         value: item($col-n/4)
+      - property: P123 #source
+        value: item(B/$row)

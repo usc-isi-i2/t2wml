@@ -11,4 +11,6 @@ typing==3.7.4.1
 PyYAML==5.1.2
 Werkzeug==0.16.0
 google-api-python-client==1.7.11
-https://github.com/usc-isi-i2/etk/archive/development.zip
+etk
+Flask-Migrate==2.5.2
+Flask-SQLAlchemy==2.4.1

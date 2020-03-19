@@ -113,3 +113,6 @@ config/*
 # gui
 /gui/node_modules/*
 /gui/build/*
+
+# user files
+uploads

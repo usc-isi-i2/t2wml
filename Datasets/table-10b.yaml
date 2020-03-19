@@ -1,9 +1,9 @@
 statementMapping:
   region:
-    - left: C
-      right: E
-      top: 4
-      bottom: 25
+    - left: D
+      right: D
+      top: 5
+      bottom: 24
       skip_row:
         - value(B:D/$row) = "" and value(A/$row) != ""
   template:

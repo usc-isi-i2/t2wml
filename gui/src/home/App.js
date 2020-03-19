@@ -85,8 +85,13 @@ class App extends React.Component {
       // do something here
       if (json !== null) {
         // success
-        this.setState({ projectData: json });
-        this.handleSortProjects("mdate", false);
+          if(json['error'] !== null){
+            console.log(json['error']);
+          }
+          else{
+            this.setState({ projectData: json['projects'] });
+            this.handleSortProjects("mdate", false);
+          }
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -180,8 +185,13 @@ class App extends React.Component {
       // do something here
       if (json !== null) {
         // success
-        const { sortBy, isAscending } = this.state;
-        this.handleSortProjects(sortBy, isAscending, json);
+        if (json['error'] !== null){
+          console.log(json['error'])
+        }
+        else {
+          const {sortBy, isAscending} = this.state;
+          this.handleSortProjects(sortBy, isAscending, json['projects']);
+        }
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request")
@@ -280,8 +290,13 @@ class App extends React.Component {
       // do something here
       if (json !== null) {
         // success
-        const { sortBy, isAscending } = this.state;
-        this.handleSortProjects(sortBy, isAscending, json);
+        if (json['error'] !== null){
+          console.log(json['error'])
+        }
+        else{
+          const { sortBy, isAscending } = this.state;
+          this.handleSortProjects(sortBy, isAscending, json['projects']);
+        }
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request")

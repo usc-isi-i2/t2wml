@@ -2,13 +2,11 @@ from typing import Union
 
 import yaml
 
-from Code.ColumnExpression import ColumnExpression
-from Code.ItemExpression import ItemExpression
-from Code.RowExpression import RowExpression
-from Code.ValueExpression import ValueExpression
+from Code.Grammar import BooleanEquation, ColumnExpression, ItemExpression, RowExpression, ValueExpression
 from Code.bindings import bindings
-from Code.BooleanEquation import BooleanEquation
-from Code.t2wml_parser import parse_and_evaluate, generate_tree
+from Code import T2WMLExceptions
+
+from Code.t2wml_parser import generate_tree
 
 
 class YAMLParser:
@@ -35,7 +33,12 @@ class YAMLParser:
         has_top = bottom.check_for_top()
         has_bottom = top.check_for_bottom()
 
-        if not (has_left and has_right):
+        left_has_left = left.check_for_left()
+        right_has_right = right.check_for_right()
+        top_has_top = top.check_for_top()
+        bottom_has_bottom = bottom.check_for_bottom()
+
+        if not (has_left and has_right) and not left_has_left and not right_has_right:
             if has_left and not has_right:
                 left = self.iterate_on_variables(left, bindings)
                 bindings['$left'] = left
@@ -52,9 +55,12 @@ class YAMLParser:
                 bindings['$left'] = left
                 bindings['$right'] = right
         else:
-            return {'error': 'Recursive definition of left and right region parameters'}
+            raise T2WMLExceptions.ConstraintViolationErrorException("Recursive definition of left and right region parameters.")
 
-        if not (has_top and has_bottom):
+        if bindings['$left'] > bindings['$right']:
+            raise T2WMLExceptions.ConstraintViolationErrorException("Value of left should be less than or equal to right")
+
+        if not (has_top and has_bottom) and not top_has_top and not bottom_has_bottom:
             if has_top and not has_bottom:
                 top = self.iterate_on_variables(top, bindings)
                 bindings['$top'] = top
@@ -71,7 +77,10 @@ class YAMLParser:
                 bindings['$top'] = top
                 bindings['$bottom'] = bottom
         else:
-            return {'error': 'Recursive definition of top and bottom region parameters'}
+            raise T2WMLExceptions.ConstraintViolationErrorException( "Recursive definition of top and bottom region parameters.")
+
+        if bindings['$top'] > bindings['$bottom']:
+            raise T2WMLExceptions.ConstraintViolationErrorException("Value of top should be less than or equal to bottom")
 
         if 'skip_row' in self.yaml_data['statementMapping']['region'][0]:
             skip_row = list()
@@ -175,15 +184,28 @@ class YAMLParser:
             else:
                 template["value"] = template_value
 
+        _template = self.yaml_data['statementMapping']['template']
+        for key in _template:
+            if key not in ('item', 'property', 'value', 'qualifier'):
+                if not _template[key].isalnum():
+                    template[key] = generate_tree(_template[key])
+                    template[key].get_variable_cell_operator_arguments()
+
+                else:
+                    template[key] = _template[key]
+
         if template.get('qualifier', None):
             for i in range(len(template['qualifier'])):
-                qualifier_value = str(template['qualifier'][i]['value'])
-                if qualifier_value:
-                    if not qualifier_value.isalnum():
-                        template['qualifier'][i]['value'] = generate_tree(qualifier_value)
-                        var = template['qualifier'][i]['value'].get_variable_cell_operator_arguments()
-                    else:
-                        template['qualifier'][i]['value'] = qualifier_value
+                qualifier_keys = list(template['qualifier'][i])
+                for qualifier_key in qualifier_keys:
+                    if qualifier_key != 'property' and qualifier_key != 'format':
+                        qualifier_value = str(template['qualifier'][i][qualifier_key])
+                        if qualifier_value:
+                            if not qualifier_value.isalnum():
+                                template['qualifier'][i][qualifier_key] = generate_tree(qualifier_value)
+                                var = template['qualifier'][i]['value'].get_variable_cell_operator_arguments()
+                            else:
+                                template['qualifier'][i][qualifier_key] = qualifier_value
 
     def get_template(self) -> dict:
         """

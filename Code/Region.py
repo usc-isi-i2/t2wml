@@ -1,10 +1,17 @@
 import pyexcel
-
-from Code.RegionNode import RegionNode
 from collections import OrderedDict
 from Code.ItemTable import ItemTable
-from Code.utility_functions import check_if_string_is_invalid
+from Code.utility_functions import check_if_string_is_invalid, get_cell_value
 
+
+class RegionNode:
+    def __init__(self):
+        self.left = None
+        self.right = None
+        self.top = None
+        self.bottom = None
+        self.next = None
+        self.previous = None
 
 class Region:
 	def __init__(self, region_params: dict, item_table: ItemTable, data_file_path: str, sheet_name: str):
@@ -30,8 +37,8 @@ class Region:
 		skipped_columns = set()
 		skipped_cells = set()
 
-		for column in range(self.left + 1, self.right):
-			for row in range(self.top + 1, self.bottom):
+		for column in range(self.left, self.right+1):
+			for row in range(self.top, self.bottom+1):
 				temp_bindings['$col'] = column
 				temp_bindings['$row'] = row
 				row_be_skipped = False
@@ -39,7 +46,7 @@ class Region:
 				cell_be_skipped = False
 				is_cell_value_invalid = False
 
-				if check_if_string_is_invalid(str(temp_bindings['excel_sheet'][row, column])):
+				if check_if_string_is_invalid(get_cell_value(temp_bindings, row, column)):
 					is_cell_value_invalid = True
 
 				if self.skip_row:
@@ -64,25 +71,25 @@ class Region:
 					skipped_cells.add((column, row))
 
 				region_node = RegionNode()
-				if row - 1 == self.top:
+				if row == self.top:
 					region_node.top = None
 				else:
-					region_node.top = (column, row - 1)
+					region_node.top = (column, row)
 
-				if row + 1 == self.bottom:
+				if row == self.bottom:
 					region_node.bottom = None
 				else:
-					region_node.bottom = (column, row + 1)
+					region_node.bottom = (column, row)
 
-				if column - 1 == self.left:
+				if column == self.left:
 					region_node.left = None
 				else:
-					region_node.left = (column - 1, row)
+					region_node.left = (column, row)
 
-				if column + 1 == self.right:
+				if column == self.right:
 					region_node.right = None
 				else:
-					region_node.right = (column + 1, row)
+					region_node.right = (column, row)
 
 				region_node.previous = previous
 				if previous:
@@ -92,12 +99,12 @@ class Region:
 				self.sheet[(column, row)] = region_node
 
 		for row in skipped_rows:
-			for col in range(self.left + 1, self.right):
+			for col in range(self.left, self.right+1):
 				if (col, row) in self.sheet:
 					self.add_hole(row, col, col)
 
 		for col in skipped_columns:
-			for row in range(self.top + 1, self.bottom):
+			for row in range(self.top, self.bottom+1):
 				if (col, row) in self.sheet:
 					self.add_hole(row, col, col)
 
