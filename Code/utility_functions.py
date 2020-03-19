@@ -109,7 +109,6 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
             r[column_index_map[col + 1]] = sheet[row, col]
         sheet_data['rowData'].append(r)
 
-    book.save_as(file_path)
     return sheet_data
 
 
