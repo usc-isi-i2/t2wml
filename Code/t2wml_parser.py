@@ -13,7 +13,8 @@ from pathlib import Path
 __CWD__ = os.getcwd()
 
 # instantiate Lark Parser
-parser = Lark(open(str(Path(__file__).parent.absolute() / 'grammar.lark')))
+with open(str(Path(__file__).parent.absolute() / 'grammar.lark'), 'r') as f:
+    parser = Lark(f)
 
 
 def generate_tree(program: str) -> Union[ValueExpression]:

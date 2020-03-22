@@ -20,8 +20,8 @@ def model_data(properties_file_path, output_file_path) -> None:
     :return:
     """
     # stream = open(Path.cwd().parent / "Datasets/new-property-configuration.yaml", 'r', encoding='utf8')
-    stream = open(properties_file_path, 'r', encoding='utf8')
-    yaml_data = yaml.safe_load(stream)
+    with open(properties_file_path, 'r', encoding='utf8') as f:
+        yaml_data = yaml.safe_load(f)
     # initialize
     kg_schema = KGSchema()
     kg_schema.add_schema('@prefix : <http://isi.edu/> .', 'ttl')
