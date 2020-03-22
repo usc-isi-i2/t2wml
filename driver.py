@@ -1,10 +1,10 @@
 import os
 from Code.ItemTable import ItemTable
-from Code.handler import generate_download_file, load_yaml_data, process_wikified_output_file
+from Code.handler import generate_download_file, process_wikified_output_file
 from models import YamlObject
 from pathlib import Path
 from etk.wikidata import serialize_change_record
-from Code.utility_functions import get_first_sheet_name, add_row_in_data_file
+from Code.Spreadsheets.Utilities import get_first_sheet_name, add_row_in_data_file
 import logging
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
@@ -22,12 +22,13 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
             logging.error("Data file has no extension")
             return
         new_file_path = str(Path.cwd() / 'temporary_files' / file_name)
+        #os.makedirs(str(Path.cwd() / 'temporary_files'), exist_ok=True)
         add_row_in_data_file(data_file_path, sheet_name, new_file_path)
-    except KeyError:
-        logging.error("Invalid sheet name")
+    except KeyError as e:
+        logging.error("Invalid sheet name:"+str(e))
         return
-    except Exception:
-        logging.error("Invalid data file")
+    except Exception as e:
+        logging.error("Invalid data file"+str(e))
         return
 
     try:
@@ -39,18 +40,16 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         return
 
     try:
-        yaml_configuration = YamlObject()
-        region, template, created_by = load_yaml_data(t2wml_spec, item_table, new_file_path, sheet_name)
-        yaml_configuration.region=region
-        yaml_configuration.template=template
+        yaml_configuration = YamlObject.create(t2wml_spec, item_table, new_file_path, sheet_name)
     except Exception as e:
         logging.error("Invalid YAML File")
         return
 
     filetype = "ttl"
 
-    response = generate_download_file(None, item_table, new_file_path, sheet_name, region, template, filetype,
-                                      sparql_endpoint, created_by=created_by, debug=debug)
+    response = generate_download_file(None, item_table, new_file_path, sheet_name, yaml_configuration.region, 
+                                      yaml_configuration.template, filetype,
+                                      sparql_endpoint, created_by=yaml_configuration.created_by, debug=debug)
     result_directory = '.'.join(file_name.split(".")[:-1])
 
     output_path = Path()

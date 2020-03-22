@@ -1,10 +1,10 @@
 statementMapping:
   created_by: t2wml_unittests
   region:
-    - left: A
-      right: D
-      top: 1
-      bottom: 15
+    - left: B
+      right: C
+      top: 2
+      bottom: 14
   template:
     item: item(A/$row)
     property: P2067 # weight
