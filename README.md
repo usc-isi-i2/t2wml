@@ -19,16 +19,9 @@
     pip install -r requirements.txt
     python -m spacy download en_core_web_sm
     ```
-3. Make sure the database is up-to-date:
-	set the FLASK_AP environmental variable to app_config.py
-	Powershell: ${env:FLASK_APP}='app_config.py';
-	Unix: export FLASK_APP=microblog.py
-	Then run:
-   ```flask db upgrade```
-  
-4. Run server:
+3. Run server:
    ```python application.py```
-5. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)
+4. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)
 
 <span id="usage_within_code"></span>
 ## Usage Within Code
