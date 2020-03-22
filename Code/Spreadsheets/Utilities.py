@@ -1,0 +1,124 @@
+#isolating all spreadsheet management code here
+
+import pandas
+import pickle
+import pyexcel
+import uuid
+from pathlib import Path
+
+from Code.bindings import bindings
+from Code import T2WMLExceptions
+from Code.Spreadsheets.Conversions import cell_tuple_to_str, column_index_to_letter
+
+def get_cell_value(bindings, row, column):
+    try:
+        value = str(bindings['excel_sheet'][row, column]).strip()
+    except IndexError:
+        raise T2WMLExceptions.ValueOutOfBoundException("Cell " + cell_tuple_to_str((column, row)) + " is outside the bounds of the current data file")
+    return value
+
+
+def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
+    """
+    This function reads the excel file and add the pyexcel object to the bindings
+    :return: None
+    """
+    try:
+        records = pyexcel.get_book(file_name=excel_filepath)
+        if not sheet_name:
+            bindings["excel_sheet"] = records[0]
+        else:
+            bindings["excel_sheet"] = records[sheet_name]
+
+    except IOError:
+        raise IOError('Excel File cannot be found or opened')
+
+def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: str = None) -> str:
+    """
+    This function creates a temporary csv file of the region which has to be sent to the wikifier service for wikification
+    :param cell_range:
+    :param excel_filepath:
+    :param sheet_name:
+    :return:
+    """
+    file_name = uuid.uuid4().hex + ".csv"
+    file_path = str(Path.cwd() / "temporary_files" / file_name)
+    try:
+        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, 
+                                  start_row=cell_range[0][1],
+                                  row_limit=cell_range[1][1] - cell_range[0][1] + 1, 
+                                  start_column=cell_range[0][0],
+                                  column_limit=cell_range[1][0] - cell_range[0][0] + 1)
+        pyexcel.save_as(array=sheet, dest_file_name=file_path)
+    except IOError:
+        raise IOError('Excel File cannot be found or opened')
+    return file_path
+
+def get_sheet(sheet_name, file_name):
+    sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_name)
+    return sheet
+
+def add_row_in_data_file(file_path: str, sheet_name: str, destination_path: str = None):
+    """
+    This function adds a new blank row at the end of the excel file
+    :param destination_path:
+    :param file_path:
+    :param sheet_name:
+    :return:
+    """
+    book = pyexcel.get_book(file_name=file_path)
+    num_of_cols = len(book[sheet_name][0])
+    blank_row = [" "] * num_of_cols
+    if book[sheet_name].row[-1] != blank_row:
+        book[sheet_name].row += blank_row
+    if not destination_path:
+        book.save_as(file_path)
+    else:
+        book.save_as(destination_path)
+
+
+def get_first_sheet_name(file_path: str):
+    """
+    This function returns the first sheet name of the excel file
+    :param file_path:
+    :return:
+    """
+    book_dict = pyexcel.get_book_dict(file_name=file_path)
+    for sheet in book_dict.keys():
+        return sheet
+
+def get_sheet_names(file_path):
+    sheet_names=list()
+    book_dict = pyexcel.get_book_dict(file_name=file_path)
+    for sheet in book_dict.keys():
+        sheet_names.append(sheet)
+    first_sheet_name=sheet_names[0]
+    return sheet_names, first_sheet_name
+
+def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
+    """
+    This function reads the excel file and converts it to JSON
+    :param file_path:
+    :param sheet_name:
+    :param want_sheet_names:
+    :return:
+    """
+    sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
+    column_index_map = {}
+    if not sheet_name:
+        sheet_name=get_first_sheet_name(file_path)
+    add_row_in_data_file(file_path, sheet_name)
+    book = pyexcel.get_book(file_name=file_path)
+    sheet = book[sheet_name]
+    for i in range(len(sheet[0])):
+        column = column_index_to_letter(i)
+        column_index_map[i + 1] = column
+        sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
+    for row in range(len(sheet)):
+        r = {'^': str(row + 1)}
+        for col in range(len(sheet[row])):
+            sheet[row, col] = str(sheet[row, col]).strip()
+            r[column_index_map[col + 1]] = sheet[row, col]
+        sheet_data['rowData'].append(r)
+
+    return sheet_data

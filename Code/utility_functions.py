@@ -1,6 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 import string
-import pyexcel
 import os
 import re
 import json
@@ -15,7 +14,6 @@ import yaml
 from Code import T2WMLExceptions
 from Code.property_type_map import property_type_map
 from app_config import GOOGLE_CLIENT_ID
-from Code.CellConversions import column_index_to_letter, cell_pyexcel_to_xlsx
 
 
 
@@ -46,69 +44,7 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     return type
 
 
-def add_row_in_data_file(file_path: str, sheet_name: str, destination_path: str = None):
-    """
-    This function adds a new blank row at the end of the excel file
-    :param destination_path:
-    :param file_path:
-    :param sheet_name:
-    :return:
-    """
-    book = pyexcel.get_book(file_name=file_path)
-    num_of_cols = len(book[sheet_name][0])
-    blank_row = [" "] * num_of_cols
-    if book[sheet_name].row[-1] != blank_row:
-        book[sheet_name].row += blank_row
-    if not destination_path:
-        book.save_as(file_path)
-    else:
-        book.save_as(destination_path)
 
-
-def get_first_sheet_name(file_path: str):
-    """
-    This function returns the first sheet name of the excel file
-    :param file_path:
-    :return:
-    """
-    book_dict = pyexcel.get_book_dict(file_name=file_path)
-    for sheet in book_dict.keys():
-        return sheet
-
-def get_sheet_names(file_path):
-    sheet_names=list()
-    book_dict = pyexcel.get_book_dict(file_name=file_path)
-    for sheet in book_dict.keys():
-        sheet_names.append(sheet)
-    first_sheet_name=sheet_names[0]
-    return sheet_names, first_sheet_name
-
-def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
-    """
-    This function reads the excel file and converts it to JSON
-    :param file_path:
-    :param sheet_name:
-    :param want_sheet_names:
-    :return:
-    """
-    sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
-    column_index_map = {}
-    if not sheet_name:
-        sheet_name=get_first_sheet_name(file_path)
-    book = pyexcel.get_book(file_name=file_path)
-    sheet = book[sheet_name]
-    for i in range(len(sheet[0])):
-        column = column_index_to_letter(i)
-        column_index_map[i + 1] = column
-        sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
-    for row in range(len(sheet)):
-        r = {'^': str(row + 1)}
-        for col in range(len(sheet[row])):
-            sheet[row, col] = str(sheet[row, col]).strip()
-            r[column_index_map[col + 1]] = sheet[row, col]
-        sheet_data['rowData'].append(r)
-
-    return sheet_data
 
 
 def check_special_characters(text: str) -> bool:
@@ -251,15 +187,6 @@ def item_exists(item_table, col, row, context):
     if (col, row) in item_table.table and context in item_table.table[(col,row)]:
         return True
     return False
-
-
-def get_cell_value(bindings, row, column):
-    try:
-        value = str(bindings['excel_sheet'][row, column]).strip()
-    except IndexError:
-        raise T2WMLExceptions.ValueOutOfBoundException("Cell " + cell_pyexcel_to_xlsx((column, row)) + " is outside the bounds of the current data file")
-    return value
-
 
 def validate_yaml(yaml_file_path, sparql_endpoint):
     with open(yaml_file_path, 'r') as stream:

@@ -1,9 +1,8 @@
 from typing import Union
-import pyexcel
-
+from Code.Spreadsheets.Utilities import get_sheet
 from Code.utility_functions import check_if_string_is_invalid, natural_sort_key,  \
 	 query_wikidata_for_label_and_description
-from Code.CellConversions import column_index_to_letter, cell_xlsx_to_pyexcel, cell_pyexcel_to_xlsx
+from Code.Spreadsheets.Conversions import column_index_to_letter, cell_str_to_tuple, cell_tuple_to_str
 from collections import defaultdict
 import json
 import numpy as np
@@ -14,7 +13,7 @@ class ItemTable:
 		if region_map:
 			self.table = defaultdict(dict)
 			for key, value in region_map['table'].items():
-				self.table[cell_xlsx_to_pyexcel(key)] = value
+				self.table[cell_str_to_tuple(key)] = value
 			self.item_wiki = region_map['item_wiki']
 		else:
 			# self.table = { (col, row): {value:value, context1:item, context2: item}}}
@@ -23,7 +22,7 @@ class ItemTable:
 			self.item_wiki = dict()
 
 	def update_table(self, data_frame, data_filepath: str, sheet_name: str = None, flag: int = None):
-		sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=data_filepath)
+		sheet = get_sheet(sheet_name, data_filepath)
 		col_names = data_frame.columns.values
 		index_of = {val: index for index, val in enumerate(col_names)}
 		data_frame[['context']] = data_frame[['context']].fillna(value='__NO_CONTEXT__')
@@ -159,7 +158,7 @@ class ItemTable:
 	def to_json(self):
 		temp_table = dict()
 		for key, value in self.table.items():
-			temp_table[cell_pyexcel_to_xlsx(key)] = value
+			temp_table[cell_tuple_to_str(key)] = value
 		json_object = {'table': temp_table, 'item_wiki': self.item_wiki}
 		return json.dumps(json_object, indent=3)
 

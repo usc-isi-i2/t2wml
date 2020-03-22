@@ -4,10 +4,11 @@ from uuid import uuid4
 import json
 import copy
 from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
-from Code.utility_functions import get_sheet_names, save_wikified_result, excel_to_json
 from Code.ItemTable import ItemTable
-from Code.handler import resolve_cell, load_yaml_data, highlight_region, add_excel_file_to_bindings,  process_wikified_output_file
 from Code.T2WMLExceptions import T2WMLException
+from Code.utility_functions import save_wikified_result
+from Code.Spreadsheets.Utilities import get_sheet_names, excel_to_json, add_excel_file_to_bindings
+from Code.handler import resolve_cell, load_yaml_data, highlight_region, process_wikified_output_file
 
 def generate_id() -> str:
     """

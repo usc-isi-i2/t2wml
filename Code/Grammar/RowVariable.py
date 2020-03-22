@@ -1,4 +1,4 @@
-from Code.CellConversions import one_index_to_zero_index
+from Code.Spreadsheets.Conversions import one_index_to_zero_index
 
 
 class RowVariable:

@@ -1,4 +1,4 @@
-from Code.CellConversions import column_letter_to_index
+from Code.Spreadsheets.Conversions import column_letter_to_index
 
 
 class ColumnVariable:

@@ -19,7 +19,7 @@ def column_index_to_letter(n: int) -> str:
 
 def column_letter_to_index(column: str) -> int:
     """
-    This function converts an excel column to its respective 0-indexed column index (for pyexcel)
+    This function converts a letter column to its respective 0-indexed column index
     viz. 'A' to 0
     'AZ' to 51
     :param column:
@@ -45,9 +45,9 @@ def one_index_to_zero_index(row: Union[str, int]) -> int:
     return int(row) - 1
 
 
-def cell_pyexcel_to_xlsx(cell_index: tuple) -> str:
+def cell_tuple_to_str(cell_index: tuple) -> str:
     """
-    This function converts the cell notation used by pyexcel package (0-indexed tuples)
+    This function converts 0-indexed tuples cell notation
     to the cell notation used by excel (letter + 1-indexed number, in a string)
     Eg: (0,5) to A6, (51, 5) to AZ6
     :param cell_index: (col, row)
@@ -58,10 +58,10 @@ def cell_pyexcel_to_xlsx(cell_index: tuple) -> str:
     return col + row
 
 
-def cell_xlsx_to_pyexcel(cell: str):
+def cell_str_to_tuple(cell: str):
     """
     This function converts the cell notation used by excel (letter + 1-indexed number, in a string)
-    to the cell notation  used by pyexcel package (0-indexed tuples)
+    to 0-indexed tuples cell notation 
     Eg:  A6 to 0,5
     :param cell_index: (col, row)
     :return:
@@ -71,7 +71,7 @@ def cell_xlsx_to_pyexcel(cell: str):
     return column_letter_to_index(column), one_index_to_zero_index(row)
 
 
-def cell_range_xlsx_to_pyexcel(cell_range: str) -> Tuple[Sequence[int], Sequence[int]]:
+def cell_range_str_to_tuples(cell_range: str) -> Tuple[Sequence[int], Sequence[int]]:
     """
     This function parses the cell range and returns the row and column indices supported by pyexcel
     For eg: A4:B5 to (0, 3), (1, 4)
@@ -79,6 +79,6 @@ def cell_range_xlsx_to_pyexcel(cell_range: str) -> Tuple[Sequence[int], Sequence
     :return:
     """
     cells = cell_range.split(":")
-    start_cell = cell_xlsx_to_pyexcel(cells[0])
-    end_cell = cell_xlsx_to_pyexcel(cells[1])
+    start_cell = cell_str_to_tuple(cells[0])
+    end_cell = cell_str_to_tuple(cells[1])
     return start_cell, end_cell

@@ -1,5 +1,5 @@
 from typing import Union
-from Code.utility_functions import get_cell_value
+from Code.Spreadsheets.Utilities import get_cell_value
 from Code import T2WMLExceptions
 
 
