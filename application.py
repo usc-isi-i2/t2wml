@@ -3,7 +3,7 @@ import sys
 import json
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
-from models import User, Project, ProjectFile, ProjectSheet, YamlFile, WikiRegionFile
+from Code.models import User, Project, ProjectFile, ProjectSheet, YamlFile, WikiRegionFile
 from Code.utility_functions import verify_google_login, check_if_string_is_invalid, validate_yaml
 from Code.Spreadsheets.Conversions import  column_letter_to_index, one_index_to_zero_index
 from Code.handler import generate_download_file, wikifier

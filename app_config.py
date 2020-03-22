@@ -38,23 +38,10 @@ DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sp
 GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
 
 db = SQLAlchemy(app)
-from models import *
+from Code.models import *
 
 migrate = Migrate(app, db)
 
 
-
-#automatically upgrade database if it hasn't been created or updated yet
-from contextlib import redirect_stdout
-import io
-print("checking if database is up to date...")
-f = io.StringIO()
 with app.app_context():
-    with redirect_stdout(f):
-        current()
-    s = f.getvalue()
-    if "(head)" not in s:
-        print("database not up to date, upgrading...")
-        upgrade()
-    else:
-        print("Database up to date")
+    upgrade(directory=os.path.join(basedir, 'migrations'))

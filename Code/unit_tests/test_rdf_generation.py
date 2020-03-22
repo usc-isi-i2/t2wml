@@ -1,7 +1,7 @@
 import os, sys, inspect
 
 try:
-    from models import User, Project, ProjectFile, YamlObject
+    from Code.models import User, Project, ProjectFile, YamlObject
 except:
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     print(currentdir)
@@ -9,7 +9,7 @@ except:
 
     sys.path.insert(0, grandparent_dir) 
     sys.path.insert(1, os.path.join(sys.path[0], '...'))
-    from models import User, Project, ProjectFile, YamlObject
+    from Code.models import User, Project, ProjectFile, YamlObject
     from driver import run_t2wml
 
 import unittest

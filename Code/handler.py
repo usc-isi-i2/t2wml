@@ -415,13 +415,14 @@ def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int):
     :return:
     """
     cell_qnode_map = dict()
-    files = {
-        'file': ('', open(csv_filepath, 'r')),
-        'format': (None, 'ISWC'),
-        'type': (None, 'text/csv'),
-        'header': (None, 'False')
-    }
-    response = requests.post('https://dsbox02.isi.edu:8888/wikifier/wikify', files=files)
+    with open(csv_filepath, 'r') as f:
+        files = {
+            'file': ('', f),
+            'format': (None, 'ISWC'),
+            'type': (None, 'text/csv'),
+            'header': (None, 'False')
+        }
+        response = requests.post('https://dsbox02.isi.edu:8888/wikifier/wikify', files=files)
     output = None
     if response.status_code == 200:
         data = response.content.decode("utf-8")
