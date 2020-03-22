@@ -8,7 +8,10 @@ from Code.ItemTable import ItemTable
 from Code.T2WMLExceptions import T2WMLException
 from Code.utility_functions import save_wikified_result
 from Code.Spreadsheets.Utilities import get_sheet_names, excel_to_json, add_excel_file_to_bindings
-from Code.handler import resolve_cell, load_yaml_data, highlight_region, process_wikified_output_file
+from Code.handler import resolve_cell, highlight_region, process_wikified_output_file, update_bindings
+from Code.YamlParser import YAMLParser
+from Code.bindings import bindings
+from Code.Region import Region
 
 def generate_id() -> str:
     """
@@ -326,6 +329,24 @@ class YamlObject:
         for key in self._region:
             self._region[key]=new_dict[key]
 
+    @staticmethod
+    def create(yaml_filepath: str, item_table: ItemTable, data_file_path: str, sheet_name: str):
+        """
+        This function loads the YAML file data, parses different expressions and generates the statement
+        :param yaml_filepath:
+        :return:
+        """
+        yaml_parser = YAMLParser(yaml_filepath)
+        update_bindings(item_table, None, data_file_path, sheet_name)
+        region = yaml_parser.get_region(bindings)
+        region['region_object'] = Region(region, item_table, data_file_path, sheet_name)
+        template = yaml_parser.get_template()
+        created_by = yaml_parser.get_created_by()
+        yaml_configuration=YamlObject()
+        yaml_configuration.region= region
+        yaml_configuration.template= template
+        yaml_configuration.created_by= created_by
+        return yaml_configuration
     
 
 class YamlFile(db.Model):
@@ -354,17 +375,10 @@ class YamlFile(db.Model):
             yc=self._yaml_configuration
             return yc
         except:
-            self._yaml_configuration=self.create_yaml_object()
-            return self._yaml_configuration
-    
-    def create_yaml_object(self):
-        yaml_configuration=YamlObject()
-        region, template, created_by = load_yaml_data(self.yaml_file_path,
+            self._yaml_configuration=YamlObject.create(self.yaml_file_path,
                         self.sheet.get_item_table(), self.sheet.project_file.filepath, self.sheet.name)
-        yaml_configuration.region= region
-        yaml_configuration.template= template
-        yaml_configuration.created_by= created_by
-        return yaml_configuration
+            return self._yaml_configuration
+
 
     def highlight_region(self):
         return highlight_region(self.sheet.get_item_table(), self.sheet.project_file.filepath, 

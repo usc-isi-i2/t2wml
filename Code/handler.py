@@ -6,8 +6,6 @@ from typing import Sequence
 from Code.ItemTable import ItemTable
 from Code import T2WMLExceptions
 from Code.bindings import bindings
-from Code.YamlParser import YAMLParser
-from Code.Region import Region
 from Code.utility_functions import check_if_string_is_invalid, translate_precision_to_integer, get_property_type
 from Code.Spreadsheets.Conversions import cell_range_str_to_tuples, cell_tuple_to_str
 from Code.t2wml_parser import get_cell
@@ -16,7 +14,6 @@ from Code.Grammar import ItemExpression, ValueExpression, BooleanEquation, Colum
 from Code.Spreadsheets.Utilities import add_excel_file_to_bindings, create_temporary_csv_file
 from etk.wikidata.utils import parse_datetime_string
 import pandas as pd
-
 
 
 
@@ -252,20 +249,6 @@ def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name
     # item_table.add_region(region, cell_qnode_map)
     return item_table.serialize_table(sparql_endpoint)
 
-
-def load_yaml_data(yaml_filepath: str, item_table: ItemTable, data_file_path: str, sheet_name: str) -> Sequence[dict]:
-    """
-    This function loads the YAML file data, parses different expressions and generates the statement
-    :param yaml_filepath:
-    :return:
-    """
-    yaml_parser = YAMLParser(yaml_filepath)
-    update_bindings(item_table, None, data_file_path, sheet_name)
-    region = yaml_parser.get_region(bindings)
-    region['region_object'] = Region(region, item_table, data_file_path, sheet_name)
-    template = yaml_parser.get_template()
-    created_by = yaml_parser.get_created_by()
-    return region, template, created_by
 
 
 # def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str,
