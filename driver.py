@@ -1,7 +1,7 @@
 import os
 from Code.ItemTable import ItemTable
 from Code.handler import generate_download_file, process_wikified_output_file
-from models import YamlObject
+from Code.models import YamlObject
 from pathlib import Path
 from etk.wikidata import serialize_change_record
 from Code.Spreadsheets.Utilities import get_first_sheet_name, add_row_in_data_file
