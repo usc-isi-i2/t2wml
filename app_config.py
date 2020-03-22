@@ -4,7 +4,7 @@ from flask import Flask
 from flask_cors import CORS
 from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade, current, init
 
 sys.path.append(os.getcwd()) #when running migrate, needed to not get import errors
 
@@ -40,6 +40,21 @@ GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleuse
 db = SQLAlchemy(app)
 from models import *
 
-#db.drop_all()
-#db.create_all()
 migrate = Migrate(app, db)
+
+
+
+#automatically upgrade database if it hasn't been created or updated yet
+from contextlib import redirect_stdout
+import io
+print("checking if database is up to date...")
+f = io.StringIO()
+with app.app_context():
+    with redirect_stdout(f):
+        current()
+    s = f.getvalue()
+    if "(head)" not in s:
+        print("database not up to date, upgrading...")
+        upgrade()
+    else:
+        print("Database up to date")
