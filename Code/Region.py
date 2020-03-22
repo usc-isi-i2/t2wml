@@ -1,7 +1,8 @@
-import pyexcel
+
 from collections import OrderedDict
+from Code.Spreadsheets.Utilities import get_sheet, get_cell_value
 from Code.ItemTable import ItemTable
-from Code.utility_functions import check_if_string_is_invalid, get_cell_value
+from Code.utility_functions import check_if_string_is_invalid
 
 
 class RegionNode:
@@ -31,7 +32,7 @@ class Region:
 		:return: region as a dict
 		"""
 		previous = None
-		data_sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=data_file_path)
+		data_sheet = get_sheet(sheet_name=sheet_name, file_name=data_file_path)
 		temp_bindings = {'$top': self.top, '$bottom': self.bottom, '$right': self.right, '$left': self.left, 'excel_sheet': data_sheet, 'item_table': item_table}
 		skipped_rows = set()
 		skipped_columns = set()
