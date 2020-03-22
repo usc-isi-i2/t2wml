@@ -16,7 +16,7 @@ UPLOAD_FOLDER = (Path.cwd() / "config" / "uploads")
 CODE_FOLDER = str(Path.cwd() / "Code")
 ETK_PATH = str(Path.cwd().parent / "etk")
 DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")
-
+AUTO_MIGRATE=True #only set to true if database is sqlite
 
 app = Flask(__name__, template_folder="templates", static_folder="t2wml-gui")
 CORS(app)
@@ -43,5 +43,6 @@ from Code.models import *
 migrate = Migrate(app, db)
 
 
-with app.app_context():
-    upgrade(directory=os.path.join(basedir, 'migrations'))
+if AUTO_MIGRATE:
+    with app.app_context():
+        upgrade(directory=os.path.join(basedir, 'migrations'))
