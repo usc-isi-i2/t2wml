@@ -37,6 +37,21 @@ def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: 
     bindings["item_table"] = item_table
 
 
+def handle_variables(v):
+    if v.variables:
+        variables = list(v.variables)
+        num_of_variables = len(variables)
+        if num_of_variables == 1:
+            bindings[variables[0]] = 0
+            if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
+                while not v.evaluate(bindings):
+                    bindings[variables[0]] += 1
+            col, row, _value = v.evaluate_and_get_cell(bindings)
+            del bindings[variables[0]]
+    else:
+        col, row, _value = v.evaluate_and_get_cell(bindings)
+    return col, row, _value
+
 def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict,
                      template: dict) -> dict:
     """
@@ -71,16 +86,9 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
             if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation)):
                 try:
                     if item.variables:
-                        variables = list(item.variables)
-                        num_of_variables = len(variables)
-                        if num_of_variables == 1:
-                            bindings[variables[0]] = 0
-                            while not item.evaluate(bindings):
-                                bindings[variables[0]] += 1
-                            col, row, value = item.evaluate_and_get_cell(bindings)
-                            item_cell = cell_tuple_to_str((col, row))
-                            data["item"].add(item_cell)
-                            del bindings[variables[0]]
+                        col, row, value = handle_variables(item)
+                        item_cell = cell_tuple_to_str((col, row))
+                        data["item"].add(item_cell)
                     else:
                         item_cell = get_cell(item)
                         item_cell = cell_tuple_to_str(item_cell)
@@ -250,21 +258,42 @@ def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name
     return item_table.serialize_table(sparql_endpoint)
 
 
+def parse_time_for_dict(response):
+    if "format" in response:
+        try:
+            datetime_string, precision = parse_datetime_string(response["value"],
+                                                                additional_formats=[
+                                                                    response["format"]])
+            if "precision" not in response:
+                response["precision"] = int(precision.value.__str__())
+            else:
+                response["precision"] = translate_precision_to_integer(response["precision"])
+            response["value"] = datetime_string
+        except Exception as e:
+            raise e
 
-# def build_item_table(item_table: ItemTable, wikifier_output_filepath: str, excel_data_filepath: str,
-#                      sheet_name: str) -> ItemTable:
-#     """
-#     This function builds the ItemTable using the wikified output file uploaded by the user
-#     :param item_table:
-#     :param wikifier_output_filepath:
-#     :param excel_data_filepath:
-#     :param sheet_name:
-#     :return:
-#     """
-#     if excel_data_filepath:
-#         item_table.generate_hash_tables(wikifier_output_filepath, excel_data_filepath, sheet_name)
-#     return item_table
-
+def evaluate_qualifier(template, sparql_endpoint):
+    return_arr=[]
+    for i in range(len(template)):
+        skip_qualifier = False
+        temp_dict = dict()
+        for k, v in template[i].items():
+            if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
+                col, row, _value = handle_variables(v)
+                if _value:
+                    temp_dict['cell'] = cell_tuple_to_str((col, row))
+                    temp_dict[k] = _value
+                else:
+                    skip_qualifier = True
+            else:
+                temp_dict[k] = v
+        if skip_qualifier:
+            temp_dict = None
+        else:
+            if "property" in temp_dict and get_property_type(temp_dict["property"], sparql_endpoint) == "Time":
+                parse_time_for_dict(temp_dict)
+            return_arr.append(temp_dict)
+    return return_arr
 
 def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
     """
@@ -277,132 +306,24 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
     response = dict()
     for key, value in template.items():
         if key == 'qualifier':
-            response[key] = []
-            for i in range(len(template[key])):
-                skip_qualifier = False
-                temp_dict = dict()
-                for k, v in template[key][i].items():
-                    if isinstance(v, (ItemExpression, ValueExpression)):
-                        if v.variables:
-                            variables = list(v.variables)
-                            num_of_variables = len(variables)
-                            if num_of_variables == 1:
-                                bindings[variables[0]] = 0
-                                while not v.evaluate_and_get_cell(bindings)[2]:
-                                    bindings[variables[0]] += 1
-                                col, row, _value = v.evaluate_and_get_cell(bindings)
-                                if _value:
-                                    temp_dict['cell'] = cell_tuple_to_str((col, row))
-                                    temp_dict[k] = _value
-                                else:
-                                    skip_qualifier = True
-                                del bindings[variables[0]]
-                        else:
-                            col, row, _value = v.evaluate_and_get_cell(bindings)
-                            if _value:
-                                temp_dict['cell'] = cell_tuple_to_str((col, row))
-                                temp_dict[k] = _value
-                            else:
-                                skip_qualifier = True
-                    elif isinstance(v, BooleanEquation):
-                        if v.variables:
-                            variables = list(v.variables)
-                            num_of_variables = len(variables)
-                            if num_of_variables == 1:
-                                bindings[variables[0]] = 0
-                                while not v.evaluate(bindings):
-                                    bindings[variables[0]] += 1
-                                col, row, _value = v.evaluate_and_get_cell(bindings)
-                                if _value:
-                                    temp_dict[k] = _value
-                                    temp_dict['cell'] = cell_tuple_to_str((col, row))
-                                else:
-                                    skip_qualifier = True
-                                del bindings[variables[0]]
-                        else:
-                            col, row, _value = v.evaluate_and_get_cell(bindings)
-                            if _value:
-                                temp_dict[k] = _value
-                                temp_dict['cell'] = cell_tuple_to_str((col, row))
-                            else:
-                                skip_qualifier = True
-                    else:
-                        temp_dict[k] = v
-                if skip_qualifier:
-                    temp_dict = None
-                else:
-                    if "property" in temp_dict and get_property_type(temp_dict["property"], sparql_endpoint) == "Time":
-                        if "format" in temp_dict:
-                            try:
-                                datetime_string, precision = parse_datetime_string(temp_dict["value"],
-                                                                                   additional_formats=[
-                                                                                       temp_dict["format"]])
-                                if "precision" not in temp_dict:
-                                    temp_dict["precision"] = int(precision.value.__str__())
-                                else:
-                                    temp_dict["precision"] = translate_precision_to_integer(temp_dict["precision"])
-                                temp_dict["value"] = datetime_string
-                            except Exception as e:
-                                raise e
-                    response[key].append(temp_dict)
-        else:
-            if isinstance(value, (ItemExpression, ValueExpression)):
-                if value.variables:
-                    variables = list(value.variables)
-                    num_of_variables = len(variables)
-                    if num_of_variables == 1:
-                        bindings[variables[0]] = 0
-                        while not value.evaluate_and_get_cell(bindings)[2]:
-                            bindings[variables[0]] += 1
-                        col, row, _value = value.evaluate_and_get_cell(bindings)
-                        del bindings[variables[0]]
-                else:
-                    col, row, _value = value.evaluate_and_get_cell(bindings)
+            response[key]=evaluate_qualifier(template[key], sparql_endpoint)
+        elif isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
+                col, row, _value = handle_variables(value)
                 if key == "item":
+                    response['cell'] = cell_tuple_to_str((col, row))
+                if isinstance(value, BooleanEquation):
                     response['cell'] = cell_tuple_to_str((col, row))
                 if not _value:
                     raise T2WMLExceptions.ItemNotFoundException("Couldn't find item for cell " + cell_tuple_to_str((col, row)))
                 else:
                     response[key] = _value
-            elif isinstance(value, BooleanEquation):
-                if value.variables:
-                    variables = list(value.variables)
-                    num_of_variables = len(variables)
-                    if num_of_variables == 1:
-                        bindings[variables[0]] = 0
-                        while not value.evaluate(bindings):
-                            bindings[variables[0]] += 1
-                        col, row, _value = value.evaluate_and_get_cell(bindings)
-                        response['cell'] = cell_tuple_to_str((col, row))
-                        del bindings[variables[0]]
-                else:
-                    col, row, _value = value.evaluate_and_get_cell(bindings)
-                    response['cell'] = cell_tuple_to_str((col, row))
-                if key == "item":
-                    response['cell'] = cell_tuple_to_str((col, row))
-                if not _value:
-                    raise T2WMLExceptions.ItemNotFoundException( "Couldn't find item for cell " + cell_tuple_to_str((col, row)))
-                else:
-                    response[key] = _value
-            else:
-                response[key] = value
+        else:
+            response[key] = value
 
     if get_property_type(response["property"], sparql_endpoint) == "Time":
-        if "format" in response:
-            try:
-                datetime_string, precision = parse_datetime_string(response["value"],
-                                                                   additional_formats=[response["format"]])
-                if "precision" not in response:
-                    response["precision"] = int(precision.value.__str__())
-                else:
-                    response["precision"] = translate_precision_to_integer(response["precision"])
-                response["value"] = datetime_string
-            except Exception as e:
-                raise e
+        parse_time_for_dict(response)
+
     return response
-
-
-
 
 
 def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int):
