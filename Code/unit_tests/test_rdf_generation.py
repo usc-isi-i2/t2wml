@@ -18,10 +18,13 @@ from Code.ItemTable import ItemTable
 from Code.handler import generate_download_file, process_wikified_output_file
 from Code.Spreadsheets.Utilities import get_first_sheet_name #, add_row_in_data_file
 
+output_directory = '/tmp'
+
 _path = Path(__file__).parent
 
-output_directory = os.path.join(_path, "tmp")
-os.makedirs(output_directory, exist_ok=True)
+#output_directory = os.path.join(_path, "tmp")
+#os.makedirs(output_directory, exist_ok=True)
+
 
 
 
