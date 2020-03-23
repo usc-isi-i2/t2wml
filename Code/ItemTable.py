@@ -1,5 +1,5 @@
 from typing import Union
-from Code.Spreadsheets.Utilities import get_sheet
+from Code.Spreadsheets.Caching import get_sheet
 from Code.utility_functions import check_if_string_is_invalid, natural_sort_key,  \
 	 query_wikidata_for_label_and_description
 from Code.Spreadsheets.Conversions import column_index_to_letter, cell_str_to_tuple, cell_tuple_to_str
@@ -22,7 +22,7 @@ class ItemTable:
 			self.item_wiki = dict()
 
 	def update_table(self, data_frame, data_filepath: str, sheet_name: str = None, flag: int = None):
-		sheet = get_sheet(sheet_name, data_filepath)
+		sheet = get_sheet(data_filepath, sheet_name)
 		col_names = data_frame.columns.values
 		index_of = {val: index for index, val in enumerate(col_names)}
 		data_frame[['context']] = data_frame[['context']].fillna(value='__NO_CONTEXT__')
@@ -53,13 +53,13 @@ class ItemTable:
 		both_row_col['row'] = both_row_col['row'].apply(np.int64)
 		for row in both_row_col.itertuples():
 			try:
-				value = str(sheet[row.row, row.column]).strip()
+				value = str(sheet[row.row][row.column]).strip()
 				if not row.context:
 					both_row_col.at[row.Index, 'context'] = '__NO_CONTEXT__'
 				if (row.column, row.row) not in self.table:
 					self.table[(row.column, row.row)] = {'__CELL_VALUE__': value}
 				self.table[(row.column, row.row)][row.context] = row.item
-			except IndexError:
+			except (TypeError, IndexError):
 				pass
 
 	def update_cells_by_row(self, data_frame, sheet, has_to_filter_data_frame=False):
@@ -73,20 +73,20 @@ class ItemTable:
 		item_value_map = dict()
 
 		for row in only_row.itertuples(index=False):
-			cell_value = str(sheet[row.row, row.column]).strip()
+			cell_value = str(sheet[row.row][row.column]).strip()
 			if row.row not in item_value_map:
 				item_value_map[row.row] = {cell_value: dict()}
 			item_value_map[row.row][cell_value][row.context] = row.item
 		for row in row_values:
 			for col in range(len(sheet[0])):
 				try:
-					value = str(sheet[row, col]).strip()
+					value = str(sheet[row][col]).strip()
 					if value in item_value_map[row]:
 						if (col, row) not in self.table:
 							self.table[(col, row)] = {'__CELL_VALUE__': value}
 						for context, item in item_value_map[row][value].items():
 							self.table[(col, row)][context] = item
-				except IndexError:
+				except (TypeError, IndexError):
 					pass
 
 	def update_cells_by_col(self, data_frame, sheet, has_to_filter_data_frame=None):
@@ -102,8 +102,8 @@ class ItemTable:
 
 		for row in only_col.itertuples(index=False):
 			try:
-				value = str(sheet[row.row, row.column]).strip()
-			except IndexError:
+				value = str(sheet[row.row][row.column]).strip()
+			except (TypeError, IndexError):
 				value = str(row.value).strip()
 			if row.column not in item_value_map:
 				item_value_map[row.column] = {value: dict()}
@@ -114,13 +114,13 @@ class ItemTable:
 			for row in range(len(sheet)):
 				try:
 					col = col
-					value = str(sheet[row, col]).strip()
+					value = str(sheet[row][col]).strip()
 					if value in item_value_map[col]:
 						if (col, row) not in self.table:
 							self.table[(col, row)] = {'__CELL_VALUE__': value}
 						for context, item in item_value_map[col][value].items():
 							self.table[(col, row)][context] = item
-				except IndexError:
+				except (TypeError,IndexError):
 					pass
 
 	def update_all_cells(self, data_frame, sheet, has_to_filter_data_frame=None):
@@ -134,10 +134,8 @@ class ItemTable:
 
 		for row in no_col_row.itertuples(index=False):
 			try:
-				value = str(sheet[row.row, row.column]).strip()
-			except AttributeError:
-				value = str(row.value).strip()
-			except IndexError:
+				value = str(sheet[row.row][row.column]).strip()
+			except (TypeError, AttributeError, IndexError):
 				value = str(row.value).strip()
 			if value not in item_value_map:
 				item_value_map[value] = dict()
@@ -146,13 +144,13 @@ class ItemTable:
 		for row in range(len(sheet)):
 			for col in range(len(sheet[0])):
 				try:
-					value = str(sheet[row, col]).strip()
+					value = str(sheet[row][col]).strip()
 					if value in item_value_map:
 						for context, item in item_value_map[value].items():
 							if (col, row) not in self.table:
 								self.table[(col, row)] = {'__CELL_VALUE__': value}
 							self.table[(col, row)][context] = item
-				except IndexError:
+				except (IndexError, TypeError):
 					pass
 
 	def to_json(self):

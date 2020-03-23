@@ -9,13 +9,22 @@ from pathlib import Path
 from Code.bindings import bindings
 from Code import T2WMLExceptions
 from Code.Spreadsheets.Conversions import cell_tuple_to_str, column_index_to_letter
+from Code.Spreadsheets.Caching import get_sheet
 
 def get_cell_value(bindings, row, column):
     try:
-        value = str(bindings['excel_sheet'][row, column]).strip()
+        value = str(bindings['excel_sheet'][row][column]).strip()
     except IndexError:
         raise T2WMLExceptions.ValueOutOfBoundException("Cell " + cell_tuple_to_str((column, row)) + " is outside the bounds of the current data file")
     return value
+
+
+def add_blank_row_to_bindings():
+    last_row=bindings["excel_sheet"][-1]
+    num_cols=len(last_row)
+    blank_row = [" "] * num_cols
+    if last_row!=blank_row:
+        bindings["excel_sheet"].append(blank_row)
 
 
 def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
@@ -24,12 +33,8 @@ def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
     :return: None
     """
     try:
-        records = pyexcel.get_book(file_name=excel_filepath)
-        if not sheet_name:
-            bindings["excel_sheet"] = records[0]
-        else:
-            bindings["excel_sheet"] = records[sheet_name]
-
+        bindings["excel_sheet"]=get_sheet(excel_filepath, sheet_name)
+        add_blank_row_to_bindings()
     except IOError:
         raise IOError('Excel File cannot be found or opened')
 
@@ -54,9 +59,7 @@ def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: 
         raise IOError('Excel File cannot be found or opened')
     return file_path
 
-def get_sheet(sheet_name, file_name):
-    sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=file_name)
-    return sheet
+
 
 def add_row_in_data_file(file_path: str, sheet_name: str, destination_path: str = None):
     """
@@ -87,14 +90,6 @@ def get_first_sheet_name(file_path: str):
     for sheet in book_dict.keys():
         return sheet
 
-def get_sheet_names(file_path):
-    sheet_names=list()
-    book_dict = pyexcel.get_book_dict(file_name=file_path)
-    for sheet in book_dict.keys():
-        sheet_names.append(sheet)
-    first_sheet_name=sheet_names[0]
-    return sheet_names, first_sheet_name
-
 def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     """
     This function reads the excel file and converts it to JSON
@@ -107,9 +102,10 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     column_index_map = {}
     if not sheet_name:
         sheet_name=get_first_sheet_name(file_path)
-    add_row_in_data_file(file_path, sheet_name)
-    book = pyexcel.get_book(file_name=file_path)
-    sheet = book[sheet_name]
+    #add_row_in_data_file(file_path, sheet_name)
+    sheet=get_sheet(file_path, sheet_name)
+    #book = pyexcel.get_book(file_name=file_path)
+    #sheet = book[sheet_name]
     for i in range(len(sheet[0])):
         column = column_index_to_letter(i)
         column_index_map[i + 1] = column
@@ -117,8 +113,8 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     for row in range(len(sheet)):
         r = {'^': str(row + 1)}
         for col in range(len(sheet[row])):
-            sheet[row, col] = str(sheet[row, col]).strip()
-            r[column_index_map[col + 1]] = sheet[row, col]
+            sheet[row][col] = str(sheet[row][col]).strip()
+            r[column_index_map[col + 1]] = sheet[row][col]
         sheet_data['rowData'].append(r)
 
     return sheet_data

@@ -7,7 +7,8 @@ from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
 from Code.ItemTable import ItemTable
 from Code.T2WMLExceptions import T2WMLException
 from Code.utility_functions import save_wikified_result
-from Code.Spreadsheets.Utilities import get_sheet_names, excel_to_json, add_excel_file_to_bindings
+from Code.Spreadsheets.Utilities import excel_to_json, add_excel_file_to_bindings
+from Code.Spreadsheets.Caching import load_file
 from Code.handler import resolve_cell, highlight_region, process_wikified_output_file, update_bindings
 from Code.YamlParser import YAMLParser
 from Code.bindings import bindings
@@ -230,10 +231,10 @@ class ProjectFile(db.Model):
         return pf
     
     def init_sheets(self):
-        sheetNames, sheet_name = get_sheet_names(self.filepath)
-        for sheetN in sheetNames:
-            current = sheetN==sheet_name
-            pr = ProjectSheet(name=sheetN, file_id=self.id, current=current)
+        sheet_names=load_file(self.filepath)
+        first=sheet_names[0]
+        for sheet_name in sheet_names:
+            pr = ProjectSheet(name=sheet_name, file_id=self.id, current=sheet_name==first)
             db.session.add(pr)
         db.session.commit()
     
@@ -304,7 +305,7 @@ class ProjectSheet(db.Model):
         try:
             with open(self.wiki_region_file.region_file_path) as json_data:
                 region_map = json.load(json_data)
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
+        except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
             pass #use None to initialize a default item table
         item_table = ItemTable(region_map)
         return item_table
