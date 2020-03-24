@@ -6,10 +6,10 @@ import pyexcel
 import uuid
 from pathlib import Path
 
-from Code.bindings import bindings
-from Code import T2WMLExceptions
-from Code.Spreadsheets.Conversions import cell_tuple_to_str, column_index_to_letter
-from Code.Spreadsheets.Caching import get_sheet
+from backend_code.bindings import bindings
+from backend_code import t2wml_exceptions as T2WMLExceptions
+from backend_code.spreadsheets.conversions import cell_tuple_to_str, column_index_to_letter
+from backend_code.spreadsheets.caching import get_sheet
 
 def get_cell_value(bindings, row, column):
     try:

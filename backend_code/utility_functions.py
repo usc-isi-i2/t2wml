@@ -1,20 +1,16 @@
-from SPARQLWrapper import SPARQLWrapper, JSON
-import string
 import os
 import re
 import json
-from time import time
-from uuid import uuid4
+import csv
+import yaml
+from SPARQLWrapper import SPARQLWrapper, JSON
+from string import punctuation
 from typing import Sequence, Union, Tuple, List, Dict, Any
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from pathlib import Path
-import csv
-import yaml
-from Code import T2WMLExceptions
-from Code.property_type_map import property_type_map
+from backend_code import t2wml_exceptions as T2WMLExceptions
+from backend_code.property_type_map import property_type_map
 from app_config import GOOGLE_CLIENT_ID
-
 
 
 def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
@@ -44,16 +40,13 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     return type
 
 
-
-
-
 def check_special_characters(text: str) -> bool:
     """
     This function checks if the text is made up of only special characters
     :param text:
     :return:
     """
-    return all(char in string.punctuation for char in str(text))
+    return all(char in punctuation for char in str(text))
 
 
 def check_if_string_is_invalid(text: str) -> bool:
@@ -106,10 +99,6 @@ def translate_precision_to_integer(precision: str) -> int:
         "second": 14
     }
     return precision_map[precision.lower()]
-
-
-
-
 
 
 def natural_sort_key(s: str) -> list:
@@ -182,11 +171,6 @@ def save_wikified_result(serialized_row_data: List[dict], filepath: str):
         dict_writer.writeheader()
         dict_writer.writerows(serialized_row_data)
 
-
-def item_exists(item_table, col, row, context):
-    if (col, row) in item_table.table and context in item_table.table[(col,row)]:
-        return True
-    return False
 
 def validate_yaml(yaml_file_path, sparql_endpoint):
     with open(yaml_file_path, 'r') as stream:

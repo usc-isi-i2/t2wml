@@ -1,4 +1,4 @@
-from Code.Grammar import ValueExpression, CellExpression, ColumnExpression, RowExpression,\
+from backend_code.grammar import ValueExpression, CellExpression, ColumnExpression, RowExpression,\
     ColumnVariable, RowVariable, CellOperatorArgument, BooleanEquation, BooleanExpression, OrExpression,\
         AndExpression, Expression, ItemExpression, ColumnRangeExpression, RowRangeExpression
 

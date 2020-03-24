@@ -8,8 +8,8 @@ from etk.wikidata.entity import WDItem
 from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, \
     ExternalIdentifier, GlobeCoordinate
 from etk.wikidata import serialize_change_record
-from Code.utility_functions import get_property_type, translate_precision_to_integer
-from Code.property_type_map import property_type_map as property_type_dict
+from backend_code.utility_functions import get_property_type, translate_precision_to_integer
+from backend_code.property_type_map import property_type_map as property_type_dict
 
 
 def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl',

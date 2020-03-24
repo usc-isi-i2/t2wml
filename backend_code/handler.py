@@ -3,15 +3,15 @@ from pathlib import Path
 import requests
 import csv
 from typing import Sequence
-from Code.ItemTable import ItemTable
-from Code import T2WMLExceptions
-from Code.bindings import bindings
-from Code.utility_functions import check_if_string_is_invalid, translate_precision_to_integer, get_property_type
-from Code.Spreadsheets.Conversions import cell_range_str_to_tuples, cell_tuple_to_str
-from Code.t2wml_parser import get_cell
-from Code.triple_generator import generate_triples
-from Code.Grammar import ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression
-from Code.Spreadsheets.Utilities import add_excel_file_to_bindings, create_temporary_csv_file
+from backend_code.item_table import ItemTable
+from backend_code import t2wml_exceptions as T2WMLExceptions
+from backend_code.bindings import bindings
+from backend_code.utility_functions import translate_precision_to_integer, get_property_type
+from backend_code.spreadsheets.conversions import cell_range_str_to_tuples, cell_tuple_to_str
+from backend_code.t2wml_parser import get_cell
+from backend_code.triple_generator import generate_triples
+from backend_code.grammar import ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression
+from backend_code.spreadsheets.utilities import add_excel_file_to_bindings, create_temporary_csv_file
 from etk.wikidata.utils import parse_datetime_string
 import pandas as pd
 

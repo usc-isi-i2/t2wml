@@ -1,6 +1,6 @@
 from typing import Union
 
-from Code import T2WMLExceptions
+from backend_code import t2wml_exceptions as T2WMLExceptions
 
 
 class AndExpression:

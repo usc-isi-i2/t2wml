@@ -38,7 +38,7 @@ DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sp
 GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
 
 db = SQLAlchemy(app)
-from Code.models import *
+from backend_code.models import *
 
 migrate = Migrate(app, db)
 

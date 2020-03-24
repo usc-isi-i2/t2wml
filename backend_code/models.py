@@ -4,15 +4,15 @@ from uuid import uuid4
 import json
 import copy
 from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
-from Code.ItemTable import ItemTable
-from Code.T2WMLExceptions import T2WMLException
-from Code.utility_functions import save_wikified_result
-from Code.Spreadsheets.Utilities import excel_to_json, add_excel_file_to_bindings
-from Code.Spreadsheets.Caching import load_file
-from Code.handler import resolve_cell, highlight_region, process_wikified_output_file, update_bindings
-from Code.YamlParser import YAMLParser
-from Code.bindings import bindings
-from Code.Region import Region
+from backend_code.item_table import ItemTable
+from backend_code.t2wml_exceptions import T2WMLException
+from backend_code.utility_functions import save_wikified_result
+from backend_code.spreadsheets.utilities import excel_to_json, add_excel_file_to_bindings
+from backend_code.spreadsheets.caching import load_file
+from backend_code.handler import resolve_cell, highlight_region, process_wikified_output_file, update_bindings
+from backend_code.yaml_parser import YAMLParser
+from backend_code.bindings import bindings
+from backend_code.region import Region
 
 def generate_id() -> str:
     """

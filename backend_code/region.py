@@ -1,9 +1,9 @@
 
 from collections import OrderedDict
-from Code.Spreadsheets.Utilities import get_cell_value
-from Code.Spreadsheets.Caching import get_sheet
-from Code.ItemTable import ItemTable
-from Code.utility_functions import check_if_string_is_invalid
+from backend_code.spreadsheets.utilities import get_cell_value
+from backend_code.spreadsheets.caching import get_sheet
+from backend_code.item_table import ItemTable
+from backend_code.utility_functions import check_if_string_is_invalid
 
 
 class RegionNode:

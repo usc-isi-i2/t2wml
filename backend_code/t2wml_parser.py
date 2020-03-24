@@ -1,13 +1,12 @@
+import os
+from typing import Union
 from lark import Lark
 from lark.tree import Tree
 from lark.exceptions import UnexpectedCharacters
-import os
-from typing import Union
-
-from Code import T2WMLExceptions
-from Code.dictionary import class_dictionary
-from Code.bindings import bindings
-from Code.Grammar import ValueExpression, BooleanEquation, ColumnExpression,  RowExpression, ColumnRangeExpression, RowRangeExpression
+from backend_code import t2wml_exceptions as T2WMLExceptions
+from backend_code.grammar_dictionary import class_dictionary
+from backend_code.bindings import bindings
+from backend_code.grammar import ValueExpression, BooleanEquation, ColumnExpression,  RowExpression, ColumnRangeExpression, RowRangeExpression
 from pathlib import Path
 
 __CWD__ = os.getcwd()

@@ -1,8 +1,7 @@
 from typing import Union
-from Code.Spreadsheets.Caching import get_sheet
-from Code.utility_functions import check_if_string_is_invalid, natural_sort_key,  \
-	 query_wikidata_for_label_and_description
-from Code.Spreadsheets.Conversions import column_index_to_letter, cell_str_to_tuple, cell_tuple_to_str
+from backend_code.spreadsheets.caching import get_sheet
+from backend_code.utility_functions import query_wikidata_for_label_and_description
+from backend_code.spreadsheets.conversions import column_index_to_letter, cell_str_to_tuple, cell_tuple_to_str
 from collections import defaultdict
 import json
 import numpy as np

@@ -2,11 +2,11 @@ from typing import Union
 
 import yaml
 
-from Code.Grammar import BooleanEquation, ColumnExpression, ItemExpression, RowExpression, ValueExpression
-from Code.bindings import bindings
-from Code import T2WMLExceptions
+from backend_code.grammar import BooleanEquation, ColumnExpression, ItemExpression, RowExpression, ValueExpression
+from backend_code.bindings import bindings
+from backend_code import t2wml_exceptions as T2WMLExceptions
 
-from Code.t2wml_parser import generate_tree
+from backend_code.t2wml_parser import generate_tree
 
 
 class YAMLParser:
