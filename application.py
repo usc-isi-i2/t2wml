@@ -538,8 +538,9 @@ if __name__ == "__main__":
         if sys.argv[1] == '--debug':
             debug_mode = True
             print('Debug mode is on!')
-    from werkzeug.contrib.profiler import ProfilerMiddleware
-    app.config['PROFILE'] = True
-    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions = [30])
-    app.run(debug = True)
-    #app.run(threaded=True)
+        if sys.argv[1] == "--profile":
+            from werkzeug.contrib.profiler import ProfilerMiddleware
+            app.config['PROFILE'] = True
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions = [30])
+            app.run(debug = True)
+    app.run(threaded=True)
