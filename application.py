@@ -375,7 +375,7 @@ def downloader():
     filetype = request.form["type"]
     sparql_endpoint = project.sparql_endpoint
     user_id=project.user_id
-    item_table=current_sheet.get_item_table()
+    item_table=current_sheet.item_table
     data_file_path=project_file.filepath
     sheet_name=current_sheet.name
     
@@ -412,8 +412,7 @@ def wikify_region():
             if not project.current_file:
                 raise T2WMLExceptions.WikifyWithoutDataFileException("Upload data file before wikifying a region")
             current_sheet=project.current_file.current_sheet
-            item_table = current_sheet.get_item_table()
-
+            item_table = current_sheet.item_table
             #handler
             x=wikifier(item_table, region, project.current_file.filepath, current_sheet.name, flag, context, project.sparql_endpoint)
             
@@ -450,7 +449,7 @@ def get_project_files():
         project_file=project.current_file
         if project_file:
             response["tableData"]=project_file.tableData()
-            item_table=project_file.current_sheet.get_item_table()
+            item_table=project_file.current_sheet.item_table
             serialized_item_table = item_table.serialize_table(project.sparql_endpoint)
             response["wikifierData"] = serialized_item_table
 			

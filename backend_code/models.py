@@ -264,7 +264,6 @@ class ProjectFile(db.Model):
             "sheetData": data
         }
 
-    
 class ProjectSheet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
@@ -300,15 +299,13 @@ class ProjectSheet(db.Model):
         self.current=True
         self.modify()
 
-    def get_item_table(self):
-        region_map=None
-        try:
-            with open(self.wiki_region_file.region_file_path) as json_data:
-                region_map = json.load(json_data)
-        except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
-            pass #use None to initialize a default item table
-        item_table = ItemTable(region_map)
-        return item_table
+    @property
+    def item_table(self):
+        if self.wiki_region_file:
+            return self.wiki_region_file.item_table
+        else:
+            return ItemTable(None)
+
 
 class YamlObject:
     def __init__(self):
@@ -377,16 +374,16 @@ class YamlFile(db.Model):
             return yc
         except:
             self._yaml_configuration=YamlObject.create(self.yaml_file_path,
-                        self.sheet.get_item_table(), self.sheet.project_file.filepath, self.sheet.name)
+                        self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name)
             return self._yaml_configuration
 
 
     def highlight_region(self):
-        return highlight_region(self.sheet.get_item_table(), self.sheet.project_file.filepath, 
+        return highlight_region(self.sheet.item_table, self.sheet.project_file.filepath, 
                             self.sheet.name, self.yaml_configuration.region, self.yaml_configuration.template)
 
     def resolve_cell(self, column, row):
-        return resolve_cell(self.sheet.get_item_table(), 
+        return resolve_cell(self.sheet.item_table, 
                             self.sheet.project_file.filepath, 
                             self.sheet.name, 
                             self.yaml_configuration.region, 
@@ -420,7 +417,7 @@ class YamlFile(db.Model):
 
     
     def handle(self):
-        item_table=self.sheet.get_item_table()
+        item_table=self.sheet.item_table
 
         response=dict()
         with open(self.yaml_file_path, "r") as f:
@@ -433,11 +430,31 @@ class YamlFile(db.Model):
 
 
 
+
+
 class WikiRegionFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sheet_id=db.Column(db.Integer, db.ForeignKey('project_sheet.id'))
     sheet=db.relationship("ProjectSheet", back_populates="wiki_region_file")
     
+    @property
+    def item_table(self):
+        try:
+            if self._item_table:
+                return self._item_table
+            raise ValueError("item table not yet initialized")
+        except:
+            region_map=None
+            try:
+                with open(self.region_file_path) as json_data:
+                    region_map = json.load(json_data)
+                    self._item_table = ItemTable(region_map)
+                    return self._item_table
+            except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
+                return ItemTable(None)
+
+
+
     @property 
     def project(self):
         return self.sheet.project_file.project
@@ -486,7 +503,7 @@ class WikiRegionFile(db.Model):
 
     def handle(self):
         project_file=self.sheet.project_file
-        item_table=self.sheet.get_item_table()
+        item_table=self.item_table
         
         add_excel_file_to_bindings(self.sheet.project_file.filepath, self.sheet.name)
         
@@ -500,13 +517,10 @@ class WikiRegionFile(db.Model):
     def update_wikifier_region_file(self, item_table):
         with open(self.region_file_path, 'w') as wikifier_region_config:
             wikifier_region_config.write(item_table.to_json())
+        self._item_table=None
 
     def serialize_and_save(self, item_table):
+        from backend_code.utility_functions import save_wikified_result
         serialized_table = item_table.serialize_table(self.sparql_endpoint)
         save_wikified_result(serialized_table['rowData'], self.serialized_wikifier_output_filepath)
-        return serialized_table
-    
-
-
-        serialized_table = item_table.serialize_table(self.sparql_endpoint)
         return serialized_table
