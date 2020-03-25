@@ -5,11 +5,11 @@ from etk.wikidata.entity import WDItem
 from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, \
     ExternalIdentifier, GlobeCoordinate
 from etk.wikidata import serialize_change_record
-from backend_code.utility_functions import get_property_type, translate_precision_to_integer
-from backend_code.property_type_map import property_type_map as property_type_dict
+from backend_code.utility_functions import get_property_type
+from backend_code.utility_functions import translate_precision_to_integer
 
 
-def handle_property_type_value(j, i, property_type_map, sparql_endpoint):
+def handle_property_value(j, i, sparql_endpoint):
     property_type=get_property_type(j["property"], sparql_endpoint)
             
     if property_type == "WikibaseItem":
@@ -66,7 +66,6 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
     kg_schema.add_schema('@prefix : <http://isi.edu/> .', 'ttl')
     etk = ETK(kg_schema=kg_schema, modules=ETKModule)
     doc = etk.create_document({}, doc_id="http://isi.edu/default-ns/projects")
-    property_type_map = property_type_dict
 
     # bind prefixes
     doc.kg.bind('wikibase', 'http://wikiba.se/ontology#')
@@ -91,7 +90,6 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
     doc.kg.bind('prov', 'http://www.w3.org/ns/prov#')
     doc.kg.bind('schema', 'http://schema.org/')
 
-    # property_type_cache = {}
     is_error = False
     error_statement = None
     statement_id = 0
@@ -99,7 +97,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
         _item = i["statement"]["item"]
         if _item is not None:
             item = WDItem(_item, creator='http://www.isi.edu/{}'.format(created_by))
-            value, is_error, error_statement = handle_property_type_value(i["statement"], i, property_type_map, sparql_endpoint)
+            value, is_error, error_statement = handle_property_value(i["statement"], i, sparql_endpoint)
             if is_error:
                 break
             if debug:
@@ -112,7 +110,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 
             if "qualifier" in i["statement"]:
                 for j in i["statement"]["qualifier"]:
-                    value, is_error, error_statement = handle_property_type_value(j, i, property_type_map, sparql_endpoint)
+                    value, is_error, error_statement = handle_property_value(j, i, sparql_endpoint)
                     if value:
                         s.add_qualifier(j["property"], value)
                     else:
