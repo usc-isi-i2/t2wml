@@ -9,4 +9,4 @@ sample:
     - value: B6
       property: B3
     - value: G3
-      property: Gender
+      property: Population

@@ -6,7 +6,7 @@ sample:
       property: Year
     - value: A3
       property: Country
-    - value: B3
+    - value: B4
       property: Source
     - value: C2
       property: Population

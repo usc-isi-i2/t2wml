@@ -5,8 +5,8 @@ sample:
     - value: D2
       property: Year
     - value: A3
-      property: A1
+      property: A2
     - value: B3
-      property: B1
+      property: B2
     - value: C3
-      property: Gender
+      property: Population

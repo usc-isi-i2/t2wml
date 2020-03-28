@@ -9,4 +9,4 @@ sample:
     - value: C4
       property: Source
     - value: B4
-      property: Gender
+      property: Population

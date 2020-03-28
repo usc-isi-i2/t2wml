@@ -6,7 +6,7 @@ sample:
       property: Year
     - value: A6
       property: A2
-    - value: E6
+    - value: B6
       property: B2
-    - value: C4
-      property: Gender
+    - value: C2
+      property: Population
