@@ -143,6 +143,19 @@ class Region:
 
 				del self.sheet[(i, row)]
 
+	def get_head(self) -> list:
+		"""
+		This function returns the head of the region
+		:return:
+		"""
+		if self.sheet:
+			return list(self.sheet.keys())[0]
+		else:
+			return None, None
+
+'''
+# TODO: slated for deletion
+# a bunch of functions that are currently never used for anything.  
 
 	def get_left(self, col: int, row: int, steps: int = 1) -> tuple:
 		"""
@@ -234,12 +247,5 @@ class Region:
 				return None
 		return cell
 
-	def get_head(self) -> list:
-		"""
-		This function returns the head of the region
-		:return:
-		"""
-		if self.sheet:
-			return list(self.sheet.keys())[0]
-		else:
-			return None, None
+
+'''
