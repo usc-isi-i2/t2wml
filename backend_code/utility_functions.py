@@ -178,43 +178,22 @@ def validate_yaml(yaml_file_path, sparql_endpoint):
 
         if 'region' in yaml_file_data['statementMapping']:
             if yaml_file_data['statementMapping']['region']:
-                if isinstance(yaml_file_data['statementMapping']['region'], list):
-                    for i in range(len(yaml_file_data['statementMapping']['region'])):
-                        for key in yaml_file_data['statementMapping']['region'][i].keys():
+                yaml_region=yaml_file_data['statementMapping']['region']
+                if isinstance(yaml_region, list):
+                    for i in range(len(yaml_region)):
+                        for key in yaml_region[i].keys():
                             if key not in {'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
                                 errors+= "Unrecognized key '" + key + "' (statementMapping -> region[" + str(i) + "] -> " + key + ") found\n"
 
-                        if 'left' not in yaml_file_data['statementMapping']['region'][i]:
-                            errors+= "Key 'left' (statementMapping -> region[" + str(i) + "] -> X) not found\n"
+                        for required_key in ['left', 'right', 'top', 'bottom']:
+                            if required_key not in yaml_region[i]:
+                                errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found\n"
 
-
-                        if 'right' not in yaml_file_data['statementMapping']['region'][i]:
-                            errors+= "Key 'right' not found (" \
-                                                        "statementMapping -> region[" + str(i) + "] -> X)\n"
-
-
-                        if 'top' not in yaml_file_data['statementMapping']['region'][i]:
-                            errors+= "Key 'top' (statementMapping -> region[" + str(i) + "] -> X) not found\n"
-
-                        if 'bottom' not in yaml_file_data['statementMapping']['region'][i]:
-                            errors+= "Key 'bottom' not found (" \
-                                                        "statementMapping -> region[" + str(i) + "] -> X)\n"
-
-                        if 'skip_row' in yaml_file_data['statementMapping']['region'][i]:
-                            if not yaml_file_data['statementMapping']['region'][i]['skip_row'] or not isinstance(yaml_file_data['statementMapping']['region'][i]['skip_row'], list):
-                                errors+= "Value of key 'skip_row' (statementMapping -> region[" + str(i) + "] -> skip_row) is not appropriate.\
-                                        Value should be a list of T2WML expressions.\n"
-
-
-                        if 'skip_column' in yaml_file_data['statementMapping']['region'][i]:
-                            if not yaml_file_data['statementMapping']['region'][i]['skip_column'] or not isinstance(yaml_file_data['statementMapping']['region'][i]['skip_column'], list):
-                                errors+= "Value of key 'skip_column' (statementMapping -> region[" + str(i) + "] -> skip_column) is not appropriate. \
-                                    Value should be a list of T2WML expressions.\n"
-
-                        if 'skip_cell' in yaml_file_data['statementMapping']['region'][i]:
-                            if not yaml_file_data['statementMapping']['region'][i]['skip_cell'] or not isinstance(yaml_file_data['statementMapping']['region'][i]['skip_cell'], list):
-                                errors+= "Value of key 'skip_cell' (statementMapping -> region[" + str(i) + "] -> skip_cell) is not appropriate.\
-                                        Value should be a list of T2WML expressions.\n"
+                        for optional_list_key in ['skip_row', 'skip_column', 'skip_cell']:
+                            if optional_list_key in yaml_region[i]:
+                                if not yaml_region[i][optional_list_key] or not isinstance(yaml_region[i][optional_list_key], list):
+                                    errors+= "Value of key '"+optional_list_key+"' (statementMapping -> region[" + str(i) + "] -> skip_row) is not appropriate.\
+                                            Value should be a list of T2WML expressions.\n"
                 else:
                     errors+= "Value of  key 'region' (statementMapping -> region) must be a list\n"
             else:
@@ -223,24 +202,20 @@ def validate_yaml(yaml_file_path, sparql_endpoint):
             errors +="Key 'region' (statementMapping -> X) not found\n"
 
         if 'template' in yaml_file_data['statementMapping']:
-            if isinstance(yaml_file_data['statementMapping']['template'], dict):
-                for key in yaml_file_data['statementMapping']['template'].keys():
+            yaml_template=yaml_file_data['statementMapping']['template']
+            if isinstance(yaml_template, dict):
+                for key in yaml_template.keys():
                     if key not in {'item', 'property', 'value', 'qualifier', 'calendar', 'precision', 'time_zone', 'format', 'lang', 'longitude', 'latitude', 'unit'}:
                         errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + key + ") found\n"
 
-                if 'item' not in yaml_file_data['statementMapping']['template']:
-                    errors+= "Key 'item' (statementMapping -> template -> X) not found\n"
+                for required_key in ['item', 'property', 'value']:
+                    if required_key not in yaml_template:
+                        errors+= "Key '" + required_key+ "' (statementMapping -> template -> X) not found\n"
 
-                if 'property' not in yaml_file_data['statementMapping']['template']:
-                    errors+= "Key 'property' (statementMapping -> template -> X) not found\n"
-
-                if 'value' not in yaml_file_data['statementMapping']['template']:
-                    errors+= "Key 'value' (statementMapping -> template -> X) not found\n"
-
-                if 'qualifier' in yaml_file_data['statementMapping']['template']:
-                    if yaml_file_data['statementMapping']['template']['qualifier']:
-                        if isinstance(yaml_file_data['statementMapping']['template']['qualifier'], list):
-                            qualifiers = yaml_file_data['statementMapping']['template']['qualifier']
+                if 'qualifier' in yaml_template:
+                    if yaml_template['qualifier']:
+                        if isinstance(yaml_template['qualifier'], list):
+                            qualifiers = yaml_template['qualifier']
                             for i in range(len(qualifiers)):
                                 object = qualifiers[i]
                                 if object and isinstance(object, dict):
