@@ -116,3 +116,6 @@ config/*
 
 # user files
 uploads
+
+# emacs
+*~

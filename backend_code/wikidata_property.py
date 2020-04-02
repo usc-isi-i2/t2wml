@@ -20,6 +20,8 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     """
     try:
         property_type = WikidataProperty.query.get(wikidata_property)
+        if property_type is None:
+            raise ValueError("Not found")
     except Exception as e:
         query = """SELECT ?type WHERE {
             wd:""" + wikidata_property + """ rdf:type wikibase:Property ;

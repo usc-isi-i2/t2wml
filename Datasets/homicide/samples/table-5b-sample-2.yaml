@@ -1,0 +1,12 @@
+sample:
+  value: C9
+  property: Homicides
+  qualifier:
+    - value: A8
+      property: Year
+    - value: B2
+      property: Country
+    - value: B9
+      property: Source
+    - value: H9
+      property: Population

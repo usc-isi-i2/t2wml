@@ -1,0 +1,12 @@
+sample:
+  value: D9
+  property: Homicides
+  qualifier:
+    - value: A8
+      property: A3
+    - value: C2
+      property: C1
+    - value: C9
+      property: C3
+    - value: B9
+      property: B3
