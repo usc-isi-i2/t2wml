@@ -1,4 +1,5 @@
 import os, sys, inspect
+import shutil
 
 try:
     from backend_code.models import User, Project, ProjectFile, YamlObject
@@ -55,7 +56,10 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_1).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
-        #add_row_in_data_file(self.input_file_path_1, sheet_name, new_file_path)
+        if not os.path.exists(new_file_path):
+            shutil.copyfile(self.input_file_path_1, new_file_path)
+
+        # add_row_in_data_file(self.input_file_path_1, sheet_name, new_file_path)
 
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
@@ -76,6 +80,8 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_1).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
+        if not os.path.exists(new_file_path):
+            shutil.copyfile(self.input_file_path_1, new_file_path)
         #add_row_in_data_file(self.input_file_path_1, sheet_name, new_file_path)
 
         item_table = ItemTable()
@@ -99,6 +105,9 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_3).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
+        if not os.path.exists(new_file_path):
+            shutil.copyfile(self.input_file_path_3, new_file_path)
+
         #add_row_in_data_file(self.input_file_path_3, sheet_name, new_file_path)
 
         item_table = ItemTable()
@@ -121,6 +130,9 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_3).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
+        if not os.path.exists(new_file_path):
+            shutil.copyfile(self.input_file_path_1, new_file_path)
+
         #add_row_in_data_file(self.input_file_path_3, sheet_name, new_file_path)
 
         item_table = ItemTable()
