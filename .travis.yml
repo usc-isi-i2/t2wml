@@ -9,7 +9,9 @@ python:
 #  - python -c "import ssl; print('SSSSSSSSSL', ssl.OPENSSL_VERSION)"
 install:
 - sudo apt-get update
+- pip install --upgrade pip
 - pip install -r requirements.txt
+- pip freeze
 script:
 - python -m spacy download en_core_web_sm
 - python -m unittest backend_code.unit_tests.test_rdf_generation

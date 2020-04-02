@@ -17,8 +17,9 @@ from pathlib import Path
 from backend_code.item_table import ItemTable
 from backend_code.handler import generate_download_file, process_wikified_output_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name #, add_row_in_data_file
+import tempfile
 
-output_directory = '/tmp'
+output_directory = tempfile.mkdtemp()
 
 _path = Path(__file__).parent
 
