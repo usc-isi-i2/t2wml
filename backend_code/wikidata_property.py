@@ -1,5 +1,6 @@
 from app_config import db
 from SPARQLWrapper import SPARQLWrapper, JSON
+from backend_code.property_type_map import property_type_map
 class WikidataProperty(db.Model):
     wikidata_property = db.Column(db.String(64), primary_key=True)
     property_type= db.Column(db.String(64))
@@ -23,6 +24,12 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
         if property_type is None:
             raise ValueError("Not found")
     except Exception as e:
+        predefined_property_type = property_type_map.get(wikidata_property, None)
+        if predefined_property_type:
+            WikidataProperty.add(wikidata_property, predefined_property_type)
+            return predefined_property_type
+
+
         query = """SELECT ?type WHERE {
             wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
             wikibase:propertyType ?type .
