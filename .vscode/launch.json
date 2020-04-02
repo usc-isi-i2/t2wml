@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
     
         {
             "name": "Backend",
@@ -24,6 +25,16 @@
             ],
             "cwd": "${workspaceFolder}",
             "jinja": true
+        },
+        {
+            "name": "Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "unittest",
+            "args": [
+                "backend_code.unit_tests.test_rdf_generation"
+            ],
+            "cwd": "${workspaceFolder}",
         },
     ]
 }
