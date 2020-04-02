@@ -11,7 +11,7 @@ install:
 - sudo apt-get update
 - pip install --upgrade pip
 - pip install -r requirements.txt
-- pip freeze
+- pip install --force-reinstall etk  # For some reason etk is not installed properly from requirements on Travis
 script:
 - python -m spacy download en_core_web_sm
 - python -m unittest backend_code.unit_tests.test_rdf_generation
