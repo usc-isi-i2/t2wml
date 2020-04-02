@@ -20,9 +20,10 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     :return:
     """
     try:
-        property_type = WikidataProperty.query.get(wikidata_property)
-        if property_type is None:
+        wd_property = WikidataProperty.query.get(wikidata_property)
+        if wd_property is None:
             raise ValueError("Not found")
+        property_type=wd_property.property_type
     except Exception as e:
         predefined_property_type = property_type_map.get(wikidata_property, None)
         if predefined_property_type:
