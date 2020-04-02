@@ -16,7 +16,6 @@ decorator==4.4.2
 demjson==2.2.4
 dill==0.3.0
 distro==1.5.0
-en-core-web-sm==2.1.0
 et-xmlfile==1.0.1
 etk==2.1.7
 extruct==0.8.0
