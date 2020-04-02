@@ -90,7 +90,7 @@ def wikified_output_validator():
 
     if not (in_file and is_file_allowed(in_file.filename, "csv")):
         raise T2WMLExceptions.FileTypeNotSupportedException("File with extension '" + 
-                        get_file_extension(file.filename) + "' is not a valid wikified output file")
+                        get_file_extension(in_file.filename) + "' is not a valid wikified output file")
     return in_file
 
 
