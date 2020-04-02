@@ -1,19 +1,21 @@
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
+from etk.knowledge_graph import URI, Literal, BNode
 from etk.etk_module import ETKModule
 from etk.wikidata.entity import WDItem
 from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, \
     ExternalIdentifier, GlobeCoordinate
-from etk.wikidata import serialize_change_record
+from etk.wikidata import serialize_change_record, WDReference
 from backend_code.utility_functions import get_property_type
 from backend_code.utility_functions import translate_precision_to_integer
 
-
 def handle_property_value(j, i, sparql_endpoint):
     property_type=get_property_type(j["property"], sparql_endpoint)
+
     value=None
     is_error=False
     error_statement=""
+
     if property_type == "WikibaseItem":
         value = Item(str(j["value"]))
     elif property_type == "WikibaseProperty":
@@ -35,7 +37,7 @@ def handle_property_value(j, i, sparql_endpoint):
         else:
             value = None
     elif property_type == "Time":
-        value = TimeValue(str(j["value"]), Item(j["calendar"]), 
+        value = TimeValue(str(j["value"]), Item(j["calendar"]),
                         translate_precision_to_integer(j["precision"]),
                         j["time_zone"])
     elif property_type == "Url":
@@ -50,7 +52,7 @@ def handle_property_value(j, i, sparql_endpoint):
     elif property_type == "Property Not Found":
         is_error = True
         error_statement = "Type of property " + j["property"] + " not found"
-    
+
     return value, is_error, error_statement
 
 def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl',
@@ -109,6 +111,18 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
             else:
                 s = item.add_statement(i["statement"]["property"], value)
             doc.kg.add_subject(item)
+
+            if "reference" in i["statement"]:
+                reference = WDReference()
+                for j in i["statement"]["reference"]:
+                    value, is_error, error_statement = handle_property_value(j, i, sparql_endpoint)
+                    if value:
+                        reference.add_value(j["property"], value)
+                    else:
+                        print("Invalid numeric value '{}' in cell {}".format(j["value"], j["cell"]))
+                        print("Skipping qualifier {} for cell {}".format(j["property"], i["cell"]))
+                if reference:
+                    s.add_reference(reference)
 
             if "qualifier" in i["statement"]:
                 for j in i["statement"]["qualifier"]:

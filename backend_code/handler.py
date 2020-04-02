@@ -66,7 +66,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
     update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
     region = region_specification['region_object']
     head = region.get_head()
-    data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
+    data = {"dataRegion": set(), "item": set(), "referenceRegion": set(), "qualifierRegion": set(), "error": dict()}
     bindings["$col"] = head[0]
     bindings["$row"] = head[1]
     try:
@@ -75,9 +75,16 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
         item = None
 
     try:
-        qualifiers = template['qualifier']
+        attributes = template['qualifier']
     except KeyError:
-        qualifiers = None
+        attributes = None
+
+    try:
+        references = template['reference']
+    except KeyError:
+        references = None
+
+    list_type_attributes = [references, attributes]
 
     while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
         try:
@@ -102,37 +109,40 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
                     data["item"].add(item_cell)
                 except AttributeError:
                     pass
-
-            if qualifiers:
-                qualifier_cells = set()
-                for qualifier in qualifiers:
-                    if isinstance(qualifier["value"], (ItemExpression, ValueExpression, BooleanEquation)):
-                        try:
-                            if qualifier["value"].variables:
-                                variables = list(qualifier["value"].variables)
-                                num_of_variables = len(variables)
-                                if num_of_variables == 1:
-                                    bindings[variables[0]] = 0
-                                    while not qualifier["value"].evaluate(bindings):
-                                        bindings[variables[0]] += 1
-                                    col, row, value = qualifier["value"].evaluate_and_get_cell(bindings)
-                                    qualifier_cell = cell_tuple_to_str((col, row))
-                                    qualifier_cells.add(qualifier_cell)
-                                    del bindings[variables[0]]
-                            else:
-                                qualifier_cell = get_cell(qualifier["value"])
-                                qualifier_cell = cell_tuple_to_str(qualifier_cell)
-                                qualifier_cells.add(qualifier_cell)
-                        except AttributeError:
-                            pass
-                    elif isinstance(qualifier["value"], (ColumnExpression, RowExpression)):
-                        try:
-                            qualifier_cell = get_cell(qualifier["value"])
-                            qualifier_cell = cell_tuple_to_str(qualifier_cell)
-                            qualifier_cells.add(qualifier_cell)
-                        except AttributeError:
-                            pass
-                data["qualifierRegion"] |= qualifier_cells
+            for index, attributes in enumerate(list_type_attributes):
+                if attributes:
+                    attribute_cells = set()
+                    for attribute in attributes:
+                        if isinstance(attribute["value"], (ItemExpression, ValueExpression, BooleanEquation)):
+                            try:
+                                if attribute["value"].variables:
+                                    variables = list(attribute["value"].variables)
+                                    num_of_variables = len(variables)
+                                    if num_of_variables == 1:
+                                        bindings[variables[0]] = 0
+                                        while not attribute["value"].evaluate(bindings):
+                                            bindings[variables[0]] += 1
+                                        col, row, value = attribute["value"].evaluate_and_get_cell(bindings)
+                                        attribute_cell = cell_tuple_to_str((col, row))
+                                        attribute_cells.add(attribute_cell)
+                                        del bindings[variables[0]]
+                                else:
+                                    attribute_cell = get_cell(attribute["value"])
+                                    attribute_cell = cell_tuple_to_str(attribute_cell)
+                                    attribute_cells.add(attribute_cell)
+                            except AttributeError:
+                                pass
+                        elif isinstance(attribute["value"], (ColumnExpression, RowExpression)):
+                            try:
+                                attribute_cell = get_cell(attribute["value"])
+                                attribute_cell = cell_tuple_to_str(attribute_cell)
+                                attribute_cells.add(attribute_cell)
+                            except AttributeError:
+                                pass
+                    if index == 0:
+                        data["referenceRegion"] |= attribute_cells
+                    else:
+                        data["qualifierRegion"] |= attribute_cells
         except Exception as exception:
             error = dict()
             error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
@@ -145,6 +155,7 @@ def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name
 
     data['dataRegion'] = list(data['dataRegion'])
     data['item'] = list(data['item'])
+    data['referenceRegion'] = list(data['referenceRegion'])
     data['qualifierRegion'] = list(data['qualifierRegion'])
     return data
 
@@ -272,10 +283,10 @@ def parse_time_for_dict(response):
         except Exception as e:
             raise e
 
-def evaluate_qualifier(template, sparql_endpoint):
+def evaluate_attribute(template, sparql_endpoint):
     return_arr=[]
     for i in range(len(template)):
-        skip_qualifier = False
+        skip_attribute = False
         temp_dict = dict()
         for k, v in template[i].items():
             if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
@@ -287,7 +298,7 @@ def evaluate_qualifier(template, sparql_endpoint):
                     skip_qualifier = True
             else:
                 temp_dict[k] = v
-        if skip_qualifier:
+        if skip_attribute:
             temp_dict = None
         else:
             if "property" in temp_dict and get_property_type(temp_dict["property"], sparql_endpoint) == "Time":
@@ -305,8 +316,8 @@ def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
     """
     response = dict()
     for key, value in template.items():
-        if key == 'qualifier':
-            response[key]=evaluate_qualifier(template[key], sparql_endpoint)
+        if key == 'qualifier' or key == 'reference':
+            response[key]=evaluate_attribute(template[key], sparql_endpoint)
         elif isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
                 col, row, _value = handle_variables(value)
                 if key == "item":

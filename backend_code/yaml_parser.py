@@ -150,7 +150,7 @@ class YAMLParser:
             response = None
         return response
 
-    def resolve_template(self, template: str) -> None:
+    def resolve_template(self, template: dict) -> None:
         """
         This function parses all the expressions of the template and replace them with their respective class objects
         :param template:
@@ -186,7 +186,7 @@ class YAMLParser:
 
         _template = self.yaml_data['statementMapping']['template']
         for key in _template:
-            if key not in ('item', 'property', 'value', 'qualifier'):
+            if key not in ('item', 'property', 'value', 'qualifier', 'reference'):
                 if not _template[key].isalnum():
                     template[key] = generate_tree(_template[key])
                     template[key].get_variable_cell_operator_arguments()
@@ -194,18 +194,20 @@ class YAMLParser:
                 else:
                     template[key] = _template[key]
 
-        if template.get('qualifier', None):
-            for i in range(len(template['qualifier'])):
-                qualifier_keys = list(template['qualifier'][i])
-                for qualifier_key in qualifier_keys:
-                    if qualifier_key != 'property' and qualifier_key != 'format':
-                        qualifier_value = str(template['qualifier'][i][qualifier_key])
-                        if qualifier_value:
-                            if not qualifier_value.isalnum():
-                                template['qualifier'][i][qualifier_key] = generate_tree(qualifier_value)
-                                var = template['qualifier'][i]['value'].get_variable_cell_operator_arguments()
-                            else:
-                                template['qualifier'][i][qualifier_key] = qualifier_value
+        list_type_attributes = ['reference', 'qualifier']
+        for attribute in list_type_attributes:
+            if template.get(attribute, None):
+                for i in range(len(template[attribute])):
+                    attribute_keys = list(template[attribute][i])
+                    for attribute_key in attribute_keys:
+                        if attribute_key != 'property' and attribute_key != 'format':
+                            attribute_value = str(template[attribute][i][attribute_key])
+                            if attribute_value:
+                                if not attribute_value.isalnum():
+                                    template[attribute][i][attribute_key] = generate_tree(attribute_value)
+                                    var = template[attribute][i]['value'].get_variable_cell_operator_arguments()
+                                else:
+                                    template[attribute][i][attribute_key] = attribute_value
 
     def get_template(self) -> dict:
         """
