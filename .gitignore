@@ -117,5 +117,7 @@ config/*
 # user files
 uploads
 
+# sqlite dbs
+app.db
 # emacs
 *~
