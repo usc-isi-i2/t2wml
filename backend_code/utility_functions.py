@@ -225,7 +225,7 @@ def validate_yaml(yaml_file_path, sparql_endpoint):
         if 'template' in yaml_file_data['statementMapping']:
             if isinstance(yaml_file_data['statementMapping']['template'], dict):
                 for key in yaml_file_data['statementMapping']['template'].keys():
-                    if key not in {'item', 'property', 'value', 'qualifier', 'calendar', 'precision', 'time_zone', 'format', 'lang', 'longitude', 'latitude', 'unit'}:
+                    if key not in {'item', 'property', 'value', 'qualifier', 'reference', 'calendar', 'precision', 'time_zone', 'format', 'lang', 'longitude', 'latitude', 'unit'}:
                         errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + key + ") found\n"
 
                 if 'item' not in yaml_file_data['statementMapping']['template']:
@@ -237,26 +237,28 @@ def validate_yaml(yaml_file_path, sparql_endpoint):
                 if 'value' not in yaml_file_data['statementMapping']['template']:
                     errors+= "Key 'value' (statementMapping -> template -> X) not found\n"
 
-                if 'qualifier' in yaml_file_data['statementMapping']['template']:
-                    if yaml_file_data['statementMapping']['template']['qualifier']:
-                        if isinstance(yaml_file_data['statementMapping']['template']['qualifier'], list):
-                            qualifiers = yaml_file_data['statementMapping']['template']['qualifier']
-                            for i in range(len(qualifiers)):
-                                object = qualifiers[i]
-                                if object and isinstance(object, dict):
-                                    for key in object.keys():
-                                        if key not in {'property', 'value', 'qualifier', 'calendar',
-                                                        'precision', 'time_zone', 'format', 'lang', 'longitude',
-                                                        'latitude', 'unit'}:
-                                            errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> qualifier[" + str(i) + "] -> " + key + ") found"
-                                else:
-                                    errors+= "Value of  key 'qualifier[" + str(i) + "]' (statementMapping -> template -> qualifier[" + str(i) + "]) \
-                                        must be a dictionary\n"
+                list_type_attributes = ['reference', 'qualifier']
+                for attribute in list_type_attributes:
+                    if attribute in yaml_file_data['statementMapping']['template']:
+                        if yaml_file_data['statementMapping']['template'][attribute]:
+                            if isinstance(yaml_file_data['statementMapping']['template'][attribute], list):
+                                attributes = yaml_file_data['statementMapping']['template'][attribute]
+                                for i in range(len(attributes)):
+                                    object = attributes[i]
+                                    if object and isinstance(object, dict):
+                                        for key in object.keys():
+                                            if key not in {'property', 'value', 'calendar',
+                                                            'precision', 'time_zone', 'format', 'lang', 'longitude',
+                                                            'latitude', 'unit'}:
+                                                errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + attribute + "[" + str(i) + "] -> " + key + ") found"
+                                    else:
+                                        errors+= "Value of  key '" + attribute + "[" + str(i) + "]' (statementMapping -> template -> " + attribute + "[" + str(i) + "]) \
+                                            must be a dictionary\n"
 
+                            else:
+                                errors+="Value of  key '" + attribute + "' (statementMapping -> template -> " + attribute + ") must be a list\n"
                         else:
-                            errors+="Value of  key 'qualifier' (statementMapping -> template -> qualifier) must be a list\n"
-                    else:
-                        errors+= "Value of key 'qualifier' (statementMapping -> template -> qualifier) cannot be empty\n"
+                            errors+= "Value of key '" + attribute + "' (statementMapping -> template -> " + attribute + ") cannot be empty\n"
             else:
                 errors += "Value of  key 'template' (statementMapping -> template) must be a dictionary\n"
         else:
