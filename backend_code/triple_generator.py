@@ -11,7 +11,9 @@ from backend_code.utility_functions import translate_precision_to_integer
 
 def handle_property_value(j, i, sparql_endpoint):
     property_type=get_property_type(j["property"], sparql_endpoint)
-            
+    value=None
+    is_error=False
+    error_statement=""
     if property_type == "WikibaseItem":
         value = Item(str(j["value"]))
     elif property_type == "WikibaseProperty":
