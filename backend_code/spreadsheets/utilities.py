@@ -15,7 +15,7 @@ def get_cell_value(bindings, row, column):
     try:
         value = str(bindings['excel_sheet'][row][column]).strip()
     except IndexError:
-        raise T2WMLExceptions.ValueOutOfBoundException("Cell " + cell_tuple_to_str((column, row)) + " is outside the bounds of the current data file")
+        raise T2WMLExceptions.ValueOutOfBoundException("Cell " + cell_tuple_to_str(column, row) + " is outside the bounds of the current data file")
     return value
 
 

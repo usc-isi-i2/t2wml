@@ -45,7 +45,7 @@ def one_index_to_zero_index(row: Union[str, int]) -> int:
     return int(row) - 1
 
 
-def cell_tuple_to_str(cell_index: tuple) -> str:
+def cell_tuple_to_str(col, row) -> str:
     """
     This function converts 0-indexed tuples cell notation
     to the cell notation used by excel (letter + 1-indexed number, in a string)
@@ -53,8 +53,8 @@ def cell_tuple_to_str(cell_index: tuple) -> str:
     :param cell_index: (col, row)
     :return:
     """
-    col = column_index_to_letter(int(cell_index[0]))
-    row = str(int(cell_index[1]) + 1)
+    col = column_index_to_letter(col)
+    row = str(int(row) + 1)
     return col + row
 
 

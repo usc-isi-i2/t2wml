@@ -155,7 +155,7 @@ class ItemTable:
 	def to_json(self):
 		temp_table = dict()
 		for key, value in self.table.items():
-			temp_table[cell_tuple_to_str(key)] = value
+			temp_table[cell_tuple_to_str(*key)] = value
 		json_object = {'table': temp_table, 'item_wiki': self.item_wiki}
 		return json.dumps(json_object, indent=3)
 
@@ -210,3 +210,4 @@ class ItemTable:
 				context = "__NO_CONTEXT__"
 			if context in self.table[(column, row)]:
 				return self.table[(column, row)][context]
+				

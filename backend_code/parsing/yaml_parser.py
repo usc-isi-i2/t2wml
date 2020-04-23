@@ -1,11 +1,11 @@
 from collections import OrderedDict
-
+from copy import deepcopy
 import yaml
 from backend_code.bindings import bindings
 from backend_code.spreadsheets.caching import get_sheet
 
 import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.parsing.t2wml_parser import parse_expression, iter_on_variables
+from backend_code.parsing.t2wml_parser import parse_expression
 
 
 
@@ -51,20 +51,21 @@ class Region:
             
     def get(self, key, fallback=None):
         return self.indices.get(key, fallback)
+    
+    def get_head(self):
+        for key in self.indices:
+            return key
 
 class YamlObject:
     def __init__(self, filepath, item_table, data_file_path, sheet_name):
         self.yaml_data=self.validate(filepath)
         try:
-            self.excel_sheet=get_sheet(data_file_path, sheet_name)
+            self.sheet=get_sheet(data_file_path, sheet_name)
         except IOError:
             raise IOError('Excel File cannot be found or opened')
-        update_bindings(item_table=item_table, sheet=self.excel_sheet)
-        try:
-            self._region_props=self.parse_region()
-            self._template=self.parse_template()
-        except Exception as e:
-            raise e
+        update_bindings(item_table=item_table, sheet=self.sheet)
+        self._region_props=self.parse_region()
+        self._template=dict(self.yaml_data['statementMapping']['template'])
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
     
     @property
@@ -85,25 +86,19 @@ class YamlObject:
 
     @property
     def template(self):
-        #NOTE: THIS MAY NEED A DEEPCOPY- CHECK
-        return dict(self._template)
+        return deepcopy(self._template)
         
     def iter_on_variables(self, expression, col=False, row=False):
-        max_iter=10
-        val=iter_on_variables(expression, max_iter)
+        try:
+            raise NotImplementedError
+            val=self.parse_expression(expression)
+        except:
+            raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
+    
         if not val:
             raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
         return val
-    
-    def iter_on_col_row(self, expression, context={}):
-        if not str(expression).isalnum():
-            for row, col in self.region_iter(self.excel_sheet):
-                context_dict={"row": row, "col":col}
-                context_dict.update(context)
-                context_dict.update(self._region_props)
-                val=self.parse_expression(expression, context_dict)
-                if val:
-                    return val
+
     
     def parse_expression(self, statement, context={}):
         #check if statement is actually an expression:
@@ -155,21 +150,44 @@ class YamlObject:
         self.check_region_boundaries(region)
 
         skip_row=skip_cell=skip_column=[]
-
+        
+        top=region["top"]
+        bottom=region["bottom"]
         if 'skip_row' in yaml_region:
             skip_row=[]
             for statement in yaml_region["skip_row"]:
-                skip_row.append(self.parse_expression(statement, region))
-            
+                for row in range(top, bottom):
+                    context=dict(row=row)
+                    context.update(region)
+                    skip=self.parse_expression(statement, context)
+                    if skip:
+                        skip_row.append(row)
+        
+        right=region["right"]
+        left=region["left"]
         if 'skip_column' in yaml_region:
             skip_column=[]
             for statement in yaml_region["skip_column"]:
-                skip_column.append(self.parse_expression(statement, region))
+                for col in range(left, right):
+                    context=dict(col=col)
+                    context.update(region)
+                    try:
+                        skip=self.parse_expression(statement, context)
+                    except Exception as e:
+                        raise e
+                    if skip:
+                        skip_column.append(col)
 
         if 'skip_cell' in yaml_region:
             skip_cell=[]
             for statement in yaml_region["skip_cell"]:
-                skip_cell.append(self.parse_expression(statement, region))
+                for row in range(top, bottom):
+                    for col in range(left, right):
+                        context=dict(col=col, row=row)
+                        context.update(region)
+                        skip=self.parse_expression(statement, context)
+                        if skip:
+                            skip_cell.append((row, col))
 
         region['skip_row']=skip_row
         region['skip_column']=skip_column
@@ -177,29 +195,6 @@ class YamlObject:
 
         return region
 
-
-    def parse_template(self):
-        template=dict(self.yaml_data['statementMapping']['template'])
-
-        #separately handle qualifier
-        template_qualifier=template.pop("qualifier", None)
-        if template_qualifier:
-            for q_i, q in enumerate(template_qualifier):
-                for key in q:
-                    if key!= 'property' and key!="format":
-                        try:
-                            template_qualifier[q_i][key]=self.iter_on_col_row(template_qualifier[q_i][key])
-                        except Exception as e:
-                            print(e)
-
-        for key in template:
-            template[key]=self.iter_on_col_row(template[key])
-        
-        #add qualifier back in
-        if template_qualifier:
-            template["qualifier"]=template_qualifier
-        
-        return template
 
     def validate(self, yaml_file_path):
         with open(yaml_file_path, 'r') as stream:
@@ -299,13 +294,17 @@ class YamlObject:
         return yaml_file_data
 
 
-    def region_iter(self, sheet):
+    def region_iter(self):
         skip_rows=set(self._region_props.get("skip_row", []))
         skip_cols=set(self._region_props.get("skip_column", []))
         skip_cells=set(self._region_props.get("skip_cell", []))
 
-        for r_i, row in enumerate(sheet):
+        top=self._region_props["top"]
+        bottom=self._region_props["bottom"]
+        left=self._region_props["left"]
+        right=self._region_props["right"]
+        for r_i in range(top-1, bottom+1):
             if r_i not in skip_rows:
-                for c_i, col in enumerate(row):
+                for c_i in range(left-1, right+1):
                     if c_i not in skip_cols and (r_i, c_i) not in skip_cells:
-                        yield r_i, c_i
+                        yield r_i, c_i #row needs to be converted back into 1-indexed

@@ -6,7 +6,8 @@ from flask import request, render_template, redirect, url_for, session, make_res
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
 from backend_code.utility_functions import verify_google_login, check_if_string_is_invalid, validate_yaml
 from backend_code.spreadsheets.conversions import  column_letter_to_index, one_index_to_zero_index
-from backend_code.handler import generate_download_file, wikifier
+from backend_code.handler import wikifier
+from backend_code.parsing.handler import generate_download_file
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
 
@@ -368,26 +369,14 @@ def downloader():
     This functions initiates the download
     :return:
     """
-    project=get_project()
-    project_file=project.current_file
-    current_sheet=project_file.current_sheet
+    project = get_project()
+    yaml_file = project.current_file.current_sheet.yaml_file
+    if not yaml_file: #the frontend disables this, this is just another layer of checking
+        raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
 
     filetype = request.form["type"]
-    sparql_endpoint = project.sparql_endpoint
-    user_id=project.user_id
-    item_table=current_sheet.item_table
-    data_file_path=project_file.filepath
-    sheet_name=current_sheet.name
-    
-    yaml_file=current_sheet.yaml_file
-    yaml_config=yaml_file.yaml_configuration
 
-    template = yaml_config.template
-    region = yaml_config.region
-    created_by = yaml_config.created_by
-
-    response = generate_download_file(user_id, item_table, data_file_path, sheet_name, region, template, filetype,
-                                      sparql_endpoint, created_by=created_by)
+    response = generate_download_file(yaml_file.yaml_configuration, filetype, yaml_file.parsed_yaml_file_path, project.sparql_endpoint)
     return json.dumps(response, indent=3)
 
 
