@@ -327,7 +327,6 @@ def upload_yaml():
         else:
             if project.current_file:
                 yf=YamlFile.get_or_create(project.current_file.current_sheet, yaml_data)
-                validate_yaml(yf.yaml_file_path, project.sparql_endpoint)
                 response['yamlRegions']=yf.highlight_region()
             else:
                 response['yamlRegions'] = None
