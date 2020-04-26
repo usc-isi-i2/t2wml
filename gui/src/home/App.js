@@ -72,7 +72,8 @@ class App extends React.Component {
     // fetch user data from the server
     fetch(window.server + "/userinfo", {
       mode: "cors",
-      method: "GET"
+      method: "GET",
+      credentials: "include",
     }).then(response => { return response.json(); })
     .then(userData => {
       console.log('Changing serData to ', userData);
@@ -82,7 +83,8 @@ class App extends React.Component {
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
     fetch(window.server + "/get_project_meta", {
       mode: "cors",
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -134,7 +136,8 @@ class App extends React.Component {
     fetch(window.server + "/create_project", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -182,7 +185,8 @@ class App extends React.Component {
     fetch(window.server + "/delete_project", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -235,7 +239,8 @@ class App extends React.Component {
     fetch(window.server + "/download_project", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -287,7 +292,8 @@ class App extends React.Component {
     fetch(window.server + "/rename_project", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -338,7 +344,8 @@ class App extends React.Component {
     fetch(window.server + "/update_setting", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).catch((error) => {
       console.log(error);
     });

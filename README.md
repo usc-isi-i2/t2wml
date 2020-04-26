@@ -19,6 +19,10 @@
     pip install -r requirements.txt
     python -m spacy download en_core_web_sm
     ```
+    On Windows you may encounter an error saying that `etk.wikidata` cannot be imported when you run the backend.
+    If you encounter it, run:
+
+    `pip install --force-reinstall etk`
 3. Run server:
    ```python application.py```
 4. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)

@@ -109,7 +109,8 @@ class App extends React.Component {
     // fetch user data from the server
     fetch(window.server + "/userinfo", {
       mode: "cors",
-      method: "GET"
+      method: "GET",
+      credentials: "include",
     }).then(response => { return response.json(); })
     .then(userData => {
       console.log('Changing serData to ', userData);
@@ -120,7 +121,8 @@ class App extends React.Component {
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
     fetch(window.server + "/get_project_meta", {
       mode: "cors",
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -190,7 +192,8 @@ class App extends React.Component {
     fetch(window.server + "/get_project_files", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -264,7 +267,8 @@ class App extends React.Component {
     fetch(window.server + "/update_settings", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).catch((error) => {
       console.log(error);
     });
@@ -520,7 +524,8 @@ class TableViewer extends React.Component {
     fetch(window.server + "/upload_data_file", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then((response) => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -604,7 +609,8 @@ class TableViewer extends React.Component {
     fetch(window.server + "/upload_wikifier_output", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then((response) => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -677,7 +683,8 @@ class TableViewer extends React.Component {
     fetch(window.server + "/resolve_cell", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then((response) => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -732,7 +739,8 @@ class TableViewer extends React.Component {
     fetch(window.server + "/change_sheet", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then((response) => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -1492,7 +1500,8 @@ class Wikifier extends React.Component {
     fetch(window.server + "/call_wikifier_service", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then((response) => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -2406,7 +2415,8 @@ class YamlEditor extends React.Component {
     fetch(window.server + "/upload_yaml", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
@@ -2733,7 +2743,8 @@ class Output extends React.Component {
     fetch(window.server + "/download", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then((response) => {
       if (!response.ok) throw Error(response.statusText);
       return response;

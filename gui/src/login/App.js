@@ -49,7 +49,8 @@ class App extends React.Component {
     fetch(window.server + "/login", {
       mode: "cors",
       body: formData,
-      method: "POST"
+      method: "POST",
+      credentials: "include",
     }).then(response => {
       if (!response.ok) throw Error(response.statusText);
       return response;
