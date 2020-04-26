@@ -235,7 +235,6 @@ class ProjectList extends React.Component {
   }
 
   handleLogout() {
-    debugger;
     logout();
   }
 

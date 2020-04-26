@@ -2,7 +2,7 @@ import shutil
 import sys
 import json
 from app_config import app
-from flask import request, render_template, redirect, url_for, session, make_response
+from flask import request, redirect, url_for, session, make_response
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
 from backend_code.utility_functions import verify_google_login, check_if_string_is_invalid, validate_yaml
 from backend_code.spreadsheets.conversions import  column_letter_to_index, one_index_to_zero_index
@@ -98,18 +98,6 @@ def user_info():
     user=get_user()
     return json.dumps(user.json_dict)
 
-@app.route('/', methods=['GET'])
-def index():
-    """
-    This functions renders the GUI
-    :return:
-    """
-    try:
-        get_user()
-        return redirect(url_for('project_home'))
-    except:
-        return render_template(get_template_path('login'))
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -145,33 +133,6 @@ def login():
     except Exception as e:
         response["error"]=make_frontend_err_dict(e)
         response["vs"] = False
-
-
-@app.route('/project/<string:pid>', methods=['GET'])
-def open_project(pid: str):
-    """
-    This route opens the project and displays data file viewer, YAML viewer and Wikified output file viewer cards.
-    :param pid:
-    :return:
-    """
-    try:
-        get_user()
-        return app.make_response(render_template(get_template_path('project')))
-    except UserNotFoundException:
-         return redirect(url_for('index'))
-
-
-@app.route('/project', methods=['GET'])
-def project_home():
-    """
-    This route displays the list of projects with their details and gives user the option to rename, delete and download the project.
-    :return:
-    """
-    try:
-        get_user()
-        return make_response(render_template(get_template_path('home')))
-    except UserNotFoundException:
-        return redirect(url_for('index'))
 
 
 @app.route('/get_project_meta', methods=['POST'])
@@ -247,7 +208,7 @@ def upload_data_file():
 
         return json.dumps(response, indent=3)
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('index')) # TODO: Return an error instead of a redirect
 
 
 @app.route('/change_sheet', methods=['POST'])
@@ -495,7 +456,7 @@ def logout():
     """
     if 'uid' in session:
         del session['uid']
-    return redirect(url_for('index'))
+    return '', 204
 
 @app.route('/rename_project', methods=['POST'])
 def rename_project():
