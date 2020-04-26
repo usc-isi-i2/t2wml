@@ -155,9 +155,8 @@ def open_project(pid: str):
     :return:
     """
     try:
-        user=get_user()
-        user_info_json=json.dumps(user.json_dict)
-        return app.make_response(render_template(get_template_path('project'), pid=pid, userInfo=user_info_json))
+        get_user()
+        return app.make_response(render_template(get_template_path('project')))
     except UserNotFoundException:
          return redirect(url_for('index'))
 
@@ -169,9 +168,8 @@ def project_home():
     :return:
     """
     try:
-        user=get_user()
-        user_info_json=json.dumps(user.json_dict)
-        return make_response(render_template(get_template_path('home'), userInfo=user_info_json))
+        get_user()
+        return make_response(render_template(get_template_path('home')))
     except UserNotFoundException:
         return redirect(url_for('index'))
 
