@@ -132,58 +132,6 @@ class App extends React.Component {
                 // uxMode="redirect" // make google sign-in at the same page
                 // redirectUri={window.location.href} // make google sign-in at the same page
               />
-
-              {/* Splitter */}
-              <div style={{ width: "100%", marginTop: "10%" }}>
-                <div style={{ display: "inline-block", height: "20px", width: "calc((100% - 120px) / 2)" }}><hr /></div>
-                <div style={{ display: "inline-block", height: "20px", width: "120px", textAlign: "center", fontSize: "12px" }} className="text-muted">Not&nbsp;supported&nbsp;yet</div>
-                <div style={{ display: "inline-block", height: "20px", width: "calc((100% - 120px) / 2)" }}><hr /></div>
-              </div>
-
-              {/* Facebook */}
-              <Button
-                variant="success"
-                style={{ width: "100%", marginTop: "10px" }}
-                // onClick={renderProps.onClick}
-                disabled={true}
-              >
-                <FontAwesomeIcon icon={faFacebookF} />
-                <span style={{ width: "90%", display: "inline-block", fontWeight: "bold" }}>Log in with Facebook</span>
-              </Button>
-
-              {/* GitHub */}
-              <Button
-                variant="success"
-                style={{ width: "100%", marginTop: "10px" }}
-                // onClick={renderProps.onClick}
-                disabled={true}
-              >
-                <FontAwesomeIcon icon={faGithub} />
-                <span style={{ width: "90%", display: "inline-block", fontWeight: "bold" }}>Log in with GitHub</span>
-              </Button>
-
-              {/* LinkedIn */}
-              <Button
-                variant="success"
-                style={{ width: "100%", marginTop: "10px" }}
-                // onClick={renderProps.onClick}
-                disabled={true}
-              >
-                <FontAwesomeIcon icon={faLinkedinIn} />
-                <span style={{ width: "90%", display: "inline-block", fontWeight: "bold" }}>Log in with LinkedIn</span>
-              </Button>
-
-              {/* Twitter */}
-              <Button
-                variant="success"
-                style={{ width: "100%", marginTop: "10px" }}
-                // onClick={renderProps.onClick}
-                disabled={true}
-              >
-                <FontAwesomeIcon icon={faTwitter} />
-                <span style={{ width: "90%", display: "inline-block", fontWeight: "bold" }}>Log in with Twitter</span>
-              </Button>
-
             </Card.Body>
           </Card>
         </div>
