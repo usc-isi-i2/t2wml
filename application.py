@@ -93,7 +93,7 @@ def wikified_output_validator():
                         get_file_extension(in_file.filename) + "' is not a valid wikified output file")
     return in_file
 
-@app.route('/userinfo', method=['GET'])
+@app.route('/userinfo', methods=['GET'])
 def user_info():
     user=get_user()
     return json.dumps(user.json_dict)

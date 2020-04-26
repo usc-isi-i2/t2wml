@@ -23,7 +23,7 @@ class App extends React.Component {
     super(props);
 
     // fetch data from flask
-    const { userData } = this.props;
+    // const { userData } = this.props;
 
     // init global variables
     window.server = DEFAULT_BACKEND_SERVER;
@@ -43,7 +43,7 @@ class App extends React.Component {
       downloadingPid: "",
 
       // user
-      userData: userData,
+      userData: {},
 
       // temp in form
       tempCreateProject: "Untitled project",
@@ -65,9 +65,19 @@ class App extends React.Component {
       isAscending: false,
 
     };
+
   }
 
   componentDidMount() {
+    // fetch user data from the server
+    fetch(window.server + "/userinfo", {
+      mode: "cors",
+      method: "GET"
+    }).then(response => { return response.json(); })
+    .then(userData => {
+      console.log('Changing serData to ', userData);
+      this.setState( { userData: userData });
+    });
     // fetch project meta
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
     fetch(window.server + "/get_project_meta", {
