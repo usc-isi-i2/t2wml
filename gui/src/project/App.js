@@ -61,9 +61,12 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
+    // Get the pid from the URL - the URL is ..../project/<pid>
+    const parts = window.location.href.split('/');
+    const pid = parts[parts.length - 1];
+
     // fetch data from flask
-    const { pid, userData } = this.props;
-    console.log("<App> opened project: %c" + pid, LOG.highlight);
+     console.log("<App> opened project: %c" + pid, LOG.highlight);
 
     // init global variables
     window.pid = pid;
@@ -91,7 +94,7 @@ class App extends React.Component {
       // ],
 
       // user
-      userData: userData,
+      userData: { },
 
       // settings
       tempSparqlEndpoint: window.sparqlEndpoint,
@@ -103,6 +106,15 @@ class App extends React.Component {
 
     // before sending request
     this.setState({ showSpinner: true });
+    // fetch user data from the server
+    fetch(window.server + "/userinfo", {
+      mode: "cors",
+      method: "GET"
+    }).then(response => { return response.json(); })
+    .then(userData => {
+      console.log('Changing serData to ', userData);
+      this.setState( { userData: userData });
+    });
 
     // fetch project meta
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
