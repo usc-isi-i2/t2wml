@@ -4,8 +4,8 @@ import json
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
-from backend_code.utility_functions import verify_google_login, check_if_string_is_invalid, validate_yaml
-from backend_code.spreadsheets.conversions import  column_letter_to_index, one_index_to_zero_index
+from backend_code.utility_functions import verify_google_login, check_if_string_is_invalid
+from backend_code.spreadsheets.conversions import _column_letter_to_index, _one_index_to_zero_index
 from backend_code.handler import wikifier
 from backend_code.parsing.handler import generate_download_file
 from backend_code import t2wml_exceptions as T2WMLExceptions
@@ -345,8 +345,8 @@ def get_cell_statement():
     This function returns the statement of a particular cell
     :return:
     """
-    column = column_letter_to_index(request.form["col"])
-    row = one_index_to_zero_index(request.form["row"])
+    column = request.form["col"]
+    row = request.form["row"]
     data={}
     try:
         project = get_project()

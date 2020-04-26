@@ -59,11 +59,8 @@ class FileSystemPickle(SheetCacher):
                 return True
         return False
 
-def get_sheet(data_filepath, sheet_name):
-    sc=FileSystemPickle(data_filepath, sheet_name)
-    return sc.data
 
-def load_file(data_filepath):
+def pickle_spreadsheet_file_and_get_sheet_names(data_filepath):
     book_dict = pyexcel.get_book_dict(file_name=data_filepath)
     sheet_names=[]
     for sheet_name in book_dict:
@@ -73,3 +70,5 @@ def load_file(data_filepath):
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
     return sheet_names
+
+

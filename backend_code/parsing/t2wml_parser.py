@@ -1,7 +1,6 @@
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.bindings import bindings
-from backend_code.spreadsheets.conversions import cell_tuple_to_str
-from backend_code.spreadsheets.utilities import get_cell_value
+from backend_code.spreadsheets.conversions import to_excel
 from backend_code.parsing.constants import char_dict
 from backend_code.parsing.functions import functions_dict
 eval_globals=dict()
@@ -11,15 +10,20 @@ eval_globals.update(functions_dict)
 import pandas
 
 
+def index_converter(arg):
+    try:
+        if isinstance(arg, slice):
+            return slice(arg.start-1, arg.stop-1, arg.step)
+        return arg-1
+    except Exception as e:
+        raise e
+
 class ItemReturn:
-    def __init__(self, args):
+    def __init__(self, col, row, context):
         item_table=bindings["item_table"]
-        if len(args)<3:
-            args=list(args)
-            args.append('__NO_CONTEXT__')
-        self.col=args[0]
-        self.row=args[1]-1 #convert 1 indexed to 0 indexed
-        self.value=item_table.get_item(self.col, self.row, args[2])
+        self.col=col
+        self.row=row
+        self.value=item_table.get_item(self.col, self.row, context)
 
     def __eq__(self, comparator):
         if self.value==comparator:
@@ -32,35 +36,47 @@ class ItemReturn:
         return False
     
     def __repr__(self):
-        return cell_tuple_to_str(self.col, self.row)+ " : "+str(self.value)
+        return to_excel(self.col, self.row)+ " : "+str(self.value)
+    
+    def __str__(self):
+        return str(self.value)
 
 class ItemExpression:
     def __getitem__(self, args):
-        return ItemReturn(args)
+        try:
+            context=args[2]
+        except:
+            context='__NO_CONTEXT__'
+        col=index_converter(args[0])
+        row=index_converter(args[1])
+        return ItemReturn(col, row, context)
 
 
 class Cell:
     def __init__(self, col, row):
+        data_sheet=bindings["excel_sheet"]
         self.col=col
-        self.row=row-1 #convert 1 indexed to 0 indexed
-        self.value=get_cell_value(bindings, self.row, self.col)
+        self.row=row
+        self.value=data_sheet[row][col]
     
     def __eq__(self, comparator):
         return self.value==comparator
     
     def __repr__(self):
-        return cell_tuple_to_str(self.col, self.row)+ " : "+str(self.value)
+        return to_excel(self.col, self.row)+ " : "+str(self.value)
+    
+    def __str__(self):
+        return str(self.value)
 
 
 class CellRange:
-    def __init__(self, item):
+    def __init__(self, col_args, row_args):
         data_sheet=bindings["excel_sheet"]
-        df=pandas.DataFrame(data_sheet)
-        self.col=item[0] #converted by the dictionary to the correct value
-        self.row=item[1]-1 #convert 1 indexed to 0 indexed
-        area=df.iloc[self.row, self.col]
+        df=pandas.DataFrame(data_sheet.data)
+        self.col_args=col_args
+        self.row_args=row_args
+        area=df.iloc[self.row_args, self.col_args]
         self.df=area
-
 
     def __eq__(self, comparator):
         for i in self.df:
@@ -73,9 +89,11 @@ class CellRange:
 
 class CellExpression:
     def __getitem__(self, item):
-        if isinstance(item[0], int) and isinstance(item[1], int):
-            return Cell(item[0], item[1])
-        return CellRange(item)
+        col=index_converter(item[0])
+        row=index_converter(item[1])
+        if isinstance(col, int) and isinstance(row, int):
+            return Cell(col, row)
+        return CellRange(col, row)
 
 
 
@@ -90,13 +108,14 @@ def parse_expression(e_str, context={}):
     e_str= e_str.replace("$", "")
     e_str = e_str.replace("/", ",")
     e_str = e_str.replace("=", "==")
+    e_str = e_str.replace("!==", "!=")
     e_str = e_str.replace("->", "and")
     try:
         result = eval(e_str, globals)
         print(e_str, ":\t", result)
         return result
     except Exception as e:
-        print("error in", e_str)
+        print("error in", e_str, ":", str(e))
         raise e
 
 def iter_on_n(expression, context={}):
@@ -111,5 +130,3 @@ def iter_on_n(expression, context={}):
                 return return_value
         except IndexError:
             break
-
-        

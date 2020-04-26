@@ -4,7 +4,7 @@ import requests
 import csv
 from backend_code.item_table import ItemTable
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.spreadsheets.conversions import cell_range_str_to_tuples
+from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
 from backend_code.spreadsheets.utilities import create_temporary_csv_file
 import pandas as pd
 
@@ -70,7 +70,7 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None):
     :param sheet_name:
     :return:
     """
-    cell_range = cell_range_str_to_tuples(region)
+    cell_range = _cell_range_str_to_tuples(region)
     file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
     cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
     return cell_qnode_map

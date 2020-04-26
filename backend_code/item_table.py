@@ -1,7 +1,7 @@
 from typing import Union
-from backend_code.spreadsheets.caching import get_sheet
+from backend_code.spreadsheets.sheet import Sheet
 from backend_code.utility_functions import query_wikidata_for_label_and_description
-from backend_code.spreadsheets.conversions import column_index_to_letter, cell_str_to_tuple, cell_tuple_to_str
+from backend_code.spreadsheets.conversions import from_excel, to_excel, _column_index_to_letter
 from collections import defaultdict
 import json
 import numpy as np
@@ -12,7 +12,7 @@ class ItemTable:
 		if region_map:
 			self.table = defaultdict(dict)
 			for key, value in region_map['table'].items():
-				self.table[cell_str_to_tuple(key)] = value
+				self.table[from_excel(key)] = value
 			self.item_wiki = region_map['item_wiki']
 		else:
 			# self.table = { (col, row): {value:value, context1:item, context2: item}}}
@@ -21,7 +21,7 @@ class ItemTable:
 			self.item_wiki = dict()
 
 	def update_table(self, data_frame, data_filepath: str, sheet_name: str = None, flag: int = None):
-		sheet = get_sheet(data_filepath, sheet_name)
+		sheet = Sheet(data_filepath, sheet_name)
 		col_names = data_frame.columns.values
 		index_of = {val: index for index, val in enumerate(col_names)}
 		data_frame[['context']] = data_frame[['context']].fillna(value='__NO_CONTEXT__')
@@ -155,7 +155,7 @@ class ItemTable:
 	def to_json(self):
 		temp_table = dict()
 		for key, value in self.table.items():
-			temp_table[cell_tuple_to_str(*key)] = value
+			temp_table[to_excel(*key)] = value
 		json_object = {'table': temp_table, 'item_wiki': self.item_wiki}
 		return json.dumps(json_object, indent=3)
 
@@ -163,7 +163,7 @@ class ItemTable:
 		serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
 		items_not_in_wiki = set()
 		for cell, desc in self.table.items():
-			col = column_index_to_letter(int(cell[0]))
+			col = _column_index_to_letter(int(cell[0]))
 			row = str(int(cell[1]) + 1)
 			cell = col+row
 			value = desc['__CELL_VALUE__']

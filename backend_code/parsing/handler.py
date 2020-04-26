@@ -1,12 +1,11 @@
 import json
 from etk.wikidata.utils import parse_datetime_string
 from backend_code.utility_functions import translate_precision_to_integer#, get_property_type
-
-from backend_code.spreadsheets.conversions import cell_tuple_to_str
+from backend_code.parsing.constants import char_dict
 from backend_code.t2wml_exceptions import T2WMLException
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.utility_functions import translate_precision_to_integer, get_property_type
-from backend_code.spreadsheets.conversions import cell_range_str_to_tuples, column_index_to_letter, cell_tuple_to_str
+from backend_code.spreadsheets.conversions import to_excel
 from backend_code.parsing.t2wml_parser import iter_on_n
 from backend_code.bindings import bindings
 from backend_code.triple_generator import generate_triples
@@ -27,7 +26,7 @@ def parse_time_for_dict(response, sparql_endpoint):
                 raise e
 
 def resolve_cell(yaml_parser, col, row, sparql_endpoint):
-    context={"row":row, "col":col}
+    context={"row":int(row), "col":char_dict[col]}
     context.update(yaml_parser._region_props)
     try:
         statement=evaluate_template(yaml_parser.template, context, sparql_endpoint)
@@ -55,7 +54,7 @@ def evaluate_template(template: dict, context:dict, sparql_endpoint: str) -> dic
                     try:
                         new_val=iter_on_n(temp_dict[key], context)
                         #add code here
-                        temp_dict["cell"]=cell_tuple_to_str(new_val.col, new_val.row)
+                        temp_dict["cell"]=to_excel(new_val.col, new_val.row)
                         temp_dict[key]=new_val.value
                     except Exception as e:
                         raise e
@@ -67,7 +66,7 @@ def evaluate_template(template: dict, context:dict, sparql_endpoint: str) -> dic
             try:
                 new_val=iter_on_n(template[key], context)
                 #add code here
-                response["cell"]=cell_tuple_to_str(new_val.col, new_val.row)
+                response["cell"]=to_excel(new_val.col, new_val.row)
                 response[key]=new_val.value
             except Exception as e:
                 raise (e)
@@ -89,15 +88,15 @@ def highlight_region(yaml_parser, sparql_endpoint, file_path):
     
     download_data=[]
     
-    for row, col in yaml_parser.region_iter():
+    for col, row in yaml_parser.region_iter():
         download_dict=dict(yaml_parser.template)
         context={"row":row, "col":col}
         context.update(yaml_parser._region_props)
         try:
-            data["dataRegion"].add(cell_tuple_to_str(col, row))
+            data["dataRegion"].add(to_excel(col-1, row-1))
             if item:
                 item_parsed= iter_on_n(item, context)
-                item_cell=cell_tuple_to_str(item_parsed.col, item_parsed.row)
+                item_cell=to_excel(item_parsed.col, item_parsed.row)
                 data["item"].add(item_cell)
 
                 #for download:
@@ -110,7 +109,7 @@ def highlight_region(yaml_parser, sparql_endpoint, file_path):
                     try:
                         statement=qualifier["value"]
                         qualifier_parsed=iter_on_n(statement, context) #evaluate statement here
-                        qualifier_cell=cell_tuple_to_str(qualifier_parsed.col, qualifier_parsed.row)
+                        qualifier_cell=to_excel(qualifier_parsed.col, qualifier_parsed.row)
                         qualifier_cells.add(qualifier_cell)
                         
                         #for download:
@@ -124,14 +123,14 @@ def highlight_region(yaml_parser, sparql_endpoint, file_path):
             #for download
             parse_time_for_dict(download_dict, sparql_endpoint)
             download_data.append({
-                "cell":cell_tuple_to_str(col, row), 
+                "cell":to_excel(col, row), 
                 "statement": download_dict
             })
 
         except Exception as exception:
             error = dict()
             error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
-            data['error'][cell_tuple_to_str(col, row)] = error
+            data['error'][to_excel(col, row)] = error
     
     #for download:
     try:
@@ -157,16 +156,16 @@ def generate_download_file(yaml_parser, filetype, parsed_path, sparql_endpoint):
     
     if not data:
         error=[]
-        for row, col in yaml_parser.region_iter():
+        for col, row in yaml_parser.region_iter():
             try:
                 context={"row":row, "col":col}
                 statement=evaluate_template(yaml_parser.template, context, sparql_endpoint)
                 if statement:
                     data.append(
-                        {'cell': cell_tuple_to_str(col, row), 
+                        {'cell': to_excel(col, row), 
                         'statement': statement})
             except Exception as e:
-                error.append({'cell': cell_tuple_to_str(col, row), 
+                error.append({'cell': to_excel(col, row), 
                 'error': str(e)})
 
 

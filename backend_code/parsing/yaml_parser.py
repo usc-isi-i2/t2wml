@@ -2,10 +2,10 @@ from collections import OrderedDict
 from copy import deepcopy
 import yaml
 from backend_code.bindings import bindings
-from backend_code.spreadsheets.caching import get_sheet
+from backend_code.spreadsheets.sheet import Sheet
 
 import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.parsing.t2wml_parser import parse_expression
+from backend_code.parsing.t2wml_parser import parse_expression, iter_on_n
 
 
 
@@ -41,9 +41,8 @@ class Region:
             if column not in skip_cols:
                 for row in range(self.top, self.bottom+1):
                     if row not in skip_rows:
-                        #if (row, col) not in skip_cells
-                        #check_if_string_is_invalid(get_cell_value(row, column)):
-                        self.indices[(column, row)]=True
+                        if (column, row) not in skip_cells:
+                            self.indices[(column, row)]=True
 
     def __iter__(self):
         for key in self.indices:
@@ -60,7 +59,7 @@ class YamlObject:
     def __init__(self, filepath, item_table, data_file_path, sheet_name):
         self.yaml_data=self.validate(filepath)
         try:
-            self.sheet=get_sheet(data_file_path, sheet_name)
+            self.sheet=Sheet(data_file_path, sheet_name)
         except IOError:
             raise IOError('Excel File cannot be found or opened')
         update_bindings(item_table=item_table, sheet=self.sheet)
@@ -88,16 +87,14 @@ class YamlObject:
     def template(self):
         return deepcopy(self._template)
         
-    def iter_on_variables(self, expression, col=False, row=False):
+    def fill_dependent_variables(self, yaml_region, region, independent_key:str, dependent_key:str):
+        #first get the value for the independent key (eg "left")
+        region[independent_key]=self.parse_expression(yaml_region[independent_key])
+        #using the value of the independent key, iter on n to get value of dependent key (eg "right")
         try:
-            raise NotImplementedError
-            val=self.parse_expression(expression)
+            region[dependent_key]=iter_on_n(yaml_region[dependent_key], region)
         except:
             raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
-    
-        if not val:
-            raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
-        return val
 
     
     def parse_expression(self, statement, context={}):
@@ -131,13 +128,13 @@ class YamlObject:
         self.check_for_recursive_regions(yaml_region)
 
         if "right" in str(yaml_region["left"]):
-            region["right"]=self.iter_on_variables(yaml_region["right"])
+            self.fill_dependent_variables(yaml_region, region, "right", "left")
         if "left" in str(yaml_region["right"]):
-            region["left"]=self.iter_on_variables(yaml_region["left"])
+            self.fill_dependent_variables(yaml_region, region, "left", "right")
         if "top" in str(yaml_region["bottom"]):
-            region["top"]=self.iter_on_variables(yaml_region["top"])
+            self.fill_dependent_variables(yaml_region, region, "top", "bottom")
         if "bottom" in str(yaml_region["top"]):
-            region["bottom"]=self.iter_on_variables(yaml_region["bottom"])
+            self.fill_dependent_variables(yaml_region, region, "bottom", "top")
         
         #fill in the remainder
         for key in region:
@@ -187,7 +184,7 @@ class YamlObject:
                         context.update(region)
                         skip=self.parse_expression(statement, context)
                         if skip:
-                            skip_cell.append((row, col))
+                            skip_cell.append((col, row))
 
         region['skip_row']=skip_row
         region['skip_column']=skip_column
@@ -295,16 +292,6 @@ class YamlObject:
 
 
     def region_iter(self):
-        skip_rows=set(self._region_props.get("skip_row", []))
-        skip_cols=set(self._region_props.get("skip_column", []))
-        skip_cells=set(self._region_props.get("skip_cell", []))
-
-        top=self._region_props["top"]
-        bottom=self._region_props["bottom"]
-        left=self._region_props["left"]
-        right=self._region_props["right"]
-        for r_i in range(top-1, bottom+1):
-            if r_i not in skip_rows:
-                for c_i in range(left-1, right+1):
-                    if c_i not in skip_cols and (r_i, c_i) not in skip_cells:
-                        yield r_i, c_i #row needs to be converted back into 1-indexed
+        for (column, row) in self.region_obj:
+            #TODO: fix mess of inconsistency in row/col vs col/row
+            yield (column, row)

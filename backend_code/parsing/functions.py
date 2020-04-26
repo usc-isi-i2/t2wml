@@ -39,6 +39,15 @@ def clean(input):
 def split_index(*args):
     raise NotImplementedError
 
+def contains(source, section):
+    return section in str(source)
+
+def starts_with(source, section):
+    return str(source).startswith(section)
+
+def ends_with(source, section):
+    return str(source).endswith(section)
+
 
 functions_dict=dict(
     concat=concat, 
@@ -51,5 +60,8 @@ functions_dict=dict(
     date_format=date_format,
     instance_of=instance_of,
     clean=clean,
-    split_index=split_index
+    split_index=split_index,
+    contains=contains,
+    starts_with=starts_with,
+    ends_with=ends_with
 )

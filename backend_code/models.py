@@ -8,7 +8,7 @@ from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
 from backend_code.utility_functions import save_wikified_result
 from backend_code.spreadsheets.utilities import excel_to_json, add_excel_file_to_bindings
-from backend_code.spreadsheets.caching import load_file
+from backend_code.spreadsheets.caching import pickle_spreadsheet_file_and_get_sheet_names
 from backend_code.handler import process_wikified_output_file
 
 
@@ -235,7 +235,7 @@ class ProjectFile(db.Model):
         return pf
     
     def init_sheets(self):
-        sheet_names=load_file(self.filepath)
+        sheet_names=pickle_spreadsheet_file_and_get_sheet_names(self.filepath)
         first=sheet_names[0]
         for sheet_name in sheet_names:
             pr = ProjectSheet(name=sheet_name, file_id=self.id, current=sheet_name==first)
