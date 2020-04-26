@@ -93,13 +93,13 @@ def wikified_output_validator():
                         get_file_extension(in_file.filename) + "' is not a valid wikified output file")
     return in_file
 
-@app.route('/userinfo', methods=['GET'])
+@app.route('/api/userinfo', methods=['GET'])
 def user_info():
     user=get_user()
     return json.dumps(user.json_dict)
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     """
     This function verifies the oath token and returns the authorization response
@@ -135,7 +135,7 @@ def login():
         response["vs"] = False
 
 
-@app.route('/get_project_meta', methods=['POST'])
+@app.route('/api/get_project_meta', methods=['POST'])
 def get_project_meta():
     """
     This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
@@ -154,7 +154,7 @@ def get_project_meta():
         return json.dumps(None)
 
 
-@app.route('/create_project', methods=['POST'])
+@app.route('/api/create_project', methods=['POST'])
 def create_project():
     """
     This route creates a project by generating a unique id and creating a upload directory for that project
@@ -174,7 +174,7 @@ def create_project():
     
 
 
-@app.route('/upload_data_file', methods=['POST'])
+@app.route('/api/upload_data_file', methods=['POST'])
 def upload_data_file():
     """
     This function uploads the data file
@@ -211,7 +211,7 @@ def upload_data_file():
         return redirect(url_for('index')) # TODO: Return an error instead of a redirect
 
 
-@app.route('/change_sheet', methods=['POST'])
+@app.route('/api/change_sheet', methods=['POST'])
 def change_sheet():
     """
     This route is used when a user switches a sheet in an excel data file.
@@ -249,7 +249,7 @@ def change_sheet():
         return json.dumps(response, indent=3)
 
 
-@app.route('/upload_wikifier_output', methods=['POST'])
+@app.route('/api/upload_wikifier_output', methods=['POST'])
 def upload_wikifier_output():
     """
     This function uploads the wikifier output
@@ -273,7 +273,7 @@ def upload_wikifier_output():
         return json.dumps(response, indent=3)
 
 
-@app.route('/upload_yaml', methods=['POST'])
+@app.route('/api/upload_yaml', methods=['POST'])
 def upload_yaml():
     """
     This function process the yaml
@@ -302,7 +302,7 @@ def upload_yaml():
     return json.dumps(response, indent=3)
 
 
-@app.route('/resolve_cell', methods=['POST'])
+@app.route('/api/resolve_cell', methods=['POST'])
 def get_cell_statement():
     """
     This function returns the statement of a particular cell
@@ -325,7 +325,7 @@ def get_cell_statement():
     return json.dumps(data)
 
 
-@app.route('/download', methods=['POST'])
+@app.route('/api/download', methods=['POST'])
 def downloader():
     """
     This functions initiates the download
@@ -357,7 +357,7 @@ def downloader():
 
 
 
-@app.route('/call_wikifier_service', methods=['POST'])
+@app.route('/api/call_wikifier_service', methods=['POST'])
 def wikify_region():
     """
     This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
@@ -391,7 +391,7 @@ def wikify_region():
     return json.dumps(data, indent=3)
 
 
-@app.route('/get_project_files', methods=['POST'])
+@app.route('/api/get_project_files', methods=['POST'])
 def get_project_files():
     """
     This function fetches the last session of the last opened files in a project when that project is reopened later.
@@ -425,7 +425,7 @@ def get_project_files():
 
 
 
-@app.route('/delete_project', methods=['POST'])
+@app.route('/api/delete_project', methods=['POST'])
 def delete_project():
     """
     This route is used to delete a project.
@@ -448,7 +448,7 @@ def delete_project():
 
 
 
-@app.route('/logout', methods=['GET'])
+@app.route('/api/logout', methods=['GET'])
 def logout():
     """
     This function initiate request to end a user's session and logs them out.
@@ -458,7 +458,7 @@ def logout():
         del session['uid']
     return '', 204
 
-@app.route('/rename_project', methods=['POST'])
+@app.route('/api/rename_project', methods=['POST'])
 def rename_project():
     """
     This route is used to rename a project.
@@ -484,7 +484,7 @@ def rename_project():
 
 
 
-@app.route('/update_settings', methods=['POST'])
+@app.route('/api/update_settings', methods=['POST'])
 def update_settings():
     """
     This function updates the settings from GUI
