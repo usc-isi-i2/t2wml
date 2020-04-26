@@ -6,7 +6,7 @@ from backend_code.spreadsheets.sheet import Sheet
 
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.t2wml_parser import parse_expression, iter_on_n
-
+from backend_code.utility_functions import string_is_invalid
 
 
 def update_bindings(item_table, sheet) -> None:
@@ -41,9 +41,13 @@ class Region:
             if column not in skip_cols:
                 for row in range(self.top, self.bottom+1):
                     if row not in skip_rows:
-                        if (column, row) not in skip_cells:
-                            self.indices[(column, row)]=True
+                        try:
+                            if (column, row) not in skip_cells and\
+                                not string_is_invalid(bindings["excel_sheet"][row-1][column-1]):
 
+                                self.indices[(column, row)]=True
+                        except Exception as e:
+                            raise e
     def __iter__(self):
         for key in self.indices:
             yield key
@@ -293,5 +297,4 @@ class YamlObject:
 
     def region_iter(self):
         for (column, row) in self.region_obj:
-            #TODO: fix mess of inconsistency in row/col vs col/row
             yield (column, row)
