@@ -20,8 +20,8 @@ def update_bindings(item_table, sheet) -> None:
     :return:
     """
     
-    bindings["excel_sheet"]=sheet
-    bindings["item_table"] = item_table
+    bindings.excel_sheet=sheet
+    bindings.item_table = item_table
 
 def string_is_valid(text: str) -> bool:
     def check_special_characters(text: str) -> bool:
@@ -48,7 +48,7 @@ class Region:
                 for row in range(self.top, self.bottom+1):
                     if row not in skip_rows:
                         try:
-                            if (column, row) not in skip_cells and string_is_valid(bindings["excel_sheet"][row-1][column-1]):
+                            if (column, row) not in skip_cells and string_is_valid(bindings.excel_sheet[row-1][column-1]):
                                 self.indices[(column, row)]=True
                         except Exception as e:
                             print(e)

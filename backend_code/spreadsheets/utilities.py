@@ -13,11 +13,11 @@ from backend_code.spreadsheets.sheet import Sheet
 
 
 def add_blank_row_to_bindings():
-    last_row=bindings["excel_sheet"][-1]
+    last_row=bindings.excel_sheet[-1]
     num_cols=len(last_row)
     blank_row = [" "] * num_cols
     if last_row!=blank_row:
-        bindings["excel_sheet"].append(blank_row)
+        bindings.excel_sheet.append(blank_row)
 
 
 def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
@@ -26,7 +26,7 @@ def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
     :return: None
     """
     try:
-        bindings["excel_sheet"]=Sheet(excel_filepath, sheet_name)
+        bindings.excel_sheet=Sheet(excel_filepath, sheet_name)
         add_blank_row_to_bindings()
     except IOError:
         raise IOError('Excel File cannot be found or opened')

@@ -20,7 +20,7 @@ def index_converter(arg):
 
 class ItemReturn:
     def __init__(self, col, row, context):
-        item_table=bindings["item_table"]
+        item_table=bindings.item_table
         self.col=col
         self.row=row
         self.value=item_table.get_item(self.col, self.row, context)
@@ -57,7 +57,7 @@ class ItemExpression:
 
 class Cell:
     def __init__(self, col, row):
-        data_sheet=bindings["excel_sheet"]
+        data_sheet=bindings.excel_sheet
         self.col=col
         self.row=row
         self.value=data_sheet[row][col]
@@ -77,7 +77,7 @@ class Cell:
 
 class CellRange:
     def __init__(self, col_args, row_args):
-        data_sheet=bindings["excel_sheet"]
+        data_sheet=bindings.excel_sheet
         self.col_args=col_args
         self.row_args=row_args
         area=data_sheet[row_args][col_args]
@@ -126,7 +126,7 @@ def parse_expression(e_str, context={}):
 
 def iter_on_n(expression, context={}):
     #handle iter on variable n. if there is no variable n this will anyway return in first iteration
-    upper_limit= max(len(bindings["excel_sheet"]), len(bindings["excel_sheet"][0]))
+    upper_limit= max(len(bindings.excel_sheet), len(bindings.excel_sheet[0]))
     for n in range(0, upper_limit):
         try:
             context_dir={"n":n}

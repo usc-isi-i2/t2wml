@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 import pyexcel
 import pickle
-from backend_code.bindings import bindings
 
 def get_pickle_path(data_filepath, sheet_name):
     #moved outside of class so I can use it in file initalizer as well
