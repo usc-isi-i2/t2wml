@@ -1,14 +1,24 @@
+import json
 import shutil
 import sys
-import json
+
+from flask import (make_response, redirect, request, send_from_directory,
+                   session, url_for)
+from flask.helpers import send_file
+
 from app_config import app
-from flask import request, redirect, url_for, session, make_response
-from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
-from backend_code.utility_functions import verify_google_login, check_if_string_is_invalid, validate_yaml
-from backend_code.spreadsheets.conversions import  column_letter_to_index, one_index_to_zero_index
-from backend_code.handler import generate_download_file, wikifier
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
+from backend_code.handler import generate_download_file, wikifier
+from backend_code.models import (Project, ProjectFile, User, WikiRegionFile,
+                                 YamlFile)
+from backend_code.spreadsheets.conversions import (column_letter_to_index,
+                                                   one_index_to_zero_index)
+from backend_code.t2wml_exceptions import (T2WMLException,
+                                           make_frontend_err_dict)
+from backend_code.utility_functions import (check_if_string_is_invalid,
+                                            validate_yaml, verify_google_login)
+import os
+from werkzeug.exceptions import NotFound
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False
@@ -494,6 +504,21 @@ def update_settings():
     project = get_project()
     project.update_sparql_endpoint(endpoint)
     return json.dumps(None)
+
+# We want to serve the static files in case the t2wml is deployed as a stand-alone system.
+# In that case, we only have one webserver - Flask. The following two routes are for this.
+# They are not used in dev (React's dev server is used to serve frontend assets), or in server deployment
+# (nginx is used to serve static assets)
+@app.route('/')
+def serve_home_page():
+    return send_file(os.path.join(app.config['STATIC_FOLDER'], 'index.html'))
+
+@app.route('/<path:path>')
+def serve_static(path):
+    try:
+        return send_from_directory(app.config['STATIC_FOLDER'], path)
+    except NotFound:
+        return serve_home_page()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

@@ -114,6 +114,7 @@ config/*
 **/node_modules/*
 **/build/*
 !/frontend/.env
+/static
 
 # user files
 uploads

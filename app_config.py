@@ -18,7 +18,7 @@ ETK_PATH = str(Path.cwd().parent / "etk")
 DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")
 AUTO_MIGRATE=True #only set to true if database is sqlite
 
-app = Flask(__name__, static_folder="t2wml-gui")
+app = Flask(__name__, static_folder="static", static_url_path="/")
 CORS(app, supports_credentials=True)
 app.secret_key = "secret key" # This will no longer be used once we stop using session cookies
 
@@ -31,6 +31,7 @@ class AppConfig:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    STATIC_FOLDER = os.path.join(basedir, 'static')
 
 app.config.from_object(AppConfig)
 
