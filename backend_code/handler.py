@@ -28,7 +28,7 @@ def parse_time_for_dict(response, sparql_endpoint):
 def resolve_cell(yaml_object, col, row, sparql_endpoint):
     context={"row":int(row), "col":char_dict[col]}
     try:
-        item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.template, context)
+        item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)
         statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
         if statement:
             data = {'statement': statement, 'error': None}
@@ -82,7 +82,7 @@ def evaluate_template(template, context):
     if qualifiers:
         qualifiers_parsed=[]
         for qualifier in qualifiers:
-            q_parsed=iter_on_n(qualifier["value"], context)
+            q_parsed=iter_on_n(qualifier, context)
             qualifiers_parsed.append(q_parsed)
     
     return item_parsed, value_parsed, qualifiers_parsed
@@ -114,7 +114,7 @@ def highlight_region(yaml_object, sparql_endpoint):
         highlight_data["dataRegion"].add(cell)
         context={"row":row, "col":col}
         try:
-            item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.template, context)
+            item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)
             update_highlight_data(highlight_data, item_parsed, qualifiers_parsed)
 
             if yaml_object.use_cache:
@@ -149,7 +149,7 @@ def generate_download_file(yaml_object, filetype, sparql_endpoint):
         for col, row in yaml_object.region_iter():
             try:
                 context={"row":row, "col":col}
-                item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.template, context)
+                item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)
                 statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
                 if statement:
                     data.append(

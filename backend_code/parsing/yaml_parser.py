@@ -129,6 +129,7 @@ class YamlObject:
         update_bindings(item_table=item_table, sheet=self.sheet)
         self._region_props=self.parse_region()
         self._template=dict(self.yaml_data['statementMapping']['template'])
+        self._eval_template=self.create_eval_template(self.yaml_data['statementMapping']['template'])
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
         self.use_cache=use_cache
         self.cacher=YamlCacher(filepath, data_file_path, sheet_name)
@@ -152,20 +153,56 @@ class YamlObject:
     @property
     def template(self):
         return deepcopy(self._template)
+    
+    @property
+    def eval_template(self):
+        return self._eval_template
+    
+    def fix_code_string(self, e_str):
+        e_str=str(e_str)
+        e_str= e_str.replace("$", "")
+        e_str = e_str.replace("/", ",")
+        e_str = e_str.replace("=", "==")
+        e_str = e_str.replace("!==", "!=")
+        e_str = e_str.replace("->", "and")
+        return e_str
+
+    def create_eval_template(self, template):
+        new_template=dict(template)
+        item=template.get("item", None)
+        value=template.get("value", None)
+        qualifiers=template.get("qualifier", None)
+
+        if item:
+            new_template["item"]=compile(self.fix_code_string(item), "<string>", "eval")
+
+        if value:
+            new_template["value"]=compile(self.fix_code_string(value), "<string>", "eval")
+        
+        if qualifiers:
+            qualifiers_parsed=[]
+            for qualifier in qualifiers:
+                q_parsed=compile(self.fix_code_string(qualifier["value"]), "<string>", "eval")
+                qualifiers_parsed.append(q_parsed)
+            new_template["qualifier"]=qualifiers_parsed
+        return new_template
+
+
+
         
     def fill_dependent_variables(self, yaml_region, region, independent_key:str, dependent_key:str):
         #first get the value for the independent key (eg "left")
-        region[independent_key]=self.parse_expression(yaml_region[independent_key])
+        region[independent_key]=self.parse_expression(str(yaml_region[independent_key]))
         #using the value of the independent key, iter on n to get value of dependent key (eg "right")
         try:
-            region[dependent_key]=iter_on_n(yaml_region[dependent_key], region)
+            region[dependent_key]=iter_on_n(self.fix_code_string(yaml_region[dependent_key]), region)
         except:
             raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
 
     
     def parse_expression(self, statement, context={}):
         #check if statement is actually an expression:
-        return parse_expression(statement, context)
+        return parse_expression(self.fix_code_string(statement), context)
         
 
 
@@ -206,7 +243,7 @@ class YamlObject:
         for key in region:
             if not region[key]:
                 try:
-                    region[key]=self.parse_expression(yaml_region[key], region)
+                    region[key]=self.parse_expression(str(yaml_region[key]), region)
                 except Exception as e:
                     raise e
 

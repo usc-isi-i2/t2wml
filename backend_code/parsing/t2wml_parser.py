@@ -11,17 +11,11 @@ eval_globals.update(functions_dict)
 
 def parse_expression(e_str, context={}):
     #print(context)
-    e_str=str(e_str)
     value = CellExpression()
     item=ItemExpression()
     globals = dict(value=value, item=item)
     globals.update(eval_globals)
     globals.update(context)
-    e_str= e_str.replace("$", "")
-    e_str = e_str.replace("/", ",")
-    e_str = e_str.replace("=", "==")
-    e_str = e_str.replace("!==", "!=")
-    e_str = e_str.replace("->", "and")
     try:
         result = eval(e_str, globals)
         #print(e_str, ":\t", result)
