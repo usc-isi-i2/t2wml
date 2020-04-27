@@ -72,20 +72,20 @@ class Cell:
 class CellRange:
     def __init__(self, col_args, row_args):
         data_sheet=bindings["excel_sheet"]
-        df=pandas.DataFrame(data_sheet.data)
         self.col_args=col_args
         self.row_args=row_args
-        area=df.iloc[self.row_args, self.col_args]
-        self.df=area
-
+        area=data_sheet[row_args][col_args]
+        if isinstance(row_args, slice):
+            area=[y for x in area for y in x]
+        self.area=area
     def __eq__(self, comparator):
-        for i in self.df:
+        for i in self.area:
             if i!=comparator:
                 return False
         return True
     
     def __repr__(self):
-        return str(self.df)
+        return str(self.area)
 
 class CellExpression:
     def __getitem__(self, item):
@@ -98,7 +98,7 @@ class CellExpression:
 
 
 def parse_expression(e_str, context={}):
-    print(context)
+    #print(context)
     e_str=str(e_str)
     value = CellExpression()
     item=ItemExpression()
@@ -112,7 +112,7 @@ def parse_expression(e_str, context={}):
     e_str = e_str.replace("->", "and")
     try:
         result = eval(e_str, globals)
-        print(e_str, ":\t", result)
+        #print(e_str, ":\t", result)
         return result
     except Exception as e:
         print("error in", e_str, ":", str(e))
