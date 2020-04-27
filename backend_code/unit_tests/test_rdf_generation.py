@@ -23,8 +23,8 @@ output_directory = '/tmp'
 
 _path = Path(__file__).parent
 
-#output_directory = os.path.join(_path, "tmp")
-#os.makedirs(output_directory, exist_ok=True)
+output_directory = os.path.join(_path, "tmp")
+os.makedirs(output_directory, exist_ok=True)
 
 
 
@@ -60,12 +60,11 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc = YamlObject.create(self.t2wml_spec_path_1, item_table, new_file_path, sheet_name)
+        yc = YamlObject(self.t2wml_spec_path_1, item_table, new_file_path, sheet_name)
 
         filetype = "ttl"
 
-        response = generate_download_file(None, item_table, new_file_path, sheet_name, yc.region, yc.template, filetype,
-                                          self.sparql_endpoint, created_by=yc.created_by, debug=True)
+        response = generate_download_file(yc, filetype, self.sparql_endpoint)
         self.assertEqual(response['data'], results)
 
     def test_rdf_generation_with_units(self, sheet_name: str = None):
@@ -81,13 +80,12 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc = YamlObject.create(self.t2wml_spec_path_2, item_table, new_file_path, sheet_name)
+        yc = YamlObject(self.t2wml_spec_path_2, item_table, new_file_path, sheet_name)
 
 
         filetype = "ttl"
 
-        response = generate_download_file(None, item_table, new_file_path, sheet_name, yc.region, yc.template, filetype,
-                                          self.sparql_endpoint, created_by=yc.created_by, debug=True)
+        response = generate_download_file(yc, filetype, self.sparql_endpoint)
 
         self.assertEqual(response['data'], results)
 
@@ -104,12 +102,11 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc= YamlObject.create(self.t2wml_spec_path_3, item_table, new_file_path, sheet_name)
+        yc= YamlObject(self.t2wml_spec_path_3, item_table, new_file_path, sheet_name)
 
         filetype = "ttl"
 
-        response = generate_download_file(None, item_table, new_file_path, sheet_name, yc.region, yc.template, filetype,
-                                          self.sparql_endpoint, created_by=yc.created_by, debug=True)
+        response = generate_download_file(yc, filetype, self.sparql_endpoint)
 
         self.assertEqual(response['data'], results)
 
@@ -126,12 +123,11 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc = YamlObject.create(self.t2wml_spec_path_4, item_table, new_file_path, sheet_name)
+        yc = YamlObject(self.t2wml_spec_path_4, item_table, new_file_path, sheet_name)
 
         filetype = "ttl"
 
-        response = generate_download_file(None, item_table, new_file_path, sheet_name, yc.region, yc.template, filetype,
-                                          self.sparql_endpoint, created_by=yc.created_by, debug=True)
+        response = generate_download_file(yc, filetype, self.sparql_endpoint)
 
         self.assertEqual(response['data'], results)
 

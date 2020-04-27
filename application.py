@@ -375,7 +375,7 @@ def downloader():
 
     filetype = request.form["type"]
 
-    response = generate_download_file(yaml_file.yaml_configuration, filetype, yaml_file.parsed_yaml_file_path, project.sparql_endpoint)
+    response = generate_download_file(yaml_file.yaml_configuration, filetype, project.sparql_endpoint, yaml_file.parsed_yaml_file_path)
     return json.dumps(response, indent=3)
 
 

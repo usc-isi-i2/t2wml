@@ -25,11 +25,11 @@ def parse_time_for_dict(response, sparql_endpoint):
                 response["precision"] = translate_precision_to_integer(response["precision"])
             response["value"] = datetime_string
 
-def resolve_cell(yaml_parser, col, row, sparql_endpoint):
+def resolve_cell(yaml_object, col, row, sparql_endpoint):
     context={"row":int(row), "col":char_dict[col]}
     try:
-        item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_parser.template, context)
-        statement=get_template_statement(yaml_parser.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
+        item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.template, context)
+        statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
         if statement:
             data = {'statement': statement, 'error': None}
         else:
@@ -96,14 +96,14 @@ def update_highlight_data(data, item_parsed, qualifiers_parsed):
         data["qualifierRegion"] |= qualifier_cells
             
 
-def highlight_region(yaml_parser, sparql_endpoint, file_path):
+def highlight_region(yaml_object, sparql_endpoint, file_path):
     data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
     
-    for col, row in yaml_parser.region_iter():
+    for col, row in yaml_object.region_iter():
         data["dataRegion"].add(to_excel(col-1, row-1))
         context={"row":row, "col":col}
         try:
-            item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_parser.template, context)
+            item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.template, context)
             update_highlight_data(data, item_parsed, qualifiers_parsed)
 
         except Exception as exception:
@@ -118,21 +118,24 @@ def highlight_region(yaml_parser, sparql_endpoint, file_path):
 
 
 
-def generate_download_file(yaml_parser, filetype, parsed_path, sparql_endpoint):
+def generate_download_file(yaml_object, filetype, sparql_endpoint, parsed_path=None):
     response=dict()
-    try:
-        with open(parsed_path, 'r') as f:
-            data=json.load(f)
-    except Exception as e:
-        data=[]
+    data=[]
+    if parsed_path:
+        try:
+            with open(parsed_path, 'r') as f:
+                data=json.load(f)
+        except Exception as e:
+            pass
+            
     
     if not data:
         error=[]
-        for col, row in yaml_parser.region_iter():
+        for col, row in yaml_object.region_iter():
             try:
                 context={"row":row, "col":col}
-                item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_parser.template, context)
-                statement=get_template_statement(yaml_parser.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
+                item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.template, context)
+                statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
                 if statement:
                     data.append(
                         {'cell': to_excel(col-1, row-1), 
@@ -149,7 +152,7 @@ def generate_download_file(yaml_parser, filetype, parsed_path, sparql_endpoint):
     
     elif filetype == 'ttl':
         try:
-            response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=yaml_parser.created_by)
+            response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=yaml_object.created_by)
             response["error"] = None
             return response
         except Exception as e:
