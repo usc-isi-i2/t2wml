@@ -29,9 +29,9 @@ def parse_time_for_dict(response, sparql_endpoint):
 
 def resolve_cell(yaml_parser, col, row, sparql_endpoint):
     context={"row":int(row), "col":char_dict[col]}
-    context.update(yaml_parser._region_props)
     try:
-        statement=evaluate_template(yaml_parser.template, context, sparql_endpoint)
+        item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_parser.template, context)
+        statement=get_template_statement(yaml_parser.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
         if statement:
             data = {'statement': statement, 'error': None}
         else:
@@ -42,103 +42,75 @@ def resolve_cell(yaml_parser, col, row, sparql_endpoint):
         data = {'error': error}
     return data
 
-def evaluate_template(template: dict, context:dict, sparql_endpoint: str) -> dict:
-    response=dict(template)
-    #separately handle qualifier
-    template_qualifier=template.pop("qualifier", None)
-    if template_qualifier:
-        for q_i, q in enumerate(template_qualifier):
-            temp_dict=dict(q)
-            for key in q:
-                if key!= 'property' and key!="format" and not str(temp_dict[key]).isalnum():
-                    try:
-                        new_val=iter_on_n(temp_dict[key], context)
-                        #add code here
-                        temp_dict["cell"]=to_excel(new_val.col, new_val.row)
-                        temp_dict[key]=new_val.value
-                    except Exception as e:
-                        raise e
-            parse_time_for_dict(temp_dict, sparql_endpoint)
-            template_qualifier[q_i]=temp_dict
 
-    for key in template:
-        if not str(template[key]).isalnum():
-            try:
-                new_val=iter_on_n(template[key], context)
-                #add code here
-                response["cell"]=to_excel(new_val.col, new_val.row)
-                response[key]=new_val.value
-            except Exception as e:
-                raise (e)
+def get_template_statement(template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint):
+    if item_parsed:
+        template["item"]=item_parsed.value
+        template["cell"]=to_excel(item_parsed.col, item_parsed.row)
+    if value_parsed:
+        template["value"]=value_parsed.value
+    if qualifiers_parsed:
+        new_quals=[]
+        for q_i, qualifier_dict in enumerate(template["qualifier"]):
+            new_dict=dict(qualifier_dict)
+            qualifier_parsed=qualifiers_parsed[q_i]
+            new_dict["value"]=qualifier_parsed.value
+            new_dict["cell"]=to_excel(qualifier_parsed.col, qualifier_parsed.row)
+            parse_time_for_dict(new_dict, sparql_endpoint)
+            new_quals.append(new_dict)
+        template["qualifier"]=new_quals
+    parse_time_for_dict(template, sparql_endpoint)
+    return template
 
-    parse_time_for_dict(response, sparql_endpoint)
+
+def evaluate_template(template, context):
+    item=template.get("item", None)
+    value=template.get("value", None)
+    qualifiers=template.get("qualifier", None)
+
+    item_parsed=value_parsed=qualifiers_parsed=None
+
+    if item:
+        item_parsed= iter_on_n(item, context)
     
-    #add qualifier back in
-    if template_qualifier:
-        response["qualifier"]=template_qualifier
+    if value:
+        value_parsed= iter_on_n(value, context)
     
-    return response
+    if qualifiers:
+        qualifiers_parsed=[]
+        for qualifier in qualifiers:
+            q_parsed=iter_on_n(qualifier["value"], context)
+            qualifiers_parsed.append(q_parsed)
+    
+    return item_parsed, value_parsed, qualifiers_parsed
 
+def update_highlight_data(data, item_parsed, qualifiers_parsed):
+    if item_parsed:
+        item_cell=to_excel(item_parsed.col, item_parsed.row)
+        data["item"].add(item_cell)
+    if qualifiers_parsed:
+        qualifier_cells = set()
+        for qualifier_parsed in qualifiers_parsed:
+            qualifier_cell=to_excel(qualifier_parsed.col, qualifier_parsed.row)
+            qualifier_cells.add(qualifier_cell)
+        data["qualifierRegion"] |= qualifier_cells
+            
 
 def highlight_region(yaml_parser, sparql_endpoint, file_path):
     data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
-    item=yaml_parser.template.get("item", None)
-    value=yaml_parser.template.get("value", None)
-    qualifiers=yaml_parser.template.get("qualifier", None)
-    
-    download_data=[]
     
     for col, row in yaml_parser.region_iter():
-        download_dict=dict(yaml_parser.template)
+        data["dataRegion"].add(to_excel(col-1, row-1))
         context={"row":row, "col":col}
-        context.update(yaml_parser._region_props)
         try:
-            data["dataRegion"].add(to_excel(col-1, row-1))
-            if item:
-                item_parsed= iter_on_n(item, context)
-                item_cell=to_excel(item_parsed.col, item_parsed.row)
-                data["item"].add(item_cell)
-
-                #for download:
-                download_dict["cell"]=item_cell
-                download_dict["item"]=item_parsed.value
-
-            if qualifiers:
-                qualifier_cells = set()
-                for q_i, qualifier in enumerate(qualifiers):
-                    try:
-                        statement=qualifier["value"]
-                        qualifier_parsed=iter_on_n(statement, context) #evaluate statement here
-                        qualifier_cell=to_excel(qualifier_parsed.col, qualifier_parsed.row)
-                        qualifier_cells.add(qualifier_cell)
-                        
-                        #for download:
-                        download_dict["qualifier"][q_i]["cell"]=qualifier_cell
-                        download_dict["qualifier"][q_i]["value"]=qualifier_parsed.value
-                        parse_time_for_dict(qualifier, sparql_endpoint)
-                    except Exception as e:
-                        raise e
-                data["qualifierRegion"] |= qualifier_cells
-
-            #for download
-            parse_time_for_dict(download_dict, sparql_endpoint)
-            download_data.append({
-                "cell":to_excel(col, row), 
-                "statement": download_dict
-            })
+            item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_parser.template, context)
+            update_highlight_data(data, item_parsed, qualifiers_parsed)
 
         except Exception as exception:
             error = dict()
             error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
             data['error'][to_excel(col, row)] = error
     
-    #for download:
-    try:
-        with open(file_path, 'w') as f:
-            json.dump(download_data, f)
-    except Exception as e:
-        pass
-
     data['dataRegion'] = list(data['dataRegion'])
     data['item'] = list(data['item'])
     data['qualifierRegion'] = list(data['qualifierRegion'])
@@ -159,7 +131,8 @@ def generate_download_file(yaml_parser, filetype, parsed_path, sparql_endpoint):
         for col, row in yaml_parser.region_iter():
             try:
                 context={"row":row, "col":col}
-                statement=evaluate_template(yaml_parser.template, context, sparql_endpoint)
+                item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_parser.template, context)
+                statement=get_template_statement(yaml_parser.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
                 if statement:
                     data.append(
                         {'cell': to_excel(col, row), 
