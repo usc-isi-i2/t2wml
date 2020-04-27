@@ -19,10 +19,9 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     :return:
     """
     try:
-        prop = WikidataProperty.query.get(wikidata_property)
-        if prop is None:
+        property_type = WikidataProperty.query.get(wikidata_property)
+        if property_type is None:
             raise ValueError("Not found")
-        return prop.property_type
     except Exception as e:
         query = """SELECT ?type WHERE {
             wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
@@ -37,4 +36,5 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
             WikidataProperty.add(wikidata_property, property_type)
         except IndexError:
             property_type = "Property Not Found"
-        return property_type
+
+    return property_type

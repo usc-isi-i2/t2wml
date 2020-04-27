@@ -32,7 +32,7 @@ def check_special_characters(text: str) -> bool:
     return all(char in punctuation for char in str(text))
 
 
-def string_is_invalid(text: str) -> bool:
+def check_if_string_is_invalid(text: str) -> bool:
     """
     This function checks if the text is empty or has only special characters
     :param text:
