@@ -14,16 +14,18 @@ def parse_time_for_dict(response, sparql_endpoint):
     if "property" in response and get_property_type(response["property"], sparql_endpoint)=="Time":
         if "format" in response:
             try:
-                datetime_string, precision = parse_datetime_string(response["value"],
+                datetime_string, precision = parse_datetime_string(str(response["value"]),
                                                                     additional_formats=[
                                                                         response["format"]])
-                if "precision" not in response:
-                    response["precision"] = int(precision.value.__str__())
-                else:
-                    response["precision"] = translate_precision_to_integer(response["precision"])
-                response["value"] = datetime_string
-            except Exception as e:
-                raise e
+            except ValueError:
+                #This is a workaround for a separatte bug, WIP, that is sending wrong dictionaries to this function
+                print("attempting to parse datetime string that isn't a datetime:", str(response["value"]))
+                return
+            if "precision" not in response:
+                response["precision"] = int(precision.value.__str__())
+            else:
+                response["precision"] = translate_precision_to_integer(response["precision"])
+            response["value"] = datetime_string
 
 def resolve_cell(yaml_parser, col, row, sparql_endpoint):
     context={"row":int(row), "col":char_dict[col]}
@@ -39,8 +41,6 @@ def resolve_cell(yaml_parser, col, row, sparql_endpoint):
         error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
         data = {'error': error}
     return data
-
-
 
 def evaluate_template(template: dict, context:dict, sparql_endpoint: str) -> dict:
     response=dict(template)
