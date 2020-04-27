@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from copy import deepcopy
+from string import punctuation
 import yaml
 from backend_code.bindings import bindings
 from backend_code.spreadsheets.sheet import Sheet
@@ -22,7 +23,12 @@ def update_bindings(item_table, sheet) -> None:
     bindings["excel_sheet"]=sheet
     bindings["item_table"] = item_table
 
-
+def string_is_valid(text: str) -> bool:
+    def check_special_characters(text: str) -> bool:
+        return all(char in punctuation for char in str(text))
+    if text is None or str(text).strip() == "" or check_special_characters(text) or str(text).strip().lower() == '#n/a':
+        return False
+    return True
 
 class Region:
     def __init__(self, region_data):
@@ -41,9 +47,11 @@ class Region:
             if column not in skip_cols:
                 for row in range(self.top, self.bottom+1):
                     if row not in skip_rows:
-                        if (column, row) not in skip_cells:
-                            self.indices[(column, row)]=True
-
+                        try:
+                            if (column, row) not in skip_cells and string_is_valid(bindings["excel_sheet"][row-1][column-1]):
+                                self.indices[(column, row)]=True
+                        except Exception as e:
+                            print(e)
     def __iter__(self):
         for key in self.indices:
             yield key
@@ -293,5 +301,4 @@ class YamlObject:
 
     def region_iter(self):
         for (column, row) in self.region_obj:
-            #TODO: fix mess of inconsistency in row/col vs col/row
             yield (column, row)
