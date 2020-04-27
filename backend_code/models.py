@@ -12,7 +12,7 @@ from backend_code.spreadsheets.caching import pickle_spreadsheet_file_and_get_sh
 from backend_code.wikify_handler import process_wikified_output_file
 
 
-from backend_code.parsing.handler import highlight_region, resolve_cell
+from backend_code.handler import highlight_region, resolve_cell
 from backend_code.parsing.yaml_parser import YamlObject
 
 def generate_id() -> str:

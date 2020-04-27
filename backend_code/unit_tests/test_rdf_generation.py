@@ -15,7 +15,8 @@ except:
 import unittest
 from pathlib import Path
 from backend_code.item_table import ItemTable
-from backend_code.wikify_handler import generate_download_file, process_wikified_output_file
+from backend_code.wikify_handler import process_wikified_output_file
+from backend_code.handler import generate_download_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name #, add_row_in_data_file
 
 output_directory = '/tmp'
