@@ -80,7 +80,9 @@ def evaluate_template(template, context):
         qualifiers_parsed=[]
         for qualifier in qualifiers:
             q_parsed=iter_on_n(qualifier["value"], context)
-            qualifiers_parsed.append(q_parsed)
+            #check if item/value are not None
+            if q_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
+                qualifiers_parsed.append(q_parsed)
     
     return item_parsed, value_parsed, qualifiers_parsed
 
@@ -135,7 +137,7 @@ def generate_download_file(yaml_parser, filetype, parsed_path, sparql_endpoint):
                 statement=get_template_statement(yaml_parser.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
                 if statement:
                     data.append(
-                        {'cell': to_excel(col, row), 
+                        {'cell': to_excel(col-1, row-1), 
                         'statement': statement})
             except Exception as e:
                 error.append({'cell': to_excel(col, row), 

@@ -40,6 +40,9 @@ class ItemReturn:
     
     def __str__(self):
         return str(self.value)
+    
+    def __bool__(self):
+        return bool(self.value)
 
 class ItemExpression:
     def __getitem__(self, args):
@@ -67,6 +70,9 @@ class Cell:
     
     def __str__(self):
         return str(self.value)
+    
+    def __bool__(self):
+        return bool(self.value)
 
 
 class CellRange:
@@ -121,7 +127,7 @@ def parse_expression(e_str, context={}):
 def iter_on_n(expression, context={}):
     #handle iter on variable n. if there is no variable n this will anyway return in first iteration
     upper_limit= max(len(bindings["excel_sheet"]), len(bindings["excel_sheet"][0]))
-    for n in range(1, upper_limit):
+    for n in range(0, upper_limit):
         try:
             context_dir={"n":n}
             context_dir.update(context)
