@@ -1,3 +1,6 @@
+import os
+import json
+from pathlib import Path
 from collections import OrderedDict
 from copy import deepcopy
 from string import punctuation
@@ -63,8 +66,61 @@ class Region:
         for key in self.indices:
             return key
 
+class YamlCacher:
+    def __init__(self, filepath, data_file_path, sheet_name):
+        self.filepath=filepath
+        self.data_file_path=data_file_path
+        self.sheet_name=sheet_name
+    
+    @property
+    def cache_path(self):
+            path=Path(self.filepath)
+            filename=path.stem+"_"+self.sheet_name+"_cached.json"
+            parent=path.parent
+            filepath=parent/"cache"
+            if not filepath.is_dir():
+                os.makedirs(filepath)
+            return str(filepath/filename)
+
+    def is_fresh(self):
+        if os.path.isfile(self.cache_path):
+            if os.path.getmtime(self.cache_path) > os.path.getmtime(self.filepath) and\
+                os.path.getmtime(self.cache_path) > os.path.getmtime(self.data_file_path):
+                return True
+        return False
+    
+    def save(self, highlight_data, statement_data):
+        d={
+            "highlight region": highlight_data,
+            "download": statement_data
+        }
+        with open(self.cache_path, 'w') as f:
+            json.dump(d, f)
+
+    def get_highlight_region(self):
+        if self.is_fresh():
+            try:
+                with open(self.cache_path, 'r') as f:
+                    data=json.load(f)
+                return data["highlight region"]
+            except:
+                pass
+        return None
+
+    def get_download(self):
+        if self.is_fresh():
+            try:
+                with open(self.cache_path, 'r') as f:
+                    data=json.load(f)
+                return data["download"]
+            except:
+                pass
+        return None
+    
+    
+
 class YamlObject:
-    def __init__(self, filepath, item_table, data_file_path, sheet_name):
+    def __init__(self, filepath, item_table, data_file_path, sheet_name, use_cache=False):
         self.yaml_data=self.validate(filepath)
         try:
             self.sheet=Sheet(data_file_path, sheet_name)
@@ -74,6 +130,8 @@ class YamlObject:
         self._region_props=self.parse_region()
         self._template=dict(self.yaml_data['statementMapping']['template'])
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
+        self.use_cache=use_cache
+        self.cacher=YamlCacher(filepath, data_file_path, sheet_name)
     
     @property
     def region_obj(self):

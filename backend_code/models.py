@@ -12,7 +12,7 @@ from backend_code.spreadsheets.caching import pickle_spreadsheet_file_and_get_sh
 from backend_code.wikify_handler import process_wikified_output_file
 
 
-from backend_code.handler import highlight_region, resolve_cell
+from backend_code.handler import highlight_region, resolve_cell, generate_download_file
 from backend_code.parsing.yaml_parser import YamlObject
 
 def generate_id() -> str:
@@ -329,21 +329,29 @@ class YamlFile(db.Model):
         return yf
     
     @property
-    def yaml_configuration(self):
+    def sparql_endpoint(self):
+        return self.sheet.project_file.project.sparql_endpoint
+
+    @property
+    def yaml_object(self):
         try:
-            yc=self._yaml_configuration
+            yc=self._yaml_object
             return yc
         except:
-            self._yaml_configuration=YamlObject(self.yaml_file_path, 
-                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name)
-            return self._yaml_configuration
+            self._yaml_object=YamlObject(self.yaml_file_path, 
+                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name, use_cache=True)
+            return self._yaml_object
 
 
     def highlight_region(self):
-        return highlight_region(self.yaml_configuration, self.sheet.project_file.project.sparql_endpoint, self.parsed_yaml_file_path)
+        return highlight_region(self.yaml_object, self.sparql_endpoint)
 
     def resolve_cell(self, column, row):
-        return resolve_cell(self.yaml_configuration, column, row, self.sheet.project_file.project.sparql_endpoint)
+        return resolve_cell(self.yaml_object, column, row, self.sparql_endpoint)
+    
+    def generate_download_file(self, filetype):
+        return generate_download_file(self.yaml_object, filetype, self.sparql_endpoint)
+
 
     @staticmethod
     def get_handler(sheet):
@@ -370,11 +378,6 @@ class YamlFile(db.Model):
             return str(self.id) + ".yaml"
         return str(base_upload_path(self.user_id, self.project_id)/ "yf" / yaml_file_name())
 
-    @property
-    def parsed_yaml_file_path(self):
-        def yaml_file_name(): 
-            return str(self.id) + "_parsed.json"
-        return str(base_upload_path(self.user_id, self.project_id)/ "yf" / yaml_file_name())
 
     
     def handle(self):

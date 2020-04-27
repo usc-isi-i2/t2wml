@@ -5,9 +5,7 @@ from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
 from backend_code.utility_functions import verify_google_login, check_if_string_is_invalid
-from backend_code.spreadsheets.conversions import _column_letter_to_index, _one_index_to_zero_index
 from backend_code.wikify_handler import wikifier
-from backend_code.handler import generate_download_file
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
 
@@ -375,7 +373,7 @@ def downloader():
 
     filetype = request.form["type"]
 
-    response = generate_download_file(yaml_file.yaml_configuration, filetype, project.sparql_endpoint, yaml_file.parsed_yaml_file_path)
+    response = yaml_file.generate_download_file(filetype)
     return json.dumps(response, indent=3)
 
 

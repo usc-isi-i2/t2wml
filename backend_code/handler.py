@@ -50,12 +50,17 @@ def get_template_statement(template, item_parsed, value_parsed, qualifiers_parse
     if qualifiers_parsed:
         new_quals=[]
         for q_i, qualifier_dict in enumerate(template["qualifier"]):
-            new_dict=dict(qualifier_dict)
-            qualifier_parsed=qualifiers_parsed[q_i]
-            new_dict["value"]=qualifier_parsed.value
-            new_dict["cell"]=to_excel(qualifier_parsed.col, qualifier_parsed.row)
-            parse_time_for_dict(new_dict, sparql_endpoint)
-            new_quals.append(new_dict)
+            try:
+                new_dict=dict(qualifier_dict)
+                qualifier_parsed=qualifiers_parsed[q_i]
+                            #check if item/value are not None
+                if qualifier_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
+                    new_dict["value"]=qualifier_parsed.value
+                    new_dict["cell"]=to_excel(qualifier_parsed.col, qualifier_parsed.row)
+                    parse_time_for_dict(new_dict, sparql_endpoint)
+                    new_quals.append(new_dict)
+            except Exception as e:
+                raise e
         template["qualifier"]=new_quals
     parse_time_for_dict(template, sparql_endpoint)
     return template
@@ -70,7 +75,7 @@ def evaluate_template(template, context):
 
     if item:
         item_parsed= iter_on_n(item, context)
-    
+
     if value:
         value_parsed= iter_on_n(value, context)
     
@@ -78,9 +83,7 @@ def evaluate_template(template, context):
         qualifiers_parsed=[]
         for qualifier in qualifiers:
             q_parsed=iter_on_n(qualifier["value"], context)
-            #check if item/value are not None
-            if q_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
-                qualifiers_parsed.append(q_parsed)
+            qualifiers_parsed.append(q_parsed)
     
     return item_parsed, value_parsed, qualifiers_parsed
 
@@ -91,44 +94,56 @@ def update_highlight_data(data, item_parsed, qualifiers_parsed):
     if qualifiers_parsed:
         qualifier_cells = set()
         for qualifier_parsed in qualifiers_parsed:
-            qualifier_cell=to_excel(qualifier_parsed.col, qualifier_parsed.row)
-            qualifier_cells.add(qualifier_cell)
+            #check if item/value are not None
+            if qualifier_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
+                qualifier_cell=to_excel(qualifier_parsed.col, qualifier_parsed.row)
+                qualifier_cells.add(qualifier_cell)
         data["qualifierRegion"] |= qualifier_cells
             
 
-def highlight_region(yaml_object, sparql_endpoint, file_path):
-    data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
-    
+def highlight_region(yaml_object, sparql_endpoint):
+    if yaml_object.use_cache:
+        data=yaml_object.cacher.get_highlight_region()
+        if data:
+            return data
+
+    highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
+    statement_data=[]
     for col, row in yaml_object.region_iter():
-        data["dataRegion"].add(to_excel(col-1, row-1))
+        cell=to_excel(col-1, row-1)
+        highlight_data["dataRegion"].add(cell)
         context={"row":row, "col":col}
         try:
             item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.template, context)
-            update_highlight_data(data, item_parsed, qualifiers_parsed)
+            update_highlight_data(highlight_data, item_parsed, qualifiers_parsed)
 
+            if yaml_object.use_cache:
+                    statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
+                    if statement:
+                        statement_data.append(
+                            {'cell': cell, 
+                            'statement': statement})
         except Exception as exception:
             error = dict()
             error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
             data['error'][to_excel(col, row)] = error
-    
-    data['dataRegion'] = list(data['dataRegion'])
-    data['item'] = list(data['item'])
-    data['qualifierRegion'] = list(data['qualifierRegion'])
-    return data
+        
+    highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
+    highlight_data['item'] = list(highlight_data['item'])
+    highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
+
+    if yaml_object.use_cache:
+        yaml_object.cacher.save(highlight_data, statement_data)
+    return highlight_data
 
 
 
-def generate_download_file(yaml_object, filetype, sparql_endpoint, parsed_path=None):
+def generate_download_file(yaml_object, filetype, sparql_endpoint):
     response=dict()
     data=[]
-    if parsed_path:
-        try:
-            with open(parsed_path, 'r') as f:
-                data=json.load(f)
-        except Exception as e:
-            pass
-            
-    
+    if yaml_object.use_cache:
+        data=yaml_object.cacher.get_download()
+
     if not data:
         error=[]
         for col, row in yaml_object.region_iter():
