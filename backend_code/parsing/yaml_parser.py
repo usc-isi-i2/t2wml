@@ -161,9 +161,6 @@ class YamlObject:
     def fix_code_string(self, e_str):
         e_str=str(e_str)
         e_str= e_str.replace("$", "")
-        e_str = e_str.replace("/", ",")
-        e_str = e_str.replace("=", "==")
-        e_str = e_str.replace("!==", "!=")
         e_str = e_str.replace("->", "and")
         return e_str
 
