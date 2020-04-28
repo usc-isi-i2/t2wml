@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from version import __version__
 import os
 
 CLASSIFIERS = [
@@ -41,7 +42,7 @@ PACKAGES = find_packages() + ['.']
 setup(
     author="USC ISI",
     name='t2wml-standalone',
-    version='1.9.0',
+    version=__version__,
     description='A standalone version of T2WML',
     long_description=open(os.path.join(
         os.path.dirname(__file__), 'README.md'), encoding='utf-8').read(),
