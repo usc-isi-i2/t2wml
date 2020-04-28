@@ -6,10 +6,9 @@ from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade, current, init
 
-sys.path.append(os.getcwd()) #when running migrate, needed to not get import errors
-
-
-basedir = os.path.abspath(os.path.dirname(__file__))
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+if BASEDIR not in sys.path:
+    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
 __CWD__ = os.getcwd()
 UPLOAD_FOLDER = (Path.cwd() / "config" / "uploads")
@@ -18,7 +17,7 @@ ETK_PATH = str(Path.cwd().parent / "etk")
 DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")
 AUTO_MIGRATE=True #only set to true if database is sqlite
 
-app = Flask(__name__, static_folder="static", static_url_path="/")
+app = Flask(__name__, static_folder=None)
 CORS(app, supports_credentials=True)
 app.secret_key = "secret key" # This will no longer be used once we stop using session cookies
 
@@ -29,9 +28,9 @@ class AppConfig:
     ETK_PATH = ETK_PATH
     downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
+        'sqlite:///' + os.path.join(BASEDIR, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    STATIC_FOLDER = os.path.join(basedir, 'static')
+    STATIC_FOLDER = os.path.join(BASEDIR, 'static')
 
 app.config.from_object(AppConfig)
 
@@ -47,4 +46,4 @@ migrate = Migrate(app, db)
 
 if AUTO_MIGRATE:
     with app.app_context():
-        upgrade(directory=os.path.join(basedir, 'migrations'))
+        upgrade(directory=os.path.join(BASEDIR, 'migrations'))
