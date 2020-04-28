@@ -31,18 +31,6 @@ def check_special_characters(text: str) -> bool:
     """
     return all(char in punctuation for char in str(text))
 
-
-def check_if_string_is_invalid(text: str) -> bool:
-    """
-    This function checks if the text is empty or has only special characters
-    :param text:
-    :return:
-    """
-    if text is None or str(text).strip() == "" or check_special_characters(text) or str(text).strip().lower() == '#n/a':
-        return True
-    return False
-
-
 def translate_precision_to_integer(precision: str) -> int:
     """
     This function translates the precision value to indexes used by wikidata

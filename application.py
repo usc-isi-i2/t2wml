@@ -4,7 +4,8 @@ import json
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
-from backend_code.utility_functions import verify_google_login, check_if_string_is_invalid
+from backend_code.parsing.yaml_parser import string_is_valid
+from backend_code.utility_functions import verify_google_login
 from backend_code.wikify_handler import wikifier
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
@@ -320,7 +321,7 @@ def upload_yaml():
     response={"error":None,
             "yamlRegions":None}
     try:
-        if check_if_string_is_invalid(yaml_data):
+        if not string_is_valid(yaml_data):
             raise T2WMLExceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
         else:
             if project.current_file:
