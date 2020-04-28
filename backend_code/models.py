@@ -314,13 +314,10 @@ class YamlFile(db.Model):
     sheet=db.relationship("ProjectSheet", back_populates="yaml_file")
     
     @staticmethod
-    def get_or_create(sheet, yaml_data):
-        if sheet.yaml_file:
-            yf = sheet.yaml_file
-        else:
-            yf=YamlFile(sheet_id=sheet.id)
-            db.session.add(yf)
-            db.session.commit()
+    def create(sheet, yaml_data):
+        yf=YamlFile(sheet_id=sheet.id)
+        db.session.add(yf)
+        db.session.commit()
         
         with open(yf.yaml_file_path, "w", newline='') as f:
             f.write(yaml_data)

@@ -324,7 +324,7 @@ def upload_yaml():
             raise T2WMLExceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
         else:
             if project.current_file:
-                yf=YamlFile.get_or_create(project.current_file.current_sheet, yaml_data)
+                yf=YamlFile.create(project.current_file.current_sheet, yaml_data)
                 response['yamlRegions']=yf.highlight_region()
             else:
                 response['yamlRegions'] = None
