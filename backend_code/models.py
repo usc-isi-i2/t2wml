@@ -2,17 +2,18 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 import json
-import copy
+
 from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
 from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
 from backend_code.utility_functions import save_wikified_result
 from backend_code.spreadsheets.utilities import excel_to_json, add_excel_file_to_bindings
-from backend_code.spreadsheets.caching import load_file
-from backend_code.handler import resolve_cell, highlight_region, process_wikified_output_file, update_bindings
-from backend_code.yaml_parser import YAMLParser
-from backend_code.bindings import bindings
-from backend_code.region import Region
+from backend_code.spreadsheets.caching import pickle_spreadsheet_file_and_get_sheet_names
+from backend_code.wikify_handler import process_wikified_output_file
+
+
+from backend_code.handler import highlight_region, resolve_cell, generate_download_file
+from backend_code.parsing.yaml_parser import YamlObject
 
 def generate_id() -> str:
     """
@@ -231,7 +232,7 @@ class ProjectFile(db.Model):
         return pf
     
     def init_sheets(self):
-        sheet_names=load_file(self.filepath)
+        sheet_names=pickle_spreadsheet_file_and_get_sheet_names(self.filepath)
         first=sheet_names[0]
         for sheet_name in sheet_names:
             pr = ProjectSheet(name=sheet_name, file_id=self.id, current=sheet_name==first)
@@ -305,46 +306,6 @@ class ProjectSheet(db.Model):
             return self.wiki_region_file.item_table
         else:
             return ItemTable(None)
-
-
-class YamlObject:
-    def __init__(self):
-        self._region={'left': None, 'right': None, 'top': None, 'bottom': None, 
-                        'skip_row': None, 'skip_column': None, 'skip_cell':None,
-                        'region_object': None}
-        self.template=None
-        self.created_by='t2wml'
-    
-    def get_template_copy(self):
-        return copy.deepcopy(self.template)
-    
-    @property
-    def region(self):
-        return self._region
-
-    @region.setter
-    def region(self, new_dict):
-        for key in self._region:
-            self._region[key]=new_dict[key]
-
-    @staticmethod
-    def create(yaml_filepath: str, item_table: ItemTable, data_file_path: str, sheet_name: str):
-        """
-        This function loads the YAML file data, parses different expressions and generates the statement
-        :param yaml_filepath:
-        :return:
-        """
-        yaml_parser = YAMLParser(yaml_filepath)
-        update_bindings(item_table, None, data_file_path, sheet_name)
-        region = yaml_parser.get_region(bindings)
-        region['region_object'] = Region(region, item_table, data_file_path, sheet_name)
-        template = yaml_parser.get_template()
-        created_by = yaml_parser.get_created_by()
-        yaml_configuration=YamlObject()
-        yaml_configuration.region= region
-        yaml_configuration.template= template
-        yaml_configuration.created_by= created_by
-        return yaml_configuration
     
 
 class YamlFile(db.Model):
@@ -353,13 +314,10 @@ class YamlFile(db.Model):
     sheet=db.relationship("ProjectSheet", back_populates="yaml_file")
     
     @staticmethod
-    def get_or_create(sheet, yaml_data):
-        if sheet.yaml_file:
-            yf = sheet.yaml_file
-        else:
-            yf=YamlFile(sheet_id=sheet.id)
-            db.session.add(yf)
-            db.session.commit()
+    def create(sheet, yaml_data):
+        yf=YamlFile(sheet_id=sheet.id)
+        db.session.add(yf)
+        db.session.commit()
         
         with open(yf.yaml_file_path, "w", newline='') as f:
             f.write(yaml_data)
@@ -368,28 +326,29 @@ class YamlFile(db.Model):
         return yf
     
     @property
-    def yaml_configuration(self):
+    def sparql_endpoint(self):
+        return self.sheet.project_file.project.sparql_endpoint
+
+    @property
+    def yaml_object(self):
         try:
-            yc=self._yaml_configuration
+            yc=self._yaml_object
             return yc
         except:
-            self._yaml_configuration=YamlObject.create(self.yaml_file_path,
-                        self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name)
-            return self._yaml_configuration
+            self._yaml_object=YamlObject(self.yaml_file_path, 
+                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name, use_cache=True)
+            return self._yaml_object
 
 
     def highlight_region(self):
-        return highlight_region(self.sheet.item_table, self.sheet.project_file.filepath, 
-                            self.sheet.name, self.yaml_configuration.region, self.yaml_configuration.template)
+        return highlight_region(self.yaml_object, self.sparql_endpoint)
 
     def resolve_cell(self, column, row):
-        return resolve_cell(self.sheet.item_table, 
-                            self.sheet.project_file.filepath, 
-                            self.sheet.name, 
-                            self.yaml_configuration.region, 
-                            self.yaml_configuration.template, 
-                            column, row, 
-                            self.sheet.project_file.project.sparql_endpoint)
+        return resolve_cell(self.yaml_object, column, row, self.sparql_endpoint)
+    
+    def generate_download_file(self, filetype):
+        return generate_download_file(self.yaml_object, filetype, self.sparql_endpoint)
+
 
     @staticmethod
     def get_handler(sheet):
@@ -399,9 +358,8 @@ class YamlFile(db.Model):
             except Exception as e:
                 return None #TODO: can't return a better error here yet, it breaks the frontend
         return None
-    @property
-    def yaml_file_name(self): 
-        return str(self.id) + ".yaml"
+
+
     
     @property
     def user_id(self):
@@ -413,19 +371,17 @@ class YamlFile(db.Model):
 
     @property
     def yaml_file_path(self):
-        return str(base_upload_path(self.user_id, self.project_id)/ "yf" / self.yaml_file_name)
+        def yaml_file_name(): 
+            return str(self.id) + ".yaml"
+        return str(base_upload_path(self.user_id, self.project_id)/ "yf" / yaml_file_name())
+
 
     
     def handle(self):
-        item_table=self.sheet.item_table
-
         response=dict()
         with open(self.yaml_file_path, "r") as f:
             response["yamlFileContent"]= f.read()
-        template = self.yaml_configuration.template
-        region = self.yaml_configuration.region
-        response['yamlRegions'] = highlight_region(item_table, self.sheet.project_file.filepath, self.sheet.name, region, template)
-        
+        response['yamlRegions'] = self.highlight_region()
         return response
 
 

@@ -6,7 +6,8 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 #IMPORTANT: the import from models must happen before the other backend_code imports because of flask circular oimports
 from backend_code.models import YamlObject 
 from backend_code.item_table import ItemTable
-from backend_code.handler import generate_download_file, process_wikified_output_file
+from backend_code.handler import generate_download_file
+from backend_code.wikify_handler import process_wikified_output_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name, add_row_in_data_file
 
 
@@ -42,16 +43,13 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         return
 
     try:
-        yaml_configuration = YamlObject.create(t2wml_spec, item_table, new_file_path, sheet_name)
+        yc = YamlObject(t2wml_spec, item_table, new_file_path, sheet_name)
     except Exception as e:
         logging.error("Invalid YAML File")
         return
 
     filetype = "ttl"
-
-    response = generate_download_file(None, item_table, new_file_path, sheet_name, yaml_configuration.region, 
-                                      yaml_configuration.template, filetype,
-                                      sparql_endpoint, created_by=yaml_configuration.created_by, debug=debug)
+    response = generate_download_file(yc, filetype, sparql_endpoint)
     result_directory = '.'.join(file_name.split(".")[:-1])
 
     output_path = Path()

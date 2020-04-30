@@ -1,392 +1,176 @@
 import json
-from pathlib import Path
-import requests
-import csv
-from typing import Sequence
-from backend_code.item_table import ItemTable
-from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.bindings import bindings
-from backend_code.utility_functions import translate_precision_to_integer, get_property_type
-from backend_code.spreadsheets.conversions import cell_range_str_to_tuples, cell_tuple_to_str
-from backend_code.t2wml_parser import get_cell
-from backend_code.triple_generator import generate_triples
-from backend_code.grammar import ItemExpression, ValueExpression, BooleanEquation, ColumnExpression, RowExpression
-from backend_code.spreadsheets.utilities import add_excel_file_to_bindings, create_temporary_csv_file
 from etk.wikidata.utils import parse_datetime_string
-import pandas as pd
+from backend_code.parsing.constants import char_dict
+from backend_code.t2wml_exceptions import T2WMLException
+import backend_code.t2wml_exceptions as T2WMLExceptions
+from backend_code.utility_functions import translate_precision_to_integer, get_property_type
+from backend_code.spreadsheets.conversions import to_excel
+from backend_code.parsing.t2wml_parser import iter_on_n
+from backend_code.triple_generator import generate_triples
 
-
-
-def update_bindings(item_table: ItemTable, region: dict = None, excel_filepath: str = None,
-                    sheet_name: str = None) -> None:
-    """
-    This function updates the bindings dictionary with the region, excel_file and item_table
-    :param item_table:
-    :param region:
-    :param excel_filepath:
-    :param sheet_name:
-    :return:
-    """
-    if region:
-        bindings["$left"] = region['left']
-        bindings["$right"] = region['right']
-        bindings["$top"] = region['top']
-        bindings["$bottom"] = region['bottom']
-    if excel_filepath:
-        add_excel_file_to_bindings(excel_filepath, sheet_name)
-    bindings["item_table"] = item_table
-
-
-def handle_variables(v):
-    if v.variables:
-        variables = list(v.variables)
-        num_of_variables = len(variables)
-        if num_of_variables == 1:
-            bindings[variables[0]] = 0
-            if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
-                while not v.evaluate(bindings):
-                    bindings[variables[0]] += 1
-            col, row, _value = v.evaluate_and_get_cell(bindings)
-            del bindings[variables[0]]
-    else:
-        col, row, _value = v.evaluate_and_get_cell(bindings)
-    return col, row, _value
-
-def highlight_region(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict,
-                     template: dict) -> dict:
-    """
-    This function add holes in the region_object and builds up the list of data_region, item_region and qualifier_region
-    :param item_table:
-    :param excel_data_filepath:
-    :param sheet_name:
-    :param region_specification:
-    :param template:
-    :return:
-    """
-    update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
-    region = region_specification['region_object']
-    head = region.get_head()
-    data = {"dataRegion": set(), "item": set(), "referenceRegion": set(), "qualifierRegion": set(), "error": dict()}
-    bindings["$col"] = head[0]
-    bindings["$row"] = head[1]
-    try:
-        item = template['item']
-    except KeyError:
-        item = None
-
-    try:
-        attributes = template['qualifier']
-    except KeyError:
-        attributes = None
-
-    try:
-        references = template['reference']
-    except KeyError:
-        references = None
-
-    list_type_attributes = [references, attributes]
-
-    while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
-        try:
-            data_cell = cell_tuple_to_str((bindings["$col"], bindings["$row"]))
-            data["dataRegion"].add(data_cell)
-            if item and isinstance(item, (ItemExpression, ValueExpression, BooleanEquation)):
-                try:
-                    if item.variables:
-                        col, row, value = handle_variables(item)
-                        item_cell = cell_tuple_to_str((col, row))
-                        data["item"].add(item_cell)
-                    else:
-                        item_cell = get_cell(item)
-                        item_cell = cell_tuple_to_str(item_cell)
-                        data["item"].add(item_cell)
-                except AttributeError:
-                    pass
-            elif item and isinstance(item, (ColumnExpression, RowExpression)):
-                try:
-                    item_cell = get_cell(item)
-                    item_cell = cell_tuple_to_str(item_cell)
-                    data["item"].add(item_cell)
-                except AttributeError:
-                    pass
-            for index, attributes in enumerate(list_type_attributes):
-                if attributes:
-                    attribute_cells = set()
-                    for attribute in attributes:
-                        if isinstance(attribute["value"], (ItemExpression, ValueExpression, BooleanEquation)):
-                            try:
-                                if attribute["value"].variables:
-                                    variables = list(attribute["value"].variables)
-                                    num_of_variables = len(variables)
-                                    if num_of_variables == 1:
-                                        bindings[variables[0]] = 0
-                                        while not attribute["value"].evaluate(bindings):
-                                            bindings[variables[0]] += 1
-                                        col, row, value = attribute["value"].evaluate_and_get_cell(bindings)
-                                        attribute_cell = cell_tuple_to_str((col, row))
-                                        attribute_cells.add(attribute_cell)
-                                        del bindings[variables[0]]
-                                else:
-                                    attribute_cell = get_cell(attribute["value"])
-                                    attribute_cell = cell_tuple_to_str(attribute_cell)
-                                    attribute_cells.add(attribute_cell)
-                            except AttributeError:
-                                pass
-                        elif isinstance(attribute["value"], (ColumnExpression, RowExpression)):
-                            try:
-                                attribute_cell = get_cell(attribute["value"])
-                                attribute_cell = cell_tuple_to_str(attribute_cell)
-                                attribute_cells.add(attribute_cell)
-                            except AttributeError:
-                                pass
-                    if index == 0:
-                        data["referenceRegion"] |= attribute_cells
-                    else:
-                        data["qualifierRegion"] |= attribute_cells
-        except Exception as exception:
-            error = dict()
-            error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
-            data['error'][cell_tuple_to_str((bindings["$col"], bindings["$row"]))] = error
-
-        if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
-            bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
-        else:
-            bindings["$col"], bindings["$row"] = None, None
-
-    data['dataRegion'] = list(data['dataRegion'])
-    data['item'] = list(data['item'])
-    data['referenceRegion'] = list(data['referenceRegion'])
-    data['qualifierRegion'] = list(data['qualifierRegion'])
-    return data
-
-
-def resolve_cell(item_table: ItemTable, excel_data_filepath: str, sheet_name: str, region_specification: dict,
-                 template: dict, column: int, row: int, sparql_endpoint: str) -> dict:
-    """
-    This cell resolve the statement for a particular cell
-    :param sparql_endpoint:
-    :param item_table:
-    :param excel_data_filepath:
-    :param sheet_name:
-    :param region_specification:
-    :param template:
-    :param column:
-    :param row:
-    :return:
-    """
-    update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
-    region = region_specification['region_object']
-    bindings["$col"] = column
-    bindings["$row"] = row
-    data = {}
-    if region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
-        try:
-            statement = evaluate_template(template, sparql_endpoint)
-            if statement:
-                data = {'statement': statement, 'error': None}
+def parse_time_for_dict(response, sparql_endpoint):
+    if "property" in response and get_property_type(response["property"], sparql_endpoint)=="Time":
+        if "format" in response:
+            try:
+                datetime_string, precision = parse_datetime_string(str(response["value"]),
+                                                                    additional_formats=[
+                                                                        response["format"]])
+            except ValueError:
+                #This is a workaround for a separatte bug, WIP, that is sending wrong dictionaries to this function
+                print("attempting to parse datetime string that isn't a datetime:", str(response["value"]))
+                return
+            if "precision" not in response:
+                response["precision"] = int(precision.value.__str__())
             else:
-                data = {'statement': None, 'error': "Item doesn't exist"}
-        except Exception as exception:
-            error = dict()
-            error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
-            data = {'error': error}
+                response["precision"] = translate_precision_to_integer(response["precision"])
+            response["value"] = datetime_string
+
+def resolve_cell(yaml_object, col, row, sparql_endpoint):
+    context={"row":int(row), "col":char_dict[col]}
+    try:
+        item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)
+        statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
+        if statement:
+            data = {'statement': statement, 'error': None}
+        else:
+            data = {'statement': None, 'error': "Item doesn't exist"}
+    except Exception as exception:
+        error = dict()
+        error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
+        data = {'error': error}
     return data
 
 
-def generate_download_file(user_id: str, item_table: ItemTable, excel_data_filepath: str, sheet_name: str,
-                           region_specification: dict, template: dict, filetype: str, sparql_endpoint: str,
-                           created_by: str = 't2wml', debug=False) -> dict:
-    """
-    This function generates the download files based on the filetype
-    :param created_by:
-    :param user_id:
-    :param item_table:
-    :param excel_data_filepath:
-    :param sheet_name:
-    :param region_specification:
-    :param template:
-    :param filetype:
-    :param sparql_endpoint:
-    :return:
-    """
-    update_bindings(item_table, region_specification, excel_data_filepath, sheet_name)
+def get_template_statement(template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint):
+    if item_parsed:
+        template["item"]=item_parsed.value
+        template["cell"]=to_excel(item_parsed.col, item_parsed.row)
+    if value_parsed:
+        template["value"]=value_parsed.value
+    if qualifiers_parsed:
+        new_quals=[]
+        for q_i, qualifier_dict in enumerate(template["qualifier"]):
+            try:
+                new_dict=dict(qualifier_dict)
+                qualifier_parsed=qualifiers_parsed[q_i]
+                            #check if item/value are not None
+                if qualifier_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
+                    new_dict["value"]=qualifier_parsed.value
+                    new_dict["cell"]=to_excel(qualifier_parsed.col, qualifier_parsed.row)
+                    parse_time_for_dict(new_dict, sparql_endpoint)
+                    new_quals.append(new_dict)
+            except Exception as e:
+                raise e
+        template["qualifier"]=new_quals
+    parse_time_for_dict(template, sparql_endpoint)
+    return template
 
-    region = region_specification['region_object']
-    response = dict()
 
-    data = []
-    error = []
-    head = region.get_head()
-    bindings["$col"] = head[0]
-    bindings["$row"] = head[1]
-    while region.sheet.get((bindings["$col"], bindings["$row"]), None) is not None:
+def evaluate_template(template, context):
+    item=template.get("item", None)
+    value=template.get("value", None)
+    qualifiers=template.get("qualifier", None)
+
+    item_parsed=value_parsed=qualifiers_parsed=None
+
+    if item:
+        item_parsed= iter_on_n(item, context)
+
+    if value:
+        value_parsed= iter_on_n(value, context)
+    
+    if qualifiers:
+        qualifiers_parsed=[]
+        for qualifier in qualifiers:
+            q_parsed=iter_on_n(qualifier, context)
+            qualifiers_parsed.append(q_parsed)
+    
+    return item_parsed, value_parsed, qualifiers_parsed
+
+def update_highlight_data(data, item_parsed, qualifiers_parsed):
+    if item_parsed:
+        item_cell=to_excel(item_parsed.col, item_parsed.row)
+        data["item"].add(item_cell)
+    if qualifiers_parsed:
+        qualifier_cells = set()
+        for qualifier_parsed in qualifiers_parsed:
+            #check if item/value are not None
+            if qualifier_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
+                qualifier_cell=to_excel(qualifier_parsed.col, qualifier_parsed.row)
+                qualifier_cells.add(qualifier_cell)
+        data["qualifierRegion"] |= qualifier_cells
+            
+
+def highlight_region(yaml_object, sparql_endpoint):
+    if yaml_object.use_cache:
+        data=yaml_object.cacher.get_highlight_region()
+        if data:
+            return data
+
+    highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
+    statement_data=[]
+    for col, row in yaml_object.region_iter():
+        cell=to_excel(col-1, row-1)
+        highlight_data["dataRegion"].add(cell)
+        context={"row":row, "col":col}
         try:
-            statement = evaluate_template(template, sparql_endpoint)
-            if statement:
-                data.append(
-                    {'cell': cell_tuple_to_str((bindings["$col"], bindings["$row"])), 'statement': statement})
-        except Exception as e:
-            error.append({'cell': cell_tuple_to_str((bindings["$col"], bindings["$row"])), 'error': str(e)})
-        if region.sheet[(bindings["$col"], bindings["$row"])].next is not None:
-            bindings["$col"], bindings["$row"] = region.sheet[(bindings["$col"], bindings["$row"])].next
-        else:
-            bindings["$col"], bindings["$row"] = None, None
+            item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)
+            update_highlight_data(highlight_data, item_parsed, qualifiers_parsed)
+
+            if yaml_object.use_cache:
+                    statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
+                    if statement:
+                        statement_data.append(
+                            {'cell': cell, 
+                            'statement': statement})
+        except Exception as exception:
+            error = dict()
+            error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
+            data['error'][to_excel(col, row)] = error
+        
+    highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
+    highlight_data['item'] = list(highlight_data['item'])
+    highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
+
+    if yaml_object.use_cache:
+        yaml_object.cacher.save(highlight_data, statement_data)
+    return highlight_data
+
+
+
+def generate_download_file(yaml_object, filetype, sparql_endpoint):
+    response=dict()
+    data=[]
+    if yaml_object.use_cache:
+        data=yaml_object.cacher.get_download()
+
+    if not data:
+        error=[]
+        for col, row in yaml_object.region_iter():
+            try:
+                context={"row":row, "col":col}
+                item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)
+                statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, sparql_endpoint)
+                if statement:
+                    data.append(
+                        {'cell': to_excel(col-1, row-1), 
+                        'statement': statement})
+            except Exception as e:
+                error.append({'cell': to_excel(col, row), 
+                'error': str(e)})
+
+
     if filetype == 'json':
         response["data"] = json.dumps(data, indent=3)
         response["error"] = None
         return response
+    
     elif filetype == 'ttl':
         try:
-            response["data"] = generate_triples(user_id, data, sparql_endpoint, filetype, created_by=created_by,
-                                                debug=debug)
+            response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=yaml_object.created_by)
             response["error"] = None
             return response
         except Exception as e:
             print(e)
             response = {'error': str(e)}
             return response
-
-
-def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str, flag, context,
-             sparql_endpoint) -> dict:
-    """
-    This function processes the calls to the wikifier service and adds the output to the ItemTable object
-    :param sparql_endpoint:
-    :param item_table:
-    :param region:
-    :param excel_filepath:
-    :param sheet_name:
-    :return:
-    """
-    if not item_table:
-        item_table = ItemTable()
-    cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
-    if not context:
-        context = '__NO_CONTEXT__'
-    cell_qnode_map['context'] = context
-    item_table.update_table(cell_qnode_map, excel_filepath, sheet_name, flag)
-    # item_table.add_region(region, cell_qnode_map)
-    return item_table.serialize_table(sparql_endpoint)
-
-
-def parse_time_for_dict(response):
-    if "format" in response:
-        try:
-            datetime_string, precision = parse_datetime_string(response["value"],
-                                                                additional_formats=[
-                                                                    response["format"]])
-            if "precision" not in response:
-                response["precision"] = int(precision.value.__str__())
-            else:
-                response["precision"] = translate_precision_to_integer(response["precision"])
-            response["value"] = datetime_string
-        except Exception as e:
-            raise e
-
-def evaluate_attribute(template, sparql_endpoint):
-    return_arr=[]
-    for i in range(len(template)):
-        skip_attribute = False
-        temp_dict = dict()
-        for k, v in template[i].items():
-            if isinstance(v, (ItemExpression, ValueExpression, BooleanEquation)):
-                col, row, _value = handle_variables(v)
-                if _value:
-                    temp_dict['cell'] = cell_tuple_to_str((col, row))
-                    temp_dict[k] = _value
-                else:
-                    skip_qualifier = True
-            else:
-                temp_dict[k] = v
-        if skip_attribute:
-            temp_dict = None
-        else:
-            if "property" in temp_dict and get_property_type(temp_dict["property"], sparql_endpoint) == "Time":
-                parse_time_for_dict(temp_dict)
-            return_arr.append(temp_dict)
-    return return_arr
-
-def evaluate_template(template: dict, sparql_endpoint: str) -> dict:
-    """
-    This function resolves the template by parsing the T2WML expressions
-    and replacing them by the class trees of those expressions
-    :param sparql_endpoint:
-    :param template:
-    :return:
-    """
-    response = dict()
-    for key, value in template.items():
-        if key == 'qualifier' or key == 'reference':
-            response[key]=evaluate_attribute(template[key], sparql_endpoint)
-        elif isinstance(value, (ItemExpression, ValueExpression, BooleanEquation)):
-                col, row, _value = handle_variables(value)
-                if key == "item":
-                    response['cell'] = cell_tuple_to_str((col, row))
-                if isinstance(value, BooleanEquation):
-                    response['cell'] = cell_tuple_to_str((col, row))
-                if not _value:
-                    raise T2WMLExceptions.ItemNotFoundException("Couldn't find item for cell " + cell_tuple_to_str((col, row)))
-                else:
-                    response[key] = _value
-        else:
-            response[key] = value
-
-    if get_property_type(response["property"], sparql_endpoint) == "Time":
-        parse_time_for_dict(response)
-
-    return response
-
-
-def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int):
-    """
-    This function calls the wikifier service and creates a cell to qnode dictionary based on the response
-    cell to qnode dictionary = { 'A4': 'Q383', 'B5': 'Q6892' }
-    :param csv_filepath:
-    :param col_offset:
-    :param row_offset:
-    :return:
-    """
-    cell_qnode_map = dict()
-    with open(csv_filepath, 'r') as f:
-        files = {
-            'file': ('', f),
-            'format': (None, 'ISWC'),
-            'type': (None, 'text/csv'),
-            'header': (None, 'False')
-        }
-        response = requests.post('https://dsbox02.isi.edu:8888/wikifier/wikify', files=files)
-    output = None
-    if response.status_code == 200:
-        data = response.content.decode("utf-8")
-        data = json.loads(data)['data']
-        data = [x.split(",") for x in data]
-        output = pd.DataFrame(data, columns=["column", "row", "item"])
-        for index in range(output.shape[0]):
-            output.at[index, 'column'] = int(output.at[index, 'column']) + col_offset
-            output.at[index, 'row'] = int(output.at[index, 'row']) + row_offset
-    return output
-
-
-def wikify_region(region: str, excel_filepath: str, sheet_name: str = None):
-    """
-    This function parses the cell range, creates the temporary csv file and calls the wikifier service on that csv
-    to get the cell qnode map. cell qnode map is then processed to omit non empty cells and is then returned.
-    :param region:
-    :param excel_filepath:
-    :param sheet_name:
-    :return:
-    """
-    cell_range = cell_range_str_to_tuples(region)
-    file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
-    cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
-    return cell_qnode_map
-
-
-def csv_to_dataframe(file_path):
-    df = pd.read_csv(file_path)
-    return df
-
-
-def process_wikified_output_file(file_path: str, item_table: ItemTable, data_filepath, sheet_name, context=None):
-    df = csv_to_dataframe(file_path)
-    item_table.update_table(df, data_filepath, sheet_name)

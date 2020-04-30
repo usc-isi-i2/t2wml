@@ -7,6 +7,11 @@ from flask import (make_response, redirect, request, send_from_directory,
 from flask.helpers import send_file
 
 from app_config import app
+from flask import request, render_template, redirect, url_for, session, make_response
+from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
+from backend_code.parsing.yaml_parser import string_is_valid
+from backend_code.utility_functions import verify_google_login
+from backend_code.wikify_handler import wikifier
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.handler import generate_download_file, wikifier
 from backend_code.models import (Project, ProjectFile, User, WikiRegionFile,
@@ -294,12 +299,11 @@ def upload_yaml():
     response={"error":None,
             "yamlRegions":None}
     try:
-        if check_if_string_is_invalid(yaml_data):
+        if not string_is_valid(yaml_data):
             raise T2WMLExceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
         else:
             if project.current_file:
-                yf=YamlFile.get_or_create(project.current_file.current_sheet, yaml_data)
-                validate_yaml(yf.yaml_file_path, project.sparql_endpoint)
+                yf=YamlFile.create(project.current_file.current_sheet, yaml_data)
                 response['yamlRegions']=yf.highlight_region()
             else:
                 response['yamlRegions'] = None
@@ -318,8 +322,8 @@ def get_cell_statement():
     This function returns the statement of a particular cell
     :return:
     """
-    column = column_letter_to_index(request.form["col"])
-    row = one_index_to_zero_index(request.form["row"])
+    column = request.form["col"]
+    row = request.form["row"]
     data={}
     try:
         project = get_project()
@@ -341,26 +345,14 @@ def downloader():
     This functions initiates the download
     :return:
     """
-    project=get_project()
-    project_file=project.current_file
-    current_sheet=project_file.current_sheet
+    project = get_project()
+    yaml_file = project.current_file.current_sheet.yaml_file
+    if not yaml_file: #the frontend disables this, this is just another layer of checking
+        raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
 
     filetype = request.form["type"]
-    sparql_endpoint = project.sparql_endpoint
-    user_id=project.user_id
-    item_table=current_sheet.item_table
-    data_file_path=project_file.filepath
-    sheet_name=current_sheet.name
-    
-    yaml_file=current_sheet.yaml_file
-    yaml_config=yaml_file.yaml_configuration
 
-    template = yaml_config.template
-    region = yaml_config.region
-    created_by = yaml_config.created_by
-
-    response = generate_download_file(user_id, item_table, data_file_path, sheet_name, region, template, filetype,
-                                      sparql_endpoint, created_by=created_by)
+    response = yaml_file.generate_download_file(filetype)
     return json.dumps(response, indent=3)
 
 

@@ -1,11 +1,6 @@
-bindings = {
-    "$col": None,
-    "$row": None,
-    "$left": None,
-    "$right": None,
-    "$top": None,
-    "$bottom": None,
-    "excel_sheet": None,
-    "item_table": None,
-    "created_by": None
-}
+class BindingsClass:
+    def __init__(self):
+        self.item_table=None
+        self.excel_sheet=None
+
+bindings=BindingsClass()

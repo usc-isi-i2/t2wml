@@ -2,7 +2,7 @@ import re
 from typing import Sequence, Union, Tuple, List, Dict, Any
 
 
-def column_index_to_letter(n: int) -> str:
+def _column_index_to_letter(n: int) -> str:
     """
     This function converts the 0-indexed column index to column letter
     0 to A,
@@ -17,7 +17,7 @@ def column_index_to_letter(n: int) -> str:
         string = chr(65 + remainder) + string
     return string
 
-def column_letter_to_index(column: str) -> int:
+def _column_letter_to_index(column: str) -> int:
     """
     This function converts a letter column to its respective 0-indexed column index
     viz. 'A' to 0
@@ -33,7 +33,7 @@ def column_letter_to_index(column: str) -> int:
     return index - 1
 
 
-def one_index_to_zero_index(row: Union[str, int]) -> int:
+def _one_index_to_zero_index(row: Union[str, int]) -> int:
     """
     This function converts a 1-indexed excel row (either string or int) to its respective 0-indexed row
     viz. '5' to 1
@@ -45,7 +45,7 @@ def one_index_to_zero_index(row: Union[str, int]) -> int:
     return int(row) - 1
 
 
-def cell_tuple_to_str(cell_index: tuple) -> str:
+def _cell_tuple_to_str(col, row) -> str:
     """
     This function converts 0-indexed tuples cell notation
     to the cell notation used by excel (letter + 1-indexed number, in a string)
@@ -53,12 +53,12 @@ def cell_tuple_to_str(cell_index: tuple) -> str:
     :param cell_index: (col, row)
     :return:
     """
-    col = column_index_to_letter(int(cell_index[0]))
-    row = str(int(cell_index[1]) + 1)
+    col = _column_index_to_letter(col)
+    row = str(int(row) + 1)
     return col + row
 
 
-def cell_str_to_tuple(cell: str):
+def _cell_str_to_tuple(cell: str):
     """
     This function converts the cell notation used by excel (letter + 1-indexed number, in a string)
     to 0-indexed tuples cell notation 
@@ -68,10 +68,10 @@ def cell_str_to_tuple(cell: str):
     """
     column = re.search('[a-zA-Z]+', cell).group(0)
     row = re.search('[0-9]+', cell).group(0)
-    return column_letter_to_index(column), one_index_to_zero_index(row)
+    return _column_letter_to_index(column), _one_index_to_zero_index(row)
 
 
-def cell_range_str_to_tuples(cell_range: str) -> Tuple[Sequence[int], Sequence[int]]:
+def _cell_range_str_to_tuples(cell_range: str) -> Tuple[Sequence[int], Sequence[int]]:
     """
     This function parses the cell range and returns the row and column indices supported by pyexcel
     For eg: A4:B5 to (0, 3), (1, 4)
@@ -79,6 +79,14 @@ def cell_range_str_to_tuples(cell_range: str) -> Tuple[Sequence[int], Sequence[i
     :return:
     """
     cells = cell_range.split(":")
-    start_cell = cell_str_to_tuple(cells[0])
-    end_cell = cell_str_to_tuple(cells[1])
+    start_cell = _cell_str_to_tuple(cells[0])
+    end_cell = _cell_str_to_tuple(cells[1])
     return start_cell, end_cell
+
+
+
+def from_excel(cell:str):
+    return _cell_str_to_tuple(cell)
+
+def to_excel(col, row):
+    return _cell_tuple_to_str(col, row)

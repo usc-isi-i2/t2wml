@@ -8,20 +8,20 @@ statementMapping:
       # multiple rows named years. % symbol assigns a name to the row
       # one could also specify % years[B:D] to name a range of cells
       skip_row:
-        - value(A:B/$row) = "" and value(C:D/$row) != "" % years
+        - value[A:B, $row] == "" and value[C:D, $row] != "" % years
   template:
-    item: item(A/$row)
+    item: item[A, $row]
     property: C3002 # murder
-    value: value($col/$row)
+    value: value[$col, $row]
     qualifier:
       - property: P585 #point in time
         # the subtract iterator looks for the first row named years going up.
-        value: value($col/-years)
+        value: value[$col, -years]
         calendar: Q1985727
         precision: year
         time_zone: 0
         format: "%Y"
       - property: P6001 # applies to people
-        value: item($col/18)
+        value: item[$col, 18]
       - property: P123 #source
-        value: item(B/$row)
+        value: item[B, $row]

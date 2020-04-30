@@ -8,23 +8,16 @@ from pathlib import Path
 
 from backend_code.bindings import bindings
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.spreadsheets.conversions import cell_tuple_to_str, column_index_to_letter
-from backend_code.spreadsheets.caching import get_sheet
-
-def get_cell_value(bindings, row, column):
-    try:
-        value = str(bindings['excel_sheet'][row][column]).strip()
-    except IndexError:
-        raise T2WMLExceptions.ValueOutOfBoundException("Cell " + cell_tuple_to_str((column, row)) + " is outside the bounds of the current data file")
-    return value
+from backend_code.spreadsheets.conversions import _column_index_to_letter
+from backend_code.spreadsheets.sheet import Sheet
 
 
 def add_blank_row_to_bindings():
-    last_row=bindings["excel_sheet"][-1]
+    last_row=bindings.excel_sheet[-1]
     num_cols=len(last_row)
     blank_row = [" "] * num_cols
     if last_row!=blank_row:
-        bindings["excel_sheet"].append(blank_row)
+        bindings.excel_sheet.append(blank_row)
 
 
 def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
@@ -33,7 +26,7 @@ def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
     :return: None
     """
     try:
-        bindings["excel_sheet"]=get_sheet(excel_filepath, sheet_name)
+        bindings.excel_sheet=Sheet(excel_filepath, sheet_name)
         add_blank_row_to_bindings()
     except IOError:
         raise IOError('Excel File cannot be found or opened')
@@ -103,11 +96,11 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     if not sheet_name:
         sheet_name=get_first_sheet_name(file_path)
     #add_row_in_data_file(file_path, sheet_name)
-    sheet=get_sheet(file_path, sheet_name)
+    sheet=Sheet(file_path, sheet_name)
     #book = pyexcel.get_book(file_name=file_path)
     #sheet = book[sheet_name]
     for i in range(len(sheet[0])):
-        column = column_index_to_letter(i)
+        column = _column_index_to_letter(i)
         column_index_map[i + 1] = column
         sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
     for row in range(len(sheet)):
