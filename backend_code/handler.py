@@ -3,7 +3,8 @@ from etk.wikidata.utils import parse_datetime_string
 from backend_code.parsing.constants import char_dict
 from backend_code.t2wml_exceptions import T2WMLException
 import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.utility_functions import translate_precision_to_integer, get_property_type
+from backend_code.utility_functions import translate_precision_to_integer
+from backend_code.wikidata_property import get_property_type
 from backend_code.spreadsheets.conversions import to_excel
 from backend_code.parsing.t2wml_parser import iter_on_n
 from backend_code.triple_generator import generate_triples

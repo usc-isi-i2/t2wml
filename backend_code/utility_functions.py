@@ -9,19 +9,8 @@ from typing import Sequence, Union, Tuple, List, Dict, Any
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.wikidata_property import get_property_type as gp
 from app_config import GOOGLE_CLIENT_ID
 
-
-
-def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
-    """
-    This functions queries the wikidata to find out the type of a wikidata property
-    :param wikidata_property:
-    :param sparql_endpoint:
-    :return:
-    """
-    return gp(wikidata_property, sparql_endpoint)
 
 def check_special_characters(text: str) -> bool:
     """

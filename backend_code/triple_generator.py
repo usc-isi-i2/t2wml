@@ -5,7 +5,7 @@ from etk.wikidata.entity import WDItem
 from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, \
     ExternalIdentifier, GlobeCoordinate
 from etk.wikidata import serialize_change_record
-from backend_code.utility_functions import get_property_type
+from backend_code.wikidata_property import get_property_type
 from backend_code.utility_functions import translate_precision_to_integer
 
 

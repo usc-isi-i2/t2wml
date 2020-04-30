@@ -4,7 +4,8 @@ import sys
 from pathlib import Path
 
 CWD = os.getcwd()
-from backend_code.utility_functions import get_property_type, translate_precision_to_integer
+from backend_code.wikidata_property import get_property_type
+from backend_code.utility_functions import translate_precision_to_integer
 from etk.etk import ETK
 from etk.knowledge_graph.schema import KGSchema
 from etk.etk_module import ETKModule
