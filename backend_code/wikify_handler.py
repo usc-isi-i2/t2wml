@@ -5,7 +5,6 @@ import csv
 from backend_code.item_table import ItemTable
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
-from backend_code.spreadsheets.utilities import create_temporary_csv_file
 import pandas as pd
 
 
@@ -84,3 +83,24 @@ def csv_to_dataframe(file_path):
 def process_wikified_output_file(file_path: str, item_table: ItemTable, data_filepath, sheet_name, context=None):
     df = csv_to_dataframe(file_path)
     item_table.update_table(df, data_filepath, sheet_name)
+
+def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: str = None) -> str:
+    """
+    This function creates a temporary csv file of the region which has to be sent to the wikifier service for wikification
+    :param cell_range:
+    :param excel_filepath:
+    :param sheet_name:
+    :return:
+    """
+    file_name = uuid.uuid4().hex + ".csv"
+    file_path = str(Path.cwd() / "temporary_files" / file_name)
+    try:
+        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, 
+                                  start_row=cell_range[0][1],
+                                  row_limit=cell_range[1][1] - cell_range[0][1] + 1, 
+                                  start_column=cell_range[0][0],
+                                  column_limit=cell_range[1][0] - cell_range[0][0] + 1)
+        pyexcel.save_as(array=sheet, dest_file_name=file_path)
+    except IOError:
+        raise IOError('Excel File cannot be found or opened')
+    return file_path
