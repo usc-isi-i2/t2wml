@@ -2505,7 +2505,7 @@ class YamlEditor extends React.Component {
             options={{
               // All options for construction of monaco editor:
               // https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ieditorconstructionoptions.html
-              automaticLayout: true,
+              automaticLayout: false,
               lineNumbersMinChars: 4,
               // minimap: { enabled: false, },
               // mouseWheelZoom: true,
@@ -2522,6 +2522,9 @@ class YamlEditor extends React.Component {
             onChange={() => this.handleChangeYaml()}
             editorDidMount={(editor, monaco) => {
               editor.getModel().updateOptions({ tabSize: 2 });
+              setInterval(() => { editor.layout(); }, 200);  // automaticLayout above misses trigger opening, so we've replaced it
+              // This is better done by catching the trigger event and calling editor.layout there,
+              // once we figure out how to catch the trigger event.
             }}
           />
         </Card.Body>
