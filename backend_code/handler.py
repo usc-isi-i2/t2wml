@@ -175,9 +175,3 @@ def generate_download_file(yaml_object, filetype, sparql_endpoint):
             print(e)
             response = {'error': str(e)}
             return response
-
-
-
-
-
-

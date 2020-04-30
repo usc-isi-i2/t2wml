@@ -20,14 +20,10 @@
         {
             "type": "npm",
             "script": "start",
-            "path": "gui/",
-            "isBackground": true,
-            "problemMatcher": [
-               
-                    ]
-                },
-        
-            ]
+            "path": "frontend/",
+            "problemMatcher": [],
+            "label": "npm: start - frontend",
+            "detail": "react-scripts start"
         }
     ]
 }

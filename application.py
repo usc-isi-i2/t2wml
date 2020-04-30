@@ -1,6 +1,8 @@
+import json
 import shutil
 import sys
 import json
+import os
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
@@ -9,6 +11,8 @@ from backend_code.utility_functions import verify_google_login
 from backend_code.wikify_handler import wikifier
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
+from werkzeug.exceptions import NotFound
+from flask.helpers import send_file, send_from_directory
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False
@@ -90,24 +94,16 @@ def wikified_output_validator():
 
     if not (in_file and is_file_allowed(in_file.filename, "csv")):
         raise T2WMLExceptions.FileTypeNotSupportedException("File with extension '" + 
-                        get_file_extension(file.filename) + "' is not a valid wikified output file")
+                        get_file_extension(in_file.filename) + "' is not a valid wikified output file")
     return in_file
 
-
-@app.route('/', methods=['GET'])
-def index():
-    """
-    This functions renders the GUI
-    :return:
-    """
-    try:
-        get_user()
-        return redirect(url_for('project_home'))
-    except:
-        return render_template(get_template_path('login'))
+@app.route('/api/userinfo', methods=['GET'])
+def user_info():
+    user=get_user()
+    return json.dumps(user.json_dict)
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     """
     This function verifies the oath token and returns the authorization response
@@ -143,36 +139,7 @@ def login():
         response["vs"] = False
 
 
-@app.route('/project/<string:pid>', methods=['GET'])
-def open_project(pid: str):
-    """
-    This route opens the project and displays data file viewer, YAML viewer and Wikified output file viewer cards.
-    :param pid:
-    :return:
-    """
-    try:
-        user=get_user()
-        user_info_json=json.dumps(user.json_dict)
-        return app.make_response(render_template(get_template_path('project'), pid=pid, userInfo=user_info_json))
-    except UserNotFoundException:
-         return redirect(url_for('index'))
-
-
-@app.route('/project', methods=['GET'])
-def project_home():
-    """
-    This route displays the list of projects with their details and gives user the option to rename, delete and download the project.
-    :return:
-    """
-    try:
-        user=get_user()
-        user_info_json=json.dumps(user.json_dict)
-        return make_response(render_template(get_template_path('home'), userInfo=user_info_json))
-    except UserNotFoundException:
-        return redirect(url_for('index'))
-
-
-@app.route('/get_project_meta', methods=['POST'])
+@app.route('/api/get_project_meta', methods=['POST'])
 def get_project_meta():
     """
     This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
@@ -191,7 +158,7 @@ def get_project_meta():
         return json.dumps(None)
 
 
-@app.route('/create_project', methods=['POST'])
+@app.route('/api/create_project', methods=['POST'])
 def create_project():
     """
     This route creates a project by generating a unique id and creating a upload directory for that project
@@ -211,7 +178,7 @@ def create_project():
     
 
 
-@app.route('/upload_data_file', methods=['POST'])
+@app.route('/api/upload_data_file', methods=['POST'])
 def upload_data_file():
     """
     This function uploads the data file
@@ -245,10 +212,10 @@ def upload_data_file():
 
         return json.dumps(response, indent=3)
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('index')) # TODO: Return an error instead of a redirect
 
 
-@app.route('/change_sheet', methods=['POST'])
+@app.route('/api/change_sheet', methods=['POST'])
 def change_sheet():
     """
     This route is used when a user switches a sheet in an excel data file.
@@ -286,7 +253,7 @@ def change_sheet():
         return json.dumps(response, indent=3)
 
 
-@app.route('/upload_wikifier_output', methods=['POST'])
+@app.route('/api/upload_wikifier_output', methods=['POST'])
 def upload_wikifier_output():
     """
     This function uploads the wikifier output
@@ -310,7 +277,7 @@ def upload_wikifier_output():
         return json.dumps(response, indent=3)
 
 
-@app.route('/upload_yaml', methods=['POST'])
+@app.route('/api/upload_yaml', methods=['POST'])
 def upload_yaml():
     """
     This function process the yaml
@@ -338,7 +305,7 @@ def upload_yaml():
     return json.dumps(response, indent=3)
 
 
-@app.route('/resolve_cell', methods=['POST'])
+@app.route('/api/resolve_cell', methods=['POST'])
 def get_cell_statement():
     """
     This function returns the statement of a particular cell
@@ -361,7 +328,7 @@ def get_cell_statement():
     return json.dumps(data)
 
 
-@app.route('/download', methods=['POST'])
+@app.route('/api/download', methods=['POST'])
 def downloader():
     """
     This functions initiates the download
@@ -381,7 +348,7 @@ def downloader():
 
 
 
-@app.route('/call_wikifier_service', methods=['POST'])
+@app.route('/api/call_wikifier_service', methods=['POST'])
 def wikify_region():
     """
     This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
@@ -415,7 +382,7 @@ def wikify_region():
     return json.dumps(data, indent=3)
 
 
-@app.route('/get_project_files', methods=['POST'])
+@app.route('/api/get_project_files', methods=['POST'])
 def get_project_files():
     """
     This function fetches the last session of the last opened files in a project when that project is reopened later.
@@ -449,7 +416,7 @@ def get_project_files():
 
 
 
-@app.route('/delete_project', methods=['POST'])
+@app.route('/api/delete_project', methods=['POST'])
 def delete_project():
     """
     This route is used to delete a project.
@@ -472,7 +439,7 @@ def delete_project():
 
 
 
-@app.route('/logout', methods=['GET'])
+@app.route('/api/logout', methods=['GET'])
 def logout():
     """
     This function initiate request to end a user's session and logs them out.
@@ -480,9 +447,9 @@ def logout():
     """
     if 'uid' in session:
         del session['uid']
-    return redirect(url_for('index'))
+    return '', 204
 
-@app.route('/rename_project', methods=['POST'])
+@app.route('/api/rename_project', methods=['POST'])
 def rename_project():
     """
     This route is used to rename a project.
@@ -508,7 +475,7 @@ def rename_project():
 
 
 
-@app.route('/update_settings', methods=['POST'])
+@app.route('/api/update_settings', methods=['POST'])
 def update_settings():
     """
     This function updates the settings from GUI
@@ -518,6 +485,21 @@ def update_settings():
     project = get_project()
     project.update_sparql_endpoint(endpoint)
     return json.dumps(None)
+
+# We want to serve the static files in case the t2wml is deployed as a stand-alone system.
+# In that case, we only have one webserver - Flask. The following two routes are for this.
+# They are not used in dev (React's dev server is used to serve frontend assets), or in server deployment
+# (nginx is used to serve static assets)
+@app.route('/')
+def serve_home_page():
+    return send_file(os.path.join(app.config['STATIC_FOLDER'], 'index.html'))
+
+@app.route('/<path:path>')
+def serve_static(path):
+    try:
+        return send_from_directory(app.config['STATIC_FOLDER'], path)
+    except NotFound:
+        return serve_home_page()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
