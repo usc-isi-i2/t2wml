@@ -6,7 +6,8 @@ from backend_code.item_table import ItemTable
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
 import pandas as pd
-
+import uuid
+import pyexcel
 
 def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str, flag, context,
              sparql_endpoint) -> dict:
