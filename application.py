@@ -1,11 +1,8 @@
 import json
 import shutil
 import sys
-
-from flask import (make_response, redirect, request, send_from_directory,
-                   session, url_for)
-from flask.helpers import send_file
-
+import json
+import os
 from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
@@ -13,17 +10,9 @@ from backend_code.parsing.yaml_parser import string_is_valid
 from backend_code.utility_functions import verify_google_login
 from backend_code.wikify_handler import wikifier
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.handler import generate_download_file, wikifier
-from backend_code.models import (Project, ProjectFile, User, WikiRegionFile,
-                                 YamlFile)
-from backend_code.spreadsheets.conversions import (column_letter_to_index,
-                                                   one_index_to_zero_index)
-from backend_code.t2wml_exceptions import (T2WMLException,
-                                           make_frontend_err_dict)
-from backend_code.utility_functions import (check_if_string_is_invalid,
-                                            validate_yaml, verify_google_login)
-import os
+from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
 from werkzeug.exceptions import NotFound
+from flask.helpers import send_file, send_from_directory
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False
