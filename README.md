@@ -15,7 +15,7 @@
 
 1. Clone the repository
 2. Open terminal/cmd in the project directory and type the following commands:
-    ```sh
+    ```
     pip install -r requirements.txt
     python -m spacy download en_core_web_sm
     ```
