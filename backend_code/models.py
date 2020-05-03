@@ -11,7 +11,7 @@ from backend_code.spreadsheets.utilities import excel_to_json, add_excel_file_to
 from backend_code.spreadsheets.caching import pickle_spreadsheet_file_and_get_sheet_names
 from backend_code.wikify_handler import process_wikified_output_file
 
-
+from backend_code.bindings import bindings
 from backend_code.handler import highlight_region, resolve_cell, generate_download_file
 from backend_code.parsing.yaml_parser import YamlObject
 
@@ -316,6 +316,8 @@ class YamlFile(db.Model):
     
     @staticmethod
     def create(sheet, yaml_data):
+        if sheet.yaml_file:
+            db.session.delete(sheet.yaml_file)
         yf=YamlFile(sheet_id=sheet.id)
         db.session.add(yf)
         db.session.commit()
