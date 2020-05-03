@@ -1,7 +1,8 @@
 import ftfy
 import re
 from etk.wikidata.utils import parse_datetime_string
-
+from SPARQLWrapper import SPARQLWrapper, JSON
+from backend_code.bindings import bindings
 
 def contains(source, section):
     return section in str(source)
@@ -37,23 +38,36 @@ def split_index(item, character, i):
 
 
 def substring(input, start, end=-1):
-    #need to make decisions about how indexing of the substr will work (0 or 1 based, negative, etc)
-    return str(input)[start:end]
+    #1-based indexing
+    #substring("platypus", 3, 5) would be "aty" and substring(pirate, 2, -2) would return "irat"?
+    return str(input)[start+1:end]
 
 def concat(*args):
     # concatenate a list of expression, e.g., concat(value(D/$row), “, “, value(F/$row))
     raise NotImplementedError
 
-def t_regex(in_string, reg, *num):
+def t_regex(in_string, reg, i=0):
     # extract a substring using a regex. The string is the regex and the result is the value of the first group in 
     # the regex. If the regex contains no group, it is the match of the regex.
+    #regex(value[], "regex") returns the first string that matches the whole regex
+    #regex(value[]. regex, i) returns the value of group i in the regex
+    #The reason for the group is that it allows more complex expressions. In our use case we could do a single expression as we cannot fetch more than one
+
     raise NotImplementedError
 
 def date_format(input, date_format):
+    return parse_datetime_string(str(input),
+                                additional_formats=[date_format])
     raise NotImplementedError
 
-def instance_of(item, qnode):
-    raise NotImplementedError
+def instance_of_qnode(item, qnode):
+    
+    query="ASK {wd:"+str(item)+" wdt:P31/wdt:P279* wd:"+ str(qnode) +"}"
+    sparql = SPARQLWrapper(bindings.sparql_endpoint)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    return results['boolean']
 
 
 
@@ -61,18 +75,18 @@ def instance_of(item, qnode):
 
 
 functions_dict=dict(
-    concat=concat, 
-    substring=substring,
-    t_regex=t_regex,
+    contains=contains,
+    starts_with=starts_with,
+    ends_with=ends_with,
     strip=strip,
     lower=lower,
     upper=upper,
     title=title, 
-    date_format=date_format,
-    instance_of=instance_of,
     clean=clean,
     split_index=split_index,
-    contains=contains,
-    starts_with=starts_with,
-    ends_with=ends_with
+    substring=substring,
+    concat=concat, 
+    t_regex=t_regex,
+    date_format=date_format,
+    instance_of_qnode=instance_of_qnode
 )

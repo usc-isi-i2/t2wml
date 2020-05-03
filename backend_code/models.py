@@ -169,6 +169,7 @@ class Project(db.Model):
 
     def update_sparql_endpoint(self, endpoint):
         self.sparql_endpoint=endpoint
+        bindings.sparql_endpoint=sparql_endpoint
         self.modify()
     
     def update_project_title(self, title):
@@ -331,6 +332,7 @@ class YamlFile(db.Model):
 
     @property
     def yaml_object(self):
+        bindings.sparql_endpoint=self.sparql_endpoint
         try:
             yc=self._yaml_object
             return yc
