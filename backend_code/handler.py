@@ -1,4 +1,5 @@
 import json
+import warnings
 from etk.wikidata.utils import parse_datetime_string
 from backend_code.parsing.constants import char_dict
 from backend_code.t2wml_exceptions import T2WMLException
@@ -12,19 +13,20 @@ from backend_code.triple_generator import generate_triples
 def parse_time_for_dict(response, sparql_endpoint):
     if "property" in response and get_property_type(response["property"], sparql_endpoint)=="Time":
         if "format" in response:
-            try:
-                datetime_string, precision = parse_datetime_string(str(response["value"]),
-                                                                    additional_formats=[
-                                                                        response["format"]])
-            except ValueError:
-                #This is a workaround for a separatte bug, WIP, that is sending wrong dictionaries to this function
-                print("attempting to parse datetime string that isn't a datetime:", str(response["value"]))
-                return
-            if "precision" not in response:
-                response["precision"] = int(precision.value.__str__())
-            else:
-                response["precision"] = translate_precision_to_integer(response["precision"])
-            response["value"] = datetime_string
+            # with warnings.catch_warnings(record=True) as w: #use this line to make etk stop harassing us with "no lang features detected" warnings
+                try:
+                    datetime_string, precision = parse_datetime_string(str(response["value"]),
+                                                                        additional_formats=[
+                                                                            response["format"]])
+                except ValueError:
+                    #This is a workaround for a separatte bug, WIP, that is sending wrong dictionaries to this function
+                    print("attempting to parse datetime string that isn't a datetime:", str(response["value"]))
+                    return
+                if "precision" not in response:
+                    response["precision"] = int(precision.value.__str__())
+                else:
+                    response["precision"] = translate_precision_to_integer(response["precision"])
+                response["value"] = datetime_string
 
 def resolve_cell(yaml_object, col, row, sparql_endpoint):
     context={"row":int(row), "col":char_dict[col]}

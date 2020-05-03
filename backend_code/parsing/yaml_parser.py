@@ -10,7 +10,7 @@ from backend_code.spreadsheets.sheet import Sheet
 
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.t2wml_parser import parse_expression, iter_on_n
-
+from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
 
 
 def update_bindings(item_table, sheet) -> None:
@@ -222,28 +222,40 @@ class YamlObject:
 
     def parse_region(self):
         yaml_region = self.yaml_data['statementMapping']['region'][0]
-        region=dict(left=None, right=None, top=None, bottom=None)
 
-        #first, get any positions that other positions are dependent on
-        #(We check for recursion first, so it's safe to just try all the ifs-- max 2 will be entered)
-        self.check_for_recursive_regions(yaml_region)
+        if 'range' in yaml_region:
+            cell_range=yaml_region["range"]
+            try:
+                (left, top), (right, bottom) = _cell_range_str_to_tuples(cell_range)
+            except Exception as e:
+                raise T2WMLExceptions.ErrorInYAMLFileException("range expression for region invalid")
 
-        if "right" in str(yaml_region["left"]):
-            self.fill_dependent_variables(yaml_region, region, "right", "left")
-        if "left" in str(yaml_region["right"]):
-            self.fill_dependent_variables(yaml_region, region, "left", "right")
-        if "top" in str(yaml_region["bottom"]):
-            self.fill_dependent_variables(yaml_region, region, "top", "bottom")
-        if "bottom" in str(yaml_region["top"]):
-            self.fill_dependent_variables(yaml_region, region, "bottom", "top")
+            region=dict(left=left+1, right=right+1, top=top+1, bottom=bottom+1) #need to convert to 1-indexed
+
         
-        #fill in the remainder
-        for key in region:
-            if not region[key]:
-                try:
-                    region[key]=self.parse_expression(str(yaml_region[key]), region)
-                except Exception as e:
-                    raise e
+        else:
+            region=dict(left=None, right=None, top=None, bottom=None)
+            #first, get any positions that other positions are dependent on
+            #(We check for recursion first, so it's safe to just try all the ifs-- max 2 will be entered)
+            self.check_for_recursive_regions(yaml_region)
+
+            if "right" in str(yaml_region["left"]):
+                self.fill_dependent_variables(yaml_region, region, "right", "left")
+            if "left" in str(yaml_region["right"]):
+                self.fill_dependent_variables(yaml_region, region, "left", "right")
+            if "top" in str(yaml_region["bottom"]):
+                self.fill_dependent_variables(yaml_region, region, "top", "bottom")
+            if "bottom" in str(yaml_region["top"]):
+                self.fill_dependent_variables(yaml_region, region, "bottom", "top")
+            
+            #fill in the remainder
+            for key in region:
+                if not region[key]:
+                    try:
+                        region[key]=self.parse_expression(str(yaml_region[key]), region)
+                    except Exception as e:
+                        raise e
+
 
         self.check_region_boundaries(region)
 
@@ -333,12 +345,13 @@ class YamlObject:
                     if isinstance(yaml_region, list):
                         for i in range(len(yaml_region)):
                             for key in yaml_region[i].keys():
-                                if key not in {'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
+                                if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
                                     errors+= "Unrecognized key '" + key + "' (statementMapping -> region[" + str(i) + "] -> " + key + ") found\n"
 
-                            for required_key in ['left', 'right', 'top', 'bottom']:
-                                if required_key not in yaml_region[i]:
-                                    errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found\n"
+                            if 'range' not in yaml_region[i]:
+                                for required_key in ['left', 'right', 'top', 'bottom']:
+                                    if required_key not in yaml_region[i]:
+                                        errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found\n"
 
                             for optional_list_key in ['skip_row', 'skip_column', 'skip_cell']:
                                 if optional_list_key in yaml_region[i]:
