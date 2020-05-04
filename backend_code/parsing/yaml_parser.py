@@ -127,7 +127,8 @@ class YamlObject:
         except IOError:
             raise IOError('Excel File cannot be found or opened')
         update_bindings(item_table=item_table, sheet=self.sheet)
-        self._region_props=self.parse_region()
+        self.yaml_data=self.fix_yaml(self.yaml_data)
+        self._region_props=self.parse_region(self.yaml_data['statementMapping']['region'][0])
         self._template=dict(self.yaml_data['statementMapping']['template'])
         self._eval_template=self.create_eval_template(self.yaml_data['statementMapping']['template'])
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
@@ -164,6 +165,26 @@ class YamlObject:
         e_str= e_str.replace("$", "")
         e_str = e_str.replace("->", "and")
         return e_str
+    
+
+
+    def fix_yaml(self, yaml):
+        if isinstance(yaml, str):
+            return self.fix_code_string(yaml)
+
+        if isinstance(yaml, list):
+            for i in range(len(yaml)):
+                yaml[i] = self.fix_yaml(yaml[i])
+            return yaml
+        
+        if isinstance(yaml, dict):
+            for key in dict(yaml):
+                yaml[key]=self.fix_yaml(yaml[key])
+            return yaml
+        
+        return str(yaml)
+            
+
 
     def create_eval_template(self, template):
         new_template=dict(template)
@@ -172,15 +193,15 @@ class YamlObject:
         qualifiers=template.get("qualifier", None)
 
         if item:
-            new_template["item"]=compile(self.fix_code_string(item), "<string>", "eval")
+            new_template["item"]=compile(item, "<string>", "eval")
 
         if value:
-            new_template["value"]=compile(self.fix_code_string(value), "<string>", "eval")
+            new_template["value"]=compile(value, "<string>", "eval")
         
         if qualifiers:
             qualifiers_parsed=[]
             for qualifier in qualifiers:
-                q_parsed=compile(self.fix_code_string(qualifier["value"]), "<string>", "eval")
+                q_parsed=compile(qualifier["value"], "<string>", "eval")
                 qualifiers_parsed.append(q_parsed)
             new_template["qualifier"]=qualifiers_parsed
         return new_template
@@ -193,14 +214,14 @@ class YamlObject:
         region[independent_key]=self.parse_expression(str(yaml_region[independent_key]))
         #using the value of the independent key, iter on n to get value of dependent key (eg "right")
         try:
-            region[dependent_key]=iter_on_n(self.fix_code_string(yaml_region[dependent_key]), region)
+            region[dependent_key]=iter_on_n(yaml_region[dependent_key], region)
         except:
             raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
 
     
     def parse_expression(self, statement, context={}):
         #check if statement is actually an expression:
-        return parse_expression(self.fix_code_string(statement), context)
+        return parse_expression(statement, context)
         
 
 
@@ -220,9 +241,7 @@ class YamlObject:
         if region['top'] > region['bottom']:
             raise T2WMLExceptions.ConstraintViolationErrorException("Value of top should be less than or equal to bottom")
 
-    def parse_region(self):
-        yaml_region = self.yaml_data['statementMapping']['region'][0]
-
+    def parse_region(self, yaml_region):
         if 'range' in yaml_region:
             cell_range=yaml_region["range"]
             try:
