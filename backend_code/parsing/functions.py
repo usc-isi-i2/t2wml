@@ -3,20 +3,37 @@ import re
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper import SPARQLWrapper, JSON
 from backend_code.bindings import bindings
+from backend_code.parsing.classes import ReturnClass, CellRange
 
+def boolean_modifer(func):
+    def wrapper(input, *args, **kwargs):
+        if input: #if value is not None
+            if isinstance(input, CellRange): #handle ranges separately:
+                for i, val in enumerate(input):
+                    if val:
+                        flag=func(input[i], *args, **kwargs)
+                        if flag == False:
+                            return False
+                return True
+            return func(input, *args, **kwargs)
+        return False
+    return wrapper
 
-def contains(source, section):
-    return section in str(source)
+@boolean_modifer
+def contains(input, section):
+    return section in str(input)
 
-def starts_with(source, section):
-    return str(source).startswith(section)
+@boolean_modifer
+def starts_with(input, section):
+    return str(input).startswith(section)
 
-def ends_with(source, section):
-    return str(source).endswith(section)
+@boolean_modifer
+def ends_with(input, section):
+    return str(input).endswith(section)
 
-def instance_of_qnode(item, qnode):
-    
-    query="ASK {wd:"+str(item)+" wdt:P31/wdt:P279* wd:"+ str(qnode) +"}"
+@boolean_modifer
+def instance_of_qnode(input, qnode):
+    query="ASK {wd:"+str(input)+" wdt:P31/wdt:P279* wd:"+ str(qnode) +"}"
     sparql = SPARQLWrapper(bindings.sparql_endpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -27,6 +44,10 @@ def instance_of_qnode(item, qnode):
 def string_modifier(func):
     def wrapper(input, *args, **kwargs):
         if input: #if value is None, don't modify
+            if isinstance(input, CellRange): #handle ranges separately:
+                for i, val in enumerate(input):
+                    if val:
+                        input[i]=func(str(input[i]), *args, **kwargs)
             res_string=func(str(input), *args, **kwargs)
             try:
                 input.value=res_string
@@ -66,32 +87,57 @@ def split_index(input, character, i):
     return vals[i-1] #1-indexed to 0-indexed
 
 @string_modifier
-def substring(input, start, end=-1):
+def substring(input, start, end=None):
     #1-based indexing
-    #substring("platypus", 3, 5) would be "aty" and substring(pirate, 2, -2) would return "irat"?
-    return str(input)[start+1:end]
+    #substring("platypus", 3, 5) would be "aty" and substring(pirate, 2, -2) would return "irat"
+    return str(input)[start-1:end] #adjust start to 0-indexing
 
 @string_modifier
 def date_format(input, date_format):
-    return parse_datetime_string(str(input),
+    date_str, precision= parse_datetime_string(str(input),
                                 additional_formats=[date_format])
-    raise NotImplementedError
+    return date_str
 
-
-def t_regex(in_string, reg, i=0):
+@string_modifier
+def regex(input, pattern, i=0):
     # extract a substring using a regex. The string is the regex and the result is the value of the first group in 
     # the regex. If the regex contains no group, it is the match of the regex.
     #regex(value[], "regex") returns the first string that matches the whole regex
     #regex(value[]. regex, i) returns the value of group i in the regex
     #The reason for the group is that it allows more complex expressions. In our use case we could do a single expression as we cannot fetch more than one
-
-    raise NotImplementedError
-
+    matches=[x.group() for x in re.finditer(pattern, input)]
+    try:
+        if matches[i]:
+            return matches[i]
+    except:
+        pass
+    return None
 
 
 def concat(*args):
     # concatenate a list of expression, e.g., concat(value(D/$row), “, “, value(F/$row))
-    raise NotImplementedError
+    # ranges are concatenated in row-major order
+    # the last argument is the separator
+    # this is not a string modifier function. it does not change values in place, it creates a new return object
+    sep=args[-1]
+    args=args[:-1]
+    return_str=""
+    for arg in args:
+        if isinstance(arg, CellRange):
+            for thing in arg:
+                return_str+=str(thing)
+                return_str+=sep
+        else:
+            if arg: #skip empty values:
+                return_str+=str(arg)
+                return_str+=sep
+
+    #remove the last sep
+    length=len(sep)
+    return_str=return_str[:-length]
+
+    r=ReturnClass(None, None, return_str)
+    return r
 
 
 
@@ -110,6 +156,6 @@ functions_dict=dict(
     split_index=split_index,
     substring=substring,
     date_format=date_format,
-    t_regex=t_regex,
+    regex=regex,
     concat=concat
 )
