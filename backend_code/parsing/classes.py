@@ -36,11 +36,56 @@ class ReturnClass:
         return to_excel(self.col, self.row)+ " : "+str(self.value)
 
 
+class RangeClass:
+    @property
+    def flattened(self):
+        for row in self.data:
+            for col in row:
+                yield col
+
+    def __eq__(self, comparator):
+        for i in self.flattened:
+            if i != comparator:
+                return False
+        return True
+    
+    def __iter__(self):
+        for i in self.flattened:
+            yield i
+
+    def __getitem__(self, flat_index):
+        row=flat_index//self.row_length
+        col=flat_index%self.row_length
+        return self.area[row][col]
+
+
+
 class Item(ReturnClass):
     def __init__(self, col, row, context):
         super().__init__(col, row)
         item_table=bindings.item_table
         self.value=item_table.get_item(self.col, self.row, context)
+
+class ItemRange(RangeClass):
+    def __init__(self, col, row, context):
+        if isinstance(col, slice):
+            cols=[i for i in range(col.start, col.stop)]
+        else:
+            cols=[col]
+        if isinstance(row, slice):
+            rows=[i for i in range(row.start, row.stop)]
+        else:
+            rows=[row]
+
+        self.data=[]
+        for r in rows:
+            row_arr=[]
+            for c in cols:
+                row_arr.append(Item(c, r, context))
+            self.data.append(row_arr)
+    
+    def __setitem__(self, flat_index, data):
+        raise ValueError("Should not be changing the value of Items")
 
 
 class ItemExpression:
@@ -51,7 +96,9 @@ class ItemExpression:
             context='__NO_CONTEXT__'
         col=index_converter(args[0])
         row=index_converter(args[1])
-        return Item(col, row, context)
+        if isinstance(col, int) and isinstance(row, int):
+            return Item(col, row, context)
+        return ItemRange(col, row, context)
 
 class Cell(ReturnClass):
     def __init__(self, col, row):
@@ -60,7 +107,7 @@ class Cell(ReturnClass):
         self.value=data_sheet[row][col]
     
 
-class CellRange:
+class CellRange(RangeClass):
     def __init__(self, col_args, row_args):
         data_sheet=bindings.excel_sheet
         self.col_args = col_args
@@ -74,37 +121,18 @@ class CellRange:
             new_row=row[col_args]
             area.append(new_row)
 
-        self.area = area
+        self.data = area
         self.row_length=len(self.area[0])
-
-    @property
-    def flattened_area(self):
-        for row in self.area:
-            for col in row:
-                yield col
-
-    def __eq__(self, comparator):
-        for i in self.flattened_area:
-            if i != comparator:
-                return False
-        return True
-
+    
     def __repr__(self):
         return str(self.area)
-
-    def __iter__(self):
-        for i in self.flattened_area:
-            yield i
-
+    
     def __setitem__(self, flat_index, data):
         row=flat_index//self.row_length
         col=flat_index%self.row_length
         self.area[row][col]=data
+    
 
-    def __getitem__(self, flat_index):
-        row=flat_index//self.row_length
-        col=flat_index%self.row_length
-        return self.area[row][col]
 
 
 class CellExpression:

@@ -3,12 +3,12 @@ import re
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper import SPARQLWrapper, JSON
 from backend_code.bindings import bindings
-from backend_code.parsing.classes import ReturnClass, CellRange
+from backend_code.parsing.classes import ReturnClass, RangeClass
 
 def boolean_modifer(func):
     def wrapper(input, *args, **kwargs):
         if input: #if value is not None
-            if isinstance(input, CellRange): #handle ranges separately:
+            if isinstance(input, RangeClass): #handle ranges separately:
                 for i, val in enumerate(input):
                     if val:
                         flag=func(input[i], *args, **kwargs)
@@ -44,7 +44,7 @@ def instance_of_qnode(input, qnode):
 def string_modifier(func):
     def wrapper(input, *args, **kwargs):
         if input: #if value is None, don't modify
-            if isinstance(input, CellRange): #handle ranges separately:
+            if isinstance(input, RangeClass): #handle ranges separately:
                 for i, val in enumerate(input):
                     if val:
                         input[i]=func(str(input[i]), *args, **kwargs)
@@ -90,7 +90,15 @@ def split_index(input, character, i):
 def substring(input, start, end=None):
     #1-based indexing
     #substring("platypus", 3, 5) would be "aty" and substring(pirate, 2, -2) would return "irat"
-    return str(input)[start-1:end] #adjust start to 0-indexing
+    
+    #adjust to 0-indexing
+    if start<0:
+        start+=1
+    else:
+        start-=1
+    if end<0:
+        end+=1
+    return str(input)[start-1:end] 
 
 @string_modifier
 def extract_date(input, date_format):
@@ -99,13 +107,14 @@ def extract_date(input, date_format):
     return date_str
 
 @string_modifier
-def regex(input, pattern, i=0):
+def regex(input, pattern, i=1):
     # extract a substring using a regex. The string is the regex and the result is the value of the first group in 
     # the regex. If the regex contains no group, it is the match of the regex.
     #regex(value[], "regex") returns the first string that matches the whole regex
     #regex(value[]. regex, i) returns the value of group i in the regex
     #The reason for the group is that it allows more complex expressions. In our use case we could do a single expression as we cannot fetch more than one
     matches=[x.group() for x in re.finditer(pattern, input)]
+    i=i-1 #1 indexing
     try:
         if matches[i]:
             return matches[i]
@@ -123,7 +132,7 @@ def concat(*args):
     args=args[:-1]
     return_str=""
     for arg in args:
-        if isinstance(arg, CellRange):
+        if isinstance(arg, RangeClass):
             for thing in arg:
                 return_str+=str(thing)
                 return_str+=sep
