@@ -93,7 +93,7 @@ def substring(input, start, end=None):
     return str(input)[start-1:end] #adjust start to 0-indexing
 
 @string_modifier
-def date_format(input, date_format):
+def extract_date(input, date_format):
     date_str, precision= parse_datetime_string(str(input),
                                 additional_formats=[date_format])
     return date_str
@@ -155,7 +155,7 @@ functions_dict=dict(
     clean=clean,
     split_index=split_index,
     substring=substring,
-    date_format=date_format,
+    extract_date=extract_date,
     regex=regex,
     concat=concat
 )
