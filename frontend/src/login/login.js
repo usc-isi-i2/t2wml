@@ -1,6 +1,6 @@
 import React from 'react';
 import './login.css';
-import T2WMLLogo from '../common/T2WMLLogo'
+import Navbar from '../common/navbar/navbar'
 import Config from '../common/config';
 
 // icons
@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
 // App
-import { Button, Card, Navbar } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { GoogleLogin } from 'react-google-login';
 import { backendPost, backendGet } from '../common/comm';
 
@@ -76,16 +76,7 @@ class Login extends React.Component {
   render() {
     return (
       <div>
-
-        {/* navbar */}
-        <div>
-          <Navbar className="shadow" bg="dark" variant="dark" sticky="top" style={{ height: "50px" }}>
-
-            {/* logo */}
-            <T2WMLLogo />
-
-          </Navbar>
-        </div>
+        <Navbar loginPage="true"></Navbar>
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>

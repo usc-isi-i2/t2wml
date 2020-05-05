@@ -1,14 +1,14 @@
 import React from 'react';
 import './project-list.css';
 import * as utils from '../common/utils'
-import T2WMLLogo from '../common/T2WMLLogo'
+import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 // App
-import { Button, Card, Col, Form, FormControl, Image, InputGroup, Modal, Nav, Navbar, NavDropdown, OverlayTrigger, Row, Spinner, Table, Tooltip } from 'react-bootstrap';
+import { Button, Card, Col, Form, FormControl, InputGroup, Modal, OverlayTrigger, Row, Spinner, Table, Tooltip } from 'react-bootstrap';
 import { backendGet, backendPost } from '../common/comm';
 import { logout } from '../common/session';
 
@@ -753,7 +753,12 @@ class ProjectList extends React.Component {
     );
   }
 
+  onShowSettingsClicked() {
+    this.setState({ showSettings: true });
+  }
+
   renderSettings() {
+    console.log('render settings')
     return (
       <Modal show={this.state.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
 
@@ -842,43 +847,10 @@ class ProjectList extends React.Component {
         {this.renderRenameProject()}
         {this.renderSettings()}
 
-        {/* navbar */}
-        <div>
-          <Navbar className="shadow" bg="dark" variant="dark" sticky="top" style={{ height: "50px" }}>
-
-            {/* logo */}
-            <T2WMLLogo />
-
-            {/* avatar */}
-            <Nav className="ml-auto">\
-              <NavDropdown alignRight title={
-                <Image src={this.state.userData.picture} rounded style={{ width: "30px", height: "30px" }} />
-              }>
-                <NavDropdown.Item disabled style={{ color: "gray" }}>
-                  <div style={{ fontWeight: "bold" }}>
-                    <FontAwesomeIcon icon={faUser} />
-                    &nbsp;{this.state.userData.name}
-                  </div>
-                  <div>{this.state.userData.email}</div>
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                {/* <NavDropdown.Item
-                  onClick={() => this.setState({ showSettings: true })}
-                >
-                  Settings
-                </NavDropdown.Item>
-                <NavDropdown.Divider /> */}
-                <NavDropdown.Item
-                  style={{ color: "hsl(0, 100%, 30%)" }}
-                  onClick={() => this.handleLogout()}
-                >
-                  Log&nbsp;out
-                </NavDropdown.Item>
-              </NavDropdown>
-            </Nav>
-
-          </Navbar>
-        </div>
+        <Navbar userData={this.state.userData}
+        onShowSettingsClicked={() => this.onShowSettingsClicked()}
+        handleLogout={() => this.handleLogout()} />
+        
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
