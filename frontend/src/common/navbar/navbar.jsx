@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Image, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 // icons
@@ -10,7 +10,8 @@ import T2WMLLogo from './T2WMLLogo';
 // todo: add it when adding type script
 // interface NavbarProperteis {
 //   userData: any;
-//   loginPage?: true;
+//   loginPage?: boolean;
+//   showSettings?: boolean;
 
 //   onShowSettingsClicked: Function;
 //   handleLogout: Function;
@@ -48,10 +49,13 @@ class T2wmlNavbar extends Component { //<NavbarProperteis, NavbarState> {
               </NavDropdown.Item>
 
               {/* settings */}
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={this.props.onShowSettingsClicked}>
-                Settings
-            </NavDropdown.Item>
+              {(this.props.showSettings) ? 
+              <Fragment>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={this.props.onShowSettingsClicked}>
+                  Settings
+                </NavDropdown.Item>
+              </Fragment> : null }
 
               {/* log out */}
               <NavDropdown.Divider />

@@ -302,6 +302,7 @@ class Project extends React.Component {
     return (
       <div>
         <Navbar userData={userData}
+        showSettings="true"
         onShowSettingsClicked={() => this.onShowSettingsClicked()}
         handleLogout={() => this.handleLogout()} />
 
