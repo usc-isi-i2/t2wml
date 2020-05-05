@@ -316,8 +316,13 @@ class YamlFile(db.Model):
     
     @staticmethod
     def create(sheet, yaml_data):
-        if sheet.yaml_file:
-            db.session.delete(sheet.yaml_file)
+        try:
+            yamls_to_delete=YamlFile.query.filter_by(sheet_id=sheet.id)
+            for yaml in yamls_to_delete:
+                db.session.delete(yaml)
+            db.session.commit()
+        except:
+            pass #it's a cleanup section, don't break on it
         yf=YamlFile(sheet_id=sheet.id)
         db.session.add(yf)
         db.session.commit()
