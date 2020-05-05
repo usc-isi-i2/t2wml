@@ -11,7 +11,7 @@ from backend_code.spreadsheets.utilities import excel_to_json, add_excel_file_to
 from backend_code.spreadsheets.caching import pickle_spreadsheet_file_and_get_sheet_names
 from backend_code.wikify_handler import process_wikified_output_file
 
-
+from backend_code.bindings import bindings
 from backend_code.handler import highlight_region, resolve_cell, generate_download_file
 from backend_code.parsing.yaml_parser import YamlObject
 
@@ -169,6 +169,7 @@ class Project(db.Model):
 
     def update_sparql_endpoint(self, endpoint):
         self.sparql_endpoint=endpoint
+        bindings.sparql_endpoint=sparql_endpoint
         self.modify()
     
     def update_project_title(self, title):
@@ -315,6 +316,13 @@ class YamlFile(db.Model):
     
     @staticmethod
     def create(sheet, yaml_data):
+        try:
+            yamls_to_delete=YamlFile.query.filter_by(sheet_id=sheet.id)
+            for yaml in yamls_to_delete:
+                db.session.delete(yaml)
+            db.session.commit()
+        except:
+            pass #it's a cleanup section, don't break on it
         yf=YamlFile(sheet_id=sheet.id)
         db.session.add(yf)
         db.session.commit()
@@ -331,6 +339,7 @@ class YamlFile(db.Model):
 
     @property
     def yaml_object(self):
+        bindings.sparql_endpoint=self.sparql_endpoint
         try:
             yc=self._yaml_object
             return yc

@@ -10,7 +10,6 @@ eval_globals.update(functions_dict)
 
 
 def parse_expression(e_str, context={}):
-    #print(context)
     value = CellExpression()
     item=ItemExpression()
     globals = dict(value=value, item=item)
@@ -18,7 +17,6 @@ def parse_expression(e_str, context={}):
     globals.update(context)
     try:
         result = eval(e_str, globals)
-        #print(e_str, ":\t", result)
         return result
     except Exception as e:
         print("error in", e_str, ":", str(e))

@@ -10,7 +10,7 @@ from backend_code.spreadsheets.sheet import Sheet
 
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.t2wml_parser import parse_expression, iter_on_n
-
+from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
 
 
 def update_bindings(item_table, sheet) -> None:
@@ -127,7 +127,8 @@ class YamlObject:
         except IOError:
             raise IOError('Excel File cannot be found or opened')
         update_bindings(item_table=item_table, sheet=self.sheet)
-        self._region_props=self.parse_region()
+        self.yaml_data=self.fix_yaml(self.yaml_data)
+        self._region_props=self.parse_region(self.yaml_data['statementMapping']['region'][0])
         self._template=dict(self.yaml_data['statementMapping']['template'])
         self._eval_template=self.create_eval_template(self.yaml_data['statementMapping']['template'])
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
@@ -164,6 +165,26 @@ class YamlObject:
         e_str= e_str.replace("$", "")
         e_str = e_str.replace("->", "and")
         return e_str
+    
+
+
+    def fix_yaml(self, yaml):
+        if isinstance(yaml, str):
+            return self.fix_code_string(yaml)
+
+        if isinstance(yaml, list):
+            for i in range(len(yaml)):
+                yaml[i] = self.fix_yaml(yaml[i])
+            return yaml
+        
+        if isinstance(yaml, dict):
+            for key in dict(yaml):
+                yaml[key]=self.fix_yaml(yaml[key])
+            return yaml
+        
+        return str(yaml)
+            
+
 
     def create_eval_template(self, template):
         new_template=dict(template)
@@ -172,15 +193,15 @@ class YamlObject:
         qualifiers=template.get("qualifier", None)
 
         if item:
-            new_template["item"]=compile(self.fix_code_string(item), "<string>", "eval")
+            new_template["item"]=compile(item, "<string>", "eval")
 
         if value:
-            new_template["value"]=compile(self.fix_code_string(value), "<string>", "eval")
+            new_template["value"]=compile(value, "<string>", "eval")
         
         if qualifiers:
             qualifiers_parsed=[]
             for qualifier in qualifiers:
-                q_parsed=compile(self.fix_code_string(qualifier["value"]), "<string>", "eval")
+                q_parsed=compile(qualifier["value"], "<string>", "eval")
                 qualifiers_parsed.append(q_parsed)
             new_template["qualifier"]=qualifiers_parsed
         return new_template
@@ -193,14 +214,14 @@ class YamlObject:
         region[independent_key]=self.parse_expression(str(yaml_region[independent_key]))
         #using the value of the independent key, iter on n to get value of dependent key (eg "right")
         try:
-            region[dependent_key]=iter_on_n(self.fix_code_string(yaml_region[dependent_key]), region)
+            region[dependent_key]=iter_on_n(yaml_region[dependent_key], region)
         except:
             raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
 
     
     def parse_expression(self, statement, context={}):
         #check if statement is actually an expression:
-        return parse_expression(self.fix_code_string(statement), context)
+        return parse_expression(statement, context)
         
 
 
@@ -220,30 +241,40 @@ class YamlObject:
         if region['top'] > region['bottom']:
             raise T2WMLExceptions.ConstraintViolationErrorException("Value of top should be less than or equal to bottom")
 
-    def parse_region(self):
-        yaml_region = self.yaml_data['statementMapping']['region'][0]
-        region=dict(left=None, right=None, top=None, bottom=None)
+    def parse_region(self, yaml_region):
+        if 'range' in yaml_region:
+            cell_range=yaml_region["range"]
+            try:
+                (left, top), (right, bottom) = _cell_range_str_to_tuples(cell_range)
+            except Exception as e:
+                raise T2WMLExceptions.ErrorInYAMLFileException("range expression for region invalid")
 
-        #first, get any positions that other positions are dependent on
-        #(We check for recursion first, so it's safe to just try all the ifs-- max 2 will be entered)
-        self.check_for_recursive_regions(yaml_region)
+            region=dict(left=left+1, right=right+1, top=top+1, bottom=bottom+1) #need to convert to 1-indexed
 
-        if "right" in str(yaml_region["left"]):
-            self.fill_dependent_variables(yaml_region, region, "right", "left")
-        if "left" in str(yaml_region["right"]):
-            self.fill_dependent_variables(yaml_region, region, "left", "right")
-        if "top" in str(yaml_region["bottom"]):
-            self.fill_dependent_variables(yaml_region, region, "top", "bottom")
-        if "bottom" in str(yaml_region["top"]):
-            self.fill_dependent_variables(yaml_region, region, "bottom", "top")
         
-        #fill in the remainder
-        for key in region:
-            if not region[key]:
-                try:
-                    region[key]=self.parse_expression(str(yaml_region[key]), region)
-                except Exception as e:
-                    raise e
+        else:
+            region=dict(left=None, right=None, top=None, bottom=None)
+            #first, get any positions that other positions are dependent on
+            #(We check for recursion first, so it's safe to just try all the ifs-- max 2 will be entered)
+            self.check_for_recursive_regions(yaml_region)
+
+            if "right" in str(yaml_region["left"]):
+                self.fill_dependent_variables(yaml_region, region, "right", "left")
+            if "left" in str(yaml_region["right"]):
+                self.fill_dependent_variables(yaml_region, region, "left", "right")
+            if "top" in str(yaml_region["bottom"]):
+                self.fill_dependent_variables(yaml_region, region, "top", "bottom")
+            if "bottom" in str(yaml_region["top"]):
+                self.fill_dependent_variables(yaml_region, region, "bottom", "top")
+            
+            #fill in the remainder
+            for key in region:
+                if not region[key]:
+                    try:
+                        region[key]=self.parse_expression(str(yaml_region[key]), region)
+                    except Exception as e:
+                        raise e
+
 
         self.check_region_boundaries(region)
 
@@ -333,12 +364,13 @@ class YamlObject:
                     if isinstance(yaml_region, list):
                         for i in range(len(yaml_region)):
                             for key in yaml_region[i].keys():
-                                if key not in {'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
+                                if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
                                     errors+= "Unrecognized key '" + key + "' (statementMapping -> region[" + str(i) + "] -> " + key + ") found\n"
 
-                            for required_key in ['left', 'right', 'top', 'bottom']:
-                                if required_key not in yaml_region[i]:
-                                    errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found\n"
+                            if 'range' not in yaml_region[i]:
+                                for required_key in ['left', 'right', 'top', 'bottom']:
+                                    if required_key not in yaml_region[i]:
+                                        errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found\n"
 
                             for optional_list_key in ['skip_row', 'skip_column', 'skip_cell']:
                                 if optional_list_key in yaml_region[i]:

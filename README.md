@@ -1,34 +1,54 @@
 # T2WML: A Cell-Based Language To Map Tables Into Wikidata Records
 
-* [Installation](#installation)
+* [Installing the server using pip](#serverinstall)
+* [Running T2WML for development](#development)
 * [Usage Within Code](#usage_within_code)
 * [Usage with GUI](#usage_with_gui)
 * [Features](#features)
 * [FAQs](#faqs)
 
-<span id="installation"></span>
-## Installation
 <table>
   <tr><td><b>Operating system:</b></td><td>macOS / OS X, Linux, Windows</td></tr>
   <tr><td><b>Python version:</b></td><td>Python 3.6+</td></tr>
 </table>
 
+<span id="serverinstall"></span>
+## Installing the server with pip
+
+A locally hosted web GUI version of t2wml can be installed quickly using pip
+
+1. make a fresh virtual environment
+2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a2`
+3. run `t2wml-server`
+4. navigate to [`http://localhost:5000/`](http://localhost:5000/) in a Chrome browser
+
+<span id="development"></span>
+## Running T2WML for development
+
 1. Clone the repository
-2. Open terminal/cmd in the project directory and type the following commands:
-    ```
-    pip install -r requirements.txt
-    python -m spacy download en_core_web_sm
-    ```
-    On Windows you may encounter an error saying that `etk.wikidata` cannot be imported when you run the backend.
+2. Install the python requirements
+	`pip install -r requirements.txt`
+	
+	On Windows you may encounter an error saying that `etk.wikidata` cannot be imported when you run the backend.
     If you encounter it, run:
 
     `pip install --force-reinstall etk`
-3. Run server:
-   ```python application.py```
-4. Server is up and running at [`http://localhost:5000/`](http://localhost:5000/)
+3. Run the backend server: 
+    `python application.py`
+4. Install the frontend requirements:
+   In the folder "frontend", run `npm install`
+5. Run the frontend server: 
+   In the folder "frontend", run `npm run start`
+
+The backend will be running on port 5000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
+
+
 
 <span id="usage_within_code"></span>
 ## Usage Within Code
+
+For now, using within code requires running from the repo (not via pip install). It is not necessary to follow the steps for installing the frontend, only the backend.
+
 ```
 from driver import run_t2wml
 run_t2wml(data_file_path,  wikified_output_path, t2wml_spec, output_directory, sheet_name, sparql_endpoint)

@@ -2731,7 +2731,7 @@ class Output extends React.Component {
           }
         }
 
-        if (temp[i]["cell"] !== undefined) {
+        if (temp[i]["cell"] !== undefined && temp[i]["cell"] !==null) {
           [col, row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
           qualifier["col"] = col;
           qualifier["row"] = row;
