@@ -1,11 +1,11 @@
 import React from 'react';
 import './login.css';
-import Navbar from '../common/navbar/navbar'
+import Navbar from '../common/navbar/navbar';
 import Config from '../common/config';
 
 // icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 // App
 import { Button, Card } from 'react-bootstrap';
@@ -20,16 +20,6 @@ const LOG = {
 };
 
 class Login extends React.Component {
-  constructor(props) {
-    super(props);
-
-    // init state
-    this.state = {
-
-      // none
-
-    };
-  }
 
   async componentDidMount() {
     document.title = "T2WML - Login";
@@ -43,12 +33,12 @@ class Login extends React.Component {
     }
   }
 
-  onGoogleFailure(googleUser) {
+  onGoogleFailure(googleUser: any) {
     console.log(googleUser);
     alert("Login failed!\n\nError: " + googleUser.error);
   }
 
-  onGoogleSuccess(googleUser) {
+  onGoogleSuccess(googleUser: any){ // TODO: add the correct type. GoogleLoginResponse | GoogleLoginResponseOffline) {
     // send request
     console.log("<App> -> %c/login%c to verify id_token", LOG.link, LOG.default);
     let formData = new FormData();
@@ -76,7 +66,7 @@ class Login extends React.Component {
   render() {
     return (
       <div>
-        <Navbar loginPage="true"></Navbar>
+        <Navbar loginPage></Navbar>
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>

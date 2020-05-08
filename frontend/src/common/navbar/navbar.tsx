@@ -8,19 +8,16 @@ import { faUser } from '@fortawesome/free-solid-svg-icons'
 import T2WMLLogo from './T2WMLLogo';
 
 interface NavbarProperteis {
-  userData: any;
+  userData?: any;
   loginPage?: boolean;
   showSettings?: boolean;
 
-  onShowSettingsClicked: Function;
-  handleLogout: Function;
+  onShowSettingsClicked?: Function;
+  handleLogout?: Function;
 }
 
-interface NavbarState {
-}
+class T2wmlNavbar extends Component<NavbarProperteis> {
 
-
-class T2wmlNavbar extends Component<NavbarProperteis, NavbarState> {
   render() {
     return (
       <div>
@@ -48,19 +45,23 @@ class T2wmlNavbar extends Component<NavbarProperteis, NavbarState> {
               </NavDropdown.Item>
 
               {/* settings */}
-              {(this.props.showSettings) ? 
+              {(this.props.showSettings && 
+              this.props.onShowSettingsClicked !== undefined) ? 
               <Fragment>
                 <NavDropdown.Divider />
-                <NavDropdown.Item onClick={() => this.props.onShowSettingsClicked()}>
+                <NavDropdown.Item onClick={this.props.onShowSettingsClicked.bind(this)}>
                   Settings
                 </NavDropdown.Item>
               </Fragment> : null }
 
               {/* log out */}
+              {this.props.handleLogout !== undefined ?
+              <Fragment>
               <NavDropdown.Divider />
-              <NavDropdown.Item onClick={() => this.props.handleLogout()} style={{ color: "hsl(0, 100%, 30%)" }}>
-                Log out
-            </NavDropdown.Item>
+                <NavDropdown.Item onClick={this.props.handleLogout.bind(this)} style={{ color: "hsl(0, 100%, 30%)" }}>
+                  Log out
+                </NavDropdown.Item>
+              </Fragment> : null}
 
             </NavDropdown>
           </Nav> : null }
