@@ -310,7 +310,7 @@ class YamlObject:
         if 'skip_row' in yaml_region:
             skip_row=[]
             for statement in yaml_region["skip_row"]:
-                for row in range(top, bottom):
+                for row in range(top, bottom+1):
                     context=dict(row=row)
                     context.update(region)
                     skip=self.parse_expression(statement, context)
@@ -322,7 +322,7 @@ class YamlObject:
         if 'skip_column' in yaml_region:
             skip_column=[]
             for statement in yaml_region["skip_column"]:
-                for col in range(left, right):
+                for col in range(left, right+1):
                     context=dict(col=col)
                     context.update(region)
                     try:
@@ -335,8 +335,8 @@ class YamlObject:
         if 'skip_cell' in yaml_region:
             skip_cell=[]
             for statement in yaml_region["skip_cell"]:
-                for row in range(top, bottom):
-                    for col in range(left, right):
+                for row in range(top, bottom+1):
+                    for col in range(left, right+1):
                         context=dict(col=col, row=row)
                         context.update(region)
                         skip=self.parse_expression(statement, context)
