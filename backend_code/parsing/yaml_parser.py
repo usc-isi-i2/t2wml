@@ -167,7 +167,6 @@ class YamlObject:
         return e_str
     
 
-
     def fix_yaml(self, yaml):
         if isinstance(yaml, str):
             return self.fix_code_string(yaml)
@@ -191,20 +190,46 @@ class YamlObject:
         item=template.get("item", None)
         value=template.get("value", None)
         qualifiers=template.get("qualifier", None)
+        fake_context=dict(row=0, col=0, n=0)
 
-        if item:
-            new_template["item"]=compile(item, "<string>", "eval")
+        try:
+            if item and not str(item).isalnum():
+                try:
+                    test=compile(item, "<string>", "eval")
+                    parse_expression(test, fake_context)
+                    new_template["item"]=test
+                except:
+                    raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(item))
+                    
 
-        if value:
-            new_template["value"]=compile(value, "<string>", "eval")
-        
-        if qualifiers:
-            qualifiers_parsed=[]
-            for qualifier in qualifiers:
-                q_parsed=compile(qualifier["value"], "<string>", "eval")
-                qualifiers_parsed.append(q_parsed)
-            new_template["qualifier"]=qualifiers_parsed
-        return new_template
+            if value and not str(value).isalnum():
+                try:
+                    test=compile(value, "<string>", "eval")
+                    parse_expression(test, fake_context)
+                    new_template["value"]=test
+                except:
+                    raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(value))
+                    
+            
+            if qualifiers:
+                qualifiers_parsed=[]
+                for qualifier in qualifiers:
+                    new_dict=dict(qualifier)
+                    for key in qualifier:
+                        if not str(qualifier[key]).isalnum() and key!="format":
+                            try:
+                                test=compile(qualifier[key], "<string>", "eval")
+                                parse_expression(test, fake_context)
+                                new_dict[key]=test
+                            except:
+                                raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(qualifier[key]))
+                                
+                    qualifiers_parsed.append(new_dict)
+                new_template["qualifier"]=qualifiers_parsed
+            return new_template
+        except Exception as e:
+            print(e)
+            raise e
 
 
 

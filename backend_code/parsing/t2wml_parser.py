@@ -1,6 +1,7 @@
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.bindings import bindings
-from backend_code.parsing.classes import CellExpression, ItemExpression
+from backend_code.parsing.classes import (CellExpression, ItemExpression,
+                                          ReturnClass)
 from backend_code.parsing.constants import char_dict
 from backend_code.parsing.functions import functions_dict
 
@@ -34,3 +35,8 @@ def iter_on_n(expression, context={}):
                 return return_value
         except IndexError:
             break
+
+def iter_on_n_for_code(input, context={}):
+    if isinstance(input, str):
+        return ReturnClass(None, None, input)
+    return iter_on_n(input, context)
