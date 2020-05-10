@@ -9,7 +9,7 @@ from backend_code.bindings import bindings
 from backend_code.spreadsheets.sheet import Sheet
 
 import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.parsing.t2wml_parser import parse_expression, iter_on_n
+from backend_code.parsing.t2wml_parser import iter_on_n, t2wml_parse
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
 
 
@@ -196,7 +196,7 @@ class YamlObject:
             if item and not str(item).isalnum():
                 try:
                     test=compile(item, "<string>", "eval")
-                    parse_expression(test, fake_context)
+                    t2wml_parse(test, fake_context)
                     new_template["item"]=test
                 except:
                     raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(item))
@@ -205,7 +205,7 @@ class YamlObject:
             if value and not str(value).isalnum():
                 try:
                     test=compile(value, "<string>", "eval")
-                    parse_expression(test, fake_context)
+                    t2wml_parse(test, fake_context)
                     new_template["value"]=test
                 except:
                     raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(value))
@@ -219,7 +219,7 @@ class YamlObject:
                         if not str(qualifier[key]).isalnum() and key!="format":
                             try:
                                 test=compile(qualifier[key], "<string>", "eval")
-                                parse_expression(test, fake_context)
+                                t2wml_parse(test, fake_context)
                                 new_dict[key]=test
                             except:
                                 raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(qualifier[key]))
@@ -239,14 +239,13 @@ class YamlObject:
         region[independent_key]=self.parse_expression(str(yaml_region[independent_key]))
         #using the value of the independent key, iter on n to get value of dependent key (eg "right")
         try:
-            region[dependent_key]=iter_on_n(yaml_region[dependent_key], region)
+            region[dependent_key]=self.parse_expression(yaml_region[dependent_key], region)
         except:
             raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
 
     
     def parse_expression(self, statement, context={}):
-        #check if statement is actually an expression:
-        return parse_expression(statement, context)
+        return iter_on_n(statement, context)
         
 
 

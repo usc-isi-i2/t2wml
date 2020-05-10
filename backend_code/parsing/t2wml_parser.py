@@ -10,7 +10,7 @@ eval_globals.update(char_dict)
 eval_globals.update(functions_dict)
 
 
-def parse_expression(e_str, context={}):
+def t2wml_parse(e_str, context={}):
     value = CellExpression()
     item=ItemExpression()
     globals = dict(value=value, item=item)
@@ -30,7 +30,7 @@ def iter_on_n(expression, context={}):
         try:
             context_dir={"n":n}
             context_dir.update(context)
-            return_value= parse_expression(expression, context_dir)
+            return_value= t2wml_parse(expression, context_dir)
             if return_value:
                 return return_value
         except IndexError:
