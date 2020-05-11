@@ -32,7 +32,7 @@ def ends_with(input, section):
     return str(input).endswith(section)
 
 @boolean_modifer
-def instance_of_qnode(input, qnode):
+def instance_of(input, qnode):
     query="ASK {wd:"+str(input)+" wdt:P31/wdt:P279* wd:"+ str(qnode) +"}"
     sparql = SPARQLWrapper(bindings.sparql_endpoint)
     sparql.setQuery(query)
@@ -157,7 +157,7 @@ functions_dict=dict(
     contains=contains,
     starts_with=starts_with,
     ends_with=ends_with,
-    instance_of_qnode=instance_of_qnode,
+    instance_of=instance_of,
     strip=strip,
     lower=lower,
     upper=upper,
