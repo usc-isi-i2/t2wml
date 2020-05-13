@@ -43,7 +43,7 @@ class FileSystemPickle(SheetCacher):
             self.data=self.load_pickle()
         else:
             #if not, load the sheet with pyexcel, save the pickle file for future use
-            self.data=self.load_sheet()
+            self.data=self.load_sheet(self.sheet_name)
             self.pickle(self.data)
         return self.data
     
