@@ -8,10 +8,10 @@ statementMapping:
   template:
     item: item[A/$row]
     property: P115 # home venue
-    value: value[B/$row]
+    value: =value[B/$row]
     qualifier:
       - property: P5140 #geo coordinates
-        value: value[E/$row]
-        latitude: value[C/$row]
-        longitude: value[D/$row]
+        value: =value[E/$row]
+        latitude: =value[C/$row]
+        longitude: =value[D/$row]
         precision: '0'

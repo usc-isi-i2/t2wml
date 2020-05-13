@@ -1,30 +1,44 @@
 import json
+import warnings
+from types import CodeType
+
 from etk.wikidata.utils import parse_datetime_string
-from backend_code.parsing.constants import char_dict
-from backend_code.t2wml_exceptions import T2WMLException
+from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
+
 import backend_code.t2wml_exceptions as T2WMLExceptions
+from backend_code.parsing.classes import ReturnClass
+from backend_code.parsing.constants import char_dict
+from backend_code.parsing.t2wml_parser import iter_on_n_for_code
+from backend_code.spreadsheets.conversions import to_excel
+from backend_code.t2wml_exceptions import T2WMLException
+from backend_code.triple_generator import generate_triples
 from backend_code.utility_functions import translate_precision_to_integer
 from backend_code.wikidata_property import get_property_type
-from backend_code.spreadsheets.conversions import to_excel
-from backend_code.parsing.t2wml_parser import iter_on_n
-from backend_code.triple_generator import generate_triples
+
 
 def parse_time_for_dict(response, sparql_endpoint):
-    if "property" in response and get_property_type(response["property"], sparql_endpoint)=="Time":
-        if "format" in response:
-            try:
-                datetime_string, precision = parse_datetime_string(str(response["value"]),
-                                                                    additional_formats=[
-                                                                        response["format"]])
-            except ValueError:
-                #This is a workaround for a separatte bug, WIP, that is sending wrong dictionaries to this function
-                print("attempting to parse datetime string that isn't a datetime:", str(response["value"]))
-                return
-            if "precision" not in response:
-                response["precision"] = int(precision.value.__str__())
-            else:
-                response["precision"] = translate_precision_to_integer(response["precision"])
-            response["value"] = datetime_string
+    
+    if "property" in response:
+        try:
+            prop_type= get_property_type(response["property"], sparql_endpoint)
+        except QueryBadFormed:
+            raise ValueError("The value given for property is not a valid property:" +str(response["property"]))
+        
+        if prop_type=="Time":
+            if "format" in response:
+                with warnings.catch_warnings(record=True) as w: #use this line to make etk stop harassing us with "no lang features detected" warnings
+                    try:
+                        datetime_string, precision = parse_datetime_string(str(response["value"]),
+                                                                            additional_formats=[
+                                                                                response["format"]])
+                    except ValueError:
+                        raise ValueError("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
+
+                    if "precision" not in response:
+                        response["precision"] = int(precision.value.__str__())
+                    else:
+                        response["precision"] = translate_precision_to_integer(response["precision"])
+                    response["value"] = datetime_string
 
 def resolve_cell(yaml_object, col, row, sparql_endpoint):
     context={"row":int(row), "col":char_dict[col]}
@@ -49,20 +63,21 @@ def get_template_statement(template, item_parsed, value_parsed, qualifiers_parse
     if value_parsed:
         template["value"]=value_parsed.value
     if qualifiers_parsed:
-        new_quals=[]
-        for q_i, qualifier_dict in enumerate(template["qualifier"]):
-            try:
-                new_dict=dict(qualifier_dict)
-                qualifier_parsed=qualifiers_parsed[q_i]
-                            #check if item/value are not None
-                if qualifier_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
-                    new_dict["value"]=qualifier_parsed.value
-                    new_dict["cell"]=to_excel(qualifier_parsed.col, qualifier_parsed.row)
-                    parse_time_for_dict(new_dict, sparql_endpoint)
-                    new_quals.append(new_dict)
-            except Exception as e:
-                raise e
-        template["qualifier"]=new_quals
+        for qualifier_dict in qualifiers_parsed:
+            q_val=qualifier_dict.pop("value") #deal with value last
+            for key in qualifier_dict:
+                if isinstance(qualifier_dict[key], ReturnClass):
+                    qualifier_dict[key]=qualifier_dict[key].value
+            
+            qualifier_dict["value"]=q_val #return q_value, then deal with it
+            if q_val:
+                if isinstance(q_val, ReturnClass):
+                    qualifier_dict["value"]=q_val.value
+                    qualifier_dict["cell"]=to_excel(q_val.col, q_val.row)
+            
+            parse_time_for_dict(qualifier_dict, sparql_endpoint)    
+
+        template["qualifier"]=qualifiers_parsed
     parse_time_for_dict(template, sparql_endpoint)
     return template
 
@@ -74,31 +89,42 @@ def evaluate_template(template, context):
 
     item_parsed=value_parsed=qualifiers_parsed=None
 
-    if item:
-        item_parsed= iter_on_n(item, context)
+    try:
+        if item:
+            item_parsed= iter_on_n_for_code(item, context)
 
-    if value:
-        value_parsed= iter_on_n(value, context)
+        if value:
+            value_parsed= iter_on_n_for_code(value, context)
+        
+        if qualifiers:
+            qualifiers_parsed=[]
+            for qualifier in qualifiers:
+                new_qual=dict(qualifier)
+                for key in qualifier:
+                    if isinstance(qualifier[key], CodeType):
+                        q_parsed=iter_on_n_for_code(qualifier[key], context)
+                        new_qual[key]=q_parsed
+                qualifiers_parsed.append(new_qual)
+        return item_parsed, value_parsed, qualifiers_parsed
+    except Exception as e:
+        print(e)
+        raise e
     
-    if qualifiers:
-        qualifiers_parsed=[]
-        for qualifier in qualifiers:
-            q_parsed=iter_on_n(qualifier, context)
-            qualifiers_parsed.append(q_parsed)
     
-    return item_parsed, value_parsed, qualifiers_parsed
 
 def update_highlight_data(data, item_parsed, qualifiers_parsed):
     if item_parsed:
         item_cell=to_excel(item_parsed.col, item_parsed.row)
-        data["item"].add(item_cell)
+        if item_cell:
+            data["item"].add(item_cell)
     if qualifiers_parsed:
         qualifier_cells = set()
-        for qualifier_parsed in qualifiers_parsed:
-            #check if item/value are not None
-            if qualifier_parsed: #TODO: maybe this check needs to be moved elsewhere, or maybe it should raise an error?
+        for qualifier in qualifiers_parsed:
+            qualifier_parsed=qualifier.get("value", None)
+            if qualifier_parsed and isinstance(qualifier_parsed, ReturnClass):
                 qualifier_cell=to_excel(qualifier_parsed.col, qualifier_parsed.row)
-                qualifier_cells.add(qualifier_cell)
+                if qualifier_cell:
+                    qualifier_cells.add(qualifier_cell)
         data["qualifierRegion"] |= qualifier_cells
             
 
@@ -110,7 +136,7 @@ def highlight_region(yaml_object, sparql_endpoint):
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
     statement_data=[]
-    for col, row in yaml_object.region_iter():
+    for col, row in yaml_object.region:
         cell=to_excel(col-1, row-1)
         highlight_data["dataRegion"].add(cell)
         context={"row":row, "col":col}
@@ -147,7 +173,7 @@ def generate_download_file(yaml_object, filetype, sparql_endpoint):
 
     if not data:
         error=[]
-        for col, row in yaml_object.region_iter():
+        for col, row in yaml_object.region:
             try:
                 context={"row":row, "col":col}
                 item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)

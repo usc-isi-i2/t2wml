@@ -5,16 +5,16 @@ statementMapping:
       top: 5
       bottom: 7
   template:
-    item: item[A, $row]
+    item: =item[A, $row]
     property: P1000001 # homicide
-    value: value[$col, $row]
+    value: =value[$col, $row]
     qualifier:
       - property: P585 # point in time
-        value: value[$col, 4]
+        value: =value[$col, 4]
         precision: year
         time_zone: 0
         format: "%Y"
       - property: P6001 # applies to people
-        value: item[$col-n, 3]
+        value: =item[$col-n, 3]
       - property: P248 # stated in
-        value: item[B, $row]
+        value: =item[B, $row]
