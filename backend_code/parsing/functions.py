@@ -12,9 +12,9 @@ def boolean_modifer(func):
                 for i, val in enumerate(input):
                     if val:
                         flag=func(input[i], *args, **kwargs)
-                        if flag == False:
-                            return False
-                return True
+                        if flag == True:
+                            return True
+                return False
             return func(input, *args, **kwargs)
         return False
     return wrapper
