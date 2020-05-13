@@ -107,21 +107,16 @@ def extract_date(input, date_format):
     return date_str
 
 @string_modifier
-def regex(input, pattern, i=1):
+def regex(input, pattern, i=0):
     # extract a substring using a regex. The string is the regex and the result is the value of the first group in 
     # the regex. If the regex contains no group, it is the match of the regex.
     #regex(value[], "regex") returns the first string that matches the whole regex
     #regex(value[]. regex, i) returns the value of group i in the regex
     #The reason for the group is that it allows more complex expressions. In our use case we could do a single expression as we cannot fetch more than one
     #common use case "oil production in 2017 in cambodia"
-    matches=[x.group() for x in re.finditer(pattern, input)]
-    i=i-1 #1 indexing
-    try:
-        if matches[i]:
-            return matches[i]
-    except:
-        pass
-    return None
+    match = re.search(pattern, input)
+    if match:
+        return match.group(i)
 
 
 def concat(*args):
