@@ -14,8 +14,12 @@ class ReturnClass:
     def __init__(self, col, row, value=None):
         self.col=col
         self.row=row
-        self.value=value #usually overwritten in children
+        self._value=value #usually overwritten in children
     
+    @property
+    def value(self):
+        return self._value
+
     def __eq__(self, comparator):
         if self.value==comparator:
             return True
@@ -74,12 +78,11 @@ class RangeClass:
         return self.area[row][col]
 
 
-
 class Item(ReturnClass):
     def __init__(self, col, row, context):
         super().__init__(col, row)
         item_table=bindings.item_table
-        self.value=item_table.get_item(self.col, self.row, context)
+        self._value=item_table.get_item(self.col, self.row, context)
 
 class ItemRange(RangeClass):
     def __init__(self, col, row, context):
@@ -119,8 +122,11 @@ class Cell(ReturnClass):
     def __init__(self, col, row):
         super().__init__(col, row)
         data_sheet=bindings.excel_sheet
-        self.value=data_sheet[row][col]
+        self._value=data_sheet[row][col]
     
+    @value.setter
+    def value(self, new_val):
+        self._value=new_val
 
 class CellRange(RangeClass):
     def __init__(self, col_args, row_args):
