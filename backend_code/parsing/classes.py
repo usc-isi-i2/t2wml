@@ -26,6 +26,16 @@ class ReturnClass:
             pass
         return False
     
+    def __ne__(self, comparator):
+        if self.value==comparator:
+            return False
+        try:
+            if self.value==comparator.value:
+                return False
+        except:
+            pass
+        return True
+
     def __str__(self):
         return str(self.value)
     
@@ -45,10 +55,15 @@ class RangeClass:
 
     def __eq__(self, comparator):
         for i in self.flattened:
-            if i != comparator:
+            if comparator!= i:
                 return False
         return True
-    
+    def __ne__(self, comparator):
+        for i in self.flattened:
+            if comparator == i:
+                return False
+        return True
+
     def __iter__(self):
         for i in self.flattened:
             yield i
