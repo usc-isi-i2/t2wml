@@ -136,7 +136,7 @@ def highlight_region(yaml_object, sparql_endpoint):
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'error': dict()}
     statement_data=[]
-    for col, row in yaml_object.region_iter():
+    for col, row in yaml_object.region:
         cell=to_excel(col-1, row-1)
         highlight_data["dataRegion"].add(cell)
         context={"row":row, "col":col}
@@ -173,7 +173,7 @@ def generate_download_file(yaml_object, filetype, sparql_endpoint):
 
     if not data:
         error=[]
-        for col, row in yaml_object.region_iter():
+        for col, row in yaml_object.region:
             try:
                 context={"row":row, "col":col}
                 item_parsed, value_parsed, qualifiers_parsed= evaluate_template(yaml_object.eval_template, context)
