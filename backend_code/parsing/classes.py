@@ -19,7 +19,7 @@ class ReturnClass:
     @property
     def value(self):
         return self._value
-
+    
     def __eq__(self, comparator):
         if self.value==comparator:
             return True
@@ -75,7 +75,7 @@ class RangeClass:
     def __getitem__(self, flat_index):
         row=flat_index//self.row_length
         col=flat_index%self.row_length
-        return self.area[row][col]
+        return self.data[row][col]
 
 
 class Item(ReturnClass):
@@ -124,34 +124,40 @@ class Cell(ReturnClass):
         data_sheet=bindings.excel_sheet
         self._value=data_sheet[row][col]
     
+    @property
+    def value(self):
+        return self._value
+
     @value.setter
     def value(self, new_val):
         self._value=new_val
+    
+
 
 class CellRange(RangeClass):
     def __init__(self, col_args, row_args):
         data_sheet=bindings.excel_sheet
         self.col_args = col_args
         self.row_args = row_args
-        rows_area = data_sheet[row_args]
+        rows_data = data_sheet[row_args]
         if isinstance(row_args, int):
-            rows_area=[rows_area]
+            rows_data=[rows_data]
 
-        area=[]
-        for row in rows_area:
+        data=[]
+        for row in rows_data:
             new_row=row[col_args]
-            area.append(new_row)
+            data.append(new_row)
 
-        self.data = area
-        self.row_length=len(self.area[0])
+        self.data = data
+        self.row_length=len(self.data[0])
     
     def __repr__(self):
-        return str(self.area)
+        return str(self.data)
     
     def __setitem__(self, flat_index, data):
         row=flat_index//self.row_length
         col=flat_index%self.row_length
-        self.area[row][col]=data
+        self.data[row][col]=data
     
 
 
