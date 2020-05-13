@@ -6,13 +6,13 @@ statementMapping:
       top: 2
       bottom: 14
   template:
-    item: item[A/$row]
+    item: =item[A/$row]
     property: P2067 # weight
-    value: value[C/$row]
+    value: =value[C/$row]
     unit: Q100995 # lbs
     qualifier:
       - property: P569 #date of birth
-        value: value[D/$row]
+        value: =value[D/$row]
         calendar: Q1985727
         precision: day
         time_zone: 0

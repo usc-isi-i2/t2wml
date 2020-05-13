@@ -5,19 +5,19 @@ statementMapping:
       top: 5
       bottom: 24
       skip_row:
-        - value[A:D, $row] == ""
+        - =value[A:D, $row] == ""
   template:
-    item: item[B, $row-n]
+    item: =item[B, $row-n]
     property: C3002 # murder
-    value: value[$col, $row]
+    value: =value[$col, $row]
     qualifier:
       - property: P585 #point in time
-        value: value[A, $row-n]
+        value: =value[A, $row-n]
         calendar: Q1985727
         precision: year
         time_zone: 0
         format: "%Y"
       - property: P6001 # applies to people
-        value: item[D, $row]
+        value: =item[D, $row]
       - property: P123 #source
-        value: item[C, $row]
+        value: =item[C, $row]
