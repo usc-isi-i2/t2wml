@@ -6,12 +6,12 @@ interface DeleteProperteis {
   // pid: number; Is it needed?
   showDeleteProject: boolean;
 
-  handleDeleteProject :Function;
-  cancelDeleteProject :Function;
+  handleDeleteProject: () => void;
+  cancelDeleteProject: () => void;
 }
 
 
-class DeleteProject extends Component<DeleteProperteis> {
+class DeleteProject extends Component<DeleteProperteis, {}> {
 
   render() {
     return (

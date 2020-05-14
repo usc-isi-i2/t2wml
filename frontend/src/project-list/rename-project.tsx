@@ -11,8 +11,8 @@ interface RenameProperteis {
   tempRenameProject: string;
   isTempRenameProjectVaild: boolean;
 
-  handleRenameProject :Function;
-  cancelRenameProject :Function;
+  handleRenameProject: (name: string) => void;
+  cancelRenameProject: () => void;
 }
 
 interface RenameState {
@@ -28,10 +28,6 @@ class RenameProject extends Component<RenameProperteis, RenameState> {
       name: this.props.tempRenameProject,
       isNameVaild: this.props.isTempRenameProjectVaild
     } as RenameState;
-  }
-
-  aaa() {
-    this.props.handleRenameProject("talya");
   }
 
   render() {
@@ -70,7 +66,7 @@ class RenameProject extends Component<RenameProperteis, RenameState> {
                     if (event.key === "Enter") {
                       // if press enter (13), then do create new project
                       event.preventDefault();
-                      this.props.handleRenameProject();
+                      this.props.handleRenameProject(this.state.name);
                     }
                   }}
                 />
@@ -89,7 +85,7 @@ class RenameProject extends Component<RenameProperteis, RenameState> {
           <Button variant="outline-dark" onClick={() => this.props.cancelRenameProject()} >
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => this.props.handleRenameProject(this.state.name)} disabled={!(this.props.isTempRenameProjectVaild)}>
+          <Button variant="dark" onClick={() => this.props.handleRenameProject(this.state.name)} disabled={!(this.state.isNameVaild)}>
             Rename
           </Button>
         </Modal.Footer>

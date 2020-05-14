@@ -8,13 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 // App
-import { Button, Card, Col, Form, FormControl, InputGroup, Modal, OverlayTrigger, Row, Spinner, Table, Tooltip } from 'react-bootstrap';
+import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 import { backendGet, backendPost } from '../common/comm';
 import { logout } from '../common/session';
 
 import DeleteProject from './delete-project';
 import RenameProject from './rename-project';
 import DownloadProject from './dowmload-project';
+import CreateProject from './create-project';
 
 // console.log
 const LOG = {
@@ -29,7 +30,6 @@ class ProjectList extends Component {
 
     // this.handleRenameProject = this.handleRenameProject.bind(this);
 
-
     // fetch data from flask
     // const { userData } = this.props;
 
@@ -40,7 +40,6 @@ class ProjectList extends Component {
     this.state = {
 
       // appearance
-      showSettings: false,
       showSpinner: true,
       showCreateProject: false,
       showDeleteProject: false,
@@ -53,8 +52,8 @@ class ProjectList extends Component {
       userData: {},
 
       // temp in form
-      tempCreateProject: "Untitled project",
-      isTempCreateProjectVaild: true,
+      // tempCreateProject: "Untitled project",
+      // isTempCreateProjectVaild: true,
       tempRenamePid: null,
       tempRenameProject: "Untitled project",
       isTempRenameProjectVaild: true,
@@ -121,8 +120,8 @@ class ProjectList extends Component {
     });
   }
 
-  handleCreateProject(event) {
-    let ptitle = this.state.tempCreateProject.trim();
+  handleCreateProject(name) {
+    let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
     // before sending request
@@ -156,6 +155,10 @@ class ProjectList extends Component {
       this.setState({ showCreateProject: false, showSpinner: false });
       this.handleLogout();
     });
+  }
+
+  cancelCreateProject() {
+    this.setState({ showCreateProject: false });
   }
 
   handleDeleteProject(pid = "") {
@@ -256,7 +259,7 @@ class ProjectList extends Component {
   handleRenameProject(name) {
     debugger
     let pid = this.state.tempRenamePid;
-    let ptitle = this.state.tempRenameProject.trim();
+    let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
     // before sending request
@@ -271,6 +274,7 @@ class ProjectList extends Component {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
+      debugger
       // do something here
       if (json !== null) {
         // success
@@ -300,22 +304,6 @@ class ProjectList extends Component {
 
   cancelRenameProject() {
     this.setState({ showRenameProject: false });
-  }
-
-  handleSaveSettings(event) {
-    console.log("<App> updated settings");
-
-    // update settings
-    window.sparqlEndpoint = this.refs.sparqlEndpoint.value;
-    this.setState({ showSettings: false });
-
-    // notify backend
-    let formData = new FormData();
-    formData.append("pid", window.pid);
-    formData.append("endpoint", window.sparqlEndpoint);
-    backendPost("/update_setting", formData).catch((error) => {
-      console.log(error);
-    });
   }
 
   handleSortProjects(willSortBy, willBeAscending = null, newProjectData = null) {
@@ -361,73 +349,6 @@ class ProjectList extends Component {
       sortBy: willSortBy,
       isAscending: willBeAscending,
     });
-  }
-
-  renderCreateProject() {
-    return (
-      <Modal show={this.state.showCreateProject} onHide={() => { /* do nothing */ }}>
-
-        {/* loading spinner */}
-        <div className="mySpinner" hidden={!this.state.showSpinner}>
-          <Spinner animation="border" />
-        </div>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>New&nbsp;Project</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-
-            {/* project title */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event) => {
-              this.setState({
-                tempCreateProject: event.target.value,
-                isTempCreateProjectVaild: utils.isValidTitle(event.target.value)
-              })
-            }}>
-              {/* <Form.Label column sm="12" md="2" className="text-right">
-                Title
-              </Form.Label> */}
-              <Col sm="12" md="12">
-                <Form.Control
-                  type="text"
-                  defaultValue=""
-                  placeholder={this.state.tempCreateProject}
-                  autoFocus={true}
-                  style={this.state.isTempCreateProjectVaild ? {} : { border: "1px solid red" }}
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      // if press enter (13), then do create new project
-                      event.preventDefault();
-                      this.handleCreateProject();
-                    }
-                  }}
-                />
-                <div className="small" style={this.state.isTempCreateProjectVaild ? { display: "none" } : { color: "red" }}>
-                  <span>*&nbsp;Cannot contain any of the following characters:&nbsp;</span>
-                  <code>&#92;&nbsp;&#47;&nbsp;&#58;&nbsp;&#42;&nbsp;&#63;&nbsp;&#34;&nbsp;&#60;&nbsp;&#62;&nbsp;&#124;</code>
-                </div>
-              </Col>
-            </Form.Group>
-
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showCreateProject: false })} >
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={this.handleCreateProject.bind(this)} disabled={!(this.state.isTempCreateProjectVaild)}>
-            Create
-          </Button>
-        </Modal.Footer>
-
-      </Modal>
-    );
   }
 
   renderProjects() {
@@ -632,84 +553,6 @@ class ProjectList extends Component {
     );
   }
 
-  onShowSettingsClicked() {
-    this.setState({ showSettings: true });
-  }
-
-  renderSettings() {
-    return (
-      <Modal show={this.state.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Settings</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-
-            {/* server */}
-            {/* <Form.Group as={Row} onChange={(event) => this.setState({ tempServer: event.target.value })}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Server
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Form.Control type="url" defaultValue={window.server} />
-              </Col>
-            </Form.Group> */}
-
-            {/* query server */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                SPARQL&nbsp;endpoint
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Form.Control
-                  as="select"
-                  defaultValue={window.sparqlEndpoint}
-                  ref="sparqlEndpoint"
-                >
-                  <option value="http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql">http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql</option>
-                  <option value="http://kg2018a.isi.edu:8888/bigdata/namespace/wdq/sparql">http://kg2018a.isi.edu:8888/bigdata/namespace/wdq/sparql</option>
-                  <option value="https://query.wikidata.org/sparql">https://query.wikidata.org/sparql</option>
-                </Form.Control>
-              </Col>
-            </Form.Group>
-
-            {/* cache (for clear qnode cache feature) */}
-            {/* <Form.Group as={Row}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Cache
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Button variant="secondary" onClick={() => {
-                  window.Wikifier.setState({ cacheQnode: {} });
-                  alert("Emptied qnode cache.");
-                  window.Wikifier.updateCacheQnode();
-                }}>
-                  Empty qnode cache
-                </Button>
-              </Col>
-            </Form.Group> */}
-
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false })}>
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={this.handleSaveSettings.bind(this)}>
-            Save
-          </Button>
-        </Modal.Footer>
-
-      </Modal>
-    );
-  }
-
   renderModals() {
     return (
       <Fragment>
@@ -728,8 +571,16 @@ class ProjectList extends Component {
           showSpinner={this.state.showSpinner}
           tempRenameProject={this.state.tempRenameProject}
           isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
-          handleRenameProject={this.handleRenameProject}
+          handleRenameProject={(name) => this.handleRenameProject(name)}
           cancelRenameProject={() => this.cancelRenameProject()}
+        />
+        <CreateProject
+          showCreateProject={this.state.showCreateProject}
+          showSpinner={this.state.showSpinner}
+          // tempCreateProject={this.state.tempCreateProject}
+          // isTempCreateProjectVaild={this.state.isTempCreateProjectVaild}
+          handleCreateProject={(name) => this.handleCreateProject(name)}
+          cancelCreateProject={() =>this.cancelCreateProject()}
         />
       </Fragment>
     );
@@ -745,11 +596,9 @@ class ProjectList extends Component {
         </div>
 
         {this.renderModals()}
-        {this.renderCreateProject()}
-        {this.renderSettings()}
 
+{/* remove show settings */}
         <Navbar userData={this.state.userData}
-        onShowSettingsClicked={() => this.onShowSettingsClicked()}
         handleLogout={() => this.handleLogout()} />
         
 
@@ -774,8 +623,8 @@ class ProjectList extends Component {
                     style={{ fontWeight: "600" }}
                     onClick={() => {
                       this.setState({
-                        tempCreateProject: "Untitled project",
-                        isTempCreateProjectVaild: true,
+                        // tempCreateProject: "Untitled project",
+                        // isTempCreateProjectVaild: true,
                         showCreateProject: true
                       });
                     }}

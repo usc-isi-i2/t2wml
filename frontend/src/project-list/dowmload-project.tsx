@@ -5,12 +5,12 @@ import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 interface DownloadProperteis {
   showDownloadProject: boolean;
 
-  handleDownloadProject :Function;
-  cancelDownloadProject :Function;
+  handleDownloadProject: () => void;
+  cancelDownloadProject: () => void;
 }
 
 
-class DownloadProject extends Component<DownloadProperteis> {
+class DownloadProject extends Component<DownloadProperteis, {}> {
 
   render() {
     return (

@@ -9,7 +9,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 // App
 import { Button, Card } from 'react-bootstrap';
-import { GoogleLogin } from 'react-google-login';
+import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
 import { backendPost, backendGet } from '../common/comm';
 
 // console.log
@@ -38,12 +38,14 @@ class Login extends React.Component {
     alert("Login failed!\n\nError: " + googleUser.error);
   }
 
-  onGoogleSuccess(googleUser: any){ // TODO: add the correct type. GoogleLoginResponse | GoogleLoginResponseOffline) {
+  onGoogleSuccess(googleUser: any) {// GoogleLoginResponse | GoogleLoginResponseOffline) { // TODO: add the correct type
     // send request
     console.log("<App> -> %c/login%c to verify id_token", LOG.link, LOG.default);
     let formData = new FormData();
     formData.append("source", "Google");
-    formData.append("token", googleUser.getAuthResponse().id_token);
+    if (googleUser as GoogleLoginResponse) { // Maybe split to 2 functions?
+      formData.append("token", googleUser.getAuthResponse()!.id_token);
+    }
     backendPost('login', formData).then(json => {
       console.log("<App> <- %c/login%c with:", LOG.link, LOG.default);
       console.log(json);
