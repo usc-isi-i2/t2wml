@@ -6,8 +6,7 @@ from etk.wikidata.entity import WDItem
 from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, \
     ExternalIdentifier, GlobeCoordinate
 from etk.wikidata import serialize_change_record, WDReference
-from backend_code.wikidata_property import get_property_type
-from backend_code.utility_functions import translate_precision_to_integer
+from backend_code.utility_functions import get_property_type, translate_precision_to_integer
 
 def handle_property_value(j, i, sparql_endpoint):
     property_type=get_property_type(j["property"], sparql_endpoint)

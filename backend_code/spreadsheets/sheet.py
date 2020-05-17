@@ -16,8 +16,9 @@ class Sheet:
         #self.add_empty_row()
     
     def add_empty_row(self):
+        #pretty defunct at this point, will probably get rid of soon
         empty_row= [""]*len(self.data[0])
-        self.append(empty_row)
+        self.data.append(empty_row)
     
     def __getitem__(self, params):
         try:
@@ -27,13 +28,17 @@ class Sheet:
 
     def __len__(self):
         return len(self.data)
-
-    def append(self, row):
-        self.data.append(row)
-    
+            
     def to_json(self):
         #rename cols
+        col_names=[]
+        for i in range(len(self.data[0])):
+            column = _column_index_to_letter(i)
+            col_names.append(column)
+        self.data.columns=col_names
         #rename rows
+        sheet.data.index+=1
+        #get json
         json_string=self.data.to_json(orient='table')
         return_dict=json.loads(json_string)
         return return_dict

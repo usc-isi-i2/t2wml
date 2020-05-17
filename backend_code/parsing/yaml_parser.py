@@ -2,11 +2,10 @@ import os
 import json
 from pathlib import Path
 from collections import OrderedDict
-from string import punctuation
 import yaml
-from backend_code.bindings import bindings
+from backend_code.bindings import bindings, update_bindings
 from backend_code.spreadsheets.sheet import Sheet
-
+from backend_code.utility_functions import string_is_valid
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.t2wml_parser import iter_on_n, t2wml_parse
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
@@ -15,25 +14,7 @@ class ForwardSlashEscape(Exception):
     def __init__(self, new_str):
         self.new_str=new_str
 
-def update_bindings(item_table, sheet) -> None:
-    """
-    This function updates the bindings dictionary with the region, excel_file and item_table
-    :param item_table:
-    :param region:
-    :param excel_filepath:
-    :param sheet_name:
-    :return:
-    """
-    
-    bindings.excel_sheet=sheet
-    bindings.item_table = item_table
 
-def string_is_valid(text: str) -> bool:
-    def check_special_characters(text: str) -> bool:
-        return all(char in punctuation for char in str(text))
-    if text is None or str(text).strip() == "" or check_special_characters(text) or str(text).strip().lower() == '#n/a':
-        return False
-    return True
 
 class Region:
     def __init__(self, region_data):

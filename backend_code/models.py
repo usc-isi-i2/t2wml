@@ -6,10 +6,9 @@ import json
 from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
 from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
-from backend_code.utility_functions import save_wikified_result
 from backend_code.spreadsheets.utilities import excel_to_json, add_excel_file_to_bindings
 from backend_code.spreadsheets.sheet import save_and_get_sheet_names
-from backend_code.wikify_handler import process_wikified_output_file
+from backend_code.wikify_handler import process_wikified_output_file, save_wikified_result
 
 from backend_code.bindings import bindings
 from backend_code.handler import highlight_region, resolve_cell, generate_download_file

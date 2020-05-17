@@ -5,15 +5,15 @@ from types import CodeType
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
+from backend_code.t2wml_exceptions import T2WMLException, make_frontend_err_dict
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.classes import ReturnClass
 from backend_code.parsing.constants import char_dict
 from backend_code.parsing.t2wml_parser import iter_on_n_for_code
 from backend_code.spreadsheets.conversions import to_excel
-from backend_code.t2wml_exceptions import T2WMLException
+
 from backend_code.triple_generator import generate_triples
-from backend_code.utility_functions import translate_precision_to_integer
-from backend_code.wikidata_property import get_property_type
+from backend_code.utility_functions import translate_precision_to_integer, get_property_type
 
 
 def parse_time_for_dict(response, sparql_endpoint):
@@ -49,10 +49,13 @@ def resolve_cell(yaml_object, col, row, sparql_endpoint):
             data = {'statement': statement, 'error': None}
         else:
             data = {'statement': None, 'error': "Item doesn't exist"}
-    except Exception as exception:
+    except T2WMLException as exception:
         error = dict()
         error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
         data = {'error': error}
+    except Exception as exception:
+        print(exception)
+        raise exception
     return data
 
 
@@ -107,24 +110,22 @@ def evaluate_template(template, context):
 
     item_parsed=value_parsed=qualifiers_parsed=references_parsed=None
 
-    try:
-        if item:
-            item_parsed= iter_on_n_for_code(item, context)
 
-        if value:
-            value_parsed= iter_on_n_for_code(value, context)
+    if item:
+        item_parsed= iter_on_n_for_code(item, context)
+
+    if value:
+        value_parsed= iter_on_n_for_code(value, context)
+    
+    if qualifiers:
+        qualifiers_parsed = _evaluate_template_for_list_of_dicts(qualifiers, context)
+    
+    if references:
+        references_parsed = _evaluate_template_for_list_of_dicts(references, context)
         
-        if qualifiers:
-            qualifiers_parsed = _evaluate_template_for_list_of_dicts(qualifiers, context)
-        
-        if references:
-            references_parsed = _evaluate_template_for_list_of_dicts(references, context)
-            
-        
-        return item_parsed, value_parsed, qualifiers_parsed, references_parsed
-    except Exception as e:
-        print(e)
-        raise e
+    
+    return item_parsed, value_parsed, qualifiers_parsed, references_parsed
+
     
     
 
@@ -170,10 +171,13 @@ def highlight_region(yaml_object, sparql_endpoint):
                         statement_data.append(
                             {'cell': cell, 
                             'statement': statement})
-        except Exception as exception:
+        except T2WMLException as exception:
             error = dict()
             error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
             data['error'][to_excel(col, row)] = error
+        except Exception as exception:
+            print(exception)
+            data['error'][to_excel(col, row)]=make_frontend_err_dict(exception)
         
     highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
     highlight_data['item'] = list(highlight_data['item'])

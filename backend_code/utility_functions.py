@@ -1,24 +1,20 @@
-import os
-import re
-import json
-import csv
-import yaml
 from SPARQLWrapper import SPARQLWrapper, JSON
-from string import punctuation
 from typing import Sequence, Union, Tuple, List, Dict, Any
 from google.oauth2 import id_token
+from string import punctuation
 from google.auth.transport import requests
 from backend_code import t2wml_exceptions as T2WMLExceptions
+from backend_code.property_type_map import property_type_map
+from backend_code.wikidata_property import WikidataProperty
 from app_config import GOOGLE_CLIENT_ID
 
 
-def check_special_characters(text: str) -> bool:
-    """
-    This function checks if the text is made up of only special characters
-    :param text:
-    :return:
-    """
-    return all(char in punctuation for char in str(text))
+def string_is_valid(text: str) -> bool:
+    def check_special_characters(text: str) -> bool:
+        return all(char in punctuation for char in str(text))
+    if text is None or str(text).strip() == "" or check_special_characters(text) or str(text).strip().lower() == '#n/a':
+        return False
+    return True
 
 def translate_precision_to_integer(precision: str) -> int:
     """
@@ -60,15 +56,6 @@ def translate_precision_to_integer(precision: str) -> int:
     }
     return precision_map[precision.lower()]
 
-
-def natural_sort_key(s: str) -> list:
-    """
-    This function generates the key for the natural sorting algorithm
-    :param s:
-    :return:
-    """
-    _nsre = re.compile('([0-9]+)')
-    return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
 
 
 def verify_google_login(tn: str) -> Tuple[dict, dict]:
@@ -123,11 +110,38 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
     return response
 
 
-def save_wikified_result(serialized_row_data: List[dict], filepath: str):
-    keys = ['context', 'col', 'row', 'value', 'item', 'label', 'desc']
-    serialized_row_data.sort(key=lambda x: [x['context'], natural_sort_key(x['col']), natural_sort_key(x['row'])])
-    with open(filepath, 'w', newline='', encoding="utf-8") as output_file:
-        dict_writer = csv.DictWriter(output_file, keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(serialized_row_data)
+
+
+
+def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
+    """
+    This functions queries the wikidata to find out the type of a wikidata property
+    :param wikidata_property:
+    :param sparql_endpoint:
+    :return:
+    """
+    try:
+        prop = WikidataProperty.query.get(wikidata_property)
+        if prop is None:
+            raise ValueError("Not found")
+        return prop.property_type
+    except Exception as e:
+        property_type=property_type_map.get(wikidata_property, None)
+        if not property_type:
+            query = """SELECT ?type WHERE {
+                wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
+                wikibase:propertyType ?type .
+            }"""
+            sparql = SPARQLWrapper(sparql_endpoint)
+            sparql.setQuery(query)
+            sparql.setReturnFormat(JSON)
+            results = sparql.query().convert()
+            try:
+                property_type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+            except IndexError:
+                property_type = "Property Not Found"
+        WikidataProperty.add(wikidata_property, property_type)
+    return property_type
+
+
 
