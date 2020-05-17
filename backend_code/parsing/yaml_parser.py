@@ -103,20 +103,21 @@ class YamlCacher:
     
 
 class YamlObject:
-    def __init__(self, filepath, item_table, data_file_path, sheet_name, use_cache=False):
+    def __init__(self, filepath, item_table, data_file_path, sheet_name, sparql_endpoint, use_cache=False):
         self.yaml_data=self.validate(filepath)
         
         try:
             self.sheet=Sheet(data_file_path, sheet_name)
         except IOError:
             raise IOError('Excel File cannot be found or opened')
-        update_bindings(item_table=item_table, sheet=self.sheet)
+        update_bindings(item_table=item_table, sheet=self.sheet, sparql_endpoint=sparql_endpoint)
         
         region_parser=RegionParser(self.yaml_data)
         self._region=Region(region_parser.parsed_region)
         
         self.template_parser=TemplateParser(self.yaml_data)
         
+        self.sparql_endpoint=sparql_endpoint
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
         
         self.use_cache=use_cache

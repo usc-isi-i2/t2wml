@@ -6,52 +6,12 @@ import pyexcel
 import uuid
 from pathlib import Path
 
-from backend_code.bindings import bindings
+
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.spreadsheets.conversions import _column_index_to_letter
 from backend_code.spreadsheets.sheet import Sheet
 
 
-def add_blank_row_to_bindings():
-    last_row=bindings.excel_sheet[-1]
-    num_cols=len(last_row)
-    blank_row = [" "] * num_cols
-    if last_row!=blank_row:
-        bindings.excel_sheet.append(blank_row)
-
-
-def add_excel_file_to_bindings(excel_filepath: str, sheet_name: str) -> None:
-    """
-    This function reads the excel file and add the pyexcel object to the bindings
-    :return: None
-    """
-    try:
-        bindings.excel_sheet=Sheet(excel_filepath, sheet_name)
-        add_blank_row_to_bindings()
-    except IOError:
-        raise IOError('Excel File cannot be found or opened')
-
-
-
-
-
-def add_row_in_data_file(file_path: str, sheet_name: str, destination_path: str = None):
-    """
-    This function adds a new blank row at the end of the excel file
-    :param destination_path:
-    :param file_path:
-    :param sheet_name:
-    :return:
-    """
-    book = pyexcel.get_book(file_name=file_path)
-    num_of_cols = len(book[sheet_name][0])
-    blank_row = [" "] * num_of_cols
-    if book[sheet_name].row[-1] != blank_row:
-        book[sheet_name].row += blank_row
-    if not destination_path:
-        book.save_as(file_path)
-    else:
-        book.save_as(destination_path)
 
 
 def get_first_sheet_name(file_path: str):
@@ -76,7 +36,6 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     column_index_map = {}
     if not sheet_name:
         sheet_name=get_first_sheet_name(file_path)
-    #add_row_in_data_file(file_path, sheet_name)
     sheet=Sheet(file_path, sheet_name)
     #book = pyexcel.get_book(file_name=file_path)
     #sheet = book[sheet_name]

@@ -3,18 +3,17 @@ from pathlib import Path
 import logging
 from etk.wikidata import serialize_change_record
 from app_config import DEFAULT_SPARQL_ENDPOINT
-#IMPORTANT: the import from models must happen before the other backend_code imports because of flask circular oimports
+#IMPORTANT: the import from models must happen before the other backend_code imports because of flask circular imports
 from backend_code.models import YamlObject 
 from backend_code.item_table import ItemTable
 from backend_code.handler import generate_download_file
 from backend_code.wikify_handler import process_wikified_output_file
-from backend_code.spreadsheets.utilities import get_first_sheet_name, add_row_in_data_file
-
-
+from backend_code.spreadsheets.utilities import get_first_sheet_name
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
               sheet_name: str = None,
               sparql_endpoint: str = DEFAULT_SPARQL_ENDPOINT, debug=False):
+    
     try:
         if not sheet_name:
             sheet_name = get_first_sheet_name(data_file_path)
@@ -26,7 +25,6 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
             return
         new_file_path = str(Path.cwd() / 'temporary_files' / file_name)
         #os.makedirs(str(Path.cwd() / 'temporary_files'), exist_ok=True)
-        add_row_in_data_file(data_file_path, sheet_name, new_file_path)
     except KeyError as e:
         logging.error("Invalid sheet name:"+str(e))
         return
@@ -43,13 +41,13 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         return
 
     try:
-        yc = YamlObject(t2wml_spec, item_table, new_file_path, sheet_name)
+        yc = YamlObject(t2wml_spec, item_table, new_file_path, sheet_name, sparql_endpoint)
     except Exception as e:
         logging.error("Invalid YAML File")
         return
 
     filetype = "ttl"
-    response = generate_download_file(yc, filetype, sparql_endpoint)
+    response = generate_download_file(yc, filetype)
     result_directory = '.'.join(file_name.split(".")[:-1])
 
     output_path = Path()

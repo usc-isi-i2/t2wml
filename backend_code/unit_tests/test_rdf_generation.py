@@ -18,7 +18,7 @@ from pathlib import Path
 from backend_code.item_table import ItemTable
 from backend_code.wikify_handler import process_wikified_output_file
 from backend_code.handler import generate_download_file
-from backend_code.spreadsheets.utilities import get_first_sheet_name #, add_row_in_data_file
+from backend_code.spreadsheets.utilities import get_first_sheet_name
 import tempfile
 
 output_directory = tempfile.mkdtemp()
@@ -52,6 +52,7 @@ class TestRDFGeneration(unittest.TestCase):
         self.t2wml_spec_path_3 = '{}/ground_truth/t2wml_spec_3.yaml'.format(_path)
         self.t2wml_spec_path_4 = '{}/ground_truth/t2wml_spec_4.yaml'.format(_path)
 
+
     def test_rdf_generation(self, sheet_name: str = None):
         with open(self.results_path_1, 'r') as f:
             results=f.read()
@@ -60,16 +61,15 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_1).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
-        #add_row_in_data_file(self.input_file_path_1, sheet_name, new_file_path)
 
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_1, item_table, new_file_path, sheet_name)
+        yc = YamlObject(self.t2wml_spec_path_1, item_table, new_file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
-        response = generate_download_file(yc, filetype, self.sparql_endpoint)
+        response = generate_download_file(yc, filetype)
         self.assertEqual(response['data'], results)
 
     def test_rdf_generation_with_units(self, sheet_name: str = None):
@@ -80,17 +80,16 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_1).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
-        #add_row_in_data_file(self.input_file_path_1, sheet_name, new_file_path)
 
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_2, item_table, new_file_path, sheet_name)
+        yc = YamlObject(self.t2wml_spec_path_2, item_table, new_file_path, sheet_name, self.sparql_endpoint)
 
 
         filetype = "ttl"
 
-        response = generate_download_file(yc, filetype, self.sparql_endpoint)
+        response = generate_download_file(yc, filetype)
 
         self.assertEqual(response['data'], results)
 
@@ -102,16 +101,15 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_3).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
-        #add_row_in_data_file(self.input_file_path_3, sheet_name, new_file_path)
 
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc= YamlObject(self.t2wml_spec_path_3, item_table, new_file_path, sheet_name)
+        yc= YamlObject(self.t2wml_spec_path_3, item_table, new_file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
-        response = generate_download_file(yc, filetype, self.sparql_endpoint)
+        response = generate_download_file(yc, filetype)
 
         self.assertEqual(response['data'], results)
 
@@ -123,16 +121,15 @@ class TestRDFGeneration(unittest.TestCase):
         file_name = Path(self.input_file_path_3).name
 
         new_file_path = '{}/{}'.format(output_directory, file_name)
-        #add_row_in_data_file(self.input_file_path_3, sheet_name, new_file_path)
 
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_4, item_table, new_file_path, sheet_name)
+        yc = YamlObject(self.t2wml_spec_path_4, item_table, new_file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
-        response = generate_download_file(yc, filetype, self.sparql_endpoint)
+        response = generate_download_file(yc, filetype)
 
 
 if __name__ == '__main__':

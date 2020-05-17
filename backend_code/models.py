@@ -6,11 +6,9 @@ import json
 from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
 from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
-from backend_code.spreadsheets.utilities import excel_to_json, add_excel_file_to_bindings
+from backend_code.spreadsheets.utilities import excel_to_json
 from backend_code.spreadsheets.sheet import save_and_get_sheet_names
 from backend_code.wikify_handler import process_wikified_output_file, save_wikified_result
-
-from backend_code.bindings import bindings
 from backend_code.handler import highlight_region, resolve_cell, generate_download_file
 from backend_code.parsing.yaml_parser import YamlObject
 
@@ -168,7 +166,6 @@ class Project(db.Model):
 
     def update_sparql_endpoint(self, endpoint):
         self.sparql_endpoint=endpoint
-        bindings.sparql_endpoint=sparql_endpoint
         self.modify()
     
     def update_project_title(self, title):
@@ -338,24 +335,24 @@ class YamlFile(db.Model):
 
     @property
     def yaml_object(self):
-        bindings.sparql_endpoint=self.sparql_endpoint
         try:
             yc=self._yaml_object
             return yc
         except:
             self._yaml_object=YamlObject(self.yaml_file_path, 
-                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name, use_cache=True)
+                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name, self.sparql_endpoint, 
+                                use_cache=True)
             return self._yaml_object
 
 
     def highlight_region(self):
-        return highlight_region(self.yaml_object, self.sparql_endpoint)
+        return highlight_region(self.yaml_object)
 
     def resolve_cell(self, column, row):
-        return resolve_cell(self.yaml_object, column, row, self.sparql_endpoint)
+        return resolve_cell(self.yaml_object, column, row)
     
     def generate_download_file(self, filetype):
-        return generate_download_file(self.yaml_object, filetype, self.sparql_endpoint)
+        return generate_download_file(self.yaml_object, filetype)
 
 
     @staticmethod
@@ -469,8 +466,6 @@ class WikiRegionFile(db.Model):
         project_file=self.sheet.project_file
         item_table=self.item_table
         
-        add_excel_file_to_bindings(self.sheet.project_file.filepath, self.sheet.name)
-        
         if Path(self.wikifier_output_filepath).exists():
             process_wikified_output_file(self.wikifier_output_filepath, item_table, project_file.filepath, self.sheet.name)
 
@@ -484,7 +479,6 @@ class WikiRegionFile(db.Model):
         self._item_table=None
 
     def serialize_and_save(self, item_table):
-        from backend_code.utility_functions import save_wikified_result
         serialized_table = item_table.serialize_table(self.sparql_endpoint)
         save_wikified_result(serialized_table['rowData'], self.serialized_wikifier_output_filepath)
         return serialized_table

@@ -7,6 +7,9 @@ Changes in current unnamed version (wip)
   - plain variable n is now $n for consistency
 * added reserved variable $sheet for name of the current sheet
 * added support for references
+* change to API: when creating YamlObject, also need to include sparql_endpoint
+* bug fixes:
+  - sparql_endpoint now updates in bindings when creating YamlObject, so that instance_of uses YO endpoint
 
 Changes in version 2.0a3
 ------------------------

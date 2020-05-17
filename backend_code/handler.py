@@ -40,7 +40,8 @@ def parse_time_for_dict(response, sparql_endpoint):
                         response["precision"] = translate_precision_to_integer(response["precision"])
                     response["value"] = datetime_string
 
-def resolve_cell(yaml_object, col, row, sparql_endpoint):
+def resolve_cell(yaml_object, col, row):
+    sparql_endpoint=yaml_object.sparql_endpoint
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     try:
         item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(yaml_object.eval_template, context)
@@ -149,7 +150,8 @@ def update_highlight_data(data, item_parsed, qualifiers_parsed, references_parse
             data[label] |= attribute_cells
 
 
-def highlight_region(yaml_object, sparql_endpoint):
+def highlight_region(yaml_object):
+    sparql_endpoint=yaml_object.sparql_endpoint
     if yaml_object.use_cache:
         data=yaml_object.cacher.get_highlight_region()
         if data:
@@ -190,7 +192,8 @@ def highlight_region(yaml_object, sparql_endpoint):
 
 
 
-def generate_download_file(yaml_object, filetype, sparql_endpoint):
+def generate_download_file(yaml_object, filetype):
+    sparql_endpoint=yaml_object.sparql_endpoint
     response=dict()
     data=[]
     if yaml_object.use_cache:

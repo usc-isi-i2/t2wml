@@ -5,13 +5,17 @@ class BindingsClass:
         self.item_table=None
         self.excel_sheet=None
         self.sparql_endpoint=None
+    
 
 bindings=BindingsClass()
 
-def update_bindings(item_table, sheet) -> None:
+def update_bindings(sheet=None, item_table=None, sparql_endpoint=None) -> None:
     """
     This function updates the bindings dictionary with the excel_file, item_table, and sparql endpoint
     """
-    
-    bindings.excel_sheet=sheet
-    bindings.item_table = item_table
+    if sheet:
+        bindings.excel_sheet=sheet
+    if item_table:
+        bindings.item_table = item_table
+    if sparql_endpoint:
+        bindings.sparql_endpoint = sparql_endpoint
