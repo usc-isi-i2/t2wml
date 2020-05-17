@@ -3,7 +3,7 @@ statementMapping:
     - left: C
       right: D
       top: 4
-      bottom: =value[A:D, $top+n] == "" -> $top+n-3
+      bottom: =$end-2
       skip_row:
         - =value[A:B, $row] == "" and value[C:D, $row] != ""
         - =contains(value[B, $row], "year")
@@ -13,7 +13,7 @@ statementMapping:
     value: =value[$col, $row]
     qualifier:
       - property: P585 #point in time
-        value: =value[A:B, $row-n] == "" and value[C:D, $row-n] != "" -> value[$col, $row-n]
+        value: =value[A:B, $row-$n] == "" and value[C:D, $row-$n] != "" -> value[$col, $row-$n]
         calendar: Q1985727
         precision: year
         time_zone: 0

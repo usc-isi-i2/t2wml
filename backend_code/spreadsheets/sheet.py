@@ -11,6 +11,7 @@ class Sheet:
     #a class to wrap ALL sheet interactions, so that all access to spreadsheet goes through here
     def __init__(self, data_filepath, sheet_name):
         sc=cache_class(data_filepath, sheet_name)
+        self.sheet_name=sheet_name
         self.data=sc.get_sheet()
         #self.add_empty_row()
     

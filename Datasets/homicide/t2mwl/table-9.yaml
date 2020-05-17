@@ -8,7 +8,7 @@ statementMapping:
         - =value[A, $row] != "" and value[B:D, $row] == ""
       # skip_row: item[A, $row].instance_of Q48277
   template:
-    item: =item[A, $row-n]
+    item: =item[A, $row-$n]
     property: C3002 # murder
     value: =value[$col, $row]
     qualifier:
@@ -19,10 +19,10 @@ statementMapping:
         time_zone: 0
         format: "%Y"
       - property: P6001 # applies to people
-        value: =value[A, $row-n] != "" and value[B:D, $row-n] == "" -> item[A, $row-n]
-        # value: item[A, $row-n].instance_of Q48277 -> item[A, $row-n]
+        value: =value[A, $row-$n] != "" and value[B:D, $row-$n] == "" -> item[A, $row-$n]
+        # value: item[A, $row-$n].instance_of Q48277 -> item[A, $row-$n]
         # Would be nice to write this as 
-        # value: item[A, $row-n].instance_of Q48277
+        # value: item[A, $row-$n].instance_of Q48277
         # so when the predicate is true, it keeps the item
       - property: P123 #source
         value: =item[B, $row]

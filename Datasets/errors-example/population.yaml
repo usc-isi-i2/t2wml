@@ -6,7 +6,7 @@ statementMapping:
       top: 3
       bottom: 12
   template:
-    item: =item[A, $row-n]
+    item: =item[A, $row-$n]
     property: P1082 #population
     value: =value[$col, $row]
     qualifier:

@@ -7,7 +7,7 @@ statementMapping:
       skip_column:
         - =value[$col, 5] == "Source"
   template:
-    item: =item[$col-n, 4]
+    item: =item[$col-$n, 4]
     property: C3002 # murder
     value: =value[$col, $row]
     qualifier:
@@ -20,4 +20,4 @@ statementMapping:
       - property: P6001 # applies to people
         value: =item[$col, 5]
       - property: P123 #source
-        value: =value[$col-n, 5] == "Source" -> item[$col-n, $row]
+        value: =value[$col-$n, 5] == "Source" -> item[$col-$n, $row]

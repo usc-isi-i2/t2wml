@@ -15,6 +15,6 @@ statementMapping:
         time_zone: 0
         format: "%Y"
       - property: P6001 # applies to people
-        value: =item[$col-n, 3]
+        value: =item[$col-$n, 3]
       - property: P248 # stated in
         value: =item[B, $row]

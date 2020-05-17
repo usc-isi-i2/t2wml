@@ -28,7 +28,7 @@ def iter_on_n(expression, context={}):
     upper_limit= max(len(bindings.excel_sheet), len(bindings.excel_sheet[0]))
     for n in range(0, upper_limit):
         try:
-            context_dir={"n":n}
+            context_dir={"t_var_n":n}
             context_dir.update(context)
             return_value= t2wml_parse(expression, context_dir)
             if return_value:
