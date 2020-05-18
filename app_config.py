@@ -11,9 +11,7 @@ if BASEDIR not in sys.path:
     sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
 __CWD__ = os.getcwd()
-UPLOAD_FOLDER = (Path.cwd() / "config" / "uploads")
-CODE_FOLDER = str(Path.cwd() / "Code")
-ETK_PATH = str(Path.cwd().parent / "etk")
+UPLOAD_FOLDER = (Path.cwd() / "storage")
 DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")
 AUTO_MIGRATE=True #only set to true if database is sqlite
 
@@ -24,8 +22,6 @@ app.secret_key = "secret key" # This will no longer be used once we stop using s
 class AppConfig:
     UPLOAD_FOLDER = UPLOAD_FOLDER
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
-    CODE_FOLDER = CODE_FOLDER
-    ETK_PATH = ETK_PATH
     downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(BASEDIR, 'app.db')
