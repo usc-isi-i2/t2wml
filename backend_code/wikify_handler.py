@@ -33,7 +33,7 @@ def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name
     return item_table.serialize_table(sparql_endpoint)
 
 
-def call_wikifiy_service(csv_filepath: str, col_offset: int, row_offset: int):
+def call_wikify_service(csv_filepath: str, col_offset: int, row_offset: int):
     """
     This function calls the wikifier service and creates a cell to qnode dictionary based on the response
     cell to qnode dictionary = { 'A4': 'Q383', 'B5': 'Q6892' }
@@ -74,7 +74,7 @@ def wikify_region(region: str, excel_filepath: str, sheet_name: str = None):
     """
     cell_range = _cell_range_str_to_tuples(region)
     file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
-    cell_qnode_map = call_wikifiy_service(file_path, cell_range[0][0], cell_range[0][1])
+    cell_qnode_map = call_wikify_service(file_path, cell_range[0][0], cell_range[0][1])
     return cell_qnode_map
 
 
