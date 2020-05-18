@@ -6,7 +6,7 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 #IMPORTANT: the import from models must happen before the other backend_code imports because of flask circular imports
 from backend_code.models import YamlObject 
 from backend_code.item_table import ItemTable
-from backend_code.handler import generate_download_file
+from backend_code.t2wml_handler import generate_download_file
 from backend_code.wikify_handler import process_wikified_output_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name
 

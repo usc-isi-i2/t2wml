@@ -17,7 +17,7 @@ import unittest
 from pathlib import Path
 from backend_code.item_table import ItemTable
 from backend_code.wikify_handler import process_wikified_output_file
-from backend_code.handler import generate_download_file
+from backend_code.t2wml_handler import generate_download_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name
 import tempfile
 
