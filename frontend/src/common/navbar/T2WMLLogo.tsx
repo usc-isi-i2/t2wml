@@ -3,8 +3,18 @@ import React from 'react';
 // T2WMLLogo
 import { Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-class T2WMLLogo extends React.Component {
-  constructor(props) {
+interface T2WMLLogoProperteis {
+}
+
+interface T2WMLLogoState {
+  logo: string;
+  version: string;
+  homeUrl: string;
+}
+
+
+class T2WMLLogo extends React.Component<T2WMLLogoProperteis, T2WMLLogoState> {
+  constructor(props: T2WMLLogoProperteis) {
     super(props);
 
     // init state
@@ -18,7 +28,7 @@ class T2WMLLogo extends React.Component {
   render() {
     const { logo, version, homeUrl } = this.state;
     const logoTooltipHtml = (
-      <Tooltip style={{ width: "fit-content" }}>
+      <Tooltip style={{ width: "fit-content" }} id="navbar-tooltip">
         <span className="text-left">
           Table to Wikidata<br />
           Mapping Language

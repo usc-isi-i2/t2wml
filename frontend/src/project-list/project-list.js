@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import './project-list.css';
 import * as utils from '../common/utils'
-import T2WMLLogo from '../common/T2WMLLogo'
+import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 // App
-import { Button, Card, Col, Form, FormControl, Image, InputGroup, Modal, Nav, Navbar, NavDropdown, OverlayTrigger, Row, Spinner, Table, Tooltip } from 'react-bootstrap';
+import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 import { backendGet, backendPost } from '../common/comm';
 import { logout } from '../common/session';
+
+import DeleteProject from './delete-project';
+import RenameProject from './rename-project';
+import DownloadProject from './dowmload-project';
+import CreateProject from './create-project';
 
 // console.log
 const LOG = {
@@ -19,9 +24,11 @@ const LOG = {
   link: "background: white; color: blue"
 };
 
-class ProjectList extends React.Component {
+class ProjectList extends Component {
   constructor(props) {
     super(props);
+
+    // this.handleRenameProject = this.handleRenameProject.bind(this);
 
     // fetch data from flask
     // const { userData } = this.props;
@@ -33,7 +40,6 @@ class ProjectList extends React.Component {
     this.state = {
 
       // appearance
-      showSettings: false,
       showSpinner: true,
       showCreateProject: false,
       showDeleteProject: false,
@@ -46,10 +52,8 @@ class ProjectList extends React.Component {
       userData: {},
 
       // temp in form
-      tempCreateProject: "Untitled project",
-      isTempCreateProjectVaild: true,
       tempRenamePid: null,
-      tempRenameProject: "Untitled project",
+      tempRenameProject: "",
       isTempRenameProjectVaild: true,
       tempSearch: "",
 
@@ -114,8 +118,8 @@ class ProjectList extends React.Component {
     });
   }
 
-  handleCreateProject(event) {
-    let ptitle = this.state.tempCreateProject.trim();
+  handleCreateProject(name) {
+    let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
     // before sending request
@@ -149,6 +153,10 @@ class ProjectList extends React.Component {
       this.setState({ showCreateProject: false, showSpinner: false });
       this.handleLogout();
     });
+  }
+
+  cancelCreateProject() {
+    this.setState({ showCreateProject: false });
   }
 
   handleDeleteProject(pid = "") {
@@ -195,6 +203,10 @@ class ProjectList extends React.Component {
     });
   }
 
+  cancelDeleteProject() {
+    this.setState({ showDeleteProject: false, deletingPid: "" });
+  }
+
   handleDownloadProject(pid = "") {
     if (pid === "") {
       pid = this.state.downloadingPid;
@@ -234,13 +246,17 @@ class ProjectList extends React.Component {
     });
   }
 
+  cancelDownloadProject() {
+    this.setState({ showDownloadProject: false, downloadingPid: "" });
+  }
+
   handleLogout() {
     logout();
   }
 
-  handleRenameProject(event) {
+  handleRenameProject(name) {
     let pid = this.state.tempRenamePid;
-    let ptitle = this.state.tempRenameProject.trim();
+    let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
     // before sending request
@@ -254,7 +270,7 @@ class ProjectList extends React.Component {
     backendPost("/rename_project", formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
       console.log(json);
-
+      
       // do something here
       if (json !== null) {
         // success
@@ -282,20 +298,8 @@ class ProjectList extends React.Component {
     });
   }
 
-  handleSaveSettings(event) {
-    console.log("<App> updated settings");
-
-    // update settings
-    window.sparqlEndpoint = this.refs.sparqlEndpoint.value;
-    this.setState({ showSettings: false });
-
-    // notify backend
-    let formData = new FormData();
-    formData.append("pid", window.pid);
-    formData.append("endpoint", window.sparqlEndpoint);
-    backendPost("/update_setting", formData).catch((error) => {
-      console.log(error);
-    });
+  cancelRenameProject() {
+    this.setState({ showRenameProject: false });
   }
 
   handleSortProjects(willSortBy, willBeAscending = null, newProjectData = null) {
@@ -341,214 +345,6 @@ class ProjectList extends React.Component {
       sortBy: willSortBy,
       isAscending: willBeAscending,
     });
-  }
-
-  renderCreateProject() {
-    return (
-      <Modal show={this.state.showCreateProject} onHide={() => { /* do nothing */ }}>
-
-        {/* loading spinner */}
-        <div className="mySpinner" hidden={!this.state.showSpinner}>
-          <Spinner animation="border" />
-        </div>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>New&nbsp;Project</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-
-            {/* project title */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event) => {
-              this.setState({
-                tempCreateProject: event.target.value,
-                isTempCreateProjectVaild: utils.isValidTitle(event.target.value)
-              })
-            }}>
-              {/* <Form.Label column sm="12" md="2" className="text-right">
-                Title
-              </Form.Label> */}
-              <Col sm="12" md="12">
-                <Form.Control
-                  type="text"
-                  defaultValue=""
-                  placeholder={this.state.tempCreateProject}
-                  autoFocus={true}
-                  style={this.state.isTempCreateProjectVaild ? {} : { border: "1px solid red" }}
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      // if press enter (13), then do create new project
-                      event.preventDefault();
-                      this.handleCreateProject();
-                    }
-                  }}
-                />
-                <div className="small" style={this.state.isTempCreateProjectVaild ? { display: "none" } : { color: "red" }}>
-                  <span>*&nbsp;Cannot contain any of the following characters:&nbsp;</span>
-                  <code>&#92;&nbsp;&#47;&nbsp;&#58;&nbsp;&#42;&nbsp;&#63;&nbsp;&#34;&nbsp;&#60;&nbsp;&#62;&nbsp;&#124;</code>
-                </div>
-              </Col>
-            </Form.Group>
-
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showCreateProject: false })} >
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={this.handleCreateProject.bind(this)} disabled={!(this.state.isTempCreateProjectVaild)}>
-            Create
-          </Button>
-        </Modal.Footer>
-
-      </Modal>
-    );
-  }
-
-  renderDeleteProject() {
-    return (
-      <Modal show={this.state.showDeleteProject} onHide={() => { /* do nothing */ }}>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Delete&nbsp;Project</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Col sm="12" md="12">
-                <Form.Control
-                  plaintext
-                  readOnly
-                  defaultValue={"You are about to delete this project..."}
-                />
-              </Col>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showDeleteProject: false, deletingPid: "" })} >
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={() => this.handleDeleteProject()} style={{ backgroundColor: "#990000", borderColor: "#990000" }}>
-            Confirm
-          </Button>
-        </Modal.Footer>
-
-      </Modal>
-    );
-  }
-
-  renderDownloadProject() {
-    return (
-      <Modal show={this.state.showDownloadProject} onHide={() => { /* do nothing */ }}>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Download&nbsp;Project</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Col sm="12" md="12">
-                <Form.Control
-                  plaintext
-                  readOnly
-                  defaultValue={"Feature not available"}
-                  // defaultValue={"It might take some time to gather and compress files..."}
-                />
-              </Col>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showDownloadProject: false, downloadingPid: "" })} >
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={() => this.handleDownloadProject()} disabled>
-            Start
-          </Button>
-        </Modal.Footer>
-
-      </Modal>
-    );
-  }
-
-  renderRenameProject() {
-    return (
-      <Modal show={this.state.showRenameProject} onHide={() => { /* do nothing */ }}>
-
-        {/* loading spinner */}
-        <div className="mySpinner" hidden={!this.state.showSpinner}>
-          <Spinner animation="border" />
-        </div>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Rename&nbsp;Project</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-
-            {/* project title */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event) => {
-              this.setState({
-                tempRenameProject: event.target.value,
-                isTempRenameProjectVaild: utils.isValidTitle(event.target.value)
-              })
-            }}>
-              <Col sm="12" md="12">
-                <Form.Control
-                  type="text"
-                  defaultValue={this.state.tempRenameProject}
-                  placeholder="Untitled project"
-                  autoFocus={true}
-                  style={this.state.isTempRenameProjectVaild ? {} : { border: "1px solid red" }}
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      // if press enter (13), then do create new project
-                      event.preventDefault();
-                      this.handleRenameProject();
-                    }
-                  }}
-                />
-                <div className="small" style={this.state.isTempRenameProjectVaild ? { display: "none" } : { color: "red" }}>
-                  <span>*&nbsp;Cannot contain any of the following characters:&nbsp;</span>
-                  <code>&#92;&nbsp;&#47;&nbsp;&#58;&nbsp;&#42;&nbsp;&#63;&nbsp;&#34;&nbsp;&#60;&nbsp;&#62;&nbsp;&#124;</code>
-                </div>
-              </Col>
-            </Form.Group>
-
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showRenameProject: false })} >
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={this.handleRenameProject.bind(this)} disabled={!(this.state.isTempRenameProjectVaild)}>
-            Rename
-          </Button>
-        </Modal.Footer>
-
-      </Modal>
-    );
   }
 
   renderProjects() {
@@ -668,7 +464,7 @@ class ProjectList extends React.Component {
                   onClick={() => this.setState({ showDeleteProject: true, deletingPid: pid })}
                 >
                   <FontAwesomeIcon icon={faTrashAlt} />
-                </span>
+                </span>     
               </OverlayTrigger>
             </td>
           </tr>
@@ -753,77 +549,36 @@ class ProjectList extends React.Component {
     );
   }
 
-  renderSettings() {
+  renderModals() {
     return (
-      <Modal show={this.state.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Settings</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-
-            {/* server */}
-            {/* <Form.Group as={Row} onChange={(event) => this.setState({ tempServer: event.target.value })}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Server
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Form.Control type="url" defaultValue={window.server} />
-              </Col>
-            </Form.Group> */}
-
-            {/* query server */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                SPARQL&nbsp;endpoint
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Form.Control
-                  as="select"
-                  defaultValue={window.sparqlEndpoint}
-                  ref="sparqlEndpoint"
-                >
-                  <option value="http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql">http://sitaware.isi.edu:8080/bigdata/namespace/wdq/sparql</option>
-                  <option value="http://kg2018a.isi.edu:8888/bigdata/namespace/wdq/sparql">http://kg2018a.isi.edu:8888/bigdata/namespace/wdq/sparql</option>
-                  <option value="https://query.wikidata.org/sparql">https://query.wikidata.org/sparql</option>
-                </Form.Control>
-              </Col>
-            </Form.Group>
-
-            {/* cache (for clear qnode cache feature) */}
-            {/* <Form.Group as={Row}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Cache
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Button variant="secondary" onClick={() => {
-                  window.Wikifier.setState({ cacheQnode: {} });
-                  alert("Emptied qnode cache.");
-                  window.Wikifier.updateCacheQnode();
-                }}>
-                  Empty qnode cache
-                </Button>
-              </Col>
-            </Form.Group> */}
-
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false })}>
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={this.handleSaveSettings.bind(this)}>
-            Save
-          </Button>
-        </Modal.Footer>
-
-      </Modal>
+      <Fragment>
+        <DeleteProject 
+          showDeleteProject={this.state.showDeleteProject} 
+          handleDeleteProject={() => this.handleDeleteProject()}
+          cancelDeleteProject={() => this.cancelDeleteProject()}
+        />
+        <DownloadProject 
+          showDownloadProject={this.state.showDownloadProject} 
+          handleDownloadProject={() => this.handleDownloadProject()}
+          cancelDownloadProject={() => this.cancelDownloadProject()}
+        />
+        <RenameProject 
+          showRenameProject={this.state.showRenameProject}
+          showSpinner={this.state.showSpinner}
+          tempRenameProject={this.state.tempRenameProject}
+          isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
+          handleRenameProject={(name) => this.handleRenameProject(name)}
+          cancelRenameProject={() => this.cancelRenameProject()}
+        />
+        <CreateProject
+          showCreateProject={this.state.showCreateProject}
+          showSpinner={this.state.showSpinner}
+          // tempCreateProject={this.state.tempCreateProject}
+          // isTempCreateProjectVaild={this.state.isTempCreateProjectVaild}
+          handleCreateProject={(name) => this.handleCreateProject(name)}
+          cancelCreateProject={() =>this.cancelCreateProject()}
+        />
+      </Fragment>
     );
   }
 
@@ -836,49 +591,11 @@ class ProjectList extends React.Component {
           <Spinner animation="border" />
         </div>
 
-        {this.renderCreateProject()}
-        {this.renderDeleteProject()}
-        {this.renderDownloadProject()}
-        {this.renderRenameProject()}
-        {this.renderSettings()}
+        {this.renderModals()}
 
-        {/* navbar */}
-        <div>
-          <Navbar className="shadow" bg="dark" variant="dark" sticky="top" style={{ height: "50px" }}>
-
-            {/* logo */}
-            <T2WMLLogo />
-
-            {/* avatar */}
-            <Nav className="ml-auto">\
-              <NavDropdown alignRight title={
-                <Image src={this.state.userData.picture} rounded style={{ width: "30px", height: "30px" }} />
-              }>
-                <NavDropdown.Item disabled style={{ color: "gray" }}>
-                  <div style={{ fontWeight: "bold" }}>
-                    <FontAwesomeIcon icon={faUser} />
-                    &nbsp;{this.state.userData.name}
-                  </div>
-                  <div>{this.state.userData.email}</div>
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                {/* <NavDropdown.Item
-                  onClick={() => this.setState({ showSettings: true })}
-                >
-                  Settings
-                </NavDropdown.Item>
-                <NavDropdown.Divider /> */}
-                <NavDropdown.Item
-                  style={{ color: "hsl(0, 100%, 30%)" }}
-                  onClick={() => this.handleLogout()}
-                >
-                  Log&nbsp;out
-                </NavDropdown.Item>
-              </NavDropdown>
-            </Nav>
-
-          </Navbar>
-        </div>
+        <Navbar userData={this.state.userData}
+        handleLogout={() => this.handleLogout()} />
+        
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
@@ -901,8 +618,8 @@ class ProjectList extends React.Component {
                     style={{ fontWeight: "600" }}
                     onClick={() => {
                       this.setState({
-                        tempCreateProject: "Untitled project",
-                        isTempCreateProjectVaild: true,
+                        // tempCreateProject: "Untitled project",
+                        // isTempCreateProjectVaild: true,
                         showCreateProject: true
                       });
                     }}

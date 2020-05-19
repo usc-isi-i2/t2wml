@@ -3,15 +3,15 @@ import './project.css';
 import './ag-grid.css'
 import './ag-theme-balham.css'
 import * as utils from '../common/utils'
-import T2WMLLogo from '../common/T2WMLLogo'
+import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuestion, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faQuestion } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import SplitPane from 'react-split-pane'
-import { Button, ButtonGroup, Card, Col, Dropdown, Form, Image, Modal, Nav, Navbar, NavDropdown, OverlayTrigger, Popover, Row, Spinner, Toast, Tooltip, InputGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, Card, Col, Dropdown, Form, Modal, OverlayTrigger, Popover, Row, Spinner, Toast, Tooltip, InputGroup } from 'react-bootstrap';
 
 // Table
 import { AgGridReact } from 'ag-grid-react';
@@ -208,6 +208,10 @@ class Project extends React.Component {
     logout();
   }
 
+  onShowSettingsClicked() {
+    this.setState({ showSettings: true });
+  }
+
   handleSaveSettings() {
     console.log("<App> updated settings");
 
@@ -297,6 +301,10 @@ class Project extends React.Component {
     const { showSpinner, userData } = this.state;
     return (
       <div>
+        <Navbar userData={userData}
+        showSettings="true"
+        onShowSettingsClicked={() => this.onShowSettingsClicked()}
+        handleLogout={() => this.handleLogout()} />
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!showSpinner} style={{ height: "100%" }}>
@@ -306,42 +314,7 @@ class Project extends React.Component {
         {/* modal */}
         {this.renderSettings()}
 
-        {/* navbar */}
-        <Navbar className="shadow" bg="dark" sticky="top" variant="dark" style={{ height: "50px" }}>
 
-          {/* logo */}
-          <T2WMLLogo />
-
-          {/* avatar */}
-          <Nav className="ml-auto">
-            <NavDropdown alignRight title={<Image src={userData.picture} style={{ width: "30px", height: "30px" }} rounded />}>
-
-              {/* user info */}
-              <NavDropdown.Item style={{ color: "gray" }} disabled>
-                <div style={{ fontWeight: "bold" }}>
-                  <FontAwesomeIcon icon={faUser} />&nbsp;{userData.name}
-                </div>
-                <div>
-                  {userData.email}
-                </div>
-              </NavDropdown.Item>
-
-              {/* settings */}
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={() => this.setState({ showSettings: true })}>
-                Settings
-              </NavDropdown.Item>
-
-              {/* log out */}
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={() => this.handleLogout()} style={{ color: "hsl(0, 100%, 30%)" }}>
-                Log out
-              </NavDropdown.Item>
-
-            </NavDropdown>
-          </Nav>
-
-        </Navbar>
 
         {/* content */}
         <div>
@@ -1146,6 +1119,7 @@ class TableViewer extends React.Component {
           </Card.Body>
 
           {/* sheet selector */}
+          {/* TODO: add scrollbar width */}
           <Card.Footer
             hidden={isCSV}
             id="sheetSelector" // apply custom scroll bar

@@ -1,15 +1,15 @@
 import React from 'react';
 import './login.css';
-import T2WMLLogo from '../common/T2WMLLogo'
+import Navbar from '../common/navbar/navbar';
 import Config from '../common/config';
 
 // icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 // App
-import { Button, Card, Navbar } from 'react-bootstrap';
-import { GoogleLogin } from 'react-google-login';
+import { Button, Card } from 'react-bootstrap';
+import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
 import { backendPost, backendGet } from '../common/comm';
 
 // console.log
@@ -20,16 +20,6 @@ const LOG = {
 };
 
 class Login extends React.Component {
-  constructor(props) {
-    super(props);
-
-    // init state
-    this.state = {
-
-      // none
-
-    };
-  }
 
   async componentDidMount() {
     document.title = "T2WML - Login";
@@ -43,17 +33,19 @@ class Login extends React.Component {
     }
   }
 
-  onGoogleFailure(googleUser) {
+  onGoogleFailure(googleUser: any) {
     console.log(googleUser);
     alert("Login failed!\n\nError: " + googleUser.error);
   }
 
-  onGoogleSuccess(googleUser) {
+  onGoogleSuccess(googleUser: GoogleLoginResponse | GoogleLoginResponseOffline) {
     // send request
     console.log("<App> -> %c/login%c to verify id_token", LOG.link, LOG.default);
     let formData = new FormData();
     formData.append("source", "Google");
-    formData.append("token", googleUser.getAuthResponse().id_token);
+    if (googleUser as GoogleLoginResponse) {
+      formData.append("token", (googleUser as GoogleLoginResponse).getAuthResponse()!.id_token);
+    }
     backendPost('login', formData).then(json => {
       console.log("<App> <- %c/login%c with:", LOG.link, LOG.default);
       console.log(json);
@@ -76,16 +68,7 @@ class Login extends React.Component {
   render() {
     return (
       <div>
-
-        {/* navbar */}
-        <div>
-          <Navbar className="shadow" bg="dark" variant="dark" sticky="top" style={{ height: "50px" }}>
-
-            {/* logo */}
-            <T2WMLLogo />
-
-          </Navbar>
-        </div>
+        <Navbar loginPage></Navbar>
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
