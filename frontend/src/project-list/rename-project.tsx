@@ -21,8 +21,10 @@ interface RenameState {
 }
 
 class RenameProject extends Component<RenameProperteis, RenameState> {
+  private input: React.RefObject<HTMLInputElement>;
   constructor(props: RenameProperteis) {
     super(props);
+    this.input = React.createRef();
 
     this.state = {
       name: this.props.tempRenameProject,
@@ -49,14 +51,15 @@ class RenameProject extends Component<RenameProperteis, RenameState> {
           <Form className="container">
 
             {/* project title */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event: any) => {
+            <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event: Event) => {
               this.setState({
-                name: event.target.value,
-                isNameVaild: utils.isValidTitle(event.target.value)
+                name: (event.target as HTMLInputElement).value,
+                isNameVaild: utils.isValidTitle((event.target as HTMLInputElement).value)
               })
             }}>
               <Col sm="12" md="12">
                 <Form.Control
+                  ref={this.input}
                   type="text"
                   defaultValue={this.props.tempRenameProject}
                   placeholder="Untitled project"
@@ -66,7 +69,7 @@ class RenameProject extends Component<RenameProperteis, RenameState> {
                     if (event.key === "Enter") {
                       // if press enter (13), then do create new project
                       event.preventDefault();
-                      this.props.handleRenameProject(this.state.name);
+                      this.props.handleRenameProject(event.target.value);
                     }
                   }}
                 />
@@ -85,7 +88,7 @@ class RenameProject extends Component<RenameProperteis, RenameState> {
           <Button variant="outline-dark" onClick={() => this.props.cancelRenameProject()} >
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => this.props.handleRenameProject(this.state.name)} disabled={!(this.state.isNameVaild)}>
+          <Button variant="dark" onClick={() => {this.input.current ? this.props.handleRenameProject(this.input.current!.value): this.props.handleRenameProject('')}} disabled={!(this.state.isNameVaild)}>
             Rename
           </Button>
         </Modal.Footer>

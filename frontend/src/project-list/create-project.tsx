@@ -50,10 +50,10 @@ class CreateProject extends Component<CreateProperteis, CreateState> {
           <Form className="container">
 
             {/* project title */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event: any) => {
+            <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event: Event) => {
               this.setState({
-                tempCreateProject: event.target.value,
-                isTempCreateProjectVaild: utils.isValidTitle(event.target.value)
+                tempCreateProject: (event.target as HTMLInputElement).value,
+                isTempCreateProjectVaild: utils.isValidTitle((event.target as HTMLInputElement).value)
               })
             }}>
               {/* <Form.Label column sm="12" md="2" className="text-right">
@@ -67,6 +67,7 @@ class CreateProject extends Component<CreateProperteis, CreateState> {
                   autoFocus={true}
                   style={this.state.isTempCreateProjectVaild ? {} : { border: "1px solid red" }}
                   onKeyPress={(event: any) => {
+                    // todo: add type event
                     if (event.key === "Enter") {
                       // if press enter (13), then do create new project
                       event.preventDefault();

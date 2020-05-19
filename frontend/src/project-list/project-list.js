@@ -52,10 +52,8 @@ class ProjectList extends Component {
       userData: {},
 
       // temp in form
-      // tempCreateProject: "Untitled project",
-      // isTempCreateProjectVaild: true,
       tempRenamePid: null,
-      tempRenameProject: "Untitled project",
+      tempRenameProject: "",
       isTempRenameProjectVaild: true,
       tempSearch: "",
 
@@ -257,7 +255,6 @@ class ProjectList extends Component {
   }
 
   handleRenameProject(name) {
-    debugger
     let pid = this.state.tempRenamePid;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
@@ -273,8 +270,7 @@ class ProjectList extends Component {
     backendPost("/rename_project", formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
       console.log(json);
-
-      debugger
+      
       // do something here
       if (json !== null) {
         // success
@@ -597,7 +593,6 @@ class ProjectList extends Component {
 
         {this.renderModals()}
 
-{/* remove show settings */}
         <Navbar userData={this.state.userData}
         handleLogout={() => this.handleLogout()} />
         
