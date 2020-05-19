@@ -30,7 +30,6 @@ REQUIREMENTS = [
     'google-api-python-client>=1.7.11',
     'numpy>=1.18.2',
     'pandas>=1.0.3',
-    'lark-parser>=0.7.1',
     'etk>=2.1.7',
     'en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz',
     'waitress>=1.4.3',
