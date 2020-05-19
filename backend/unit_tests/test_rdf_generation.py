@@ -58,14 +58,12 @@ class TestRDFGeneration(unittest.TestCase):
             results=f.read()
         if not sheet_name:
             sheet_name = get_first_sheet_name(self.input_file_path_1)
-        file_name = Path(self.input_file_path_1).name
-
-        new_file_path = '{}/{}'.format(output_directory, file_name)
+        file_path = self.input_file_path_1
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
+        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_1, item_table, new_file_path, sheet_name, self.sparql_endpoint)
+        yc = YamlObject(self.t2wml_spec_path_1, item_table, file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
@@ -77,14 +75,12 @@ class TestRDFGeneration(unittest.TestCase):
             results=f.read()
         if not sheet_name:
             sheet_name = get_first_sheet_name(self.input_file_path_1)
-        file_name = Path(self.input_file_path_1).name
-
-        new_file_path = '{}/{}'.format(output_directory, file_name)
+        file_path = self.input_file_path_1
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
+        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_2, item_table, new_file_path, sheet_name, self.sparql_endpoint)
+        yc = YamlObject(self.t2wml_spec_path_2, item_table, file_path, sheet_name, self.sparql_endpoint)
 
 
         filetype = "ttl"
@@ -98,14 +94,13 @@ class TestRDFGeneration(unittest.TestCase):
             results=f.read()
         if not sheet_name:
             sheet_name = get_first_sheet_name(self.input_file_path_3)
-        file_name = Path(self.input_file_path_3).name
-
-        new_file_path = '{}/{}'.format(output_directory, file_name)
+        
+        file_path = self.input_file_path_3
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
+        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc= YamlObject(self.t2wml_spec_path_3, item_table, new_file_path, sheet_name, self.sparql_endpoint)
+        yc= YamlObject(self.t2wml_spec_path_3, item_table, file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
@@ -118,14 +113,12 @@ class TestRDFGeneration(unittest.TestCase):
             results=f.read()
         if not sheet_name:
             sheet_name = get_first_sheet_name(self.input_file_path_3)
-        file_name = Path(self.input_file_path_3).name
-
-        new_file_path = '{}/{}'.format(output_directory, file_name)
+        file_path = self.input_file_path_3
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, new_file_path, sheet_name)
+        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_4, item_table, new_file_path, sheet_name, self.sparql_endpoint)
+        yc = YamlObject(self.t2wml_spec_path_4, item_table, file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 

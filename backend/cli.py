@@ -6,7 +6,7 @@ import os
 
 def run_server():
     if os.name == 'nt':
-        os.system('waitress-serve --listen=0.0.0.0:5000 --threads 4 wsgi:app')
+        os.system('waitress-serve --listen=0.0.0.0:5000 --threads 4 backend.wsgi:app')
     else:
-        os.system('gunicorn --workers 4 --bind 0.0.0.0:5000 wsgi:app')
+        os.system('gunicorn --workers 4 --bind 0.0.0.0:5000 backend.wsgi:app')
 

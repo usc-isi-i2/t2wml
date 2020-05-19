@@ -16,7 +16,7 @@ CLASSIFIERS = [
 ]
 
 SCRIPTS = [
-    't2wml-server=cli:run_server',
+    't2wml-server=backend.cli:run_server',
 ]
 
 REQUIREMENTS = [
@@ -39,13 +39,13 @@ REQUIREMENTS = [
 
 PACKAGES = find_packages() + ['.']
 
+
 setup(
     author="USC ISI",
     name='t2wml-standalone',
     version=__version__,
     description='A standalone version of T2WML',
-    long_description=open(os.path.join(
-        os.path.dirname(__file__), 'README.md'), encoding='utf-8').read(),
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding='utf-8').read(),
     license='BSD License',
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
