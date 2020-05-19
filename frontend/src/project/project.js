@@ -547,7 +547,7 @@ class TableViewer extends React.Component {
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("pid", window.pid);
-    formData.append("wikifier_output", file);
+    formData.append("file", file);
     backendPost("/upload_wikifier_output", formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
       console.log(json);

@@ -215,7 +215,9 @@ class ProjectFile(db.Model):
         return is_csv
 
     @staticmethod
-    def create(file, uid, pid):
+    def create(file, project):
+        pid=project.id
+        uid=project.user_id
         pf_id=generate_id()
         file_extension=Path(file.filename).suffix
         new_filename=pf_id+file_extension

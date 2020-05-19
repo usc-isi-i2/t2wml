@@ -19,8 +19,8 @@ debug_mode = False
 class UserNotFoundException(Exception):
     pass
 
-def get_template_path(filename: str):
-    return (filename if not debug_mode else '{}_dev'.format(filename)) + '.html'
+class ProjectNotFoundException(Exception):
+    pass
 
 def get_user():
     if 'uid' not in session:
@@ -36,65 +36,32 @@ def get_user():
         raise UserNotFoundException
 
 def get_project():
-    user_id = session['uid']
-    project_id = request.form['pid']
-    project = Project.query.get(project_id)
-    if project.user_id!=user_id:
-        raise ValueError("unauthenticated project access")
-    return project
-
-def is_file_allowed(filename: str, file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS) -> bool:
-    """
-    This function checks if the file extension is present in the list of allowed file extensions
-    :param filename:
-    :param file_extensions:
-    :return:
-    """
-    return '.' in filename and get_file_extension(filename) in file_extensions
+    user=get_user()
+    try:
+        project_id = request.form['pid']
+        project = Project.query.get(project_id)
+        if project.user_id!=user.uid:
+            raise ValueError("unauthenticated project access")
+        return project
+    except:
+        raise ProjectNotFoundException
 
 
-def get_file_extension(filename: str) -> str:
-    """
-    This function returns the file extension of a file
-    :param filename:
-    :return:
-    """
-    return filename.split(".")[-1].lower()
-
-def file_upload_validator():
-    in_file=None
+def file_upload_validator(file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
     if 'file' not in request.files:
-        raise T2WMLExceptions.NoFilePartException("Missing 'file' parameter in the data file upload request")
+        raise T2WMLExceptions.NoFilePartException("Missing 'file' parameter in the file upload request")
 
     in_file = request.files['file']
     if in_file.filename == '':
-        raise T2WMLExceptions.BlankFileNameException("No data file selected for uploading")
+        raise T2WMLExceptions.BlankFileNameException("No file selected for uploading")
     
-    if not (in_file and is_file_allowed(in_file.filename)):
-        raise T2WMLExceptions.FileTypeNotSupportedException("File with extension '" + get_file_extension(in_file.filename) + "' is not a valid data file")
-    
+    file_extension=in_file.filename.split(".")[-1].lower()
+    file_allowed = file_extension in file_extensions
+    if not file_allowed:
+        raise T2WMLExceptions.FileTypeNotSupportedException("File with extension '"+file_extension+"' is not allowed")
+
     return in_file
     
-
-
-def wikified_output_validator():
-    """
-    This function helps in processing the wikifier output file upload request
-    :param uid:
-    :param pid:
-    :return:
-    """
-    in_file=None
-    if 'wikifier_output' not in request.files:
-        raise T2WMLExceptions.NoFilePartException("Missing 'file' parameter in the wikified output file upload request")
-    in_file = request.files['wikifier_output']
-    if in_file.filename == '':
-        raise T2WMLExceptions.BlankFileNameException("No wikified output file selected for uploading")
-
-    if not (in_file and is_file_allowed(in_file.filename, "csv")):
-        raise T2WMLExceptions.FileTypeNotSupportedException("File with extension '" + 
-                        get_file_extension(in_file.filename) + "' is not a valid wikified output file")
-    return in_file
 
 @app.route('/api/userinfo', methods=['GET'])
 def user_info():
@@ -109,33 +76,21 @@ def login():
     :return:
     """
     verification_status = False
-    try:
-        response = {"vs": None, 'error': None}
-        if 'token' in request.form and 'source' in request.form:
-            token = request.form['token']
-            source = request.form['source']
-            user_info, error = verify_google_login(token)
-            if user_info:
-                if source == "Google":
-                    user_id = "G"+user_info["sub"]
-                    u=User.get_or_create(user_id, **user_info)
-                    session['uid'] = u.uid
-                    verification_status = True
-        else:
-            if 'token' in request.form and 'source' not in request.form:
-                raise T2WMLExceptions.InvalidRequestException( "Missing 'source' parameter in the login request")
-            elif 'token' not in request.form and 'source' in request.form:
-                raise T2WMLExceptions.InvalidRequestException("Missing 'token' parameter in the login request")
-            elif 'token' not in request.form and 'source' not in request.form:
-                raise T2WMLExceptions.InvalidRequestException("Missing 'token' and 'source' parameters in the login request")
-        response["vs"] = verification_status
-        return json.dumps(response)
-    except T2WMLException as e:
-        response["error"]=e.error_dict
-        response["vs"] = False
-    except Exception as e:
-        response["error"]=make_frontend_err_dict(e)
-        response["vs"] = False
+    response = {"vs": None, 'error': None}
+    if 'token' in request.form and 'source' in request.form:
+        token = request.form['token']
+        source = request.form['source']
+        user_info, error = verify_google_login(token)
+        if user_info:
+            if source == "Google":
+                user_id = "G"+user_info["sub"]
+                u=User.get_or_create(user_id, **user_info)
+                session['uid'] = u.uid
+                verification_status = True
+    else:
+        raise T2WMLExceptions.InvalidRequestException("Missing 'token' and/or 'source' parameters in the login request")
+    response["vs"] = verification_status
+    return json.dumps(response)
 
 
 @app.route('/api/get_project_meta', methods=['POST'])
@@ -191,8 +146,9 @@ def upload_data_file():
                         "error": None
                     }
         try:
+            project=get_project()
             new_file=file_upload_validator()
-            project_file=ProjectFile.create(new_file, session['uid'], request.form['pid'])
+            project_file=ProjectFile.create(new_file, project)
             project_file.set_as_current()
             response["tableData"]=project_file.tableData()
             current_sheet=project_file.current_sheet
@@ -229,8 +185,8 @@ def change_sheet():
                 }
         
         try:
-            new_sheet_name = request.form['sheet_name']
             project=get_project()
+            new_sheet_name = request.form['sheet_name']
             project_file=project.current_file
             project_file.change_sheet(new_sheet_name)
             
@@ -261,8 +217,8 @@ def upload_wikifier_output():
     if 'uid' in session:
         response={"error":None}
         try:
-            in_file = wikified_output_validator()
             project=get_project()
+            in_file = file_upload_validator("csv")
             project.change_wikifier_file(in_file)
             if project.current_file:
                 sheet=project.current_file.current_sheet
@@ -310,11 +266,11 @@ def get_cell_statement():
     This function returns the statement of a particular cell
     :return:
     """
+    project = get_project()
     column = request.form["col"]
     row = request.form["row"]
     data={}
     try:
-        project = get_project()
         yaml_file = project.current_file.current_sheet.yaml_file
         if not yaml_file:
             raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
@@ -354,11 +310,11 @@ def wikify_region():
     and update the wikification result.
     :return:
     """
+    project = get_project()
     action = request.form["action"]
     region = request.form["region"]
     context = request.form["context"]
     flag = int(request.form["flag"])
-    project = get_project()
     data = {"error":None}
     try:
         if action == "wikify_region":
@@ -480,8 +436,8 @@ def update_settings():
     This function updates the settings from GUI
     :return:
     """
-    endpoint = request.form["endpoint"]
     project = get_project()
+    endpoint = request.form["endpoint"]
     project.update_sparql_endpoint(endpoint)
     return json.dumps(None)
 
