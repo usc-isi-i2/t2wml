@@ -61,15 +61,35 @@ def file_upload_validator(file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
         raise T2WMLExceptions.FileTypeNotSupportedException("File with extension '"+file_extension+"' is not allowed")
 
     return in_file
-    
+
+def json_response(func):
+    def wrapper(*args, **kwargs):
+        try:
+            data, return_code=func(*args, **kwargs)
+            return json.dumps(data, indent=3), return_code
+        except UserNotFoundException as e:
+            return "", 401
+        except ProjectNotFoundException as e:
+            return "", 404
+        except T2WMLException as e:
+            data = {"error": e.error_dict} #error code from the exception
+            return json.dumps(data, indent=3), 400
+        except Exception as e:
+            data = {"error": make_frontend_err_dict(e)}
+            return json.dumps(data, indent=3), 500
+        
+    wrapper.__name__ = func.__name__
+    return wrapper    
 
 @app.route('/api/userinfo', methods=['GET'])
+@json_response
 def user_info():
     user=get_user()
-    return json.dumps(user.json_dict)
+    return user.json_dict, 200
 
 
 @app.route('/api/login', methods=['POST'])
+@json_response
 def login():
     """
     This function verifies the oath token and returns the authorization response
@@ -90,149 +110,129 @@ def login():
     else:
         raise T2WMLExceptions.InvalidRequestException("Missing 'token' and/or 'source' parameters in the login request")
     response["vs"] = verification_status
-    return json.dumps(response)
+    return response, 200
 
 
 @app.route('/api/get_project_meta', methods=['POST'])
+@json_response
 def get_project_meta():
     """
     This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
     :return:
     """
+    user=get_user()
     data={
         'projects':None,
         'error':None
     }
-    try:
-        user=get_user()
-        data['projects']=user.get_project_details()
-        project_details_json = json.dumps(data)
-        return project_details_json
-    except UserNotFoundException:
-        return json.dumps(None)
+    data['projects']=user.get_project_details()
+    return data, 200
+
 
 
 @app.route('/api/create_project', methods=['POST'])
+@json_response
 def create_project():
     """
     This route creates a project by generating a unique id and creating a upload directory for that project
     :return:
     """
-    try:
-        user=get_user()
-        response = dict()
-        if 'ptitle' in request.form:
-            project_title = request.form['ptitle']
-            project= Project.create(user.uid, project_title)
-            response['pid'] = project.id
-            response_json = json.dumps(response)
-            return response_json
-    except UserNotFoundException:
-        return json.dumps(None)
+    user=get_user()
+    response = dict()
+    if 'ptitle' in request.form:
+        project_title = request.form['ptitle']
+        project= Project.create(user.uid, project_title)
+        response['pid'] = project.id
+        return response, 201
+
     
 
 
 @app.route('/api/upload_data_file', methods=['POST'])
+@json_response
 def upload_data_file():
     """
     This function uploads the data file
     :return:
     """
-    if 'uid' in session:
-        response = {
-                        "tableData": dict(),
-                        "wikifierData": dict(),
-                        "yamlData": dict(),
-                        "error": None
-                    }
-        try:
-            project=get_project()
-            new_file=file_upload_validator()
-            project_file=ProjectFile.create(new_file, project)
-            project_file.set_as_current()
-            response["tableData"]=project_file.tableData()
-            current_sheet=project_file.current_sheet
-
-            w=WikiRegionFile.get_or_create(current_sheet)
-            response["wikifierData"]=w.handle()
-            response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_filepath
-
-            y=YamlFile.get_handler(current_sheet)
-            response["yamlData"]=y
-
-        except T2WMLException as e:
-            response["error"]=e.error_dict
-        except Exception as e:
-            response["error"]=make_frontend_err_dict(e)
-
-        return json.dumps(response, indent=3)
-    else:
-        return redirect(url_for('index')) # TODO: Return an error instead of a redirect
-
-
-@app.route('/api/change_sheet', methods=['POST'])
-def change_sheet():
-    """
-    This route is used when a user switches a sheet in an excel data file.
-    :return:
-    """
-    if 'uid' in session:
-        response = {
+    project=get_project()
+    response = {
                     "tableData": dict(),
                     "wikifierData": dict(),
                     "yamlData": dict(),
                     "error": None
                 }
-        
-        try:
-            project=get_project()
-            new_sheet_name = request.form['sheet_name']
-            project_file=project.current_file
-            project_file.change_sheet(new_sheet_name)
-            
-            response["tableData"]=project_file.tableData()
+    new_file=file_upload_validator()
+    project_file=ProjectFile.create(new_file, project)
+    project_file.set_as_current()
+    response["tableData"]=project_file.tableData()
+    current_sheet=project_file.current_sheet
 
-            current_sheet=project_file.current_sheet
+    w=WikiRegionFile.get_or_create(current_sheet)
+    response["wikifierData"]=w.handle()
+    response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_filepath
 
-            w=WikiRegionFile.get_or_create(current_sheet)
-            response["wikifierData"]=w.handle()
-            response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_filepath
+    y=YamlFile.get_handler(current_sheet)
+    response["yamlData"]=y
+    return response, 200
 
-            y=YamlFile.get_handler(current_sheet)
-            response["yamlData"]=y
-        
-        except T2WMLException as e:
-            response["error"]=e.error_dict
-        except Exception as e:
-            response["error"]=make_frontend_err_dict(e)
-        return json.dumps(response, indent=3)
+
+
+@app.route('/api/change_sheet', methods=['POST'])
+@json_response
+def change_sheet():
+    """
+    This route is used when a user switches a sheet in an excel data file.
+    :return:
+    """
+    project=get_project()
+    response = {
+                "tableData": dict(),
+                "wikifierData": dict(),
+                "yamlData": dict(),
+                "error": None
+            }
+    
+    new_sheet_name = request.form['sheet_name']
+    project_file=project.current_file
+    project_file.change_sheet(new_sheet_name)
+    
+    response["tableData"]=project_file.tableData()
+
+    current_sheet=project_file.current_sheet
+
+    w=WikiRegionFile.get_or_create(current_sheet)
+    response["wikifierData"]=w.handle()
+    response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_filepath
+
+    y=YamlFile.get_handler(current_sheet)
+    response["yamlData"]=y
+
+    return response, 200
 
 
 @app.route('/api/upload_wikifier_output', methods=['POST'])
+@json_response
 def upload_wikifier_output():
     """
     This function uploads the wikifier output
     :return:
     """
-    if 'uid' in session:
-        response={"error":None}
-        try:
-            project=get_project()
-            in_file = file_upload_validator("csv")
-            project.change_wikifier_file(in_file)
-            if project.current_file:
-                sheet=project.current_file.current_sheet
-                w=WikiRegionFile.get_or_create(sheet)
-                response.update(w.handle()) #does not go into field wikifierData but is dumped directly
-                response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_filepath
-        except T2WMLException as e:
-            response["error"]=e.error_dict
-        except Exception as e:
-            response["error"]=make_frontend_err_dict(e)
-        return json.dumps(response, indent=3)
+    project=get_project()
+    response={"error":None}
+    in_file = file_upload_validator("csv")
+    project.change_wikifier_file(in_file)
+    if project.current_file:
+        sheet=project.current_file.current_sheet
+        w=WikiRegionFile.get_or_create(sheet)
+        response.update(w.handle()) #does not go into field wikifierData but is dumped directly
+        response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_filepath
+
+    return response, 200
 
 
 @app.route('/api/upload_yaml', methods=['POST'])
+@json_response
 def upload_yaml():
     """
     This function process the yaml
@@ -242,25 +242,21 @@ def upload_yaml():
     yaml_data = request.form["yaml"]
     response={"error":None,
             "yamlRegions":None}
-    try:
-        if not string_is_valid(yaml_data):
-            raise T2WMLExceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
+    if not string_is_valid(yaml_data):
+        raise T2WMLExceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
+    else:
+        if project.current_file:
+            yf=YamlFile.create(project.current_file.current_sheet, yaml_data)
+            response['yamlRegions']=yf.highlight_region()
         else:
-            if project.current_file:
-                yf=YamlFile.create(project.current_file.current_sheet, yaml_data)
-                response['yamlRegions']=yf.highlight_region()
-            else:
-                response['yamlRegions'] = None
-                raise T2WMLExceptions.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
+            response['yamlRegions'] = None
+            raise T2WMLExceptions.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
 
-    except T2WMLException as e:
-        response["error"]=e.error_dict
-    except Exception as e:
-        response["error"]=make_frontend_err_dict(e)
-    return json.dumps(response, indent=3)
+    return response, 200
 
 
 @app.route('/api/resolve_cell', methods=['POST'])
+@json_response
 def get_cell_statement():
     """
     This function returns the statement of a particular cell
@@ -270,20 +266,15 @@ def get_cell_statement():
     column = request.form["col"]
     row = request.form["row"]
     data={}
-    try:
-        yaml_file = project.current_file.current_sheet.yaml_file
-        if not yaml_file:
-            raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
-        data = yaml_file.resolve_cell(column, row)
-    
-    except T2WMLException as e:
-        data["error"]=e.error_dict
-    except Exception as e:
-        data["error"]=make_frontend_err_dict(e)
-    return json.dumps(data)
+    yaml_file = project.current_file.current_sheet.yaml_file
+    if not yaml_file:
+        raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
+    data = yaml_file.resolve_cell(column, row)
+    return data, 200
 
 
 @app.route('/api/download', methods=['POST'])
+@json_response
 def downloader():
     """
     This functions initiates the download
@@ -297,13 +288,14 @@ def downloader():
     filetype = request.form["type"]
 
     response = yaml_file.generate_download_file(filetype)
-    return json.dumps(response, indent=3)
+    return response, 200
 
 
 
 
 
 @app.route('/api/call_wikifier_service', methods=['POST'])
+@json_response
 def wikify_region():
     """
     This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
@@ -316,8 +308,7 @@ def wikify_region():
     context = request.form["context"]
     flag = int(request.form["flag"])
     data = {"error":None}
-    try:
-        if action == "wikify_region":
+    if action == "wikify_region":
             if not project.current_file:
                 raise T2WMLExceptions.WikifyWithoutDataFileException("Upload data file before wikifying a region")
             current_sheet=project.current_file.current_sheet
@@ -330,14 +321,11 @@ def wikify_region():
             data = wikier.serialize_and_save(item_table)
 
             data['wikifiedOutputFilepath'] = wikier.serialized_wikifier_output_filepath
-    except T2WMLException as e:
-        data["error"]=e.error_dict
-    except Exception as e:
-        data["error"]=make_frontend_err_dict(e)
-    return json.dumps(data, indent=3)
+    return data, 200
 
 
 @app.route('/api/get_project_files', methods=['POST'])
+@json_response
 def get_project_files():
     """
     This function fetches the last session of the last opened files in a project when that project is reopened later.
@@ -349,29 +337,28 @@ def get_project_files():
                 "wikifierData": None,
                 "settings": {"endpoint": None}
             }
-    if 'uid' in session:
-        project=get_project()
+    project=get_project()
+    
+    response["settings"]["endpoint"] = project.sparql_endpoint
+    response['wikifiedOutputFilepath'] = project.serialized_wikifier_output_filepath
+
+    project_file=project.current_file
+    if project_file:
+        response["tableData"]=project_file.tableData()
+        item_table=project_file.current_sheet.item_table
+        serialized_item_table = item_table.serialize_table(project.sparql_endpoint)
+        response["wikifierData"] = serialized_item_table
         
-        response["settings"]["endpoint"] = project.sparql_endpoint
-        response['wikifiedOutputFilepath'] = project.serialized_wikifier_output_filepath
 
-        project_file=project.current_file
-        if project_file:
-            response["tableData"]=project_file.tableData()
-            item_table=project_file.current_sheet.item_table
-            serialized_item_table = item_table.serialize_table(project.sparql_endpoint)
-            response["wikifierData"] = serialized_item_table
-			
+        y=YamlFile.get_handler(project_file.current_sheet)
+        response["yamlData"]=y
 
-            y=YamlFile.get_handler(project_file.current_sheet)
-            response["yamlData"]=y
-
-    response_json = json.dumps(response)
-    return response_json
+    return response, 200
 
 
 
 @app.route('/api/delete_project', methods=['POST'])
+@json_response
 def delete_project():
     """
     This route is used to delete a project.
@@ -381,20 +368,19 @@ def delete_project():
         'projects':None,
         'error':None
     }
-    try:
-        user=get_user()
-        project_id = request.form["pid"]
-        Project.delete(project_id)
-        data['projects']=user.get_project_details()
-        project_details_json = json.dumps(data)
-        return project_details_json
-    except UserNotFoundException:
-        return json.dumps(None)
+    
+    user=get_user()
+    project_id = request.form["pid"]
+    Project.delete(project_id)
+    data['projects']=user.get_project_details()
+    return data, 200
+
 
 
 
 
 @app.route('/api/logout', methods=['GET'])
+@json_response
 def logout():
     """
     This function initiate request to end a user's session and logs them out.
@@ -405,32 +391,26 @@ def logout():
     return '', 204
 
 @app.route('/api/rename_project', methods=['POST'])
+@json_response
 def rename_project():
     """
     This route is used to rename a project.
     :return:
     """
-    try:
-        data={
-            'projects':None,
-            'error':None
-        }
-        user=get_user()
-        ptitle = request.form["ptitle"]
-        project=get_project()
-        project.update_project_title(ptitle)
-        data['projects']=user.get_project_details()
-    except UserNotFoundException:
-        data=None
-    except Exception as e:
-        data["error"]=make_frontend_err_dict(e)
-    project_details_json = json.dumps(data)
-    return project_details_json
+    user=get_user()
+    data={
+        'projects':None,
+        'error':None
+    }
+    ptitle = request.form["ptitle"]
+    project=get_project()
+    project.update_project_title(ptitle)
+    data['projects']=user.get_project_details()
+    return data, 200
         
 
-
-
 @app.route('/api/update_settings', methods=['POST'])
+@json_response
 def update_settings():
     """
     This function updates the settings from GUI
@@ -439,7 +419,7 @@ def update_settings():
     project = get_project()
     endpoint = request.form["endpoint"]
     project.update_sparql_endpoint(endpoint)
-    return json.dumps(None)
+    return None, 200 #can become 204 eventually, need to check frontend compatibility
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
 # In that case, we only have one webserver - Flask. The following two routes are for this.
