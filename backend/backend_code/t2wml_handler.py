@@ -40,24 +40,6 @@ def parse_time_for_dict(response, sparql_endpoint):
                         response["precision"] = translate_precision_to_integer(response["precision"])
                     response["value"] = datetime_string
 
-def resolve_cell(yaml_object, col, row):
-    sparql_endpoint=yaml_object.sparql_endpoint
-    context={"t_var_row":int(row), "t_var_col":char_dict[col]}
-    try:
-        item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(yaml_object.eval_template, context)
-        statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
-        if statement:
-            data = {'statement': statement, 'error': None}
-        else:
-            data = {'statement': None, 'error': "Item doesn't exist"}
-    except T2WMLException as exception:
-        error = dict()
-        error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
-        data = {'error': error}
-    except Exception as exception:
-        print(exception)
-        raise exception
-    return data
 
 
 def get_template_statement(template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint):
@@ -150,6 +132,8 @@ def update_highlight_data(data, item_parsed, qualifiers_parsed, references_parse
             data[label] |= attribute_cells
 
 
+
+
 def highlight_region(yaml_object):
     sparql_endpoint=yaml_object.sparql_endpoint
     if yaml_object.use_cache:
@@ -174,12 +158,8 @@ def highlight_region(yaml_object):
                             {'cell': cell, 
                             'statement': statement})
         except T2WMLException as exception:
-            error = dict()
-            error["errorCode"], error["errorTitle"], error["errorDescription"] = exception.args
+            error = exception.error_dict()
             data['error'][to_excel(col, row)] = error
-        except Exception as exception:
-            print(exception)
-            data['error'][to_excel(col, row)]=make_frontend_err_dict(exception)
         
     highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
     highlight_data['item'] = list(highlight_data['item'])
@@ -189,6 +169,22 @@ def highlight_region(yaml_object):
     if yaml_object.use_cache:
         yaml_object.cacher.save(highlight_data, statement_data)
     return highlight_data
+
+
+def resolve_cell(yaml_object, col, row):
+    sparql_endpoint=yaml_object.sparql_endpoint
+    context={"t_var_row":int(row), "t_var_col":char_dict[col]}
+    try:
+        item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(yaml_object.eval_template, context)
+        statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
+        if statement:
+            data = {'statement': statement, 'error': None}
+        else:
+            data = {'statement': None, 'error': "Item doesn't exist"}
+    except T2WMLException as exception:
+        error = exception.error_dict()
+        data = {'error': error}
+    return data
 
 
 
@@ -210,7 +206,7 @@ def generate_download_file(yaml_object, filetype):
                     data.append(
                         {'cell': to_excel(col-1, row-1), 
                         'statement': statement})
-            except Exception as e:
+            except T2WMLException as e:
                 error.append({'cell': to_excel(col, row), 
                 'error': str(e)})
 
@@ -221,11 +217,6 @@ def generate_download_file(yaml_object, filetype):
         return response
     
     elif filetype == 'ttl':
-        try:
-            response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=yaml_object.created_by)
-            response["error"] = None
-            return response
-        except Exception as e:
-            print(e)
-            response = {'error': str(e)}
-            return response
+        response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=yaml_object.created_by)
+        response["error"] = None
+        return response

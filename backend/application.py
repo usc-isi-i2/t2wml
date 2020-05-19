@@ -66,6 +66,13 @@ def json_response(func):
     def wrapper(*args, **kwargs):
         try:
             data, return_code=func(*args, **kwargs)
+            try: 
+                error=data.get("error", None)
+                if error:
+                    return json.dumps(data, indent=3), 400
+            except: #not all data is a dictionary
+                pass
+
             return json.dumps(data, indent=3), return_code
         except UserNotFoundException as e:
             return "", 401
@@ -73,7 +80,7 @@ def json_response(func):
             return "", 404
         except T2WMLException as e:
             data = {"error": e.error_dict} #error code from the exception
-            return json.dumps(data, indent=3), 400
+            return json.dumps(data, indent=3), e.code
         except Exception as e:
             data = {"error": make_frontend_err_dict(e)}
             return json.dumps(data, indent=3), 500

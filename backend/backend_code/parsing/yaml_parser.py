@@ -102,141 +102,6 @@ class YamlCacher:
     
     
 
-class YamlObject:
-    def __init__(self, filepath, item_table, data_file_path, sheet_name, sparql_endpoint, use_cache=False):
-        self.yaml_data=self.validate(filepath)
-        
-        try:
-            self.sheet=Sheet(data_file_path, sheet_name)
-        except IOError:
-            raise IOError('Excel File cannot be found or opened')
-        update_bindings(item_table=item_table, sheet=self.sheet, sparql_endpoint=sparql_endpoint)
-        
-        region_parser=RegionParser(self.yaml_data)
-        self._region=Region(region_parser.parsed_region)
-        
-        self.template_parser=TemplateParser(self.yaml_data)
-        
-        self.sparql_endpoint=sparql_endpoint
-        self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
-        
-        self.use_cache=use_cache
-        self.cacher=YamlCacher(filepath, data_file_path, sheet_name)
-    
-    @property
-    def region(self):
-        return self._region
-
-    @property
-    def template(self):
-        return (self.template_parser.template)
-    
-    @property
-    def eval_template(self):
-        return self.template_parser.eval_template
-    
-    def validate(self, yaml_file_path):
-        with open(yaml_file_path, 'r') as stream:
-            try:
-                yaml_file_data = yaml.safe_load(stream)
-            except Exception as e:
-                raise T2WMLExceptions.InvalidYAMLFileException("Could not load Yaml File: "+str(e))
-        
-        with open(yaml_file_path, 'r') as f:
-            #some real quick security validation, lazy style
-            content=f.read()
-            if "import" in content: #includes __import__ which is the real evil here
-                raise T2WMLExceptions.InvalidYAMLFileException("Could not load Yaml File: invalid T2wml code")
-
-
-
-        errors = ""
-        for key in yaml_file_data.keys():
-            if key != 'statementMapping':
-                errors+= "Unrecognized key '" + key + "' found\n"
-
-        if 'statementMapping' not in yaml_file_data:
-            errors+= "Key 'statementMapping' not found\n"
-        else:
-            for key in yaml_file_data['statementMapping'].keys():
-                if key not in {'region', 'template', 'created_by'}:
-                    errors+= "Unrecognized key '" + key + "' (statementMapping -> " + key + ") found\n"
-
-            if 'created_by' in yaml_file_data['statementMapping']:
-                if not yaml_file_data['statementMapping']['created_by']:
-                    errors+= "Value of key 'created_by' (statementMapping -> created_by) cannot be empty\n"
-
-            if 'region' not in yaml_file_data['statementMapping']:
-                errors +="Key 'region' (statementMapping -> X) not found\n"
-            else:
-                if yaml_file_data['statementMapping']['region']:
-                    yaml_region=yaml_file_data['statementMapping']['region']
-                    if isinstance(yaml_region, list):
-                        for i in range(len(yaml_region)):
-                            for key in yaml_region[i].keys():
-                                if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
-                                    errors+= "Unrecognized key '" + key + "' (statementMapping -> region[" + str(i) + "] -> " + key + ") found\n"
-
-                            if 'range' not in yaml_region[i]:
-                                for required_key in ['left', 'right', 'top', 'bottom']:
-                                    if required_key not in yaml_region[i]:
-                                        errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found\n"
-
-                            for optional_list_key in ['skip_row', 'skip_column', 'skip_cell']:
-                                if optional_list_key in yaml_region[i]:
-                                    if not yaml_region[i][optional_list_key] or not isinstance(yaml_region[i][optional_list_key], list):
-                                        errors+= "Value of key '"+optional_list_key+"' (statementMapping -> region[" + str(i) + "] -> skip_row) is not appropriate.\
-                                                Value should be a list of T2WML expressions.\n"
-                    else:
-                        errors+= "Value of  key 'region' (statementMapping -> region) must be a list\n"
-                else:
-                    errors+= "Value of key 'region' (statementMapping -> region) cannot be empty\n"
-
-            if 'template' not in yaml_file_data['statementMapping']:
-                errors+= "Key 'template' (statementMapping -> X) not found\n"
-            else:
-                yaml_template=yaml_file_data['statementMapping']['template']
-                if isinstance(yaml_template, dict):
-                    for key in yaml_template.keys():
-                        if key not in {'item', 'property', 'value', 'qualifier', 'calendar', 'precision', 'time_zone', 'format', 'lang', 'longitude', 'latitude', 'unit', 'reference'}:
-                            errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + key + ") found\n"
-
-                    for required_key in ['item', 'property', 'value']:
-                        if required_key not in yaml_template:
-                            errors+= "Key '" + required_key+ "' (statementMapping -> template -> X) not found\n"
-                    
-                    attributes = ['qualifier', 'reference']
-                    for attribute in attributes:
-                        if attribute in yaml_template:
-                            if yaml_template[attribute]:
-                                if isinstance(yaml_template[attribute], list):
-                                    attributes = yaml_template[attribute]
-                                    for i in range(len(attributes)):
-                                        obj = attributes[i]
-                                        if obj and isinstance(obj, dict):
-                                            for key in obj.keys():
-                                                if key not in {'property', 'value', 'calendar',
-                                                                'precision', 'time_zone', 'format', 'lang', 'longitude',
-                                                                'latitude', 'unit'}:
-                                                    errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + attribute + "[" + str(i) + "] -> " + key + ") found"
-                                        else:
-                                            errors+= "Value of  key '" + attribute + "[" + str(i) + "]' (statementMapping -> template -> " + attribute + "[" + str(i) + "]) \
-                                                must be a dictionary\n"
-
-                                else:
-                                    errors+="Value of  key '" + attribute + "' (statementMapping -> template -> " + attribute + ") must be a list\n"
-                            else:
-                                errors+= "Value of key '" + attribute + "' (statementMapping -> template -> " + attribute + ") cannot be empty\n"
-                else:
-                    errors += "Value of  key 'template' (statementMapping -> template) must be a dictionary\n"
-        
-        if errors:
-                raise T2WMLExceptions.ErrorInYAMLFileException(errors)
-        
-        return yaml_file_data
-
-
-
 class CodeParser:
     def fix_code_string(self, e_str):
         # we made various compromises between valid code from the get-go and easy for the user code. 
@@ -447,4 +312,141 @@ class RegionParser(CodeParser):
         return skip_row, skip_column, skip_cell
 
 
+
+
+class YamlObject:
+    def __init__(self, filepath, item_table, data_file_path, sheet_name, sparql_endpoint, use_cache=False):
+        self.yaml_data=validate_yaml(filepath)
+        
+        try:
+            self.sheet=Sheet(data_file_path, sheet_name)
+        except IOError:
+            raise IOError('Excel File cannot be found or opened')
+        update_bindings(item_table=item_table, sheet=self.sheet, sparql_endpoint=sparql_endpoint)
+        
+        region_parser=RegionParser(self.yaml_data)
+        self._region=Region(region_parser.parsed_region)
+        
+        self.template_parser=TemplateParser(self.yaml_data)
+        
+        self.sparql_endpoint=sparql_endpoint
+        self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
+        
+        self.use_cache=use_cache
+        self.cacher=YamlCacher(filepath, data_file_path, sheet_name)
+    
+    @property
+    def region(self):
+        return self._region
+
+    @property
+    def template(self):
+        return (self.template_parser.template)
+    
+    @property
+    def eval_template(self):
+        return self.template_parser.eval_template
+    
+def validate_yaml(yaml_file_path):
+        with open(yaml_file_path, 'r') as stream:
+            try:
+                yaml_file_data = yaml.safe_load(stream)
+            except Exception as e:
+                raise T2WMLExceptions.InvalidYAMLFileException("Could not load Yaml File: "+str(e))
+        
+        with open(yaml_file_path, 'r') as f:
+            #some real quick security validation, lazy style
+            content=f.read()
+            if "import" in content: #includes __import__ which is the real evil here
+                raise T2WMLExceptions.InvalidYAMLFileException("Could not load Yaml File: invalid T2wml code")
+
+
+
+        errors = ""
+        for key in yaml_file_data.keys():
+            if key != 'statementMapping':
+                errors+= "Unrecognized key '" + key + "' found\n"
+
+        if 'statementMapping' not in yaml_file_data:
+            errors+= "Key 'statementMapping' not found\n"
+        else:
+            for key in yaml_file_data['statementMapping'].keys():
+                if key not in {'region', 'template', 'created_by'}:
+                    errors+= "Unrecognized key '" + key + "' (statementMapping -> " + key + ") found\n"
+
+            if 'created_by' in yaml_file_data['statementMapping']:
+                if not yaml_file_data['statementMapping']['created_by']:
+                    errors+= "Value of key 'created_by' (statementMapping -> created_by) cannot be empty\n"
+
+            if 'region' not in yaml_file_data['statementMapping']:
+                errors +="Key 'region' (statementMapping -> X) not found\n"
+            else:
+                if yaml_file_data['statementMapping']['region']:
+                    yaml_region=yaml_file_data['statementMapping']['region']
+                    if isinstance(yaml_region, list):
+                        for i in range(len(yaml_region)):
+                            for key in yaml_region[i].keys():
+                                if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
+                                    errors+= "Unrecognized key '" + key + "' (statementMapping -> region[" + str(i) + "] -> " + key + ") found\n"
+
+                            if 'range' not in yaml_region[i]:
+                                for required_key in ['left', 'right', 'top', 'bottom']:
+                                    present = yaml_region[i].get(required_key, None)
+                                    if not present:
+                                        errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found or empty\n"
+                            elif not yaml_region[i]['range']:
+                                errors+="Value of range cannot be empty"
+                                
+                            for optional_list_key in ['skip_row', 'skip_column', 'skip_cell']:
+                                if optional_list_key in yaml_region[i]:
+                                    if not yaml_region[i][optional_list_key] or not isinstance(yaml_region[i][optional_list_key], list):
+                                        errors+= "Value of key '"+optional_list_key+"' (statementMapping -> region[" + str(i) + "] -> skip_row) is not appropriate.\
+                                                Value should be a list of T2WML expressions.\n"
+                    else:
+                        errors+= "Value of  key 'region' (statementMapping -> region) must be a list\n"
+                else:
+                    errors+= "Value of key 'region' (statementMapping -> region) cannot be empty\n"
+
+            if 'template' not in yaml_file_data['statementMapping']:
+                errors+= "Key 'template' (statementMapping -> X) not found\n"
+            else:
+                yaml_template=yaml_file_data['statementMapping']['template']
+                if isinstance(yaml_template, dict):
+                    for key in yaml_template.keys():
+                        if key not in {'item', 'property', 'value', 'qualifier', 'calendar', 'precision', 'time_zone', 'format', 'lang', 'longitude', 'latitude', 'unit', 'reference'}:
+                            errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + key + ") found\n"
+
+                    for required_key in ['item', 'property', 'value']:
+                        if required_key not in yaml_template:
+                            errors+= "Key '" + required_key+ "' (statementMapping -> template -> X) not found\n"
+                    
+                    attributes = ['qualifier', 'reference']
+                    for attribute in attributes:
+                        if attribute in yaml_template:
+                            if yaml_template[attribute]:
+                                if isinstance(yaml_template[attribute], list):
+                                    attributes = yaml_template[attribute]
+                                    for i in range(len(attributes)):
+                                        obj = attributes[i]
+                                        if obj and isinstance(obj, dict):
+                                            for key in obj.keys():
+                                                if key not in {'property', 'value', 'calendar',
+                                                                'precision', 'time_zone', 'format', 'lang', 'longitude',
+                                                                'latitude', 'unit'}:
+                                                    errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + attribute + "[" + str(i) + "] -> " + key + ") found"
+                                        else:
+                                            errors+= "Value of  key '" + attribute + "[" + str(i) + "]' (statementMapping -> template -> " + attribute + "[" + str(i) + "]) \
+                                                must be a dictionary\n"
+
+                                else:
+                                    errors+="Value of  key '" + attribute + "' (statementMapping -> template -> " + attribute + ") must be a list\n"
+                            else:
+                                errors+= "Value of key '" + attribute + "' (statementMapping -> template -> " + attribute + ") cannot be empty\n"
+                else:
+                    errors += "Value of  key 'template' (statementMapping -> template) must be a dictionary\n"
+        
+        if errors:
+                raise T2WMLExceptions.ErrorInYAMLFileException(errors)
+        
+        return yaml_file_data
 
