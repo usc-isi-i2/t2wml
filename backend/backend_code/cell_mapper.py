@@ -93,8 +93,8 @@ class MappingCacher:
     
  
 class CellMapper:
-    def __init__(self, filepath, item_table, data_file_path, sheet_name, sparql_endpoint, use_cache=False):
-        self.yaml_data=validate_yaml(filepath)
+    def __init__(self, yaml_file_path, item_table, data_file_path, sheet_name, sparql_endpoint, use_cache=False):
+        self.yaml_data=validate_yaml(yaml_file_path)
         
         try:
             sheet=Sheet(data_file_path, sheet_name)
@@ -113,5 +113,5 @@ class CellMapper:
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
         
         self.use_cache=use_cache
-        self.cacher=MappingCacher(filepath, data_file_path, sheet_name)
+        self.cacher=MappingCacher(yaml_file_path, data_file_path, sheet_name)
     
