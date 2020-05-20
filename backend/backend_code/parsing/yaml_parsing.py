@@ -52,7 +52,7 @@ class TemplateParser(CodeParser):
         self.eval_template=self.create_eval_template(yaml_data['statementMapping']['template'])
 
     def get_code_replacement(self, input_str):
-        fake_context=dict(t_var_row=0, t_var_col=0, t_var_n=0)
+        fake_context=dict(t_var_row=1, t_var_col=1, t_var_n=0)
         try:
             if self.is_code_string(input_str):
                 try:
