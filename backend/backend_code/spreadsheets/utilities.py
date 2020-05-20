@@ -32,22 +32,15 @@ def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     :param want_sheet_names:
     :return:
     """
-    sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 'rowData': []}
-    column_index_map = {}
-    if not sheet_name:
-        sheet_name=get_first_sheet_name(file_path)
+    sheet_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 
+                 'rowData': []}
     sheet=Sheet(file_path, sheet_name)
-    #book = pyexcel.get_book(file_name=file_path)
-    #sheet = book[sheet_name]
     for i in range(len(sheet[0])):
-        column = _column_index_to_letter(i)
-        column_index_map[i + 1] = column
-        sheet_data['columnDefs'].append({'headerName': column_index_map[i + 1], 'field': column_index_map[i + 1]})
-    for row in range(len(sheet)):
-        r = {'^': str(row + 1)}
-        for col in range(len(sheet[row])):
-            sheet[row][col] = str(sheet[row][col]).strip()
-            r[column_index_map[col + 1]] = sheet[row][col]
-        sheet_data['rowData'].append(r)
-
+        column_def = _column_index_to_letter(i)
+        sheet_data['columnDefs'].append({'headerName': column_def, 'field': column_def})
+    initial_json=sheet.to_json()
+    initial_json=initial_json['data']
+    for i, row in enumerate(initial_json):
+        row["^"]=str(i+1)
+    sheet_data['rowData']=initial_json
     return sheet_data

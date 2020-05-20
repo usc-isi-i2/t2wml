@@ -9,10 +9,11 @@ cache_settings={
     "use_cache": False
 }
 
+
 def get_pickle_path(data_filepath, sheet_name):
     #moved outside of class so I can use it in file initalizer as well
     path=Path(data_filepath)
-    filename=path.stem+"_"+sheet_name+".pkl"
+    filename=path.stem+sheet_name+".pkl"
     parent=path.parent
     filepath=parent/"pf"
     if not filepath.is_dir():
@@ -25,6 +26,7 @@ class SheetCacher:
         self.sheet_name=sheet_name
         file_extension=Path(self.data_filepath).suffix
         self.is_csv = True if file_extension.lower() == ".csv" else False
+        
         
     def get_sheet(self):
         raise NotImplementedError
@@ -108,9 +110,9 @@ class PandasFileSystemPickle(FileSystemPickle):
     
     def load_file(self, sheet_name=None):
         if self.is_csv:
-            data=pd.read_csv(self.data_filepath)
+            data=pd.read_csv(self.data_filepath, header=None)
         else:
-            data=pd.read_excel(self.data_filepath, sheet_name=sheet_name)
+            data=pd.read_excel(self.data_filepath, sheet_name=sheet_name, header=None)
         return data
     
     def load_sheet(self, sheet_name):
