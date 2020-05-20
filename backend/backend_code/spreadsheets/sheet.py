@@ -1,15 +1,17 @@
 import pandas as pd
 import json
-from backend_code.spreadsheets.caching import PyexcelFileSystemPickle, PandasFileSystemPickle
+from backend_code.spreadsheets.caching import PyexcelFileSystemPickle, PandasFileSystemPickle, FakeCacher, cache_settings
 from backend_code.spreadsheets.conversions import to_excel
 import backend_code.t2wml_exceptions as T2WMLExceptions
 
+cache_class = FakeCacher
 
-cache_class=PyexcelFileSystemPickle
 
 class Sheet:
     #a class to wrap ALL sheet interactions, so that all access to spreadsheet goes through here
     def __init__(self, data_filepath, sheet_name):
+        if cache_settings["use_cache"]:
+            cache_class = PyexcelFileSystemPickle
         sc=cache_class(data_filepath, sheet_name)
         self.sheet_name=sheet_name
         self.data=sc.get_sheet()

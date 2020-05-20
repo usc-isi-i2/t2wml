@@ -3,15 +3,18 @@ import shutil
 import sys
 import json
 import os
-from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
+from flask.helpers import send_file, send_from_directory
+from werkzeug.exceptions import NotFound
+from app_config import app
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
 from backend_code.utility_functions import string_is_valid, verify_google_login
 from backend_code.wikify_handling import wikifier
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
-from werkzeug.exceptions import NotFound
-from flask.helpers import send_file, send_from_directory
+from backend_code.spreadsheets.caching import cache_settings
+
+cache_settings["use_cache"]=True
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False

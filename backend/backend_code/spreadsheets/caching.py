@@ -5,6 +5,10 @@ import pyexcel
 import pandas as pd
 
 
+cache_settings={
+    "use_cache": False
+}
+
 def get_pickle_path(data_filepath, sheet_name):
     #moved outside of class so I can use it in file initalizer as well
     path=Path(data_filepath)
@@ -24,6 +28,20 @@ class SheetCacher:
         
     def get_sheet(self):
         raise NotImplementedError
+
+
+class FakeCacher(SheetCacher):
+    def get_sheet(self):
+        records=pyexcel.get_book_dict(file_name=self.data_filepath)
+        sheet=records[self.sheet_name]
+        return sheet
+    def ___get_sheet_pandas(self):
+        if self.is_csv:
+            data=pd.read_csv(self.data_filepath)
+        else:
+            data=pd.read_excel(self.data_filepath, sheet_name=sheet_name)
+        return data
+
 
 
 class FileSystemPickle(SheetCacher):

@@ -3,5 +3,4 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "editor.detectIndentation": false,
-    "editor.tabSize": 2,
 }
