@@ -9,7 +9,7 @@ from backend_code.t2wml_exceptions import T2WMLException, make_frontend_err_dict
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.classes import ReturnClass
 from backend_code.parsing.constants import char_dict
-from backend_code.parsing.t2wml_parser import iter_on_n_for_code
+from backend_code.parsing.t2wml_parsing import iter_on_n_for_code
 from backend_code.spreadsheets.conversions import to_excel
 
 from backend_code.triple_generator import generate_triples
@@ -22,7 +22,7 @@ def parse_time_for_dict(response, sparql_endpoint):
         try:
             prop_type= get_property_type(response["property"], sparql_endpoint)
         except QueryBadFormed:
-            raise ValueError("The value given for property is not a valid property:" +str(response["property"]))
+            raise T2WMLExceptions.InvalidT2WMLExpressionException("The value given for property is not a valid property:" +str(response["property"]))
         
         if prop_type=="Time":
             if "format" in response:
@@ -32,7 +32,7 @@ def parse_time_for_dict(response, sparql_endpoint):
                                                                             additional_formats=[
                                                                                 response["format"]])
                     except ValueError:
-                        raise ValueError("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
+                        raise T2WMLExceptions.InvalidT2WMLExpressionException("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
 
                     if "precision" not in response:
                         response["precision"] = int(precision.value.__str__())
@@ -134,74 +134,75 @@ def update_highlight_data(data, item_parsed, qualifiers_parsed, references_parse
 
 
 
-def highlight_region(yaml_object):
-    sparql_endpoint=yaml_object.sparql_endpoint
-    if yaml_object.use_cache:
-        data=yaml_object.cacher.get_highlight_region()
+def highlight_region(cell_mapper):
+    sparql_endpoint=cell_mapper.sparql_endpoint
+    if cell_mapper.use_cache:
+        data=cell_mapper.cacher.get_highlight_region()
         if data:
             return data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
     statement_data=[]
-    for col, row in yaml_object.region:
+    for col, row in cell_mapper.region:
         cell=to_excel(col-1, row-1)
         highlight_data["dataRegion"].add(cell)
         context={"t_var_row":row, "t_var_col":col}
         try:
-            item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(yaml_object.eval_template, context)
+            item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(cell_mapper.eval_template, context)
             update_highlight_data(highlight_data, item_parsed, qualifiers_parsed, references_parsed)
 
-            if yaml_object.use_cache:
-                    statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
+            if cell_mapper.use_cache:
+                    statement=get_template_statement(cell_mapper.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
                     if statement:
                         statement_data.append(
                             {'cell': cell, 
                             'statement': statement})
         except T2WMLException as exception:
-            error = exception.error_dict()
-            data['error'][to_excel(col, row)] = error
-        
+            error = exception.error_dict
+            highlight_data['error'][to_excel(col, row)] = error
+    if highlight_data["error"]:
+        raise T2WMLExceptions.InvalidT2WMLExpressionException(message=str(highlight_data["error"])) #TODO: return this properly, not as a str(dict)
     highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
     highlight_data['item'] = list(highlight_data['item'])
     highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
 
-    if yaml_object.use_cache:
-        yaml_object.cacher.save(highlight_data, statement_data)
+    if cell_mapper.use_cache:
+        cell_mapper.cacher.save(highlight_data, statement_data)
     return highlight_data
 
 
-def resolve_cell(yaml_object, col, row):
-    sparql_endpoint=yaml_object.sparql_endpoint
+def resolve_cell(cell_mapper, col, row):
+    sparql_endpoint=cell_mapper.sparql_endpoint
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     try:
-        item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(yaml_object.eval_template, context)
-        statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
+        item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(cell_mapper.eval_template, context)
+        statement=get_template_statement(cell_mapper.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
         if statement:
             data = {'statement': statement, 'error': None}
         else:
             data = {'statement': None, 'error': "Item doesn't exist"}
     except T2WMLException as exception:
-        error = exception.error_dict()
+        error = exception.error_dict
         data = {'error': error}
     return data
 
 
 
-def generate_download_file(yaml_object, filetype):
-    sparql_endpoint=yaml_object.sparql_endpoint
+def generate_download_file(cell_mapper, filetype):
+    sparql_endpoint=cell_mapper.sparql_endpoint
     response=dict()
     data=[]
-    if yaml_object.use_cache:
-        data=yaml_object.cacher.get_download()
+    if cell_mapper.use_cache:
+        data=cell_mapper.cacher.get_download()
 
     if not data:
         error=[]
-        for col, row in yaml_object.region:
+        for col, row in cell_mapper.region:
             try:
                 context={"t_var_row":row, "t_var_col":col}
-                item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(yaml_object.eval_template, context)
-                statement=get_template_statement(yaml_object.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
+                item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(cell_mapper.eval_template, context)
+                statement=get_template_statement(cell_mapper.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
                 if statement:
                     data.append(
                         {'cell': to_excel(col-1, row-1), 
@@ -213,10 +214,10 @@ def generate_download_file(yaml_object, filetype):
 
     if filetype == 'json':
         response["data"] = json.dumps(data, indent=3)
-        response["error"] = None
+        response["error"] = error
         return response
     
     elif filetype == 'ttl':
-        response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=yaml_object.created_by)
-        response["error"] = None
+        response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=cell_mapper.created_by)
+        response["error"] = error
         return response

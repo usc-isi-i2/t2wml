@@ -1,13 +1,8 @@
-import os
-import json
-from pathlib import Path
-from collections import OrderedDict
+
 import yaml
-from backend_code.bindings import bindings, update_bindings
-from backend_code.spreadsheets.sheet import Sheet
-from backend_code.utility_functions import string_is_valid
+from backend_code.bindings import bindings
 import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.parsing.t2wml_parser import iter_on_n, t2wml_parse
+from backend_code.parsing.t2wml_parsing import iter_on_n, t2wml_parse
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
 
 class ForwardSlashEscape(Exception):
@@ -15,92 +10,7 @@ class ForwardSlashEscape(Exception):
         self.new_str=new_str
 
 
-
-class Region:
-    def __init__(self, region_data):
-        self.left=region_data["t_var_left"]
-        self.right=region_data["t_var_right"]
-        self.top=region_data["t_var_top"]
-        self.bottom=region_data["t_var_bottom"]
-        self.create_holes(region_data)
-
-    def create_holes(self, region_data):
-        self.indices=OrderedDict()
-        skip_rows=set(region_data.get("skip_row", []))
-        skip_cols=set(region_data.get("skip_column", []))
-        skip_cells=set(region_data.get("skip_cell", []))
-        for column in range(self.left, self.right+1):
-            if column not in skip_cols:
-                for row in range(self.top, self.bottom+1):
-                    if row not in skip_rows:
-                        try:
-                            if (column, row) not in skip_cells and string_is_valid(bindings.excel_sheet[row-1][column-1]):
-                                self.indices[(column, row)]=True
-                        except Exception as e:
-                            print(e)
-    def __iter__(self):
-        for key in self.indices:
-            yield key
-            
-    def get(self, key, fallback=None):
-        return self.indices.get(key, fallback)
-    
-    def get_head(self):
-        for key in self.indices:
-            return key
-
-class YamlCacher:
-    def __init__(self, filepath, data_file_path, sheet_name):
-        self.filepath=filepath
-        self.data_file_path=data_file_path
-        self.sheet_name=sheet_name
-    
-    @property
-    def cache_path(self):
-            path=Path(self.filepath)
-            filename=path.stem+"_"+self.sheet_name+"_cached.json"
-            parent=path.parent
-            filepath=parent/"cache"
-            if not filepath.is_dir():
-                os.makedirs(filepath)
-            return str(filepath/filename)
-
-    def is_fresh(self):
-        if os.path.isfile(self.cache_path):
-            if os.path.getmtime(self.cache_path) > os.path.getmtime(self.filepath) and\
-                os.path.getmtime(self.cache_path) > os.path.getmtime(self.data_file_path):
-                return True
-        return False
-    
-    def save(self, highlight_data, statement_data):
-        d={
-            "highlight region": highlight_data,
-            "download": statement_data
-        }
-        with open(self.cache_path, 'w') as f:
-            json.dump(d, f)
-
-    def get_highlight_region(self):
-        if self.is_fresh():
-            try:
-                with open(self.cache_path, 'r') as f:
-                    data=json.load(f)
-                return data["highlight region"]
-            except:
-                pass
-        return None
-
-    def get_download(self):
-        if self.is_fresh():
-            try:
-                with open(self.cache_path, 'r') as f:
-                    data=json.load(f)
-                return data["download"]
-            except:
-                pass
-        return None
-    
-    
+   
 
 class CodeParser:
     def fix_code_string(self, e_str):
@@ -313,40 +223,7 @@ class RegionParser(CodeParser):
 
 
 
-
-class YamlObject:
-    def __init__(self, filepath, item_table, data_file_path, sheet_name, sparql_endpoint, use_cache=False):
-        self.yaml_data=validate_yaml(filepath)
-        
-        try:
-            self.sheet=Sheet(data_file_path, sheet_name)
-        except IOError:
-            raise IOError('Excel File cannot be found or opened')
-        update_bindings(item_table=item_table, sheet=self.sheet, sparql_endpoint=sparql_endpoint)
-        
-        region_parser=RegionParser(self.yaml_data)
-        self._region=Region(region_parser.parsed_region)
-        
-        self.template_parser=TemplateParser(self.yaml_data)
-        
-        self.sparql_endpoint=sparql_endpoint
-        self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
-        
-        self.use_cache=use_cache
-        self.cacher=YamlCacher(filepath, data_file_path, sheet_name)
-    
-    @property
-    def region(self):
-        return self._region
-
-    @property
-    def template(self):
-        return (self.template_parser.template)
-    
-    @property
-    def eval_template(self):
-        return self.template_parser.eval_template
-    
+  
 def validate_yaml(yaml_file_path):
         with open(yaml_file_path, 'r') as stream:
             try:

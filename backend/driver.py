@@ -4,10 +4,10 @@ import logging
 from etk.wikidata import serialize_change_record
 from app_config import DEFAULT_SPARQL_ENDPOINT
 #IMPORTANT: the import from models must happen before the other backend_code imports because of flask circular imports
-from backend_code.models import YamlObject 
+from backend_code.cell_mapper import CellMapper
 from backend_code.item_table import ItemTable
-from backend_code.t2wml_handler import generate_download_file
-from backend_code.wikify_handler import process_wikified_output_file
+from backend_code.t2wml_handling import generate_download_file
+from backend_code.wikify_handling import process_wikified_output_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
@@ -41,7 +41,7 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         return
 
     try:
-        yc = YamlObject(t2wml_spec, item_table, new_file_path, sheet_name, sparql_endpoint)
+        yc = CellMapper(t2wml_spec, item_table, new_file_path, sheet_name, sparql_endpoint)
     except Exception as e:
         logging.error("Invalid YAML File")
         return

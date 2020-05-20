@@ -7,7 +7,7 @@ from app_config import app
 from flask import request, render_template, redirect, url_for, session, make_response
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
 from backend_code.utility_functions import string_is_valid, verify_google_login
-from backend_code.wikify_handler import wikifier
+from backend_code.wikify_handling import wikifier
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
 from werkzeug.exceptions import NotFound
@@ -66,13 +66,6 @@ def json_response(func):
     def wrapper(*args, **kwargs):
         try:
             data, return_code=func(*args, **kwargs)
-            try: 
-                error=data.get("error", None)
-                if error:
-                    return json.dumps(data, indent=3), 400
-            except: #not all data is a dictionary
-                pass
-
             return json.dumps(data, indent=3), return_code
         except UserNotFoundException as e:
             return "", 401

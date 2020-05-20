@@ -8,9 +8,9 @@ from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
 from backend_code.spreadsheets.utilities import excel_to_json
 from backend_code.spreadsheets.sheet import save_and_get_sheet_names
-from backend_code.wikify_handler import process_wikified_output_file, save_wikified_result
-from backend_code.t2wml_handler import highlight_region, resolve_cell, generate_download_file
-from backend_code.parsing.yaml_parser import YamlObject
+from backend_code.wikify_handling import process_wikified_output_file, save_wikified_result
+from backend_code.t2wml_handling import highlight_region, resolve_cell, generate_download_file
+from backend_code.cell_mapper import CellMapper
 
 def generate_id() -> str:
     """
@@ -336,25 +336,25 @@ class YamlFile(db.Model):
         return self.sheet.project_file.project.sparql_endpoint
 
     @property
-    def yaml_object(self):
+    def cell_mapper(self):
         try:
-            yc=self._yaml_object
+            yc=self._cell_mapper
             return yc
         except:
-            self._yaml_object=YamlObject(self.yaml_file_path, 
+            self._cell_mapper=CellMapper(self.yaml_file_path, 
                                 self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name, self.sparql_endpoint, 
                                 use_cache=True)
-            return self._yaml_object
+            return self._cell_mapper
 
 
     def highlight_region(self):
-        return highlight_region(self.yaml_object)
+        return highlight_region(self.cell_mapper)
 
     def resolve_cell(self, column, row):
-        return resolve_cell(self.yaml_object, column, row)
+        return resolve_cell(self.cell_mapper, column, row)
     
     def generate_download_file(self, filetype):
-        return generate_download_file(self.yaml_object, filetype)
+        return generate_download_file(self.cell_mapper, filetype)
 
 
     @staticmethod

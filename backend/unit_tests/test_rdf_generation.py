@@ -2,7 +2,7 @@ import os, sys, inspect
 import shutil
 
 try:
-    from backend_code.models import User, Project, ProjectFile, YamlObject
+    from backend_code.models import User, Project, ProjectFile
 except:
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     print(currentdir)
@@ -10,15 +10,16 @@ except:
 
     sys.path.insert(0, grandparent_dir)
     sys.path.insert(1, os.path.join(sys.path[0], '...'))
-    from backend_code.models import User, Project, ProjectFile, YamlObject
+    from backend_code.models import User, Project, ProjectFile
     from driver import run_t2wml
 
 import unittest
 from pathlib import Path
 from backend_code.item_table import ItemTable
-from backend_code.wikify_handler import process_wikified_output_file
-from backend_code.t2wml_handler import generate_download_file
+from backend_code.wikify_handling import process_wikified_output_file
+from backend_code.t2wml_handling import generate_download_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name
+from backend_code.cell_mapper import CellMapper
 import tempfile
 
 output_directory = tempfile.mkdtemp()
@@ -63,7 +64,7 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_1, item_table, file_path, sheet_name, self.sparql_endpoint)
+        yc = CellMapper(self.t2wml_spec_path_1, item_table, file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
@@ -80,7 +81,7 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_2, item_table, file_path, sheet_name, self.sparql_endpoint)
+        yc = CellMapper(self.t2wml_spec_path_2, item_table, file_path, sheet_name, self.sparql_endpoint)
 
 
         filetype = "ttl"
@@ -100,7 +101,7 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc= YamlObject(self.t2wml_spec_path_3, item_table, file_path, sheet_name, self.sparql_endpoint)
+        yc= CellMapper(self.t2wml_spec_path_3, item_table, file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
@@ -118,7 +119,7 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
 
-        yc = YamlObject(self.t2wml_spec_path_4, item_table, file_path, sheet_name, self.sparql_endpoint)
+        yc = CellMapper(self.t2wml_spec_path_4, item_table, file_path, sheet_name, self.sparql_endpoint)
 
         filetype = "ttl"
 
