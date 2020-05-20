@@ -1,20 +1,17 @@
-import os, sys, inspect
+import os
 import shutil
-
-try:
-    from backend_code.models import User, Project, ProjectFile
-except:
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    print(currentdir)
-    grandparent_dir = os.path.dirname(os.path.dirname(currentdir))
-
-    sys.path.insert(0, grandparent_dir)
-    sys.path.insert(1, os.path.join(sys.path[0], '...'))
-    from backend_code.models import User, Project, ProjectFile
-    from driver import run_t2wml
-
+from driver import run_t2wml
 import unittest
 from pathlib import Path
+try:
+    from backend_code import models
+except:
+    import sys, inspect
+    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    grandparent_dir = os.path.dirname(os.path.dirname(currentdir))
+    sys.path.insert(0, grandparent_dir)
+    sys.path.insert(1, os.path.join(sys.path[0], '...'))
+
 from backend_code.item_table import ItemTable
 from backend_code.wikify_handling import process_wikified_output_file
 from backend_code.t2wml_handling import generate_download_file
