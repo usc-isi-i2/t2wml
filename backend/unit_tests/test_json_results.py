@@ -21,10 +21,6 @@ repo_folder=Path(__file__).parents[2]
 dataset_folder=os.path.join(repo_folder, "Datasets")
 
 
-
-
-
-
 class TestHomicideData(unittest.TestCase):
     maxDiff = None
     def setUp(self):
@@ -73,12 +69,62 @@ class TestHomicideData(unittest.TestCase):
     def test_sheet_2b(self):
         sheet_name="table-2b"
         self.run_test_on_sheet(sheet_name)
-    
+
+    def test_sheet_3a(self):
+        sheet_name = "table-3a"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_3b(self):
+        sheet_name = "table-3b"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_4a(self):
+        sheet_name = "table-4a"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_4b(self):
+        sheet_name = "table-4b"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_5a(self):
+        sheet_name = "table-5a"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_5b(self):
+        sheet_name = "table-5b"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_6(self):
+        sheet_name = "table-6"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_8(self):
+        sheet_name = "table-8"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_9(self):
+        sheet_name = "table-9"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_10a(self):
+        sheet_name = "table-10a"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_10b(self):
+        sheet_name="table-10b"
+        self.run_test_on_sheet(sheet_name)
+
+    def test_sheet_10c(self):
+        sheet_name="table-10c"
+        self.run_test_on_sheet(sheet_name)
+
     def test_sheet_10d(self):
         sheet_name="table-10d"
         self.run_test_on_sheet(sheet_name)
 
-    
+    def test_sheet_10e(self):
+        sheet_name="table-10e"
+        self.run_test_on_sheet(sheet_name)
 
 
 if __name__ == '__main__':
