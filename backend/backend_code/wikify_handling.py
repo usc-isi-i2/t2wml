@@ -11,39 +11,39 @@ import pandas as pd
 import uuid
 import pyexcel
 
-def wikifier(item_table: ItemTable, region: str, excel_filepath: str, sheet_name: str, flag, context,
+def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_name: str, flag, context,
              sparql_endpoint) -> dict:
     """
     This function processes the calls to the wikifier service and adds the output to the ItemTable object
     :param sparql_endpoint:
     :param item_table:
     :param region:
-    :param excel_filepath:
+    :param excel_file_path:
     :param sheet_name:
     :return:
     """
     if not item_table:
         item_table = ItemTable()
-    cell_qnode_map = wikify_region(region, excel_filepath, sheet_name)
+    cell_qnode_map = wikify_region(region, excel_file_path, sheet_name)
     if not context:
         context = '__NO_CONTEXT__'
     cell_qnode_map['context'] = context
-    item_table.update_table(cell_qnode_map, excel_filepath, sheet_name, flag)
+    item_table.update_table(cell_qnode_map, excel_file_path, sheet_name, flag)
     # item_table.add_region(region, cell_qnode_map)
     return item_table.serialize_table(sparql_endpoint)
 
 
-def call_wikify_service(csv_filepath: str, col_offset: int, row_offset: int):
+def call_wikify_service(csv_file_path: str, col_offset: int, row_offset: int):
     """
     This function calls the wikifier service and creates a cell to qnode dictionary based on the response
     cell to qnode dictionary = { 'A4': 'Q383', 'B5': 'Q6892' }
-    :param csv_filepath:
+    :param csv_file_path:
     :param col_offset:
     :param row_offset:
     :return:
     """
     cell_qnode_map = dict()
-    with open(csv_filepath, 'r') as f:
+    with open(csv_file_path, 'r') as f:
         files = {
             'file': ('', f),
             'format': (None, 'ISWC'),
@@ -63,17 +63,17 @@ def call_wikify_service(csv_filepath: str, col_offset: int, row_offset: int):
     return output
 
 
-def wikify_region(region: str, excel_filepath: str, sheet_name: str = None):
+def wikify_region(region: str, excel_file_path: str, sheet_name: str = None):
     """
     This function parses the cell range, creates the temporary csv file and calls the wikifier service on that csv
     to get the cell qnode map. cell qnode map is then processed to omit non empty cells and is then returned.
     :param region:
-    :param excel_filepath:
+    :param excel_file_path:
     :param sheet_name:
     :return:
     """
     cell_range = _cell_range_str_to_tuples(region)
-    file_path = create_temporary_csv_file(cell_range, excel_filepath, sheet_name)
+    file_path = create_temporary_csv_file(cell_range, excel_file_path, sheet_name)
     cell_qnode_map = call_wikify_service(file_path, cell_range[0][0], cell_range[0][1])
     return cell_qnode_map
 
@@ -83,22 +83,22 @@ def csv_to_dataframe(file_path):
     return df
 
 
-def process_wikified_output_file(file_path: str, item_table: ItemTable, data_filepath, sheet_name, context=None):
+def process_wikified_output_file(file_path: str, item_table: ItemTable, data_file_path, sheet_name, context=None):
     df = csv_to_dataframe(file_path)
-    item_table.update_table(df, data_filepath, sheet_name)
+    item_table.update_table(df, data_file_path, sheet_name)
 
-def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: str = None) -> str:
+def create_temporary_csv_file(cell_range: str, excel_file_path: str, sheet_name: str = None) -> str:
     """
     This function creates a temporary csv file of the region which has to be sent to the wikifier service for wikification
     :param cell_range:
-    :param excel_filepath:
+    :param excel_file_path:
     :param sheet_name:
     :return:
     """
     file_name = uuid.uuid4().hex + ".csv"
     file_path = str(Path.cwd() / "temporary_files" / file_name)
     try:
-        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_filepath, 
+        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_file_path, 
                                   start_row=cell_range[0][1],
                                   row_limit=cell_range[1][1] - cell_range[0][1] + 1, 
                                   start_column=cell_range[0][0],
@@ -108,7 +108,7 @@ def create_temporary_csv_file(cell_range: str, excel_filepath: str, sheet_name: 
         raise IOError('Excel File cannot be found or opened')
     return file_path
 
-def save_wikified_result(serialized_row_data: List[dict], filepath: str):
+def save_wikified_result(serialized_row_data: List[dict], file_path: str):
     def natural_sort_key(s: str) -> list:
         """
         This function generates the key for the natural sorting algorithm
@@ -121,7 +121,7 @@ def save_wikified_result(serialized_row_data: List[dict], filepath: str):
 
     keys = ['context', 'col', 'row', 'value', 'item', 'label', 'desc']
     serialized_row_data.sort(key=lambda x: [x['context'], natural_sort_key(x['col']), natural_sort_key(x['row'])])
-    with open(filepath, 'w', newline='', encoding="utf-8") as output_file:
+    with open(file_path, 'w', newline='', encoding="utf-8") as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
         dict_writer.writeheader()
         dict_writer.writerows(serialized_row_data)

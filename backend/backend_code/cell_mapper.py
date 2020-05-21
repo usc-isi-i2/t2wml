@@ -41,24 +41,24 @@ class Region:
             return key
 
 class MappingCacher:
-    def __init__(self, filepath, data_file_path, sheet_name):
-        self.filepath=filepath
+    def __init__(self, file_path, data_file_path, sheet_name):
+        self.file_path=file_path
         self.data_file_path=data_file_path
         self.sheet_name=sheet_name
     
     @property
     def cache_path(self):
-            path=Path(self.filepath)
+            path=Path(self.file_path)
             filename=path.stem+"_"+self.sheet_name+"_cached.json"
             parent=path.parent
-            filepath=parent/"cache"
-            if not filepath.is_dir():
-                os.makedirs(filepath)
-            return str(filepath/filename)
+            file_path=parent/"cache"
+            if not file_path.is_dir():
+                os.makedirs(file_path)
+            return str(file_path/filename)
 
     def is_fresh(self):
         if os.path.isfile(self.cache_path):
-            if os.path.getmtime(self.cache_path) > os.path.getmtime(self.filepath) and\
+            if os.path.getmtime(self.cache_path) > os.path.getmtime(self.file_path) and\
                 os.path.getmtime(self.cache_path) > os.path.getmtime(self.data_file_path):
                 return True
         return False

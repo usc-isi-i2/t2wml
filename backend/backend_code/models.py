@@ -153,15 +153,15 @@ class Project(db.Model):
         return str(base_upload_path(self.user_id, self.id) / "wf")
     
     @property
-    def wikifier_output_filepath(self):
+    def wikifier_output_file_path(self):
         return str(Path(self.wikifier_folder_path) / "other.csv")
 
     @property
-    def serialized_wikifier_output_filepath(self):
+    def serialized_wikifier_output_file_path(self):
         return str(Path(self.wikifier_folder_path) / "result.csv")
     
     def change_wikifier_file(self, file):
-        file.save(self.wikifier_output_filepath)
+        file.save(self.wikifier_output_file_path)
         self.modify()
 
     def update_sparql_endpoint(self, endpoint):
@@ -223,7 +223,7 @@ class ProjectFile(db.Model):
         new_filename=pf_id+file_extension
         file_path = str(base_upload_path(uid, pid)/ "df" / new_filename)
         file.save(file_path)
-        pf=ProjectFile(id=pf_id, filepath=file_path, project_id=pid, name=file.filename)
+        pf=ProjectFile(id=pf_id, file_path=file_path, project_id=pid, name=file.filename)
         db.session.add(pf)
         db.session.commit()
         pf.init_sheets()
@@ -435,12 +435,12 @@ class WikiRegionFile(db.Model):
         return self.project.wikifier_folder_path
     
     @property
-    def wikifier_output_filepath(self):
-        return self.project.wikifier_output_filepath
+    def wikifier_output_file_path(self):
+        return self.project.wikifier_output_file_path
 
     @property
-    def serialized_wikifier_output_filepath(self):
-        return self.project.serialized_wikifier_output_filepath
+    def serialized_wikifier_output_file_path(self):
+        return self.project.serialized_wikifier_output_file_path
         
     @property
     def region_file_name(self):
@@ -468,8 +468,8 @@ class WikiRegionFile(db.Model):
         project_file=self.sheet.project_file
         item_table=self.item_table
         
-        if Path(self.wikifier_output_filepath).exists():
-            process_wikified_output_file(self.wikifier_output_filepath, item_table, project_file.filepath, self.sheet.name)
+        if Path(self.wikifier_output_file_path).exists():
+            process_wikified_output_file(self.wikifier_output_file_path, item_table, project_file.filepath, self.sheet.name)
 
         serialized_table=self.serialize_and_save(item_table)
         self.update_wikifier_region_file(item_table)
@@ -482,5 +482,5 @@ class WikiRegionFile(db.Model):
 
     def serialize_and_save(self, item_table):
         serialized_table = item_table.serialize_table(self.sparql_endpoint)
-        save_wikified_result(serialized_table['rowData'], self.serialized_wikifier_output_filepath)
+        save_wikified_result(serialized_table['rowData'], self.serialized_wikifier_output_file_path)
         return serialized_table

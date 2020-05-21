@@ -7,12 +7,19 @@ import backend_code.t2wml_exceptions as T2WMLExceptions
 cache_class = FakeCacher
 
 
+class SpreadSheet:
+    #a spreadsheet can be of type csv, xls, or xlsx
+    #it contains a collection of Sheets. if it is a csv file, the sheet name is the file name. otherwise it is the sheet name
+    def __init__(self, data_file_path):
+        pass
+
+
 class Sheet:
     #a class to wrap ALL sheet interactions, so that all access to spreadsheet goes through here
-    def __init__(self, data_filepath, sheet_name):
+    def __init__(self, data_file_path, sheet_name):
         if cache_settings["use_cache"]:
             cache_class = PandasFileSystemPickle
-        sc=cache_class(data_filepath, sheet_name)
+        sc=cache_class(data_file_path, sheet_name)
         self.sheet_name=sheet_name
         self.data=sc.get_sheet()
     
@@ -45,6 +52,6 @@ class Sheet:
         return return_dict
 
 
-def save_and_get_sheet_names(data_filepath):
-    sheet_names= cache_class.save_file(data_filepath)
+def save_and_get_sheet_names(data_file_path):
+    sheet_names= cache_class.save_file(data_file_path)
     return sheet_names

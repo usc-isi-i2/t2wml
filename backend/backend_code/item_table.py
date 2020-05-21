@@ -20,8 +20,8 @@ class ItemTable:
 			# self.item_wiki = {qnode1: {'label': label, 'desc': desc}, qnode2: {'label': label, 'desc': desc}}
 			self.item_wiki = dict()
 
-	def update_table(self, data_frame, data_filepath: str, sheet_name: str = None, flag: int = None):
-		sheet = Sheet(data_filepath, sheet_name)
+	def update_table(self, data_frame, data_file_path: str, sheet_name: str = None, flag: int = None):
+		sheet = Sheet(data_file_path, sheet_name)
 		col_names = data_frame.columns.values
 		index_of = {val: index for index, val in enumerate(col_names)}
 		data_frame[['context']] = data_frame[['context']].fillna(value='__NO_CONTEXT__')
