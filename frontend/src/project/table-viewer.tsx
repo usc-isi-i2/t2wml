@@ -15,14 +15,62 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { backendPost } from '../common/comm';
 
 // console.log
-import { LOG } from './classes';
+import { LOG, WikifierData } from './general';
 
-class TableViewer extends Component {
-  constructor(props) {
+interface Column {
+  headerName: string;
+  field: string;
+  pinned?: "left" | "right";
+  width?: number;
+}
+
+interface Cell {
+  col: string | null;
+  row: string | number | null;
+  value: string | null;
+}
+
+interface TableData {
+  filename: string;
+  isCSV: boolean;
+  sheetNames: Array<string>;
+  currSheetName: string;
+  columnDefs: Array<string>;
+  rowData: string;
+
+  sheetData: any;
+}
+
+interface TableProperties  {
+
+}
+
+interface TableState  {
+  showSpinner: boolean;
+  showToast0: boolean;  // showing details of current cell
+  showToast1: boolean;  // showing temperary messages
+  msgInToast1: string,  // message shows in toast 1
+
+  // table data
+  filename: string | null,       // if null, show "Table Viewer"
+  isCSV: boolean,         // csv: true   excel: false
+  sheetNames: Array<string> | null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
+  currSheetName: string | null,  // csv: null    excel: "sheet1"
+  columnDefs:  Array<Column>; 
+  rowData: any; // Array<object>; // todo: add interface
+  selectedCell: Cell | null;
+  yamlRegions: any; // null,
+}
+
+class TableViewer extends Component<TableProperties, TableState> {
+  public gridApi: any;
+  public gridColumnApi: any;
+
+  constructor(props: TableProperties) {
     super(props);
 
     // init global variables
-    window.TableViewer = this;
+    (window as any).TableViewer = this;
 
     // init state
     this.state = {
@@ -54,16 +102,16 @@ class TableViewer extends Component {
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
   }
 
-  onGridReady(params) {
+  onGridReady(params: WikifierData) {
     // store the api
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
   }
 
-  handleOpenTableFile(event) {
+  handleOpenTableFile(event:any) {
     // remove current status
-    window.isCellSelectable = false;
+    (window as any).isCellSelectable = false;
     this.updateSelectedCell();
     this.updateQnodeCells();
 
@@ -73,12 +121,12 @@ class TableViewer extends Component {
 
     // before sending request
     this.setState({ showSpinner: true });
-    window.Wikifier.setState({ showSpinner: true });
+    (window as any).Wikifier.setState({ showSpinner: true });
 
     // send request
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     formData.append("file", file);
     backendPost("/upload_data_file", formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
@@ -117,28 +165,28 @@ class TableViewer extends Component {
 
       // load yaml data
       if (yamlData !== null) {
-        window.YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
-        window.isCellSelectable = true;
+        (window as any).isCellSelectable = true;
       } else {
-        window.isCellSelectable = false;
+        (window as any).isCellSelectable = false;
       }
 
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
 
     }).catch((error) => {
       console.log(error);
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
     });
   }
 
-  handleOpenWikifierFile(event) {
+  handleOpenWikifierFile(event: any) {
     // remove current status
     this.updateQnodeCells();
 
@@ -148,12 +196,12 @@ class TableViewer extends Component {
 
     // before sending request
     this.setState({ showSpinner: true });
-    window.Wikifier.setState({ showSpinner: true });
+    (window as any).Wikifier.setState({ showSpinner: true });
 
     // send request
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     formData.append("wikifier_output", file);
     backendPost("/upload_wikifier_output", formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
@@ -177,7 +225,7 @@ class TableViewer extends Component {
         msgInToast1: "✅ Wikifier file loaded",
         showToast1: true,
       });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
 
     }).catch((error) => {
       console.log(error);
@@ -185,14 +233,14 @@ class TableViewer extends Component {
       // follow-ups (failure)
       this.updateQnodeCells();
       this.setState({ showSpinner: false });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
     });
   }
 
-  handleSelectCell(params) {
+  handleSelectCell(params: any) {
     // remove current status
     this.updateSelectedCell();
-    window.Output.removeOutput();
+    (window as any).Output.removeOutput();
 
     // get selected cell index
     const colName = String(params.colDef["headerName"]);
@@ -209,14 +257,14 @@ class TableViewer extends Component {
     this.updateSelectedCell(colName, rowName, value);
 
     // before sending request
-    if (!window.isCellSelectable) return;
+    if (!(window as any).isCellSelectable) return;
     this.setState({ showSpinner: true });
-    window.Output.setState({ showSpinner: true });
+    (window as any).Output.setState({ showSpinner: true });
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     formData.append("col", colName);
     formData.append("row", rowName);
     backendPost("/resolve_cell", formData).then((json) => {
@@ -232,7 +280,7 @@ class TableViewer extends Component {
       }
 
       // else, success
-      window.Output.updateOutput(colName, rowName, json);
+      (window as any).Output.updateOutput(colName, rowName, json);
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
@@ -241,29 +289,29 @@ class TableViewer extends Component {
       console.log(error);
 
       // follow-ups (failure)
-      window.Output.setState({ showSpinner: false });
+      (window as any).Output.setState({ showSpinner: false });
       this.setState({ showSpinner: false });
     });
   }
 
-  handleSelectSheet(event) {
+  handleSelectSheet(event: any) {
     // remove current status
     this.updateSelectedCell();
-    window.YamlEditor.updateYamlText();
+    (window as any).YamlEditor.updateYamlText();
     this.updateYamlRegions();
     this.updateQnodeCells();
-    window.Output.removeOutput();
-    window.Output.setState({ isDownloadDisabled: true });
+    (window as any).Output.removeOutput();
+    (window as any).Output.setState({ isDownloadDisabled: true });
 
     // before sending request
     this.setState({ showSpinner: true });
-    window.Wikifier.setState({ showSpinner: true });
+    (window as any).Wikifier.setState({ showSpinner: true });
 
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     formData.append("sheet_name", sheetName);
     backendPost("/change_sheet", formData).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
@@ -302,24 +350,24 @@ class TableViewer extends Component {
 
       // load yaml data
       if (yamlData !== null) {
-        window.YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
-        window.isCellSelectable = true;
-        window.Output.setState({ isDownloadDisabled: false });
+        (window as any).isCellSelectable = true;
+        (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
-        window.isCellSelectable = false;
+        (window as any).isCellSelectable = false;
       }
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
 
     }).catch((error) => {
       console.log(error);
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
     });
   }
 
@@ -327,7 +375,7 @@ class TableViewer extends Component {
   updateQnodeCells(qnodeData = null, rowData = null) {
     if (qnodeData === null) {
       // reset qnode cells
-      const qnodes = Object.keys(window.Wikifier.state.qnodeData);
+      const qnodes = Object.keys((window as any).Wikifier.state.qnodeData);
       if (qnodes.length === 0) return;
       const cells = { qnode: qnodes };
       const presets = {
@@ -336,7 +384,7 @@ class TableViewer extends Component {
       this.updateStyleByDict(cells, presets);
 
       // reset wikifier data
-      window.Wikifier.updateWikifier();
+      (window as any).Wikifier.updateWikifier();
 
     } else {
       // update qnode cells
@@ -351,11 +399,11 @@ class TableViewer extends Component {
 
       // update wikifier data
 
-      window.Wikifier.updateWikifier(qnodeData, rowData);
+      (window as any).Wikifier.updateWikifier(qnodeData, rowData);
     }
   }
 
-  updateSelectedCell(col = null, row = null, value = null) {
+  updateSelectedCell(col: string | null = null, row: string | null = null, value: string | null = null) {
     if (col === null) {
       // reset
       const { selectedCell } = this.state;
@@ -377,30 +425,32 @@ class TableViewer extends Component {
 
   }
 
-  updateStyleByCell(colName, rowName, style, override = false) {
-    const col = colName;
-    const row = rowName - 1;
-    let rowData2 = this.state.rowData;
-    if (rowData2 !== undefined && rowData2[row] !== undefined) {
-      if (rowData2[row]["styles"] === undefined) {
-        rowData2[row]["styles"] = {};
+  updateStyleByCell(colName: string | null, rowName: string | null, style: {border: string}, override: boolean = false) {
+    if (rowName && colName) {
+      const col = colName;
+      const row = rowName - 1;
+      let rowData2 = this.state.rowData;
+      if (rowData2 !== undefined && rowData2[row] !== undefined) {
+        if (rowData2[row]["styles"] === undefined) {
+          rowData2[row]["styles"] = {};
+        }
+        if (override) {
+          rowData2[row]["styles"][col] = style;
+        } else {
+          rowData2[row]["styles"][col] = Object.assign({}, rowData2[row]["styles"][col], style); // combine old and new styles
+        }
+        this.setState({
+          rowData: rowData2
+        });
+        this.gridApi.setRowData(rowData2);
+        // console.log("<TableViewer> updated style of (" + colName + rowName + ") by " + JSON.stringify(style) + ".");
       }
-      if (override) {
-        rowData2[row]["styles"][col] = style;
-      } else {
-        rowData2[row]["styles"][col] = Object.assign({}, rowData2[row]["styles"][col], style); // combine old and new styles
-      }
-      this.setState({
-        rowData: rowData2
-      });
-      this.gridApi.setRowData(rowData2);
-      // console.log("<TableViewer> updated style of (" + colName + rowName + ") by " + JSON.stringify(style) + ".");
     } else {
       // console.log("<TableViewer> updated nothing.");
     }
   }
 
-  updateStyleByDict(dict, presets, override = false) {
+  updateStyleByDict(dict: any, presets: any, override = false) {
     // dict = { "styleName": ["A1", "A2", ...] }
     // window.TableViewer.updateStyleByDict({ "data_region": ["A14", "A15"], "qualifier_region": ["B14", "B15"], "item": ["C14", "C15"] });
     let rowData2 = this.state.rowData;
@@ -430,7 +480,7 @@ class TableViewer extends Component {
     this.gridApi.setRowData(rowData2);
   }
 
-  updateTableData(tableData) {
+  updateTableData(tableData: TableData) {
     tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
     tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
     this.setState({
@@ -439,7 +489,7 @@ class TableViewer extends Component {
       sheetNames: tableData.sheetNames,
       currSheetName: tableData.currSheetName,
       columnDefs: tableData.sheetData.columnDefs,
-      rowData: tableData.sheetData.rowData,
+      rowData: tableData.sheetData.rowData
     });
     // this.gridColumnApi.autoSizeAllColumns();
   }
@@ -487,7 +537,7 @@ class TableViewer extends Component {
           variant="success"
           size="sm"
           style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
-          onClick={(event) => { this.handleSelectSheet(event) }}
+          onClick={(event: any) => { this.handleSelectSheet(event) }}
         >{sheetNames[i]}</Button>
       );
     }
@@ -496,7 +546,7 @@ class TableViewer extends Component {
 
   renderTableLegend() {
     return (
-      <Popover className="shadow" style={{ backgroundColor: "rgba(255,255,255,0.8)" }}>
+      <Popover className="shadow" style={{ backgroundColor: "rgba(255,255,255,0.8)" }} id="table">
         <div style={{ margin: "10px 30px" }}>
           <span><strong>Legend</strong>:&nbsp;</span>
           <span className="legend" style={{ backgroundColor: "white", color: "hsl(200, 100%, 30%)", marginLeft: "0" }}>wikified</span>
@@ -511,9 +561,9 @@ class TableViewer extends Component {
 
   renderToastBody() {
     // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    if (window.Wikifier === undefined) return;
-    if (window.Wikifier.state === undefined) return;
-    const { qnodeData } = window.Wikifier.state;
+    if ((window as any).Wikifier === undefined) return;
+    if ((window as any).Wikifier.state === undefined) return;
+    const { qnodeData } = (window as any).Wikifier.state;
     if (qnodeData === undefined) return;
 
     // get qnode according to cell index, e.g. "Q967"
@@ -582,7 +632,7 @@ class TableViewer extends Component {
 
     // render upload tooltip
     const uploadToolTipHtml = (
-      <Tooltip style={{ width: "fit-content" }}>
+      <Tooltip style={{ width: "fit-content" }} id="upload">
         <div className="text-left small">
           <b>Accepted file types:</b><br />
           • Comma-Separated Values (.csv)<br />
@@ -613,7 +663,7 @@ class TableViewer extends Component {
                 variant="outline-light"
                 size="sm"
                 style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document.getElementById("file_table").click(); }}
+                onClick={() => { document!.getElementById("file_table")!.click(); }}
               >
                 Upload
               </Button>
@@ -627,7 +677,7 @@ class TableViewer extends Component {
               accept=".csv, .xls, .xlsx"
               style={{ display: "none" }}
               onChange={this.handleOpenTableFile}
-              onClick={(event) => { event.target.value = null }}
+              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
             {/* hidden input of wikifier file */}
@@ -637,7 +687,7 @@ class TableViewer extends Component {
               accept=".csv"
               style={{ display: "none" }}
               onChange={this.handleOpenWikifierFile}
-              onClick={(event) => { event.target.value = null }}
+              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
           </Card.Header>

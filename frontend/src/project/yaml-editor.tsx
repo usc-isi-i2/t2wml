@@ -8,16 +8,28 @@ import yaml from 'js-yaml';
 import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG } from './classes';
+import { LOG } from './general';
 import { backendPost } from '../common/comm';
 
 
-class YamlEditor extends Component {
-  constructor(props) {
+interface yamlProperties {
+  isShowing: boolean;
+}
+
+interface yamlState {
+  yamlText: string;
+  yamlJson: JSON | null;
+  isValidYaml: boolean;
+  errMsg: string | null;
+  errStack: string;
+}
+
+class YamlEditor extends Component<yamlProperties, yamlState> {
+  constructor(props: yamlProperties) {
     super(props);
 
     // init global variables
-    window.YamlEditor = this;
+    (window as any).YamlEditor = this;
 
     // init state
     const defaultYamlText = "### A simplest sample of T2WML.\n### Replace all #PLACEHOLDER below to start.\nstatementMapping:\n  region:\n    - left: #CHAR\n      right: #CHAR\n      top: #INT\n      bottom: #INT\n  template:\n    item: #EXPRESSION/QNODE\n    property: #EXPRESSION/PNODE\n    value: #EXPRESSION/VALUE\n    qualifier:\n      - property: #EXPRESSION/PNODE\n        value: #EXPRESSION/VALUE";
@@ -38,20 +50,20 @@ class YamlEditor extends Component {
     this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
   }
 
-  handleApplyYaml(event) {
+  handleApplyYaml() {
     console.log("<YamlEditor> clicked apply");
 
     // remove current status
-    window.TableViewer.updateYamlRegions();
-    window.Output.removeOutput();
+    (window as any).TableViewer.updateYamlRegions();
+    (window as any).Output.removeOutput();
 
     // before sending request
-    window.TableViewer.setState({ showSpinner: true });
+    (window as any).TableViewer.setState({ showSpinner: true });
 
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     formData.append("yaml", this.state.yamlText);
     // const sheetName = window.TableViewer.state.currSheetName;
     // if (sheetName !== null) {
@@ -70,33 +82,33 @@ class YamlEditor extends Component {
               yamlJson: null,
               isValidYaml: false,
               errMsg: "⚠️There was an error applying YAML. Check browser console for details.",
-              errStack: null,
+              errStack: '',
           });
         // throw Error(error);
       }
 
           // else, success
           const { yamlRegions } = json;
-          window.TableViewer.updateYamlRegions(yamlRegions);
+          (window as any).TableViewer.updateYamlRegions(yamlRegions);
 
           // follow-ups (success)
-          window.TableViewer.setState({ showSpinner: false });
-          window.Output.setState({ isDownloadDisabled: false });
-          window.isCellSelectable = true;
+          (window as any).TableViewer.setState({ showSpinner: false });
+          (window as any).Output.setState({ isDownloadDisabled: false });
+          (window as any).isCellSelectable = true;
 
     }).catch((error) => {
       console.log(error);
       alert("Failed to apply. 🙁\n\n" + error);
 
       // follow-ups (failure)
-      window.TableViewer.setState({ showSpinner: false });
+      (window as any).TableViewer.setState({ showSpinner: false });
     });
   }
 
-  handleChangeYaml(event) {
-    window.isCellSelectable = false;
+  handleChangeYaml() {
+    (window as any).isCellSelectable = false;
 
-    const yamlText = this.refs.monaco.editor.getModel().getValue();
+    const yamlText = (this.refs.monaco as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
       let yamlJson = yaml.safeLoad(yamlText);
@@ -104,7 +116,7 @@ class YamlEditor extends Component {
         yamlJson: yamlJson,
         isValidYaml: true,
         errMsg: null,
-        errStack: null,
+        errStack: '',
       });
     } catch (err) {
       this.setState({
@@ -116,27 +128,27 @@ class YamlEditor extends Component {
     }
   }
 
-  handleOpenYamlFile(event) {
+  handleOpenYamlFile(event: any) {
     // get file
-    const file = event.target.files[0];
+    const file = (event.target as any).files[0];
     if (!file) return;
     console.log("<YamlEditor> opened file: " + file.name);
 
-    window.isCellSelectable = false;
+    (window as any).isCellSelectable = false;
 
     // upload local yaml
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onloadend = (() => {
       const yamlText = reader.result;
-      this.setState({ yamlText: yamlText });
+      this.setState({ yamlText: yamlText as string });
       try {
-        const yamlJson = yaml.safeLoad(yamlText);
+        const yamlJson = yaml.safeLoad((yamlText as string));
         this.setState({
           yamlJson: yamlJson,
           isValidYaml: true,
           errMsg: null,
-          errStack: null
+          errStack: ''
         });
       } catch (err) {
         this.setState({
@@ -149,7 +161,7 @@ class YamlEditor extends Component {
     });
   }
 
-  updateYamlText(yamlText = null) {
+  updateYamlText(yamlText: string | null = null) {
     let newYamlText = yamlText;
     if (newYamlText === null) {
       const defaultYamlText = "### A simplest sample of T2WML.\n### Replace all #PLACEHOLDER below to start.\nstatementMapping:\n  region:\n    - left: #CHAR\n      right: #CHAR\n      top: #INT\n      bottom: #INT\n  template:\n    item: #EXPRESSION/QNODE\n    property: #EXPRESSION/PNODE\n    value: #EXPRESSION/VALUE\n    qualifier:\n      - property: #EXPRESSION/PNODE\n        value: #EXPRESSION/VALUE";
@@ -162,7 +174,7 @@ class YamlEditor extends Component {
         yamlJson: yamlJson,
         isValidYaml: true,
         errMsg: null,
-        errStack: null
+        errStack: ''
       });
     } catch (err) {
       this.setState({
@@ -179,7 +191,7 @@ class YamlEditor extends Component {
 
     // render upload tooltip
     const uploadToolTipHtml = (
-      <Tooltip style={{ width: "fit-content" }}>
+      <Tooltip style={{ width: "fit-content" }} id="upload">
         <div className="text-left small">
           <b>Accepted file types:</b><br />
           • YAML Ain't Markup Language (.yaml)
@@ -196,7 +208,7 @@ class YamlEditor extends Component {
         {/* header */}
         <Card.Header
           style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-          onClick={() => window.Editors.setState({ nowShowing: "YamlEditor" })}
+          onClick={() => (window as any).Editors.setState({ nowShowing: "YamlEditor" })}
         >
 
           {/* title */}
@@ -214,7 +226,7 @@ class YamlEditor extends Component {
               variant="outline-light"
               size="sm"
               style={{ padding: "0rem 0.5rem" }}
-              onClick={() => { document.getElementById("file_yaml").click(); }}
+              onClick={() => { document!.getElementById("file_yaml")!.click(); }}
             >
               Upload
             </Button>
@@ -228,7 +240,7 @@ class YamlEditor extends Component {
             accept=".yaml"
             style={{ display: "none" }}
             onChange={this.handleOpenYamlFile}
-            onClick={(event) => { event.target.value = null }}
+            onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
           />
 
         </Card.Header>
@@ -264,7 +276,7 @@ class YamlEditor extends Component {
             }}
             onChange={() => this.handleChangeYaml()}
             editorDidMount={(editor, monaco) => {
-              editor.getModel().updateOptions({ tabSize: 2 });
+              editor.getModel()!.updateOptions({ tabSize: 2 });
               setInterval(() => { editor.layout(); }, 200);  // automaticLayout above misses trigger opening, so we've replaced it
               // This is better done by catching the trigger event and calling editor.layout there,
               // once we figure out how to catch the trigger event.

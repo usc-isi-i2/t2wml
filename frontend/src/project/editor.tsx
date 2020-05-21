@@ -3,12 +3,20 @@ import React, { Component } from 'react';
 import Wikifier from './wikifier';
 import YamlEditor from './yaml-editor';
 
-class Editors extends Component {
-  constructor(props) {
+interface EditorProperties {
+
+}
+
+interface EditorState {
+  nowShowing: string;
+}
+
+class Editors extends Component<EditorProperties, EditorState> {
+  constructor(props: EditorProperties) {
     super(props);
 
     // init global variables
-    window.Editors = this;
+    (window as any).Editors = this;
 
     // init state
     this.state = {

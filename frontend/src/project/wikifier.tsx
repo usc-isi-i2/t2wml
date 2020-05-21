@@ -9,19 +9,42 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 // console.log
-import { LOG } from './classes';
+import { LOG, WikifierData } from './general';
 import * as utils from '../common/utils'
 import { backendPost } from '../common/comm';
 
 import QnodeEditor from './qnode-editor';
 
 
-class Wikifier extends Component {
-  constructor(props) {
+interface WikifierProperties {
+  isShowing: boolean;
+}
+
+interface WikifierState {
+  showSpinner: boolean;
+  showCallWikifier: boolean;
+  qnodeData: any,
+  rowData: Array<any>,
+  flag: number;
+  scope: number;
+}
+
+class Wikifier extends Component<WikifierProperties, WikifierState> {
+  public gridApi: any;
+  public gridColumnApi: any;
+
+  private tempWikifyRegionRef: React.RefObject<HTMLInputElement>;
+  private tempWikifyFlagRef: React.RefObject<HTMLSelectElement>;
+  private tempWikifyContextRef: React.RefObject<HTMLInputElement>;
+
+  constructor(props: WikifierProperties) {
     super(props);
+    this.tempWikifyRegionRef = React.createRef();
+    this.tempWikifyFlagRef = React.createRef();
+    this.tempWikifyContextRef = React.createRef();
 
     // init global variables
-    window.Wikifier = this;
+    (window as any).Wikifier = this;
 
     // init state
     this.state = {
@@ -40,11 +63,10 @@ class Wikifier extends Component {
 
       // qnode editor
       scope: 0,
-
     };
   }
 
-  onGridReady(params) {
+  onGridReady(params: WikifierData) {
     // store the api
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
@@ -173,10 +195,10 @@ class Wikifier extends Component {
   //   });
   // }
 
-  handleDoCall(event) {
-    const region = this.refs.tempWikifyRegion.value.trim();
-    const flag = this.refs.tempWikifyFlag.value;
-    const context = this.refs.tempWikifyContext.value.trim();
+  handleDoCall() {
+    const region = (this.refs.tempWikifyRegionRef as any).value.trim();
+    const flag = (this.refs.tempWikifyFlagRef as any).value;
+    const context = (this.refs.tempWikifyContextRef as any).value.trim();
 
     // validate input
     if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(region) || !utils.isValidRegion(region)) {
@@ -194,7 +216,7 @@ class Wikifier extends Component {
     // send request
     console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     formData.append("action", "wikify_region");
     formData.append("region", region);
     formData.append("context", context);
@@ -214,7 +236,7 @@ class Wikifier extends Component {
       // else, success
 
       const { qnodes, rowData } = json;
-      window.TableViewer.updateQnodeCells(qnodes, rowData);
+      (window as any).TableViewer.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
@@ -223,7 +245,7 @@ class Wikifier extends Component {
       console.log(error);
 
       // follow-ups (failure)
-      window.TableViewer.updateQnodeCells();
+      (window as any).TableViewer.updateQnodeCells();
       this.setState({ showSpinner: false });
     });
   }
@@ -294,13 +316,13 @@ class Wikifier extends Component {
   //   });
   // }
 
-  tableColComparator(col1, col2) {
+  tableColComparator(col1: string, col2: string) {
     const col1Idx = utils.colName2colIdx(col1);
     const col2Idx = utils.colName2colIdx(col2);
     return col1Idx - col2Idx;
   }
 
-  tableRowComparator(row1, row2) {
+  tableRowComparator(row1: string, row2: string) {
     const row1Idx = parseInt(row1);
     const row2Idx = parseInt(row2);
     return row1Idx - row2Idx;
@@ -442,7 +464,7 @@ class Wikifier extends Component {
               <Col xs="9" md="9" className="pr-0">
                 <Form.Control
                   type="text"
-                  ref="tempWikifyRegion"
+                  ref={this.tempWikifyRegionRef}
                   placeholder="e.g. A1:A10"
                 />
               </Col>
@@ -456,7 +478,7 @@ class Wikifier extends Component {
               <Col xs="9" md="9" className="pr-0">
                 <Form.Control
                   as="select"
-                  ref="tempWikifyFlag"
+                  ref={this.tempWikifyFlagRef}
                 >
                   <option value="0">{"record col & row"}</option>
                   <option value="1">{"record col"}</option>
@@ -474,7 +496,7 @@ class Wikifier extends Component {
               <Col xs="9" md="9" className="pr-0">
                 <Form.Control
                   type="text"
-                  ref="tempWikifyContext"
+                  ref={this.tempWikifyContextRef}
                   placeholder="(optional)"
                 />
               </Col>
@@ -657,7 +679,7 @@ class Wikifier extends Component {
 
     // render upload tooltip
     const uploadToolTipHtml = (
-      <Tooltip style={{ width: "fit-content" }}>
+      <Tooltip style={{ width: "fit-content" }} id="upload">
         <div className="text-left small">
           <b>Accepted file types:</b><br />
           • Comma-Separated Values (.csv)
@@ -676,7 +698,7 @@ class Wikifier extends Component {
         {/* header */}
         <Card.Header
           style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-          onClick={() => window.Editors.setState({ nowShowing: "Wikifier" })}
+          onClick={() => (window as any).Editors.setState({ nowShowing: "Wikifier" })}
         >
 
           {/* title */}
@@ -696,7 +718,7 @@ class Wikifier extends Component {
               variant="outline-light"
               size="sm"
               style={{ padding: "0rem 0.5rem" }}
-              onClick={() => { document.getElementById("file_wikifier").click(); }}
+              onClick={() => { document!.getElementById("file_wikifier")!.click(); }}
             >
               Upload
             </Button>

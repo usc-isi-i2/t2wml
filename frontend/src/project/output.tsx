@@ -9,16 +9,43 @@ import Downloader from 'js-file-download';
 import { backendPost } from '../common/comm';
 
 // console.log
-import { LOG } from './classes';
+import { LOG } from './general';
 import * as utils from '../common/utils'
 
+interface OutputProperties {
 
-class Output extends Component {
-  constructor(props) {
+}
+
+interface OutputState {
+  showSpinner: boolean,
+  currCol: string;
+  currRow: string;
+  // data
+  valueCol: string | null;
+  valueRow: string | null;
+  value: string | null;
+  itemID: string | null;
+  itemName: string | null;
+  itemCol: string | null;
+  itemRow: string | null;
+  propertyID: string | null;
+  qualifiers: string | null;
+  cache: any; // cache for Wikidata queries
+
+  // download
+  showDownload: false,
+  isDownloadDisabled: true,
+  downloadFileName: string;
+  downloadFileType: string;
+  isDownloading: boolean;
+}
+
+class Output extends Component<OutputProperties, OutputState> {
+  constructor(props: OutputProperties) {
     super(props);
 
     // init global variables
-    window.Output = this;
+    (window as any).Output = this;
 
     // init state
     this.state = {
@@ -41,13 +68,13 @@ class Output extends Component {
       // download
       showDownload: false,
       isDownloadDisabled: true,
-      downloadFileName: window.pid,
+      downloadFileName: (window as any).pid,
       downloadFileType: "json",
       isDownloading: false,
     };
   }
 
-  handleDoDownload(event) {
+  handleDoDownload() {
     const filename = this.state.downloadFileName + "." + this.state.downloadFileType;
 
     // before sending request
@@ -56,7 +83,7 @@ class Output extends Component {
     // send request
     console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     formData.append("type", this.state.downloadFileType);
     backendPost("/download", formData).then((json) => {
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
@@ -90,14 +117,14 @@ class Output extends Component {
     let col = this.state.currCol;
     let row = this.state.currRow;
     if (col !== undefined && row !== undefined) {
-      window.TableViewer.updateStyleByCell(col, row, { "border": "" });
+      (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
     }
 
     // remove item border
     col = this.state.itemCol;
     row = this.state.itemRow;
     if (col !== undefined && row !== undefined) {
-      window.TableViewer.updateStyleByCell(col, row, { "border": "" });
+      (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
     }
 
     // remove qualifier borders
@@ -106,12 +133,12 @@ class Output extends Component {
       for (let i = 0, len = qualifiers.length; i < len; i++) {
         col = qualifiers[i]["col"];
         row = qualifiers[i]["row"];
-        window.TableViewer.updateStyleByCell(col, row, { "border": "" });
+        (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
       }
     }
   }
 
-  updateOutput(colName, rowName, json) {
+  updateOutput(colName: string, rowName: string, json: any) {
     if (json["statement"] === undefined) return;
 
     // remove current status
@@ -137,7 +164,7 @@ class Output extends Component {
       isAllCached = false;
     }
     let [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
-    window.TableViewer.updateStyleByCell(col, row, { "border": "1px solid black !important" });
+    (window as any).TableViewer.updateStyleByCell(col, row, { "border": "1px solid black !important" });
     this.setState({ itemCol: col, itemRow: row });
 
     // property
@@ -153,7 +180,7 @@ class Output extends Component {
     // value
     const value = json["statement"]["value"];
     this.setState({ value: value });
-    window.TableViewer.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
+    (window as any).TableViewer.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
     this.setState({ currCol: colName, currRow: rowName });
 
     // qualifiers
@@ -188,7 +215,7 @@ class Output extends Component {
           qualifier["row"] = row;
           // let hue = utils.getHueByRandom(10); // first param is the total number of colors
           let hue = utils.getHueByQnode(10, qualifier["propertyID"]);
-          window.TableViewer.updateStyleByCell(col, row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
+          (window as any).TableViewer.updateStyleByCell(col, row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
 
         qualifiers.push(qualifier);
@@ -218,7 +245,7 @@ class Output extends Component {
 
   queryWikidata(node, field, index = 0, subfield = "propertyName") {
     // FUTURE: use <local stroage> to store previous query result even longer
-    const api = window.sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
+    const api = (window as any).sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
     // console.log("<Output> made query to Wikidata: " + api);
 
     // before send request

@@ -15,7 +15,7 @@ import { backendGet, backendPost } from '../common/comm';
 import Config from '../common/config';
 
 // console.log
-import { LOG } from './classes';
+import { LOG } from './general';
 
 // components
 import Editors from './editor';

@@ -2,8 +2,24 @@ import React, { Component } from 'react';
 
 import { Button, ButtonGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-class QnodeEditor extends Component {
-  constructor(props) {
+interface qnodeProperties {
+  charPress: string;
+  keyPress: number;
+  value: string;
+
+  stopEditing: (stop: boolean) => void;
+}
+
+interface qnodeState {
+  value: string;
+  scope: number;
+  highlightAllOnFocus: boolean;
+  cancelAfterEnd: boolean;
+  isValidValue: boolean;
+}
+
+class QnodeEditor extends Component<qnodeProperties, qnodeState> {
+  constructor(props: qnodeProperties) {
     super(props);
     // console.log(props);
 
@@ -16,21 +32,21 @@ class QnodeEditor extends Component {
     //   cancelAfterEnd: true,
     //   isValidValue: true,
     // };
-    window.Wikifier.setState({ scope: 0 });
+    (window as any).Wikifier.setState({ scope: 0 });
 
     // init functions
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
   componentDidMount() {
-    this.refs.tempQnodeEditor.addEventListener('keydown', this.handleKeyDown);
+    (this.refs.tempQnodeEditor as HTMLInputElement).addEventListener('keydown', this.handleKeyDown);
   }
 
   componentWillUnmount() {
-    this.refs.tempQnodeEditor.removeEventListener('keydown', this.handleKeyDown);
+    (this.refs.tempQnodeEditor as HTMLInputElement).removeEventListener('keydown', this.handleKeyDown);
   }
 
-  createInitState(props) {
+  createInitState(props: qnodeProperties) {
     if (props.keyPress === 8 || props.keyPress === 46) {
       // if BACKSPACE (8) or DELETE (46) pressed, we clear the cell
       return {
@@ -39,7 +55,7 @@ class QnodeEditor extends Component {
         highlightAllOnFocus: false,
         cancelAfterEnd: true,
         isValidValue: true
-      };
+      } as qnodeState;
     } else if (props.charPress) {
       // if a letter was pressed, we start with the letter
       return {
@@ -48,7 +64,7 @@ class QnodeEditor extends Component {
         highlightAllOnFocus: false,
         cancelAfterEnd: true,
         isValidValue: true
-      };
+      } as qnodeState;
     } else {
       // otherwise we start with the current value
       return {
@@ -57,14 +73,14 @@ class QnodeEditor extends Component {
         highlightAllOnFocus: true,
         cancelAfterEnd: true,
         isValidValue: true
-      };
+      } as qnodeState;
     }
   }
 
   afterGuiAttached() {
     // get ref from React component
-    const eInput = this.refs.tempQnodeEditor;
-    eInput.focus();
+    const eInput = this.refs.tempQnodeEditor as HTMLInputElement;
+    (eInput).focus();
     if (this.state.highlightAllOnFocus) {
       eInput.select();
       this.setState({ highlightAllOnFocus: false })
@@ -84,7 +100,7 @@ class QnodeEditor extends Component {
     return this.state.value;
   }
 
-  handleChangeValue(value) {
+  handleChangeValue(value: string) {
     let isValidValue;
     if (/^Q\d+$/.test(value) || /^$/.test(value)) {
       // valid if "Q..." or ""
@@ -98,9 +114,9 @@ class QnodeEditor extends Component {
     });
   }
 
-  handleChangeScope(scope) {
+  handleChangeScope(scope: number) {
     this.setState({ scope: scope });
-    window.Wikifier.setState({ scope: scope });
+    (window as any).Wikifier.setState({ scope: scope });
   }
 
   handleClickUpdateQnode() {
@@ -115,7 +131,7 @@ class QnodeEditor extends Component {
     setTimeout(this.handleStopEditing.bind(this), 100);
   }
 
-  handleKeyDown(event) {
+  handleKeyDown(event: KeyboardEvent) {
     if ([37, 39, 8, 46].indexOf(event.keyCode) > -1) {
       // if LEFT (37) or RIGHT (39) or BACKSPACE (8) or DELETE (46) pressed, we clear the cell
       event.stopPropagation();
@@ -165,21 +181,21 @@ class QnodeEditor extends Component {
 
     // scope button tooltips
     const scope0TooltipHtml = (
-      <Tooltip style={{ width: "fit-content" }}>
+      <Tooltip style={{ width: "fit-content" }} id="scope0">
         <div className="text-left small">
           Apply to this cell only
         </div>
       </Tooltip>
     );
     const scope1TooltipHtml = (
-      <Tooltip style={{ width: "fit-content" }}>
+      <Tooltip style={{ width: "fit-content" }} id="scope1">
         <div className="text-left small">
           Apply to all cells with same value in this region
         </div>
       </Tooltip>
     );
     const scope2TooltipHtml = (
-      <Tooltip style={{ width: "fit-content" }}>
+      <Tooltip style={{ width: "fit-content" }} id="scope2">
         <div className="text-left small">
           Apply to all cells with same value in all regions
         </div>
@@ -201,7 +217,7 @@ class QnodeEditor extends Component {
 
           {/* apply to */}
           <div style={{ padding: "5px", background: "whitesmoke", borderRadius: "4px" }}>
-            <span style={{ fontWeight: "600" }}>
+            <span style={{ fontWeight: 600 }}>
               Scope:&nbsp;
             </span>
             <ButtonGroup>
@@ -220,7 +236,7 @@ class QnodeEditor extends Component {
                   variant="outline-light"
                   size="sm"
                   style={(scope === 1) ? currScopeStyle : otherScopeStyle}
-                  disabled={window.Wikifier.state.currRegion === "All"}
+                  disabled={(window as any).Wikifier.state.currRegion === "All"}
                   onClick={() => this.handleChangeScope(1)}
                 >
                   Region

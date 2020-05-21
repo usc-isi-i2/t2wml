@@ -5,7 +5,7 @@ export const LOG = {
   link: "background: white; color: blue"
 };
 
-// export interface Grid {
-//   gridApi: any;
-//   gridColumnApi: any;
-// }
+export interface WikifierData {
+  api: any;
+  columnApi: any;
+}
