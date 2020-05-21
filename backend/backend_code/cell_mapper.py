@@ -105,7 +105,7 @@ class CellMapper:
         region_parser=RegionParser(self.yaml_data)
         self.region=Region(region_parser.parsed_region)
         
-        template_parser=TemplateParser(self.yaml_data)
+        template_parser=TemplateParser(self.yaml_data, self.region)
         self.template=template_parser.template
         self.eval_template=template_parser.eval_template
         
