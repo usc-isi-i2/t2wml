@@ -34,7 +34,7 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
 
     try:
         item_table = ItemTable()
-        process_wikified_output_file(wikified_output_path, item_table, new_file_path, sheet_name)
+        item_table.update_table_from_wikifier_file(wikified_output_path, new_file_path, sheet_name)
     except Exception as e:
         print(e)
         logging.error("Invalid Wikfied Output File")

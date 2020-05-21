@@ -301,8 +301,7 @@ def downloader():
 @json_response
 def wikify_region():
     """
-    This function perfoms three tasks; calls the wikifier service to wikifiy a region, delete a region's wikification result
-    and update the wikification result.
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
     """
     project = get_project()
@@ -319,9 +318,9 @@ def wikify_region():
             #handler
             x=wikifier(item_table, region, project.current_file.file_path, current_sheet.name, flag, context, project.sparql_endpoint)
             
-            wikier=WikiRegionFile.get_or_create(current_sheet)
-            wikier.update_wikifier_region_file(item_table)
-            data = wikier.serialize_and_save(item_table)
+            wrf=WikiRegionFile.get_or_create(current_sheet)
+            wrf.update_table(item_table)
+            data = wrf.serialized_table
 
     return data, 200
 

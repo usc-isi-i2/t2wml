@@ -77,14 +77,4 @@ def wikify_region(region: str, excel_file_path: str, sheet_name: str = None):
     return cell_qnode_map
 
 
-def csv_to_dataframe(file_path):
-    df = pd.read_csv(file_path)
-    return df
-
-
-def process_wikified_output_file(file_path: str, item_table: ItemTable, data_file_path, sheet_name, context=None):
-    df = csv_to_dataframe(file_path)
-    item_table.update_table(df, data_file_path, sheet_name)
-
-
 

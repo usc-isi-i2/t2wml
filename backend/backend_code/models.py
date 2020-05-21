@@ -8,7 +8,6 @@ from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
 from backend_code.spreadsheets.utilities import excel_to_json
 from backend_code.spreadsheets.sheet import save_and_get_sheet_names
-from backend_code.wikify_handling import process_wikified_output_file
 from backend_code.t2wml_handling import highlight_region, resolve_cell, generate_download_file
 from backend_code.cell_mapper import CellMapper
 
@@ -153,13 +152,12 @@ class Project(db.Model):
         return str(base_upload_path(self.user_id, self.id) / "wf")
     
     @property
-    def wikifier_output_file_path(self):
-        return str(Path(self.wikifier_folder_path) / "other.csv")
-
+    def wikifier_file_path(self):
+        return str(Path(self.wikifier_folder_path) / "wikifier.csv")
 
     
     def change_wikifier_file(self, file):
-        file.save(self.wikifier_output_file_path)
+        file.save(self.wikifier_file_path)
         self.modify()
 
     def update_sparql_endpoint(self, endpoint):
@@ -414,41 +412,24 @@ class WikiRegionFile(db.Model):
             except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
                 return ItemTable(None)
 
-
-
     @property 
     def project(self):
         return self.sheet.project_file.project
-
-    @property
-    def project_id(self):
-        return self.project.id
-    
-    @property
-    def user_id(self):
-        return self.project.user_id 
-
-    @property
-    def wikifier_folder_path(self):
-        return self.project.wikifier_folder_path
-    
-    @property
-    def wikifier_output_file_path(self):
-        return self.project.wikifier_output_file_path
-
-        
-    @property
-    def region_file_name(self):
-        return str(self.id)+".json"
-    
-    @property
-    def region_file_path(self):
-        return str(Path(self.wikifier_folder_path) / self.region_file_name)
     
     @property
     def sparql_endpoint(self):
-        return self.sheet.project_file.project.sparql_endpoint
+        return self.project.sparql_endpoint
+    
+    @property
+    def wikifier_file_path(self):
+        return self.project.wikifier_file_path
 
+    @property
+    def region_file_path(self):
+        def region_file_name():
+            return str(self.id)+".json"
+        return str(Path(self.project.wikifier_folder_path) / region_file_name())
+    
     @staticmethod
     def get_or_create(sheet):
         if sheet.wiki_region_file:
@@ -460,19 +441,34 @@ class WikiRegionFile(db.Model):
         return w
 
     def handle(self):
-        project_file=self.sheet.project_file
-        item_table=self.item_table
-        
-        if Path(self.wikifier_output_file_path).exists():
-            process_wikified_output_file(self.wikifier_output_file_path, item_table, project_file.filepath, self.sheet.name)
-
-        serialized_table = item_table.serialize_table(self.sparql_endpoint)
-        self.update_wikifier_region_file(item_table)
+        self.update_from_wikifier_file() #make sure table is up to date
+        #serialize
+        return self.serialized_table
+    
+    @property
+    def serialized_table(self):
+        serialized_table = self.item_table.serialize_table(self.sparql_endpoint)
         return serialized_table
+    
+    def update_from_wikifier_file(self):
+        item_table=ItemTable()
 
-    def update_wikifier_region_file(self, item_table):
+        #update from wikifier file
+        project_file=self.sheet.project_file
+        if Path(self.wikifier_file_path).exists():
+            item_table.update_table_from_wikifier_file(self.wikifier_file_path, project_file.filepath, self.sheet.name, context=None)
+
+        self.update_table(item_table)
+
+    def update_table(self, item_table):
+        #this function is also called from outside, if someone uses wikifier
+        #cache item table for later
         with open(self.region_file_path, 'w') as wikifier_region_config:
             wikifier_region_config.write(item_table.to_json())
-        self._item_table=None
+        
+        #set property
+        self._item_table=item_table
+        
+
 
 

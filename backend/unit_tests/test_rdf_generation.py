@@ -62,7 +62,7 @@ class TestRDFGeneration(unittest.TestCase):
         file_path = self.input_file_path_1
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
+        item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
         yc = CellMapper(self.t2wml_spec_path_1, item_table, file_path, sheet_name, self.sparql_endpoint)
 
@@ -79,7 +79,7 @@ class TestRDFGeneration(unittest.TestCase):
         file_path = self.input_file_path_1
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
+        item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
         yc = CellMapper(self.t2wml_spec_path_2, item_table, file_path, sheet_name, self.sparql_endpoint)
 
@@ -99,7 +99,7 @@ class TestRDFGeneration(unittest.TestCase):
         file_path = self.input_file_path_3
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
+        item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
         yc= CellMapper(self.t2wml_spec_path_3, item_table, file_path, sheet_name, self.sparql_endpoint)
 
@@ -117,7 +117,7 @@ class TestRDFGeneration(unittest.TestCase):
         file_path = self.input_file_path_3
 
         item_table = ItemTable()
-        process_wikified_output_file(self.wikifier_path, item_table, file_path, sheet_name)
+        item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
         yc = CellMapper(self.t2wml_spec_path_4, item_table, file_path, sheet_name, self.sparql_endpoint)
 
