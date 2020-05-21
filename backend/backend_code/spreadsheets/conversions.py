@@ -73,7 +73,7 @@ def _cell_str_to_tuple(cell: str):
 
 def _cell_range_str_to_tuples(cell_range: str) -> Tuple[Sequence[int], Sequence[int]]:
     """
-    This function parses the cell range and returns the row and column indices supported by pyexcel
+    This function parses the cell range and returns 0-index row and column indices
     For eg: A4:B5 to (0, 3), (1, 4)
     :param cell_range:
     :return:

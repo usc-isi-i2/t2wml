@@ -122,7 +122,7 @@ class Cell(ReturnClass):
     def __init__(self, col, row):
         super().__init__(col, row)
         data_sheet=bindings.excel_sheet
-        self._value=data_sheet[row][col]
+        self._value=data_sheet[row, col]
     
     @property
     def value(self):
@@ -139,15 +139,11 @@ class CellRange(RangeClass):
         data_sheet=bindings.excel_sheet
         self.col_args = col_args
         self.row_args = row_args
-        rows_data = data_sheet[row_args]
-        if isinstance(row_args, int):
-            rows_data=[rows_data]
-
-        data=[]
-        for row in rows_data:
-            new_row=row[col_args]
-            data.append(new_row)
-
+        data = data_sheet[row_args, col_args]
+        ndim=data.ndim
+        data=data.to_numpy().tolist()
+        if ndim==1:
+            data=[data]
         self.data = data
         self.row_length=len(self.data[0])
     
