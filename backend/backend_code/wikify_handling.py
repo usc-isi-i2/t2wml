@@ -2,14 +2,13 @@ import re
 import json
 from pathlib import Path
 import requests
-import csv
 from typing import List
 from backend_code.item_table import ItemTable
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
+from backend_code.spreadsheets.utilities import create_temporary_csv_file
 import pandas as pd
 import uuid
-import pyexcel
 
 def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_name: str, flag, context,
              sparql_endpoint) -> dict:
@@ -87,41 +86,5 @@ def process_wikified_output_file(file_path: str, item_table: ItemTable, data_fil
     df = csv_to_dataframe(file_path)
     item_table.update_table(df, data_file_path, sheet_name)
 
-def create_temporary_csv_file(cell_range: str, excel_file_path: str, sheet_name: str = None) -> str:
-    """
-    This function creates a temporary csv file of the region which has to be sent to the wikifier service for wikification
-    :param cell_range:
-    :param excel_file_path:
-    :param sheet_name:
-    :return:
-    """
-    file_name = uuid.uuid4().hex + ".csv"
-    file_path = str(Path.cwd() / "temporary_files" / file_name)
-    try:
-        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_file_path, 
-                                  start_row=cell_range[0][1],
-                                  row_limit=cell_range[1][1] - cell_range[0][1] + 1, 
-                                  start_column=cell_range[0][0],
-                                  column_limit=cell_range[1][0] - cell_range[0][0] + 1)
-        pyexcel.save_as(array=sheet, dest_file_name=file_path)
-    except IOError:
-        raise IOError('Excel File cannot be found or opened')
-    return file_path
-
-def save_wikified_result(serialized_row_data: List[dict], file_path: str):
-    def natural_sort_key(s: str) -> list:
-        """
-        This function generates the key for the natural sorting algorithm
-        :param s:
-        :return:
-        """
-        _nsre = re.compile('([0-9]+)')
-        return [int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)]
 
 
-    keys = ['context', 'col', 'row', 'value', 'item', 'label', 'desc']
-    serialized_row_data.sort(key=lambda x: [x['context'], natural_sort_key(x['col']), natural_sort_key(x['row'])])
-    with open(file_path, 'w', newline='', encoding="utf-8") as output_file:
-        dict_writer = csv.DictWriter(output_file, keys)
-        dict_writer.writeheader()
-        dict_writer.writerows(serialized_row_data)

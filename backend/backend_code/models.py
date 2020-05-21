@@ -8,7 +8,7 @@ from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
 from backend_code.spreadsheets.utilities import excel_to_json
 from backend_code.spreadsheets.sheet import save_and_get_sheet_names
-from backend_code.wikify_handling import process_wikified_output_file, save_wikified_result
+from backend_code.wikify_handling import process_wikified_output_file
 from backend_code.t2wml_handling import highlight_region, resolve_cell, generate_download_file
 from backend_code.cell_mapper import CellMapper
 
@@ -156,9 +156,7 @@ class Project(db.Model):
     def wikifier_output_file_path(self):
         return str(Path(self.wikifier_folder_path) / "other.csv")
 
-    @property
-    def serialized_wikifier_output_file_path(self):
-        return str(Path(self.wikifier_folder_path) / "result.csv")
+
     
     def change_wikifier_file(self, file):
         file.save(self.wikifier_output_file_path)
@@ -438,9 +436,6 @@ class WikiRegionFile(db.Model):
     def wikifier_output_file_path(self):
         return self.project.wikifier_output_file_path
 
-    @property
-    def serialized_wikifier_output_file_path(self):
-        return self.project.serialized_wikifier_output_file_path
         
     @property
     def region_file_name(self):
@@ -471,7 +466,7 @@ class WikiRegionFile(db.Model):
         if Path(self.wikifier_output_file_path).exists():
             process_wikified_output_file(self.wikifier_output_file_path, item_table, project_file.filepath, self.sheet.name)
 
-        serialized_table=self.serialize_and_save(item_table)
+        serialized_table = item_table.serialize_table(self.sparql_endpoint)
         self.update_wikifier_region_file(item_table)
         return serialized_table
 
@@ -480,7 +475,4 @@ class WikiRegionFile(db.Model):
             wikifier_region_config.write(item_table.to_json())
         self._item_table=None
 
-    def serialize_and_save(self, item_table):
-        serialized_table = item_table.serialize_table(self.sparql_endpoint)
-        save_wikified_result(serialized_table['rowData'], self.serialized_wikifier_output_file_path)
-        return serialized_table
+

@@ -173,7 +173,7 @@ def upload_data_file():
 
     w=WikiRegionFile.get_or_create(current_sheet)
     response["wikifierData"]=w.handle()
-    response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_file_path
+
 
     y=YamlFile.get_handler(current_sheet)
     response["yamlData"]=y
@@ -206,7 +206,7 @@ def change_sheet():
 
     w=WikiRegionFile.get_or_create(current_sheet)
     response["wikifierData"]=w.handle()
-    response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_file_path
+
 
     y=YamlFile.get_handler(current_sheet)
     response["yamlData"]=y
@@ -229,7 +229,7 @@ def upload_wikifier_output():
         sheet=project.current_file.current_sheet
         w=WikiRegionFile.get_or_create(sheet)
         response.update(w.handle()) #does not go into field wikifierData but is dumped directly
-        response['wikifiedOutputFilepath'] = w.serialized_wikifier_output_file_path
+
 
     return response, 200
 
@@ -323,7 +323,6 @@ def wikify_region():
             wikier.update_wikifier_region_file(item_table)
             data = wikier.serialize_and_save(item_table)
 
-            data['wikifiedOutputFilepath'] = wikier.serialized_wikifier_output_file_path
     return data, 200
 
 
@@ -343,7 +342,6 @@ def get_project_files():
     project=get_project()
     
     response["settings"]["endpoint"] = project.sparql_endpoint
-    response['wikifiedOutputFilepath'] = project.serialized_wikifier_output_file_path
 
     project_file=project.current_file
     if project_file:
