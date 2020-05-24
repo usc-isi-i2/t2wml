@@ -77,16 +77,17 @@ class FileSystemPickleCacher(SheetCacher):
             data=pd.read_csv(self.data_file_path, header=None)
         else:
             data=pd.read_excel(self.data_file_path, sheet_name=sheet_name, header=None)
-        data=data.fillna("")
         return data
     
     def load_sheet(self, sheet_name):
-        return self.load_file(sheet_name)
+        data= self.load_file(sheet_name)
+        data=data.fillna("")
+        return data
     
 
     @staticmethod
     def save_file(data_file_path):
-        pickler=PandasFileSystemPickle(data_file_path, None)
+        pickler=FileSystemPickleCacher(data_file_path, None)
         xl=pickler.load_file()
         if pickler.is_csv:
             sheet_name=Path(data_file_path).name

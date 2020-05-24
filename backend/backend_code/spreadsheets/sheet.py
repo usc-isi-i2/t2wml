@@ -46,5 +46,6 @@ class Sheet:
     
 
 def save_and_get_sheet_names(data_file_path):
+    cache_class=get_cache_class()
     sheet_names= cache_class.save_file(data_file_path)
     return sheet_names

@@ -218,7 +218,7 @@ class ProjectFile(db.Model):
         new_filename=pf_id+file_extension
         file_path = str(base_upload_path(uid, pid)/ "df" / new_filename)
         file.save(file_path)
-        pf=ProjectFile(id=pf_id, file_path=file_path, project_id=pid, name=file.filename)
+        pf=ProjectFile(id=pf_id, filepath=file_path, project_id=pid, name=file.filename)
         db.session.add(pf)
         db.session.commit()
         pf.init_sheets()
