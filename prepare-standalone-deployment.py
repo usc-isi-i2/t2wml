@@ -46,8 +46,8 @@ def run():
     if args.version:
         prepare_version(args.version)
     
-    #build_frontend()
-    #copy_frontend_to_static()
+    build_frontend()
+    copy_frontend_to_static()
     build_package()
     print("Done, you can now upload the package to the PyPI repository")
 
