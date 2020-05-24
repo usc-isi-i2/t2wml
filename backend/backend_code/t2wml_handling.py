@@ -193,7 +193,7 @@ def generate_download_file(cell_mapper, filetype):
     sparql_endpoint=cell_mapper.sparql_endpoint
     response=dict()
     data=[]
-
+    error=[]
     if cell_mapper.use_cache:
         data=cell_mapper.cacher.get_download()
 
@@ -209,16 +209,16 @@ def generate_download_file(cell_mapper, filetype):
                         {'cell': to_excel(col-1, row-1), 
                         'statement': statement})
             except T2WMLException as e:
-                data.append({'cell': to_excel(col, row), 
+                error.append({'cell': to_excel(col, row), 
                 'error': str(e)})
 
 
     if filetype == 'json':
         response["data"] = json.dumps(data, indent=3)
-        response["error"] = None
+        response["error"] = None if not error else error
         return response
     
     elif filetype == 'ttl':
         response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=cell_mapper.created_by)
-        response["error"] = None
+        response["error"] = None if not error else error
         return response
