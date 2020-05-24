@@ -1,7 +1,8 @@
 T2WML History
 ===================
 
-Changes in current version, wip (unnamed):
+
+Changes in version 2.0a5:
 ------------------------
 * bug fixes: 
    - download was broken and is now fixed
@@ -13,7 +14,7 @@ Changes in current version, wip (unnamed):
 * some changes to api
 
 
-Changes in current unnamed version 2.0a4
+Changes in version 2.0a4
 ------------------------
 * backwards-compatibility breaking changes to the T2WML syntax:
   - plain variable n is now $n for consistency
