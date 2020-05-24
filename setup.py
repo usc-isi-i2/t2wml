@@ -24,7 +24,6 @@ REQUIREMENTS = [
     'flask-cors>=3.0.8',
     'flask-sqlalchemy>=2.4.1',
     'flask-migrate>=2.5.3',
-    'pyexcel>=0.6.0',
     'PyYAML>=5.1.2',
     'SPARQLWrapper>=1.8.4',
     'google-api-python-client>=1.7.11',

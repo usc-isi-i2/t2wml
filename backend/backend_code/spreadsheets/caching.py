@@ -2,6 +2,7 @@ import os
 import pickle
 from pathlib import Path
 import pandas as pd
+from backend_code.utility_functions import is_csv
 
 
 cache_settings={
@@ -14,7 +15,7 @@ class SheetCacher:
         self.data_file_path=data_file_path
         self.sheet_name=sheet_name
         file_extension=Path(self.data_file_path).suffix
-        self.is_csv = True if file_extension.lower() == ".csv" else False
+        self.is_csv = is_csv(self.data_file_path)
         
         
     def get_sheet(self):

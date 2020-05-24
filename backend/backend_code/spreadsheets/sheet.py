@@ -4,14 +4,17 @@ from backend_code.spreadsheets.caching import FileSystemPickleCacher, FakeCacher
 from backend_code.spreadsheets.conversions import to_excel, _column_index_to_letter
 import backend_code.t2wml_exceptions as T2WMLExceptions
 
-cache_class = FakeCacher
+def get_cache_class():
+    cache_class = FakeCacher
+    if cache_settings["use_cache"]:
+        cache_class = FileSystemPickleCacher
+    return cache_class
 
 
 class Sheet:
     #a class to wrap ALL sheet interactions, so that all access to spreadsheet goes through here
     def __init__(self, data_file_path, sheet_name):
-        if cache_settings["use_cache"]:
-            cache_class = FileSystemPickleCacher
+        cache_class=get_cache_class()
         sc=cache_class(data_file_path, sheet_name)
         self.sheet_name=sheet_name
         self.data=sc.get_sheet()

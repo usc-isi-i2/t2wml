@@ -2,17 +2,16 @@
 
 import pandas
 import pickle
-import pyexcel
 import uuid
 from pathlib import Path
 
-
+from backend_code.utility_functions import is_csv
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.spreadsheets.conversions import _column_index_to_letter
+from backend_code.spreadsheets.conversions import _column_index_to_letter, _cell_range_str_to_tuples
 from backend_code.spreadsheets.sheet import Sheet
 
 
-def create_temporary_csv_file(cell_range: str, excel_file_path: str, sheet_name: str = None) -> str:
+def create_temporary_csv_file(cell_range: str, data_file_path: str, sheet_name: str = None) -> str:
     """
     This function creates a temporary csv file of the region which has to be sent to the wikifier service for wikification
     :param cell_range:
@@ -21,17 +20,15 @@ def create_temporary_csv_file(cell_range: str, excel_file_path: str, sheet_name:
     :return:
     """
     file_name = uuid.uuid4().hex + ".csv"
-    file_path = str(Path.cwd() / "temporary_files" / file_name)
+    csv_file_path = str(Path.cwd() / "temporary_files" / file_name)
+    (start_col, start_row), (end_col, end_row) = _cell_range_str_to_tuples(region)
     try:
-        sheet = pyexcel.get_sheet(sheet_name=sheet_name, file_name=excel_file_path, 
-                                  start_row=cell_range[0][1],
-                                  row_limit=cell_range[1][1] - cell_range[0][1] + 1, 
-                                  start_column=cell_range[0][0],
-                                  column_limit=cell_range[1][0] - cell_range[0][0] + 1)
-        pyexcel.save_as(array=sheet, dest_file_name=file_path)
+        sheet=Sheet(data_file_path, sheet_name)
+        data=sheet.data[start_row:end_row, start_col:end_col]
+        data.to_csv(csv_file_path, header=False, index=False)
     except IOError:
         raise IOError('Excel File cannot be found or opened')
-    return file_path
+    return csv_file_path
 
 
 def get_first_sheet_name(file_path: str):
@@ -40,9 +37,11 @@ def get_first_sheet_name(file_path: str):
     :param file_path:
     :return:
     """
-    book_dict = pyexcel.get_book_dict(file_name=file_path)
-    for sheet in book_dict.keys():
-        return sheet
+    if is_csv(file_path):
+        return Path(file_path).name
+    xl = pd.ExcelFile(file_path)
+    return xl.sheet_names[0]
+
 
 def excel_to_json(file_path: str, sheet_name: str = None) -> dict:
     """

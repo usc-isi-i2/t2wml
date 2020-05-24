@@ -6,6 +6,7 @@ import json
 from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
 from backend_code.item_table import ItemTable
 from backend_code.t2wml_exceptions import T2WMLException
+from backend_code.utility_functions import is_csv
 from backend_code.spreadsheets.utilities import excel_to_json
 from backend_code.spreadsheets.sheet import save_and_get_sheet_names
 from backend_code.t2wml_handling import highlight_region, resolve_cell, generate_download_file
@@ -206,9 +207,7 @@ class ProjectFile(db.Model):
         
     @property
     def is_csv(self):
-        file_extension=Path(self.filepath).suffix
-        is_csv = True if file_extension.lower() == ".csv" else False
-        return is_csv
+        return is_csv(self.filepath)
 
     @staticmethod
     def create(file, project):

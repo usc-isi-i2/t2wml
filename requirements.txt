@@ -4,7 +4,6 @@ Flask-SQLAlchemy==2.4.1
 Flask-Migrate==2.5.3
 PyYAML==5.3.1
 google-api-python-client==1.8.2
-pyexcel==0.6.1 #included in etk
 pandas==1.0.3 #included in etk
 SPARQLWrapper==1.8.5 #included in etk
 etk==2.2.1

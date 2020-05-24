@@ -1,3 +1,4 @@
+from pathlib import Path
 from SPARQLWrapper import SPARQLWrapper, JSON
 from typing import Sequence, Union, Tuple, List, Dict, Any
 from google.oauth2 import id_token
@@ -8,6 +9,11 @@ from backend_code.property_type_map import property_type_map
 from backend_code.wikidata_property import WikidataProperty
 from app_config import GOOGLE_CLIENT_ID
 
+
+def is_csv(file_path):
+    file_extension=Path(file_path).suffix
+    is_csv = True if file_extension.lower() == ".csv" else False
+    return is_csv
 
 def string_is_valid(text: str) -> bool:
     def check_special_characters(text: str) -> bool:
@@ -111,8 +117,6 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
     except IndexError:
         pass
     return response
-
-
 
 
 
