@@ -5,7 +5,6 @@ import requests
 from typing import List
 from backend_code.item_table import ItemTable
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
 from backend_code.spreadsheets.utilities import create_temporary_csv_file
 import pandas as pd
 import uuid
@@ -31,6 +30,18 @@ def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_nam
     # item_table.add_region(region, cell_qnode_map)
     return item_table.serialize_table(sparql_endpoint)
 
+def wikify_region(region: str, excel_file_path: str, sheet_name: str = None):
+    """
+    This function parses the cell range, creates the temporary csv file and calls the wikifier service on that csv
+    to get the cell qnode map. cell qnode map is then processed to omit non empty cells and is then returned.
+    :param region:
+    :param excel_file_path:
+    :param sheet_name:
+    :return:
+    """
+    file_path = create_temporary_csv_file(region, excel_file_path, sheet_name)
+    cell_qnode_map = call_wikify_service(file_path, cell_range[0][0], cell_range[0][1])
+    return cell_qnode_map
 
 def call_wikify_service(csv_file_path: str, col_offset: int, row_offset: int):
     """
@@ -60,21 +71,3 @@ def call_wikify_service(csv_file_path: str, col_offset: int, row_offset: int):
             output.at[index, 'column'] = int(output.at[index, 'column']) + col_offset
             output.at[index, 'row'] = int(output.at[index, 'row']) + row_offset
     return output
-
-
-def wikify_region(region: str, excel_file_path: str, sheet_name: str = None):
-    """
-    This function parses the cell range, creates the temporary csv file and calls the wikifier service on that csv
-    to get the cell qnode map. cell qnode map is then processed to omit non empty cells and is then returned.
-    :param region:
-    :param excel_file_path:
-    :param sheet_name:
-    :return:
-    """
-    cell_range = _cell_range_str_to_tuples(region)
-    file_path = create_temporary_csv_file(cell_range, excel_file_path, sheet_name)
-    cell_qnode_map = call_wikify_service(file_path, cell_range[0][0], cell_range[0][1])
-    return cell_qnode_map
-
-
-
