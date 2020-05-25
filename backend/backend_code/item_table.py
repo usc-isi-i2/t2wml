@@ -1,6 +1,6 @@
 from typing import Union
 from backend_code.spreadsheets.sheet import Sheet
-from backend_code.utility_functions import query_wikidata_for_label_and_description
+from backend_code.utility_functions import get_labels_and_descriptions
 from backend_code.spreadsheets.conversions import from_excel, to_excel, _column_index_to_letter
 from collections import defaultdict
 import json
@@ -184,11 +184,11 @@ class ItemTable:
                         row_data['label'] = self.item_wiki[item]['label']
                         row_data['desc'] = self.item_wiki[item]['desc']
                     else:
-                        items_not_in_wiki.add('wd:' + item)
+                        items_not_in_wiki.add(item)
                     serialized_table['rowData'].append(row_data)
-        items_not_in_wiki = ' '.join(items_not_in_wiki)
+        
         if sparql_endpoint and items_not_in_wiki:
-            labels_and_descriptions = query_wikidata_for_label_and_description(items_not_in_wiki, sparql_endpoint)
+            labels_and_descriptions = get_labels_and_descriptions(items_not_in_wiki, sparql_endpoint)
             if labels_and_descriptions:
                 self.item_wiki.update(labels_and_descriptions)
 

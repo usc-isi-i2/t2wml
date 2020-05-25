@@ -12,3 +12,15 @@ class WikidataProperty(db.Model):
         db.session.add(wp)
         db.session.commit()
 
+
+class WikidataItem(db.Model):
+    id=db.Column(db.Integer, primary_key=True)
+    wd_id = db.Column(db.String(64))
+    label = db.Column(db.String(300))
+    description = db.Column(db.String(1000))
+
+    @staticmethod
+    def add(wd_id, label, desc):
+        wi=WikidataItem(wd_id=wd_id, label=label, description=desc)
+        db.session.add(wi)
+        db.session.commit()
