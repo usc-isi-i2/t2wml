@@ -415,6 +415,7 @@ class TableViewer extends React.Component {
 
     // init functions
     this.handleOpenTableFile = this.handleOpenTableFile.bind(this);
+    this.handleOpenPropertiesFile = this.handleOpenPropertiesFile.bind(this);
     this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
@@ -425,6 +426,25 @@ class TableViewer extends React.Component {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
+  }
+
+  handleOpenPropertiesFile(event){
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // send request
+    console.log("<TableViewer> -> %c/upload_properties%c", LOG.link, LOG.default, LOG.highlight);
+    let formData = new FormData();
+    formData.append("pid", window.pid);
+    formData.append("file", file);
+    
+    backendPost("/upload_properties", formData).then((json) => {
+          console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
+          console.log(json);
+    
+        }).catch((error) => {
+          console.log(error);
+        });
   }
 
   handleOpenTableFile(event) {
@@ -967,11 +987,22 @@ class TableViewer extends React.Component {
             {/* title */}
             <div
               className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 75px)", cursor: "default" }}
+              style={{ width: "calc(100% - 305px)", cursor: "default" }}
             >
               {titleHtml}
             </div>
 
+            {/* button to upload properties file */}
+                <Button
+                className="d-inline-block float-right"
+                variant="outline-light"
+                size="sm"
+                style={{ padding: "0rem 0.5rem" }}
+                onClick={() => { document.getElementById("properties_button").click(); }}
+              >
+                Upload properties
+              </Button>
+              
             {/* button to upload table file */}
             <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
               <Button
@@ -981,9 +1012,21 @@ class TableViewer extends React.Component {
                 style={{ padding: "0rem 0.5rem" }}
                 onClick={() => { document.getElementById("file_table").click(); }}
               >
-                Upload
+                Upload data
               </Button>
-            </OverlayTrigger>
+            </OverlayTrigger>            
+
+            {/* hidden input of properties button */}
+            <input
+              type="file"
+              id="properties_button"
+              accept=".json"
+              style={{ display: "none" }}
+              onChange={this.handleOpenPropertiesFile}
+              onClick={(event) => { event.target.value = null }}
+            />
+
+
 
             {/* TODO: move following inputs to another place */}
             {/* hidden input of table file */}
