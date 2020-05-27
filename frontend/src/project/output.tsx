@@ -26,18 +26,20 @@ interface OutputState {
   value: string | null;
   itemID: string | null;
   itemName: string | null;
-  itemCol: string | null;
-  itemRow: string | null;
+  itemCol: string | undefined;
+  itemRow: string | undefined;
   propertyID: string | null;
-  qualifiers: string | null;
+  qualifiers: any; //  null;
   cache: any; // cache for Wikidata queries
 
   // download
-  showDownload: false,
-  isDownloadDisabled: true,
+  showDownload: boolean,
+  isDownloadDisabled: boolean,
   downloadFileName: string;
   downloadFileType: string;
   isDownloading: boolean;
+
+  propertyName: string;
 }
 
 class Output extends Component<OutputProperties, OutputState> {
@@ -59,8 +61,8 @@ class Output extends Component<OutputProperties, OutputState> {
       value: null,
       itemID: null,
       itemName: null,
-      itemCol: null,
-      itemRow: null,
+      itemCol: undefined,
+      itemRow: undefined,
       propertyID: null,
       qualifiers: null,
       cache: {}, // cache for Wikidata queries
@@ -71,7 +73,7 @@ class Output extends Component<OutputProperties, OutputState> {
       downloadFileName: (window as any).pid,
       downloadFileType: "json",
       isDownloading: false,
-    };
+    } as OutputState;
   }
 
   handleDoDownload() {
@@ -114,8 +116,8 @@ class Output extends Component<OutputProperties, OutputState> {
 
   removeBorders() {
     // remove value border
-    let col = this.state.currCol;
-    let row = this.state.currRow;
+    let col: string | undefined = this.state.currCol;
+    let row: string | undefined = this.state.currRow;
     if (col !== undefined && row !== undefined) {
       (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
     }
@@ -188,7 +190,7 @@ class Output extends Component<OutputProperties, OutputState> {
     let qualifiers = [];
     if (temp !== undefined) {
       for (let i = 0, len = temp.length; i < len; i++) {
-        let qualifier = {};
+        let qualifier: any = {};
 
         qualifier["propertyID"] = temp[i]["property"];
         if (cache[qualifier["propertyID"]] !== undefined) {
@@ -236,14 +238,14 @@ class Output extends Component<OutputProperties, OutputState> {
       value: null,
       itemID: null,
       itemName: null,
-      itemCol: null,
-      itemRow: null,
+      itemCol: undefined,
+      itemRow: undefined,
       propertyID: null,
       qualifiers: null,
     });
   }
 
-  queryWikidata(node, field, index = 0, subfield = "propertyName") {
+  queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
     // FUTURE: use <local stroage> to store previous query result even longer
     const api = (window as any).sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
     // console.log("<Output> made query to Wikidata: " + api);
@@ -319,7 +321,7 @@ class Output extends Component<OutputProperties, OutputState> {
           <OverlayTrigger placement="bottom" trigger={["hover", "focus"]}
             // defaultShow="true"
             overlay={
-              <Tooltip style={{ width: "fit-content" }}>
+              <Tooltip style={{ width: "fit-content" }} id="file">
                 <div className="text-left small">
                   Your file will be prepared shortly. Once the file is ready, it will be downloaded automatically.
                 </div>

@@ -11,6 +11,7 @@ import { Button, Card, OverlayTrigger, Popover, Spinner, Toast, Tooltip } from '
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 import { backendPost } from '../common/comm';
 
@@ -26,7 +27,7 @@ interface Column {
 
 interface Cell {
   col: string | null;
-  row: string | number | null;
+  row: number | null;
   value: string | null;
 }
 
@@ -244,7 +245,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // get selected cell index
     const colName = String(params.colDef["headerName"]);
-    const rowName = String(params.rowIndex + 1);
+    const rowName = params.rowIndex + 1;
     const value = String(params.value);
 
     // check if row header
@@ -372,7 +373,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
 
-  updateQnodeCells(qnodeData = null, rowData = null) {
+  updateQnodeCells(qnodeData: any | null = null, rowData = null) {
     if (qnodeData === null) {
       // reset qnode cells
       const qnodes = Object.keys((window as any).Wikifier.state.qnodeData);
@@ -403,7 +404,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     }
   }
 
-  updateSelectedCell(col: string | null = null, row: string | null = null, value: string | null = null) {
+  updateSelectedCell(col: string | null = null, row: number | null = null, value: string | null = null) {
     if (col === null) {
       // reset
       const { selectedCell } = this.state;
@@ -425,7 +426,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
   }
 
-  updateStyleByCell(colName: string | null, rowName: string | null, style: {border: string}, override: boolean = false) {
+  updateStyleByCell(colName: string | null, rowName: number | null, style: {border: string}, override: boolean = false) {
     if (rowName && colName) {
       const col = colName;
       const row = rowName - 1;
@@ -750,7 +751,7 @@ class TableViewer extends Component<TableProperties, TableState> {
               onGridReady={this.onGridReady.bind(this)}
               columnDefs={columnDefs}
               rowData={rowData}
-              rowDataChangeDetectionStrategy="IdentityCheck"
+              rowDataChangeDetectionStrategy={ChangeDetectionStrategyType.IdentityCheck}
               suppressScrollOnNewData={true} // prevent unintended scrolling top after grid updated
               headerHeight={18}
               rowHeight={18}

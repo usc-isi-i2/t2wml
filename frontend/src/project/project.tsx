@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './project.css';
 import './ag-grid.css'
 import './ag-theme-balham.css'
@@ -22,9 +22,24 @@ import Editors from './editor';
 import Output from './output';
 import TableViewer from './table-viewer';
 
-class Project extends React.Component {
-  constructor(props) {
+interface ProjectProperties {
+
+}
+
+interface ProjectState {
+  showSettings: boolean;
+  showSpinner: boolean;
+  projectData:  any; //todo: add project class[]
+  userData: any; //todo: add user class{ },
+  tempSparqlEndpoint: string;
+}
+
+class Project extends Component<ProjectProperties, ProjectState> {
+  private tempSparqlEndpointRef: React.RefObject<HTMLInputElement>;
+
+  constructor(props: ProjectProperties) {
     super(props);
+    this.tempSparqlEndpointRef = React.createRef();
 
     // Get the pid from the URL - the URL is ..../project/<pid>
     // This will be put in an app wide store at some point
@@ -35,10 +50,10 @@ class Project extends React.Component {
      console.log("<App> opened project: %c" + pid, LOG.highlight);
 
     // init global variables
-    window.pid = pid;
-    window.isCellSelectable = false;
-    window.sparqlEndpoint = Config.sparql;
-    window.onbeforeunload = () => {
+    (window as any).pid = pid;
+    (window as any).isCellSelectable = false;
+    (window as any).sparqlEndpoint = Config.sparql;
+    (window as any).onbeforeunload = () => {
       return null; // only "null" cannot prevent leave/reload page
     };
 
@@ -62,7 +77,7 @@ class Project extends React.Component {
       userData: { },
 
       // settings
-      tempSparqlEndpoint: window.sparqlEndpoint,
+      tempSparqlEndpoint: (window as any).sparqlEndpoint,
 
     };
   }
@@ -94,7 +109,7 @@ class Project extends React.Component {
               let projectData = json['projects'];
 
               // sort
-              projectData.sort(function (p1, p2) {
+              projectData.sort(function (p1: any, p2: any) {
                   if (p1['mdate'] < p2['mdate']) return 1;
                   else if (p1['mdate'] > p2['mdate']) return -1;
                   else return 0;
@@ -106,7 +121,7 @@ class Project extends React.Component {
               // update document title
               let ptitle = null;
               for (let i = 0, len = projectData.length; i < len; i++) {
-                  if (projectData[i].pid === window.pid) {
+                  if (projectData[i].pid === (window as any).pid) {
                       ptitle = projectData[i].ptitle;
                       break;
                   }
@@ -135,13 +150,13 @@ class Project extends React.Component {
     });
 
     // before fetching project files
-    window.TableViewer.setState({ showSpinner: true });
-    window.Wikifier.setState({ showSpinner: true });
+    (window as any).TableViewer.setState({ showSpinner: true });
+    (window as any).Wikifier.setState({ showSpinner: true });
 
     // fetch project files
     console.log("<App> -> %c/get_project_files%c for previous files", LOG.link, LOG.default);
     let formData = new FormData();
-    formData.append("pid", window.pid);
+    formData.append("pid", (window as any).pid);
     backendPost("/get_project_files", formData).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
@@ -151,42 +166,42 @@ class Project extends React.Component {
 
       // load table data
       if (tableData !== null) {
-        window.TableViewer.updateTableData(tableData);
+        (window as any).TableViewer.updateTableData(tableData);
       }
 
       // load wikifier data
       if (wikifierData !== null) {
-        window.TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+        (window as any).TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        window.TableViewer.updateQnodeCells(); // reset
+        (window as any).TableViewer.updateQnodeCells(); // reset
       }
 
       // load yaml data
       if (yamlData !== null) {
-        window.YamlEditor.updateYamlText(yamlData.yamlFileContent);
-        window.TableViewer.updateYamlRegions(yamlData.yamlRegions);
-        window.isCellSelectable = true;
-        window.Output.setState({ isDownloadDisabled: false });
+        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        (window as any).TableViewer.updateYamlRegions(yamlData.yamlRegions);
+        (window as any).isCellSelectable = true;
+        (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
-        window.isCellSelectable = false;
+        (window as any).isCellSelectable = false;
       }
 
       // load settings
       if (settings !== null) {
-        window.sparqlEndpoint = settings.endpoint;
+        (window as any).sparqlEndpoint = settings.endpoint;
       }
 
       // follow-ups (success)
-      window.TableViewer.setState({ showSpinner: false });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).TableViewer.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
 
     }).catch((error) => {
       console.log(error);
       alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
-      window.TableViewer.setState({ showSpinner: false });
-      window.Wikifier.setState({ showSpinner: false });
+      (window as any).TableViewer.setState({ showSpinner: false });
+      (window as any).Wikifier.setState({ showSpinner: false });
     });
   }
 
@@ -202,15 +217,15 @@ class Project extends React.Component {
     console.log("<App> updated settings");
 
     // update settings
-    window.sparqlEndpoint = this.refs.tempSparqlEndpoint.value;
+    (window as any).sparqlEndpoint = (this.refs.tempSparqlEndpoint as HTMLInputElement).value;
     // window.sparqlEndpoint = this.state.tempSparqlEndpoint;
-    this.setState({ showSettings: false, tempSparqlEndpoint: window.sparqlEndpoint });
+    this.setState({ showSettings: false, tempSparqlEndpoint: (window as any).sparqlEndpoint });
 
     // notify backend
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     let formData = new FormData();
-    formData.append("pid", window.pid);
-    formData.append("endpoint", window.sparqlEndpoint);
+    formData.append("pid", (window as any).pid);
+    formData.append("endpoint", (window as any).sparqlEndpoint);
     backendPost("/update_settings", formData).catch((error) => {
       console.log(error);
     });
@@ -253,14 +268,14 @@ class Project extends React.Component {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={window.sparqlEndpoint}
-                    ref="tempSparqlEndpoint"
-                    onKeyDown={(event) => event.stopPropagation()} // or Dropdown would get error
+                    defaultValue={(window as any).sparqlEndpoint}
+                    ref={this.tempSparqlEndpointRef}
+                    onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
-                  <Dropdown.Toggle split variant="outline-dark" />
+                  <Dropdown.Toggle split variant="outline-dark" id="endpoint"/>
                   <Dropdown.Menu style={{ width: "100%" }}>
-                    <Dropdown.Item onClick={() => this.refs.tempSparqlEndpoint.value = sparqlEndpoints[0]}>{sparqlEndpoints[0]}</Dropdown.Item>
-                    <Dropdown.Item onClick={() => this.refs.tempSparqlEndpoint.value = sparqlEndpoints[1]}>{sparqlEndpoints[1]}</Dropdown.Item>
+                    <Dropdown.Item onClick={() => (this.refs.tempSparqlEndpoint as HTMLInputElement).value = sparqlEndpoints[0]}>{sparqlEndpoints[0]}</Dropdown.Item>
+                    <Dropdown.Item onClick={() => (this.refs.tempSparqlEndpoint as HTMLInputElement).value = sparqlEndpoints[1]}>{sparqlEndpoints[1]}</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
@@ -271,7 +286,7 @@ class Project extends React.Component {
 
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false, tempSparqlEndpoint: window.sparqlEndpoint })}>
+          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false, tempSparqlEndpoint: (window as any).sparqlEndpoint })}>
             Cancel
           </Button>
           <Button variant="dark" onClick={() => this.handleSaveSettings()}>
@@ -288,7 +303,7 @@ class Project extends React.Component {
     return (
       <div>
         <Navbar userData={userData}
-        showSettings="true"
+        showSettings={true}
         onShowSettingsClicked={() => this.onShowSettingsClicked()}
         handleLogout={() => this.handleLogout()} />
 
