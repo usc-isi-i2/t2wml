@@ -134,7 +134,11 @@ output_directory/
 * **Login failed or encountered an authentication error like `400 (OAuth2 Error)`?**
   
     Access T2WML at `http://localhost:5000/` instead of `http://127.0.0.1:5000`.
-    
+
+* **Error saying can't find static/index.html?**
+  
+    Make sure you install t2wml-standalone in a folder that does not contain the T2WML repo or there will be a configurations clash.
+
 * **Encountered any other error not mentioned in the FAQs?**
   
     Post the issue in the T2WML repository along with a detailed description.
