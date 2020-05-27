@@ -24,8 +24,36 @@ const LOG = {
   link: "background: white; color: blue"
 };
 
-class ProjectList extends Component {
-  constructor(props) {
+interface ProjectListProperties {
+
+}
+
+interface ProjectListState {
+  showSpinner: boolean;
+  showCreateProject: boolean;
+  showDeleteProject: boolean;
+  showDownloadProject: boolean;
+  showRenameProject: boolean;
+  deletingPid: string;
+  downloadingPid: string;
+
+  // user
+  userData: any,
+
+  // temp in form
+  tempRenamePid: string | null;
+  tempRenameProject: string;
+  isTempRenameProjectVaild: boolean;
+  tempSearch: string;
+
+  // projects
+  projectData: any;
+  sortBy: string;
+  isAscending: boolean;
+}
+
+class ProjectList extends Component<ProjectListProperties, ProjectListState> {
+  constructor(props: ProjectListProperties) {
     super(props);
 
     // this.handleRenameProject = this.handleRenameProject.bind(this);
@@ -118,7 +146,7 @@ class ProjectList extends Component {
     });
   }
 
-  handleCreateProject(name) {
+  handleCreateProject(name: string) {
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
@@ -254,7 +282,7 @@ class ProjectList extends Component {
     logout();
   }
 
-  handleRenameProject(name) {
+  handleRenameProject(name: string) {
     let pid = this.state.tempRenamePid;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
@@ -265,7 +293,7 @@ class ProjectList extends Component {
     // send request
     console.log("<App> -> %c/rename_project%c to rename project %c" + pid + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", pid);
+    formData.append("pid", pid as string);
     formData.append("ptitle", ptitle);
     backendPost("/rename_project", formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
@@ -302,7 +330,7 @@ class ProjectList extends Component {
     this.setState({ showRenameProject: false });
   }
 
-  handleSortProjects(willSortBy, willBeAscending = null, newProjectData = null) {
+  handleSortProjects(willSortBy: string, willBeAscending: boolean | null = null, newProjectData = null) {
     const { sortBy, isAscending } = this.state;
 
     // decide if it's ascending
@@ -327,7 +355,7 @@ class ProjectList extends Component {
     } else {
       projectData = this.state.projectData;
     }
-    projectData.sort(function (p1, p2) {
+    projectData.sort(function (p1: any, p2: any) {
       if (willBeAscending) {
         if (p1[willSortBy] < p2[willSortBy]) return -1;
         else if (p1[willSortBy] > p2[willSortBy]) return 1;
@@ -377,7 +405,7 @@ class ProjectList extends Component {
               <OverlayTrigger placement="top" trigger={["hover", "focus"]} // defaultShow="true"
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
-                  <Tooltip style={{ width: "fit-content" }}>
+                  <Tooltip style={{ width: "fit-content" }} id="last-modified">
                     <span className="text-left small">
                       {utils.timestamp2abstime(mdate)}
                     </span>
@@ -393,7 +421,7 @@ class ProjectList extends Component {
               <OverlayTrigger placement="top" trigger={["hover", "focus"]} // defaultShow="true"
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
-                  <Tooltip style={{ width: "fit-content" }}>
+                  <Tooltip style={{ width: "fit-content" }} id="date-created">
                     <span className="text-left small">
                       {utils.timestamp2abstime(cdate)}
                     </span>
@@ -413,7 +441,7 @@ class ProjectList extends Component {
                 trigger={["hover", "focus"]}
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
-                  <Tooltip style={{ width: "fit-content" }}>
+                  <Tooltip style={{ width: "fit-content" }} id="rename">
                     <span className="text-left small">Rename</span>
                   </Tooltip>
                 }
@@ -433,7 +461,7 @@ class ProjectList extends Component {
                 trigger={["hover", "focus"]}
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
-                  <Tooltip style={{ width: "fit-content" }}>
+                  <Tooltip style={{ width: "fit-content" }} id="download">
                     <span className="text-left small">Download</span>
                   </Tooltip>
                 }
@@ -453,7 +481,7 @@ class ProjectList extends Component {
                 trigger={["hover", "focus"]}
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
-                  <Tooltip style={{ width: "fit-content" }}>
+                  <Tooltip style={{ width: "fit-content" }} id="delete">
                     <span className="text-left small">Delete</span>
                   </Tooltip>
                 }
@@ -474,7 +502,7 @@ class ProjectList extends Component {
     if (projectListDiv.length === 0) {
       projectListDiv.push(
         <tr key={-1}>
-          <td colSpan="4" style={{ textAlign: "center" }}>No projects</td>
+          <td colSpan={4} style={{ textAlign: "center" }}>No projects</td>
         </tr>
       );
     }
@@ -615,7 +643,7 @@ class ProjectList extends Component {
                   <Button
                     variant="primary"
                     size="sm"
-                    style={{ fontWeight: "600" }}
+                    style={{ fontWeight: 600 }}
                     onClick={() => {
                       this.setState({
                         // tempCreateProject: "Untitled project",
