@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './project.css';
 import './ag-grid.css'
 import './ag-theme-balham.css'
-import Navbar from '../common/navbar/navbar'
+import Navbar from '../common/navbar/navbar';
 
 
 // App
@@ -11,16 +11,16 @@ import { Button, Col, Dropdown, Form, Modal, Row, Spinner, InputGroup } from 're
 
 
 import { logout } from '../common/session';
-import { backendGet, backendPost } from '../common/comm';
 import Config from '../common/config';
 
 // console.log
-import { LOG } from './general';
+import { LOG } from '../common/general';
 
 // components
 import Editors from './editor';
 import Output from './output';
 import TableViewer from './table-viewer';
+import RequestService from '../common/service';
 
 interface ProjectProperties {
 
@@ -36,9 +36,11 @@ interface ProjectState {
 
 class Project extends Component<ProjectProperties, ProjectState> {
   private tempSparqlEndpointRef: React.RefObject<HTMLInputElement>;
+  private requestService: RequestService;
 
   constructor(props: ProjectProperties) {
     super(props);
+    this.requestService = new RequestService();
     this.tempSparqlEndpointRef = React.createRef();
 
     // Get the pid from the URL - the URL is ..../project/<pid>
@@ -88,7 +90,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
     this.setState({ showSpinner: true });
     // fetch user data from the server
     try {
-      const userData = await backendGet('userinfo');
+      const userData = await this.requestService.getUserInfo();
       this.setState( { userData: userData });
     } catch(error) {
       this.handleLogout();
@@ -96,7 +98,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     // fetch project meta
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
-    backendPost("/get_project_meta").then(json => {
+    this.requestService.getProjects().then(json => {
       console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -155,9 +157,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     // fetch project files
     console.log("<App> -> %c/get_project_files%c for previous files", LOG.link, LOG.default);
-    let formData = new FormData();
-    formData.append("pid", (window as any).pid);
-    backendPost("/get_project_files", formData).then(json => {
+    this.requestService.getProjectFiles((window as any).pid).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -224,9 +224,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
     // notify backend
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     let formData = new FormData();
-    formData.append("pid", (window as any).pid);
     formData.append("endpoint", (window as any).sparqlEndpoint);
-    backendPost("/update_settings", formData).catch((error) => {
+    this.requestService.updateSettings((window as any).pid, formData).catch((error) => {
       console.log(error);
     });
   }

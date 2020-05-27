@@ -9,11 +9,11 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 // console.log
-import { LOG, WikifierData } from './general';
+import { LOG, WikifierData } from '../common/general';
 import * as utils from '../common/utils'
-import { backendPost } from '../common/comm';
 
 import QnodeEditor from './qnode-editor';
+import RequestService from '../common/service';
 
 
 interface WikifierProperties {
@@ -33,12 +33,15 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   public gridApi: any;
   public gridColumnApi: any;
 
+  private requestService: RequestService
+
   private tempWikifyRegionRef: React.RefObject<HTMLInputElement>;
   private tempWikifyFlagRef: React.RefObject<HTMLSelectElement>;
   private tempWikifyContextRef: React.RefObject<HTMLInputElement>;
 
   constructor(props: WikifierProperties) {
     super(props);
+    this.requestService = new RequestService();
     this.tempWikifyRegionRef = React.createRef();
     this.tempWikifyFlagRef = React.createRef();
     this.tempWikifyContextRef = React.createRef();
@@ -216,12 +219,11 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     // send request
     console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", (window as any).pid);
     formData.append("action", "wikify_region");
     formData.append("region", region);
     formData.append("context", context);
     formData.append("flag", flag);
-    backendPost("/call_wikifier_service", formData).then((json) => {
+    this.requestService.callWikifierService((window as any).pid, formData).then((json) => {
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       console.log(json);
 

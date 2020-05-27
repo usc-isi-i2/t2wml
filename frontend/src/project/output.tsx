@@ -6,11 +6,10 @@ import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip }
 // Output
 import Downloader from 'js-file-download';
 
-import { backendPost } from '../common/comm';
-
 // console.log
-import { LOG } from './general';
+import { LOG } from '../common/general';
 import * as utils from '../common/utils'
+import RequestService from '../common/service';
 
 interface OutputProperties {
 
@@ -43,8 +42,11 @@ interface OutputState {
 }
 
 class Output extends Component<OutputProperties, OutputState> {
+  private requestService: RequestService;
+  
   constructor(props: OutputProperties) {
     super(props);
+    this.requestService = new RequestService();
 
     // init global variables
     (window as any).Output = this;
@@ -84,10 +86,7 @@ class Output extends Component<OutputProperties, OutputState> {
 
     // send request
     console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
-    formData.append("pid", (window as any).pid);
-    formData.append("type", this.state.downloadFileType);
-    backendPost("/download", formData).then((json) => {
+    this.requestService.download((window as any).pid, this.state.downloadFileType).then((json) => {
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 

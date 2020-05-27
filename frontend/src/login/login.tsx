@@ -10,23 +10,25 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 // App
 import { Button, Card } from 'react-bootstrap';
 import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
-import { backendPost, backendGet } from '../common/comm';
+import RequestService from '../common/service';
 
 // console.log
-const LOG = {
-  default: "background: ; color: ",
-  highlight: "background: yellow; color: black",
-  link: "background: white; color: blue"
-};
+import { LOG } from '../common/general';
+
 
 class Login extends React.Component {
+  private requestService: RequestService;
+  constructor(props: {}) {
+      super(props)
+      this.requestService = new RequestService();
+  }
 
   async componentDidMount() {
     document.title = "T2WML - Login";
 
     // Check if user is logged in. If so - redirect to project list
     try {
-      await backendGet('/userinfo');
+      await this.requestService.getUserInfo();
       window.location.href = '/projects';
     } catch(e) {
       // Don't do anything here, just log in as usual.
@@ -46,7 +48,8 @@ class Login extends React.Component {
     if (googleUser as GoogleLoginResponse) {
       formData.append("token", (googleUser as GoogleLoginResponse).getAuthResponse()!.id_token);
     }
-    backendPost('login', formData).then(json => {
+
+    this.requestService.login(formData).then(json => {
       console.log("<App> <- %c/login%c with:", LOG.link, LOG.default);
       console.log(json);
 

@@ -8,8 +8,8 @@ import yaml from 'js-yaml';
 import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG } from './general';
-import { backendPost } from '../common/comm';
+import { LOG } from '../common/general';
+import RequestService from '../common/service';
 
 
 interface yamlProperties {
@@ -25,8 +25,11 @@ interface yamlState {
 }
 
 class YamlEditor extends Component<yamlProperties, yamlState> {
+  private requestService: RequestService;
+
   constructor(props: yamlProperties) {
     super(props);
+    this.requestService = new RequestService();
 
     // init global variables
     (window as any).YamlEditor = this;
@@ -63,13 +66,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
     let formData = new FormData();
-    formData.append("pid", (window as any).pid);
     formData.append("yaml", this.state.yamlText);
     // const sheetName = window.TableViewer.state.currSheetName;
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)
     // }
-    backendPost("/upload_yaml", formData).then(json => {
+    this.requestService.uploadYaml((window as any).pid, formData).then(json => {
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 

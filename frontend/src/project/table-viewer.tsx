@@ -13,10 +13,9 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
-import { backendPost } from '../common/comm';
-
 // console.log
-import { LOG, WikifierData } from './general';
+import { LOG, WikifierData } from '../common/general';
+import RequestService from '../common/service';
 
 interface Column {
   headerName: string;
@@ -67,8 +66,11 @@ class TableViewer extends Component<TableProperties, TableState> {
   public gridApi: any;
   public gridColumnApi: any;
 
+  private requestService: RequestService;
+
   constructor(props: TableProperties) {
     super(props);
+    this.requestService = new RequestService();
 
     // init global variables
     (window as any).TableViewer = this;
@@ -127,9 +129,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     // send request
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", (window as any).pid);
     formData.append("file", file);
-    backendPost("/upload_data_file", formData).then((json) => {
+    this.requestService.uploadDataFile((window as any).pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -202,9 +203,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     // send request
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", (window as any).pid);
     formData.append("wikifier_output", file);
-    backendPost("/upload_wikifier_output", formData).then((json) => {
+    this.requestService.uploadWikifierOutput((window as any).pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -264,11 +264,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    let formData = new FormData();
-    formData.append("pid", (window as any).pid);
-    formData.append("col", colName);
-    formData.append("row", rowName);
-    backendPost("/resolve_cell", formData).then((json) => {
+    this.requestService.resolveCell((window as any).pid, colName, rowName).then((json) => {
       console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -311,10 +307,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
-    formData.append("pid", (window as any).pid);
-    formData.append("sheet_name", sheetName);
-    backendPost("/change_sheet", formData).then((json) => {
+    this.requestService.changeSheet((window as any).pid, sheetName).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
 

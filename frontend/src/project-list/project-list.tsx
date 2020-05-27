@@ -9,7 +9,6 @@ import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTras
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
-import { backendGet, backendPost } from '../common/comm';
 import { logout } from '../common/session';
 
 import DeleteProject from './delete-project';
@@ -18,11 +17,8 @@ import DownloadProject from './dowmload-project';
 import CreateProject from './create-project';
 
 // console.log
-const LOG = {
-  default: "background: ; color: ",
-  highlight: "background: yellow; color: black",
-  link: "background: white; color: blue"
-};
+import { LOG } from '../common/general';
+import RequestService from '../common/service';
 
 interface ProjectListProperties {
 
@@ -53,8 +49,10 @@ interface ProjectListState {
 }
 
 class ProjectList extends Component<ProjectListProperties, ProjectListState> {
+  private requestService: RequestService;
   constructor(props: ProjectListProperties) {
     super(props);
+    this.requestService = new RequestService();
 
     // this.handleRenameProject = this.handleRenameProject.bind(this);
 
@@ -104,7 +102,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     document.title = "T2WML - Projects";
     // fetch user data from the server
     try {
-      const userData = await backendGet('userinfo');
+      const userData = await this.requestService.getUserInfo();
       this.setState( { userData: userData });
     } catch(error) {
       // User is not logged in
@@ -114,7 +112,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     // fetch project meta
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
-    backendPost('get_project_meta').then(json => {
+    this.requestService.getProjects().then(json => {
       console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -157,7 +155,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     console.log("<App> -> %c/create_project%c to create project: %c" + ptitle, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("ptitle", ptitle);
-    backendPost('create_project', formData).then(json => {
+    this.requestService.createProject(formData).then(json => {
       console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -198,9 +196,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
-    formData.append("pid", pid);
-    backendPost('delete_project', formData).then(json => {
+    this.requestService.deleteProject((window as any).pid).then(json => {
       console.log("<App> <- %c/delete_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -246,9 +242,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
-    formData.append("pid", pid);
-    backendPost("/download_project", formData).then(json => {
+    this.requestService.downloadProject(pid).then(json => {
       console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -293,9 +287,8 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     // send request
     console.log("<App> -> %c/rename_project%c to rename project %c" + pid + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
     let formData = new FormData();
-    formData.append("pid", pid as string);
     formData.append("ptitle", ptitle);
-    backendPost("/rename_project", formData).then(json => {
+    this.requestService.renameProject((window as any).pid, formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
       console.log(json);
       
