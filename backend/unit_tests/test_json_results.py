@@ -11,7 +11,7 @@ except:
     sys.path.insert(0, grandparent_dir)
     sys.path.insert(1, os.path.join(sys.path[0], '...'))
 
-from backend_code.wikify_handling import process_wikified_output_file
+
 from backend_code.item_table import ItemTable
 from backend_code.cell_mapper import CellMapper
 from backend_code.t2wml_handling import generate_download_file
@@ -47,7 +47,7 @@ class TestHomicideData(unittest.TestCase):
             expected_result=json.load(f)
 
         item_table=ItemTable()
-        process_wikified_output_file(self.wikifier_file, item_table, self.data_file, sheet_name)
+        item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
         result=generate_download_file(cm, "json")
         result_dict=json.loads(result['data'])
