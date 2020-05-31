@@ -1,20 +1,17 @@
-import os, sys, inspect
+import os
 import shutil
-
-try:
-    from backend_code.models import User, Project, ProjectFile
-except:
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    print(currentdir)
-    grandparent_dir = os.path.dirname(os.path.dirname(currentdir))
-
-    sys.path.insert(0, grandparent_dir)
-    sys.path.insert(1, os.path.join(sys.path[0], '...'))
-    from backend_code.models import User, Project, ProjectFile
-    from driver import run_t2wml
-
+from driver import run_t2wml
 import unittest
 from pathlib import Path
+try:
+    from backend_code import models
+except:
+    import sys, inspect
+    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    grandparent_dir = os.path.dirname(os.path.dirname(currentdir))
+    sys.path.insert(0, grandparent_dir)
+    sys.path.insert(1, os.path.join(sys.path[0], '...'))
+
 from backend_code.item_table import ItemTable
 from backend_code.t2wml_handling import generate_download_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name
@@ -89,7 +86,7 @@ class TestRDFGeneration(unittest.TestCase):
 
         self.assertEqual(response['data'], results)
 
-    def test_rdf_generation_with_geo_coordinates_as_qualifiers(self, sheet_name: str = None):
+    def xtest_rdf_generation_with_geo_coordinates_as_qualifiers(self, sheet_name: str = None):
         with open(self.results_path_3, 'r') as f:
             results=f.read()
         if not sheet_name:
@@ -108,7 +105,7 @@ class TestRDFGeneration(unittest.TestCase):
 
         self.assertEqual(response['data'], results)
 
-    def test_rdf_generation_with_geo_coordinates(self, sheet_name: str = None):
+    def xtest_rdf_generation_with_geo_coordinates(self, sheet_name: str = None):
         with open(self.results_path_4, 'r') as f:
             results=f.read()
         if not sheet_name:
