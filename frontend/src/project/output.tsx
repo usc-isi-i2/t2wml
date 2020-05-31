@@ -83,10 +83,9 @@ class Output extends Component<OutputProperties, OutputState> {
 
     // before sending request
     this.setState({ isDownloading: true, showDownload: false });
-
     // send request
     console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.download((window as any).pid, this.state.downloadFileType).then((json) => {
+    this.requestService.downloadResults((window as any).pid, this.state.downloadFileType).then((json) => {
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 

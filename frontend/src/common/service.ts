@@ -59,7 +59,7 @@ class RequestService {
     return response;
   }
 
-  public async download(pid: string, fileType: string) {
+  public async downloadResults(pid: string, fileType: string) {
     const response = await backendGet(`/project/${pid}/download/${fileType}`);
     return response;
   }
