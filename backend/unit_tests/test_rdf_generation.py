@@ -1,8 +1,9 @@
 import os
 import shutil
-from driver import run_t2wml
 import unittest
 from pathlib import Path
+import tempfile
+
 try:
     from backend_code import models
 except:
@@ -16,7 +17,8 @@ from backend_code.item_table import ItemTable
 from backend_code.t2wml_handling import generate_download_file
 from backend_code.spreadsheets.utilities import get_first_sheet_name
 from backend_code.cell_mapper import CellMapper
-import tempfile
+from driver import run_t2wml
+
 
 output_directory = tempfile.mkdtemp()
 
