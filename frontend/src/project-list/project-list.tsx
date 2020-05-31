@@ -196,7 +196,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.deleteProject((window as any).pid).then(json => {
+    this.requestService.deleteProject(pid as string).then(json => {
       console.log("<App> <- %c/delete_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -288,7 +288,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     console.log("<App> -> %c/rename_project%c to rename project %c" + pid + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("ptitle", ptitle);
-    this.requestService.renameProject((window as any).pid, formData).then(json => {
+    this.requestService.renameProject(pid as string, formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
       console.log(json);
       
