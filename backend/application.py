@@ -82,7 +82,24 @@ def json_response(func):
     wrapper.__name__ = func.__name__
     return wrapper    
 
-@app.route('/api/userinfo', methods=['GET'])
+
+@app.route('/api/projects', methods=['GET'])
+@json_response
+def get_project_meta():
+    """
+    This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
+    :return:
+    """
+    user=get_user()
+    data={
+        'projects':None,
+        'error':None
+    }
+    data['projects']=user.get_project_details()
+    return data, 200
+
+
+@app.route('/api/user', methods=['GET'])
 @json_response
 def user_info():
     user=get_user()
@@ -114,20 +131,6 @@ def login():
     return response, 200
 
 
-@app.route('/api/user/projects', methods=['GET'])
-@json_response
-def get_project_meta():
-    """
-    This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
-    :return:
-    """
-    user=get_user()
-    data={
-        'projects':None,
-        'error':None
-    }
-    data['projects']=user.get_project_details()
-    return data, 200
 
 
 
@@ -146,7 +149,95 @@ def create_project():
         response['pid'] = project.id
         return response, 201
 
+
+
+
+@app.route('/api/project/<pid>', methods=['GET'])
+@json_response
+def get_project_files(pid):
+    """
+    This function fetches the last session of the last opened files in a project when that project is reopened later.
+    :return:
+    """
+    response = {
+                "tableData": None,
+                "yamlData": None,
+                "wikifierData": None,
+                "settings": {"endpoint": None}
+            }
+    project=get_project(pid)
     
+    response["settings"]["endpoint"] = project.sparql_endpoint
+
+    project_file=project.current_file
+    if project_file:
+        response["tableData"]=project_file.tableData()
+        item_table=project_file.current_sheet.item_table
+        serialized_item_table = item_table.serialize_table(project.sparql_endpoint)
+        response["wikifierData"] = serialized_item_table
+        
+
+        y=YamlFile.get_handler(project_file.current_sheet)
+        response["yamlData"]=y
+
+    return response, 200
+
+
+
+@app.route('/api/project/<pid>', methods=['DELETE'])
+@json_response
+def delete_project(pid):
+    """
+    This route is used to delete a project.
+    :return:
+    """
+    data={
+        'projects':None,
+        'error':None
+    }
+    
+    user=get_user()
+    project=get_project(pid)
+    Project.delete(project.id)
+    data['projects']=user.get_project_details()
+    return data, 200
+
+
+
+@app.route('/api/project/<pid>', methods=['PUT'])
+@json_response
+def rename_project(pid):
+    """
+    This route is used to rename a project.
+    :return:
+    """
+    user=get_user()
+    data={
+        'projects':None,
+        'error':None
+    }
+    ptitle = request.form["ptitle"]
+    project=get_project(pid)
+    project.update_project_title(ptitle)
+    data['projects']=user.get_project_details()
+    return data, 200
+        
+
+
+@app.route('/api/project/<pid>/sparql', methods=['PUT'])
+@json_response
+def update_settings(pid):
+    """
+    This function updates the settings from GUI
+    :return:
+    """
+    project = get_project(pid)
+    endpoint = request.form["endpoint"]
+    project.update_sparql_endpoint(endpoint)
+    return None, 200 #can become 204 eventually, need to check frontend compatibility
+
+
+
 
 @app.route('/api/properties', methods=['POST'])
 @json_response
@@ -213,7 +304,7 @@ def change_sheet(pid, sheet_name):
                 "error": None
             }
     
-    new_sheet_name = request.form['sheet_name']
+    new_sheet_name = sheet_name
     project_file=project.current_file
     project_file.change_sheet(new_sheet_name)
     
@@ -275,21 +366,19 @@ def upload_yaml(pid):
     return response, 200
 
 
-@app.route('/api/data/<pid>/cell/<row>/<col>', methods=['GET'])
+@app.route('/api/data/<pid>/cell/<col>/<row>', methods=['GET'])
 @json_response
-def get_cell_statement(pid, row, col):
+def get_cell_statement(pid, col, row):
     """
     This function returns the statement of a particular cell
     :return:
     """
     project = get_project(pid)
-    column = request.form["col"]
-    row = request.form["row"]
     data={}
     yaml_file = project.current_file.current_sheet.yaml_file
     if not yaml_file:
         raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
-    data = yaml_file.resolve_cell(column, row)
+    data = yaml_file.resolve_cell(col, row)
     return data, 200
 
 
@@ -304,8 +393,6 @@ def downloader(pid, filetype):
     yaml_file = project.current_file.current_sheet.yaml_file
     if not yaml_file: #the frontend disables this, this is just another layer of checking
         raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
-
-    filetype = request.form["type"]
 
     response = yaml_file.generate_download_file(filetype)
     return response, 200
@@ -342,57 +429,6 @@ def wikify_region(pid):
     return data, 200
 
 
-@app.route('/api/project/<pid>', methods=['GET'])
-@json_response
-def get_project_files(pid):
-    """
-    This function fetches the last session of the last opened files in a project when that project is reopened later.
-    :return:
-    """
-    response = {
-                "tableData": None,
-                "yamlData": None,
-                "wikifierData": None,
-                "settings": {"endpoint": None}
-            }
-    project=get_project(pid)
-    
-    response["settings"]["endpoint"] = project.sparql_endpoint
-
-    project_file=project.current_file
-    if project_file:
-        response["tableData"]=project_file.tableData()
-        item_table=project_file.current_sheet.item_table
-        serialized_item_table = item_table.serialize_table(project.sparql_endpoint)
-        response["wikifierData"] = serialized_item_table
-        
-
-        y=YamlFile.get_handler(project_file.current_sheet)
-        response["yamlData"]=y
-
-    return response, 200
-
-
-
-@app.route('/api/project/<pid>', methods=['DELETE'])
-@json_response
-def delete_project(pid):
-    """
-    This route is used to delete a project.
-    :return:
-    """
-    data={
-        'projects':None,
-        'error':None
-    }
-    
-    user=get_user()
-    project=get_project(pid)
-    Project.delete(project.id)
-    data['projects']=user.get_project_details()
-    return data, 200
-
-
 
 
 
@@ -406,37 +442,6 @@ def logout():
     if 'uid' in session:
         del session['uid']
     return '', 204
-
-@app.route('/api/project/<pid>', methods=['PUT'])
-@json_response
-def rename_project(pid):
-    """
-    This route is used to rename a project.
-    :return:
-    """
-    user=get_user()
-    data={
-        'projects':None,
-        'error':None
-    }
-    ptitle = request.form["ptitle"]
-    project=get_project(pid)
-    project.update_project_title(ptitle)
-    data['projects']=user.get_project_details()
-    return data, 200
-        
-
-@app.route('/api/project/<pid>/sparql', methods=['PUT'])
-@json_response
-def update_settings(pid):
-    """
-    This function updates the settings from GUI
-    :return:
-    """
-    project = get_project(pid)
-    endpoint = request.form["endpoint"]
-    project.update_sparql_endpoint(endpoint)
-    return None, 200 #can become 204 eventually, need to check frontend compatibility
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
 # In that case, we only have one webserver - Flask. The following two routes are for this.

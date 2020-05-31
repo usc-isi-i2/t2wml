@@ -5,7 +5,7 @@ import { backendGet, backendPost, backendPut, backendDelete } from './comm';
 class RequestService {
 
   public async getUserInfo() {
-    const response = await backendGet('/userinfo');
+    const response = await backendGet('/user');
     return response;
   }
 
@@ -20,7 +20,7 @@ class RequestService {
   }
 
   public async getProjects() {
-    const response = await backendGet('/user/projects');
+    const response = await backendGet('/projects');
     return response;
   }
 
