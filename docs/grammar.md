@@ -114,6 +114,8 @@ The T2WML grammar is based on yaml files that can contain custom T2WML statement
 
 Therefore T2WML files must conform to [yaml 1.1 standards](https://yaml.org/spec/1.1/). (The yaml standards most likely to trip up a T2WML user are those regarding [escaping strings](http://blogs.perl.org/users/tinita/2018/03/strings-in-yaml---to-quote-or-not-to-quote.html), if you want a shorter document to read)
 
+Note: It's not necessary to read this before writing T2WML yaml files. It's just something to be aware of if something goes wrong.
+
 ## The T2WML Language
 <span id="language"></span>
 
