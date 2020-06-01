@@ -1,5 +1,4 @@
 property_type_map = {
-    "P100024": "Quantity",
 	"P100001": "Quantity",
 	"P100002": "Quantity",
 	"P100003": "Quantity",
