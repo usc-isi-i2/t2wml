@@ -112,13 +112,13 @@ output_directory/
 > Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
 <span id="wikify_region"></span>⬇️ Wikify region
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_add.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_add.gif)
 
 <span id="modify_qnode"></span>⬇️ Modify qnode
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_update.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_update.gif)
 
 <span id="preview_result"></span>⬇️ Preview result
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-output.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-output.gif)
 
 <span id="faqs"></span>
 ## FAQs
