@@ -4,6 +4,7 @@
 * [Running T2WML for development](#development)
 * [Usage Within Code](#usage_within_code)
 * [Usage with GUI](#usage_with_gui)
+* [Writing T2WML](#writing_t2wml)
 * [Features](#features)
 * [FAQs](#faqs)
 
@@ -106,19 +107,25 @@ output_directory/
 	1. preview result by clicking cell in **Table Viewer** [[demo](#preview_result)], or
 	2. click **Download** to get all results
 
+
+<span id="writing_t2wml"></span>
+## Writing T2WML
+
+Check out the [grammar guide](docs/grammar.md)
+
 <span id="features"></span>
 ## Features
 
 > Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
 <span id="wikify_region"></span>⬇️ Wikify region
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_add.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_add.gif)
 
 <span id="modify_qnode"></span>⬇️ Modify qnode
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_update.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_update.gif)
 
 <span id="preview_result"></span>⬇️ Preview result
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-output.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-output.gif)
 
 <span id="faqs"></span>
 ## FAQs

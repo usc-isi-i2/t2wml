@@ -11,7 +11,7 @@ statementMapping:
         - =value[A:B, $row] == "" and value[C:D, $row] != "" % years
   template:
     item: =item[A, $row]
-    property: C3002 # murder
+    property: P100024 # murder
     value: =value[$col, $row]
     qualifier:
       - property: P585 #point in time

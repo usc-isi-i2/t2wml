@@ -6,7 +6,7 @@ from string import punctuation
 from google.auth.transport import requests
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.property_type_map import property_type_map
-from backend_code.wikidata_property import WikidataProperty
+from backend_code.wikidata_property import WikidataProperty, WikidataItem
 from app_config import GOOGLE_CLIENT_ID
 
 
@@ -119,6 +119,39 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
     return response
 
 
+def get_labels_and_descriptions(items: set, sparql_endpoint: str):
+    response=dict()
+    items_not_found=""
+    for item in items:
+        try:
+            wdi= WikidataItem.query.filter_by(wd_id=item).first()
+            response[wdi.wd_id] =  {'label': wdi.label, 'desc': wdi.description}
+        except AttributeError as e:
+            items_not_found+="wd:" + item + " "
+    if items_not_found:
+        new_items=query_wikidata_for_label_and_description(items_not_found, sparql_endpoint)
+        response.update(new_items)
+        for wd_id in new_items:
+            item_dict=new_items[wd_id]
+            WikidataItem.add(wd_id, item_dict['label'], item_dict['desc'])
+    return response
+
+
+def query_wikidata_for_property_type(wikidata_property, sparql_endpoint):
+    query = """SELECT ?type WHERE {
+                wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
+                wikibase:propertyType ?type .
+            }"""
+    sparql = SPARQLWrapper(sparql_endpoint)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    try:
+        property_type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+    except IndexError:
+        property_type = "Property Not Found"
+    return property_type
+
 
 def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     """
@@ -135,18 +168,7 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     except Exception as e:
         property_type=property_type_map.get(wikidata_property, None)
         if not property_type:
-            query = """SELECT ?type WHERE {
-                wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
-                wikibase:propertyType ?type .
-            }"""
-            sparql = SPARQLWrapper(sparql_endpoint)
-            sparql.setQuery(query)
-            sparql.setReturnFormat(JSON)
-            results = sparql.query().convert()
-            try:
-                property_type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
-            except IndexError:
-                property_type = "Property Not Found"
+            property_type=query_wikidata_for_property_type(wikidata_property, sparql_endpoint)
         WikidataProperty.add(wikidata_property, property_type)
     return property_type
 

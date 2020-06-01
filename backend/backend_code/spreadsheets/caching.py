@@ -25,9 +25,9 @@ class SheetCacher:
 class FakeCacher(SheetCacher):
     def get_sheet(self):
         if self.is_csv:
-            data=pd.read_csv(self.data_file_path)
+            data=pd.read_csv(self.data_file_path, dtype=object, header=None)
         else:
-            data=pd.read_excel(self.data_file_path, sheet_name=self.sheet_name)
+            data=pd.read_excel(self.data_file_path, sheet_name=self.sheet_name, dtype=object, header=None)
         data=data.fillna("")
         return data
 
@@ -74,9 +74,9 @@ class FileSystemPickleCacher(SheetCacher):
     
     def load_file(self, sheet_name=None):
         if self.is_csv:
-            data=pd.read_csv(self.data_file_path, header=None)
+            data=pd.read_csv(self.data_file_path, header=None, dtype=object)
         else:
-            data=pd.read_excel(self.data_file_path, sheet_name=sheet_name, header=None)
+            data=pd.read_excel(self.data_file_path, sheet_name=sheet_name, header=None, dtype=object)
         return data
     
     def load_sheet(self, sheet_name):
