@@ -199,9 +199,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   // }
 
   handleDoCall() {
-    const region = (this.refs.tempWikifyRegionRef as any).value.trim();
-    const flag = (this.refs.tempWikifyFlagRef as any).value;
-    const context = (this.refs.tempWikifyContextRef as any).value.trim();
+    const region = (this.tempWikifyRegionRef as any).current.value.trim();
+    const flag = (this.tempWikifyFlagRef as any).current.value;
+    const context = (this.tempWikifyContextRef as any).current.value.trim();
 
     // validate input
     if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(region) || !utils.isValidRegion(region)) {

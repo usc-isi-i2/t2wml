@@ -217,7 +217,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
     console.log("<App> updated settings");
 
     // update settings
-    (window as any).sparqlEndpoint = (this.refs.tempSparqlEndpoint as HTMLInputElement).value;
+    (window as any).sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
     // window.sparqlEndpoint = this.state.tempSparqlEndpoint;
     this.setState({ showSettings: false, tempSparqlEndpoint: (window as any).sparqlEndpoint });
 
@@ -273,8 +273,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
                   />
                   <Dropdown.Toggle split variant="outline-dark" id="endpoint"/>
                   <Dropdown.Menu style={{ width: "100%" }}>
-                    <Dropdown.Item onClick={() => (this.refs.tempSparqlEndpoint as HTMLInputElement).value = sparqlEndpoints[0]}>{sparqlEndpoints[0]}</Dropdown.Item>
-                    <Dropdown.Item onClick={() => (this.refs.tempSparqlEndpoint as HTMLInputElement).value = sparqlEndpoints[1]}>{sparqlEndpoints[1]}</Dropdown.Item>
+                    <Dropdown.Item onClick={() => (this.tempSparqlEndpointRef as any).current.value = sparqlEndpoints[0]}>{sparqlEndpoints[0]}</Dropdown.Item>
+                    <Dropdown.Item onClick={() => (this.tempSparqlEndpointRef as any).current.value = sparqlEndpoints[1]}>{sparqlEndpoints[1]}</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
