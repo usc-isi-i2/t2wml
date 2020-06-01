@@ -1,6 +1,13 @@
 T2WML History
 ===================
 
+Changes in upcoming unnamed version:
+------------------------
+* bug fixes:
+     - local version was reading spreadsheets wrong
+     - local version had multiple bugs in generate_download_file
+     - a variety of bug fixes to wikifier/wikify_region, but the endpoint is still not working
+
 Changes in version 2.0a6:
 ------------------------
 * added support for uploading a json properties file
