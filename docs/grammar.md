@@ -112,7 +112,7 @@ template:
 
 The T2WML grammar is based on yaml files that can contain custom T2WML statements. 
 
-Therefore T2WML files must conform to [[yaml 1.1 standards](https://yaml.org/spec/1.1/)]. (The yaml standards most likely to trip up a T2WML universe are those regarding [[escaping strings](http://blogs.perl.org/users/tinita/2018/03/strings-in-yaml---to-quote-or-not-to-quote.html)], if you want a shorter document to read)
+Therefore T2WML files must conform to [yaml 1.1 standards](https://yaml.org/spec/1.1/). (The yaml standards most likely to trip up a T2WML universe are those regarding [escaping strings](http://blogs.perl.org/users/tinita/2018/03/strings-in-yaml---to-quote-or-not-to-quote.html), if you want a shorter document to read)
 
 ## The T2WML Language
 <span id="language"></span>
@@ -250,7 +250,7 @@ Example:
 `regex("Isaac Newton, physicist",  "(\w+) (\w+)", 1)` returns “Isaac”
 
 
-
+#### Other
 <span id="other"></span>
 
 Functions which do not behave like boolean functions or like string modifiers. For now there is one such function:
