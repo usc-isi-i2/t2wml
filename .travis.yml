@@ -3,11 +3,10 @@ dist: trusty
 language: python
 python:
 - 3.6.6
-
-before_install:
-  - env
-  - openssl version
-  - python -c "import ssl; print('SSSSSSSSSL', ssl.OPENSSL_VERSION)"
+#before_install:
+#  - env
+#  - openssl version
+#  - python -c "import ssl; print('SSSSSSSSSL', ssl.OPENSSL_VERSION)"
 install:
 - sudo apt-get update
 - pip install --upgrade pip
