@@ -20,7 +20,9 @@
 ## Structure
 <span id="overallstructure"></span>
 
-**The overall structure**
+A valid T2WML file has a very specific structure it must conform to in order to work.
+
+### The overall structure
 
 ````
 statementMapping:
@@ -31,7 +33,7 @@ statementMapping:
     created_by: demo
 ````
 
-A valid T2WML file has a very specific structure.
+
 
 It must begin with the key `statementMapping`, opening a dictionary.
 
