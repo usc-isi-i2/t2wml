@@ -420,7 +420,7 @@ def wikify_region(pid):
             current_sheet=project.current_file.current_sheet
             item_table = current_sheet.item_table
             #handler
-            x=wikifier(item_table, region, project.current_file.file_path, current_sheet.name, flag, context, project.sparql_endpoint)
+            x=wikifier(item_table, region, project.current_file.filepath, current_sheet.name, flag, context, project.sparql_endpoint)
             
             wrf=WikiRegionFile.get_or_create(current_sheet)
             wrf.update_table(item_table)
