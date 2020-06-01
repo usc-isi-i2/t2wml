@@ -4,6 +4,7 @@
 * [Running T2WML for development](#development)
 * [Usage Within Code](#usage_within_code)
 * [Usage with GUI](#usage_with_gui)
+* [Writing T2WML](#writing_t2wml)
 * [Features](#features)
 * [FAQs](#faqs)
 
@@ -105,6 +106,12 @@ output_directory/
 5. In **Output**,
 	1. preview result by clicking cell in **Table Viewer** [[demo](#preview_result)], or
 	2. click **Download** to get all results
+
+
+<span id="writing_t2wml"></span>
+## Writing T2WML
+
+Check out the [grammar guide](docs/grammar.md)
 
 <span id="features"></span>
 ## Features

@@ -42,7 +42,7 @@ The `statementMapping` must contain the keys `region` and `template`. It can als
 The `region` and the `template` must each be a list of dictionaries (although we currently only support one entry in the list)
 
 
-### The Region
+### The region
 <span id="regionstructure"></span>
 
 The region is used to specify which cells of the data sheet are the data area.
