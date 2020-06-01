@@ -20,7 +20,7 @@
                 "--port",
                 "5000"
             ],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}\\backend",
             "jinja": true
         },
         {
@@ -30,7 +30,7 @@
             "program": "prepare-standalone-deployment.py",
             "args": [
                 "--version",
-                "2.0a1",
+                "2.0a6",
             ],
             "cwd": "${workspaceFolder}",
             "jinja": true
@@ -41,9 +41,9 @@
             "request": "launch",
             "module": "unittest",
             "args": [
-                "backend_code.unit_tests.test_rdf_generation"
+                "unit_tests.test_json_results" //"unit_tests.test_rdf_generation"
             ],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}\\backend",
         },
     ]
 }

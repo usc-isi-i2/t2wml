@@ -119,6 +119,12 @@ config/*
 
 # user files
 uploads
+config
+storage
+
+#temporary files
+*/tmp
+*/temporary_files
 
 # sqlite dbs
 app.db

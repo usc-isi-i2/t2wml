@@ -4,6 +4,7 @@
 * [Running T2WML for development](#development)
 * [Usage Within Code](#usage_within_code)
 * [Usage with GUI](#usage_with_gui)
+* [Writing T2WML](#writing_t2wml)
 * [Features](#features)
 * [FAQs](#faqs)
 
@@ -18,7 +19,7 @@
 A locally hosted web GUI version of t2wml can be installed quickly using pip
 
 1. make a fresh virtual environment
-2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a2`
+2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a6`
 3. run `t2wml-server`
 4. navigate to [`http://localhost:5000/`](http://localhost:5000/) in a Chrome browser
 
@@ -106,19 +107,25 @@ output_directory/
 	1. preview result by clicking cell in **Table Viewer** [[demo](#preview_result)], or
 	2. click **Download** to get all results
 
+
+<span id="writing_t2wml"></span>
+## Writing T2WML
+
+Check out the [grammar guide](docs/grammar.md)
+
 <span id="features"></span>
 ## Features
 
 > Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
 <span id="wikify_region"></span>⬇️ Wikify region
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_add.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_add.gif)
 
 <span id="modify_qnode"></span>⬇️ Modify qnode
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-wikifier_update.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_update.gif)
 
 <span id="preview_result"></span>⬇️ Preview result
-![t2wml-gui-demo](demo/t2wml-gui-v1.3-output.gif)
+![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-output.gif)
 
 <span id="faqs"></span>
 ## FAQs
@@ -134,7 +141,11 @@ output_directory/
 * **Login failed or encountered an authentication error like `400 (OAuth2 Error)`?**
   
     Access T2WML at `http://localhost:5000/` instead of `http://127.0.0.1:5000`.
-    
+
+* **Error saying can't find static/index.html?**
+  
+    Make sure you install t2wml-standalone in a folder that does not contain the T2WML repo or there will be a configurations clash.
+
 * **Encountered any other error not mentioned in the FAQs?**
   
     Post the issue in the T2WML repository along with a detailed description.

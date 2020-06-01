@@ -1,7 +1,32 @@
 T2WML History
 ===================
 
-Changes in current unnamed version (wip)
+Changes in upcoming unnamed version:
+------------------------
+* bug fixes:
+     - local version was reading spreadsheets wrong
+     - local version had multiple bugs in generate_download_file
+     - a variety of bug fixes to wikifier/wikify_region, but the endpoint is still not working
+
+Changes in version 2.0a6:
+------------------------
+* added support for uploading a json properties file
+* bug fixes:
+   - download was overwriting existing values in a loop 
+
+Changes in version 2.0a5:
+------------------------
+* bug fixes: 
+   - download was broken and is now fixed
+   - removed a security leak
+   - fixed a bug where $n - x would incorrectly cause yaml file to be declared invalid
+* all spreadsheet handling is now done with pandas, pyexcel has been removed from requirements
+* http error codes are now returned instead of 200. UI display of error codes is not yet updated to match
+* in local driver/tests, sheets no longer automatically generate a pickle file folder. caching must be explicitly set as an option. 
+* some changes to api
+
+
+Changes in version 2.0a4
 ------------------------
 * backwards-compatibility breaking changes to the T2WML syntax:
   - plain variable n is now $n for consistency

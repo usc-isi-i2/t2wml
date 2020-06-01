@@ -16,7 +16,7 @@ CLASSIFIERS = [
 ]
 
 SCRIPTS = [
-    't2wml-server=cli:run_server',
+    't2wml-server=backend.cli:run_server',
 ]
 
 REQUIREMENTS = [
@@ -24,13 +24,11 @@ REQUIREMENTS = [
     'flask-cors>=3.0.8',
     'flask-sqlalchemy>=2.4.1',
     'flask-migrate>=2.5.3',
-    'pyexcel>=0.6.0',
     'PyYAML>=5.1.2',
     'SPARQLWrapper>=1.8.4',
     'google-api-python-client>=1.7.11',
     'numpy>=1.18.2',
     'pandas>=1.0.3',
-    'lark-parser>=0.7.1',
     'etk>=2.1.7',
     'en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz',
     'waitress>=1.4.3',
@@ -39,13 +37,13 @@ REQUIREMENTS = [
 
 PACKAGES = find_packages() + ['.']
 
+
 setup(
     author="USC ISI",
     name='t2wml-standalone',
     version=__version__,
     description='A standalone version of T2WML',
-    long_description=open(os.path.join(
-        os.path.dirname(__file__), 'README.md'), encoding='utf-8').read(),
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding='utf-8').read(),
     license='BSD License',
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,

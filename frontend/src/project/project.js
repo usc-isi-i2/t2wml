@@ -3,15 +3,15 @@ import './project.css';
 import './ag-grid.css'
 import './ag-theme-balham.css'
 import * as utils from '../common/utils'
-import T2WMLLogo from '../common/T2WMLLogo'
+import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuestion, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faQuestion } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import SplitPane from 'react-split-pane'
-import { Button, ButtonGroup, Card, Col, Dropdown, Form, Image, Modal, Nav, Navbar, NavDropdown, OverlayTrigger, Popover, Row, Spinner, Toast, Tooltip, InputGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, Card, Col, Dropdown, Form, Modal, OverlayTrigger, Popover, Row, Spinner, Toast, Tooltip, InputGroup } from 'react-bootstrap';
 
 // Table
 import { AgGridReact } from 'ag-grid-react';
@@ -208,6 +208,10 @@ class Project extends React.Component {
     logout();
   }
 
+  onShowSettingsClicked() {
+    this.setState({ showSettings: true });
+  }
+
   handleSaveSettings() {
     console.log("<App> updated settings");
 
@@ -297,6 +301,10 @@ class Project extends React.Component {
     const { showSpinner, userData } = this.state;
     return (
       <div>
+        <Navbar userData={userData}
+        showSettings="true"
+        onShowSettingsClicked={() => this.onShowSettingsClicked()}
+        handleLogout={() => this.handleLogout()} />
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!showSpinner} style={{ height: "100%" }}>
@@ -306,42 +314,7 @@ class Project extends React.Component {
         {/* modal */}
         {this.renderSettings()}
 
-        {/* navbar */}
-        <Navbar className="shadow" bg="dark" sticky="top" variant="dark" style={{ height: "50px" }}>
 
-          {/* logo */}
-          <T2WMLLogo />
-
-          {/* avatar */}
-          <Nav className="ml-auto">
-            <NavDropdown alignRight title={<Image src={userData.picture} style={{ width: "30px", height: "30px" }} rounded />}>
-
-              {/* user info */}
-              <NavDropdown.Item style={{ color: "gray" }} disabled>
-                <div style={{ fontWeight: "bold" }}>
-                  <FontAwesomeIcon icon={faUser} />&nbsp;{userData.name}
-                </div>
-                <div>
-                  {userData.email}
-                </div>
-              </NavDropdown.Item>
-
-              {/* settings */}
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={() => this.setState({ showSettings: true })}>
-                Settings
-              </NavDropdown.Item>
-
-              {/* log out */}
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={() => this.handleLogout()} style={{ color: "hsl(0, 100%, 30%)" }}>
-                Log out
-              </NavDropdown.Item>
-
-            </NavDropdown>
-          </Nav>
-
-        </Navbar>
 
         {/* content */}
         <div>
@@ -442,6 +415,7 @@ class TableViewer extends React.Component {
 
     // init functions
     this.handleOpenTableFile = this.handleOpenTableFile.bind(this);
+    this.handleOpenPropertiesFile = this.handleOpenPropertiesFile.bind(this);
     this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
@@ -452,6 +426,25 @@ class TableViewer extends React.Component {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
+  }
+
+  handleOpenPropertiesFile(event){
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // send request
+    console.log("<TableViewer> -> %c/upload_properties%c", LOG.link, LOG.default, LOG.highlight);
+    let formData = new FormData();
+    formData.append("pid", window.pid);
+    formData.append("file", file);
+    
+    backendPost("/upload_properties", formData).then((json) => {
+          console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
+          console.log(json);
+    
+        }).catch((error) => {
+          console.log(error);
+        });
   }
 
   handleOpenTableFile(event) {
@@ -547,7 +540,7 @@ class TableViewer extends React.Component {
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("pid", window.pid);
-    formData.append("wikifier_output", file);
+    formData.append("file", file);
     backendPost("/upload_wikifier_output", formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
       console.log(json);
@@ -994,11 +987,22 @@ class TableViewer extends React.Component {
             {/* title */}
             <div
               className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 75px)", cursor: "default" }}
+              style={{ width: "calc(100% - 305px)", cursor: "default" }}
             >
               {titleHtml}
             </div>
 
+            {/* button to upload properties file */}
+                <Button
+                className="d-inline-block float-right"
+                variant="outline-light"
+                size="sm"
+                style={{ padding: "0rem 0.5rem" }}
+                onClick={() => { document.getElementById("properties_button").click(); }}
+              >
+                Upload properties
+              </Button>
+              
             {/* button to upload table file */}
             <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
               <Button
@@ -1008,9 +1012,21 @@ class TableViewer extends React.Component {
                 style={{ padding: "0rem 0.5rem" }}
                 onClick={() => { document.getElementById("file_table").click(); }}
               >
-                Upload
+                Upload data
               </Button>
-            </OverlayTrigger>
+            </OverlayTrigger>            
+
+            {/* hidden input of properties button */}
+            <input
+              type="file"
+              id="properties_button"
+              accept=".json"
+              style={{ display: "none" }}
+              onChange={this.handleOpenPropertiesFile}
+              onClick={(event) => { event.target.value = null }}
+            />
+
+
 
             {/* TODO: move following inputs to another place */}
             {/* hidden input of table file */}
@@ -1146,6 +1162,7 @@ class TableViewer extends React.Component {
           </Card.Body>
 
           {/* sheet selector */}
+          {/* TODO: add scrollbar width */}
           <Card.Footer
             hidden={isCSV}
             id="sheetSelector" // apply custom scroll bar

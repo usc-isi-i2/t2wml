@@ -1,0 +1,452 @@
+[
+    {
+        "cell": "C5",
+        "statement": {
+            "cell": "A4",
+            "item": "Q967",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A5",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2000-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B5",
+                    "property": "P123",
+                    "value": "Q7649586"
+                }
+            ],
+            "value": 1
+        }
+    },
+    {
+        "cell": "C6",
+        "statement": {
+            "cell": "A4",
+            "item": "Q967",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A6",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2001-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B6",
+                    "property": "P123",
+                    "value": "Q7649586"
+                }
+            ],
+            "value": 2
+        }
+    },
+    {
+        "cell": "C7",
+        "statement": {
+            "cell": "A4",
+            "item": "Q967",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A7",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2002-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B7",
+                    "property": "P123",
+                    "value": "Q7649586"
+                }
+            ],
+            "value": 2
+        }
+    },
+    {
+        "cell": "C9",
+        "statement": {
+            "cell": "A8",
+            "item": "Q970",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A9",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2000-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B9",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 2
+        }
+    },
+    {
+        "cell": "C10",
+        "statement": {
+            "cell": "A8",
+            "item": "Q970",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A10",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2001-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B10",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 1
+        }
+    },
+    {
+        "cell": "C13",
+        "statement": {
+            "cell": "A12",
+            "item": "Q977",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A13",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2000-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B13",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 2
+        }
+    },
+    {
+        "cell": "C14",
+        "statement": {
+            "cell": "A12",
+            "item": "Q977",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A14",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2001-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B14",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 1
+        }
+    },
+    {
+        "cell": "C15",
+        "statement": {
+            "cell": "A12",
+            "item": "Q977",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A15",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2002-01-01T00:00:00"
+                },
+                {
+                    "cell": "C3",
+                    "property": "P6001",
+                    "value": "Q6581072"
+                },
+                {
+                    "cell": "B15",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 3
+        }
+    },
+    {
+        "cell": "D5",
+        "statement": {
+            "cell": "A4",
+            "item": "Q967",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A5",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2000-01-01T00:00:00"
+                },
+                {
+                    "cell": "D3",
+                    "property": "P6001",
+                    "value": "Q6581097"
+                },
+                {
+                    "cell": "B5",
+                    "property": "P123",
+                    "value": "Q7649586"
+                }
+            ],
+            "value": 3
+        }
+    },
+    {
+        "cell": "D6",
+        "statement": {
+            "cell": "A4",
+            "item": "Q967",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A6",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2001-01-01T00:00:00"
+                },
+                {
+                    "cell": "D3",
+                    "property": "P6001",
+                    "value": "Q6581097"
+                },
+                {
+                    "cell": "B6",
+                    "property": "P123",
+                    "value": "Q7649586"
+                }
+            ],
+            "value": 4
+        }
+    },
+    {
+        "cell": "D7",
+        "statement": {
+            "cell": "A4",
+            "item": "Q967",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A7",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2002-01-01T00:00:00"
+                },
+                {
+                    "cell": "D3",
+                    "property": "P6001",
+                    "value": "Q6581097"
+                },
+                {
+                    "cell": "B7",
+                    "property": "P123",
+                    "value": "Q7649586"
+                }
+            ],
+            "value": 6
+        }
+    },
+    {
+        "cell": "D9",
+        "statement": {
+            "cell": "A8",
+            "item": "Q970",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A9",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2000-01-01T00:00:00"
+                },
+                {
+                    "cell": "D3",
+                    "property": "P6001",
+                    "value": "Q6581097"
+                },
+                {
+                    "cell": "B9",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 4
+        }
+    },
+    {
+        "cell": "D11",
+        "statement": {
+            "cell": "A8",
+            "item": "Q970",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A11",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2002-01-01T00:00:00"
+                },
+                {
+                    "cell": "D3",
+                    "property": "P6001",
+                    "value": "Q6581097"
+                },
+                {
+                    "cell": "B11",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 8
+        }
+    },
+    {
+        "cell": "D13",
+        "statement": {
+            "cell": "A12",
+            "item": "Q977",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A13",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2000-01-01T00:00:00"
+                },
+                {
+                    "cell": "D3",
+                    "property": "P6001",
+                    "value": "Q6581097"
+                },
+                {
+                    "cell": "B13",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 1
+        }
+    },
+    {
+        "cell": "D14",
+        "statement": {
+            "cell": "A12",
+            "item": "Q977",
+            "property": "P100024",
+            "qualifier": [
+                {
+                    "calendar": "Q1985727",
+                    "cell": "A14",
+                    "format": "%Y",
+                    "precision": 9,
+                    "property": "P585",
+                    "time_zone": 0,
+                    "value": "2001-01-01T00:00:00"
+                },
+                {
+                    "cell": "D3",
+                    "property": "P6001",
+                    "value": "Q6581097"
+                },
+                {
+                    "cell": "B14",
+                    "property": "P123",
+                    "value": "Q6039400"
+                }
+            ],
+            "value": 1
+        }
+    }
+]
