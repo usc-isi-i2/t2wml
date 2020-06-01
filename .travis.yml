@@ -1,6 +1,7 @@
 sudo: false
 dist: trusty
 language: python
+cache: pip
 addons:
     apt:
       packages:
