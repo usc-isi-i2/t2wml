@@ -192,13 +192,12 @@ def resolve_cell(cell_mapper, col, row):
 def generate_download_file(cell_mapper, filetype):
     sparql_endpoint=cell_mapper.sparql_endpoint
     response=dict()
-    data=[]
     error=[]
+    data=[]
     if cell_mapper.use_cache:
         data=cell_mapper.cacher.get_download()
-
+    
     if not data:
-        
         for col, row in cell_mapper.region:
             try:
                 context={"t_var_row":row, "t_var_col":col}
