@@ -43,14 +43,18 @@ class TestHomicideData(unittest.TestCase):
         yaml_name= sheet_name+".yaml"
         expected_result_name=sheet_name+".json"
         yaml_file=os.path.join(self.yaml_folder, yaml_name)
-        with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
-            expected_result=json.load(f)
 
         item_table=ItemTable()
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
         result=generate_download_file(cm, "json")
         result_dict=json.loads(result['data'])
+        
+        #code for saving results in an initial run (alphabetize and indent as mercy to future users)
+        #with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
+        #    json.dump(result_dict, f, sort_keys=True, indent=4)
+        with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
+            expected_result=json.load(f)
 
         self.validate_results(result_dict, expected_result)
 
