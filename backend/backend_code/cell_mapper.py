@@ -90,7 +90,7 @@ class MappingCacher:
                 return data["download"]
             except:
                 pass
-        return None
+        return []
     
  
 class CellMapper:
