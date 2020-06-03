@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 
-interface DeleteProperteis {
+interface DeleteProperties {
   // pid: number; Is it needed?
   showDeleteProject: boolean;
 
@@ -11,7 +11,7 @@ interface DeleteProperteis {
 }
 
 
-class DeleteProject extends Component<DeleteProperteis, {}> {
+class DeleteProject extends Component<DeleteProperties, {}> {
 
   render() {
     return (

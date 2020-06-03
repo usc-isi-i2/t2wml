@@ -30,7 +30,7 @@ def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_nam
     # item_table.add_region(region, cell_qnode_map)
     return item_table.serialize_table(sparql_endpoint)
 
-def wikify_region(region: str, excel_file_path: str, sheet_name: str = None):
+def wikify_region(cell_range: str, excel_file_path: str, sheet_name: str = None):
     """
     This function parses the cell range, creates the temporary csv file and calls the wikifier service on that csv
     to get the cell qnode map. cell qnode map is then processed to omit non empty cells and is then returned.
@@ -39,7 +39,7 @@ def wikify_region(region: str, excel_file_path: str, sheet_name: str = None):
     :param sheet_name:
     :return:
     """
-    file_path = create_temporary_csv_file(region, excel_file_path, sheet_name)
+    file_path, cell_range = create_temporary_csv_file(cell_range, excel_file_path, sheet_name)
     cell_qnode_map = call_wikify_service(file_path, cell_range[0][0], cell_range[0][1])
     return cell_qnode_map
 
