@@ -305,6 +305,7 @@ class Output extends Component<OutputProperties, OutputState> {
                 <Form.Control as="select" onChange={(event) => this.setState({ downloadFileType: event.target.value })}>
                   <option value="json">.json</option>
                   <option value="ttl">.ttl</option>
+                  <option value="tsv">kgtk (.tsv)</option>
                 </Form.Control>
               </Col>
             </Form.Group>
