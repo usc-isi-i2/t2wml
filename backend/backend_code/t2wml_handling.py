@@ -19,7 +19,6 @@ from backend_code.utility_functions import translate_precision_to_integer, get_p
 
 
 def parse_time_for_dict(response, sparql_endpoint):
-    
     if "property" in response:
         try:
             prop_type= get_property_type(response["property"], sparql_endpoint)
@@ -56,7 +55,7 @@ def get_template_statement(template, item_parsed, value_parsed, qualifiers_parse
         attribute=attributes[attribute_name]
         if attribute:
             for attribute_dict in attribute:
-                q_val=attribute_dict.pop("value") #deal with value last
+                q_val=attribute_dict.pop("value", None) #deal with value last
                 for key in attribute_dict:
                     if isinstance(attribute_dict[key], ReturnClass):
                         attribute_dict[key]=attribute_dict[key].value
@@ -260,33 +259,33 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
         result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
         result_dict["node2;kgtk:calendar"]=property_dict.get("calendar", "")
 
-    elif property_type=="Coordinate": #?
+    elif property_type=="GlobeCoordinate": #?
         '''
         node2;kgtk:latitude: for coordinates, the latitude
         node2;kgtk:longitude: for coordinates, the longitude
         '''
-        #'longitude', 'latitude'
-        #not clear if need to be parsing things from value...?
-        #result_dict["node2;kgtk:data_type"]="location" #not defined for sure yet
-        result["node2;kgtk:latitude"]=property_dict["latitude"]
-        result["node2;kgtk:longitude"]=property_dict["longitude"]
+        # 'longitude', 'latitude'
+        # not clear if need to be parsing things from value...?
+        result_dict["node2;kgtk:data_type"]="coordinate" #not defined for sure yet
+        result_dict["node2;kgtk:latitude"]=property_dict["latitude"]
+        result_dict["node2;kgtk:longitude"]=property_dict["longitude"]
 
-    elif property_type=="Text": #?
+    elif property_type=="String":
         '''
         node2;kgtk:text: for text, the text without the language tag
         node2;kgtk:language: for text, the language tag
         '''
         result_dict["node2;kgtk:data_type"]="string"
-        result["node2;kgtk:text"]="\""+value+"\""
-        result["node2;kgtk:language"]=property_dict["lang"]
+        result_dict["node2;kgtk:text"]="\""+value+"\""
+        result_dict["node2;kgtk:language"]=property_dict.get("lang", "")
 
     elif property_type=="WikibaseItem":
         result_dict["node2;kgtk:data_type"]="symbol"
         "node2;kgtk:symbol: when node2 is another item, the item goes here"
-        result_dict["node2;kgtk:symbol"]=value #?
+        result_dict["node2;kgtk:symbol"]=value
     
     else:
-        hi=1
+        raise ValueError("Property type "+property_type+" is not currently supported")
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response=generate_download_file(cell_mapper, "json")
@@ -300,26 +299,22 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     tsv_data=[]
     for entry in data:
         cell=entry["cell"]
-        statement=entry["statement"]
-
-        item=statement["item"]
-        property=statement["property"]
-
         id = project_name + ";" + file_name + "." + sheet_name + file_extension + ";" + cell
-        cell_result_dict=dict(id=id, node1=item, label=property)
+        statement=entry["statement"]
+        cell_result_dict=dict(id=id, node1=statement["item"], label=statement["property"])
         kgtk_add_property_type_specific_fields(statement, cell_result_dict, cell_mapper.sparql_endpoint)
         tsv_data.append(cell_result_dict)
 
         qualifiers=statement.get("qualifier", [])
         for qualifier in qualifiers:
-            second_cell=qualifier["cell"]
+            second_cell=qualifier.get("cell", "")
             q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
-            property=qualifier["property"]
-            qualifier_result_dict=dict(id=id, node1=id, label=property)
+            qualifier_result_dict=dict(id=q_id, node1=id, label=qualifier["property"])
             kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict, cell_mapper.sparql_endpoint)
             tsv_data.append(qualifier_result_dict)
 
         references = statement.get("reference", [])
+        #todo: handle references
 
 
     string_stream= StringIO("", newline="")
