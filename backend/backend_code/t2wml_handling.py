@@ -280,12 +280,13 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
         result["node2;kgtk:text"]="\""+value+"\""
         result["node2;kgtk:language"]=property_dict["lang"]
 
-    elif property_type=="Item": #?
+    elif property_type=="WikibaseItem":
         result_dict["node2;kgtk:data_type"]="symbol"
         "node2;kgtk:symbol: when node2 is another item, the item goes here"
         result_dict["node2;kgtk:symbol"]=value #?
     
-    #if we ever have booleans their code would go here
+    else:
+        hi=1
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response=generate_download_file(cell_mapper, "json")
