@@ -1,16 +1,17 @@
+import json
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
-import json
 
-from app_config import db, DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER
-from backend_code.item_table import ItemTable
-from backend_code.t2wml_exceptions import T2WMLException
-from backend_code.utility_functions import is_csv
-from backend_code.spreadsheets.utilities import excel_to_json
-from backend_code.spreadsheets.sheet import save_and_get_sheet_names
-from backend_code.t2wml_handling import highlight_region, resolve_cell, generate_download_file
+from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 from backend_code.cell_mapper import CellMapper
+from backend_code.item_table import ItemTable
+from backend_code.spreadsheets.sheet import save_and_get_sheet_names
+from backend_code.spreadsheets.utilities import excel_to_json
+from backend_code.t2wml_exceptions import T2WMLException
+from backend_code.t2wml_handling import download_kgtk, generate_download_file, highlight_region, resolve_cell
+from backend_code.utility_functions import is_csv
+
 
 def generate_id() -> str:
     """
@@ -349,6 +350,8 @@ class YamlFile(db.Model):
         return resolve_cell(self.cell_mapper, column, row)
     
     def generate_download_file(self, filetype):
+        if filetype=="tsv":
+            return download_kgtk(self.cell_mapper, self.sheet.project_file.project.name, self.sheet.project_file.name, self.sheet.name)
         return generate_download_file(self.cell_mapper, filetype)
 
 
@@ -467,7 +470,3 @@ class WikiRegionFile(db.Model):
         
         #set property
         self._item_table=item_table
-        
-
-
-

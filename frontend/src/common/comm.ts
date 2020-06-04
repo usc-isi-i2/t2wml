@@ -43,3 +43,38 @@ export async function backendPost(url: string, formData?: FormData): Promise<any
 
     return json;
 }
+
+export async function backendPut(url: string, formData?: FormData): Promise<any> {
+  const fullUrl = getUrl(url);
+  console.debug('Fetching from ', fullUrl);
+  const response = await fetch(fullUrl, {
+      mode: "cors",
+      method: "PUT",
+      body: formData,
+      credentials: "include",
+  });
+
+  if (!response.ok) {
+      throw Error(response.statusText);
+  }
+  const json = await response.json();
+
+  return json;
+}
+
+export async function backendDelete(url: string): Promise<any> {
+  const fullUrl = getUrl(url);
+  console.debug('Fetching from ', fullUrl);
+  const response = await fetch(fullUrl, {
+      mode: "cors",
+      method: "DELETE",
+      credentials: "include",
+  });
+
+  if (!response.ok) {
+      throw Error(response.statusText);
+  }
+  const json = await response.json();
+
+  return json;
+}

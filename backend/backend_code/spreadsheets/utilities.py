@@ -1,5 +1,5 @@
 #isolating all spreadsheet management code here
-
+import os
 import pandas
 import pickle
 import uuid
@@ -21,14 +21,18 @@ def create_temporary_csv_file(cell_range: str, data_file_path: str, sheet_name: 
     """
     file_name = uuid.uuid4().hex + ".csv"
     csv_file_path = str(Path.cwd() / "temporary_files" / file_name)
-    (start_col, start_row), (end_col, end_row) = _cell_range_str_to_tuples(region)
+    if not os.path.exists(str(Path.cwd() / "temporary_files")):
+        os.mkdir(str(Path.cwd() / "temporary_files"))
+    (start_col, start_row), (end_col, end_row) = _cell_range_str_to_tuples(cell_range)
+    end_col+=1
+    end_row+=1
     try:
         sheet=Sheet(data_file_path, sheet_name)
-        data=sheet.data[start_row:end_row, start_col:end_col]
+        data=sheet[start_row:end_row, start_col:end_col]
         data.to_csv(csv_file_path, header=False, index=False)
     except IOError:
         raise IOError('Excel File cannot be found or opened')
-    return csv_file_path
+    return csv_file_path, ((start_col, start_row), (end_col, end_row))
 
 
 def get_first_sheet_name(file_path: str):

@@ -35,7 +35,7 @@ GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleuse
 
 db = SQLAlchemy(app)
 from backend_code.models import *
-from backend_code.wikidata_property import WikidataProperty
+from backend_code.wikidata_property import *
 
 migrate = Migrate(app, db)
 

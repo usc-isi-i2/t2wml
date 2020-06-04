@@ -41,7 +41,7 @@
             "request": "launch",
             "module": "unittest",
             "args": [
-                "unit_tests.test_rdf_generation"
+                "unit_tests.test_json_results" //"unit_tests.test_rdf_generation"
             ],
             "cwd": "${workspaceFolder}\\backend",
         },

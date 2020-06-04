@@ -6,7 +6,7 @@ statementMapping:
       bottom: 22
   template:
     item: =item[A, $row]
-    property: C3002 # murder [a new property]
+    property: P100024 # murder [a new property]
     value: =value[$col, $row]
     unit: D1002
     qualifier:

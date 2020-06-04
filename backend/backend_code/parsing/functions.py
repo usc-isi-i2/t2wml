@@ -57,6 +57,7 @@ def string_modifier(func):
         return input
     return wrapper
 
+
 @string_modifier
 def strip(input):
     return input.strip()
@@ -76,6 +77,13 @@ def title(input):
 @string_modifier
 def clean(input):
     return ftfy.fix_text(input)
+
+@string_modifier
+def replace(input, to_replace, replacer):
+    val = re.sub(to_replace, replacer, input)
+    return val
+    #return input.replace(to_replace, replacer)
+
 
 @string_modifier
 def split_index(input, character, i):
@@ -158,6 +166,7 @@ functions_dict=dict(
     upper=upper,
     title=title, 
     clean=clean,
+    replace=replace,
     split_index=split_index,
     substring=substring,
     extract_date=extract_date,
