@@ -5,14 +5,14 @@ statementMapping:
       top: 3
       bottom: 10
   template:
-    item: item(A/$row)
+    item: =item[A, $row]
     property: P1082 #C3002 # murder
-    value: value($col/$row)
+    value: =value[$col, $row]
     qualifier:
       - property: P585
-        value: value($col/3)
+        value: =value[$col, 3]
         calendar: Q1985727
         precision: year
         time_zone: 0 
       - property: P6001 # applies to people
-        value: item(C/$row)
+        value: =item[C, $row]

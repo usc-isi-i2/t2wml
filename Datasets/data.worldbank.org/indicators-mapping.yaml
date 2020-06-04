@@ -5,13 +5,13 @@ statementMapping:
       top: 4
       bottom: 269
   template:
-    item: item(A/$row)
-    property: item(D/$row)
-    value: value($col/$row)
-    #unit: # item(D/$row, "unit")
+    item: =item[A, $row]
+    property: =item[D, $row]
+    value: =value[$col, $row]
+    #unit: # =item[D, $row, "unit"]
     qualifier:
       - property: P585
-        value: value($col/4)
+        value: =value[$col, 4]
         calendar: Q1985727
         precision: year
         time_zone: 0

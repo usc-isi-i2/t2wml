@@ -1,6 +1,7 @@
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.bindings import bindings
-from backend_code.parsing.classes import CellExpression, ItemExpression
+from backend_code.parsing.classes import (CellExpression, ItemExpression,
+                                          ReturnClass)
 from backend_code.parsing.constants import char_dict
 from backend_code.parsing.functions import functions_dict
 
@@ -9,8 +10,7 @@ eval_globals.update(char_dict)
 eval_globals.update(functions_dict)
 
 
-def parse_expression(e_str, context={}):
-    #print(context)
+def t2wml_parse(e_str, context={}):
     value = CellExpression()
     item=ItemExpression()
     globals = dict(value=value, item=item)
@@ -18,7 +18,6 @@ def parse_expression(e_str, context={}):
     globals.update(context)
     try:
         result = eval(e_str, globals)
-        #print(e_str, ":\t", result)
         return result
     except Exception as e:
         print("error in", e_str, ":", str(e))
@@ -31,8 +30,13 @@ def iter_on_n(expression, context={}):
         try:
             context_dir={"n":n}
             context_dir.update(context)
-            return_value= parse_expression(expression, context_dir)
+            return_value= t2wml_parse(expression, context_dir)
             if return_value:
                 return return_value
         except IndexError:
             break
+
+def iter_on_n_for_code(input, context={}):
+    if isinstance(input, str):
+        return ReturnClass(None, None, input)
+    return iter_on_n(input, context)
