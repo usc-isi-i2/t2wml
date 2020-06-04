@@ -236,16 +236,23 @@ For simplicity, the examples all use a string for the input, but they would appl
 
 `clean(input)`:  Uses the ftfy package to clean the input, eg schÃ¶n becomes schön
 
+`replace(input, to_replace, replace_with)`: replaces instance of to_replace with replace_with. to_replace can be a regex. (therefore you will need to escape regex characters you want treated literally)
+
+`replace("cats and dogs and cats", "cats", "turtles")` returns "turtles and dogs and turtles"
+`replace(" 30 456 e", "[^\d.]", "")` returns "30456"
+
+
+
 `split_index(input, split_char, i)`: Splits the input on the split_char, and returns the ith item from the split, where i is 1-indexed. For example, `split_index(“yes,no,maybe”, “,”, 2)` returns “no”
 
 `substring(input, start (,end))`: Returns a substring of the input, from start to end, inclusive. (end is optional, if not provided the end will be the end of the string). Negatives indices are counted from the end of the string.
 
-`substring("platypus", 3)` would return “atypus”
-`substring("platypus", 3, 5)` would return "aty"
-`substring(“platypus”, 3, -2)` would return "atypu"
+`substring("platypus", 3)` returns “atypus”
+`substring("platypus", 3, 5)` returns "aty"
+`substring(“platypus”, 3, -2)` returns "atypu"
 
 `extract_date(input, format_string)`: Attempts to extract a date from the input using etk, based on the format string.
-For example, `extract_date(“2000”, “%Y”)` would return  2000-01-01T00:00:00
+For example, `extract_date(“2000”, “%Y”)` returns  2000-01-01T00:00:00
 
 `regex(input, pattern (,i))`: Returns the value of the ith group in the regex pattern provided if a match is found. Returns None if no regex match is found. i is optional, if i is not provided the entire match will be returned. 
 
@@ -255,7 +262,7 @@ Example:
 
 The regex uses Python regex syntax. You can [test your regex](https://regex101.com/) to check that is returning the results you expect.
 
-**WARNING**: Because of the need to [conform to Yaml standards](#yamlstandards), a regex containing a colon followed by whitespace `: `, or whitespace followed by an octothorpe ` #`, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character `\s`, eg: `:\s`, `\s#`.
+**WARNING**: Because of the need to [conform to Yaml standards](#yamlstandards), a regex containing a colon *followed by whitespace* `: `, or whitespace followed by an octothorpe ` #`, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character `\s`, eg: `:\s`, `\s#`.
 
 #### Other
 <span id="other"></span>
