@@ -1,4 +1,4 @@
-# simple mapping of ocuntry populations
+# simple mapping of country populations
 statementMapping:
   region:
     - left: B
