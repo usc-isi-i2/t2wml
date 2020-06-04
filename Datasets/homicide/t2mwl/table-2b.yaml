@@ -5,7 +5,7 @@ statementMapping:
       top: 5
       bottom: 22
   template:
-    item: =item[A, $row-n]
+    item: =item[A, $row-$n]
     property: C3002 # murder [a new property]
     value: =value[$col, $row]
     unit: D1002
@@ -17,6 +17,6 @@ statementMapping:
         time_zone: 0
         format: "%Y"
       - property: P6001 # applies to people
-        value: =item[B, $row-n]
+        value: =item[B, $row-$n]
       - property: P123 #source
         value: =item[C, $row]

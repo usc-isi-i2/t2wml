@@ -1,0 +1,20 @@
+# simple mapping of country populations
+statementMapping:
+  region:
+    - left: B
+      right: E
+      top: 3
+      bottom: 12
+  template:
+    item: =item[A, $row-$n]
+    property: P1082 #population
+    value: =value[$col, $row]
+    qualifier:
+      - property: P527
+        value: =item[B, $row]
+      - property: P585 #point in time
+        value: =value[$col, 3]
+        calendar: Q1985727
+        precision: year
+        time_zone: 0
+        format: "%Y"

@@ -33,12 +33,13 @@ def build_frontend():
 
 def copy_frontend_to_static():
     print("Copying frontend files to backend's static folder...")
-    shutil.rmtree('static', ignore_errors=True)
-    shutil.copytree(os.path.join('frontend', 'build'), 'static')
+    shutil.rmtree(os.path.join('backend','static'), ignore_errors=True)
+    shutil.copytree(os.path.join('frontend', 'build'), os.path.join('backend','static'))
 
 def build_package():
     print("Building package...")
     os.system("python setup.py sdist")
+
 
 def run():
     args = parse_args()
