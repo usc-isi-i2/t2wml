@@ -211,10 +211,10 @@ It is important to note that when applied to a range, unlike operators, boolean 
 4. `instance_of(input, qnode)`: checks whether the input has an "instance of" relationship with the qnode. both must be items or qnode strings. As described in the [Wikidata query tutorial](https://www.wikidata.org/wiki/Wikidata:SPARQL_tutorial), the query uses “instance of” followed by any number of “subclass of”. ( wdt:P31/wdt:P279* )
 
 
-`instance_of(“Q378619”, “Q146”)` would return True
-`instance_of_qnode(item[A, 3], “Q146”)` would return True if the item for cell A3 was an instance of Q146, eg Q378619
-`instance_of_qnode(value[B, 3], “Q146”)` would return True if the value for cell A3 was a string that happened to be a valid qnode string for a qnode that was an instance of Q146.
-`instance_of_qnode(item[A, 3:6], “Q146”)` would return True if cells A3-A6 all were items that are instances of Q146
+* `instance_of(“Q378619”, “Q146”)` would return True
+* `instance_of_qnode(item[A, 3], “Q146”)` would return True if the item for cell A3 was an instance of Q146, eg Q378619
+* `instance_of_qnode(value[B, 3], “Q146”)` would return True if the value for cell A3 was a string that happened to be a valid qnode string for a qnode that was an instance of Q146.
+* `instance_of_qnode(item[A, 3:6], “Q146”)` would return True if cells A3-A6 all were items that are instances of Q146
 
 #### String modifiers
 <span id="string"></span>
@@ -238,9 +238,8 @@ For simplicity, the examples all use a string for the input, but they would appl
 
 `replace(input, to_replace, replace_with)`: replaces instance of to_replace with replace_with. to_replace can be a regex. (therefore you will need to escape regex characters you want treated literally)
 
-`replace("cats and dogs and cats", "cats", "turtles")` returns "turtles and dogs and turtles"
-
-`replace(" 30 456 e", "[^\d.-]", "")` returns "30456"
+* `replace("cats and dogs and cats", "cats", "turtles")` returns "turtles and dogs and turtles"
+* `replace(" 30 456 e", "[^\d.-]", "")` returns "30456"
 
 
 
@@ -248,9 +247,9 @@ For simplicity, the examples all use a string for the input, but they would appl
 
 `substring(input, start (,end))`: Returns a substring of the input, from start to end, inclusive. (end is optional, if not provided the end will be the end of the string). Negatives indices are counted from the end of the string.
 
-`substring("platypus", 3)` returns “atypus”
-`substring("platypus", 3, 5)` returns "aty"
-`substring(“platypus”, 3, -2)` returns "atypu"
+* `substring("platypus", 3)` returns “atypus”
+* `substring("platypus", 3, 5)` returns "aty"
+* `substring(“platypus”, 3, -2)` returns "atypu"
 
 `extract_date(input, format_string)`: Attempts to extract a date from the input using etk, based on the format string.
 For example, `extract_date(“2000”, “%Y”)` returns  2000-01-01T00:00:00
@@ -258,8 +257,8 @@ For example, `extract_date(“2000”, “%Y”)` returns  2000-01-01T00:00:00
 `regex(input, pattern (,i))`: Returns the value of the ith group in the regex pattern provided if a match is found. Returns None if no regex match is found. i is optional, if i is not provided the entire match will be returned. 
 
 Example: 
-`regex("Isaac Newton, physicist",  "(\w+) (\w+)")` returns “Isaac Newton”
-`regex("Isaac Newton, physicist",  "(\w+) (\w+)", 1)` returns “Isaac”
+* `regex("Isaac Newton, physicist",  "(\w+) (\w+)")` returns “Isaac Newton”
+* `regex("Isaac Newton, physicist",  "(\w+) (\w+)", 1)` returns “Isaac”
 
 The regex uses Python regex syntax. You can [test your regex](https://regex101.com/) to check that is returning the results you expect.
 
@@ -282,7 +281,7 @@ For arguments that are ranges, rather than single values, concat will join every
 | 2   | Female  | No  | Fire  |
 | 3   | Males  | Maybe  | Water  |
 
-`concat(value[B:C, 2:3], “implies”,  item[A, 1:2], “-”)`
+* `concat(value[B:C, 2:3], “implies”,  item[A, 1:2], “-”)`
 
 Would return the string “No-Fire-Maybe-Water-implies-Q6581072-Q6581097”
 
