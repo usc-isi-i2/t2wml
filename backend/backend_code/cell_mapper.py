@@ -1,5 +1,6 @@
 import os
 import json
+from copy import deepcopy
 from pathlib import Path
 from collections import OrderedDict
 from backend_code.utility_functions import string_is_valid
@@ -106,7 +107,7 @@ class CellMapper:
         self.region=Region(region_parser.parsed_region)
         
         template_parser=TemplateParser(self.yaml_data, self.region)
-        self.template=template_parser.template
+        self._template=template_parser.template
         self.eval_template=template_parser.eval_template
         
         self.sparql_endpoint=sparql_endpoint
@@ -115,3 +116,6 @@ class CellMapper:
         self.use_cache=use_cache
         self.cacher=MappingCacher(yaml_file_path, data_file_path, sheet_name)
     
+    @property
+    def template(self):
+        return deepcopy(self._template)

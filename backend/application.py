@@ -1,7 +1,6 @@
 import json
 import shutil
 import sys
-import json
 import os
 from flask import request, render_template, redirect, url_for, session, make_response
 from flask.helpers import send_file, send_from_directory
@@ -149,6 +148,25 @@ def create_project():
         return response, 201
 
     
+
+@app.route('/api/upload_properties', methods=['POST'])
+@json_response
+def upload_properties():
+    from backend_code.wikidata_property import WikidataProperty, ValueAlreadyPresentError
+    project=get_project()
+    in_file = request.files['file']
+    input_dict= json.load(in_file)
+    return_dict={"added":[], "present":[], "failed":[]}
+    for key in input_dict:
+        try:
+            WikidataProperty.add(key, input_dict[key])
+            return_dict["added"].append(key)
+        except ValueAlreadyPresentError:
+            return_dict["present"].append(key)
+        except Exception as e:
+            print(e)
+            return_dict["failed"].append((key, str(e)))
+    return return_dict, 200
 
 
 @app.route('/api/upload_data_file', methods=['POST'])

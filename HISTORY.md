@@ -1,6 +1,11 @@
 T2WML History
 ===================
 
+Changes in version 2.0a6:
+------------------------
+* added support for uploading a json properties file
+* bug fixes:
+   - download was overwriting existing values in a loop 
 
 Changes in version 2.0a5:
 ------------------------
