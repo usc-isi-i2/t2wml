@@ -253,6 +253,9 @@ Example:
 `regex("Isaac Newton, physicist",  "(\w+) (\w+)")` returns “Isaac Newton”
 `regex("Isaac Newton, physicist",  "(\w+) (\w+)", 1)` returns “Isaac”
 
+The regex uses Python regex syntax. You can [test your regex](https://regex101.com/) to check that is returning the results you expect.
+
+**WARNING**: Because of the need to [conform to Yaml standards](#yamlstandards), a regex containing a colon followed by whitespace `: `, or whitespace followed by an octothorpe ` #`, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character `\s`, eg: `:\s`, `\s#`.
 
 #### Other
 <span id="other"></span>
