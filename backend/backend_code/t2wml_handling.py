@@ -227,9 +227,6 @@ def generate_download_file(cell_mapper, filetype):
         response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=cell_mapper.created_by)
         response["error"] = None if not error else error
         return response
-    
-    elif filetype == 'kgtk':
-        pass
 
 
 
@@ -259,10 +256,10 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             node2;kgtk:high_tolerance: for quantities, the upper bound of the value (cannot do it in T2WML yet)
             '''
             result_dict["node2;kgtk:data_type"]="quantity"
-            result_dict["node2;kgtk:number"]=value
-            result_dict["node2;kgtk:units_node"]=property_dict.get("unit", "")
-            result_dict["node2;kgtk:low_tolerance"]=property_dict.get("lower-bound", "")
-            result_dict[" node2;kgtk:high_tolerance"]property_dict.get("upper-bound", "")
+            result_dict["node2;kgtk:number"]= value
+            result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
+            result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
+            result_dict[" node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
 
         elif property_type=="Time":
             '''
