@@ -163,10 +163,12 @@ class Output extends Component<OutputProperties, OutputState> {
       this.queryWikidata(itemID, "itemName");
       isAllCached = false;
     }
+    
+    if (json["statement"]["cell"]) {
     let [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
     (window as any).TableViewer.updateStyleByCell(col, row, { "border": "1px solid black !important" });
     this.setState({ itemCol: col, itemRow: row });
-
+    }
     // property
     const propertyID = json["statement"]["property"];
     if (cache[propertyID] !== undefined) {
@@ -210,12 +212,12 @@ class Output extends Component<OutputProperties, OutputState> {
         }
 
         if (temp[i]["cell"] !== undefined && temp[i]["cell"] !==null) {
-          [col, row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
-          qualifier["col"] = col;
-          qualifier["row"] = row;
+          let [q_col, q_row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
+          qualifier["col"] = q_col;
+          qualifier["row"] = q_row;
           // let hue = utils.getHueByRandom(10); // first param is the total number of colors
           let hue = utils.getHueByQnode(10, qualifier["propertyID"]);
-          (window as any).TableViewer.updateStyleByCell(col, row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
+          (window as any).TableViewer.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
 
         qualifiers.push(qualifier);
