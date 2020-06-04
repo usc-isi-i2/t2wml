@@ -1,12 +1,16 @@
 T2WML History
 ===================
 
-Changes in upcoming unnamed version:
+Changes in version 2.0a7:
 ------------------------
+* added a replace function to t2wml grammar
+* added kgtk (.csv) download support
 * bug fixes:
      - local version was reading spreadsheets wrong
      - local version had multiple bugs in generate_download_file
-     - a variety of bug fixes to wikifier/wikify_region, but the endpoint is still not working
+     - wikify_region now works
+     - frontend preview output could not handle item not having a cell associated with it (eg being hardcoded)
+* switched to RESTful api, frontend has been refactored into components
 
 Changes in version 2.0a6:
 ------------------------

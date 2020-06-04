@@ -239,7 +239,7 @@ For simplicity, the examples all use a string for the input, but they would appl
 `replace(input, to_replace, replace_with)`: replaces instance of to_replace with replace_with. to_replace can be a regex. (therefore you will need to escape regex characters you want treated literally)
 
 `replace("cats and dogs and cats", "cats", "turtles")` returns "turtles and dogs and turtles"
-`replace(" 30 456 e", "[^\d.]", "")` returns "30456"
+`replace(" 30 456 e", "[^\d.-]", "")` returns "30456"
 
 
 
