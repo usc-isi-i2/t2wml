@@ -235,57 +235,64 @@ def generate_download_file(cell_mapper, filetype):
 
 def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_endpoint):
     property_type= get_property_type(property_dict["property"], sparql_endpoint)
-    value=property_dict["value"]
-
-    if property_type=="Quantity":
-        '''
-        node2;kgtk:magnitude: for quantities, the number
-        node2;kgtk:units_node: for quantities, the unit
-        node2;kgtk:low_tolerance: for quantities, the lower bound of the value (cannot do it in T2WML yet)
-        node2;kgtk:high_tolerance: for quantities, the upper bound of the value (cannot do it in T2WML yet)
-        '''
-        result_dict["node2;kgtk:data_type"]="quantity"
-        result_dict["node2;kgtk:number"]=value
-        result_dict["node2;kgtk:units_node"]=property_dict.get("unit", "")
-
-    elif property_type=="Time":
-        '''
-        node2;kgtk:date_and_time: for dates, the ISO-formatted data
-        node2;kgtk:precision: for dates, the precision, as an integer (need to verify this with KGTK folks, could be that we use human readable strings such as year, month
-        node2;kgtk:calendar: for dates, the qnode of the calendar, if specified
-        '''
-        result_dict["node2;kgtk:data_type"]="date_and_times"
-        result_dict["node2;kgtk:date_and_time"]=value
-        result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
-        result_dict["node2;kgtk:calendar"]=property_dict.get("calendar", "")
-
-    elif property_type=="GlobeCoordinate": #?
+    
+    #The only property that doesn't require value
+    if property_type=="GlobeCoordinate": 
         '''
         node2;kgtk:latitude: for coordinates, the latitude
         node2;kgtk:longitude: for coordinates, the longitude
         '''
-        # 'longitude', 'latitude'
-        # not clear if need to be parsing things from value...?
         result_dict["node2;kgtk:data_type"]="coordinate" #not defined for sure yet
         result_dict["node2;kgtk:latitude"]=property_dict["latitude"]
         result_dict["node2;kgtk:longitude"]=property_dict["longitude"]
+        result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
+        result_dict[" node2;kgtk:globe"]=property_dict.get("globe", "")
 
-    elif property_type=="String":
-        '''
-        node2;kgtk:text: for text, the text without the language tag
-        node2;kgtk:language: for text, the language tag
-        '''
-        result_dict["node2;kgtk:data_type"]="string"
-        result_dict["node2;kgtk:text"]="\""+value+"\""
-        result_dict["node2;kgtk:language"]=property_dict.get("lang", "")
-
-    elif property_type=="WikibaseItem":
-        result_dict["node2;kgtk:data_type"]="symbol"
-        "node2;kgtk:symbol: when node2 is another item, the item goes here"
-        result_dict["node2;kgtk:symbol"]=value
-    
     else:
-        raise ValueError("Property type "+property_type+" is not currently supported")
+        value=property_dict["value"]
+
+        if property_type=="Quantity":
+            '''
+            node2;kgtk:magnitude: for quantities, the number
+            node2;kgtk:units_node: for quantities, the unit
+            node2;kgtk:low_tolerance: for quantities, the lower bound of the value (cannot do it in T2WML yet)
+            node2;kgtk:high_tolerance: for quantities, the upper bound of the value (cannot do it in T2WML yet)
+            '''
+            result_dict["node2;kgtk:data_type"]="quantity"
+            result_dict["node2;kgtk:number"]=value
+            result_dict["node2;kgtk:units_node"]=property_dict.get("unit", "")
+            result_dict["node2;kgtk:low_tolerance"]=property_dict.get("lower-bound", "")
+            result_dict[" node2;kgtk:high_tolerance"]property_dict.get("upper-bound", "")
+
+        elif property_type=="Time":
+            '''
+            node2;kgtk:date_and_time: for dates, the ISO-formatted data
+            node2;kgtk:precision: for dates, the precision, as an integer (need to verify this with KGTK folks, could be that we use human readable strings such as year, month
+            node2;kgtk:calendar: for dates, the qnode of the calendar, if specified
+            '''
+            result_dict["node2;kgtk:data_type"]="date_and_times"
+            result_dict["node2;kgtk:date_and_time"]=value
+            result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
+            result_dict["node2;kgtk:calendar"]=property_dict.get("calendar", "")
+
+
+
+        elif property_type in ["String", "MonolingualText", "ExternalIdentifier"]:
+            '''
+            node2;kgtk:text: for text, the text without the language tag
+            node2;kgtk:language: for text, the language tag
+            '''
+            result_dict["node2;kgtk:data_type"]="string"
+            result_dict["node2;kgtk:text"]="\""+value+"\""
+            result_dict["node2;kgtk:language"]=property_dict.get("lang", "")
+
+        elif property_type in ["WikibaseItem", "WikibaseProperty"]:
+            result_dict["node2;kgtk:data_type"]="symbol"
+            "node2;kgtk:symbol: when node2 is another item, the item goes here"
+            result_dict["node2;kgtk:symbol"]=value
+        
+        else:
+            raise ValueError("Property type "+property_type+" is not currently supported")
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response=generate_download_file(cell_mapper, "json")
