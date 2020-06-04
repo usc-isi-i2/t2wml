@@ -288,16 +288,23 @@ def validate_yaml(yaml_file_path):
             if 'template' not in yaml_file_data['statementMapping']:
                 errors+= "Key 'template' (statementMapping -> X) not found\n"
             else:
+                allowed_keys={'item', 'property', 'value', 'qualifier', 'reference',
+                 'unit','lower-bound', 'upper-bound', #Quantity
+                 'longitude', 'latitude', 'globe', #Coordinate (+precision below)
+                  'calendar', 'precision','time_zone', 'format', #Time
+                  'lang', #change to language? #Text
+                }
                 yaml_template=yaml_file_data['statementMapping']['template']
                 if isinstance(yaml_template, dict):
                     for key in yaml_template.keys():
-                        if key not in {'item', 'property', 'value', 'qualifier', 'calendar', 'precision', 'time_zone', 'format', 'lang', 'longitude', 'latitude', 'unit', 'reference'}:
+                        if key not in allowed_keys:
                             errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + key + ") found\n"
 
                     for required_key in ['item', 'property', 'value']:
                         if required_key not in yaml_template:
                             errors+= "Key '" + required_key+ "' (statementMapping -> template -> X) not found\n"
                     
+                    #allowed_keys.pop("item") #remove item, which isn't allowed in attributes?
                     attributes = ['qualifier', 'reference']
                     for attribute in attributes:
                         if attribute in yaml_template:
@@ -308,9 +315,7 @@ def validate_yaml(yaml_file_path):
                                         obj = attributes[i]
                                         if obj and isinstance(obj, dict):
                                             for key in obj.keys():
-                                                if key not in {'property', 'value', 'calendar',
-                                                                'precision', 'time_zone', 'format', 'lang', 'longitude',
-                                                                'latitude', 'unit'}:
+                                                if key not in allowed_keys:
                                                     errors+= "Unrecognized key '" + key + "' (statementMapping -> template -> " + attribute + "[" + str(i) + "] -> " + key + ") found"
                                         else:
                                             errors+= "Value of  key '" + attribute + "[" + str(i) + "]' (statementMapping -> template -> " + attribute + "[" + str(i) + "]) \
