@@ -1,0 +1,4 @@
+include README.md
+include backend_code/grammar.lark
+recursive-include static *
+recursive-include migrations *

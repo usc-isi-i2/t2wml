@@ -111,5 +111,16 @@ config/*
 /Datasets/WDI_scripts_data/
 
 # gui
-/gui/node_modules/*
-/gui/build/*
+**/node_modules/*
+**/build/*
+/frontend/.env*.local
+!/frontend/.env
+/static
+
+# user files
+uploads
+
+# sqlite dbs
+app.db
+# emacs
+*~
