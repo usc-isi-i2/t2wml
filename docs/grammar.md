@@ -265,7 +265,21 @@ The regex uses Python regex syntax. You can [test your regex](https://regex101.c
 #### Other
 <span id="other"></span>
 
-Functions which do not behave like boolean functions or like string modifiers. For now there is one such function:
+Functions which do not behave like boolean functions or like string modifiers.
+
+`get_item(input(, context))`
+
+get_item receives an input which can be resolved to a string (for example, a value, the output of any string modifer, or just a string).
+
+It optionally receives a context-- if no context is provided, the default context (`"__NO_CONTEXT__"`) is used.
+
+It then looks up this string in the item table. If the string is not present in the item table it will return an error. Otherwise, it returns the item from the item table.
+
+Obviously the preferred way to get an item from a string is to use the wikifier. `get_item` was created for situations where simply grabbing the string from a cell was not sufficient, for example, if it is necessary to use a regex on the cell to get the needed string.
+
+example: `item: '=get_item(regex(value[B, 2], "profile: (.*) \d{4}", 1))'`
+
+
 `concat(*args)`
 
 concat receives a variable number of arguments, **the last of which must be the join character**

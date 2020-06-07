@@ -1,6 +1,13 @@
 T2WML History
 ===================
 
+Changes in version 2.0a8:
+------------------------
+* added patch support for getting items by string+context from item table
+* added function get_item to t2wml grammar
+* bug fixes:
+    - fixed a typo in kgtk keys that was breaking kgtk download
+
 Changes in version 2.0a7:
 ------------------------
 * added a replace function to t2wml grammar
