@@ -191,8 +191,8 @@ def resolve_cell(cell_mapper, col, row):
 
 
 def generate_download_file(cell_mapper, filetype):
-    if filetype=="tsv":
-        raise ValueError("Please use download_kgtk function to create kgtk tsv files")
+    if filetype in ["tsv", "kgtk"]:
+        raise ValueError("Please use download_kgtk function to create tsv files for the kgtk format")
     if filetype not in ["json", "ttl"]:
         raise ValueError("Unsupported file type")
 
