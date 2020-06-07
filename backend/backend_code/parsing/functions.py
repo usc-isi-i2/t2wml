@@ -3,7 +3,7 @@ import re
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper import SPARQLWrapper, JSON
 from backend_code.bindings import bindings
-from backend_code.parsing.classes import ReturnClass, RangeClass
+from backend_code.parsing.classes import ReturnClass, RangeClass, Item
 
 def boolean_modifer(func):
     def wrapper(input, *args, **kwargs):
@@ -152,7 +152,12 @@ def concat(*args):
     r=ReturnClass(None, None, return_str)
     return r
 
-
+def get_item(input, context="__NO_CONTEXT__"):
+    value= bindings.item_table.get_item_by_string(str(input), context)
+    if isinstance(input, ReturnClass):
+        return ReturnClass(input.col, input.row, value)
+    return value
+    
 
 
 
@@ -171,5 +176,6 @@ functions_dict=dict(
     substring=substring,
     extract_date=extract_date,
     regex=regex,
-    concat=concat
+    concat=concat,
+    get_item=get_item
 )

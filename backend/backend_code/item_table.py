@@ -1,23 +1,41 @@
 from typing import Union
 from backend_code.spreadsheets.sheet import Sheet
 from backend_code.utility_functions import get_labels_and_descriptions
-from backend_code.spreadsheets.conversions import from_excel, to_excel, _column_index_to_letter
+from backend_code.spreadsheets.conversions import  _column_index_to_letter
 from collections import defaultdict
 import json
 import numpy as np
 import pandas as pd
 
+def patch_get_string_table(cell_table):
+    #a patch workaround until we rewrite item table
+    string_table=dict()
+    for key in cell_table:
+        item_string=cell_table[key].pop("__CELL_VALUE__")
+        if item_string not in string_table:
+            string_table[item_string]={}
+            for context_key in cell_table[key]: #contexts:
+                string_table[item_string][context_key]=cell_table[key][context_key]
+    return string_table
 
 class ItemTable:
     def __init__(self, region_map=None):
         if region_map:
             self.table = defaultdict(dict)
             for key, value in region_map['table'].items():
-                self.table[from_excel(key)] = value
+                self.table[key] = value
             self.item_wiki = region_map['item_wiki']
+
+            #add patch support for string lookup table:
+            string_table=region_map.get("string_table", None)
+            if not string_table:
+                string_table=patch_get_string_table(self.table)
+            self.string_table=string_table
+
         else:
             # self.table = { (col, row): {value:value, context1:item, context2: item}}}
             self.table = defaultdict(dict)
+            self.string_table=defaultdict(dict)
             # self.item_wiki = {qnode1: {'label': label, 'desc': desc}, qnode2: {'label': label, 'desc': desc}}
             self.item_wiki = dict()
 
@@ -140,7 +158,7 @@ class ItemTable:
             if value not in item_value_map:
                 item_value_map[value] = dict()
             item_value_map[value][row.context] = row.item
-
+        self.string_table=item_value_map #for the patch
         for row in range(len(sheet)):
             for col in range(len(sheet[0])):
                 try:
@@ -153,12 +171,15 @@ class ItemTable:
                 except (IndexError, TypeError, ValueError):
                     pass
 
-    def to_json(self):
+
+    def save_to_file(self, file_path):
         temp_table = dict()
         for key, value in self.table.items():
-            temp_table[to_excel(*key)] = value
-        json_object = {'table': temp_table, 'item_wiki': self.item_wiki}
-        return json.dumps(json_object, indent=3)
+            temp_table[key] = value
+        json_object = {'table': temp_table, 'item_wiki': self.item_wiki, 'string_table':self.string_table}
+        with open(file_path, 'w') as f:
+            f.write(json.dumps(json_object, indent=3))
+
 
     def serialize_table(self, sparql_endpoint: str):
         serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
@@ -212,6 +233,13 @@ class ItemTable:
             if context in self.table[(column, row)]:
                 return self.table[(column, row)][context]
     
+    
+    def get_item_by_string(self, in_string, context):
+        try:
+            return self.string_table[in_string][context]
+        except:
+            raise KeyError("Item for that string and context not found")
+
     def update_table_from_wikifier_file(self, wikifier_file_path, data_file_path, sheet_name, context=None):
         df = pd.read_csv(wikifier_file_path)
         self.update_table(df, data_file_path, sheet_name)

@@ -445,12 +445,7 @@ class WikiRegionFile(db.Model):
     def handle(self):
         self.update_from_wikifier_file() #make sure table is up to date
         #serialize
-        return self.serialized_table
-    
-    @property
-    def serialized_table(self):
-        serialized_table = self.item_table.serialize_table(self.sparql_endpoint)
-        return serialized_table
+        return self.item_table.serialize_table(self.sparql_endpoint)
     
     def update_from_wikifier_file(self):
         item_table=ItemTable()
@@ -465,8 +460,7 @@ class WikiRegionFile(db.Model):
     def update_table(self, item_table):
         #this function is also called from outside, if someone uses wikifier
         #cache item table for later
-        with open(self.region_file_path, 'w') as wikifier_region_config:
-            wikifier_region_config.write(item_table.to_json())
+        item_table.save_to_file(self.region_file_path)
         
         #set property
         self._item_table=item_table
