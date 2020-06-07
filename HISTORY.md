@@ -7,6 +7,7 @@ Changes in version 2.0a8:
 * added function get_item to t2wml grammar
 * bug fixes:
     - fixed a typo in kgtk keys that was breaking kgtk download
+    - fixed an error that was ignoring additional keys in the template
 
 Changes in version 2.0a7:
 ------------------------
