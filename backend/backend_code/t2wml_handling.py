@@ -46,8 +46,11 @@ def parse_time_for_dict(response, sparql_endpoint):
 def get_template_statement(template, parsed_template, sparql_endpoint):
     item_parsed=parsed_template.get("item", None)
     if item_parsed:
-        template["item"]=item_parsed.value
-        template["cell"]=to_excel(item_parsed.col, item_parsed.row)
+        try:
+            template["item"]=item_parsed.value
+            template["cell"]=to_excel(item_parsed.col, item_parsed.row)
+        except AttributeError: #eg hardcoded string
+             template["item"]=item_parsed
     
     for key in parsed_template:
         if isinstance(parsed_template[key], ReturnClass):
@@ -102,9 +105,10 @@ def evaluate_template(template, context):
 def update_highlight_data(data, parsed_template):
     item_parsed=parsed_template.get("item", None)
     if item_parsed:
-        item_cell=to_excel(item_parsed.col, item_parsed.row)
-        if item_cell:
-            data["item"].add(item_cell)
+        try:
+            data["item"].add(to_excel(item_parsed.col, item_parsed.row))
+        except AttributeError: #eg hardcoded string
+            pass
     
     attributes_parsed_dict= {'qualifierRegion': "qualifier", 'referenceRegion': "reference"}
     for label, attribute_key in attributes_parsed_dict.items():
