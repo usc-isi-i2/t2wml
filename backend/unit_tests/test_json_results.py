@@ -19,17 +19,10 @@ from backend_code.t2wml_handling import generate_download_file
 
 repo_folder=Path(__file__).parents[2]
 dataset_folder=os.path.join(repo_folder, "Datasets")
+unit_test_folder=os.path.join(repo_folder, "backend", "unit_tests", "ground_truth")
 
 
-class TestHomicideData(unittest.TestCase):
-    maxDiff = None
-    def setUp(self):
-        self.data_file=os.path.join(dataset_folder, "homicide", "homicide_report_total_and_sex.xlsx")
-        self.wikifier_file=os.path.join(dataset_folder, "wikifier_general.csv")
-        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
-        self.expected_result_dir=os.path.join(repo_folder, "backend", "unit_tests", "ground_truth", "homicide_results")
-        self.yaml_folder=os.path.join(dataset_folder, "homicide", "t2mwl")
-    
+class JsonTest(unittest.TestCase):
     def validate_results(self, results, expected):
         #for now this compares cell by cell. 
         #we could eventually have this compare more granularly, if we see there's specific properties we need to ignore
@@ -39,6 +32,17 @@ class TestHomicideData(unittest.TestCase):
             e_dict=expected[i]
             self.assertEqual(e_dict, r_dict)
 
+
+class TestHomicideData(JsonTest):
+    maxDiff = None
+    def setUp(self):
+        self.data_file=os.path.join(dataset_folder, "homicide", "homicide_report_total_and_sex.xlsx")
+        self.wikifier_file=os.path.join(dataset_folder, "wikifier_general.csv")
+        self.yaml_folder=os.path.join(dataset_folder, "homicide", "t2mwl")
+        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
+        self.expected_result_dir=os.path.join(unit_test_folder, "homicide_results")
+        
+    
     def run_test_on_sheet(self, sheet_name):
         yaml_name= sheet_name+".yaml"
         expected_result_name=sheet_name+".json"
@@ -129,6 +133,33 @@ class TestHomicideData(unittest.TestCase):
     def test_sheet_10e(self):
         sheet_name="table-10e"
         self.run_test_on_sheet(sheet_name)
+
+class TestBelgiumRegex(JsonTest):
+    maxDiff = None
+    def setUp(self):
+        self.data_file=os.path.join(unit_test_folder, "belgium-regex", "Belgium.csv")
+        self.wikifier_file=os.path.join(unit_test_folder, "belgium-regex", "wikifier.csv")
+        self.yaml_file=os.path.join(unit_test_folder, "belgium-regex", "Belgium.yaml")
+        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
+        self.expected_result_dir=os.path.join(unit_test_folder, "belgium-regex")
+        
+
+    def test_regex(self):
+        yaml_file=self.yaml_file
+        item_table=ItemTable()
+        sheet_name="Belgium.csv"
+        item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
+        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
+        result=generate_download_file(cm, "json")
+        result_dict=json.loads(result['data'])
+        expected_result_name="results.json"
+        #code for saving results in an initial run (alphabetize and indent as mercy to future users)
+        with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
+            json.dump(result_dict, f, sort_keys=True, indent=4)
+        with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
+            expected_result=json.load(f)
+
+        self.validate_results(result_dict, expected_result)
 
 
 if __name__ == '__main__':

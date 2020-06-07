@@ -191,8 +191,8 @@ def resolve_cell(cell_mapper, col, row):
 
 
 def generate_download_file(cell_mapper, filetype):
-    if filetype=="tsv":
-        raise ValueError("Please use download_kgtk function to create kgtk tsv files")
+    if filetype in ["tsv", "kgtk"]:
+        raise ValueError("Please use download_kgtk function to create tsv files for the kgtk format")
     if filetype not in ["json", "ttl"]:
         raise ValueError("Unsupported file type")
 
@@ -259,7 +259,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:number"]= value
             result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
             result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
-            result_dict[" node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
+            result_dict["node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
 
         elif property_type=="Time":
             '''
