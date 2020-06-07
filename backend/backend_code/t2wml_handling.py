@@ -259,7 +259,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:number"]= value
             result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
             result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
-            result_dict[" node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
+            result_dict["node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
 
         elif property_type=="Time":
             '''
