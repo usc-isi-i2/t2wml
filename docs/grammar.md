@@ -260,7 +260,7 @@ Example:
 
 The regex uses Python regex syntax. You can [test your regex](https://regex101.com/) to check that is returning the results you expect.
 
-**WARNING**: Because of the need to [conform to Yaml standards](#yamlstandards), a regex containing a colon *followed by whitespace* `: `, or whitespace followed by an octothorpe ` #`, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character `\s`, eg: `:\s`, `\s#`.
+**WARNING**: Because of the need to [conform to Yaml standards](#yamlstandards), a regex containing a colon *followed by whitespace* `: `, or whitespace followed by an octothorpe ` #`, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character `\s`, eg: `:\s`, `\s#`. You can also single-quote the entire line while double-quoting the regex string, eg: `item '=regex(value[B, 2], "profile: (.*) \d{4}", 1)'`.
 
 #### Other
 <span id="other"></span>
