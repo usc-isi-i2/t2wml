@@ -1,7 +1,7 @@
 from typing import Union
 from backend_code.spreadsheets.sheet import Sheet
 from backend_code.utility_functions import get_labels_and_descriptions
-from backend_code.spreadsheets.conversions import  _column_index_to_letter
+from backend_code.spreadsheets.conversions import  _column_index_to_letter, from_excel, to_excel
 from collections import defaultdict
 import json
 import numpy as np
@@ -23,7 +23,7 @@ class ItemTable:
         if region_map:
             self.table = defaultdict(dict)
             for key, value in region_map['table'].items():
-                self.table[key] = value
+                self.table[from_excel(key)] = value
             self.item_wiki = region_map['item_wiki']
 
             #add patch support for string lookup table:
@@ -175,7 +175,7 @@ class ItemTable:
     def save_to_file(self, file_path):
         temp_table = dict()
         for key, value in self.table.items():
-            temp_table[key] = value
+            temp_table[to_excel(*key)] = value
         json_object = {'table': temp_table, 'item_wiki': self.item_wiki, 'string_table':self.string_table}
         with open(file_path, 'w') as f:
             f.write(json.dumps(json_object, indent=3))

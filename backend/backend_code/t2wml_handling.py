@@ -43,32 +43,34 @@ def parse_time_for_dict(response, sparql_endpoint):
 
 
 
-def get_template_statement(template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint):
+def get_template_statement(template, parsed_template, sparql_endpoint):
+    item_parsed=parsed_template.get("item", None)
     if item_parsed:
-        template["item"]=item_parsed.value
-        template["cell"]=to_excel(item_parsed.col, item_parsed.row)
-    if value_parsed:
-        template["value"]=value_parsed.value
+        try:
+            template["item"]=item_parsed.value
+            template["cell"]=to_excel(item_parsed.col, item_parsed.row)
+        except AttributeError: #eg hardcoded string
+             template["item"]=item_parsed
     
-    attributes={"qualifier": qualifiers_parsed, "reference": references_parsed}
-    for attribute_name in attributes:
-        attribute=attributes[attribute_name]
-        if attribute:
-            for attribute_dict in attribute:
+    for key in parsed_template:
+        if isinstance(parsed_template[key], ReturnClass):
+            template[key]=parsed_template[key].value
+        elif isinstance(parsed_template[key], list):
+            for attribute_dict in parsed_template[key]:
                 q_val=attribute_dict.pop("value", None) #deal with value last
-                for key in attribute_dict:
-                    if isinstance(attribute_dict[key], ReturnClass):
-                        attribute_dict[key]=attribute_dict[key].value
+                for a_key in attribute_dict:
+                    if isinstance(attribute_dict[a_key], ReturnClass):
+                        attribute_dict[a_key]=attribute_dict[a_key].value
                 
                 attribute_dict["value"]=q_val #add q_val back, then deal with it
                 if q_val:
                     if isinstance(q_val, ReturnClass):
                         attribute_dict["value"]=q_val.value
                         attribute_dict["cell"]=to_excel(q_val.col, q_val.row)
-                
-                parse_time_for_dict(attribute_dict, sparql_endpoint)    
-
-            template[attribute_name]=attribute
+                parse_time_for_dict(attribute_dict, sparql_endpoint)
+            template[key]=parsed_template[key]
+        else:
+            template[key]=parsed_template[key]
 
     parse_time_for_dict(template, sparql_endpoint)
     return template
@@ -87,41 +89,30 @@ def _evaluate_template_for_list_of_dicts(attributes, context):
 
 
 def evaluate_template(template, context):
-    item=template.get("item", None)
-    value=template.get("value", None)
-    qualifiers=template.get("qualifier", None)
-    references=template.get("reference", None)
-
-    item_parsed=value_parsed=qualifiers_parsed=references_parsed=None
-
-
-    if item:
-        item_parsed= iter_on_n_for_code(item, context)
-
-    if value:
-        value_parsed= iter_on_n_for_code(value, context)
-    
-    if qualifiers:
-        qualifiers_parsed = _evaluate_template_for_list_of_dicts(qualifiers, context)
-    
-    if references:
-        references_parsed = _evaluate_template_for_list_of_dicts(references, context)
-        
-    
-    return item_parsed, value_parsed, qualifiers_parsed, references_parsed
+    parsed_template=dict(template)
+    for key in template:
+        if isinstance(template[key], list):
+            key_parsed=_evaluate_template_for_list_of_dicts(template[key], context)
+        elif isinstance(template[key], CodeType):
+            key_parsed=iter_on_n_for_code(template[key], context)
+        else:
+            key_parsed=template[key]
+        parsed_template[key]=key_parsed
+    return parsed_template
 
     
     
-
-def update_highlight_data(data, item_parsed, qualifiers_parsed, references_parsed):
+def update_highlight_data(data, parsed_template):
+    item_parsed=parsed_template.get("item", None)
     if item_parsed:
-        item_cell=to_excel(item_parsed.col, item_parsed.row)
-        if item_cell:
-            data["item"].add(item_cell)
+        try:
+            data["item"].add(to_excel(item_parsed.col, item_parsed.row))
+        except AttributeError: #eg hardcoded string
+            pass
     
-    
-    attributes_parsed_dict= {'qualifierRegion': qualifiers_parsed, 'referenceRegion': references_parsed}
-    for label, attributes_parsed in attributes_parsed_dict.items():
+    attributes_parsed_dict= {'qualifierRegion': "qualifier", 'referenceRegion': "reference"}
+    for label, attribute_key in attributes_parsed_dict.items():
+        attributes_parsed=parsed_template.get(attribute_key, None)
         if attributes_parsed:
             attribute_cells = set()
             for attribute in attributes_parsed:
@@ -149,15 +140,15 @@ def highlight_region(cell_mapper):
         highlight_data["dataRegion"].add(cell)
         context={"t_var_row":row, "t_var_col":col}
         try:
-            item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(cell_mapper.eval_template, context)
-            update_highlight_data(highlight_data, item_parsed, qualifiers_parsed, references_parsed)
+            parsed_template= evaluate_template(cell_mapper.eval_template, context)
+            update_highlight_data(highlight_data, parsed_template)
 
             if cell_mapper.use_cache:
-                    statement=get_template_statement(cell_mapper.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
-                    if statement:
-                        statement_data.append(
-                            {'cell': cell, 
-                            'statement': statement})
+                statement=get_template_statement(cell_mapper.template, parsed_template, sparql_endpoint)
+                if statement:
+                    statement_data.append(
+                        {'cell': cell, 
+                        'statement': statement})
         except T2WMLException as exception:
             error = exception.error_dict
             highlight_data['error'][to_excel(col, row)] = error
@@ -177,8 +168,8 @@ def resolve_cell(cell_mapper, col, row):
     sparql_endpoint=cell_mapper.sparql_endpoint
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     try:
-        item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(cell_mapper.eval_template, context)
-        statement=get_template_statement(cell_mapper.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
+        template_parsed= evaluate_template(cell_mapper.eval_template, context)
+        statement=get_template_statement(cell_mapper.template, template_parsed, sparql_endpoint)
         if statement:
             data = {'statement': statement, 'error': None}
         else:
@@ -207,8 +198,8 @@ def generate_download_file(cell_mapper, filetype):
         for col, row in cell_mapper.region:
             try:
                 context={"t_var_row":row, "t_var_col":col}
-                item_parsed, value_parsed, qualifiers_parsed, references_parsed= evaluate_template(cell_mapper.eval_template, context)
-                statement=get_template_statement(cell_mapper.template, item_parsed, value_parsed, qualifiers_parsed, references_parsed, sparql_endpoint)
+                template_parsed= evaluate_template(cell_mapper.eval_template, context)
+                statement=get_template_statement(cell_mapper.template, template_parsed, sparql_endpoint)
                 if statement:
                     data.append(
                         {'cell': to_excel(col-1, row-1), 

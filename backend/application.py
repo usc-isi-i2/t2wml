@@ -5,7 +5,7 @@ import os
 from flask import request, render_template, redirect, url_for, session, make_response
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
-from app_config import app
+from app_config import app, UPLOAD_FOLDER
 from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
 from backend_code.utility_functions import string_is_valid, verify_google_login
 from backend_code.wikify_handling import wikifier
@@ -465,8 +465,10 @@ if __name__ == "__main__":
             debug_mode = True
             print('Debug mode is on!')
         if sys.argv[1] == "--profile":
-            from werkzeug.contrib.profiler import ProfilerMiddleware
+            from werkzeug.middleware.profiler import ProfilerMiddleware
             app.config['PROFILE'] = True
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions = [30])
+            if not os.path.isdir(os.path.join(UPLOAD_FOLDER, "profiles")):
+                os.mkdir(os.path.join(UPLOAD_FOLDER, "profiles"))
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,restrictions = [200], profile_dir=os.path.join(UPLOAD_FOLDER, "profiles"))
             app.run(debug = True)
     app.run(threaded=True)
