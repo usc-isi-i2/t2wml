@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 
-interface DownloadProperteis {
+interface DownloadProperties {
   showDownloadProject: boolean;
 
   handleDownloadProject: () => void;
@@ -10,7 +10,7 @@ interface DownloadProperteis {
 }
 
 
-class DownloadProject extends Component<DownloadProperteis, {}> {
+class DownloadProject extends Component<DownloadProperties, {}> {
 
   render() {
     return (
