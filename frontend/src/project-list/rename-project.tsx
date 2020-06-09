@@ -4,7 +4,7 @@ import * as utils from '../common/utils'
 
 import { Button, Col, Form, Modal, Row, Spinner } from 'react-bootstrap';
 
-interface RenameProperteis {
+interface RenameProperties {
   // pid: number; Is it needed?
   showRenameProject: boolean;
   showSpinner: boolean;
@@ -20,9 +20,9 @@ interface RenameState {
   isNameVaild: boolean;
 }
 
-class RenameProject extends Component<RenameProperteis, RenameState> {
+class RenameProject extends Component<RenameProperties, RenameState> {
   private input: React.RefObject<HTMLInputElement>;
-  constructor(props: RenameProperteis) {
+  constructor(props: RenameProperties) {
     super(props);
     this.input = React.createRef();
 

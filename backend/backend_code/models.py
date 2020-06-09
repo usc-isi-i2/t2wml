@@ -1,8 +1,9 @@
+import os
 import json
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
-
+from werkzeug.utils import secure_filename
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 from backend_code.cell_mapper import CellMapper
 from backend_code.item_table import ItemTable
@@ -10,7 +11,7 @@ from backend_code.spreadsheets.sheet import save_and_get_sheet_names
 from backend_code.spreadsheets.utilities import excel_to_json
 from backend_code.t2wml_exceptions import T2WMLException
 from backend_code.t2wml_handling import download_kgtk, generate_download_file, highlight_region, resolve_cell
-from backend_code.utility_functions import is_csv
+from backend_code.utility_functions import is_csv, add_properties_from_file
 
 
 def generate_id() -> str:
@@ -169,6 +170,16 @@ class Project(db.Model):
     def update_project_title(self, title):
         self.name=title
         self.modify()
+
+    def upload_property_file(self, in_file):
+        filename = secure_filename(in_file.filename)
+        property_folder=str(base_upload_path(self.user_id, self.id) / "pf")
+        if not os.path.isdir(property_folder):
+            os.mkdir(property_folder)
+        file_path=os.path.join(property_folder, filename)
+        in_file.save(file_path)
+        return add_properties_from_file(file_path)
+
 
 class ProjectFile(db.Model):
     id = db.Column(db.String, primary_key=True)
