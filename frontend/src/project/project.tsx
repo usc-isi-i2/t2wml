@@ -14,13 +14,14 @@ import { logout } from '../common/session';
 import Config from '../common/config';
 
 // console.log
-import { LOG } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
 
 // components
 import Editors from './editor';
 import Output from './output';
 import TableViewer from './table-viewer';
 import RequestService from '../common/service';
+import ToastMessage from '../common/toast';
 
 interface ProjectProperties {
 
@@ -32,6 +33,7 @@ interface ProjectState {
   projectData:  any; //todo: add project class[]
   userData: any; //todo: add user class{ },
   tempSparqlEndpoint: string;
+  errorMessage: ErrorMessage;
 }
 
 class Project extends Component<ProjectProperties, ProjectState> {
@@ -81,6 +83,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
       // settings
       tempSparqlEndpoint: (window as any).sparqlEndpoint,
 
+      errorMessage: {} as ErrorMessage,
     };
   }
 
@@ -143,8 +146,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      this.setState({ errorMessage: error });
       alert("Cannot fetch project meta data!\n\n" + error);
 
       // follow-ups (failure)
@@ -195,9 +199,10 @@ class Project extends Component<ProjectProperties, ProjectState> {
       (window as any).TableViewer.setState({ showSpinner: false });
       (window as any).Wikifier.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
-      alert("Cannot fetch project files!\n\n" + error);
+    this.setState({ errorMessage: error });
+    //   alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
       (window as any).TableViewer.setState({ showSpinner: false });
@@ -225,8 +230,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     let formData = new FormData();
     formData.append("endpoint", (window as any).sparqlEndpoint);
-    this.requestService.updateSettings((window as any).pid, formData).catch((error) => {
+    this.requestService.updateSettings((window as any).pid, formData).catch((error: ErrorMessage) => {
       console.log(error);
+      this.setState({ errorMessage: error });
     });
   }
 
@@ -305,6 +311,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
         showSettings={true}
         onShowSettingsClicked={() => this.onShowSettingsClicked()}
         handleLogout={() => this.handleLogout()} />
+
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!showSpinner} style={{ height: "100%" }}>

@@ -9,3 +9,9 @@ export interface WikifierData {
   api: any;
   columnApi: any;
 }
+
+export interface ErrorMessage {
+    errorCode: number;
+    errorTitle: string;
+    errorDescription: string;
+}

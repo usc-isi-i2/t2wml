@@ -7,9 +7,10 @@ import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip }
 import Downloader from 'js-file-download';
 
 // console.log
-import { LOG } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
 import * as utils from '../common/utils'
 import RequestService from '../common/service';
+import ToastMessage from '../common/toast';
 
 interface OutputProperties {
 
@@ -39,6 +40,7 @@ interface OutputState {
   isDownloading: boolean;
 
   propertyName: string;
+  errorMessage: ErrorMessage;
 }
 
 class Output extends Component<OutputProperties, OutputState> {
@@ -75,10 +77,13 @@ class Output extends Component<OutputProperties, OutputState> {
       downloadFileName: (window as any).pid,
       downloadFileType: "json",
       isDownloading: false,
+
+      errorMessage: {} as ErrorMessage,
     } as OutputState;
   }
 
   handleDoDownload() {
+    this.setState({ errorMessage: {} as ErrorMessage });  
     const filename = this.state.downloadFileName + "." + this.state.downloadFileType;
 
     // before sending request
@@ -104,8 +109,9 @@ class Output extends Component<OutputProperties, OutputState> {
       // follow-ups (success)
       this.setState({ isDownloading: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ isDownloading: false });
@@ -483,6 +489,7 @@ class Output extends Component<OutputProperties, OutputState> {
     return (
       <div className="w-100 h-100 p-1">
         {this.renderDownload()}
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
 
         <Card className="w-100 h-100 shadow-sm">
 

@@ -14,8 +14,9 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData } from '../common/general';
+import { LOG, WikifierData, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
+import ToastMessage from '../common/toast';
 
 interface Column {
   headerName: string;
@@ -60,6 +61,8 @@ interface TableState  {
   rowData: any; // Array<object>; // todo: add interface
   selectedCell: Cell | null;
   yamlRegions: any; // null,
+
+  errorMessage: ErrorMessage;
 }
 
 class TableViewer extends Component<TableProperties, TableState> {
@@ -96,6 +99,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       selectedCell: { "col": null, "row": null, "value": null },
       yamlRegions: null,
 
+      errorMessage: {} as ErrorMessage,
     };
 
     // init functions
@@ -114,6 +118,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
   handleOpenTableFile(event:any) {
+    this.setState({ errorMessage: {} as ErrorMessage });  
     // remove current status
     (window as any).isCellSelectable = false;
     this.updateSelectedCell();
@@ -180,8 +185,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       this.setState({ showSpinner: false });
       (window as any).Wikifier.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
@@ -190,6 +196,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
   handleOpenPropertiesFile(event:any){
+    this.setState({ errorMessage: {} as ErrorMessage });
     const file = event.target.files[0];
     if (!file) return;
 
@@ -202,12 +209,14 @@ class TableViewer extends Component<TableProperties, TableState> {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
 
-        }).catch((error) => {
+        }).catch((error: ErrorMessage) => {
           console.log(error);
+          this.setState({ errorMessage: error });
         });
   }
 
   handleOpenWikifierFile(event: any) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateQnodeCells();
 
@@ -247,8 +256,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       });
       (window as any).Wikifier.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.updateQnodeCells();
@@ -258,6 +268,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
   handleSelectCell(params: any) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
     (window as any).Output.removeOutput();
@@ -301,8 +312,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       (window as any).Output.setState({ showSpinner: false });
@@ -311,6 +323,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
   handleSelectSheet(event: any) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
     (window as any).YamlEditor.updateYamlText();
@@ -375,8 +388,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       this.setState({ showSpinner: false });
       (window as any).Wikifier.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
@@ -656,6 +670,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     return (
       <div className="w-100 h-100 p-1">
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
         <Card className="w-100 h-100 shadow-sm">
 
           {/* header */}

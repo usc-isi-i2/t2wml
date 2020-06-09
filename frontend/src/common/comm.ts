@@ -19,7 +19,7 @@ export async function backendGet(url: string): Promise<any> {
     });
 
     if (!response.ok) {
-        throw Error(response.statusText);
+        throw ((await response.json() as any).error);
     }
     const json = await response.json();
 
@@ -37,7 +37,7 @@ export async function backendPost(url: string, formData?: FormData): Promise<any
     });
 
     if (!response.ok) {
-        throw Error(response.statusText);
+        throw ((await response.json() as any).error);
     }
     const json = await response.json();
 
@@ -55,7 +55,7 @@ export async function backendPut(url: string, formData?: FormData): Promise<any>
   });
 
   if (!response.ok) {
-      throw Error(response.statusText);
+      throw ((await response.json() as any).error);
   }
   const json = await response.json();
 
@@ -72,7 +72,7 @@ export async function backendDelete(url: string): Promise<any> {
   });
 
   if (!response.ok) {
-      throw Error(response.statusText);
+    throw ((await response.json() as any).error);
   }
   const json = await response.json();
 

@@ -15,9 +15,10 @@ import DeleteProject from './delete-project';
 import RenameProject from './rename-project';
 import DownloadProject from './dowmload-project';
 import CreateProject from './create-project';
+import ToastMessage from '../common/toast';
 
 // console.log
-import { LOG } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
 
 interface ProjectListProperties {
@@ -46,6 +47,8 @@ interface ProjectListState {
   projectData: any;
   sortBy: string;
   isAscending: boolean;
+
+  errorMessage: ErrorMessage;
 }
 
 class ProjectList extends Component<ProjectListProperties, ProjectListState> {
@@ -93,6 +96,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // ],
       sortBy: "mdate",
       isAscending: false,
+      errorMessage: {} as ErrorMessage,
 
     };
 
@@ -134,17 +138,19 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
-      alert("Cannot fetch project details!\n\n" + error);
+      this.setState({ errorMessage: error });
+    //   alert("Cannot fetch project details!\n\n" + error);
 
       // follow-ups (failure)
-      // this.setState({ showSpinner: false });
-      this.handleLogout();
+      this.setState({ showSpinner: false });
+    //   this.handleLogout();
     });
   }
 
   handleCreateProject(name: string) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
@@ -171,13 +177,12 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showCreateProject: false, showSpinner: false });
 
-    }).catch((error) => {
-      // console.log(error);
-      alert("Cannot create new project!\n\n" + error);
+    }).catch((error: ErrorMessage) => {
+    //   this.setState({ errorMessage: "Cannot create new project!\n\n" + error });
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ showCreateProject: false, showSpinner: false });
-      this.handleLogout();
     });
   }
 
@@ -186,6 +191,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   }
 
   handleDeleteProject(pid = "") {
+    this.setState({ errorMessage: {} as ErrorMessage });
     if (pid === "") {
       pid = this.state.deletingPid;
       if (pid === "") return;
@@ -218,9 +224,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
-      alert("Cannot delete project!\n\n" + error);
+      this.setState({ errorMessage: error });
+    //   alert("Cannot delete project!\n\n" + error);
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
@@ -232,6 +239,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   }
 
   handleDownloadProject(pid = "") {
+    this.setState({ errorMessage: {} as ErrorMessage });
     if (pid === "") {
       pid = this.state.downloadingPid;
       if (pid === "") return;
@@ -259,9 +267,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
-      alert("Cannot download project!\n\n" + error);
+      this.setState({ errorMessage: error });
+    //   alert("Cannot download project!\n\n" + error);
 
       // follow-ups (failure)
       // nothing
@@ -277,6 +286,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   }
 
   handleRenameProject(name: string) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     let pid = this.state.tempRenamePid;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
@@ -310,9 +320,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showRenameProject: false, showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
-      alert("Cannot rename project!\n\n" + error);
+      this.setState({ errorMessage: error });
+    //   alert("Cannot rename project!\n\n" + error);
 
       // follow-ups (failure)
       this.setState({ showRenameProject: false, showSpinner: false });
@@ -620,6 +631,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
+          {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
           <Card className="shadow-sm" style={{ width: "90%", maxWidth: "800px", height: "calc(100vh - 90px)", margin: "0 auto" }}>
             <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#343a40" }}>
               <div
