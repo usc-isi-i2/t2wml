@@ -59,11 +59,16 @@ class TemplateParser(CodeParser):
                 try:
                     fixed=self.fix_code_string(input_str)
                     #t2wml_parse(fixed, fake_context) #for debugging
-                    test=compile(fixed, "<string>", "eval")
-                    t2wml_parse(test, fake_context)
-                    return test
-                except:
+                    compiled_statement=compile(fixed, "<string>", "eval")
+                    result=t2wml_parse(compiled_statement, fake_context)
+                except Exception as e:
                     raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(input_str))
+                variable_code_expression= "t_var" in fixed
+                if variable_code_expression:
+                    return compiled_statement
+                else:
+                    return result
+
             else:
                 return input_str
         except ForwardSlashEscape as e:
