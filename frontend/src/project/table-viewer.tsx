@@ -198,7 +198,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     let formData = new FormData();
     formData.append("file", file);
 
-    this.requestService.uploadProperties(formData).then((json) => {
+    this.requestService.uploadProperties((window as any).pid, formData).then((json) => {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
 
@@ -699,7 +699,7 @@ class TableViewer extends Component<TableProperties, TableState> {
             <input
               type="file"
               id="properties_button"
-              accept=".json"
+              accept=".json, .tsv"
               style={{ display: "none" }}
               onChange={this.handleOpenPropertiesFile}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}

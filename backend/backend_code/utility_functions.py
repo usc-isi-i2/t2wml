@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 from SPARQLWrapper import SPARQLWrapper, JSON
 from typing import Sequence, Union, Tuple, List, Dict, Any
@@ -6,7 +7,7 @@ from string import punctuation
 from google.auth.transport import requests
 from backend_code import t2wml_exceptions as T2WMLExceptions
 from backend_code.property_type_map import property_type_map
-from backend_code.wikidata_property import WikidataProperty, WikidataItem
+from backend_code.wikidata_property import WikidataProperty, WikidataItem, ValueAlreadyPresentError
 from app_config import GOOGLE_CLIENT_ID
 
 
@@ -64,7 +65,6 @@ def translate_precision_to_integer(precision: str) -> int:
         "second": 14
     }
     return precision_map[precision.lower()]
-
 
 
 def verify_google_login(tn: str) -> Tuple[dict, dict]:
@@ -173,4 +173,24 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     return property_type
 
 
+def add_properties_from_file(file_path):
+    if Path(file_path).suffix == ".json":
+        with open(file_path, 'r') as f:
+            input_dict= json.load(f)
+    if Path(file_path).suffix == ".tsv":     
+        with open(file_path, 'r') as f:
+            reader=csv.DictReader(f, delimiter="\t")
+            input_dict={row_dict["node1"]: str(row_dict["node2"]).title() for row_dict in reader if row_dict["label"]=="data_type"}
 
+    return_dict={"added":[], "present":[], "failed":[]}
+    for key in input_dict:
+        try:
+            WikidataProperty.add(key, input_dict[key])
+            return_dict["added"].append(key)
+        except ValueAlreadyPresentError:
+            return_dict["present"].append(key)
+        except Exception as e:
+            print(e)
+            return_dict["failed"].append((key, str(e)))
+    return return_dict
+    

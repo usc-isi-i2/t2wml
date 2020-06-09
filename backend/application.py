@@ -2,6 +2,7 @@ import json
 import shutil
 import sys
 import os
+from pathlib import Path
 from flask import request, render_template, redirect, url_for, session, make_response
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
@@ -239,23 +240,12 @@ def update_settings(pid):
 
 
 
-@app.route('/api/properties', methods=['POST'])
+@app.route('/api/project/<pid>/properties', methods=['POST'])
 @json_response
-def upload_properties():
-    from backend_code.wikidata_property import WikidataProperty, ValueAlreadyPresentError
-    user=get_user()
-    in_file = request.files['file']
-    input_dict= json.load(in_file)
-    return_dict={"added":[], "present":[], "failed":[]}
-    for key in input_dict:
-        try:
-            WikidataProperty.add(key, input_dict[key])
-            return_dict["added"].append(key)
-        except ValueAlreadyPresentError:
-            return_dict["present"].append(key)
-        except Exception as e:
-            print(e)
-            return_dict["failed"].append((key, str(e)))
+def upload_properties(pid):
+    project = get_project(pid)
+    in_file = file_upload_validator(["json", "tsv"])
+    return_dict=project.upload_property_file(in_file)
     return return_dict, 200
 
 

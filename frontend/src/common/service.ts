@@ -29,8 +29,8 @@ class RequestService {
     return response;
   }
 
-  public async uploadProperties(formData: any) {
-    const response = await backendPost('/properties', formData);
+  public async uploadProperties(pid: string, formData: any) {
+    const response = await backendPost(`/project/${pid}/properties`, formData);
     return response;
   }
 
