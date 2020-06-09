@@ -1,6 +1,11 @@
 T2WML History
 ===================
 
+Changes in version 2.0a9:
+------------------------
+* added support for uploading properties from a kgtk tsv file
+* added slight optimization for r2wml expressions that only need to be evaluated once
+
 Changes in version 2.0a8:
 ------------------------
 * added patch support for getting items by string+context from item table
