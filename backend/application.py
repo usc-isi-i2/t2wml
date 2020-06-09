@@ -79,7 +79,7 @@ def json_response(func):
             data = {"error": make_frontend_err_dict(e)}
             return json.dumps(data, indent=3), 500
         
-    wrapper.__name__ = func.__name__
+    wrapper.__name__ = func.__name__ #This is required to avoid issues with flask
     return wrapper    
 
 
