@@ -1,5 +1,11 @@
 T2WML History
 ===================
+Changes in version 2.0a11:
+------------------------
+* fixed bug that was forcing incorrect property captilization for multi-word property types
+* uploading proprties that already exist now overwrites the type of the existing properties
+* attempting to upload properties of a type that is not supported will now return an error
+
 Changes in version 2.0a10:
 ------------------------
 * performance improvements
