@@ -187,8 +187,9 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot upload data file!";
       this.setState({ errorMessage: error });
-
+    
       // follow-ups (failure)
       this.setState({ showSpinner: false });
       (window as any).Wikifier.setState({ showSpinner: false });
@@ -211,6 +212,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
         }).catch((error: ErrorMessage) => {
           console.log(error);
+          error.errorDescription += "\n\nCannot upload properties file!";
           this.setState({ errorMessage: error });
         });
   }
@@ -258,6 +260,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot upload wikifier file!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
@@ -314,6 +317,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot resolve cell!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
@@ -390,6 +394,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)

@@ -7,7 +7,19 @@ interface ToastProperties {
     message: ErrorMessage;
 }
 
-class ToastMessage extends Component<ToastProperties, {}> {
+interface ToastState {
+    show: boolean;
+}
+
+class ToastMessage extends Component<ToastProperties, ToastState> {
+    constructor(props: ToastProperties) {
+        super(props);
+
+        this.state = {
+            show: true,
+        };
+    }
+
     render() {
         return (
         <div
@@ -18,7 +30,7 @@ class ToastMessage extends Component<ToastProperties, {}> {
             minHeight: '100px',
         }}
         >
-        <Toast
+        <Toast onClose={() => this.setState({ show: false })} show={this.state.show} delay={8000} autohide
             style={{
             position: 'absolute',
             top: 0,
@@ -29,7 +41,6 @@ class ToastMessage extends Component<ToastProperties, {}> {
             }}
         >
             <Toast.Header>
-                <img src="holder.js/20x20?text=%20" className="rounded mr-2" alt="" />
                 <strong className="mr-auto">{this.props.message.errorTitle}</strong>
                 <small>{new Date().getHours()}:{new Date().getMinutes()}</small>
             </Toast.Header>

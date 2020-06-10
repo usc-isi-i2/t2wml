@@ -45,7 +45,9 @@ class Login extends React.Component<{}, LoginState> {
 
   onGoogleFailure(googleUser: any) {
     console.log(googleUser);
-    alert("Login failed!\n\nError: " + googleUser.error);
+    const error = { errorDescription: "\n\nLogin failed", errorTitle: googleUser.error } as ErrorMessage;
+    this.setState({ errorMessage: error });
+    // alert("Login failed!\n\nError: " + googleUser.error);
   }
 
   onGoogleSuccess(googleUser: GoogleLoginResponse | GoogleLoginResponseOffline) {
@@ -72,7 +74,11 @@ class Login extends React.Component<{}, LoginState> {
       }
 
     }).catch((error: ErrorMessage) => {
-      console.log(error);
+    //   console.log(error);
+      if ((error as any).message) {
+        error.errorDescription = (error as any).message; 
+      }
+      error.errorDescription += "\n\nLogin failed!";
       this.setState({ errorMessage: error });
     //   alert("Login failed!\n\n" + error);
     });

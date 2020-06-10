@@ -139,7 +139,8 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       this.setState({ showSpinner: false });
 
     }).catch((error: ErrorMessage) => {
-      console.log(error);
+    //   console.log(error);
+      error.errorDescription += "\n\nCannot fetch project details!";
       this.setState({ errorMessage: error });
     //   alert("Cannot fetch project details!\n\n" + error);
 
@@ -178,7 +179,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       this.setState({ showCreateProject: false, showSpinner: false });
 
     }).catch((error: ErrorMessage) => {
-    //   this.setState({ errorMessage: "Cannot create new project!\n\n" + error });
+      error.errorDescription += "\n\nCannot create new project!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
@@ -226,8 +227,9 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     }).catch((error: ErrorMessage) => {
       // console.log(error);
+      error.errorDescription += "\n\nCannot delete project!";
       this.setState({ errorMessage: error });
-    //   alert("Cannot delete project!\n\n" + error);
+    //   alert("Cannot delete project!\n\n" + error.errorTitle);
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
@@ -269,6 +271,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     }).catch((error: ErrorMessage) => {
       // console.log(error);
+      error.errorDescription += "\n\nCannot download project!";
       this.setState({ errorMessage: error });
     //   alert("Cannot download project!\n\n" + error);
 
@@ -322,6 +325,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     }).catch((error: ErrorMessage) => {
       // console.log(error);
+      error.errorDescription += "\n\nCannot rename project!";
       this.setState({ errorMessage: error });
     //   alert("Cannot rename project!\n\n" + error);
 

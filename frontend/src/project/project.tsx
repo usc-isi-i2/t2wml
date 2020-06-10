@@ -148,8 +148,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot fetch project meta data!";
       this.setState({ errorMessage: error });
-      alert("Cannot fetch project meta data!\n\n" + error);
+    //   alert("Cannot fetch project meta data!\n\n" + error);
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
@@ -201,8 +202,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
-    this.setState({ errorMessage: error });
-    //   alert("Cannot fetch project files!\n\n" + error);
+      error.errorDescription += "\n\nCannot fetch project files!";
+      this.setState({ errorMessage: error });
+//    alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
       (window as any).TableViewer.setState({ showSpinner: false });
@@ -232,6 +234,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
     formData.append("endpoint", (window as any).sparqlEndpoint);
     this.requestService.updateSettings((window as any).pid, formData).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
     });
   }

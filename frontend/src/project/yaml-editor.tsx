@@ -103,6 +103,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     }).catch((error: ErrorMessage) => {
     //   alert("Failed to apply. 🙁\n\n" + error);
+        error.errorDescription += "\n\nFailed to apply. 🙁";
         this.setState({ errorMessage: error });
 
       // follow-ups (failure)

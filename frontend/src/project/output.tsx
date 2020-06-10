@@ -110,7 +110,8 @@ class Output extends Component<OutputProperties, OutputState> {
       this.setState({ isDownloading: false });
 
     }).catch((error: ErrorMessage) => {
-      console.log(error);
+    //   console.log(error);
+      error.errorDescription += "\n\nCannot download!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)

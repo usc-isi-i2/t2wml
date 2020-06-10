@@ -249,6 +249,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot call wikifier servie!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
