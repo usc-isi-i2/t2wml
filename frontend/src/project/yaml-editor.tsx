@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 // YAML
 import MonacoEditor from 'react-monaco-editor';
@@ -206,7 +206,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     );
 
     return (
-    <div>
+    <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
         <Card
             className="w-100 shadow-sm"
@@ -326,7 +326,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             </Button>
             </Card.Footer>
         </Card>
-      </div>
+      </Fragment>
     );
   }
 }

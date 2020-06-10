@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 // App
 import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
@@ -696,7 +696,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     );
 
     return (
-    <div>
+    <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
     
         <Card
@@ -793,7 +793,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             </Card.Footer> */}
 
         </Card >
-    </div>
+    </Fragment>
     );
   }
 }
