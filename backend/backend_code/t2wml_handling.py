@@ -279,7 +279,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:symbol"]=value
         
         else:
-            raise ValueError("Property type "+property_type+" is not currently supported")
+            raise T2WMLExceptions.PropertyTypeNotFound("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response=generate_download_file(cell_mapper, "json")
