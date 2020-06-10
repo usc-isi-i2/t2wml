@@ -1,5 +1,8 @@
 T2WML History
 ===================
+Changes in version 2.0a10:
+------------------------
+* performance improvements
 
 Changes in version 2.0a9:
 ------------------------
