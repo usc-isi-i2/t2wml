@@ -1,16 +1,16 @@
 
 import yaml
-from backend_code.bindings import bindings
+
 import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.parsing.t2wml_parsing import iter_on_n, t2wml_parse
+from backend_code.bindings import bindings
+from backend_code.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
+
 
 class ForwardSlashEscape(Exception):
     def __init__(self, new_str):
         self.new_str=new_str
 
-
-   
 
 class CodeParser:
     def fix_code_string(self, e_str):
@@ -63,10 +63,9 @@ class TemplateParser(CodeParser):
                     result=t2wml_parse(compiled_statement, fake_context)
                 except Exception as e:
                     raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(input_str))
-                variable_code_expression= "t_var" in fixed
-                if variable_code_expression:
-                    return compiled_statement
-                else:
+                if "t_var" in fixed: #variable code expression
+                    return T2WMLCode(compiled_statement, fixed)
+                else: #invariable, result from anywhere is the same and we've already calculated it
                     return result
 
             else:
@@ -107,7 +106,10 @@ class RegionParser(CodeParser):
             if self.is_code_string(statement):
                 statement=self.fix_code_string(statement)
         #we run parser even if it's not a string, so that we get back number values for A, B, etc
-            return iter_on_n(statement, context)
+            if "t_var_n" in statement:
+                return iter_on_n(statement, context)
+            else:
+                return t2wml_parse(statement, context)
         except Exception as e:
             raise T2WMLExceptions.InvalidYAMLFileException("Failed to parse:"+str(statement))
 
@@ -337,4 +339,3 @@ def validate_yaml(yaml_file_path):
                 raise T2WMLExceptions.ErrorInYAMLFileException(errors)
         
         return yaml_file_data
-

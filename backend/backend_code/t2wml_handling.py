@@ -2,7 +2,6 @@ import csv
 import json
 import warnings
 from io import StringIO
-from types import CodeType
 from pathlib import Path
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
@@ -11,7 +10,7 @@ from backend_code.t2wml_exceptions import T2WMLException, make_frontend_err_dict
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.classes import ReturnClass
 from backend_code.parsing.constants import char_dict
-from backend_code.parsing.t2wml_parsing import iter_on_n_for_code
+from backend_code.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from backend_code.spreadsheets.conversions import to_excel
 
 from backend_code.triple_generator import generate_triples
@@ -81,7 +80,7 @@ def _evaluate_template_for_list_of_dicts(attributes, context):
     for attribute in attributes:
         new_dict=dict(attribute)
         for key in attribute:
-            if isinstance(attribute[key], CodeType):
+            if isinstance(attribute[key], T2WMLCode):
                 q_parsed=iter_on_n_for_code(attribute[key], context)
                 new_dict[key]=q_parsed
         attributes_parsed.append(new_dict)
@@ -93,7 +92,7 @@ def evaluate_template(template, context):
     for key in template:
         if isinstance(template[key], list):
             key_parsed=_evaluate_template_for_list_of_dicts(template[key], context)
-        elif isinstance(template[key], CodeType):
+        elif isinstance(template[key], T2WMLCode):
             key_parsed=iter_on_n_for_code(template[key], context)
         else:
             key_parsed=template[key]
@@ -129,7 +128,7 @@ def update_highlight_data(data, parsed_template):
 def highlight_region(cell_mapper):
     sparql_endpoint=cell_mapper.sparql_endpoint
     if cell_mapper.use_cache:
-        data=cell_mapper.cacher.get_highlight_region()
+        data=cell_mapper.result_cacher.get_highlight_region()
         if data:
             return data
 
@@ -160,7 +159,7 @@ def highlight_region(cell_mapper):
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
 
     if cell_mapper.use_cache:
-        cell_mapper.cacher.save(highlight_data, statement_data)
+        cell_mapper.result_cacher.save(highlight_data, statement_data)
     return highlight_data
 
 
@@ -192,7 +191,7 @@ def generate_download_file(cell_mapper, filetype):
     error=[]
     data=[]
     if cell_mapper.use_cache:
-        data=cell_mapper.cacher.get_download()
+        data=cell_mapper.result_cacher.get_download()
     
     if not data:
         for col, row in cell_mapper.region:
@@ -280,7 +279,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:symbol"]=value
         
         else:
-            raise ValueError("Property type "+property_type+" is not currently supported")
+            raise T2WMLExceptions.PropertyTypeNotFound("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response=generate_download_file(cell_mapper, "json")

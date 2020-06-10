@@ -23,6 +23,8 @@ class T2WMLException(Exception):
 			"errorDescription": self.detail_message
 		}
 
+class PropertyTypeNotFound(T2WMLException):
+	message="Property type not found"
 
 class InvalidRequestException(T2WMLException):
 	message="Resource requested without appropriate arguments"

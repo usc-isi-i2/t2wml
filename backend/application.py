@@ -459,6 +459,6 @@ if __name__ == "__main__":
             app.config['PROFILE'] = True
             if not os.path.isdir(os.path.join(UPLOAD_FOLDER, "profiles")):
                 os.mkdir(os.path.join(UPLOAD_FOLDER, "profiles"))
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,restrictions = [200], profile_dir=os.path.join(UPLOAD_FOLDER, "profiles"))
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,restrictions = [100], profile_dir=os.path.join(UPLOAD_FOLDER, "profiles"))
             app.run(debug = True)
     app.run(threaded=True)
