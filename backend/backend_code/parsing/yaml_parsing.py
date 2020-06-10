@@ -107,7 +107,10 @@ class RegionParser(CodeParser):
             if self.is_code_string(statement):
                 statement=self.fix_code_string(statement)
         #we run parser even if it's not a string, so that we get back number values for A, B, etc
-            return iter_on_n(statement, context)
+            if "t_var_n" in statement:
+                return iter_on_n(statement, context)
+            else:
+                return t2wml_parse(statement, context)
         except Exception as e:
             raise T2WMLExceptions.InvalidYAMLFileException("Failed to parse:"+str(statement))
 
