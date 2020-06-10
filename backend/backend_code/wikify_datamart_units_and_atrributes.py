@@ -1,24 +1,44 @@
 import pandas as pd
 import os
-from collections import defaultdict
 import csv
+
+from collections import defaultdict
 
 """
 How to use:
-call "generate" only, send with the 3 file's path, the output folder location and column name config (optional) if needed
+Step 1: load file
+a. call "load_csvs" send with the 3 file's path
+b. call "load_xlsx" send with one file path
+
+Step 2: generate file
+call "generate" after you loaded the file 
+
+the output folder location and column name config (optional) if needed
 if column name config not given or partial not given the system will use:
 
-For example:
-dataset_file = "./Dataset.csv"
-attributes_file = "./Attributes.csv"
-units_file = "./Units.csv"
+Example file:
+https://docs.google.com/spreadsheets/d/1NuTmRIxpy460S4CRdP6XORKFILssOby_RxiFbONXwv0/edit#gid=756069733
+
+
 column_name_config = {
     "attributes_file_node_column_name": "Property",
     "attributes_file_node_label_column_name": "Attribute",
     "unit_file_node_column_name": "Q-Node",
     "unit_file_node_label_column_name": "Unit"
 }
-generate(dataset_file, attributes_file, units_file, ".", column_name_config)
+# first method
+dataset_file = "./Dataset.csv"
+attributes_file = "./Attributes.csv"
+units_file = "./Units.csv"
+loaded_file = load_csvs(dataset_file, attributes_file, units_file)
+generate(loaded_file , ".", column_name_config)
+
+# second method:
+# specify the sheet name if needed
+sheet_name_config = {"dataset_file": "Dataset", "attributes_file": "Attributes", "units_file": "Units"}
+all_file = "all.xlsx"
+loaded_file = load_xlsx(all_file)
+generate(loaded_file , ".", column_name_config)
 
 For attribute file:
 Assume "Property" column exist and it is the node column
@@ -30,10 +50,30 @@ Assume "Q-Node" column exist and it is the label column
 """
 
 
-def generate(dataset_file: str, attributes_file: str, units_file: str, output_path: str = ".", column_name_config=None) -> None:
+def load_csvs(dataset_file: str, attributes_file: str, units_file: str):
+    loaded_file = {}
+    files = [dataset_file, attributes_file, units_file]
+    file_type = ["dataset_file", "attributes_file", "units_file"]
+    for each_file, each_file_type in zip(files, file_type):
+        if each_file:
+            if not os.path.exists(each_file):
+                raise ValueError("{} {} not exist!".format(each_file_type, each_file))
+            loaded_file[each_file_type] = pd.read_csv(each_file)
+    return loaded_file
+
+
+def load_xlsx(input_file: str, sheet_name_config: dict = None):
+    loaded_file = {}
+    if not sheet_name_config:
+        sheet_name_config = {"dataset_file": "Dataset", "attributes_file": "Attributes", "units_file": "Units"}
+    for k, v in sheet_name_config.items():
+        loaded_file[k] = pd.read_excel(input_file, v)
+    return loaded_file
+
+
+def generate(loaded_file: dict, output_path: str = ".", column_name_config=None) -> None:
     if column_name_config is None:
         column_name_config = {}
-    loaded_file = {}
     if "attributes_file_node_column_name" not in column_name_config:
         column_name_config["attributes_file_node_column_name"] = "Property"
     if "attributes_file_node_label_column_name" not in column_name_config:
@@ -43,15 +83,9 @@ def generate(dataset_file: str, attributes_file: str, units_file: str, output_pa
     if "unit_file_node_label_column_name" not in column_name_config:
         column_name_config["unit_file_node_label_column_name"] = "Unit"
 
-    files = [dataset_file, attributes_file, units_file]
-    file_type = ["dataset_file", "attributes_file", "units_file"]
-    for each_file, each_file_type in zip(files, file_type):
-        if each_file:
-            if not os.path.exists(each_file):
-                raise ValueError("{} {} not exist!".format(each_file_type, each_file))
-            loaded_file[each_file_type] = pd.read_csv(each_file)
     if len(loaded_file["dataset_file"]["node1"].unique()) > 1:
         raise ValueError("One dataset file should only contains 1 dataset ID in `node1` column.")
+
     dataset_id = loaded_file["dataset_file"]["node1"].iloc[0]
     # generate files
     memo = defaultdict(dict)
@@ -76,8 +110,6 @@ def generate(dataset_file: str, attributes_file: str, units_file: str, output_pa
             each_file.to_csv(output_file_path, index=False)
         elif each_file_name.endswith(".tsv"):
             each_file.to_csv(output_file_path, sep='\t', index=False, quoting=csv.QUOTE_NONE)
-
-
 
 
 def generate_KGTK_properties_file(input_df: pd.DataFrame, dataset_id: str, memo: dict, node_column_name="Property",
