@@ -124,7 +124,7 @@ def generate_KGTK_properties_file(input_df: pd.DataFrame, dataset_id: str, memo:
             node_id = "P{}-{:03}".format(dataset_id, node_number)
             memo["property"][node_id] = each_row[node_label_column_name]
             labels = ["data_type", "P31", "label"]
-            node2s = ["quantity", "Q18616576", to_kgtk_format_string(each_row[node_label_column_name])]
+            node2s = ["Quantity", "Q18616576", to_kgtk_format_string(each_row[node_label_column_name])]
             for i in range(3):
                 # if node2s[i].startswith("Q"):
                 # id_ = "{}-{}-{}".format(node_id, labels[i], node2s[i])
