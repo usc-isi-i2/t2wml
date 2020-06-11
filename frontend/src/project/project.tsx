@@ -202,7 +202,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
-      error.errorDescription += "\n\nCannot fetch project files!";
+      error.errorDescription += "\n\nCannot fetch project!";
       this.setState({ errorMessage: error });
 //    alert("Cannot fetch project files!\n\n" + error);
 
