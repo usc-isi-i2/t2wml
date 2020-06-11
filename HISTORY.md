@@ -1,5 +1,11 @@
 T2WML History
 ===================
+
+Upcoming changes in next version:
+------------------------
+* bug fixes:
+   - enclose some fields for kgtk in quotes
+
 Changes in version 2.0a11:
 ------------------------
 * fixed bug that was forcing incorrect property captilization for multi-word property types
