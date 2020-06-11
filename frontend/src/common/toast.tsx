@@ -22,17 +22,13 @@ class ToastMessage extends Component<ToastProperties, ToastState> {
 
     render() {
         return (
-        <div
+        <div 
         aria-live="polite"
-        aria-atomic="true"
-        style={{
-            position: 'relative',
-            minHeight: '100px',
-        }}
-        >
+        aria-atomic="true">
         <Toast onClose={() => this.setState({ show: false })} show={this.state.show} delay={8000} autohide
             style={{
             position: 'absolute',
+            zIndex: 999,
             top: 0,
             right: 0,
             minHeight: '100px',
