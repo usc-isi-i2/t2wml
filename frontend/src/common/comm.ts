@@ -14,12 +14,12 @@ function getUrl(url: string) {
 
 async function getResponse(response: Response, method: string): Promise<any> {
     if (!response.ok) {
-        if (response.status === 401) { // Unauthorized. what about failed, no connection error?
+        if (response.status === 401) { // Unauthorized
             throw ({errorCode: response.status,
                 errorTitle: response.statusText,
                 errorDescription: `${method} failed`} as ErrorMessage);
         }  
-        throw ((await response.json() as any).error);
+        throw ((await response.json() as any).error); // Error class from backend (code, title, description)
     }
 
     const json = await response.json();
@@ -29,18 +29,12 @@ async function getResponse(response: Response, method: string): Promise<any> {
 export async function backendGet(url: string): Promise<any> {
     let response: Response;
     try {
-        response = await Promise.race([
-            fetch(getUrl(url), {
+        response = await fetch(getUrl(url), {
             mode: "cors",
             method: "GET",
             credentials: "include",
-        }),
-        new Promise((_, reject) => setTimeout(
-            () => reject(new Error('Timeout')),
-            10000
-        )),
-        ]) as Response;
-    } catch(error) {
+        });
+    } catch(error) { // no connection error
         throw ({ errorTitle: error.message,
             errorDescription: 'Connection error.' } as ErrorMessage);
     }
@@ -51,18 +45,13 @@ export async function backendGet(url: string): Promise<any> {
 export async function backendPost(url: string, formData?: FormData): Promise<any> {
     let response: Response;
     try {
-        response = await Promise.race([
-          fetch(getUrl(url), {
+        response = await fetch(getUrl(url), {
             mode: "cors",
             method: "POST",
             body: formData,
             credentials: "include",
-      }),
-      new Promise((_, reject) => setTimeout(
-          () => reject(new Error('Timeout')),
-          10000
-      )),
-      ]) as Response;
+        });
+
     } catch(error) {
         throw ({ errorTitle: error.message,
         errorDescription: 'Connection error.' } as ErrorMessage);
@@ -72,45 +61,34 @@ export async function backendPost(url: string, formData?: FormData): Promise<any
 }
 
 export async function backendPut(url: string, formData?: FormData): Promise<any> {
-  let response: Response;
-  try {
-      response = await Promise.race([
-          fetch(getUrl(url), {
-          mode: "cors",
-          method: "PUT",
-          body: formData,
-          credentials: "include",
-      }),
-      new Promise((_, reject) => setTimeout(
-          () => reject(new Error('Timeout')),
-          10000
-      )),
-      ]) as Response;
+    let response: Response;
+    try {
+        response = await fetch(getUrl(url), {	     
+            mode: "cors",
+            method: "PUT",
+            body: formData,
+            credentials: "include",
+        });
     } catch(error) {
         throw ({ errorTitle: error.message,
-        errorDescription: 'Connection error.' } as ErrorMessage);
-  }
-
-  return await getResponse(response, 'Put');
+            errorDescription: 'Connection error.' } as ErrorMessage);
+    }
+    
+    return await getResponse(response, 'Put');
 }
 
 export async function backendDelete(url: string): Promise<any> {
-  let response: Response;
-  try {
-      response = await Promise.race([
-          fetch(getUrl(url), {
-          mode: "cors",
-          method: "DELETE",
-      }),
-      new Promise((_, reject) => setTimeout(
-          () => reject(new Error('Timeout')),
-          10000
-      )),
-      ]) as Response;
+    let response: Response;
+    try { 
+        response = await fetch(getUrl(url), {	     
+            mode: "cors",
+            method: "DELETE",
+            credentials: "include",
+        });
     } catch(error) {
         throw ({ errorTitle: error.message,
-        errorDescription: 'Connection error.' } as ErrorMessage);
-  }
+            errorDescription: 'Connection error.' } as ErrorMessage);
+    }
 
-  return await getResponse(response, 'Delete');
+    return await getResponse(response, 'Delete');
 }
