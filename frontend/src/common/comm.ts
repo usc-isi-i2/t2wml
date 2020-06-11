@@ -27,50 +27,90 @@ async function getResponse(response: Response, method: string): Promise<any> {
 }
 
 export async function backendGet(url: string): Promise<any> {
-    const response = await fetch(getUrl(url), {
-        mode: "cors",
-        method: "GET",
-        credentials: "include",
-    });
+    let response: Response;
+    try {
+        response = await Promise.race([
+            fetch(getUrl(url), {
+            mode: "cors",
+            method: "GET",
+            credentials: "include",
+        }),
+        new Promise((_, reject) => setTimeout(
+            () => reject(new Error('Timeout')),
+            10000
+        )),
+        ]) as Response;
+    } catch(error) {
+        throw ({ errorTitle: error.message,
+            errorDescription: 'Connection error.' } as ErrorMessage);
+    }
 
     return await getResponse(response, 'Get');
 }
 
 export async function backendPost(url: string, formData?: FormData): Promise<any> {
-    const fullUrl = getUrl(url);
-    console.debug('Fetching from ', fullUrl);
-
-    const response = await fetch(fullUrl, {
-        mode: "cors",
-        method: "POST",
-        body: formData,
-        credentials: "include",
-    });
+    let response: Response;
+    try {
+        response = await Promise.race([
+          fetch(getUrl(url), {
+            mode: "cors",
+            method: "POST",
+            body: formData,
+            credentials: "include",
+      }),
+      new Promise((_, reject) => setTimeout(
+          () => reject(new Error('Timeout')),
+          10000
+      )),
+      ]) as Response;
+    } catch(error) {
+        throw ({ errorTitle: error.message,
+        errorDescription: 'Connection error.' } as ErrorMessage);
+    }
 
     return await getResponse(response, 'Post');
 }
 
 export async function backendPut(url: string, formData?: FormData): Promise<any> {
-  const fullUrl = getUrl(url);
-  console.debug('Fetching from ', fullUrl);
-  const response = await fetch(fullUrl, {
-      mode: "cors",
-      method: "PUT",
-      body: formData,
-      credentials: "include",
-  });
+  let response: Response;
+  try {
+      response = await Promise.race([
+          fetch(getUrl(url), {
+          mode: "cors",
+          method: "PUT",
+          body: formData,
+          credentials: "include",
+      }),
+      new Promise((_, reject) => setTimeout(
+          () => reject(new Error('Timeout')),
+          10000
+      )),
+      ]) as Response;
+    } catch(error) {
+        throw ({ errorTitle: error.message,
+        errorDescription: 'Connection error.' } as ErrorMessage);
+  }
 
   return await getResponse(response, 'Put');
 }
 
 export async function backendDelete(url: string): Promise<any> {
-  const fullUrl = getUrl(url);
-  console.debug('Fetching from ', fullUrl);
-  const response = await fetch(fullUrl, {
-      mode: "cors",
-      method: "DELETE",
-      credentials: "include",
-  });
+  let response: Response;
+  try {
+      response = await Promise.race([
+          fetch(getUrl(url), {
+          mode: "cors",
+          method: "DELETE",
+      }),
+      new Promise((_, reject) => setTimeout(
+          () => reject(new Error('Timeout')),
+          10000
+      )),
+      ]) as Response;
+    } catch(error) {
+        throw ({ errorTitle: error.message,
+        errorDescription: 'Connection error.' } as ErrorMessage);
+  }
 
   return await getResponse(response, 'Delete');
 }
