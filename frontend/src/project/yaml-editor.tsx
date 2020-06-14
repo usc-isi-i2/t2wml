@@ -12,6 +12,9 @@ import { LOG, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react"
+import wikiStore from '../data/store';
+
 
 interface yamlProperties {
   isShowing: boolean;
@@ -26,6 +29,7 @@ interface yamlState {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class YamlEditor extends Component<yamlProperties, yamlState> {
   private requestService: RequestService;
 
@@ -74,7 +78,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)
     // }
-    this.requestService.uploadYaml((window as any).pid, formData).then(json => {
+    this.requestService.uploadYaml(wikiStore.project.pid, formData).then(json => {
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 

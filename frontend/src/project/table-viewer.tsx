@@ -18,6 +18,9 @@ import { LOG, WikifierData, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
+
 interface Column {
   headerName: string;
   field: string;
@@ -65,15 +68,18 @@ interface TableState  {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class TableViewer extends Component<TableProperties, TableState> {
   public gridApi: any;
   public gridColumnApi: any;
+  private pid: string;
 
   private requestService: RequestService;
 
   constructor(props: TableProperties) {
     super(props);
     this.requestService = new RequestService();
+    this.pid = wikiStore.project.pid;
 
     // init global variables
     (window as any).TableViewer = this;
@@ -136,7 +142,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadDataFile((window as any).pid, formData).then((json) => {
+    this.requestService.uploadDataFile(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -206,7 +212,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     let formData = new FormData();
     formData.append("file", file);
 
-    this.requestService.uploadProperties((window as any).pid, formData).then((json) => {
+    this.requestService.uploadProperties(this.pid, formData).then((json) => {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
 
@@ -234,7 +240,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadWikifierOutput((window as any).pid, formData).then((json) => {
+    this.requestService.uploadWikifierOutput(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -297,7 +303,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    this.requestService.resolveCell((window as any).pid, colName, rowName).then((json) => {
+    this.requestService.resolveCell(this.pid, colName, rowName).then((json) => {
       console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -343,7 +349,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.changeSheet((window as any).pid, sheetName).then((json) => {
+    this.requestService.changeSheet(this.pid, sheetName).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
 

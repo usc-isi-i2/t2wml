@@ -16,6 +16,8 @@ import QnodeEditor from './qnode-editor';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react"
+import wikiStore from '../data/store';
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -31,6 +33,7 @@ interface WikifierState {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class Wikifier extends Component<WikifierProperties, WikifierState> {
   public gridApi: any;
   public gridColumnApi: any;
@@ -227,7 +230,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     formData.append("region", region);
     formData.append("context", context);
     formData.append("flag", flag);
-    this.requestService.callWikifierService((window as any).pid, formData).then((json) => {
+    this.requestService.callWikifierService(wikiStore.project.pid, formData).then((json) => {
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       console.log(json);
 

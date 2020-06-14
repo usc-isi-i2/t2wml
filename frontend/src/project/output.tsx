@@ -12,6 +12,9 @@ import * as utils from '../common/utils'
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
+
 interface OutputProperties {
 
 }
@@ -43,12 +46,15 @@ interface OutputState {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class Output extends Component<OutputProperties, OutputState> {
   private requestService: RequestService;
+  private pid: string;
   
   constructor(props: OutputProperties) {
     super(props);
     this.requestService = new RequestService();
+    this.pid = wikiStore.project.pid;
 
     // init global variables
     (window as any).Output = this;
@@ -74,7 +80,7 @@ class Output extends Component<OutputProperties, OutputState> {
       // download
       showDownload: false,
       isDownloadDisabled: true,
-      downloadFileName: (window as any).pid,
+      downloadFileName: this.pid,
       downloadFileType: "json",
       isDownloading: false,
 
@@ -90,7 +96,7 @@ class Output extends Component<OutputProperties, OutputState> {
     this.setState({ isDownloading: true, showDownload: false });
     // send request
     console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadResults((window as any).pid, this.state.downloadFileType).then((json) => {
+    this.requestService.downloadResults(this.pid, this.state.downloadFileType).then((json) => {
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 

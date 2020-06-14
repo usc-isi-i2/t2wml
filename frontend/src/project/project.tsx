@@ -23,6 +23,9 @@ import TableViewer from './table-viewer';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
+
 interface ProjectProperties {
 
 }
@@ -36,9 +39,11 @@ interface ProjectState {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class Project extends Component<ProjectProperties, ProjectState> {
   private tempSparqlEndpointRef: React.RefObject<HTMLInputElement>;
   private requestService: RequestService;
+  private pid: string;
 
   constructor(props: ProjectProperties) {
     super(props);
@@ -47,14 +52,22 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     // Get the pid from the URL - the URL is ..../project/<pid>
     // This will be put in an app wide store at some point
+    
+    // this.pid = wikiStore.project.pid; //?
+    // if (this.pid === "") {
+    //     const parts = window.location.href.split('/');
+    //     this.pid = parts[parts.length - 1];
+    //     wikiStore.project.pid = this.pid
+    // }
+
     const parts = window.location.href.split('/');
-    const pid = parts[parts.length - 1];
+    this.pid = parts[parts.length - 1];
+    wikiStore.project.pid = this.pid
 
     // fetch data from flask
-     console.log("<App> opened project: %c" + pid, LOG.highlight);
+     console.log("<App> opened project: %c" + this.pid, LOG.highlight);
 
     // init global variables
-    (window as any).pid = pid;
     (window as any).isCellSelectable = false;
     (window as any).sparqlEndpoint = Config.sparql;
     (window as any).onbeforeunload = () => {
@@ -126,7 +139,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
               // update document title
               let ptitle = null;
               for (let i = 0, len = projectData.length; i < len; i++) {
-                  if (projectData[i].pid === (window as any).pid) {
+                  if (projectData[i].pid === this.pid) {
                       ptitle = projectData[i].ptitle;
                       break;
                   }
@@ -162,7 +175,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     // fetch project files
     console.log("<App> -> %c/get_project_files%c for previous files", LOG.link, LOG.default);
-    this.requestService.getProjectFiles((window as any).pid).then(json => {
+    this.requestService.getProjectFiles(this.pid).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -232,7 +245,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     let formData = new FormData();
     formData.append("endpoint", (window as any).sparqlEndpoint);
-    this.requestService.updateSettings((window as any).pid, formData).catch((error: ErrorMessage) => {
+    this.requestService.updateSettings(this.pid, formData).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
