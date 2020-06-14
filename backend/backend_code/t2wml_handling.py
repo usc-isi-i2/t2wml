@@ -305,9 +305,10 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
 
         qualifiers=statement.get("qualifier", [])
         for qualifier in qualifiers:
-            second_cell=qualifier.get("cell", "")
-            q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
-            qualifier_result_dict=dict(id=q_id, node1=id, label=qualifier["property"])
+            #commented out. for now, do not generate an id at all for qualifier edges.
+            #second_cell=qualifier.get("cell", "")
+            #q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
+            qualifier_result_dict=dict(node1=id, label=qualifier["property"])
             kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict, cell_mapper.sparql_endpoint)
             tsv_data.append(qualifier_result_dict)
 
