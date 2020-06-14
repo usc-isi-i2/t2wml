@@ -220,8 +220,8 @@ def generate_download_file(cell_mapper, filetype):
 
 
 def enclose_in_quotes(value):
-    if value != "":
-        return "\""+value+"\""
+    if value != "" and value is not None:
+        return "\""+str(value)+"\""
     return ""
 
 def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_endpoint):
