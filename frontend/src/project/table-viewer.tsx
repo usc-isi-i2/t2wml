@@ -126,7 +126,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   handleOpenTableFile(event:any) {
     this.setState({ errorMessage: {} as ErrorMessage });  
     // remove current status
-    (window as any).isCellSelectable = false;
+    wikiStore.table.isCellSelectable = false;
     this.updateSelectedCell();
     this.updateQnodeCells();
 
@@ -136,7 +136,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // before sending request
     this.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
@@ -181,15 +182,16 @@ class TableViewer extends Component<TableProperties, TableState> {
       if (yamlData !== null) {
         (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
-        (window as any).isCellSelectable = true;
+        wikiStore.table.isCellSelectable = true;
       } else {
-        (window as any).isCellSelectable = false;
+        wikiStore.table.isCellSelectable = false;
       }
 
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
@@ -198,7 +200,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     
       // follow-ups (failure)
       this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -234,7 +237,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // before sending request
     this.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
@@ -262,7 +266,8 @@ class TableViewer extends Component<TableProperties, TableState> {
         msgInToast1: "✅ Wikifier file loaded",
         showToast1: true,
       });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
@@ -272,7 +277,8 @@ class TableViewer extends Component<TableProperties, TableState> {
       // follow-ups (failure)
       this.updateQnodeCells();
       this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -297,7 +303,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.updateSelectedCell(colName, rowName, value);
 
     // before sending request
-    if (!(window as any).isCellSelectable) return;
+    if (!wikiStore.table.isCellSelectable) return;
     this.setState({ showSpinner: true });
     (window as any).Output.setState({ showSpinner: true });
 
@@ -344,7 +350,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // before sending request
     this.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     const sheetName = event.target.innerHTML;
@@ -388,15 +395,16 @@ class TableViewer extends Component<TableProperties, TableState> {
       if (yamlData !== null) {
         (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
-        (window as any).isCellSelectable = true;
+        wikiStore.table.isCellSelectable = true;
         (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
-        (window as any).isCellSelectable = false;
+        wikiStore.table.isCellSelectable = false;
       }
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
@@ -405,7 +413,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -414,6 +423,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     if (qnodeData === null) {
       // reset qnode cells
       const qnodes = Object.keys((window as any).Wikifier.state.qnodeData);
+    //   if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;
+    //   const qnodes = Object.keys(wikiStore.wikifier.state.qnodeData);
       if (qnodes.length === 0) return;
       const cells = { qnode: qnodes };
       const presets = {
@@ -602,6 +613,9 @@ class TableViewer extends Component<TableProperties, TableState> {
     if ((window as any).Wikifier === undefined) return;
     if ((window as any).Wikifier.state === undefined) return;
     const { qnodeData } = (window as any).Wikifier.state;
+    // if (wikiStore.wikifier === undefined) return;
+    // if (wikiStore.wikifier.state === undefined) return;
+    // const { qnodeData } = wikiStore.wikifier.state;
     if (qnodeData === undefined) return;
 
     // get qnode according to cell index, e.g. "Q967"

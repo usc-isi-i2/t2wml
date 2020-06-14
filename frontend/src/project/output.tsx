@@ -260,7 +260,7 @@ class Output extends Component<OutputProperties, OutputState> {
 
   queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
     // FUTURE: use <local stroage> to store previous query result even longer
-    const api = (window as any).sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
+    const api = wikiStore.settings.sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
     // console.log("<Output> made query to Wikidata: " + api);
 
     // before send request

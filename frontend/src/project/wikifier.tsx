@@ -58,7 +58,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     this.state = {
 
       // appearance
-      showSpinner: false,
+      showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
 
@@ -712,7 +712,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             {/* header */}
             <Card.Header
             style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-            onClick={() => (window as any).Editors.setState({ nowShowing: "Wikifier" })}
+            onClick={() => wikiStore.editors.nowShowing = "Wikifier" }
             >
 
             {/* title */}
@@ -761,7 +761,11 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             >
 
             {/* loading spinner */}
-            <div className="mySpinner" hidden={!this.state.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
+            {/* <div className="mySpinner" hidden={!this.state.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
+                <Spinner animation="border" />
+            </div> */}
+
+            <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
                 <Spinner animation="border" />
             </div>
 

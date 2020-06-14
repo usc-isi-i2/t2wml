@@ -103,7 +103,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           // follow-ups (success)
           (window as any).TableViewer.setState({ showSpinner: false });
           (window as any).Output.setState({ isDownloadDisabled: false });
-          (window as any).isCellSelectable = true;
+          wikiStore.table.isCellSelectable = true;
 
     }).catch((error: ErrorMessage) => {
     //   alert("Failed to apply. 🙁\n\n" + error);
@@ -116,7 +116,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   handleChangeYaml() {
-    (window as any).isCellSelectable = false;
+    wikiStore.table.isCellSelectable = false;
 
     const yamlText = (this.refs.monaco as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
@@ -144,7 +144,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     if (!file) return;
     console.log("<YamlEditor> opened file: " + file.name);
 
-    (window as any).isCellSelectable = false;
+    wikiStore.table.isCellSelectable = false;
 
     // upload local yaml
     let reader = new FileReader();
@@ -220,7 +220,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             {/* header */}
             <Card.Header
             style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-            onClick={() => (window as any).Editors.setState({ nowShowing: "YamlEditor" })}
+            onClick={() => wikiStore.editors.nowShowing = "YamlEditor" }
             >
 
             {/* title */}

@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { useHistory } from "react-router-dom";
 
 import './project-list.css';
 import * as utils from '../common/utils'

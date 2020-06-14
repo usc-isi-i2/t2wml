@@ -68,8 +68,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
      console.log("<App> opened project: %c" + this.pid, LOG.highlight);
 
     // init global variables
-    (window as any).isCellSelectable = false;
-    (window as any).sparqlEndpoint = Config.sparql;
+    wikiStore.table.isCellSelectable = false;
+    wikiStore.settings.sparqlEndpoint = Config.sparql;
     (window as any).onbeforeunload = () => {
       return null; // only "null" cannot prevent leave/reload page
     };
@@ -94,7 +94,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
       userData: { },
 
       // settings
-      tempSparqlEndpoint: (window as any).sparqlEndpoint,
+      tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -171,7 +171,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     // before fetching project files
     (window as any).TableViewer.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.wikifier.showSpinner = true;
 
     // fetch project files
     console.log("<App> -> %c/get_project_files%c for previous files", LOG.link, LOG.default);
@@ -198,20 +199,21 @@ class Project extends Component<ProjectProperties, ProjectState> {
       if (yamlData !== null) {
         (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         (window as any).TableViewer.updateYamlRegions(yamlData.yamlRegions);
-        (window as any).isCellSelectable = true;
+        wikiStore.table.isCellSelectable = true;
         (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
-        (window as any).isCellSelectable = false;
+        wikiStore.table.isCellSelectable = false;
       }
 
       // load settings
       if (settings !== null) {
-        (window as any).sparqlEndpoint = settings.endpoint;
+        wikiStore.settings.sparqlEndpoint = settings.endpoint;
       }
 
       // follow-ups (success)
       (window as any).TableViewer.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+      // (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
@@ -221,7 +223,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
       // follow-ups (failure)
       (window as any).TableViewer.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+      // (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -237,14 +240,14 @@ class Project extends Component<ProjectProperties, ProjectState> {
     console.log("<App> updated settings");
 
     // update settings
-    (window as any).sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
+    wikiStore.settings.sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
     // window.sparqlEndpoint = this.state.tempSparqlEndpoint;
-    this.setState({ showSettings: false, tempSparqlEndpoint: (window as any).sparqlEndpoint });
+    this.setState({ showSettings: false, tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint });
 
     // notify backend
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     let formData = new FormData();
-    formData.append("endpoint", (window as any).sparqlEndpoint);
+    formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
     this.requestService.updateSettings(this.pid, formData).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot update settings!";
@@ -289,7 +292,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={(window as any).sparqlEndpoint}
+                    defaultValue={wikiStore.settings.sparqlEndpoint}
                     ref={this.tempSparqlEndpointRef}
                     onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
@@ -307,7 +310,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false, tempSparqlEndpoint: (window as any).sparqlEndpoint })}>
+          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false, tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint })}>
             Cancel
           </Button>
           <Button variant="dark" onClick={() => this.handleSaveSettings()}>
