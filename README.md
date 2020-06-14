@@ -52,7 +52,7 @@ For now, using within code requires running from the repo (not via pip install).
 
 ```
 from driver import run_t2wml
-run_t2wml(data_file_path,  wikified_output_path, t2wml_spec, output_directory, sheet_name, sparql_endpoint)
+run_t2wml(data_file_path,  wikified_output_path, t2wml_spec, output_directory, sheet_name, sparql_endpoint, filetype, project_name)
 ```
 Arguments:
 ```
@@ -64,6 +64,8 @@ Mandatory Arguments:
 Optional Arguments:
     sheet_name: string
     sparql_endpoint: string
+    filetype: valid values "ttl", "json", "tsv"
+    project_name: string
 ```
 
 Default Values:
@@ -75,7 +77,7 @@ Default Values:
 
 Output:
 
-The function will create a directory structure in the output directory which will have the results.ttl and changes.tsv files.
+The function will create a directory structure in the output directory which will have the results file and changes.tsv files.
 
 Output Directory Structure:
 ```
@@ -85,7 +87,7 @@ output_directory/
 |       ├── results.ttl
 |       └── changes.tsv
 └── csv_file_name/
-    ├── results.ttl
+    ├── results.ttl (or results.json or results.tsv)
     └── changes.tsv
 ```
 
