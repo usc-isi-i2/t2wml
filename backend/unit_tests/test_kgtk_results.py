@@ -39,7 +39,7 @@ class TestBelgiumRegex(unittest.TestCase):
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
         result= download_kgtk(cm, "TestKGTK", self.data_file, sheet_name)["data"]
-        expected_result_name="results.kgtk"
+        expected_result_name="results.tsv"
         #with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
         #    f.write(result)
         csv_args_dict=dict(delimiter="\t", lineterminator="\n",
@@ -73,9 +73,7 @@ class TestOECDWithCustomProperties(unittest.TestCase):
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
         result= download_kgtk(cm, "TestKGTK", self.data_file, sheet_name)["data"]
-        expected_result_name="results.kgtk"
-        with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
-            f.write(result)
+        expected_result_name="results.tsv"
         csv_args_dict=dict(delimiter="\t", lineterminator="\n",
                             escapechar='', quotechar='',
                             dialect=csv.unix_dialect, quoting=csv.QUOTE_NONE)
