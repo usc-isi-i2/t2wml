@@ -70,12 +70,12 @@ Optional Arguments:
 
 Default Values:
 ``` 
-    sparql_endpoint = "https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
+    sparql_endpoint = DEFAULT_SPARQL_ENDPOINT ("https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql")
     filetype = "ttl"
     project_name = "DriverProject"
 ```
 
-> Edit in [/app_config.py](https://github.com/usc-isi-i2/t2wml/blob/master/app_config.py)
+> You can edit DEFAULT_SPARQL_ENDPOINT in [/app_config.py](https://github.com/usc-isi-i2/t2wml/blob/master/app_config.py)
 
 Output:
 
