@@ -4,8 +4,8 @@ T2WML History
 Changes in version 2.0a12:
 ------------------------
 * bug fixes:
-   - duplicate edges
-   - missing quotations
+   - duplicate edges in kgtk output
+   - missing quotations in kgtk output
    - driver.py crashed on missing file
 
 Changes in version 2.0a11:
