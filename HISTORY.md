@@ -1,5 +1,13 @@
 T2WML History
 ===================
+
+Changes in version 2.0a12:
+------------------------
+* bug fixes:
+   - duplicate edges
+   - missing quotations
+   - driver.py crashed on missing file
+
 Changes in version 2.0a11:
 ------------------------
 * fixed bug that was forcing incorrect property captilization for multi-word property types
