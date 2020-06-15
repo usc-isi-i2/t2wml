@@ -215,7 +215,9 @@ def generate_download_file(cell_mapper, filetype):
 
 
 def enclose_in_quotes(value):
-    return "\""+value+"\""
+    if value != "" and value is not None:
+        return "\""+str(value)+"\""
+    return ""
 
 def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_endpoint):
     property_type= get_property_type(property_dict["property"], sparql_endpoint)
@@ -244,7 +246,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             '''
             result_dict["node2;kgtk:data_type"]="quantity"
             result_dict["node2;kgtk:number"]= value
-            result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
+            result_dict["node2;kgtk:units_node"]= enclose_in_quotes(property_dict.get("unit", ""))
             result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
             result_dict["node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
 
@@ -268,7 +270,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             '''
             result_dict["node2;kgtk:data_type"]="string"
             result_dict["node2;kgtk:text"]=enclose_in_quotes(value)
-            result_dict["node2;kgtk:language"]=property_dict.get("lang", "")
+            result_dict["node2;kgtk:language"]=enclose_in_quotes(property_dict.get("lang", ""))
 
         elif property_type in ["WikibaseItem", "WikibaseProperty"]:
             result_dict["node2;kgtk:data_type"]="symbol"
@@ -297,9 +299,10 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
 
         qualifiers=statement.get("qualifier", [])
         for qualifier in qualifiers:
-            second_cell=qualifier.get("cell", "")
-            q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
-            qualifier_result_dict=dict(id=q_id, node1=id, label=qualifier["property"])
+            #commented out. for now, do not generate an id at all for qualifier edges.
+            #second_cell=qualifier.get("cell", "")
+            #q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
+            qualifier_result_dict=dict(node1=id, label=qualifier["property"])
             kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict, cell_mapper.sparql_endpoint)
             tsv_data.append(qualifier_result_dict)
 

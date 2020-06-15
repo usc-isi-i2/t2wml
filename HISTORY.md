@@ -1,10 +1,12 @@
 T2WML History
 ===================
 
-Upcoming changes in next version:
+Changes in version 2.0a12:
 ------------------------
 * bug fixes:
-   - enclose some fields for kgtk in quotes
+   - duplicate edges in kgtk output
+   - missing quotations in kgtk output
+   - driver.py crashed on missing file
 
 Changes in version 2.0a11:
 ------------------------
