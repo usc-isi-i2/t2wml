@@ -45,10 +45,15 @@ class Region:
 
 
 class Cacher:
+    title=""
     def __init__(self, yaml_file_path,  data_file_path, sheet_name):
         self.yaml_file_path=yaml_file_path
         self.data_file_path=data_file_path
         self.sheet_name=sheet_name
+    
+    @property
+    def cache_path(self):
+        return self.get_cache_path(self.title)
 
     def get_cache_path(self, title_str):
         path=Path(self.yaml_file_path)
@@ -67,12 +72,11 @@ class Cacher:
         return False
 
 class RegionCacher(Cacher):
+    title="region"
+    
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
-    
-    @property
-    def cache_path(self):
-        return self.get_cache_path("region")
+
 
     def load_from_cache(self):
         if self.is_fresh():
@@ -88,17 +92,18 @@ class RegionCacher(Cacher):
 
 
 class MappingResultsCacher(Cacher):
+    title="result_j" #j is a modifier for backwards incompatible changes in cache format as of version 2.0a13
+
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
     
-    @property
-    def cache_path(self):
-        return self.get_cache_path("result")
+
         
-    def save(self, highlight_data, statement_data):
+    def save(self, highlight_data, statement_data, errors=[]):
         d={
             "highlight region": highlight_data,
-            "download": statement_data
+            "download": statement_data,
+            "errors": errors
         }
         with open(self.cache_path, 'w') as f:
             json.dump(d, f)
