@@ -52,7 +52,7 @@ For now, using within code requires running from the repo (not via pip install).
 
 ```
 from driver import run_t2wml
-run_t2wml(data_file_path,  wikified_output_path, t2wml_spec, output_directory, sheet_name, sparql_endpoint)
+run_t2wml(data_file_path,  wikified_output_path, t2wml_spec, output_directory, sheet_name, sparql_endpoint, filetype, project_name)
 ```
 Arguments:
 ```
@@ -64,18 +64,22 @@ Mandatory Arguments:
 Optional Arguments:
     sheet_name: string
     sparql_endpoint: string
+    filetype: valid values "ttl", "json", "tsv"
+    project_name: string
 ```
 
 Default Values:
 ``` 
-    sparql_endpoint = "https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
+    sparql_endpoint = DEFAULT_SPARQL_ENDPOINT ("https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql")
+    filetype = "ttl"
+    project_name = "DriverProject"
 ```
 
-> Edit in [/app_config.py](https://github.com/usc-isi-i2/t2wml/blob/master/app_config.py)
+> You can edit DEFAULT_SPARQL_ENDPOINT in [/app_config.py](https://github.com/usc-isi-i2/t2wml/blob/master/app_config.py)
 
 Output:
 
-The function will create a directory structure in the output directory which will have the results.ttl and changes.tsv files.
+The function will create a directory structure in the output directory which will have the results file and changes.tsv files.
 
 Output Directory Structure:
 ```
@@ -85,7 +89,7 @@ output_directory/
 |       ├── results.ttl
 |       └── changes.tsv
 └── csv_file_name/
-    ├── results.ttl
+    ├── results.ttl (or results.json or results.tsv)
     └── changes.tsv
 ```
 
