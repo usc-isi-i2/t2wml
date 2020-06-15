@@ -27,9 +27,9 @@ class JsonTest(unittest.TestCase):
         #for now this compares cell by cell. 
         #we could eventually have this compare more granularly, if we see there's specific properties we need to ignore
         #or we could pop those properties out before the comparison and deal with them separately
-        for i in range(len(results)):
-            r_dict=results[i]
-            e_dict=expected[i]
+        for cell in results:
+            r_dict=results[cell]
+            e_dict=expected[cell]
             self.assertEqual(e_dict, r_dict)
 
 
@@ -54,9 +54,9 @@ class TestHomicideData(JsonTest):
         result=generate_download_file(cm, "json")
         result_dict=json.loads(result['data'])
         
-        #code for saving results in an initial run (alphabetize and indent as mercy to future users)
+        #code for saving results in an initial run (insertion-ordered and indented as mercy to future users)
         #with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
-        #    json.dump(result_dict, f, sort_keys=True, indent=4)
+        #    json.dump(result_dict, f, sort_keys=False, indent=4)
         with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
             expected_result=json.load(f)
 
@@ -153,9 +153,6 @@ class TestBelgiumRegex(JsonTest):
         result=generate_download_file(cm, "json")
         result_dict=json.loads(result['data'])
         expected_result_name="results.json"
-        #code for saving results in an initial run (alphabetize and indent as mercy to future users)
-        with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
-            json.dump(result_dict, f, sort_keys=True, indent=4)
         with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
             expected_result=json.load(f)
 

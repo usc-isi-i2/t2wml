@@ -118,6 +118,7 @@ def get_all_template_statements(cell_mapper):
                 errors[cell]="Missing (did not resolve to statement)"
         except Exception as e:
             errors[cell]=str(e)
+
     if errors:
         for cell in errors:
             print("error in cell "+ cell+ ": "+errors[cell], file=sys.stderr)
@@ -204,7 +205,7 @@ def generate_download_file(cell_mapper, filetype):
         data, errors = get_all_template_statements(cell_mapper)
 
     if filetype == 'json':
-        response["data"] = json.dumps(data, indent=3, sort_keys=True)
+        response["data"] = json.dumps(data, indent=3, sort_keys=False) #insertion-ordered
         response["error"] = None if not errors else errors
         return response
     
@@ -281,8 +282,14 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             raise T2WMLExceptions.PropertyTypeNotFound("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
-    response=generate_download_file(cell_mapper, "json")
-    data=json.loads(response["data"])
+    response=dict()
+    errors=[]
+    data=[]
+    if cell_mapper.use_cache:
+        data=cell_mapper.result_cacher.get_download()
+    if not data:
+        data, errors = get_all_template_statements(cell_mapper)
+
     file_name=Path(file_path).stem
     file_extension=Path(file_path).suffix
 
@@ -330,4 +337,5 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response["data"]=string_stream.getvalue()
     string_stream.close()
 
+    response["error"]=None if not errors else errors
     return response
