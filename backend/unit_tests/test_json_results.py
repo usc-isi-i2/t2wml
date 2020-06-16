@@ -30,7 +30,11 @@ class JsonTest(unittest.TestCase):
         for cell in results:
             r_dict=results[cell]
             e_dict=expected[cell]
-            self.assertEqual(e_dict, r_dict)
+            try:
+                self.assertEqual(e_dict, r_dict)
+            except:
+                for key in e_dict:
+                    self.assertEqual(e_dict[key], r_dict[key])
 
 
 class TestHomicideData(JsonTest):
@@ -157,6 +161,34 @@ class TestBelgiumRegex(JsonTest):
             expected_result=json.load(f)
 
         self.validate_results(result_dict, expected_result)
+
+
+class TestErrorCatching(JsonTest):
+    maxDiff = None
+    def setUp(self):
+        test_folder=os.path.join(unit_test_folder, "error-catching")
+        self.data_file=os.path.join(test_folder, "input_1.csv")
+        self.wikifier_file=os.path.join(test_folder, "wikifier_1.csv")
+        self.yaml_file=os.path.join(test_folder, "error.yaml")
+        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
+        self.expected_result_dir=test_folder
+        
+
+    def test_error(self):
+        yaml_file=self.yaml_file
+        item_table=ItemTable()
+        sheet_name="input_1.csv"
+        item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
+        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
+        result=generate_download_file(cm, "json")
+        result_dict= {"data":json.loads(result['data']), "error":result['error']}
+        expected_result_name="results.json"
+        with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
+            expected_result=json.load(f)
+
+        self.validate_results(result_dict, expected_result)
+
+
 
 
 if __name__ == '__main__':
