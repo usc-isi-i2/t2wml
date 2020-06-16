@@ -1,9 +1,11 @@
 import csv
 import json
 import warnings
+import sys
+from copy import deepcopy
 from io import StringIO
-from types import CodeType
 from pathlib import Path
+from collections import defaultdict
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
@@ -11,7 +13,7 @@ from backend_code.t2wml_exceptions import T2WMLException, make_frontend_err_dict
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.parsing.classes import ReturnClass
 from backend_code.parsing.constants import char_dict
-from backend_code.parsing.t2wml_parsing import iter_on_n_for_code
+from backend_code.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from backend_code.spreadsheets.conversions import to_excel
 
 from backend_code.triple_generator import generate_triples
@@ -23,7 +25,7 @@ def parse_time_for_dict(response, sparql_endpoint):
         try:
             prop_type= get_property_type(response["property"], sparql_endpoint)
         except QueryBadFormed:
-            raise T2WMLExceptions.InvalidT2WMLExpressionException("The value given for property is not a valid property:" +str(response["property"]))
+            raise T2WMLExceptions.MissingWikidataEntryException("The value given for property is not a valid property:" +str(response["property"]))
         
         if prop_type=="Time":
             if "format" in response:
@@ -33,7 +35,7 @@ def parse_time_for_dict(response, sparql_endpoint):
                                                                             additional_formats=[
                                                                                 response["format"]])
                     except ValueError:
-                        raise T2WMLExceptions.InvalidT2WMLExpressionException("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
+                        raise T2WMLExceptions.BadDateFormatException("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
 
                     if "precision" not in response:
                         response["precision"] = int(precision.value.__str__())
@@ -43,124 +45,179 @@ def parse_time_for_dict(response, sparql_endpoint):
 
 
 
-def get_template_statement(template, parsed_template, sparql_endpoint):
-    item_parsed=parsed_template.get("item", None)
-    if item_parsed:
-        try:
-            template["item"]=item_parsed.value
-            template["cell"]=to_excel(item_parsed.col, item_parsed.row)
-        except AttributeError: #eg hardcoded string
-             template["item"]=item_parsed
-    
-    for key in parsed_template:
-        if isinstance(parsed_template[key], ReturnClass):
-            template[key]=parsed_template[key].value
-        elif isinstance(parsed_template[key], list):
-            for attribute_dict in parsed_template[key]:
-                q_val=attribute_dict.pop("value", None) #deal with value last
-                for a_key in attribute_dict:
-                    if isinstance(attribute_dict[a_key], ReturnClass):
-                        attribute_dict[a_key]=attribute_dict[a_key].value
-                
-                attribute_dict["value"]=q_val #add q_val back, then deal with it
-                if q_val:
-                    if isinstance(q_val, ReturnClass):
-                        attribute_dict["value"]=q_val.value
-                        attribute_dict["cell"]=to_excel(q_val.col, q_val.row)
-                parse_time_for_dict(attribute_dict, sparql_endpoint)
-            template[key]=parsed_template[key]
-        else:
-            template[key]=parsed_template[key]
-
-    parse_time_for_dict(template, sparql_endpoint)
-    return template
-
-
-def _evaluate_template_for_list_of_dicts(attributes, context):
+def _parse_template_for_list_of_dicts(attributes, context):
+    errors=defaultdict(dict)
     attributes_parsed=[]
-    for attribute in attributes:
+    for i, attribute in enumerate(attributes):
         new_dict=dict(attribute)
         for key in attribute:
-            if isinstance(attribute[key], CodeType):
-                q_parsed=iter_on_n_for_code(attribute[key], context)
-                new_dict[key]=q_parsed
+            try:
+                if isinstance(attribute[key], T2WMLCode):
+                    q_parsed=iter_on_n_for_code(attribute[key], context)
+                    new_dict[key]=q_parsed
+            except Exception as e:
+                errors[str(i+1)][key]=str(e)
         attributes_parsed.append(new_dict)
-    return attributes_parsed
+
+    return attributes_parsed, errors
 
 
-def evaluate_template(template, context):
-    parsed_template=dict(template)
-    for key in template:
-        if isinstance(template[key], list):
-            key_parsed=_evaluate_template_for_list_of_dicts(template[key], context)
-        elif isinstance(template[key], CodeType):
-            key_parsed=iter_on_n_for_code(template[key], context)
-        else:
-            key_parsed=template[key]
-        parsed_template[key]=key_parsed
-    return parsed_template
+def _parse_template(entry, context):
+    if isinstance(entry, list):
+        entry_parsed, errors=_parse_template_for_list_of_dicts(entry, context)
+        return entry_parsed, errors
+    elif isinstance(entry, T2WMLCode):
+        entry_parsed= iter_on_n_for_code(entry, context)
+        return entry_parsed, None
+    else:
+        return entry, None
 
-    
-    
-def update_highlight_data(data, parsed_template):
-    item_parsed=parsed_template.get("item", None)
-    if item_parsed:
+def get_template_statement(cell_mapper, context, sparql_endpoint):
+    parsed_template=dict()
+    errors=dict()
+    for key in cell_mapper.template:
         try:
-            data["item"].add(to_excel(item_parsed.col, item_parsed.row))
-        except AttributeError: #eg hardcoded string
-            pass
+            entry_parsed, inner_errors=_parse_template(cell_mapper.eval_template[key], context)
+            if inner_errors:
+                errors[key]=inner_errors
+            parsed_template[key]=entry_parsed
+        except Exception as e:
+            errors[key]=str(e)
     
-    attributes_parsed_dict= {'qualifierRegion': "qualifier", 'referenceRegion': "reference"}
-    for label, attribute_key in attributes_parsed_dict.items():
-        attributes_parsed=parsed_template.get(attribute_key, None)
-        if attributes_parsed:
-            attribute_cells = set()
-            for attribute in attributes_parsed:
-                attribute_parsed=attribute.get("value", None)
-                if attribute_parsed and isinstance(attribute_parsed, ReturnClass):
-                    attribute_cell=to_excel(attribute_parsed.col, attribute_parsed.row)
-                    if attribute_cell:
-                        attribute_cells.add(attribute_cell)
-            data[label] |= attribute_cells
+    template=dict()
+     
+    for key in parsed_template:
+        if isinstance(parsed_template[key], ReturnClass):
+            value=parsed_template[key].value
+            if not value:
+                errors[key]="Not found"
+            else:
+                template[key]=value
+        elif isinstance(parsed_template[key], list):
+            new_list=[]
+            for i, attribute_dict in enumerate(parsed_template[key]):
+                new_dict={}
+                mini_error_dict={}
+                for a_key in attribute_dict:
+                    if isinstance(attribute_dict[a_key], ReturnClass):
+                        value=attribute_dict[a_key].value
+                        if not value:
+                            mini_error_dict[a_key]="Not found"
+                        else:
+                            new_dict[a_key]=value
+                    else:
+                        new_dict[a_key]=attribute_dict[a_key]
+
+                #handle value cell
+                q_val=attribute_dict.get("value", None)
+                try:
+                    new_dict["cell"]=to_excel(q_val.col, q_val.row)
+                except AttributeError: #eg hardcoded string
+                    pass
+                try:
+                    parse_time_for_dict(new_dict, sparql_endpoint)
+                except Exception as e:
+                    mini_error_dict['time parsing']=str(e)
 
 
+                new_list.append(new_dict)
+                if mini_error_dict:
+                    if key in errors:
+                        errors[key][str(i)]=mini_error_dict
+                    else:
+                        errors[key]={str(i):mini_error_dict}
+
+            template[key]=new_list
+            
+
+        else:
+            template[key]=parsed_template[key]
+    
+    #handle item cell
+    try:
+        item_parsed=parsed_template["item"]
+        template["item"]=item_parsed.value
+        template["cell"]=to_excel(item_parsed.col, item_parsed.row)
+    except AttributeError: #eg hardcoded string
+        template["item"]=item_parsed
+    
+    if errors:
+        #if the problem is in value, property, or item, the statement for this cell is too malformed to return the template
+        if set(["value", "property", "item"]).intersection(errors.keys()):
+            raise T2WMLExceptions.TemplateDidNotApplyToInput(errors=errors)
+    try:
+        parse_time_for_dict(template, sparql_endpoint)
+    except Exception as e: #for now we're treating this as critical failure of value, may change to warning
+        raise T2WMLExceptions.TemplateDidNotApplyToInput(errors=errors)
+    return template, errors
+    
+    
+def get_all_template_statements(cell_mapper):
+    sparql_endpoint=cell_mapper.sparql_endpoint
+    statements={}
+    errors={}
+    for col, row in cell_mapper.region:
+        cell=to_excel(col-1, row-1)
+        context={"t_var_row":row, "t_var_col":col}
+        try:
+            statement, inner_errors=get_template_statement(cell_mapper, context, sparql_endpoint)
+            statements[cell]=statement
+            if inner_errors:
+                errors[cell]=inner_errors
+        except T2WMLExceptions.TemplateDidNotApplyToInput as e:
+            errors[cell]=e.errors
+        except Exception as e:
+            errors[cell]=str(e)
+
+    if errors:
+        for cell in errors:
+            print("ERROR: error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
+    return statements, errors
+
+
+
+
+                
 
 
 def highlight_region(cell_mapper):
-    sparql_endpoint=cell_mapper.sparql_endpoint
     if cell_mapper.use_cache:
-        data=cell_mapper.cacher.get_highlight_region()
-        if data:
-            return data
+        highlight_data=cell_mapper.result_cacher.get_highlight_region()
+        if highlight_data:
+            return highlight_data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
-    statement_data=[]
-    for col, row in cell_mapper.region:
-        cell=to_excel(col-1, row-1)
+    statement_data, errors= get_all_template_statements(cell_mapper)
+    for cell in statement_data:
         highlight_data["dataRegion"].add(cell)
-        context={"t_var_row":row, "t_var_col":col}
-        try:
-            parsed_template= evaluate_template(cell_mapper.eval_template, context)
-            update_highlight_data(highlight_data, parsed_template)
+        statement = statement_data[cell]
+        item_cell=statement.get("cell", None)
+        if item_cell:
+            highlight_data["item"].add(item_cell)
+        qualifiers = statement.get("qualifier", None)
+        if qualifiers:
+            for qualifier in qualifiers:
+                qual_cell=qualifier.get("cell", None)
+                if qual_cell:
+                    highlight_data["qualifierRegion"].add(qual_cell)
+    
+        references = statement.get("reference", None)
+        if references:
+            for ref in references:
+                ref_cell=ref.get("cell", None)
+                if ref_cell:
+                    highlight_data["referenceRegion"].add(ref_cell)
 
-            if cell_mapper.use_cache:
-                statement=get_template_statement(cell_mapper.template, parsed_template, sparql_endpoint)
-                if statement:
-                    statement_data.append(
-                        {'cell': cell, 
-                        'statement': statement})
-        except T2WMLException as exception:
-            error = exception.error_dict
-            highlight_data['error'][to_excel(col, row)] = error
-    if highlight_data["error"]:
-        raise T2WMLExceptions.InvalidT2WMLExpressionException(message=str(highlight_data["error"])) #TODO: return this properly, not as a str(dict)
+
+
     highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
     highlight_data['item'] = list(highlight_data['item'])
     highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
+    highlight_data['error']=errors
 
     if cell_mapper.use_cache:
-        cell_mapper.cacher.save(highlight_data, statement_data)
+        cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
     return highlight_data
 
 
@@ -168,15 +225,12 @@ def resolve_cell(cell_mapper, col, row):
     sparql_endpoint=cell_mapper.sparql_endpoint
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     try:
-        template_parsed= evaluate_template(cell_mapper.eval_template, context)
-        statement=get_template_statement(cell_mapper.template, template_parsed, sparql_endpoint)
-        if statement:
-            data = {'statement': statement, 'error': None}
-        else:
-            data = {'statement': None, 'error': "Item doesn't exist"}
-    except T2WMLException as exception:
-        error = exception.error_dict
-        data = {'error': error}
+        statement, errors=get_template_statement(cell_mapper, context, sparql_endpoint)
+        data = {'statement': statement, 'error': errors if errors else None}
+    except T2WMLExceptions.TemplateDidNotApplyToInput as e:
+        data=dict(error=e.errors)
+    except T2WMLException as e:
+        data=dict(error=e.error_dict)
     return data
 
 
@@ -189,37 +243,29 @@ def generate_download_file(cell_mapper, filetype):
 
     sparql_endpoint=cell_mapper.sparql_endpoint
     response=dict()
-    error=[]
+    errors=[]
     data=[]
     if cell_mapper.use_cache:
-        data=cell_mapper.cacher.get_download()
+        data=cell_mapper.result_cacher.get_download()
     
     if not data:
-        for col, row in cell_mapper.region:
-            try:
-                context={"t_var_row":row, "t_var_col":col}
-                template_parsed= evaluate_template(cell_mapper.eval_template, context)
-                statement=get_template_statement(cell_mapper.template, template_parsed, sparql_endpoint)
-                if statement:
-                    data.append(
-                        {'cell': to_excel(col-1, row-1), 
-                        'statement': statement})
-            except T2WMLException as e:
-                error.append({'cell': to_excel(col, row), 
-                'error': str(e)})
-
+        data, errors = get_all_template_statements(cell_mapper)
 
     if filetype == 'json':
-        response["data"] = json.dumps(data, indent=3)
-        response["error"] = None if not error else error
+        response["data"] = json.dumps(data, indent=3, sort_keys=False) #insertion-ordered
+        response["error"] = None if not errors else errors
         return response
     
     elif filetype == 'ttl':
         response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=cell_mapper.created_by)
-        response["error"] = None if not error else error
+        response["error"] = None #if not errors else errors
         return response
 
 
+def enclose_in_quotes(value):
+    if value != "" and value is not None:
+        return "\""+str(value)+"\""
+    return ""
 
 def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_endpoint):
     property_type= get_property_type(property_dict["property"], sparql_endpoint)
@@ -248,7 +294,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             '''
             result_dict["node2;kgtk:data_type"]="quantity"
             result_dict["node2;kgtk:number"]= value
-            result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
+            result_dict["node2;kgtk:units_node"]= enclose_in_quotes(property_dict.get("unit", ""))
             result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
             result_dict["node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
 
@@ -259,7 +305,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             node2;kgtk:calendar: for dates, the qnode of the calendar, if specified
             '''
             result_dict["node2;kgtk:data_type"]="date_and_times"
-            result_dict["node2;kgtk:date_and_time"]=value
+            result_dict["node2;kgtk:date_and_time"]=enclose_in_quotes(value)
             result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
             result_dict["node2;kgtk:calendar"]=property_dict.get("calendar", "")
 
@@ -271,8 +317,8 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             node2;kgtk:language: for text, the language tag
             '''
             result_dict["node2;kgtk:data_type"]="string"
-            result_dict["node2;kgtk:text"]="\""+value+"\""
-            result_dict["node2;kgtk:language"]=property_dict.get("lang", "")
+            result_dict["node2;kgtk:text"]=enclose_in_quotes(value)
+            result_dict["node2;kgtk:language"]=enclose_in_quotes(property_dict.get("lang", ""))
 
         elif property_type in ["WikibaseItem", "WikibaseProperty"]:
             result_dict["node2;kgtk:data_type"]="symbol"
@@ -280,11 +326,17 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:symbol"]=value
         
         else:
-            raise ValueError("Property type "+property_type+" is not currently supported")
+            raise T2WMLExceptions.PropertyTypeNotFound("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
-    response=generate_download_file(cell_mapper, "json")
-    data=json.loads(response["data"])
+    response=dict()
+    errors=[]
+    data=[]
+    if cell_mapper.use_cache:
+        data=cell_mapper.result_cacher.get_download()
+    if not data:
+        data, errors = get_all_template_statements(cell_mapper)
+
     file_name=Path(file_path).stem
     file_extension=Path(file_path).suffix
 
@@ -292,19 +344,19 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
         sheet_name=""
 
     tsv_data=[]
-    for entry in data:
-        cell=entry["cell"]
+    for cell in data:
+        statement=data[cell]
         id = project_name + ";" + file_name + "." + sheet_name + file_extension + ";" + cell
-        statement=entry["statement"]
         cell_result_dict=dict(id=id, node1=statement["item"], label=statement["property"])
         kgtk_add_property_type_specific_fields(statement, cell_result_dict, cell_mapper.sparql_endpoint)
         tsv_data.append(cell_result_dict)
 
         qualifiers=statement.get("qualifier", [])
         for qualifier in qualifiers:
-            second_cell=qualifier.get("cell", "")
-            q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
-            qualifier_result_dict=dict(id=q_id, node1=id, label=qualifier["property"])
+            #commented out. for now, do not generate an id at all for qualifier edges.
+            #second_cell=qualifier.get("cell", "")
+            #q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
+            qualifier_result_dict=dict(node1=id, label=qualifier["property"])
             kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict, cell_mapper.sparql_endpoint)
             tsv_data.append(qualifier_result_dict)
 
@@ -332,4 +384,5 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response["data"]=string_stream.getvalue()
     string_stream.close()
 
+    response["error"]=None if not errors else errors
     return response

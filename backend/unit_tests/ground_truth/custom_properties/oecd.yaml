@@ -1,0 +1,28 @@
+statementMapping:
+  region: 
+    - left: D
+      right: K
+      top: 6
+      # find the bottom of the data
+      #bottom: =value[C:D, $top+$n] == "" -> $top+$n-1 
+      bottom: 8
+      skip_cell:
+        - =value[$col, $row] == " .."
+        - =contains(value[$col, $row], "c") 
+  template:
+    # The country is extracted from B2
+    item: '=get_item(regex(value[B, 2], "profile: (.*) \d{4}", 1))' 
+    property: P1082 #=item[B, $row]
+    value: =replace(value[$col, $row], "[^\d.-]", "")
+    unit: =item[C, $row, 'unit']
+    qualifier:
+      - property: P585 #point in time
+        value: =value[$col, 4]
+        calendar: Q1985727
+        precision: year
+        time_zone: 0
+        format: "%Y"
+      - property: P248 # stated in
+        value: Q41550 # OECD
+      - property: P2006010001 # Datamart dataset id
+        value: Q2006050001 # OECD dataset

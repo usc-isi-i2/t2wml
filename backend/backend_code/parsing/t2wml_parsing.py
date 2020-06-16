@@ -9,6 +9,11 @@ eval_globals=dict()
 eval_globals.update(char_dict)
 eval_globals.update(functions_dict)
 
+class T2WMLCode:
+    def __init__(self, code, original_str):
+        self.code=code
+        self.has_n="t_var_n" in original_str
+
 
 def t2wml_parse(e_str, context={}):
     value = CellExpression()
@@ -16,16 +21,14 @@ def t2wml_parse(e_str, context={}):
     globals = dict(value=value, item=item)
     globals.update(eval_globals)
     globals.update(context)
-    try:
-        result = eval(e_str, globals)
-        return result
-    except Exception as e:
-        print("error in", e_str, ":", str(e))
-        raise e
+    result = eval(e_str, globals)
+    return result
 
-def iter_on_n(expression, context={}):
+
+def iter_on_n(expression, context={}, upper_limit=None):
     #handle iter on variable n. if there is no variable n this will anyway return in first iteration
-    upper_limit= max(len(bindings.excel_sheet), len(bindings.excel_sheet[0]))
+    if upper_limit is None:
+        upper_limit= max(len(bindings.excel_sheet), len(bindings.excel_sheet[0]))
     for n in range(0, upper_limit):
         try:
             context_dir={"t_var_n":n}
@@ -33,10 +36,16 @@ def iter_on_n(expression, context={}):
             return_value= t2wml_parse(expression, context_dir)
             if return_value:
                 return return_value
+            #else:
+            #    print(n)
         except IndexError:
             break
 
 def iter_on_n_for_code(input, context={}):
     if isinstance(input, str):
         return ReturnClass(None, None, input)
-    return iter_on_n(input, context)
+    if isinstance(input, T2WMLCode):
+        if input.has_n:
+            return iter_on_n(input.code, context)
+        return t2wml_parse(input.code, context)
+    return t2wml_parse(input, context)

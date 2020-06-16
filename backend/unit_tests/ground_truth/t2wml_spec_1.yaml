@@ -15,4 +15,4 @@ statementMapping:
         calendar: Q1985727
         precision: day
         time_zone: 0
-        format: "%d/%m/%Y"
+        format: "%d/%m/%y"

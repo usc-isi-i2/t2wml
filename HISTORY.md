@@ -1,6 +1,28 @@
 T2WML History
 ===================
 
+Changes in version 2.0a12:
+------------------------
+* bug fixes:
+   - duplicate edges in kgtk output
+   - missing quotations in kgtk output
+   - driver.py crashed on missing file
+
+Changes in version 2.0a11:
+------------------------
+* fixed bug that was forcing incorrect property captilization for multi-word property types
+* uploading proprties that already exist now overwrites the type of the existing properties
+* attempting to upload properties of a type that is not supported will now return an error
+
+Changes in version 2.0a10:
+------------------------
+* performance improvements
+
+Changes in version 2.0a9:
+------------------------
+* added support for uploading properties from a kgtk tsv file
+* added slight optimization for r2wml expressions that only need to be evaluated once
+
 Changes in version 2.0a8:
 ------------------------
 * added patch support for getting items by string+context from item table

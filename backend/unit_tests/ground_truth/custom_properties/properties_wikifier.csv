@@ -1,0 +1,261 @@
+column,row,value,context,item
+,,GDP per capita,property,POECD-002
+,,Gross national income (GNI) per capita,property,POECD-003
+,,Household disposable income,property,POECD-004
+,,Real GDP growth,property,POECD-005
+,,Net saving rate in household disposable income,property,POECD-006
+,,Gross fixed capital formation,property,POECD-007
+,,"Agriculture, forestry, fishing",property,POECD-008
+,,Industry including energy,property,POECD-009
+,,Construction,property,POECD-010
+,,"Trade, repairs, transport, accomm., food services",property,POECD-011
+,,"Information, communication",property,POECD-012
+,,Finance and insurance,property,POECD-013
+,,Real estate,property,POECD-014
+,,"Professional, scientific, support services",property,POECD-015
+,,"Public admin., defence, education, health, social work",property,POECD-016
+,,Other services (ISIC Rev.4 R - U),property,POECD-017
+,,Government deficit,property,POECD-018
+,,General government debt,property,POECD-019
+,,General government revenues,property,POECD-020
+,,General government expenditures,property,POECD-021
+,,Government/compulsory expenditure on health,property,POECD-022
+,,Voluntary expenditure on health,property,POECD-023
+,,Public social expenditure,property,POECD-024
+,,Private social expenditure,property,POECD-025
+,,Public pension expenditure,property,POECD-026
+,,Private pension expenditure,property,POECD-027
+,,Net official development assistance (Aid),property,POECD-028
+,,Total tax revenue,property,POECD-029
+,,Tax on personal income,property,POECD-030
+,,Tax on corporate profits,property,POECD-031
+,,Taxes on goods and services,property,POECD-032
+,,Taxes on the average worker,property,POECD-033
+,,Imports of goods and services,property,POECD-034
+,,Exports of goods and services,property,POECD-035
+,,Goods trade balance: exports minus imports of goods,property,POECD-036
+,,Imports of goods,property,POECD-037
+,,Exports of goods,property,POECD-038
+,,Service trade balance: exports minus imports of services,property,POECD-039
+,,Imports of services,property,POECD-040
+,,Exports of services,property,POECD-041
+,,Current account balance of payments,property,POECD-042
+,,Outward FDI stocks,property,POECD-043
+,,Inward FDI stocks,property,POECD-044
+,,Inflows of foreign direct investment,property,POECD-045
+,,Outflows of foreign direct investment,property,POECD-046
+,,Inflation rate: all items,property,POECD-047
+,,Inflation rate: all items non food non energy,property,POECD-048
+,,Inflation rate: food,property,POECD-049
+,,Inflation rate: energy,property,POECD-050
+,,Producer Price Indices (PPI): manufacturing,property,POECD-051
+,,Long-term interest rates,property,POECD-052
+,,Purchasing power parities,property,POECD-053
+,,Exchange rates,property,POECD-054
+,,Indices of price levels,property,POECD-055
+,,Total primary energy supply (TPES),property,POECD-056
+,,TPES per unit of GDP at 2000 prices and PPPs,property,POECD-057
+,,Renewable energy,property,POECD-058
+,,Crude oil import prices,property,POECD-059
+,,Information and Communications Technology (ICT),property,POECD-060
+,,Households with access to computers,property,POECD-061
+,,Households with access to internet,property,POECD-062
+,,Water abstactions,property,POECD-063
+,,National fish landings in domestic ports,property,POECD-064
+,,National fish landings in foreign ports,property,POECD-065
+,,Aquaculture,property,POECD-066
+,,Municipal waste total,property,POECD-067
+,,Municipal waste total per capita,property,POECD-068
+,,CO2 emissions from fuel combustion,property,POECD-069
+,,Tertiary attainment in population aged 25-64,property,POECD-070
+,,"Expenditure per student: primary, 2010 prices",property,POECD-071
+,,"Expenditure per student: secondary, 2010 prices",property,POECD-072
+,,"Expenditure per student: tertiary, 2010 prices",property,POECD-073
+,,Youths 15-19 not in education nor employment,property,POECD-074
+,,Youths 20-24 not in education nor employment,property,POECD-075
+,,Employment rate in population aged 15-24,property,POECD-076
+,,Employment rate in population aged 25-54,property,POECD-077
+,,Employment rate in population aged 55-64,property,POECD-078
+,,Incidence of part-time employment,property,POECD-079
+,,Self-employment rate: total employment,property,POECD-080
+,,Self-employment rate: male employment,property,POECD-081
+,,Self-employment rate: female employment,property,POECD-082
+,,Unemployment,property,POECD-083
+,,Unemployment rate: total labour force,property,POECD-084
+,,Unemployment rate: male labour force,property,POECD-085
+,,Unemployment rate: female labour force,property,POECD-086
+,,Long-term unemployment: total unemployed,property,POECD-087
+,,Labour compensation and hours worked,property,POECD-088
+,,"Labour compensation per unit labour input, total economy",property,POECD-089
+,,Average time worked per person in employment,property,POECD-090
+,,Research and Development (R&D),property,POECD-091
+,,Gross domestic expenditure on R&D,property,POECD-092
+,,Researchers: full-time equivalent,property,POECD-093
+,,Total population,property,P1082
+,,Population growth rates,property,POECD-095
+,,Total fertitity rates,property,POECD-096
+,,Youth population aged less than 15,property,POECD-097
+,,Elderly population aged 65 and over,property,POECD-098
+,,Foreign-born population,property,POECD-099
+,,Foreign population,property,POECD-100
+,,Unemployment rate in population of native-born men,property,POECD-101
+,,Unemployment rate in population of foreign-born men,property,POECD-102
+,,Unemployment rate in population of native-born women,property,POECD-103
+,,Unemployment rate in population of foreign-born women,property,POECD-104
+,,Life expectancy at birth,property,POECD-105
+,,Life expectancy at birth: men,property,POECD-106
+,,Life expectancy at birth: women,property,POECD-107
+,,Infant mortality,property,POECD-108
+,,"Overweight or obese, % of population aged 15 and over",property,POECD-109
+,,Suicide Rates,property,POECD-110
+,,Goods transport,property,POECD-111
+,,Passenger transport,property,POECD-112
+,,Road Fatalities,property,POECD-113
+,,GDP per capita,variable,QOECD-002
+,,Gross national income (GNI) per capita,variable,QOECD-003
+,,Household disposable income,variable,QOECD-004
+,,Real GDP growth,variable,QOECD-005
+,,Net saving rate in household disposable income,variable,QOECD-006
+,,Gross fixed capital formation,variable,QOECD-007
+,,"Agriculture, forestry, fishing",variable,QOECD-008
+,,Industry including energy,variable,QOECD-009
+,,Construction,variable,QOECD-010
+,,"Trade, repairs, transport, accomm., food services",variable,QOECD-011
+,,"Information, communication",variable,QOECD-012
+,,Finance and insurance,variable,QOECD-013
+,,Real estate,variable,QOECD-014
+,,"Professional, scientific, support services",variable,QOECD-015
+,,"Public admin., defence, education, health, social work",variable,QOECD-016
+,,Other services (ISIC Rev.4 R - U),variable,QOECD-017
+,,Government deficit,variable,QOECD-018
+,,General government debt,variable,QOECD-019
+,,General government revenues,variable,QOECD-020
+,,General government expenditures,variable,QOECD-021
+,,Government/compulsory expenditure on health,variable,QOECD-022
+,,Voluntary expenditure on health,variable,QOECD-023
+,,Public social expenditure,variable,QOECD-024
+,,Private social expenditure,variable,QOECD-025
+,,Public pension expenditure,variable,QOECD-026
+,,Private pension expenditure,variable,QOECD-027
+,,Net official development assistance (Aid),variable,QOECD-028
+,,Total tax revenue,variable,QOECD-029
+,,Tax on personal income,variable,QOECD-030
+,,Tax on corporate profits,variable,QOECD-031
+,,Taxes on goods and services,variable,QOECD-032
+,,Taxes on the average worker,variable,QOECD-033
+,,Imports of goods and services,variable,QOECD-034
+,,Exports of goods and services,variable,QOECD-035
+,,Goods trade balance: exports minus imports of goods,variable,QOECD-036
+,,Imports of goods,variable,QOECD-037
+,,Exports of goods,variable,QOECD-038
+,,Service trade balance: exports minus imports of services,variable,QOECD-039
+,,Imports of services,variable,QOECD-040
+,,Exports of services,variable,QOECD-041
+,,Current account balance of payments,variable,QOECD-042
+,,Outward FDI stocks,variable,QOECD-043
+,,Inward FDI stocks,variable,QOECD-044
+,,Inflows of foreign direct investment,variable,QOECD-045
+,,Outflows of foreign direct investment,variable,QOECD-046
+,,Inflation rate: all items,variable,QOECD-047
+,,Inflation rate: all items non food non energy,variable,QOECD-048
+,,Inflation rate: food,variable,QOECD-049
+,,Inflation rate: energy,variable,QOECD-050
+,,Producer Price Indices (PPI): manufacturing,variable,QOECD-051
+,,Long-term interest rates,variable,QOECD-052
+,,Purchasing power parities,variable,QOECD-053
+,,Exchange rates,variable,QOECD-054
+,,Indices of price levels,variable,QOECD-055
+,,Total primary energy supply (TPES),variable,QOECD-056
+,,TPES per unit of GDP at 2000 prices and PPPs,variable,QOECD-057
+,,Renewable energy,variable,QOECD-058
+,,Crude oil import prices,variable,QOECD-059
+,,Information and Communications Technology (ICT),variable,QOECD-060
+,,Households with access to computers,variable,QOECD-061
+,,Households with access to internet,variable,QOECD-062
+,,Water abstactions,variable,QOECD-063
+,,National fish landings in domestic ports,variable,QOECD-064
+,,National fish landings in foreign ports,variable,QOECD-065
+,,Aquaculture,variable,QOECD-066
+,,Municipal waste total,variable,QOECD-067
+,,Municipal waste total per capita,variable,QOECD-068
+,,CO2 emissions from fuel combustion,variable,QOECD-069
+,,Tertiary attainment in population aged 25-64,variable,QOECD-070
+,,"Expenditure per student: primary, 2010 prices",variable,QOECD-071
+,,"Expenditure per student: secondary, 2010 prices",variable,QOECD-072
+,,"Expenditure per student: tertiary, 2010 prices",variable,QOECD-073
+,,Youths 15-19 not in education nor employment,variable,QOECD-074
+,,Youths 20-24 not in education nor employment,variable,QOECD-075
+,,Employment rate in population aged 15-24,variable,QOECD-076
+,,Employment rate in population aged 25-54,variable,QOECD-077
+,,Employment rate in population aged 55-64,variable,QOECD-078
+,,Incidence of part-time employment,variable,QOECD-079
+,,Self-employment rate: total employment,variable,QOECD-080
+,,Self-employment rate: male employment,variable,QOECD-081
+,,Self-employment rate: female employment,variable,QOECD-082
+,,Unemployment,variable,QOECD-083
+,,Unemployment rate: total labour force,variable,QOECD-084
+,,Unemployment rate: male labour force,variable,QOECD-085
+,,Unemployment rate: female labour force,variable,QOECD-086
+,,Long-term unemployment: total unemployed,variable,QOECD-087
+,,Labour compensation and hours worked,variable,QOECD-088
+,,"Labour compensation per unit labour input, total economy",variable,QOECD-089
+,,Average time worked per person in employment,variable,QOECD-090
+,,Research and Development (R&D),variable,QOECD-091
+,,Gross domestic expenditure on R&D,variable,QOECD-092
+,,Researchers: full-time equivalent,variable,QOECD-093
+,,Total population,variable,QOECD-094
+,,Population growth rates,variable,QOECD-095
+,,Total fertitity rates,variable,QOECD-096
+,,Youth population aged less than 15,variable,QOECD-097
+,,Elderly population aged 65 and over,variable,QOECD-098
+,,Foreign-born population,variable,QOECD-099
+,,Foreign population,variable,QOECD-100
+,,Unemployment rate in population of native-born men,variable,QOECD-101
+,,Unemployment rate in population of foreign-born men,variable,QOECD-102
+,,Unemployment rate in population of native-born women,variable,QOECD-103
+,,Unemployment rate in population of foreign-born women,variable,QOECD-104
+,,Life expectancy at birth,variable,QOECD-105
+,,Life expectancy at birth: men,variable,QOECD-106
+,,Life expectancy at birth: women,variable,QOECD-107
+,,Infant mortality,variable,QOECD-108
+,,"Overweight or obese, % of population aged 15 and over",variable,QOECD-109
+,,Suicide Rates,variable,QOECD-110
+,,Goods transport,variable,QOECD-111
+,,Passenger transport,variable,QOECD-112
+,,Road Fatalities,variable,QOECD-113
+,,USD current PPPs,unit,QOECD-U002
+,,Annual growth %,unit,QOECD-U003
+,,%,unit,Q11229
+,,% of GDP,unit,QOECD-U005
+,,% of GNI,unit,QOECD-U006
+,,% of labour cost,unit,QOECD-U007
+,,Bln USD,unit,QOECD-U008
+,,Mln USD,unit,QOECD-U009
+,,EUR per USD,unit,QOECD-U010
+,,OECD=100,unit,QOECD-U011
+,,Mtoe,unit,QOECD-U012
+,,Toe per '000 USD,unit,QOECD-U013
+,,Ktoe,unit,QOECD-U014
+,,USD per barrel,unit,QOECD-U015
+,,Mln m3,unit,QOECD-U016
+,,000 tonnes,unit,QOECD-U017
+,,Kg,unit,Q11570
+,,Mln tonnes,unit,QOECD-U019
+,,USD constant PPPs,unit,QOECD-U020
+,,Hours per year,unit,QOECD-U021
+,,Per '000 employed,unit,QOECD-U022
+,,000 persons,unit,QOECD-U023
+,,Children,unit,QOECD-U024
+,,% of population,unit,QOECD-U025
+,,% of labour force,unit,QOECD-U026
+,,Years,unit,Q577
+,,Per '000,unit,QOECD-U028
+,,Measured,unit,QOECD-U029
+,,Per 100 000 persons,unit,QOECD-U030
+,,Mln tonne-km,unit,QOECD-U031
+,,Mln passenger-km,unit,QOECD-U032
+,,Per mln inhabitants,unit,QOECD-U033
+,,000 persons,unit,QOECD-U034
+,,000 tonnes,unit,QOECD-U035
+,,CAD per USD,unit,QOECD-U036
+,,Belgium,,Q115

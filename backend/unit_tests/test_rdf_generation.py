@@ -88,7 +88,7 @@ class TestRDFGeneration(unittest.TestCase):
 
         self.assertEqual(response['data'], results)
 
-    def xtest_rdf_generation_with_geo_coordinates_as_qualifiers(self, sheet_name: str = None):
+    def test_rdf_generation_with_geo_coordinates_as_qualifiers(self, sheet_name: str = None):
         with open(self.results_path_3, 'r') as f:
             results=f.read()
         if not sheet_name:
@@ -107,7 +107,7 @@ class TestRDFGeneration(unittest.TestCase):
 
         self.assertEqual(response['data'], results)
 
-    def xtest_rdf_generation_with_geo_coordinates(self, sheet_name: str = None):
+    def test_rdf_generation_with_geo_coordinates(self, sheet_name: str = None):
         with open(self.results_path_4, 'r') as f:
             results=f.read()
         if not sheet_name:

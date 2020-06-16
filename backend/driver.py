@@ -6,12 +6,13 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 #IMPORTANT: the import from models must happen before the other backend_code imports because of flask circular imports
 from backend_code.cell_mapper import CellMapper
 from backend_code.item_table import ItemTable
-from backend_code.t2wml_handling import generate_download_file
+from backend_code.t2wml_handling import generate_download_file, download_kgtk
 from backend_code.spreadsheets.utilities import get_first_sheet_name
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
-              sheet_name: str = None,
-              sparql_endpoint: str = DEFAULT_SPARQL_ENDPOINT, debug=False):
+              sheet_name: str = None, sparql_endpoint: str = DEFAULT_SPARQL_ENDPOINT, 
+              filetype: str="ttl", project_name="DriverProject",
+              debug=False):
     
     try:
         if not sheet_name:
@@ -22,8 +23,6 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         except:
             logging.error("Data file has no extension")
             return
-        new_file_path = str(Path.cwd() / 'temporary_files' / file_name)
-        #os.makedirs(str(Path.cwd() / 'temporary_files'), exist_ok=True)
     except KeyError as e:
         logging.error("Invalid sheet name:"+str(e))
         return
@@ -33,20 +32,25 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
 
     try:
         item_table = ItemTable()
-        item_table.update_table_from_wikifier_file(wikified_output_path, new_file_path, sheet_name)
+        item_table.update_table_from_wikifier_file(wikified_output_path, data_file_path, sheet_name)
     except Exception as e:
         print(e)
         logging.error("Invalid Wikfied Output File")
         return
 
     try:
-        yc = CellMapper(t2wml_spec, item_table, new_file_path, sheet_name, sparql_endpoint)
+        yc = CellMapper(t2wml_spec, item_table, data_file_path, sheet_name, sparql_endpoint)
     except Exception as e:
         logging.error("Invalid YAML File")
         return
 
-    filetype = "ttl"
-    response = generate_download_file(yc, filetype)
+    if filetype in ["ttl", "json"]:
+        response = generate_download_file(yc, filetype)
+    elif filetype in ["tsv"]:
+        response=download_kgtk(yc, project_name, data_file_path, sheet_name)
+    else:
+        raise ValueError("Unsupported result file type")
+
     result_directory = '.'.join(file_name.split(".")[:-1])
 
     output_path = Path()
@@ -57,10 +61,12 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
 
     Path.mkdir(output_path, parents=True, exist_ok=True)
 
-    with open(str(output_path / "results.ttl"), "w") as fp:
+    output_file_name="results."+filetype
+
+    with open(str(output_path / output_file_name), "w") as fp:
         fp.write(response["data"])
 
     with open(str(output_path / "changes.tsv"), "w") as fp:
         serialize_change_record(fp)
+    
 
-    os.remove(new_file_path)

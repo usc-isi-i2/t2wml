@@ -180,14 +180,19 @@ def add_properties_from_file(file_path):
     if Path(file_path).suffix == ".tsv":     
         with open(file_path, 'r') as f:
             reader=csv.DictReader(f, delimiter="\t")
-            input_dict={row_dict["node1"]: str(row_dict["node2"]).title() for row_dict in reader if row_dict["label"]=="data_type"}
+            input_dict={row_dict["node1"]: str(row_dict["node2"]) for row_dict in reader if row_dict["label"]=="data_type"}
 
     return_dict={"added":[], "present":[], "failed":[]}
     for key in input_dict:
+        prop_type=input_dict[key]
         try:
-            WikidataProperty.add(key, input_dict[key])
+            if prop_type not in ["GlobeCoordinate", "Quantity", "Time","String", "MonolingualText", "ExternalIdentifier", "WikibaseItem", "WikibaseProperty"]:
+                raise ValueError("Property type: "+prop_type+" not supported")
+            WikidataProperty.add(key,prop_type)
             return_dict["added"].append(key)
         except ValueAlreadyPresentError:
+            prop=WikidataProperty.query.get(key)
+            prop.update_property_definition(prop_type)
             return_dict["present"].append(key)
         except Exception as e:
             print(e)

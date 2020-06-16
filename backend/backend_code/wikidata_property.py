@@ -20,6 +20,10 @@ class WikidataProperty(db.Model):
             db.session.rollback()
             raise ValueAlreadyPresentError
 
+    def update_property_definition(self, new_definition):
+        self.property_type=new_definition
+        db.session.commit()
+
 
 class WikidataItem(db.Model):
     id=db.Column(db.Integer, primary_key=True)
