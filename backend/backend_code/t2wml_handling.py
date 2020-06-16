@@ -171,8 +171,7 @@ def get_all_template_statements(cell_mapper):
 
     if errors:
         for cell in errors:
-            pass
-            #print("ERROR: error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
+            print("ERROR: error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
     return statements, errors
 
 
