@@ -5,6 +5,7 @@ import sys
 from copy import deepcopy
 from io import StringIO
 from pathlib import Path
+from collections import defaultdict
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
@@ -45,18 +46,19 @@ def parse_time_for_dict(response, sparql_endpoint):
 
 
 def _parse_template_for_list_of_dicts(attributes, context):
-    errors={}
+    errors=defaultdict(dict)
     attributes_parsed=[]
-    for attribute in attributes:
-        try:
-            new_dict=dict(attribute)
-            for key in attribute:
+    for i, attribute in enumerate(attributes):
+        new_dict=dict(attribute)
+        for key in attribute:
+            try:
                 if isinstance(attribute[key], T2WMLCode):
                     q_parsed=iter_on_n_for_code(attribute[key], context)
                     new_dict[key]=q_parsed
-            attributes_parsed.append(new_dict)
-        except Exception as e:
-            errors[attribute]=str(e)
+            except Exception as e:
+                errors[str(i+1)][key]=str(e)
+        attributes_parsed.append(new_dict)
+
     return attributes_parsed, errors
 
 
@@ -72,7 +74,7 @@ def _parse_template(entry, context):
 
 def get_template_statement(cell_mapper, context, sparql_endpoint):
     parsed_template=dict()
-    errors={}
+    errors=dict()
     for key in cell_mapper.template:
         try:
             entry_parsed, inner_errors=_parse_template(cell_mapper.eval_template[key], context)
@@ -82,46 +84,67 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
         except Exception as e:
             errors[key]=str(e)
     
-    if errors:
-        #if the problem is in value, property, or item, the statement for this cell is too malformed to continue
-        if set("value", "property", "item").intersection(errors.keys()):
-            raise T2WMLExceptions.TemplateDidNotApplyToInput(errors=errors)
-    
     template=dict()
+     
+    for key in parsed_template:
+        if isinstance(parsed_template[key], ReturnClass):
+            value=parsed_template[key].value
+            if not value:
+                errors[key]="Not found"
+            else:
+                template[key]=value
+        elif isinstance(parsed_template[key], list):
+            new_list=[]
+            for i, attribute_dict in enumerate(parsed_template[key]):
+                new_dict={}
+                mini_error_dict={}
+                for a_key in attribute_dict:
+                    if isinstance(attribute_dict[a_key], ReturnClass):
+                        value=attribute_dict[a_key].value
+                        if not value:
+                            mini_error_dict[a_key]="Not found"
+                        else:
+                            new_dict[a_key]=value
+                    else:
+                        new_dict[a_key]=attribute_dict[a_key]
+
+                #handle value cell
+                q_val=attribute_dict.get("value", None)
+                try:
+                    new_dict["cell"]=to_excel(q_val.col, q_val.row)
+                except AttributeError: #eg hardcoded string
+                    pass
+                try:
+                    parse_time_for_dict(new_dict, sparql_endpoint)
+                except Exception as e:
+                    mini_error_dict['time parsing']=str(e)
+
+
+                new_list.append(new_dict)
+                if mini_error_dict:
+                    if key in errors:
+                        errors[key][str(i)]=mini_error_dict
+                    else:
+                        errors[key]={str(i):mini_error_dict}
+
+            template[key]=new_list
+            
+
+        else:
+            template[key]=parsed_template[key]
     
-    #deal with item separately
+    #handle item cell
     try:
-        item_parsed=parsed_template.pop("item", None)
+        item_parsed=parsed_template["item"]
         template["item"]=item_parsed.value
         template["cell"]=to_excel(item_parsed.col, item_parsed.row)
     except AttributeError: #eg hardcoded string
         template["item"]=item_parsed
     
-    for key in parsed_template:
-        if isinstance(parsed_template[key], ReturnClass):
-            template[key]=parsed_template[key].value
-        elif isinstance(parsed_template[key], list):
-            try:
-                for attribute_dict in parsed_template[key]:
-                    q_val=attribute_dict.pop("value", None) #deal with value last
-                    for a_key in attribute_dict:
-                        if isinstance(attribute_dict[a_key], ReturnClass):
-                            attribute_dict[a_key]=attribute_dict[a_key].value
-                    try:
-                        attribute_dict["value"]=q_val.value
-                        attribute_dict["cell"]=to_excel(q_val.col, q_val.row)
-                    except AttributeError: #eg hardcoded string
-                        attribute_dict["value"]=q_val
-                    
-                    try:
-                        parse_time_for_dict(attribute_dict, sparql_endpoint)
-                    except Exception as e:
-                        errors[key]=str(e)
-                template[key]=parsed_template[key]
-            except Exception as e:
-                raise e
-        else:
-            template[key]=parsed_template[key]
+    if errors:
+        #if the problem is in value, property, or item, the statement for this cell is too malformed to return the template
+        if set(["value", "property", "item"]).intersection(errors.keys()):
+            raise T2WMLExceptions.TemplateDidNotApplyToInput(errors=errors)
     try:
         parse_time_for_dict(template, sparql_endpoint)
     except Exception as e: #for now we're treating this as critical failure of value, may change to warning
@@ -139,16 +162,17 @@ def get_all_template_statements(cell_mapper):
         try:
             statement, inner_errors=get_template_statement(cell_mapper, context, sparql_endpoint)
             statements[cell]=statement
-            if errors:
+            if inner_errors:
                 errors[cell]=inner_errors
         except T2WMLExceptions.TemplateDidNotApplyToInput as e:
-                errors[cell]=e.errors_dict
+            errors[cell]=e.errors
         except Exception as e:
             errors[cell]=str(e)
 
     if errors:
         for cell in errors:
-            print("ERROR: error in cell "+ cell+ ": "+errors[cell], file=sys.stderr)
+            pass
+            #print("ERROR: error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
     return statements, errors
 
 

@@ -21,12 +21,9 @@ def t2wml_parse(e_str, context={}):
     globals = dict(value=value, item=item)
     globals.update(eval_globals)
     globals.update(context)
-    try:
-        result = eval(e_str, globals)
-        return result
-    except Exception as e:
-        print("error in", e_str, ":", str(e))
-        raise e
+    result = eval(e_str, globals)
+    return result
+
 
 def iter_on_n(expression, context={}, upper_limit=None):
     #handle iter on variable n. if there is no variable n this will anyway return in first iteration
