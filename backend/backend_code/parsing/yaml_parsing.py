@@ -46,10 +46,10 @@ class CodeParser:
             return False
 
 class TemplateParser(CodeParser):    
-    def __init__(self, yaml_data, region):
+    def __init__(self, template, region):
         self.region=region
-        self.template=dict(yaml_data['statementMapping']['template'])
-        self.eval_template=self.create_eval_template(yaml_data['statementMapping']['template'])
+        self.template=template
+        self.eval_template=self.create_eval_template(self.template)
 
     def get_code_replacement(self, input_str):
         fake_context=dict(t_var_row=self.region.top, t_var_col=self.region.left, t_var_n=0)

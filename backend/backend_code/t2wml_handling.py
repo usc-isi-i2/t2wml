@@ -2,6 +2,7 @@ import csv
 import json
 import warnings
 import sys
+from copy import deepcopy
 from io import StringIO
 from pathlib import Path
 from etk.wikidata.utils import parse_datetime_string
@@ -43,7 +44,33 @@ def parse_time_for_dict(response, sparql_endpoint):
 
 
 
-def get_template_statement(template, parsed_template, sparql_endpoint):
+def _parse_template_for_list_of_dicts(attributes, context):
+    attributes_parsed=[]
+    for attribute in attributes:
+        new_dict=dict(attribute)
+        for key in attribute:
+            if isinstance(attribute[key], T2WMLCode):
+                q_parsed=iter_on_n_for_code(attribute[key], context)
+                new_dict[key]=q_parsed
+        attributes_parsed.append(new_dict)
+    return attributes_parsed
+
+
+def _parse_template(template, context):
+    parsed_template=dict(template)
+    for key in template:
+        if isinstance(template[key], list):
+            key_parsed=_parse_template_for_list_of_dicts(template[key], context)
+        elif isinstance(template[key], T2WMLCode):
+            key_parsed=iter_on_n_for_code(template[key], context)
+        else:
+            key_parsed=template[key]
+        parsed_template[key]=key_parsed
+    return parsed_template
+
+def get_template_statement(cell_mapper, context, sparql_endpoint):
+    template=deepcopy(cell_mapper.template)
+    parsed_template=_parse_template(cell_mapper.eval_template, context)
     item_parsed=parsed_template.get("item", None)
     if item_parsed:
         try:
@@ -56,19 +83,22 @@ def get_template_statement(template, parsed_template, sparql_endpoint):
         if isinstance(parsed_template[key], ReturnClass):
             template[key]=parsed_template[key].value
         elif isinstance(parsed_template[key], list):
-            for attribute_dict in parsed_template[key]:
-                q_val=attribute_dict.pop("value", None) #deal with value last
-                for a_key in attribute_dict:
-                    if isinstance(attribute_dict[a_key], ReturnClass):
-                        attribute_dict[a_key]=attribute_dict[a_key].value
-                
-                attribute_dict["value"]=q_val #add q_val back, then deal with it
-                if q_val:
-                    if isinstance(q_val, ReturnClass):
-                        attribute_dict["value"]=q_val.value
-                        attribute_dict["cell"]=to_excel(q_val.col, q_val.row)
-                parse_time_for_dict(attribute_dict, sparql_endpoint)
-            template[key]=parsed_template[key]
+            try:
+                for attribute_dict in parsed_template[key]:
+                    q_val=attribute_dict.pop("value", None) #deal with value last
+                    for a_key in attribute_dict:
+                        if isinstance(attribute_dict[a_key], ReturnClass):
+                            attribute_dict[a_key]=attribute_dict[a_key].value
+                    
+                    attribute_dict["value"]=q_val #add q_val back, then deal with it
+                    if q_val:
+                        if isinstance(q_val, ReturnClass):
+                            attribute_dict["value"]=q_val.value
+                            attribute_dict["cell"]=to_excel(q_val.col, q_val.row)
+                    parse_time_for_dict(attribute_dict, sparql_endpoint)
+                template[key]=parsed_template[key]
+            except Exception as e:
+                raise e
         else:
             template[key]=parsed_template[key]
 
@@ -76,29 +106,7 @@ def get_template_statement(template, parsed_template, sparql_endpoint):
     return template
 
 
-def _evaluate_template_for_list_of_dicts(attributes, context):
-    attributes_parsed=[]
-    for attribute in attributes:
-        new_dict=dict(attribute)
-        for key in attribute:
-            if isinstance(attribute[key], T2WMLCode):
-                q_parsed=iter_on_n_for_code(attribute[key], context)
-                new_dict[key]=q_parsed
-        attributes_parsed.append(new_dict)
-    return attributes_parsed
 
-
-def evaluate_template(template, context):
-    parsed_template=dict(template)
-    for key in template:
-        if isinstance(template[key], list):
-            key_parsed=_evaluate_template_for_list_of_dicts(template[key], context)
-        elif isinstance(template[key], T2WMLCode):
-            key_parsed=iter_on_n_for_code(template[key], context)
-        else:
-            key_parsed=template[key]
-        parsed_template[key]=key_parsed
-    return parsed_template
 
     
     
@@ -110,8 +118,7 @@ def get_all_template_statements(cell_mapper):
         cell=to_excel(col-1, row-1)
         context={"t_var_row":row, "t_var_col":col}
         try:
-            parsed_template= evaluate_template(cell_mapper.eval_template, context)
-            statement=get_template_statement(cell_mapper.template, parsed_template, sparql_endpoint)
+            statement=get_template_statement(cell_mapper, context, sparql_endpoint)
             if statement:
                 statements[cell]=statement
             else:
@@ -121,7 +128,7 @@ def get_all_template_statements(cell_mapper):
 
     if errors:
         for cell in errors:
-            print("error in cell "+ cell+ ": "+errors[cell], file=sys.stderr)
+            print("ERROR: error in cell "+ cell+ ": "+errors[cell], file=sys.stderr)
     return statements, errors
 
 
@@ -175,8 +182,7 @@ def resolve_cell(cell_mapper, col, row):
     sparql_endpoint=cell_mapper.sparql_endpoint
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     try:
-        template_parsed= evaluate_template(cell_mapper.eval_template, context)
-        statement=get_template_statement(cell_mapper.template, template_parsed, sparql_endpoint)
+        statement=get_template_statement(cell_mapper, context, sparql_endpoint)
         if statement:
             data = {'statement': statement, 'error': None}
         else:
