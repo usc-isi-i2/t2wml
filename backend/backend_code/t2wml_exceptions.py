@@ -13,6 +13,7 @@ class T2WMLException(Exception):
     code=400
 
     def __init__(self, message=""):
+        super().__init__(message)
         self.detail_message=message
 
     @property
@@ -23,8 +24,6 @@ class T2WMLException(Exception):
             "errorDescription": self.detail_message
         }
     
-    def __str__(self):
-        return self.detail_message
 
 class PropertyTypeNotFound(T2WMLException):
     message="Property type not found"
@@ -54,6 +53,12 @@ class BadDateFormatException(InvalidYAMLFileException):
 
 class MissingWikidataEntryException(InvalidYAMLFileException):
     pass
+
+class TemplateDidNotApplyToInput(InvalidYAMLFileException):
+    def __init__(self, message="Could not apply", errors={}):
+        super.__init__(message)
+        self.errors=errors
+
 
 class YAMLEvaluatedWithoutDataFileException(T2WMLException):
     message = "Cannot evaluate YAML file without the data file"
