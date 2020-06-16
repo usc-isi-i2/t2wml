@@ -1,89 +1,89 @@
 id	node1	label	node2	node2;kgtk:data_type	node2;kgtk:number	node2;kgtk:low_tolerance	node2;kgtk:high_tolerance	node2;kgtk:units_node	node2;kgtk:date_and_time	node2;kgtk:precision	node2;kgtk:calendar	node2;kgtk:truth	node2;kgtk:symbol	node2;kgtk:latitude	node2;kgtk:longitude	node2;kgtk:text	node2;kgtk:language
-TestKGTK;oecd..csv;D6	Q115	P1082		quantity	41450												
+TestKGTK;oecd..csv;D6	Q115	P1082		quantity	41450			"QOECD-U002"									
 	TestKGTK;oecd..csv;D6	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;D6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;D6	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;D7	Q115	P1082		quantity	41868												
+TestKGTK;oecd..csv;D7	Q115	P1082		quantity	41868			"QOECD-U002"									
 	TestKGTK;oecd..csv;D7	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;D7	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;D7	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;D8	Q115	P1082		quantity	-0.5												
+TestKGTK;oecd..csv;D8	Q115	P1082		quantity	-0.5			"QOECD-U003"									
 	TestKGTK;oecd..csv;D8	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;D8	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;D8	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;E6	Q115	P1082		quantity	42585												
+TestKGTK;oecd..csv;E6	Q115	P1082		quantity	42585			"QOECD-U002"									
 	TestKGTK;oecd..csv;E6	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;E6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;E6	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;E7	Q115	P1082		quantity	43627												
+TestKGTK;oecd..csv;E7	Q115	P1082		quantity	43627			"QOECD-U002"									
 	TestKGTK;oecd..csv;E7	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;E7	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;E7	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;E8	Q115	P1082		quantity	0.2												
+TestKGTK;oecd..csv;E8	Q115	P1082		quantity	0.2			"QOECD-U003"									
 	TestKGTK;oecd..csv;E8	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;E8	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;E8	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;F6	Q115	P1082		quantity	43746												
+TestKGTK;oecd..csv;F6	Q115	P1082		quantity	43746			"QOECD-U002"									
 	TestKGTK;oecd..csv;F6	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;F6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;F6	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;F7	Q115	P1082		quantity	44467												
+TestKGTK;oecd..csv;F7	Q115	P1082		quantity	44467			"QOECD-U002"									
 	TestKGTK;oecd..csv;F7	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;F7	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;F7	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;F8	Q115	P1082		quantity	0.2												
+TestKGTK;oecd..csv;F8	Q115	P1082		quantity	0.2			"QOECD-U003"									
 	TestKGTK;oecd..csv;F8	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;F8	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;F8	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;G6	Q115	P1082		quantity	44720												
+TestKGTK;oecd..csv;G6	Q115	P1082		quantity	44720			"QOECD-U002"									
 	TestKGTK;oecd..csv;G6	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;G6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;G6	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;G7	Q115	P1082		quantity	45029												
+TestKGTK;oecd..csv;G7	Q115	P1082		quantity	45029			"QOECD-U002"									
 	TestKGTK;oecd..csv;G7	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;G7	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;G7	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;G8	Q115	P1082		quantity	1.1												
+TestKGTK;oecd..csv;G8	Q115	P1082		quantity	1.1			"QOECD-U003"									
 	TestKGTK;oecd..csv;G8	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;G8	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;G8	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;H6	Q115	P1082		quantity	45739												
+TestKGTK;oecd..csv;H6	Q115	P1082		quantity	45739			"QOECD-U002"									
 	TestKGTK;oecd..csv;H6	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;H6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;H6	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;H7	Q115	P1082		quantity	45480												
+TestKGTK;oecd..csv;H7	Q115	P1082		quantity	45480			"QOECD-U002"									
 	TestKGTK;oecd..csv;H7	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;H7	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;H7	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;H8	Q115	P1082		quantity	0.4												
+TestKGTK;oecd..csv;H8	Q115	P1082		quantity	0.4			"QOECD-U003"									
 	TestKGTK;oecd..csv;H8	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;H8	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;H8	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;I6	Q115	P1082		quantity	47366												
+TestKGTK;oecd..csv;I6	Q115	P1082		quantity	47366			"QOECD-U002"									
 	TestKGTK;oecd..csv;I6	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;I6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;I6	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;I7	Q115	P1082		quantity	47420												
+TestKGTK;oecd..csv;I7	Q115	P1082		quantity	47420			"QOECD-U002"									
 	TestKGTK;oecd..csv;I7	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;I7	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;I7	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;I8	Q115	P1082		quantity	1.3												
+TestKGTK;oecd..csv;I8	Q115	P1082		quantity	1.3			"QOECD-U003"									
 	TestKGTK;oecd..csv;I8	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;I8	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;I8	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;J6	Q115	P1082		quantity	49526												
+TestKGTK;oecd..csv;J6	Q115	P1082		quantity	49526			"QOECD-U002"									
 	TestKGTK;oecd..csv;J6	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;J6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;J6	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;J7	Q115	P1082		quantity	50109												
+TestKGTK;oecd..csv;J7	Q115	P1082		quantity	50109			"QOECD-U002"									
 	TestKGTK;oecd..csv;J7	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;J7	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;J7	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;J8	Q115	P1082		quantity	1.2												
+TestKGTK;oecd..csv;J8	Q115	P1082		quantity	1.2			"QOECD-U003"									
 	TestKGTK;oecd..csv;J8	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;J8	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;J8	P2006010001		symbol									Q2006050001				
-TestKGTK;oecd..csv;K6	Q115	P1082		quantity	50442												
+TestKGTK;oecd..csv;K6	Q115	P1082		quantity	50442			"QOECD-U002"									
 	TestKGTK;oecd..csv;K6	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
 	TestKGTK;oecd..csv;K6	P248		symbol									Q41550				
 	TestKGTK;oecd..csv;K6	P2006010001		symbol									Q2006050001				
