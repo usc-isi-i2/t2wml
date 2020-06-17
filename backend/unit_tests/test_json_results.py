@@ -15,6 +15,7 @@ except:
 from backend_code.item_table import ItemTable
 from backend_code.cell_mapper import CellMapper
 from backend_code.t2wml_handling import generate_download_file
+from backend_code.utility_functions import add_properties_from_file
 
 
 repo_folder=Path(__file__).parents[2]
@@ -45,6 +46,7 @@ class TestHomicideData(JsonTest):
         self.yaml_folder=os.path.join(dataset_folder, "homicide", "t2mwl")
         self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
         self.expected_result_dir=os.path.join(unit_test_folder, "homicide_results")
+        add_properties_from_file(os.path.join(unit_test_folder, "property_type_map.json"))
         
     
     def run_test_on_sheet(self, sheet_name):
