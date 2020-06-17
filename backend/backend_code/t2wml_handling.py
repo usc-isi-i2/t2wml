@@ -138,9 +138,9 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
                 new_list.append(new_dict)
                 if mini_error_dict:
                     if key in errors:
-                        errors[key][str(i)]=mini_error_dict
+                        errors[key][str(i+1)]=mini_error_dict
                     else:
-                        errors[key]={str(i):mini_error_dict}
+                        errors[key]={str(i+1):mini_error_dict}
             template[key]=new_list
             
         else:
