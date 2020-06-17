@@ -1,3 +1,4 @@
+import json
 import csv
 from pathlib import Path
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -6,7 +7,6 @@ from google.oauth2 import id_token
 from string import punctuation
 from google.auth.transport import requests
 from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.property_type_map import property_type_map
 from backend_code.wikidata_property import WikidataProperty, WikidataItem, ValueAlreadyPresentError
 from app_config import GOOGLE_CLIENT_ID
 
@@ -83,9 +83,9 @@ def verify_google_login(tn: str) -> Tuple[dict, dict]:
             raise T2WMLExceptions.AuthenticationFailureException("Token issued by an invalid issuer")
             user_info = None
 
-    except ValueError as exception:
+    except ValueError as e:
         user_info = None
-        raise T2WMLExceptions.AuthenticationFailureException(str(exception))
+        raise T2WMLExceptions.AuthenticationFailureException(str(e))
     return user_info, error
 
 
@@ -166,9 +166,9 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
             raise ValueError("Not found")
         return prop.property_type
     except Exception as e:
-        property_type=property_type_map.get(wikidata_property, None)
-        if not property_type:
-            property_type=query_wikidata_for_property_type(wikidata_property, sparql_endpoint)
+        property_type=query_wikidata_for_property_type(wikidata_property, sparql_endpoint)
+        if property_type=="Property Not Found":
+            raise ValueError("Property "+wikidata_property+" not found")
         WikidataProperty.add(wikidata_property, property_type)
     return property_type
 
@@ -188,14 +188,17 @@ def add_properties_from_file(file_path):
         try:
             if prop_type not in ["GlobeCoordinate", "Quantity", "Time","String", "MonolingualText", "ExternalIdentifier", "WikibaseItem", "WikibaseProperty"]:
                 raise ValueError("Property type: "+prop_type+" not supported")
-            WikidataProperty.add(key,prop_type)
-            return_dict["added"].append(key)
-        except ValueAlreadyPresentError:
-            prop=WikidataProperty.query.get(key)
-            prop.update_property_definition(prop_type)
-            return_dict["present"].append(key)
+            added=WikidataProperty.add_or_update(key, prop_type, do_session_commit=False)
+            if added:
+                return_dict["added"].append(key)
+            else:
+                return_dict["present"].append(key)
         except Exception as e:
             print(e)
             return_dict["failed"].append((key, str(e)))
+    try:
+        WikidataProperty.do_batch_commit()
+    except Exception as e:
+        return_dict={"added":[], "present":[], "failed":"Upload critically failed due to error committing to database: "+ str(e)}
     return return_dict
     

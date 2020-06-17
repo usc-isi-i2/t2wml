@@ -1,6 +1,5 @@
 import os
 import json
-from copy import deepcopy
 from pathlib import Path
 from collections import OrderedDict
 from backend_code.utility_functions import string_is_valid
@@ -45,10 +44,15 @@ class Region:
 
 
 class Cacher:
+    title=""
     def __init__(self, yaml_file_path,  data_file_path, sheet_name):
         self.yaml_file_path=yaml_file_path
         self.data_file_path=data_file_path
         self.sheet_name=sheet_name
+    
+    @property
+    def cache_path(self):
+        return self.get_cache_path(self.title)
 
     def get_cache_path(self, title_str):
         path=Path(self.yaml_file_path)
@@ -67,12 +71,11 @@ class Cacher:
         return False
 
 class RegionCacher(Cacher):
+    title="region"
+    
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
-    
-    @property
-    def cache_path(self):
-        return self.get_cache_path("region")
+
 
     def load_from_cache(self):
         if self.is_fresh():
@@ -88,17 +91,18 @@ class RegionCacher(Cacher):
 
 
 class MappingResultsCacher(Cacher):
+    title="result_j" #j is a modifier for backwards incompatible changes in cache format as of version 2.0a13
+
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
     
-    @property
-    def cache_path(self):
-        return self.get_cache_path("result")
+
         
-    def save(self, highlight_data, statement_data):
+    def save(self, highlight_data, statement_data, errors=[]):
         d={
             "highlight region": highlight_data,
-            "download": statement_data
+            "download": statement_data,
+            "errors": errors
         }
         with open(self.cache_path, 'w') as f:
             json.dump(d, f)
@@ -137,8 +141,8 @@ class CellMapper:
         
         self.init_region(yaml_file_path, data_file_path, sheet_name)
 
-        template_parser=TemplateParser(self.yaml_data, self.region)
-        self._template=template_parser.template
+        self.template=dict(self.yaml_data['statementMapping']['template'])
+        template_parser=TemplateParser(self.template, self.region)
         self.eval_template=template_parser.eval_template
         
         self.sparql_endpoint=sparql_endpoint
@@ -159,7 +163,3 @@ class CellMapper:
                 region_cacher.save(region_parser.parsed_region)
 
         self.region=region
-
-    @property
-    def template(self):
-        return deepcopy(self._template)

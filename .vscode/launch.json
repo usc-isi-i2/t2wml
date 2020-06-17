@@ -41,7 +41,10 @@
             "request": "launch",
             "module": "unittest",
             "args": [
-               "unit_tests.test_driver_import", "unit_tests.test_kgtk_results", "unit_tests.test_json_results"
+               //"unit_tests.test_rdf_generation",
+                "unit_tests.test_driver_import", 
+                "unit_tests.test_kgtk_results", 
+                "unit_tests.test_json_results"
             ],
             "cwd": "${workspaceFolder}\\backend",
         },

@@ -14,7 +14,7 @@ statementMapping:
     item: '=get_item(regex(value[B, 2], "profile: (.*) \d{4}", 1))' 
     property: P1082 #=item[B, $row]
     value: =replace(value[$col, $row], "[^\d.-]", "")
-    unit: =item[C, $row]
+    unit: =item[C, $row, 'unit']
     qualifier:
       - property: P585 #point in time
         value: =value[$col, 4]

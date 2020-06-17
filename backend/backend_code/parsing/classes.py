@@ -108,9 +108,9 @@ class ItemRange(RangeClass):
 
 class ItemExpression:
     def __getitem__(self, args):
-        try:
+        if len(args)>2:
             context=args[2]
-        except:
+        else:
             context='__NO_CONTEXT__'
         col=index_converter(args[0])
         row=index_converter(args[1])

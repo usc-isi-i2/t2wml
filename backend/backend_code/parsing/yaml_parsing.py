@@ -1,6 +1,5 @@
-
+import sys
 import yaml
-
 import backend_code.t2wml_exceptions as T2WMLExceptions
 from backend_code.bindings import bindings
 from backend_code.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode
@@ -17,10 +16,10 @@ class CodeParser:
         # we made various compromises between valid code from the get-go and easy for the user code. 
         # this function transforms user code into python-acceptable code
         e_str=str(e_str)
-        #deal with reserved variables with defined meetings ($end, $sheet, $filename)
+        #deal with reserved variables with defined meanings ($end, $sheet, $filename)
         e_str = e_str.replace("$end", str(len(bindings.excel_sheet)))
         e_str = e_str.replace("$sheet", "\""+bindings.excel_sheet.sheet_name+"\"")
-        #$ is easy and visually distinctive for users, but invalid python code. so we replace it with t_var_ (for t2wml variable)
+        #dollar sign is easy and visually distinctive for users, but invalid python code. so we replace it with t_var_ (for t2wml variable)
         e_str= e_str.replace("$", "t_var_") 
         # "condition and result" is equivalent to "if condition, result"
         e_str = e_str.replace("->", "and")
@@ -47,10 +46,10 @@ class CodeParser:
             return False
 
 class TemplateParser(CodeParser):    
-    def __init__(self, yaml_data, region):
+    def __init__(self, template, region):
         self.region=region
-        self.template=dict(yaml_data['statementMapping']['template'])
-        self.eval_template=self.create_eval_template(yaml_data['statementMapping']['template'])
+        self.template=template
+        self.eval_template=self.create_eval_template(self.template)
 
     def get_code_replacement(self, input_str):
         fake_context=dict(t_var_row=self.region.top, t_var_col=self.region.left, t_var_n=0)

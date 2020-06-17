@@ -1,5 +1,16 @@
 T2WML History
 ===================
+Changes in version 2.0a13:
+-------------------------
+* backwards compatibility breaking: property_type_map has been removed. those properties must be added manually to the project
+* json format changed from list of dicts to dict
+* cell-specific errors when parsing template no longer raise error and exit.
+  instead, they are added to a dictionary of errors, which is both printed to stderr and returned in the results
+     * the only exception is errors in the first cell of the data, as that cell is used to verify validity of the template itself, and will immediately exit with error if invalid
+* performance improvements to uploading property files
+* performance improvements to calculating statements and to downloading kgtk results
+* bug fixes:
+   * 500 error when uploading properties file in json format
 
 Changes in version 2.0a12:
 ------------------------
