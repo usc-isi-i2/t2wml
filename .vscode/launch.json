@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "Backend",
             "type": "python",
@@ -30,7 +31,7 @@
             "program": "prepare-standalone-deployment.py",
             "args": [
                 "--version",
-                "2.0a12",
+                "2.0a13",
             ],
             "cwd": "${workspaceFolder}",
             "jinja": true
