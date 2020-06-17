@@ -21,12 +21,16 @@ from backend_code.utility_functions import translate_precision_to_integer
 from backend_code.utility_functions import get_property_type as _get_property_type
 
 not_found_cache=set()
+property_cache=dict()
 
 def get_property_type(prop, sparql_endpoint):
     try:
         if prop in not_found_cache:
             raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
-        prop_type= _get_property_type(prop, sparql_endpoint)
+        prop_type=property_cache.get(prop, None)
+        if not prop_type:
+            prop_type= _get_property_type(prop, sparql_endpoint)
+            property_cache[prop]=prop_type
         return prop_type
     except QueryBadFormed:
         raise T2WMLExceptions.MissingWikidataEntryException("The value given for property is not a valid property:" +str(prop))
