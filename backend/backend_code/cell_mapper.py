@@ -85,8 +85,9 @@ class RegionCacher(Cacher):
         return None
     
     def save(self, region_data):
+        s=json.dumps(region_data)
         with open(self.cache_path, 'w') as f:
-            json.dump(region_data, f)
+            f.write(s)
 
 
 
@@ -104,8 +105,9 @@ class MappingResultsCacher(Cacher):
             "download": statement_data,
             "errors": errors
         }
+        s=json.dumps(d)
         with open(self.cache_path, 'w') as f:
-            json.dump(d, f)
+            f.write(s)
 
     def get_highlight_region(self):
         if self.is_fresh():
