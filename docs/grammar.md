@@ -166,10 +166,10 @@ The T2WML language implements a variety of functions.
 
 These can be broadly split into boolean functions, string modifiers, and other. 
 
-Functions can be nested. It is possible, for example, to write `contains((upper(value[A:B, 2:3])),”TA”)`, a case-insensitive way to check if the string “ta”, “tA”, etc is present in each cell in the range.
+Functions can be nested. It is possible, for example, to write `contains((upper_case(value[A:B, 2:3])),”TA”)`, a case-insensitive way to check if the string “ta”, “tA”, etc is present in each cell in the range.
 
 Not every nesting order makes sense.
-`upper(contains(value[A:B, 2:3], “TA”))` would return a string, “FALSE” or “TRUE” (even worse, the string “FALSE” evaluates to True in boolean checks…) 
+`upper_case(contains(value[A:B, 2:3], “TA”))` would return a string, “FALSE” or “TRUE” (even worse, the string “FALSE” evaluates to True in boolean checks…) 
 
 
 #### Boolean expressions and equations
@@ -226,11 +226,11 @@ For simplicity, the examples all use a string for the input, but they would appl
 
 `strip(input)`: Removes leading and trailing whitespace from the input
 
-`title(input)`: Changes the case of the input to titlecase.
+`title_case(input)`: Changes the case of the input to titlecase.
 
-`upper(input)`: Changes the case of the input to uppercase
+`upper_case(input)`: Changes the case of the input to uppercase
 
-`lower(input)`: Changes the case of the input to lowercase
+`lower_case(input)`: Changes the case of the input to lowercase
 
 `clean(input)`:  Uses the ftfy package to clean the input, eg schÃ¶n becomes schön
 
