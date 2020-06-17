@@ -194,5 +194,6 @@ class TestErrorCatching(JsonTest):
 
 
 if __name__ == '__main__':
+    add_properties_from_file(os.path.join(unit_test_folder, "property_type_map.json"))
     unittest.main()
 
