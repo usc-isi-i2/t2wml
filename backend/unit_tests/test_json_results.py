@@ -23,6 +23,7 @@ dataset_folder=os.path.join(repo_folder, "Datasets")
 unit_test_folder=os.path.join(repo_folder, "backend", "unit_tests", "ground_truth")
 add_properties_from_file(os.path.join(unit_test_folder, "property_type_map.json"))
 
+
 class JsonTest(unittest.TestCase):
     def validate_results(self, results, expected):
         #for now this compares cell by cell. 
