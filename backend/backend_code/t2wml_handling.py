@@ -47,9 +47,12 @@ def parse_time_for_dict(response, sparql_endpoint):
             if "format" in response:
                 with warnings.catch_warnings(record=True) as w: #use this line to make etk stop harassing us with "no lang features detected" warnings
                     try:
-                        datetime_string, precision = parse_datetime_string(str(response["value"]),
-                                                                            additional_formats=[
-                                                                                response["format"]])
+                        datetime_string, precision = parse_datetime_string(
+                            str(response["value"]),
+                            additional_formats= [response["format"]],
+                            prefer_language_date_order = False 
+                            )
+
                     except ValueError:
                         raise T2WMLExceptions.BadDateFormatException("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
 
