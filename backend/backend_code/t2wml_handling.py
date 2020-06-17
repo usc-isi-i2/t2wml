@@ -133,7 +133,7 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
                 try:
                     parse_time_for_dict(new_dict, sparql_endpoint)
                 except Exception as e:
-                    mini_error_dict['time parsing']=str(e)
+                    mini_error_dict['property']=str(e)
 
                 new_list.append(new_dict)
                 if mini_error_dict:
