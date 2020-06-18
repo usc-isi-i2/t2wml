@@ -17,23 +17,42 @@ from backend_code.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from backend_code.spreadsheets.conversions import to_excel
 
 from backend_code.triple_generator import generate_triples
-from backend_code.utility_functions import translate_precision_to_integer, get_property_type
+from backend_code.utility_functions import translate_precision_to_integer
+from backend_code.utility_functions import get_property_type as _get_property_type
+
+not_found_cache=set()
+property_cache=dict()
+
+def get_property_type(prop, sparql_endpoint):
+    try:
+        if prop in not_found_cache:
+            raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
+        prop_type=property_cache.get(prop, None)
+        if not prop_type:
+            prop_type= _get_property_type(prop, sparql_endpoint)
+            property_cache[prop]=prop_type
+        return prop_type
+    except QueryBadFormed:
+        raise T2WMLExceptions.MissingWikidataEntryException("The value given for property is not a valid property:" +str(prop))
+    except ValueError:
+        not_found_cache.add(prop)
+        raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
+
 
 
 def parse_time_for_dict(response, sparql_endpoint):
     if "property" in response:
-        try:
-            prop_type= get_property_type(response["property"], sparql_endpoint)
-        except QueryBadFormed:
-            raise T2WMLExceptions.MissingWikidataEntryException("The value given for property is not a valid property:" +str(response["property"]))
-        
+        prop_type=get_property_type(response["property"], sparql_endpoint)
         if prop_type=="Time":
             if "format" in response:
                 with warnings.catch_warnings(record=True) as w: #use this line to make etk stop harassing us with "no lang features detected" warnings
                     try:
-                        datetime_string, precision = parse_datetime_string(str(response["value"]),
-                                                                            additional_formats=[
-                                                                                response["format"]])
+                        datetime_string, precision = parse_datetime_string(
+                            str(response["value"]),
+                            additional_formats= [response["format"]],
+                            prefer_language_date_order = False 
+                            )
+
                     except ValueError:
                         raise T2WMLExceptions.BadDateFormatException("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
 
@@ -117,19 +136,16 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
                 try:
                     parse_time_for_dict(new_dict, sparql_endpoint)
                 except Exception as e:
-                    mini_error_dict['time parsing']=str(e)
-
+                    mini_error_dict['property']=str(e)
 
                 new_list.append(new_dict)
                 if mini_error_dict:
                     if key in errors:
-                        errors[key][str(i)]=mini_error_dict
+                        errors[key][str(i+1)]=mini_error_dict
                     else:
-                        errors[key]={str(i):mini_error_dict}
-
+                        errors[key]={str(i+1):mini_error_dict}
             template[key]=new_list
             
-
         else:
             template[key]=parsed_template[key]
     
@@ -141,14 +157,16 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
     except AttributeError: #eg hardcoded string
         template["item"]=item_parsed
     
-    if errors:
-        #if the problem is in value, property, or item, the statement for this cell is too malformed to return the template
-        if set(["value", "property", "item"]).intersection(errors.keys()):
-            raise T2WMLExceptions.TemplateDidNotApplyToInput(errors=errors)
     try:
         parse_time_for_dict(template, sparql_endpoint)
-    except Exception as e: #for now we're treating this as critical failure of value, may change to warning
-        raise T2WMLExceptions.TemplateDidNotApplyToInput(errors=errors)
+    except Exception as e: #we treat this as a critical failure of value
+        errors["value"]=str(e)
+
+    if errors:
+        #if the problem is in the main value, property, or item, the statement for this cell is too malformed to return the template
+        if set(["value", "property", "item"]).intersection(errors.keys()):
+            raise T2WMLExceptions.TemplateDidNotApplyToInput(errors=errors)
+
     return template, errors
     
     
@@ -171,7 +189,7 @@ def get_all_template_statements(cell_mapper):
 
     if errors:
         for cell in errors:
-            print("ERROR: error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
+            print("error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
     return statements, errors
 
 

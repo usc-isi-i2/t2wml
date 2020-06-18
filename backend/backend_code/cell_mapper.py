@@ -27,7 +27,7 @@ class Region:
                 for row in range(self.top, self.bottom+1):
                     if row not in skip_rows:
                         try:
-                            if (column, row) not in skip_cells and string_is_valid(str(bindings.excel_sheet[row-1][column-1])):
+                            if (column, row) not in skip_cells: # and string_is_valid(str(bindings.excel_sheet[row-1][column-1])):
                                 self.indices[(column, row)]=True
                         except Exception as e:
                             print(e)
@@ -85,8 +85,9 @@ class RegionCacher(Cacher):
         return None
     
     def save(self, region_data):
+        s=json.dumps(region_data)
         with open(self.cache_path, 'w') as f:
-            json.dump(region_data, f)
+            f.write(s)
 
 
 
@@ -104,8 +105,9 @@ class MappingResultsCacher(Cacher):
             "download": statement_data,
             "errors": errors
         }
+        s=json.dumps(d)
         with open(self.cache_path, 'w') as f:
-            json.dump(d, f)
+            f.write(s)
 
     def get_highlight_region(self):
         if self.is_fresh():

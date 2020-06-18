@@ -13,6 +13,7 @@ class T2WMLCode:
     def __init__(self, code, original_str):
         self.code=code
         self.has_n="t_var_n" in original_str
+        self.original_str=original_str
 
 
 def t2wml_parse(e_str, context={}):

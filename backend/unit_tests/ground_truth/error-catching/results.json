@@ -379,14 +379,14 @@
         },
         "D6": {
             "qualifier": {
-                "2": {
+                "3": {
                     "value": "Not found"
                 }
             }
         },
         "D7": {
             "qualifier": {
-                "1": {
+                "2": {
                     "value": "Not found"
                 }
             }
@@ -396,57 +396,57 @@
         },
         "E6": {
             "qualifier": {
-                "2": {
+                "3": {
                     "value": "Not found"
                 }
             }
         },
         "E7": {
             "qualifier": {
-                "1": {
+                "2": {
                     "value": "Not found"
                 }
             }
         },
         "F4": {
             "qualifier": {
-                "0": {
-                    "time parsing": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "1": {
+                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
                 }
             }
         },
         "F5": {
             "item": "Not found",
             "qualifier": {
-                "0": {
-                    "time parsing": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "1": {
+                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
                 }
             }
         },
         "F6": {
             "qualifier": {
-                "0": {
-                    "time parsing": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "1": {
+                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
                 },
-                "2": {
+                "3": {
                     "value": "Not found"
                 }
             }
         },
         "F7": {
             "qualifier": {
-                "0": {
-                    "time parsing": "Attempting to parse datetime string that isn't a datetime:Bad date time"
-                },
                 "1": {
+                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                },
+                "2": {
                     "value": "Not found"
                 }
             }
         },
         "F8": {
             "qualifier": {
-                "0": {
-                    "time parsing": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "1": {
+                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
                 }
             }
         }
