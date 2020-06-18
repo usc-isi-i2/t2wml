@@ -14,7 +14,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData, ErrorMessage } from '../common/general';
+import { LOG, WikifierData, ErrorMessage, ErrorCell } from '../common/general';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
@@ -43,7 +43,7 @@ interface TableData {
 }
 
 interface TableProperties  {
-
+    errorCells: ErrorCell;
 }
 
 interface TableState  {
@@ -63,6 +63,7 @@ interface TableState  {
   yamlRegions: any; // null,
 
   errorMessage: ErrorMessage;
+  errorCells: ErrorCell;
 }
 
 class TableViewer extends Component<TableProperties, TableState> {
@@ -100,6 +101,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       yamlRegions: null,
 
       errorMessage: {} as ErrorMessage,
+      errorCells: {},
     };
 
     // init functions
@@ -108,6 +110,10 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps: TableProperties) {
+    this.setState({ errorCells: nextProps.errorCells });
   }
 
   onGridReady(params: WikifierData) {
@@ -348,12 +354,18 @@ class TableViewer extends Component<TableProperties, TableState> {
       console.log(json);
 
       // do something here
-      const { error } = json;
+    //   const { error } = json;
 
-      // if failure
-      if (error !== null) {
-        throw Error(error);
-      }
+    //   // if failure
+    //   if (error !== null) {
+    //     throw Error(error);
+    //   }
+
+    const { error } = json.wikifierData;
+    // const  error  = {A1: 'aaa', A2: 'sd'};
+    if (error) {
+        this.setState({ errorCells: error });
+    }
 
       // else, success
       let { tableData, wikifierData, yamlData } = json;
@@ -673,6 +685,11 @@ class TableViewer extends Component<TableProperties, TableState> {
       </Tooltip>
     );
 
+    const cellsItems = [];
+    for (let cell in this.state.errorCells) {
+        cellsItems.push(<label key={cell}>{cell}, </label>)
+    }
+
     return (
       <div className="w-100 h-100 p-1">
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
@@ -746,9 +763,11 @@ class TableViewer extends Component<TableProperties, TableState> {
             />
 
           </Card.Header>
-
+          
           {/* table */}
           <Card.Body className="ag-theme-balham w-100 h-100 p-0" style={{ overflow: "hidden" }}>
+           
+            {cellsItems}
 
             {/* loading spinner */}
             <div className="mySpinner" hidden={!showSpinner}>

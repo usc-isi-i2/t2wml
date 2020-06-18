@@ -8,13 +8,15 @@ import yaml from 'js-yaml';
 import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG, ErrorMessage } from '../common/general';
+import { LOG, ErrorMessage, ErrorCell } from '../common/general';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
 
 interface yamlProperties {
   isShowing: boolean;
+
+  showErrorCells: (error: ErrorCell) => void;
 }
 
 interface yamlState {
@@ -79,18 +81,22 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       console.log(json);
 
       // do something here
-      const { error } = json;
-
-      // if failure
-      if (error !== null) {
-          this.setState({
-              yamlJson: null,
-              isValidYaml: false,
-              errMsg: "⚠️There was an error applying YAML. Check browser console for details.",
-              errStack: '',
-          });
-        // throw Error(error);
+      const { error } = json.yamlRegions;
+      if (error) {
+        this.props.showErrorCells(error as ErrorCell);
       }
+      
+    //   const { error } = json;
+    //   // if failure
+    //   if (error !== null) {
+    //       this.setState({
+    //           yamlJson: null,
+    //           isValidYaml: false,
+    //           errMsg: "⚠️There was an error applying YAML. Check browser console for details.",
+    //           errStack: '',
+    //       });
+    //     // throw Error(error);
+    //   }
 
           // else, success
           const { yamlRegions } = json;

@@ -14,7 +14,7 @@ import { logout } from '../common/session';
 import Config from '../common/config';
 
 // console.log
-import { LOG, ErrorMessage } from '../common/general';
+import { LOG, ErrorMessage, ErrorCell } from '../common/general';
 
 // components
 import Editors from './editor';
@@ -34,6 +34,7 @@ interface ProjectState {
   userData: any; //todo: add user class{ },
   tempSparqlEndpoint: string;
   errorMessage: ErrorMessage;
+  errorCells: ErrorCell;
 }
 
 class Project extends Component<ProjectProperties, ProjectState> {
@@ -84,13 +85,12 @@ class Project extends Component<ProjectProperties, ProjectState> {
       tempSparqlEndpoint: (window as any).sparqlEndpoint,
 
       errorMessage: {} as ErrorMessage,
+
+      errorCells: {} as any,
     };
   }
 
   async componentDidMount() {
-
-    // before sending request
-    this.setState({ showSpinner: true });
     // fetch user data from the server
     try {
       const userData = await this.requestService.getUserInfo();
@@ -98,63 +98,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
     } catch(error) {
       this.handleLogout();
     }
-
-    // fetch project meta
-    console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
-    this.requestService.getProjects().then(json => {
-      console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-          if (json['error'] !== null){
-              console.log(json['error'])
-          }
-          else{
-              let projectData = json['projects'];
-
-              // sort
-              projectData.sort(function (p1: any, p2: any) {
-                  if (p1['mdate'] < p2['mdate']) return 1;
-                  else if (p1['mdate'] > p2['mdate']) return -1;
-                  else return 0;
-              });
-
-              // update state
-              this.setState({ projectData: projectData });
-
-              // update document title
-              let ptitle = null;
-              for (let i = 0, len = projectData.length; i < len; i++) {
-                  if (projectData[i].pid === (window as any).pid) {
-                      ptitle = projectData[i].ptitle;
-                      break;
-                  }
-              }
-              if (ptitle !== null) {
-                  document.title = ptitle;
-              } else {
-                  throw Error("No matched pid");
-              }
-          }
-
-
-      } else {
-        throw Error("No project meta");
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      console.log(error);
-      error.errorDescription += "\n\nCannot fetch project meta data!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot fetch project meta data!\n\n" + error);
-
-      // follow-ups (failure)
-      this.setState({ showSpinner: false });
-    });
 
     // before fetching project files
     (window as any).TableViewer.setState({ showSpinner: true });
@@ -166,8 +109,15 @@ class Project extends Component<ProjectProperties, ProjectState> {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
 
+      const { error } = json.wikifierData;
+      if (error) {
+        this.showErrorCellsInTable(error);
+      }
+
       // do something here
       const { tableData, yamlData, wikifierData, settings } = json;
+
+      document.title = 'project name'; // TODO, get the name from json
 
       // load table data
       if (tableData !== null) {
@@ -237,6 +187,10 @@ class Project extends Component<ProjectProperties, ProjectState> {
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
     });
+  }
+
+  showErrorCellsInTable(error: ErrorCell) {
+    this.setState({errorCells: error});
   }
 
   renderSettings() {
@@ -330,9 +284,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
         {/* content */}
         <div>
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-            <TableViewer />
+            <TableViewer errorCells={this.state.errorCells}/>
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-              <Editors />
+              <Editors showErrorCellsInTable={(error) => this.showErrorCellsInTable(error)} />
               <Output />
             </SplitPane>
           </SplitPane>

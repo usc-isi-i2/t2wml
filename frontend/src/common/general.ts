@@ -15,3 +15,17 @@ export interface ErrorMessage {
     errorTitle: string;
     errorDescription: string;
 }
+
+interface ErrorCellData {
+    ["item"]?: string;
+    ["qualifier"]?: {
+        [key: string] : {
+            ["value"]?: string;
+            ["time parsing"]?: string;
+        };
+    }; 
+}
+
+export interface ErrorCell {
+    [key: string] : ErrorCellData;   
+}
