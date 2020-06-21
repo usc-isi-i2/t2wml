@@ -108,7 +108,7 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
     for key in parsed_template:
         if isinstance(parsed_template[key], ReturnClass):
             value=parsed_template[key].value
-            if not value:
+            if value is None:
                 errors[key]="Not found"
             else:
                 template[key]=value
@@ -120,7 +120,7 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
                 for a_key in attribute_dict:
                     if isinstance(attribute_dict[a_key], ReturnClass):
                         value=attribute_dict[a_key].value
-                        if not value:
+                        if value is None:
                             mini_error_dict[a_key]="Not found"
                         else:
                             new_dict[a_key]=value
