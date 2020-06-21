@@ -312,7 +312,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             '''
             result_dict["node2;kgtk:data_type"]="quantity"
             result_dict["node2;kgtk:number"]= value
-            result_dict["node2;kgtk:units_node"]= enclose_in_quotes(property_dict.get("unit", ""))
+            result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
             result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
             result_dict["node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
 
@@ -327,8 +327,6 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
             result_dict["node2;kgtk:calendar"]=property_dict.get("calendar", "")
 
-
-
         elif property_type in ["String", "MonolingualText", "ExternalIdentifier"]:
             '''
             node2;kgtk:text: for text, the text without the language tag
@@ -339,8 +337,10 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:language"]=enclose_in_quotes(property_dict.get("lang", ""))
 
         elif property_type in ["WikibaseItem", "WikibaseProperty"]:
+            '''
+            node2;kgtk:symbol: when node2 is another item, the item goes here"
+            '''
             result_dict["node2;kgtk:data_type"]="symbol"
-            "node2;kgtk:symbol: when node2 is another item, the item goes here"
             result_dict["node2;kgtk:symbol"]=value
         
         else:
