@@ -164,6 +164,7 @@ def get_project_files(pid):
             }
     project=get_project(pid)
     
+    response["name"] = project.name
     response["settings"]["endpoint"] = project.sparql_endpoint
 
     project_file=project.current_file

@@ -352,22 +352,15 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.requestService.changeSheet((window as any).pid, sheetName).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
+      this.setState({ errorCells: {} as ErrorCell });
 
-      // do something here
-    //   const { error } = json;
+      if (json.yamlData) {
+        const { error } = json.yamlData.yamlRegions;
+        if (error) {
+          this.setState({ errorCells: error });
+        }
+      }
 
-    //   // if failure
-    //   if (error !== null) {
-    //     throw Error(error);
-    //   }
-
-    const { error } = json.wikifierData;
-    // const  error  = {A1: 'aaa', A2: 'sd'};
-    if (error) {
-        this.setState({ errorCells: error });
-    }
-
-      // else, success
       let { tableData, wikifierData, yamlData } = json;
 
       // load table data

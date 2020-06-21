@@ -108,17 +108,18 @@ class Project extends Component<ProjectProperties, ProjectState> {
     this.requestService.getProjectFiles((window as any).pid).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
+      document.title = json.name;
 
-      const { error } = json.wikifierData;
-      if (error) {
-        this.showErrorCellsInTable(error);
+      if (json.yamlData) {
+        const { error } = json.yamlData.yamlRegions;
+        if (error) {
+            this.showErrorCellsInTable(error);
+        }
       }
-
+      
       // do something here
       const { tableData, yamlData, wikifierData, settings } = json;
-
-      document.title = 'project name'; // TODO, get the name from json
-
+  
       // load table data
       if (tableData !== null) {
         (window as any).TableViewer.updateTableData(tableData);
