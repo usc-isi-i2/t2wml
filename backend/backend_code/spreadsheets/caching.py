@@ -2,104 +2,107 @@ import os
 import pickle
 from pathlib import Path
 import pandas as pd
-from backend_code.utility_functions import is_csv
 
 
 cache_settings={
     "use_cache": False
 }
 
+class PandasLoader:
+    #a wrapper to centralize and make uniform any loading of data files/sheets from pandas
+    def __init__(self, file_path):
+        self.file_path=file_path
+        file_extension=Path(file_path).suffix
+        self.is_csv = True if file_extension.lower() == ".csv" else False
+        self.pd_args=dict(dtype=object, header=None)
 
-class SheetCacher:
+    def post_process_data(self, data):
+        data=data.fillna("")
+        data=data.replace(r'^\s+$', "", regex=True)
+        return data
+
+    def load_sheet(self, sheet_name):
+        """
+        returns a single sheet's data frame
+        """
+        if self.is_csv:
+            data=pd.read_csv(self.file_path, **self.pd_args)
+        else:
+            data=pd.read_excel(self.file_path, sheet_name=sheet_name, **self.pd_args)
+        return self.post_process_data(data)
+    
+    def load_file(self):
+        """
+        returns a dictionary of sheet_names and their data frames
+        """
+        if self.is_csv:
+            data=pd.read_csv(self.file_path, **self.pd_args)
+            data=self.post_process_data(data)
+            sheet_name=Path(self.file_path).name
+            return {sheet_name:data}
+        else:
+            return_dict={}
+            loaded_file=pd.read_excel(self.file_path, sheet_name=None, **self.pd_args)
+            for sheet_name in loaded_file:
+                data=loaded_file[sheet_name]
+                data=self.post_process_data(data)
+                return_dict[sheet_name]=data
+            return return_dict
+
+    def get_sheet_names(self):
+        if self.is_csv:
+            return [Path(self.file_path).name]
+        else:
+            xl=pd.ExcelFile(self.file_path)
+            return xl.sheet_names
+    
+    def load_pickle(self, pickle_path):
+        data=pd.read_pickle(pickle_path)
+        return self.post_process_data(data)
+
+class FakeCacher:
     def __init__(self, data_file_path, sheet_name):
         self.data_file_path=data_file_path
         self.sheet_name=sheet_name
-        file_extension=Path(self.data_file_path).suffix
-        self.is_csv = is_csv(self.data_file_path)
-        
-        
+        self.pandas_wrapper=PandasLoader(self.data_file_path)
     def get_sheet(self):
-        raise NotImplementedError
+        return self.pandas_wrapper.load_sheet(self.sheet_name)
 
-
-class FakeCacher(SheetCacher):
-    def get_sheet(self):
-        if self.is_csv:
-            data=pd.read_csv(self.data_file_path, dtype=object, header=None)
-        else:
-            data=pd.read_excel(self.data_file_path, sheet_name=self.sheet_name, dtype=object, header=None)
-        data=data.fillna("")
-        return data
-
-
-def get_pickle_path(data_file_path, sheet_name):
-    #moved outside of class so I can use it in file initalizer as well
-    path=Path(data_file_path)
-    filename=path.stem+sheet_name+".ppkl"
-    parent=path.parent
-    file_path=parent/"pf"
-    if not file_path.is_dir():
-        os.makedirs(file_path)
-    return str(file_path/filename)
-
-class FileSystemPickleCacher(SheetCacher):
-    @property
-    def pickle_path(self):
-        return get_pickle_path(self.data_file_path, self.sheet_name)
+class PickleCacher:
+    def __init__(self, data_file_path, sheet_name):
+        self.data_file_path=data_file_path
+        self.sheet_name=sheet_name
+        self.pandas_wrapper=PandasLoader(self.data_file_path)
+        if not self.pickle_folder.is_dir():
+            os.makedirs(self.pickle_folder)
     
+    @property
+    def pickle_folder(self):
+        parent=Path(self.data_file_path).parent
+        folder_path=parent/"pf"
+        return folder_path
+
+    @property
+    def pickle_file(self):
+        path=Path(self.data_file_path)
+        filename=path.stem+"_"+self.sheet_name+".pkl"
+        return str(self.pickle_folder/filename)
+
     def fresh_pickle(self):
         #checks if the pickle is "fresh"-- is more newly modified than the datafile
-        if os.path.isfile(self.pickle_path):
-            if os.path.getmtime(self.pickle_path) > os.path.getmtime(self.data_file_path):
+        if os.path.isfile(self.pickle_file):
+            if os.path.getmtime(self.pickle_file) > os.path.getmtime(self.data_file_path):
                 return True
         return False
-    
+
     def get_sheet(self):
         if self.fresh_pickle():
-            self.data=self.load_pickle()
+            data=self.pandas_wrapper.load_pickle(self.pickle_file)
         else:
             #if not, load the sheet, save the pickle file for future use
-            self.data=self.load_sheet(self.sheet_name)
-            self.save_pickle(self.data)
-        
-        return self.data
-    
-    def load_pickle(self):
-        data=pd.read_pickle(self.pickle_path)
-        data=data.fillna("")
+            data=self.pandas_wrapper.load_sheet(self.sheet_name)
+            self.save_pickle(data)
         return data
-
+    
     def save_pickle(self, data):
-        pd.to_pickle(data, self.pickle_path)
-    
-    def load_file(self, sheet_name=None):
-        if self.is_csv:
-            data=pd.read_csv(self.data_file_path, header=None, dtype=object)
-        else:
-            data=pd.read_excel(self.data_file_path, sheet_name=sheet_name, header=None, dtype=object)
-        return data
-    
-    def load_sheet(self, sheet_name):
-        data= self.load_file(sheet_name)
-        data=data.fillna("")
-        return data
-    
-
-    @staticmethod
-    def save_file(data_file_path):
-        pickler=FileSystemPickleCacher(data_file_path, None)
-        xl=pickler.load_file()
-        if pickler.is_csv:
-            sheet_name=Path(data_file_path).name
-            pd.to_pickle(xl, get_pickle_path(data_file_path, sheet_name))
-            return [sheet_name]
-        else:
-            sheet_names=[]
-            for sheet_name in xl:
-                sheet_names.append(sheet_name)
-                df=xl[sheet_name]
-                pd.to_pickle(df, get_pickle_path(data_file_path, sheet_name))
-            return sheet_names
-
-
-
+        pd.to_pickle(data, self.pickle_file)

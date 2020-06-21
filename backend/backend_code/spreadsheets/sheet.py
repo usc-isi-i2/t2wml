@@ -1,13 +1,13 @@
 import pandas as pd
 import json
-from backend_code.spreadsheets.caching import FileSystemPickleCacher, FakeCacher, cache_settings
+from backend_code.spreadsheets.caching import PickleCacher, FakeCacher, cache_settings
 from backend_code.spreadsheets.conversions import to_excel, _column_index_to_letter
 import backend_code.t2wml_exceptions as T2WMLExceptions
 
 def get_cache_class():
     cache_class = FakeCacher
     if cache_settings["use_cache"]:
-        cache_class = FileSystemPickleCacher
+        cache_class = PickleCacher
     return cache_class
 
 
@@ -44,8 +44,3 @@ class Sheet:
         return_dict=json.loads(json_string)
         return return_dict
     
-
-def save_and_get_sheet_names(data_file_path):
-    cache_class=get_cache_class()
-    sheet_names= cache_class.save_file(data_file_path)
-    return sheet_names
