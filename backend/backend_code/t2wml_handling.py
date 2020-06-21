@@ -47,9 +47,12 @@ def parse_time_for_dict(response, sparql_endpoint):
             if "format" in response:
                 with warnings.catch_warnings(record=True) as w: #use this line to make etk stop harassing us with "no lang features detected" warnings
                     try:
-                        datetime_string, precision = parse_datetime_string(str(response["value"]),
-                                                                            additional_formats=[
-                                                                                response["format"]])
+                        datetime_string, precision = parse_datetime_string(
+                            str(response["value"]),
+                            additional_formats= [response["format"]],
+                            prefer_language_date_order = False 
+                            )
+
                     except ValueError:
                         raise T2WMLExceptions.BadDateFormatException("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
 
@@ -105,7 +108,7 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
     for key in parsed_template:
         if isinstance(parsed_template[key], ReturnClass):
             value=parsed_template[key].value
-            if not value:
+            if value is None:
                 errors[key]="Not found"
             else:
                 template[key]=value
@@ -117,7 +120,7 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
                 for a_key in attribute_dict:
                     if isinstance(attribute_dict[a_key], ReturnClass):
                         value=attribute_dict[a_key].value
-                        if not value:
+                        if value is None:
                             mini_error_dict[a_key]="Not found"
                         else:
                             new_dict[a_key]=value
@@ -309,7 +312,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             '''
             result_dict["node2;kgtk:data_type"]="quantity"
             result_dict["node2;kgtk:number"]= value
-            result_dict["node2;kgtk:units_node"]= enclose_in_quotes(property_dict.get("unit", ""))
+            result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
             result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
             result_dict["node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
 
@@ -324,8 +327,6 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
             result_dict["node2;kgtk:calendar"]=property_dict.get("calendar", "")
 
-
-
         elif property_type in ["String", "MonolingualText", "ExternalIdentifier"]:
             '''
             node2;kgtk:text: for text, the text without the language tag
@@ -336,8 +337,10 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:language"]=enclose_in_quotes(property_dict.get("lang", ""))
 
         elif property_type in ["WikibaseItem", "WikibaseProperty"]:
+            '''
+            node2;kgtk:symbol: when node2 is another item, the item goes here"
+            '''
             result_dict["node2;kgtk:data_type"]="symbol"
-            "node2;kgtk:symbol: when node2 is another item, the item goes here"
             result_dict["node2;kgtk:symbol"]=value
         
         else:
