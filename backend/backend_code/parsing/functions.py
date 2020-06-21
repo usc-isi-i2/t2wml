@@ -63,15 +63,15 @@ def strip(input):
     return input.strip()
 
 @string_modifier
-def lower_case(input):
+def lower(input):
     return input.lower()
 
 @string_modifier
-def upper_case(input):
+def upper(input):
     return input.upper()
 
 @string_modifier
-def title_case(input):
+def title(input):
     return input.title()
 
 @string_modifier
@@ -167,9 +167,9 @@ functions_dict=dict(
     ends_with=ends_with,
     instance_of=instance_of,
     strip=strip,
-    lower_case=lower_case,
-    upper_case=upper_case,
-    title_case=title_case, 
+    lower=lower,
+    upper=upper,
+    title=title, 
     clean=clean,
     replace=replace,
     split_index=split_index,
