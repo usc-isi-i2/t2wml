@@ -68,7 +68,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     (window as any).Output.removeOutput();
 
     // before sending request
-    (window as any).TableViewer.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
+    // (window as any).TableViewer.setState({ showSpinner: true });
 
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
@@ -101,8 +102,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           (window as any).TableViewer.updateYamlRegions(yamlRegions);
 
           // follow-ups (success)
-          (window as any).TableViewer.setState({ showSpinner: false });
-          (window as any).Output.setState({ isDownloadDisabled: false });
+        //   (window as any).TableViewer.setState({ showSpinner: false });
+          wikiStore.wikifier.showSpinner = false;
+          wikiStore.output.isDownloadDisabled = false;
+        //   (window as any).Output.setState({ isDownloadDisabled: false });
           wikiStore.table.isCellSelectable = true;
 
     }).catch((error: ErrorMessage) => {
@@ -111,7 +114,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      (window as any).TableViewer.setState({ showSpinner: false });
+    //   (window as any).TableViewer.setState({ showSpinner: false });
+        wikiStore.wikifier.showSpinner = false;
     });
   }
 

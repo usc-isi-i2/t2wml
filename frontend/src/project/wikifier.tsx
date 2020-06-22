@@ -62,7 +62,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
       // wikifier data (from backend)
 
-      qnodeData: {},  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
+      qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in Africa" }]
 
       // call wikifier service
@@ -70,7 +70,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       flag: 0,
 
       // qnode editor
-      scope: 0,
+      scope: wikiStore.wikifier.scope,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -218,10 +218,14 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // before sending request
 
+    // this.setState({
+    //   showSpinner: true,
+    //   showCallWikifier: false
+    // });
     this.setState({
-      showSpinner: true,
       showCallWikifier: false
     });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
@@ -248,7 +252,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       (window as any).TableViewer.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
-      this.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
@@ -257,7 +262,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
       // follow-ups (failure)
       (window as any).TableViewer.updateQnodeCells();
-      this.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+        wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -446,12 +452,25 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   //   }
   // }
 
-  updateWikifier(qnodeData = {}, rowData = []) {
+//   (wikiStore.wikifier as any).updateWikifier = (qnodeData = {}, rowData = []) => {
+//     // update
+//     this.setState({
+//       qnodeData: qnodeData,
+//       rowData: rowData,
+//     });
+//   }
+updateWikifier(qnodeData = {}, rowData = []) {
     // update
+    // this.setState({
+    //   qnodeData: qnodeData,
+    //   rowData: rowData,
+    // });
     this.setState({
-      qnodeData: qnodeData,
-      rowData: rowData,
+        rowData: rowData,
     });
+    if (wikiStore.wikifier.state) {
+       wikiStore.wikifier.state.qnodeData = qnodeData;
+    }
   }
 
   renderCallWikifier() {

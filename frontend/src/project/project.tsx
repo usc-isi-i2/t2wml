@@ -62,7 +62,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     const parts = window.location.href.split('/');
     this.pid = parts[parts.length - 1];
-    wikiStore.project.pid = this.pid
+    wikiStore.project.pid = this.pid;
 
     // fetch data from flask
      console.log("<App> opened project: %c" + this.pid, LOG.highlight);
@@ -170,8 +170,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
     });
 
     // before fetching project files
-    (window as any).TableViewer.setState({ showSpinner: true });
+    // (window as any).TableViewer.setState({ showSpinner: true });
     // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
 
     // fetch project files
@@ -200,7 +201,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
         (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         (window as any).TableViewer.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
-        (window as any).Output.setState({ isDownloadDisabled: false });
+        wikiStore.output.isDownloadDisabled = false;
+        // (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
         wikiStore.table.isCellSelectable = false;
       }
@@ -211,8 +213,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
       }
 
       // follow-ups (success)
-      (window as any).TableViewer.setState({ showSpinner: false });
+    //   (window as any).TableViewer.setState({ showSpinner: false });
       // (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
@@ -222,7 +225,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
 //    alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
-      (window as any).TableViewer.setState({ showSpinner: false });
+    //   (window as any).TableViewer.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
       // (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
     });

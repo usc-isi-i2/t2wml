@@ -63,7 +63,7 @@ class Output extends Component<OutputProperties, OutputState> {
     this.state = {
 
       // appearance
-      showSpinner: false,
+      showSpinner: wikiStore.output.showSpinner,
 
       // data
       valueCol: null,
@@ -79,7 +79,7 @@ class Output extends Component<OutputProperties, OutputState> {
 
       // download
       showDownload: false,
-      isDownloadDisabled: true,
+      isDownloadDisabled: wikiStore.output.isDownloadDisabled,
       downloadFileName: this.pid,
       downloadFileType: "json",
       isDownloading: false,
@@ -239,7 +239,8 @@ class Output extends Component<OutputProperties, OutputState> {
     this.setState({ qualifiers: qualifiers });
 
     if (isAllCached) {
-      this.setState({ showSpinner: false });
+        wikiStore.output.showSpinner = false;
+    //   this.setState({ showSpinner: false });
     }
   }
 
@@ -264,7 +265,8 @@ class Output extends Component<OutputProperties, OutputState> {
     // console.log("<Output> made query to Wikidata: " + api);
 
     // before send request
-    this.setState({ showSpinner: true });
+    wikiStore.output.showSpinner = true;
+    // this.setState({ showSpinner: true });
 
     // send both "no-cors" and default requests
     fetch(api)
@@ -288,10 +290,13 @@ class Output extends Component<OutputProperties, OutputState> {
           }
           let cache = this.state.cache;
           cache[node] = name;
-          this.setState({ cache: cache, showSpinner: false });
+        //   this.setState({ cache: cache, showSpinner: false });
+          this.setState({ cache: cache });
+          wikiStore.output.showSpinner = false;
         } catch (error) {
           // console.log(error)
-          this.setState({ showSpinner: false });
+        //   this.setState({ showSpinner: false });
+          wikiStore.output.showSpinner = false;
         }
       });
   }
@@ -516,7 +521,7 @@ class Output extends Component<OutputProperties, OutputState> {
               size="sm"
               style={{ padding: "0rem 0.5rem", width: "83px" }}
               onClick={() => this.setState({ showDownload: true, downloadFileType: "json" })}
-              disabled={this.state.isDownloadDisabled || this.state.isDownloading}
+              disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >
               {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Download"}
             </Button>
@@ -526,7 +531,7 @@ class Output extends Component<OutputProperties, OutputState> {
           <Card.Body className="w-100 h-100 p-0" style={{ overflow: "auto" }}>
 
             {/* loading spinner */}
-            <div className="mySpinner" hidden={!this.state.showSpinner}>
+            <div className="mySpinner" hidden={!wikiStore.output.showSpinner}>
               <Spinner animation="border" />
             </div>
 
