@@ -12,13 +12,13 @@ before_install:
   - openssl version
   - python -c "import ssl; print('SSSSSSSSSL', ssl.OPENSSL_VERSION)"
 install:
+- cd t2wml-api
 - sudo apt-get update
 - pip install --upgrade pip
 - pip install -r requirements.txt
 - pip install --force-reinstall etk  # For some reason etk is not installed properly from requirements on Travis
 script:
 - python -m spacy download en_core_web_sm
-- cd t2wml-api
 - python -m unittest unit_tests.test_json_results 
 - python -m unittest unit_tests.test_kgtk_results
 
