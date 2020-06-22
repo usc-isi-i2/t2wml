@@ -2,20 +2,10 @@ import os
 import json
 import unittest
 from pathlib import Path
-try:
-    from backend_code import models
-except:
-    import sys, inspect
-    currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    grandparent_dir = os.path.dirname(os.path.dirname(currentdir))
-    sys.path.insert(0, grandparent_dir)
-    sys.path.insert(1, os.path.join(sys.path[0], '...'))
-
-
-from backend_code.item_table import ItemTable
-from backend_code.cell_mapper import CellMapper
-from backend_code.t2wml_handling import generate_download_file
-from backend_code.utility_functions import add_properties_from_file
+from t2wml_api.wikification.item_table import ItemTable
+from t2wml_api.mapping.cell_mapper import CellMapper
+from t2wml_api.mapping.t2wml_handling import generate_download_file
+from t2wml_api.wikification.utility_functions import add_properties_from_file
 
 
 repo_folder=Path(__file__).parents[2]
