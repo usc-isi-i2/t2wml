@@ -8,6 +8,7 @@ from t2wml_api.mapping.cell_mapper import CellMapper
 from t2wml_api.mapping.t2wml_handling import download_kgtk
 from t2wml_api.wikification.utility_functions import add_properties_from_file
 from t2wml_api.wikification.wikidata_provider import DictionaryProvider
+from t2wml_api.settings import t2wml_settings
 t2wml_settings["wikidata_provider"]=DictionaryProvider({}, t2wml_settings["sparql_endpoint"])
 
 repo_folder=Path(__file__).parents[2]

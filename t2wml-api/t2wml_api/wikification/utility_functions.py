@@ -49,9 +49,10 @@ def translate_precision_to_integer(precision: str) -> int:
 
 def get_property_type(wikidata_property, *args, **kwargs):
     provider=t2wml_settings["wikidata_provider"]
-    prop_type= provider.get_property_type(wikidata_property, *args, **kwargs)
+    property_type= provider.get_property_type(wikidata_property, *args, **kwargs)
     if property_type=="Property Not Found":
         raise ValueError("Property "+wikidata_property+" not found")
+    return property_type
 
 def get_labels_and_descriptions(items, *args, **kwargs):
     provider=t2wml_settings["wikidata_provider"]
