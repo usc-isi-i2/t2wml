@@ -64,8 +64,8 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
     sparql.setReturnFormat(JSON)
     try:
         results = sparql.query().convert()
-    except:
-        return None
+    except Exception as e:
+        raise e
     response = dict()
     try:
         for i in range(len(results["results"]["bindings"])):
@@ -104,6 +104,8 @@ def get_property_type(wikidata_property: str, sparql_endpoint: str):
 
 def get_labels_and_descriptions(items: set, sparql_endpoint: str):
     response=dict()
+    items = ' wd:'.join(items)
+    items="wd:"+items
     new_items=query_wikidata_for_label_and_description(items, sparql_endpoint)
     response.update(new_items)
     return response
