@@ -3,16 +3,16 @@ import json
 
 
 class WikidataProvider:
-    def get_property_type(wikidata_property, *args, **kwargs):
+    def get_property_type(self, wikidata_property, *args, **kwargs):
         raise NotImplementedError
 
-    def get_labels_and_descriptions(items, *args, **kwargs):
+    def get_labels_and_descriptions(self, items, *args, **kwargs):
         raise NotImplementedError
     
-    def save_property(property, property_type):
+    def save_property(self, property, property_type):
         pass
     
-    def save_item(item_id, item_dict):
+    def save_item(self, item_id, item_dict):
         pass
 
     def __enter__(self):
