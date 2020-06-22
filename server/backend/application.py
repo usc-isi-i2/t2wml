@@ -100,7 +100,7 @@ def string_is_valid(text: str) -> bool:
         return False
     return True
 
-def verify_google_login(tn: str) -> Tuple[dict, dict]:
+def verify_google_login(tn):
     """
     This function verifies the oauth token by sending a request to Google's server.
     :param tn:

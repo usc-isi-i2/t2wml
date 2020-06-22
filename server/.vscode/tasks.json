@@ -10,7 +10,7 @@
                 "${config:python.pythonPath}"
             ],
             "args": [
-                "${workspaceFolder}/application.py"
+                "${workspaceFolder}/backend/application.py"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
