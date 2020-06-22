@@ -25,11 +25,12 @@ class DataFile:
         for sheet_name in self.sheets:
             yield sheet_name
 
+DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'  #to be replaced
 class Project:
     def __init__(self, name="", sparql_endpoint=None, use_file_cache=False, use_result_cache=False):
         self.name=name
         if not sparql_endpoint:
-            sparql_endpoint="DEFAULT SPARQL ENDPOINT" #to be replaced
+            sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
         self.sparql_endpoint=sparql_endpoint
 
         self.data_files={} 
