@@ -5,6 +5,7 @@ from collections import OrderedDict
 from t2wml_api.parsing.yaml_parsing import TemplateParser, RegionParser, validate_yaml
 from t2wml_api.spreadsheets.sheet import Sheet
 from t2wml_api.utils.bindings import bindings, update_bindings
+from string import punctuation
 
 def string_is_valid(text: str) -> bool:
     def check_special_characters(text: str) -> bool:
