@@ -5,13 +5,13 @@ from pathlib import Path
 from uuid import uuid4
 from werkzeug.utils import secure_filename
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
-from backend_code.cell_mapper import CellMapper
-from backend_code.item_table import ItemTable
-from backend_code.spreadsheets.caching import PandasLoader, PickleCacher
-from backend_code.spreadsheets.utilities import excel_to_json
-from backend_code.t2wml_exceptions import T2WMLException
-from backend_code.t2wml_handling import download_kgtk, generate_download_file, highlight_region, resolve_cell
-from backend_code.utility_functions import is_csv, add_properties_from_file
+from t2wml_api.mapping.cell_mapper import CellMapper
+from t2wml_api.wikification.item_table import ItemTable
+from t2wml_api.spreadsheets.caching import PandasLoader, PickleCacher
+from t2wml_api.spreadsheets.utilities import excel_to_json
+from t2wml_api.utils.t2wml_exceptions import T2WMLException
+from t2wml_api.mapping.t2wml_handling import download_kgtk, generate_download_file, highlight_region, resolve_cell
+from t2wml_api.wikification.utility_functions import add_properties_from_file
 
 
 def generate_id() -> str:
@@ -219,7 +219,10 @@ class ProjectFile(db.Model):
         
     @property
     def is_csv(self):
-        return is_csv(self.filepath)
+        file_path=self.filepath
+        file_extension=Path(file_path).suffix
+        is_csv = True if file_extension.lower() == ".csv" else False
+        return is_csv
 
     @staticmethod
     def create(file, project):

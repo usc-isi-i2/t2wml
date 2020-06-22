@@ -6,13 +6,20 @@ from pathlib import Path
 from flask import request, render_template, redirect, url_for, session, make_response
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
+
+from t2wml_api.wikification.wikify_handling import wikifier
+from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
+from t2wml_api.utils.t2wml_exceptions import make_frontend_err_dict, T2WMLException
+from t2wml_api.spreadsheets.caching import cache_settings
+
 from app_config import app, UPLOAD_FOLDER
-from backend_code.models import User, Project, ProjectFile, YamlFile, WikiRegionFile
-from backend_code.utility_functions import string_is_valid, verify_google_login
-from backend_code.wikify_handling import wikifier
-from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.t2wml_exceptions import make_frontend_err_dict, T2WMLException
-from backend_code.spreadsheets.caching import cache_settings
+from models import User, Project, ProjectFile, YamlFile, WikiRegionFile
+
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from app_config import GOOGLE_CLIENT_ID
+
+from string import punctuation
 
 cache_settings["use_cache"]=True
 
@@ -24,6 +31,25 @@ class UserNotFoundException(Exception):
 
 class ProjectNotFoundException(Exception):
     pass
+
+def json_response(func):
+    def wrapper(*args, **kwargs):
+        try:
+            data, return_code=func(*args, **kwargs)
+            return json.dumps(data, indent=3), return_code
+        except UserNotFoundException as e:
+            return "", 401
+        except ProjectNotFoundException as e:
+            return "", 404
+        except T2WMLException as e:
+            data = {"error": e.error_dict} #error code from the exception
+            return json.dumps(data, indent=3), e.code
+        except Exception as e:
+            data = {"error": make_frontend_err_dict(e)}
+            return json.dumps(data, indent=3), 500
+        
+    wrapper.__name__ = func.__name__ #This is required to avoid issues with flask
+    return wrapper    
 
 def get_user():
     if 'uid' not in session:
@@ -64,24 +90,36 @@ def file_upload_validator(file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
 
     return in_file
 
-def json_response(func):
-    def wrapper(*args, **kwargs):
-        try:
-            data, return_code=func(*args, **kwargs)
-            return json.dumps(data, indent=3), return_code
-        except UserNotFoundException as e:
-            return "", 401
-        except ProjectNotFoundException as e:
-            return "", 404
-        except T2WMLException as e:
-            data = {"error": e.error_dict} #error code from the exception
-            return json.dumps(data, indent=3), e.code
-        except Exception as e:
-            data = {"error": make_frontend_err_dict(e)}
-            return json.dumps(data, indent=3), 500
-        
-    wrapper.__name__ = func.__name__ #This is required to avoid issues with flask
-    return wrapper    
+def string_is_valid(text: str) -> bool:
+    def check_special_characters(text: str) -> bool:
+        return all(char in punctuation for char in str(text))
+    if text is None or check_special_characters(text):
+        return False
+    text=text.strip().lower()
+    if text in ["", "#na", "nan"]:
+        return False
+    return True
+
+def verify_google_login(tn: str) -> Tuple[dict, dict]:
+    """
+    This function verifies the oauth token by sending a request to Google's server.
+    :param tn:
+    :return:
+    """
+    error = None
+    try:
+        # client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
+        request = requests.Request()
+        user_info = id_token.verify_oauth2_token(tn, request, GOOGLE_CLIENT_ID)
+
+        if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise T2WMLExceptions.AuthenticationFailureException("Token issued by an invalid issuer")
+            user_info = None
+
+    except ValueError as e:
+        user_info = None
+        raise T2WMLExceptions.AuthenticationFailureException(str(e))
+    return user_info, error
 
 
 @app.route('/api/projects', methods=['GET'])
