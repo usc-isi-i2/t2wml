@@ -3,11 +3,6 @@ import pickle
 from pathlib import Path
 import pandas as pd
 
-
-cache_settings={
-    "use_cache": False
-}
-
 class PandasLoader:
     #a wrapper to centralize and make uniform any loading of data files/sheets from pandas
     def __init__(self, file_path):

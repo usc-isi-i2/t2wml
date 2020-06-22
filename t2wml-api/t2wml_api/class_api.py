@@ -4,6 +4,7 @@ from t2wml_api.mapping.cell_mapper import CellMapper
 from t2wml_api.wikification.item_table import ItemTable
 from t2wml_api.wikification.wikify_handling import wikifier
 from t2wml_api.mapping.t2wml_handling import download_kgtk, generate_download_file, resolve_cell, get_all_template_statements
+from t2wml_api.settings import settings
 
 class DataFile:
     def __init__(self, file_path, use_cache=False):
@@ -25,12 +26,12 @@ class DataFile:
         for sheet_name in self.sheets:
             yield sheet_name
 
-DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'  #to be replaced
+
 class Project:
     def __init__(self, name="", sparql_endpoint=None, use_file_cache=False, use_result_cache=False):
         self.name=name
         if not sparql_endpoint:
-            sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
+            sparql_endpoint=settings[sparql_endpoint]
         self.sparql_endpoint=sparql_endpoint
 
         self.data_files={} 

@@ -10,8 +10,7 @@ from werkzeug.exceptions import NotFound
 from t2wml_api.wikification.wikify_handling import wikifier
 from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml_api.utils.t2wml_exceptions import make_frontend_err_dict, T2WMLException
-from t2wml_api.spreadsheets.caching import cache_settings
-from t2wml_api.wikification.wikidata_provider import provider_settings
+from t2wml_api.settings import t2wml_settings
 
 from app_config import app, UPLOAD_FOLDER
 from models import User, Project, ProjectFile, YamlFile, WikiRegionFile
@@ -23,8 +22,13 @@ from app_config import GOOGLE_CLIENT_ID, DEFAULT_SPARQL_ENDPOINT
 
 from string import punctuation
 
-cache_settings["use_cache"]=True
-provider_settings["provider"]=DatabaseProvider(DEFAULT_SPARQL_ENDPOINT)
+t2wml_settings.update(
+    {
+        "use_cache":True,
+        "wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
+        "sparql_endpoint":DEFAULT_SPARQL_ENDPOINT
+    }
+)
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False
