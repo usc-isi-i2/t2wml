@@ -80,14 +80,14 @@ class SparqlProvider(WikidataProvider):
 
 
     def get_property_type(self, wikidata_property: str):
-        property_type=query_wikidata_for_property_type(wikidata_property)
+        property_type=self.query_wikidata_for_property_type(wikidata_property)
         if property_type=="Property Not Found":
             raise ValueError("Property "+wikidata_property+" not found")
         return property_type
 
     def get_labels_and_descriptions(self, items: set):
         response=dict()
-        new_items=query_wikidata_for_label_and_description(items)
+        new_items=self.query_wikidata_for_label_and_description(items)
         response.update(new_items)
         return response
 
@@ -120,7 +120,7 @@ class FallbackSparql(SparqlProvider):
             except:
                 items_not_found.append(item)
         if items_not_found:
-            new_items=query_wikidata_for_label_and_description(items_not_found)
+            new_items=self.query_wikidata_for_label_and_description(items_not_found)
             response.update(new_items)
             for wd_id in new_items:
                 item_dict=new_items[wd_id]
