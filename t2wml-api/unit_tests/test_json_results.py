@@ -1,16 +1,19 @@
-import os
 import json
+import os
 import unittest
 from pathlib import Path
-from t2wml_api.wikification.item_table import ItemTable
 from t2wml_api.mapping.cell_mapper import CellMapper
 from t2wml_api.mapping.t2wml_handling import generate_download_file
+from t2wml_api.settings import t2wml_settings
+from t2wml_api.wikification.item_table import ItemTable
 from t2wml_api.wikification.utility_functions import add_properties_from_file
+from t2wml_api.wikification.wikidata_provider import DictionaryProvider
 
+t2wml_settings["wikidata_provider"]=DictionaryProvider({}, t2wml_settings["sparql_endpoint"])
 
 repo_folder=Path(__file__).parents[2]
 dataset_folder=os.path.join(repo_folder, "Datasets")
-unit_test_folder=os.path.join(repo_folder, "backend", "unit_tests", "ground_truth")
+unit_test_folder=os.path.join(repo_folder, "t2wml-api", "unit_tests", "ground_truth")
 add_properties_from_file(os.path.join(unit_test_folder, "property_type_map.json"))
 
 
@@ -186,4 +189,3 @@ class TestErrorCatching(JsonTest):
 
 if __name__ == '__main__':
     unittest.main()
-

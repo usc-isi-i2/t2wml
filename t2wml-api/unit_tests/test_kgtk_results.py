@@ -9,7 +9,7 @@ from t2wml_api.mapping.t2wml_handling import download_kgtk
 from t2wml_api.wikification.utility_functions import add_properties_from_file
 
 repo_folder=Path(__file__).parents[2]
-unit_test_folder=os.path.join(repo_folder, "backend", "unit_tests", "ground_truth")
+unit_test_folder=os.path.join(repo_folder, "t2wml-api", "unit_tests", "ground_truth")
 
 
 class TestBelgiumRegex(unittest.TestCase):
