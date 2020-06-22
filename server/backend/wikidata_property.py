@@ -33,13 +33,7 @@ class WikidataProperty(db.Model):
         if do_session_commit:
             db.session.commit()
         return added
-    @staticmethod
-    def do_batch_commit():
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            raise e
+
 
 
 
@@ -51,7 +45,28 @@ class WikidataItem(db.Model):
     description = db.Column(db.String(1000))
 
     @staticmethod
-    def add(wd_id, label, desc):
+    def add(wd_id, label, desc, do_session_commit=True):
         wi=WikidataItem(wd_id=wd_id, label=label, description=desc)
         db.session.add(wi)
-        db.session.commit()
+        if do_session_commit:
+            db.session.commit()
+
+
+from t2wml_api.wikification.wikidata_provider import FallbackSparql
+
+class DatabaseProvider(FallbackSparql):
+    def __init__(self, sparql_endpoint):
+        super().__init__(sparql_endpoint)
+    
+    def save_property(self, wd_property, property_type):
+        return WikidataProperty.add_or_update(wd_property, property_type, do_session_commit=False)
+    
+    def save_item(self, item_id, item_dict):
+        WikidataItem.add(item_id, item_dict['label'], item_dict['desc'], do_session_commit=False)
+    
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            raise ValueError("Failed to commit to database session")

@@ -11,17 +11,20 @@ from t2wml_api.wikification.wikify_handling import wikifier
 from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml_api.utils.t2wml_exceptions import make_frontend_err_dict, T2WMLException
 from t2wml_api.spreadsheets.caching import cache_settings
+from t2wml_api.wikification.wikidata_provider import provider_settings
 
 from app_config import app, UPLOAD_FOLDER
 from models import User, Project, ProjectFile, YamlFile, WikiRegionFile
+from wikidata_property import DatabaseProvider
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from app_config import GOOGLE_CLIENT_ID
+from app_config import GOOGLE_CLIENT_ID, DEFAULT_SPARQL_ENDPOINT
 
 from string import punctuation
 
 cache_settings["use_cache"]=True
+provider_settings["provider"]=DatabaseProvider(DEFAULT_SPARQL_ENDPOINT)
 
 ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False
