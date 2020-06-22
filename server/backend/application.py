@@ -495,8 +495,9 @@ if __name__ == "__main__":
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
             app.config['PROFILE'] = True
-            if not os.path.isdir(os.path.join(UPLOAD_FOLDER, "profiles")):
-                os.mkdir(os.path.join(UPLOAD_FOLDER, "profiles"))
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,restrictions = [100], profile_dir=os.path.join(UPLOAD_FOLDER, "profiles"))
+            profiles_dir=os.path.join(UPLOAD_FOLDER, "profiles")
+            if not os.path.isdir(profiles_dir):
+                os.mkdir(profiles_dir)
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,restrictions = [100], profile_dir=profiles_dir)
             app.run(debug = True)
     app.run(threaded=True)
