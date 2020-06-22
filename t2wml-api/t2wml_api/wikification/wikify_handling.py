@@ -3,11 +3,11 @@ import json
 from pathlib import Path
 import requests
 from typing import List
-from backend_code.item_table import ItemTable
-from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.spreadsheets.utilities import create_temporary_csv_file
 import pandas as pd
 import uuid
+from t2wml_api.wikification.item_table import ItemTable
+from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
+from t2wml_api.spreadsheets.utilities import create_temporary_csv_file
 
 def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_name: str, flag, context,
              sparql_endpoint) -> dict:

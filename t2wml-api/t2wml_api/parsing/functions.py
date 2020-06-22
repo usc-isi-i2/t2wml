@@ -2,8 +2,8 @@ import ftfy
 import re
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper import SPARQLWrapper, JSON
-from backend_code.bindings import bindings
-from backend_code.parsing.classes import ReturnClass, RangeClass, Item
+from t2wml_api.utils.bindings import bindings
+from t2wml_api.parsing.classes import ReturnClass, RangeClass, Item
 
 def boolean_modifer(func):
     def wrapper(input, *args, **kwargs):

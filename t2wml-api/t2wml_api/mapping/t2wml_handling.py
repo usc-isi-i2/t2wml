@@ -9,16 +9,16 @@ from collections import defaultdict
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
-from backend_code.t2wml_exceptions import T2WMLException, make_frontend_err_dict
-import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.parsing.classes import ReturnClass
-from backend_code.parsing.constants import char_dict
-from backend_code.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
-from backend_code.spreadsheets.conversions import to_excel
+from t2wml_api.utils.t2wml_exceptions import T2WMLException, make_frontend_err_dict
+import t2wml_api.utils.t2wml_exceptions as T2WMLExceptions
+from t2wml_api.parsing.classes import ReturnClass
+from t2wml_api.parsing.constants import char_dict
+from t2wml_api.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
+from t2wml_api.spreadsheets.conversions import to_excel
 
-from backend_code.triple_generator import generate_triples
-from backend_code.utility_functions import translate_precision_to_integer
-from backend_code.utility_functions import get_property_type as _get_property_type
+from t2wml_api.mapping.triple_generator import generate_triples
+from t2wml_api.wikification.utility_functions import translate_precision_to_integer
+from t2wml_api.wikification.utility_functions import get_property_type as _get_property_type
 
 not_found_cache=set()
 property_cache=dict()

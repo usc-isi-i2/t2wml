@@ -1,14 +1,12 @@
-#isolating all spreadsheet management code here
 import os
-import pandas
 import pickle
 import uuid
 from pathlib import Path
 
-from backend_code.utility_functions import is_csv
-from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.spreadsheets.conversions import _column_index_to_letter, _cell_range_str_to_tuples
-from backend_code.spreadsheets.sheet import Sheet
+from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
+from t2wml_api.spreadsheets.conversions import _column_index_to_letter, _cell_range_str_to_tuples
+from t2wml_api.spreadsheets.sheet import Sheet
+from t2wml_api.spreadsheets.caching import PandasLoader
 
 
 def create_temporary_csv_file(cell_range: str, data_file_path: str, sheet_name: str = None) -> str:
@@ -41,10 +39,8 @@ def get_first_sheet_name(file_path: str):
     :param file_path:
     :return:
     """
-    if is_csv(file_path):
-        return Path(file_path).name
-    xl = pd.ExcelFile(file_path)
-    return xl.sheet_names[0]
+    pw=PandasLoader(file_path)
+    return pw.get_sheet_names()[0]
 
 
 def excel_to_json(file_path: str, sheet_name: str = None) -> dict:

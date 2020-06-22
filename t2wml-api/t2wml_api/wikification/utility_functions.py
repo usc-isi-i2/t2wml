@@ -3,28 +3,9 @@ import csv
 from pathlib import Path
 from SPARQLWrapper import SPARQLWrapper, JSON
 from typing import Sequence, Union, Tuple, List, Dict, Any
-from google.oauth2 import id_token
 from string import punctuation
-from google.auth.transport import requests
-from backend_code import t2wml_exceptions as T2WMLExceptions
-from backend_code.wikidata_property import WikidataProperty, WikidataItem, ValueAlreadyPresentError
-from app_config import GOOGLE_CLIENT_ID
+from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
 
-
-def is_csv(file_path):
-    file_extension=Path(file_path).suffix
-    is_csv = True if file_extension.lower() == ".csv" else False
-    return is_csv
-
-def string_is_valid(text: str) -> bool:
-    def check_special_characters(text: str) -> bool:
-        return all(char in punctuation for char in str(text))
-    if text is None or check_special_characters(text):
-        return False
-    text=text.strip().lower()
-    if text in ["", "#na", "nan"]:
-        return False
-    return True
 
 def translate_precision_to_integer(precision: str) -> int:
     """
@@ -67,28 +48,6 @@ def translate_precision_to_integer(precision: str) -> int:
     return precision_map[precision.lower()]
 
 
-def verify_google_login(tn: str) -> Tuple[dict, dict]:
-    """
-    This function verifies the oauth token by sending a request to Google's server.
-    :param tn:
-    :return:
-    """
-    error = None
-    try:
-        # client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
-        request = requests.Request()
-        user_info = id_token.verify_oauth2_token(tn, request, GOOGLE_CLIENT_ID)
-
-        if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise T2WMLExceptions.AuthenticationFailureException("Token issued by an invalid issuer")
-            user_info = None
-
-    except ValueError as e:
-        user_info = None
-        raise T2WMLExceptions.AuthenticationFailureException(str(e))
-    return user_info, error
-
-
 def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
     query = """PREFIX wd: <http://www.wikidata.org/entity/>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -119,6 +78,39 @@ def query_wikidata_for_label_and_description(items: str, sparql_endpoint: str):
     return response
 
 
+def query_wikidata_for_property_type(wikidata_property, sparql_endpoint):
+    query = """SELECT ?type WHERE {
+                wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
+                wikibase:propertyType ?type .
+            }"""
+    sparql = SPARQLWrapper(sparql_endpoint)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    try:
+        property_type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
+    except IndexError:
+        property_type = "Property Not Found"
+    return property_type
+
+def add_properties_from_file(file_path):
+    raise NotImplementedError
+
+def get_property_type(wikidata_property: str, sparql_endpoint: str):
+    property_type=query_wikidata_for_property_type(wikidata_property, sparql_endpoint)
+    if property_type=="Property Not Found":
+        raise ValueError("Property "+wikidata_property+" not found")
+    return property_type
+
+def get_labels_and_descriptions(items: set, sparql_endpoint: str):
+    response=dict()
+    new_items=query_wikidata_for_label_and_description(items, sparql_endpoint)
+    response.update(new_items)
+    return response
+
+'''
+from t2wml_api.wikification.wikidata_property import WikidataProperty, WikidataItem, ValueAlreadyPresentError
+
 def get_labels_and_descriptions(items: set, sparql_endpoint: str):
     response=dict()
     items_not_found=""
@@ -135,23 +127,6 @@ def get_labels_and_descriptions(items: set, sparql_endpoint: str):
             item_dict=new_items[wd_id]
             WikidataItem.add(wd_id, item_dict['label'], item_dict['desc'])
     return response
-
-
-def query_wikidata_for_property_type(wikidata_property, sparql_endpoint):
-    query = """SELECT ?type WHERE {
-                wd:""" + wikidata_property + """ rdf:type wikibase:Property ;
-                wikibase:propertyType ?type .
-            }"""
-    sparql = SPARQLWrapper(sparql_endpoint)
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-    try:
-        property_type = results["results"]["bindings"][0]["type"]["value"].split("#")[1]
-    except IndexError:
-        property_type = "Property Not Found"
-    return property_type
-
 
 def get_property_type(wikidata_property: str, sparql_endpoint: str) -> str:
     """
@@ -202,3 +177,4 @@ def add_properties_from_file(file_path):
         return_dict={"added":[], "present":[], "failed":"Upload critically failed due to error committing to database: "+ str(e)}
     return return_dict
     
+'''

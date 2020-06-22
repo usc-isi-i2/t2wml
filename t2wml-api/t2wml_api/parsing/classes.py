@@ -1,5 +1,5 @@
-from backend_code.bindings import bindings
-from backend_code.spreadsheets.conversions import to_excel
+from t2wml_api.utils.bindings import bindings
+from t2wml_api.spreadsheets.conversions import to_excel
 
 def index_converter(arg):
     try:
