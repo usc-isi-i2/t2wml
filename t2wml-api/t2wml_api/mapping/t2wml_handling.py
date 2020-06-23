@@ -9,7 +9,7 @@ from collections import defaultdict
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 
-from t2wml_api.utils.t2wml_exceptions import T2WMLException, make_frontend_err_dict
+from t2wml_api.utils.t2wml_exceptions import T2WMLException
 import t2wml_api.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml_api.parsing.classes import ReturnClass
 from t2wml_api.parsing.constants import char_dict
