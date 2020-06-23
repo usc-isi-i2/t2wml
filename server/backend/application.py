@@ -6,57 +6,28 @@ from pathlib import Path
 from flask import request, render_template, redirect, url_for, session, make_response
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
-
-from t2wml_api.wikification.wikify_handling import wikifier
-from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
-from t2wml_api.utils.t2wml_exceptions import make_frontend_err_dict, T2WMLException
-from t2wml_api.settings import t2wml_settings
-
-from app_config import app, UPLOAD_FOLDER
+from app_config import app
 from models import User, Project, ProjectFile, YamlFile, WikiRegionFile
+import web_exceptions
+from web_exceptions import WebException
+from t2wml_api.wikification.wikify_handling import wikifier
+from t2wml_api.utils.t2wml_exceptions import T2WMLException
+from utils import make_frontend_err_dict, string_is_valid, verify_google_login
+
+
+from t2wml_api.settings import t2wml_settings
+from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
 
-from google.oauth2 import id_token
-from google.auth.transport import requests
-from app_config import GOOGLE_CLIENT_ID, DEFAULT_SPARQL_ENDPOINT
+t2wml_settings.update({
+            "cache_data_files":True,
+            "cache_results":True,
+            "wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
+            #"sparql_endpoint":project.sparql_endpoint,
+            #"storage_folder":UPLOAD_FOLDER
+            })
 
-from string import punctuation
-
-t2wml_settings.update(
-    {
-        "use_cache":True,
-        "wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
-        "sparql_endpoint":DEFAULT_SPARQL_ENDPOINT
-    }
-)
-
-ALLOWED_EXCEL_FILE_EXTENSIONS = {'xlsx', 'xls', 'csv'}
 debug_mode = False
-
-class UserNotFoundException(Exception):
-    pass
-
-class ProjectNotFoundException(Exception):
-    pass
-
-def json_response(func):
-    def wrapper(*args, **kwargs):
-        try:
-            data, return_code=func(*args, **kwargs)
-            return json.dumps(data, indent=3), return_code
-        except UserNotFoundException as e:
-            return "", 401
-        except ProjectNotFoundException as e:
-            return "", 404
-        except T2WMLException as e:
-            data = {"error": e.error_dict} #error code from the exception
-            return json.dumps(data, indent=3), e.code
-        except Exception as e:
-            data = {"error": make_frontend_err_dict(e)}
-            return json.dumps(data, indent=3), 500
-        
-    wrapper.__name__ = func.__name__ #This is required to avoid issues with flask
-    return wrapper    
 
 def get_user():
     if 'uid' not in session:
@@ -69,7 +40,7 @@ def get_user():
         return u
     except:
         del session['uid']
-        raise UserNotFoundException
+        raise web_exceptions.UserNotFoundException
 
 def get_project(project_id):
     user=get_user()
@@ -79,54 +50,25 @@ def get_project(project_id):
             raise ValueError("unauthenticated project access")
         return project
     except:
-        raise ProjectNotFoundException
+        raise web_exceptions.ProjectNotFoundException
 
-
-def file_upload_validator(file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
-    if 'file' not in request.files:
-        raise T2WMLExceptions.NoFilePartException("Missing 'file' parameter in the file upload request")
-
-    in_file = request.files['file']
-    if in_file.filename == '':
-        raise T2WMLExceptions.BlankFileNameException("No file selected for uploading")
-    
-    file_extension=in_file.filename.split(".")[-1].lower()
-    file_allowed = file_extension in file_extensions
-    if not file_allowed:
-        raise T2WMLExceptions.FileTypeNotSupportedException("File with extension '"+file_extension+"' is not allowed")
-
-    return in_file
-
-def string_is_valid(text: str) -> bool:
-    def check_special_characters(text: str) -> bool:
-        return all(char in punctuation for char in str(text))
-    if text is None or check_special_characters(text):
-        return False
-    text=text.strip().lower()
-    if text in ["", "#na", "nan"]:
-        return False
-    return True
-
-def verify_google_login(tn):
-    """
-    This function verifies the oauth token by sending a request to Google's server.
-    :param tn:
-    :return:
-    """
-    error = None
-    try:
-        # client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
-        request = requests.Request()
-        user_info = id_token.verify_oauth2_token(tn, request, GOOGLE_CLIENT_ID)
-
-        if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise T2WMLExceptions.AuthenticationFailureException("Token issued by an invalid issuer")
-            user_info = None
-
-    except ValueError as e:
-        user_info = None
-        raise T2WMLExceptions.AuthenticationFailureException(str(e))
-    return user_info, error
+def json_response(func):
+    def wrapper(*args, **kwargs):
+        try:
+            data, return_code=func(*args, **kwargs)
+            return json.dumps(data, indent=3), return_code
+        except WebException as e:
+            data = {"error": e.error_dict} 
+            return json.dumps(data, indent=3), e.code
+        except T2WMLException as e:
+            data = {"error": e.error_dict}
+            return json.dumps(data, indent=3), e.code
+        except Exception as e:
+            data = {"error": make_frontend_err_dict(e)}
+            return json.dumps(data, indent=3), 500
+        
+    wrapper.__name__ = func.__name__ #This is required to avoid issues with flask
+    return wrapper    
 
 
 @app.route('/api/projects', methods=['GET'])
@@ -172,7 +114,7 @@ def login():
                 session['uid'] = u.uid
                 verification_status = True
     else:
-        raise T2WMLExceptions.InvalidRequestException("Missing 'token' and/or 'source' parameters in the login request")
+        raise web_exceptions.InvalidRequestException("Missing 'token' and/or 'source' parameters in the login request")
     response["vs"] = verification_status
     return response, 200
 
@@ -289,7 +231,7 @@ def update_settings(pid):
 @json_response
 def upload_properties(pid):
     project = get_project(pid)
-    in_file = file_upload_validator(["json", "tsv"])
+    in_file = file_upload_validator({"json", "tsv"})
     return_dict=project.upload_property_file(in_file)
     return return_dict, 200
 
@@ -308,7 +250,7 @@ def upload_data_file(pid):
                     "yamlData": dict(),
                     "error": None
                 }
-    new_file=file_upload_validator()
+    new_file=file_upload_validator({'xlsx', 'xls', 'csv'})
     project_file=ProjectFile.create(new_file, project)
     project_file.set_as_current()
     response["tableData"]=project_file.tableData()
@@ -366,7 +308,7 @@ def upload_wikifier_output(pid):
     """
     project=get_project(pid)
     response={"error":None}
-    in_file = file_upload_validator("csv")
+    in_file = file_upload_validator({"csv"})
     project.change_wikifier_file(in_file)
     if project.current_file:
         sheet=project.current_file.current_sheet
@@ -389,14 +331,14 @@ def upload_yaml(pid):
     response={"error":None,
             "yamlRegions":None}
     if not string_is_valid(yaml_data):
-        raise T2WMLExceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
+        raise web_exceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
     else:
         if project.current_file:
             yf=YamlFile.create(project.current_file.current_sheet, yaml_data)
             response['yamlRegions']=yf.highlight_region()
         else:
             response['yamlRegions'] = None
-            raise T2WMLExceptions.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
+            raise web_exception.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
 
     return response, 200
 
@@ -412,7 +354,7 @@ def get_cell_statement(pid, col, row):
     data={}
     yaml_file = project.current_file.current_sheet.yaml_file
     if not yaml_file:
-        raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
+        raise web_exception.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
     data = yaml_file.resolve_cell(col, row)
     return data, 200
 
@@ -427,7 +369,7 @@ def downloader(pid, filetype):
     project = get_project(pid)
     yaml_file = project.current_file.current_sheet.yaml_file
     if not yaml_file: #the frontend disables this, this is just another layer of checking
-        raise T2WMLExceptions.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
+        raise web_exception.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
 
     response = yaml_file.generate_download_file(filetype)
     return response, 200
@@ -451,7 +393,7 @@ def wikify_region(pid):
     data = {"error":None}
     if action == "wikify_region":
             if not project.current_file:
-                raise T2WMLExceptions.WikifyWithoutDataFileException("Upload data file before wikifying a region")
+                raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
             current_sheet=project.current_file.current_sheet
             item_table = current_sheet.item_table
             #handler
@@ -501,6 +443,7 @@ if __name__ == "__main__":
             print('Debug mode is on!')
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
+            from app_config import UPLOAD_FOLDER
             app.config['PROFILE'] = True
             profiles_dir=os.path.join(UPLOAD_FOLDER, "profiles")
             if not os.path.isdir(profiles_dir):

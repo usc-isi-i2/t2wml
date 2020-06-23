@@ -257,7 +257,7 @@ def generate_download_file(cell_mapper, filetype):
     if filetype in ["tsv", "kgtk"]:
         raise ValueError("Please use download_kgtk function to create tsv files for the kgtk format")
     if filetype not in ["json", "ttl"]:
-        raise ValueError("Unsupported file type")
+        raise T2WMLExceptions.FileTypeNotSupportedException("Unsupported file type")
 
     sparql_endpoint=cell_mapper.sparql_endpoint
     response=dict()
@@ -344,7 +344,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
             result_dict["node2;kgtk:symbol"]=value
         
         else:
-            raise T2WMLExceptions.PropertyTypeNotFound("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
+            raise T2WMLExceptions.UnsupportedPropertyType("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
 
 def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     response=dict()
