@@ -82,7 +82,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.pid = wikiStore.project.pid;
 
     // init global variables
-    (window as any).TableViewer = this;
+    // (window as any).TableViewer = this;
 
     // init state
     this.state = {
@@ -114,6 +114,12 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
+
+    wikiStore.table.updateYamlRegions = (newYamlRegions = null) => this.updateYamlRegions(newYamlRegions);
+    wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
+    wikiStore.table.updateTableData = (tableData: TableData) => this.updateTableData(tableData);
+    wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
+    
   }
 
   onGridReady(params: WikifierData) {
@@ -181,7 +187,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // load yaml data
       if (yamlData !== null) {
-        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
+        // (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
       } else {
@@ -292,7 +299,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
-    (window as any).Output.removeOutput();
+    wikiStore.output.removeOutput();
+    // (window as any).Output.removeOutput();
 
     // get selected cell index
     const colName = String(params.colDef["headerName"]);
@@ -330,7 +338,8 @@ class TableViewer extends Component<TableProperties, TableState> {
       }
 
       // else, success
-      (window as any).Output.updateOutput(colName, rowName, json);
+      wikiStore.output.updateOutput(colName, rowName, json)
+    //   (window as any).Output.updateOutput(colName, rowName, json);
 
       // follow-ups (success)
     //   this.setState({ showSpinner: false });
@@ -353,10 +362,12 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
-    (window as any).YamlEditor.updateYamlText();
+    wikiStore.yaml.updateYamlText();
+    // (window as any).YamlEditor.updateYamlText();
     this.updateYamlRegions();
     this.updateQnodeCells();
-    (window as any).Output.removeOutput();
+    // (window as any).Output.removeOutput();
+    wikiStore.output.removeOutput();
     wikiStore.output.isDownloadDisabled = true;
     // (window as any).Output.setState({ isDownloadDisabled: true });
 
@@ -406,7 +417,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // load yaml data
       if (yamlData !== null) {
-        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
+        // (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
@@ -449,7 +461,8 @@ class TableViewer extends Component<TableProperties, TableState> {
       this.updateStyleByDict(cells, presets);
 
       // reset wikifier data
-      (window as any).Wikifier.updateWikifier();
+    //   (window as any).Wikifier.updateWikifier();
+      wikiStore.wikifier.updateWikifier();
 
     } else {
       // update qnode cells
@@ -464,7 +477,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // update wikifier data
 
-      (window as any).Wikifier.updateWikifier(qnodeData, rowData);
+    //   (window as any).Wikifier.updateWikifier(qnodeData, rowData);
+        wikiStore.wikifier.updateWikifier();
     }
   }
 
@@ -490,10 +504,10 @@ class TableViewer extends Component<TableProperties, TableState> {
 
   }
 
-  updateStyleByCell(colName: string | null, rowName: number | null, style: {border: string}, override: boolean = false) {
+  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: {border: string}, override: boolean = false) {
     if (rowName && colName) {
       const col = colName;
-      const row = rowName - 1;
+      const row = Number(rowName) - 1;
       let rowData2 = this.state.rowData;
       if (rowData2 !== undefined && rowData2[row] !== undefined) {
         if (rowData2[row]["styles"] === undefined) {

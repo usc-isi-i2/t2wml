@@ -57,7 +57,7 @@ class Output extends Component<OutputProperties, OutputState> {
     this.pid = wikiStore.project.pid;
 
     // init global variables
-    (window as any).Output = this;
+    // (window as any).Output = this;
 
     // init state
     this.state = {
@@ -86,6 +86,10 @@ class Output extends Component<OutputProperties, OutputState> {
 
       errorMessage: {} as ErrorMessage,
     } as OutputState;
+
+
+    wikiStore.output.removeOutput = () => this.removeOutput();
+    wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
   }
 
   handleDoDownload() {
@@ -130,14 +134,16 @@ class Output extends Component<OutputProperties, OutputState> {
     let col: string | undefined = this.state.currCol;
     let row: string | undefined = this.state.currRow;
     if (col !== undefined && row !== undefined) {
-      (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
+        wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    //   (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
     }
 
     // remove item border
     col = this.state.itemCol;
     row = this.state.itemRow;
     if (col !== undefined && row !== undefined) {
-      (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
+      wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    //   (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
     }
 
     // remove qualifier borders
@@ -146,7 +152,10 @@ class Output extends Component<OutputProperties, OutputState> {
       for (let i = 0, len = qualifiers.length; i < len; i++) {
         col = qualifiers[i]["col"];
         row = qualifiers[i]["row"];
-        (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
+        if (col && row) {
+            wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+            // (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
+        }
       }
     }
   }
@@ -179,7 +188,8 @@ class Output extends Component<OutputProperties, OutputState> {
     
     if (json["statement"]["cell"]) {
     let [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
-    (window as any).TableViewer.updateStyleByCell(col, row, { "border": "1px solid black !important" });
+    wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
+    // (window as any).TableViewer.updateStyleByCell(col, row, { "border": "1px solid black !important" });
     this.setState({ itemCol: col, itemRow: row });
     }
     // property
@@ -195,7 +205,8 @@ class Output extends Component<OutputProperties, OutputState> {
     // value
     const value = json["statement"]["value"];
     this.setState({ value: value });
-    (window as any).TableViewer.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
+    // (window as any).TableViewer.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
+    wikiStore.table.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
     this.setState({ currCol: colName, currRow: rowName });
 
     // qualifiers
@@ -230,7 +241,8 @@ class Output extends Component<OutputProperties, OutputState> {
           qualifier["row"] = q_row;
           // let hue = utils.getHueByRandom(10); // first param is the total number of colors
           let hue = utils.getHueByQnode(10, qualifier["propertyID"]);
-          (window as any).TableViewer.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
+        //   (window as any).TableViewer.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
+          wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
 
         qualifiers.push(qualifier);

@@ -52,7 +52,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     this.tempWikifyContextRef = React.createRef();
 
     // init global variables
-    (window as any).Wikifier = this;
+    // (window as any).Wikifier = this;
 
     // init state
     this.state = {
@@ -74,6 +74,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
       errorMessage: {} as ErrorMessage,
     };
+
+    (wikiStore.wikifier as any).updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
   }
 
   onGridReady(params: WikifierData) {
@@ -249,7 +251,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // else, success
 
       const { qnodes, rowData } = json;
-      (window as any).TableViewer.updateQnodeCells(qnodes, rowData);
+      wikiStore.table.updateQnodeCells(qnodes, rowData);
+    //   (window as any).TableViewer.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
     //   this.setState({ showSpinner: false });
@@ -261,7 +264,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      (window as any).TableViewer.updateQnodeCells();
+      wikiStore.table.updateQnodeCells();
+    //   (window as any).TableViewer.updateQnodeCells();
     //   this.setState({ showSpinner: false });
         wikiStore.wikifier.showSpinner = false;
     });

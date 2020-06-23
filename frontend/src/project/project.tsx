@@ -186,20 +186,25 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
       // load table data
       if (tableData !== null) {
-        (window as any).TableViewer.updateTableData(tableData);
+          wikiStore.table.updateTableData(tableData);
+        // (window as any).TableViewer.updateTableData(tableData);
       }
 
       // load wikifier data
       if (wikifierData !== null) {
-        (window as any).TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+          wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+        // (window as any).TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        (window as any).TableViewer.updateQnodeCells(); // reset
+          wikiStore.table.updateQnodeCells();
+        // (window as any).TableViewer.updateQnodeCells(); // reset
       }
 
       // load yaml data
       if (yamlData !== null) {
-        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
-        (window as any).TableViewer.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
+        // (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.table.updateYamlRegions(yamlData.yamlRegions);
+        // (window as any).TableViewer.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
         // (window as any).Output.setState({ isDownloadDisabled: false });

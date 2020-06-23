@@ -38,7 +38,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.requestService = new RequestService();
 
     // init global variables
-    (window as any).YamlEditor = this;
+    // (window as any).YamlEditor = this;
 
     // init state
     const defaultYamlText = "### A simplest sample of T2WML.\n### Replace all #PLACEHOLDER below to start.\nstatementMapping:\n  region:\n    - left: #CHAR\n      right: #CHAR\n      top: #INT\n      bottom: #INT\n  template:\n    item: #EXPRESSION/QNODE\n    property: #EXPRESSION/PNODE\n    value: #EXPRESSION/VALUE\n    qualifier:\n      - property: #EXPRESSION/PNODE\n        value: #EXPRESSION/VALUE";
@@ -57,6 +57,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // init functions
     this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
+
+    wikiStore.yaml.updateYamlText = (yamlText: string | null = null) => this.updateYamlText(yamlText);
   }
 
   handleApplyYaml() {
@@ -64,8 +66,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     console.log("<YamlEditor> clicked apply");
 
     // remove current status
-    (window as any).TableViewer.updateYamlRegions();
-    (window as any).Output.removeOutput();
+    wikiStore.table.updateYamlRegions();
+    // (window as any).TableViewer.updateYamlRegions();
+    wikiStore.output.removeOutput();
+    // (window as any).Output.removeOutput();
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -99,11 +103,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
           // else, success
           const { yamlRegions } = json;
-          (window as any).TableViewer.updateYamlRegions(yamlRegions);
+          wikiStore.table.updateYamlRegions(yamlRegions);
+        //   (window as any).TableViewer.updateYamlRegions(yamlRegions);
 
           // follow-ups (success)
         //   (window as any).TableViewer.setState({ showSpinner: false });
-          wikiStore.wikifier.showSpinner = false;
+          wikiStore.table.showSpinner = false;
           wikiStore.output.isDownloadDisabled = false;
         //   (window as any).Output.setState({ isDownloadDisabled: false });
           wikiStore.table.isCellSelectable = true;
@@ -115,7 +120,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
       // follow-ups (failure)
     //   (window as any).TableViewer.setState({ showSpinner: false });
-        wikiStore.wikifier.showSpinner = false;
+        wikiStore.table.showSpinner = false;
     });
   }
 
