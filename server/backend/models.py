@@ -483,3 +483,7 @@ class WikiRegionFile(db.Model):
         
         #set property
         self._item_table=item_table
+    @property
+    def serialized_table(self):
+        serialized_table = self.item_table.serialize_table(self.sparql_endpoint)
+        return serialized_table
