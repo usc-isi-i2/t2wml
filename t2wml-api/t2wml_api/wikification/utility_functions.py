@@ -4,7 +4,14 @@ from pathlib import Path
 from typing import Sequence, Union, Tuple, List, Dict, Any
 from string import punctuation
 from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
+from t2wml_api.wikification.wikidata_provider import SparqlProvider
 from t2wml_api.settings import t2wml_settings
+
+def get_provider():
+    provider=t2wml_settings["wikidata_provider"]
+    if provider is None:
+        provider=SparqlProvider(t2wml_settings["sparql_endpoint"])
+    return provider
 
 def translate_precision_to_integer(precision: str) -> int:
     """
@@ -48,14 +55,14 @@ def translate_precision_to_integer(precision: str) -> int:
 
 
 def get_property_type(wikidata_property, *args, **kwargs):
-    provider=t2wml_settings["wikidata_provider"]
+    provider=get_provider()
     property_type= provider.get_property_type(wikidata_property, *args, **kwargs)
     if property_type=="Property Not Found":
         raise ValueError("Property "+wikidata_property+" not found")
     return property_type
 
 def get_labels_and_descriptions(items, *args, **kwargs):
-    provider=t2wml_settings["wikidata_provider"]
+    provider=get_provider()
     return provider.get_labels_and_descriptions(items, *args, **kwargs)
 
 
@@ -70,7 +77,7 @@ def add_properties_from_file(file_path):
 
     return_dict={"added":[], "present":[], "failed":[]}
     
-    provider=t2wml_settings["wikidata_provider"]
+    provider=get_provider()
     with provider as p:
         for prop in input_dict:
             prop_type=input_dict[prop]
