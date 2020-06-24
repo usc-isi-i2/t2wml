@@ -217,7 +217,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // before sending request
     this.setState({
-      showCallWikifier: false
+      showCallWikifier: false,
+      errorMessage: {} as ErrorMessage,
     });
     wikiStore.wikifier.showSpinner = true;
 
