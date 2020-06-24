@@ -36,7 +36,7 @@ GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleuse
 #############SQL STUFF
 
 AUTO_MIGRATE= "sqlite" in AppConfig.SQLALCHEMY_DATABASE_URI #only set to true if database is sqlite
-MIGRATE_DIR=os.path.join(BASEDIR, "migrations")
+#MIGRATE_DIR=os.path.join(BASEDIR, "migrations")
 
 def auto_constraint_name(constraint, table):
     if constraint.name is None or constraint.name == "_unnamed_":
@@ -61,7 +61,7 @@ db = SQLAlchemy(app, metadata=metadata)
 from models import *
 from wikidata_property import *
 
-migrate = Migrate(app, db, render_as_batch=True, directory=MIGRATE_DIR)
+migrate = Migrate(app, db, render_as_batch=True) #, directory=MIGRATE_DIR
 
 
 if AUTO_MIGRATE:
