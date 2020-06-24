@@ -7,52 +7,54 @@ from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue,
     ExternalIdentifier, GlobeCoordinate
 from etk.wikidata import serialize_change_record, WDReference
 from backend_code.utility_functions import get_property_type, translate_precision_to_integer
+import backend_code.t2wml_exceptions as T2WMLExceptions
 
-def handle_property_value(j, i, sparql_endpoint):
-    property_type=get_property_type(j["property"], sparql_endpoint)
+def handle_property_value(attribute, sparql_endpoint):
+    property_type=get_property_type(attribute["property"], sparql_endpoint)
 
     value=None
-    is_error=False
-    error_statement=""
+
 
     if property_type == "WikibaseItem":
-        value = Item(str(j["value"]))
+        value = Item(str(attribute["value"]))
     elif property_type == "WikibaseProperty":
-        value = Property(j["value"])
+        value = Property(attribute["value"])
     elif property_type == "String":
-        value = StringValue(j["value"])
+        value = StringValue(attribute["value"])
     elif property_type == "Quantity":
     ##	# Quick hack to avoid generating empty or bad qualifiers for quantities -Amandeep
-        _value = j["value"]
+        _value = attribute["value"]
         _value = str(_value).replace(',', '')
         _value_no_decimal = _value.replace('.', '')
         if _value == "":
             value = None
         if _value_no_decimal.isnumeric():
-            if 'unit' in i['statement'] and i['statement']['unit'] is not None:
-                value = QuantityValue(_value, Item(i['statement']['unit']))
+            unit=attribute.get('unit', None)
+            if unit:
+                value = QuantityValue(_value, Item(unit))
             else:
                 value = QuantityValue(_value)
         else:
             value = None
     elif property_type == "Time":
-        value = TimeValue(str(j["value"]), Item(j["calendar"]),
-                        translate_precision_to_integer(j["precision"]),
-                        j["time_zone"])
+        value = TimeValue(str(attribute["value"]), Item(attribute["calendar"]),
+                        translate_precision_to_integer(attribute["precision"]),
+                        attribute["time_zone"])
     elif property_type == "Url":
-        value = URLValue(j["value"])
+        value = URLValue(attribute["value"])
     elif property_type == "Monolingualtext":
-        value = MonolingualText(j["value"], j["lang"])
+        value = MonolingualText(attribute["value"], attribute["lang"])
     elif property_type == "ExternalId":
-        value = ExternalIdentifier(j["value"])
+        value = ExternalIdentifier(attribute["value"])
     elif property_type == "GlobeCoordinate":
-        value = GlobeCoordinate(j["latitude"], j["longitude"], 
-                                j["precision"], globe=StringValue('Earth'))
+        value = GlobeCoordinate(attribute["latitude"], attribute["longitude"], 
+                                attribute["precision"], globe=StringValue('Earth'))
     elif property_type == "Property Not Found":
-        is_error = True
-        error_statement = "Type of property " + j["property"] + " not found"
-
-    return value, is_error, error_statement
+        raise T2WMLExceptions.MissingWikidataEntryException("Property "+attribute["property"]+" not found")
+    else:
+        print("Unsupported property type: "+property_type)
+        
+    return value
 
 def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl',
                      created_by: str = 't2wml', debug=False) -> str:
@@ -93,49 +95,45 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
     doc.kg.bind('prov', 'http://www.w3.org/ns/prov#')
     doc.kg.bind('schema', 'http://schema.org/')
 
-    is_error = False
-    error_statement = None
+
     statement_id = 0
-    for i in resolved_excel:
-        _item = i["statement"]["item"]
-        if _item is not None:
-            item = WDItem(_item, creator='http://www.isi.edu/{}'.format(created_by))
-            value, is_error, error_statement = handle_property_value(i["statement"], i, sparql_endpoint)
-            if is_error:
-                break
-            if debug:
-                s = item.add_statement(i["statement"]["property"], value,
-                                       statement_id='debugging-{}'.format(statement_id))
-                statement_id += 1
-            else:
-                s = item.add_statement(i["statement"]["property"], value)
-            doc.kg.add_subject(item)
+    for cell in resolved_excel:
+            statement=resolved_excel[cell]
+            _item = statement["item"]
+            if _item is not None:
+                item = WDItem(_item, creator='http://www.isi.edu/{}'.format(created_by))
+                value = handle_property_value(statement, sparql_endpoint)
+                if debug:
+                    s = item.add_statement(statement["property"], value,
+                                        statement_id='debugging-{}'.format(statement_id))
+                    statement_id += 1
+                else:
+                    s = item.add_statement(statement["property"], value)
+                doc.kg.add_subject(item)
 
-            if "reference" in i["statement"]:
-                reference = WDReference()
-                for j in i["statement"]["reference"]:
-                    value, is_error, error_statement = handle_property_value(j, i, sparql_endpoint)
-                    if value:
-                        reference.add_value(j["property"], value)
-                    else:
-                        print("Invalid numeric value '{}' in cell {}".format(j["value"], j["cell"]))
-                        print("Skipping qualifier {} for cell {}".format(j["property"], i["cell"]))
-                if reference:
-                    s.add_reference(reference)
+                if "reference" in statement:
+                    reference = WDReference()
+                    for attribute in statement["reference"]:
+                        value = handle_property_value(attribute, sparql_endpoint)
+                        if value:
+                            reference.add_value(attribute["property"], value)
+                        else:
+                            print("Invalid numeric value '{}' in cell {}".format(attribute["value"], attribute["cell"]))
+                            print("Skipping qualifier {} for cell {}".format(attribute["property"], cell))
+                    if reference:
+                        s.add_reference(reference)
 
-            if "qualifier" in i["statement"]:
-                for j in i["statement"]["qualifier"]:
-                    value, is_error, error_statement = handle_property_value(j, i, sparql_endpoint)
-                    if value:
-                        s.add_qualifier(j["property"], value)
-                    else:
-                        print("Invalid numeric value '{}' in cell {}".format(j["value"], j["cell"]))
-                        print("Skipping qualifier {} for cell {}".format(j["property"], i["cell"]))
+                if "qualifier" in statement:
+                    for attribute in statement["qualifier"]:
+                        value = handle_property_value(attribute, sparql_endpoint)
+                        if value:
+                            s.add_qualifier(attribute["property"], value)
+                        else:
+                            print("Invalid numeric value '{}' in cell {}".format(attribute["value"], attribute["cell"]))
+                            print("Skipping qualifier {} for cell {}".format(attribute["property"], statement["cell"]))
 
-            doc.kg.add_subject(s)
-    if not is_error:
-        data = doc.kg.serialize(filetype)
-    else:
-        raise Exception(error_statement)
+                doc.kg.add_subject(s)
 
+    
+    data = doc.kg.serialize(filetype)
     return data

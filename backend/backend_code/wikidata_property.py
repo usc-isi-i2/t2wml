@@ -20,6 +20,29 @@ class WikidataProperty(db.Model):
             db.session.rollback()
             raise ValueAlreadyPresentError
 
+    @staticmethod
+    def add_or_update(wikidata_property, property_type, do_session_commit=True):
+        wp= WikidataProperty.query.get(wikidata_property)
+        if wp:
+            wp.property_type=property_type
+            added=False
+        else:
+            wp=WikidataProperty(wikidata_property=wikidata_property, property_type=property_type)
+            db.session.add(wp)
+            added=True
+        if do_session_commit:
+            db.session.commit()
+        return added
+    @staticmethod
+    def do_batch_commit():
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+
+
 
 class WikidataItem(db.Model):
     id=db.Column(db.Integer, primary_key=True)

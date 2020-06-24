@@ -1,26 +1,25 @@
-
+import sys
 import yaml
-from backend_code.bindings import bindings
 import backend_code.t2wml_exceptions as T2WMLExceptions
-from backend_code.parsing.t2wml_parsing import iter_on_n, t2wml_parse
+from backend_code.bindings import bindings
+from backend_code.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode, iter_on_n_for_code
 from backend_code.spreadsheets.conversions import _cell_range_str_to_tuples
+
 
 class ForwardSlashEscape(Exception):
     def __init__(self, new_str):
         self.new_str=new_str
 
 
-   
-
 class CodeParser:
     def fix_code_string(self, e_str):
         # we made various compromises between valid code from the get-go and easy for the user code. 
         # this function transforms user code into python-acceptable code
         e_str=str(e_str)
-        #deal with reserved variables with defined meetings ($end, $sheet, $filename)
+        #deal with reserved variables with defined meanings ($end, $sheet, $filename)
         e_str = e_str.replace("$end", str(len(bindings.excel_sheet)))
         e_str = e_str.replace("$sheet", "\""+bindings.excel_sheet.sheet_name+"\"")
-        #$ is easy and visually distinctive for users, but invalid python code. so we replace it with t_var_ (for t2wml variable)
+        #dollar sign is easy and visually distinctive for users, but invalid python code. so we replace it with t_var_ (for t2wml variable)
         e_str= e_str.replace("$", "t_var_") 
         # "condition and result" is equivalent to "if condition, result"
         e_str = e_str.replace("->", "and")
@@ -47,10 +46,10 @@ class CodeParser:
             return False
 
 class TemplateParser(CodeParser):    
-    def __init__(self, yaml_data, region):
+    def __init__(self, template, region):
         self.region=region
-        self.template=dict(yaml_data['statementMapping']['template'])
-        self.eval_template=self.create_eval_template(yaml_data['statementMapping']['template'])
+        self.template=template
+        self.eval_template=self.create_eval_template(self.template)
 
     def get_code_replacement(self, input_str):
         fake_context=dict(t_var_row=self.region.top, t_var_col=self.region.left, t_var_n=0)
@@ -63,10 +62,9 @@ class TemplateParser(CodeParser):
                     result=t2wml_parse(compiled_statement, fake_context)
                 except Exception as e:
                     raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(input_str))
-                variable_code_expression= "t_var" in fixed
-                if variable_code_expression:
-                    return compiled_statement
-                else:
+                if "t_var" in fixed: #variable code expression
+                    return T2WMLCode(compiled_statement, fixed)
+                else: #invariable, result from anywhere is the same and we've already calculated it
                     return result
 
             else:
@@ -104,10 +102,16 @@ class RegionParser(CodeParser):
 
     def parse_region_expression(self, statement, context={}):
         try:
+            if isinstance(statement, T2WMLCode):
+                return iter_on_n_for_code(statement, context)
+
             if self.is_code_string(statement):
                 statement=self.fix_code_string(statement)
         #we run parser even if it's not a string, so that we get back number values for A, B, etc
-            return iter_on_n(statement, context)
+            if "t_var_n" in statement:
+                return iter_on_n(statement, context)
+            else:
+                return t2wml_parse(statement, context)
         except Exception as e:
             raise T2WMLExceptions.InvalidYAMLFileException("Failed to parse:"+str(statement))
 
@@ -167,7 +171,7 @@ class RegionParser(CodeParser):
             #fill in the remainder
             for boundary in ["left", "right", "top", "bottom"]:
                 key="t_var_"+boundary
-                if not region_props[key]:
+                if region_props[key] is None:
                     try:
                         region_props[key]=self.parse_region_expression(str(yaml_region[boundary]), region_props)
                     except Exception as e:
@@ -183,6 +187,10 @@ class RegionParser(CodeParser):
 
         return region_props
     
+    def get_code_replacement(self, input_str):
+        fixed=self.fix_code_string(input_str)
+        compiled_statement=compile(fixed, "<string>", "eval")
+        return T2WMLCode(compiled_statement, fixed)
 
     def get_skips(self, yaml_region, region_props):
         skip_row=skip_cell=skip_column=[]
@@ -192,10 +200,11 @@ class RegionParser(CodeParser):
         if 'skip_row' in yaml_region:
             skip_row=[]
             for statement in yaml_region["skip_row"]:
+                compiled_statement=self.get_code_replacement(statement)
                 for row in range(top, bottom+1):
                     context=dict(t_var_row=row)
                     context.update(region_props)
-                    skip=self.parse_region_expression(statement, context)
+                    skip=self.parse_region_expression(compiled_statement, context)
                     if skip:
                         skip_row.append(row)
         
@@ -204,11 +213,12 @@ class RegionParser(CodeParser):
         if 'skip_column' in yaml_region:
             skip_column=[]
             for statement in yaml_region["skip_column"]:
+                compiled_statement=self.get_code_replacement(statement)
                 for col in range(left, right+1):
                     context=dict(t_var_col=col)
                     context.update(region_props)
                     try:
-                        skip=self.parse_region_expression(statement, context)
+                        skip=self.parse_region_expression(compiled_statement, context)
                     except Exception as e:
                         raise e
                     if skip:
@@ -217,11 +227,12 @@ class RegionParser(CodeParser):
         if 'skip_cell' in yaml_region:
             skip_cell=[]
             for statement in yaml_region["skip_cell"]:
+                compiled_statement=self.get_code_replacement(statement)
                 for row in range(top, bottom+1):
                     for col in range(left, right+1):
                         context=dict(t_var_col=col, t_var_row=row)
                         context.update(region_props)
-                        skip=self.parse_region_expression(statement, context)
+                        skip=self.parse_region_expression(compiled_statement, context)
                         if skip:
                             skip_cell.append((col, row))
 
@@ -275,7 +286,7 @@ def validate_yaml(yaml_file_path):
                             if 'range' not in yaml_region[i]:
                                 for required_key in ['left', 'right', 'top', 'bottom']:
                                     present = yaml_region[i].get(required_key, None)
-                                    if not present:
+                                    if present is None:
                                         errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found or empty\n"
                             elif not yaml_region[i]['range']:
                                 errors+="Value of range cannot be empty"
@@ -337,4 +348,3 @@ def validate_yaml(yaml_file_path):
                 raise T2WMLExceptions.ErrorInYAMLFileException(errors)
         
         return yaml_file_data
-

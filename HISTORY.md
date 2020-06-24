@@ -1,6 +1,52 @@
 T2WML History
 ===================
 
+Changes in version 2.0a14:
+-------------------------
+* performance improvements:
+  - set prefer_language_date_order to False
+  - faster json saving
+  - precompile for code in skips
+* bug fixes:
+  - kgtk output: don't enclose unit node in quotes
+  - when loading csv, treat whitespace-only cells as empty strings
+  - don't skip 0 value cells
+
+
+Changes in version 2.0a13:
+-------------------------
+* backwards compatibility breaking: property_type_map has been removed. those properties must be added manually to the project
+* json format changed from list of dicts to dict
+* cell-specific errors when parsing template no longer raise error and exit.
+  instead, they are added to a dictionary of errors, which is both printed to stderr and returned in the results
+     * the only exception is errors in the first cell of the data, as that cell is used to verify validity of the template itself, and will immediately exit with error if invalid
+* performance improvements to uploading property files
+* performance improvements to calculating statements and to downloading kgtk results
+* bug fixes:
+   * 500 error when uploading properties file in json format
+
+Changes in version 2.0a12:
+------------------------
+* bug fixes:
+   - duplicate edges in kgtk output
+   - missing quotations in kgtk output
+   - driver.py crashed on missing file
+
+Changes in version 2.0a11:
+------------------------
+* fixed bug that was forcing incorrect property captilization for multi-word property types
+* uploading proprties that already exist now overwrites the type of the existing properties
+* attempting to upload properties of a type that is not supported will now return an error
+
+Changes in version 2.0a10:
+------------------------
+* performance improvements
+
+Changes in version 2.0a9:
+------------------------
+* added support for uploading properties from a kgtk tsv file
+* added slight optimization for r2wml expressions that only need to be evaluated once
+
 Changes in version 2.0a8:
 ------------------------
 * added patch support for getting items by string+context from item table

@@ -89,6 +89,6 @@ def from_excel(cell:str):
     return _cell_str_to_tuple(cell)
 
 def to_excel(col, row):
-    if not col and not row:
+    if col is None and row is None:
         return None
     return _cell_tuple_to_str(col, row)
