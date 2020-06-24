@@ -3,29 +3,15 @@ import React, { Component } from 'react';
 import Wikifier from './wikifier';
 import YamlEditor from './yaml-editor';
 
-interface EditorProperties {
+import { observer } from "mobx-react"
+import wikiStore from '../data/store';
 
-}
 
-interface EditorState {
-  nowShowing: string;
-}
-
-class Editors extends Component<EditorProperties, EditorState> {
-  constructor(props: EditorProperties) {
-    super(props);
-
-    // init global variables
-    (window as any).Editors = this;
-
-    // init state
-    this.state = {
-      nowShowing: "Wikifier",
-    };
-  }
-
+@observer
+class Editors extends Component {
   render() {
-    const { nowShowing } = this.state;
+    const nowShowing = wikiStore.editors.nowShowing;
+    
     return (
       <div className="w-100 h-100 p-1">
         <Wikifier isShowing={nowShowing === "Wikifier"} />

@@ -14,8 +14,12 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData } from '../common/general';
+import { LOG, WikifierData, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
+import ToastMessage from '../common/toast';
+
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
 
 interface Column {
   headerName: string;
@@ -60,17 +64,22 @@ interface TableState  {
   rowData: any; // Array<object>; // todo: add interface
   selectedCell: Cell | null;
   yamlRegions: any; // null,
+
+  errorMessage: ErrorMessage;
 }
 
+@observer
 class TableViewer extends Component<TableProperties, TableState> {
   public gridApi: any;
   public gridColumnApi: any;
+  private pid: string;
 
   private requestService: RequestService;
 
   constructor(props: TableProperties) {
     super(props);
     this.requestService = new RequestService();
+    this.pid = wikiStore.project.pid;
 
     // init global variables
     (window as any).TableViewer = this;
@@ -79,7 +88,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.state = {
 
       // appearance
-      showSpinner: false,
+      showSpinner: wikiStore.table.showSpinner,
       showToast0: false,  // showing details of current cell
       showToast1: false,  // showing temperary messages
       msgInToast1: "Hi",  // message shows in toast 1
@@ -96,6 +105,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       selectedCell: { "col": null, "row": null, "value": null },
       yamlRegions: null,
 
+      errorMessage: {} as ErrorMessage,
     };
 
     // init functions
@@ -114,8 +124,9 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
   handleOpenTableFile(event:any) {
+    this.setState({ errorMessage: {} as ErrorMessage });  
     // remove current status
-    (window as any).isCellSelectable = false;
+    wikiStore.table.isCellSelectable = false;
     this.updateSelectedCell();
     this.updateQnodeCells();
 
@@ -124,14 +135,16 @@ class TableViewer extends Component<TableProperties, TableState> {
     if (!file) return;
 
     // before sending request
-    this.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    // this.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
+    // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadDataFile((window as any).pid, formData).then((json) => {
+    this.requestService.uploadDataFile(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -170,26 +183,33 @@ class TableViewer extends Component<TableProperties, TableState> {
       if (yamlData !== null) {
         (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
-        (window as any).isCellSelectable = true;
+        wikiStore.table.isCellSelectable = true;
       } else {
-        (window as any).isCellSelectable = false;
+        wikiStore.table.isCellSelectable = false;
       }
 
 
       // follow-ups (success)
-      this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
-
+      error.errorDescription += "\n\nCannot upload data file!";
+      this.setState({ errorMessage: error });
+    
       // follow-ups (failure)
-      this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
   handleOpenPropertiesFile(event:any){
+    this.setState({ errorMessage: {} as ErrorMessage });
     const file = event.target.files[0];
     if (!file) return;
 
@@ -198,16 +218,19 @@ class TableViewer extends Component<TableProperties, TableState> {
     let formData = new FormData();
     formData.append("file", file);
 
-    this.requestService.uploadProperties((window as any).pid, formData).then((json) => {
+    this.requestService.uploadProperties(this.pid, formData).then((json) => {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
 
-        }).catch((error) => {
+        }).catch((error: ErrorMessage) => {
           console.log(error);
+          error.errorDescription += "\n\nCannot upload properties file!";
+          this.setState({ errorMessage: error });
         });
   }
 
   handleOpenWikifierFile(event: any) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateQnodeCells();
 
@@ -216,14 +239,16 @@ class TableViewer extends Component<TableProperties, TableState> {
     if (!file) return;
 
     // before sending request
-    this.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    // this.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
+    // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     let formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadWikifierOutput((window as any).pid, formData).then((json) => {
+    this.requestService.uploadWikifierOutput(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -241,23 +266,30 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // follow-ups (success)
       this.setState({
-        showSpinner: false,
+        // showSpinner: false,
         msgInToast1: "✅ Wikifier file loaded",
         showToast1: true,
       });
-      (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot upload wikifier file!";
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.updateQnodeCells();
-      this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
   handleSelectCell(params: any) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
     (window as any).Output.removeOutput();
@@ -277,13 +309,15 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.updateSelectedCell(colName, rowName, value);
 
     // before sending request
-    if (!(window as any).isCellSelectable) return;
-    this.setState({ showSpinner: true });
-    (window as any).Output.setState({ showSpinner: true });
+    if (!wikiStore.table.isCellSelectable) return;
+    // this.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
+    wikiStore.output.showSpinner = true;
+    // (window as any).Output.setState({ showSpinner: true });
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    this.requestService.resolveCell((window as any).pid, colName, rowName).then((json) => {
+    this.requestService.resolveCell(this.pid, colName, rowName).then((json) => {
       console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -299,34 +333,43 @@ class TableViewer extends Component<TableProperties, TableState> {
       (window as any).Output.updateOutput(colName, rowName, json);
 
       // follow-ups (success)
-      this.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot resolve cell!";
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      (window as any).Output.setState({ showSpinner: false });
-      this.setState({ showSpinner: false });
+      wikiStore.output.showSpinner = false;
+    //   (window as any).Output.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
     });
   }
 
   handleSelectSheet(event: any) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
     (window as any).YamlEditor.updateYamlText();
     this.updateYamlRegions();
     this.updateQnodeCells();
     (window as any).Output.removeOutput();
-    (window as any).Output.setState({ isDownloadDisabled: true });
+    wikiStore.output.isDownloadDisabled = true;
+    // (window as any).Output.setState({ isDownloadDisabled: true });
 
     // before sending request
-    this.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    // this.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
+    // (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.changeSheet((window as any).pid, sheetName).then((json) => {
+    this.requestService.changeSheet(this.pid, sheetName).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -365,22 +408,29 @@ class TableViewer extends Component<TableProperties, TableState> {
       if (yamlData !== null) {
         (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
-        (window as any).isCellSelectable = true;
-        (window as any).Output.setState({ isDownloadDisabled: false });
+        wikiStore.table.isCellSelectable = true;
+        wikiStore.output.isDownloadDisabled = false;
+        // (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
-        (window as any).isCellSelectable = false;
+        wikiStore.table.isCellSelectable = false;
       }
 
       // follow-ups (success)
-      this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot change sheet!";
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      this.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+    //   this.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+    //   (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -388,7 +438,9 @@ class TableViewer extends Component<TableProperties, TableState> {
   updateQnodeCells(qnodeData: any | null = null, rowData = null) {
     if (qnodeData === null) {
       // reset qnode cells
-      const qnodes = Object.keys((window as any).Wikifier.state.qnodeData);
+    //   const qnodes = Object.keys((window as any).Wikifier.state.qnodeData);
+      if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;
+      const qnodes = Object.keys(wikiStore.wikifier.state.qnodeData);
       if (qnodes.length === 0) return;
       const cells = { qnode: qnodes };
       const presets = {
@@ -574,9 +626,11 @@ class TableViewer extends Component<TableProperties, TableState> {
 
   renderToastBody() {
     // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    if ((window as any).Wikifier === undefined) return;
-    if ((window as any).Wikifier.state === undefined) return;
-    const { qnodeData } = (window as any).Wikifier.state;
+    // if ((window as any).Wikifier === undefined) return;
+    // if ((window as any).Wikifier.state === undefined) return;
+    // const { qnodeData } = (window as any).Wikifier.state;
+    if (wikiStore.wikifier === undefined || wikiStore.wikifier.state === undefined) return;
+    const { qnodeData } = wikiStore.wikifier.state;
     if (qnodeData === undefined) return;
 
     // get qnode according to cell index, e.g. "Q967"
@@ -624,7 +678,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
   render() {
-    const { showSpinner, showToast0, showToast1, msgInToast1 } = this.state;
+    const { showToast0, showToast1, msgInToast1 } = this.state;
     const { filename, isCSV, columnDefs, rowData } = this.state;
     const { selectedCell } = this.state;
 
@@ -656,6 +710,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     return (
       <div className="w-100 h-100 p-1">
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
         <Card className="w-100 h-100 shadow-sm">
 
           {/* header */}
@@ -731,7 +786,7 @@ class TableViewer extends Component<TableProperties, TableState> {
           <Card.Body className="ag-theme-balham w-100 h-100 p-0" style={{ overflow: "hidden" }}>
 
             {/* loading spinner */}
-            <div className="mySpinner" hidden={!showSpinner}>
+            <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
               <Spinner animation="border" />
             </div>
 
