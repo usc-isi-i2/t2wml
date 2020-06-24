@@ -12,8 +12,10 @@ import web_exceptions
 from web_exceptions import WebException
 from t2wml_api.wikification.wikify_handling import wikifier
 from t2wml_api.utils.t2wml_exceptions import T2WMLException
-from utils import make_frontend_err_dict, string_is_valid, verify_google_login
+from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
 
+
+debug_mode = False
 
 from t2wml_api.settings import t2wml_settings
 from app_config import DEFAULT_SPARQL_ENDPOINT
@@ -390,7 +392,6 @@ def wikify_region(pid):
     region = request.form["region"]
     context = request.form["context"]
     flag = int(request.form["flag"])
-    data = {"error":None}
     if action == "wikify_region":
             if not project.current_file:
                 raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")

@@ -1,6 +1,7 @@
 from google.oauth2 import id_token
 from google.auth.transport import requests 
 from string import punctuation
+from flask import request
 import web_exceptions
 from app_config import GOOGLE_CLIENT_ID
 
