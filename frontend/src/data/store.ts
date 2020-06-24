@@ -1,4 +1,4 @@
-import { observable, computed } from 'mobx';
+import { observable } from 'mobx';
 
 class ProjectState {
     @observable public pid: string;
@@ -47,7 +47,7 @@ class WikifierInnerState {
 }
 class WikifierState {
     @observable public showSpinner: boolean;
-    @observable public updateWikifier: () => void;
+    @observable public updateWikifier: (qnodeData?: any, rowData?: any) => void;
     @observable public state: WikifierInnerState | undefined;
     @observable public scope: number; // Is it needed?
 
