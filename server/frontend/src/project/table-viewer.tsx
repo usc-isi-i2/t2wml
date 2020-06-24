@@ -81,9 +81,6 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.requestService = new RequestService();
     this.pid = wikiStore.project.pid;
 
-    // init global variables
-    (window as any).TableViewer = this;
-
     // init state
     this.state = {
 
@@ -114,6 +111,12 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
+
+    wikiStore.table.updateYamlRegions = (newYamlRegions = null) => this.updateYamlRegions(newYamlRegions);
+    wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
+    wikiStore.table.updateTableData = (tableData: TableData) => this.updateTableData(tableData);
+    wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
+    
   }
 
   onGridReady(params: WikifierData) {
@@ -135,9 +138,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     if (!file) return;
 
     // before sending request
-    // this.setState({ showSpinner: true });
     wikiStore.table.showSpinner = true;
-    // (window as any).Wikifier.setState({ showSpinner: true });
     wikiStore.wikifier.showSpinner = true;
 
     // send request
@@ -181,7 +182,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // load yaml data
       if (yamlData !== null) {
-        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
       } else {
@@ -190,9 +191,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
 
       // follow-ups (success)
-    //   this.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
-    //   (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
@@ -201,9 +200,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       this.setState({ errorMessage: error });
     
       // follow-ups (failure)
-    //   this.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
-    //   (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
     });
   }
@@ -239,9 +236,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     if (!file) return;
 
     // before sending request
-    // this.setState({ showSpinner: true });
     wikiStore.table.showSpinner = true;
-    // (window as any).Wikifier.setState({ showSpinner: true });
     wikiStore.wikifier.showSpinner = true;
 
     // send request
@@ -271,7 +266,6 @@ class TableViewer extends Component<TableProperties, TableState> {
         showToast1: true,
       });
       wikiStore.table.showSpinner = false;
-    //   (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
@@ -281,9 +275,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // follow-ups (failure)
       this.updateQnodeCells();
-    //   this.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
-    //   (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
     });
   }
@@ -292,7 +284,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
-    (window as any).Output.removeOutput();
+    wikiStore.output.removeOutput();
 
     // get selected cell index
     const colName = String(params.colDef["headerName"]);
@@ -310,10 +302,8 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // before sending request
     if (!wikiStore.table.isCellSelectable) return;
-    // this.setState({ showSpinner: true });
     wikiStore.table.showSpinner = true;
     wikiStore.output.showSpinner = true;
-    // (window as any).Output.setState({ showSpinner: true });
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
@@ -330,10 +320,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       }
 
       // else, success
-      (window as any).Output.updateOutput(colName, rowName, json);
+      wikiStore.output.updateOutput(colName, rowName, json)
 
       // follow-ups (success)
-    //   this.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
@@ -343,8 +332,6 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // follow-ups (failure)
       wikiStore.output.showSpinner = false;
-    //   (window as any).Output.setState({ showSpinner: false });
-    //   this.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
     });
   }
@@ -353,17 +340,14 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
-    (window as any).YamlEditor.updateYamlText();
+    wikiStore.yaml.updateYamlText();
     this.updateYamlRegions();
     this.updateQnodeCells();
-    (window as any).Output.removeOutput();
+    wikiStore.output.removeOutput();
     wikiStore.output.isDownloadDisabled = true;
-    // (window as any).Output.setState({ isDownloadDisabled: true });
 
     // before sending request
-    // this.setState({ showSpinner: true });
     wikiStore.table.showSpinner = true;
-    // (window as any).Wikifier.setState({ showSpinner: true });
     wikiStore.wikifier.showSpinner = true;
 
     // send request
@@ -406,19 +390,16 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // load yaml data
       if (yamlData !== null) {
-        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
-        // (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
         wikiStore.table.isCellSelectable = false;
       }
 
       // follow-ups (success)
-    //   this.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
-    //   (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
@@ -427,9 +408,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-    //   this.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
-    //   (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
     });
   }
@@ -438,7 +417,6 @@ class TableViewer extends Component<TableProperties, TableState> {
   updateQnodeCells(qnodeData: any | null = null, rowData = null) {
     if (qnodeData === null) {
       // reset qnode cells
-    //   const qnodes = Object.keys((window as any).Wikifier.state.qnodeData);
       if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;
       const qnodes = Object.keys(wikiStore.wikifier.state.qnodeData);
       if (qnodes.length === 0) return;
@@ -449,7 +427,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       this.updateStyleByDict(cells, presets);
 
       // reset wikifier data
-      (window as any).Wikifier.updateWikifier();
+      wikiStore.wikifier.updateWikifier();
 
     } else {
       // update qnode cells
@@ -463,8 +441,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       this.updateStyleByDict(cells, presets);
 
       // update wikifier data
-
-      (window as any).Wikifier.updateWikifier(qnodeData, rowData);
+        wikiStore.wikifier.updateWikifier(qnodeData, rowData);
     }
   }
 
@@ -490,10 +467,10 @@ class TableViewer extends Component<TableProperties, TableState> {
 
   }
 
-  updateStyleByCell(colName: string | null, rowName: number | null, style: {border: string}, override: boolean = false) {
+  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: {border: string}, override: boolean = false) {
     if (rowName && colName) {
       const col = colName;
-      const row = rowName - 1;
+      const row = Number(rowName) - 1;
       let rowData2 = this.state.rowData;
       if (rowData2 !== undefined && rowData2[row] !== undefined) {
         if (rowData2[row]["styles"] === undefined) {
@@ -626,9 +603,6 @@ class TableViewer extends Component<TableProperties, TableState> {
 
   renderToastBody() {
     // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    // if ((window as any).Wikifier === undefined) return;
-    // if ((window as any).Wikifier.state === undefined) return;
-    // const { qnodeData } = (window as any).Wikifier.state;
     if (wikiStore.wikifier === undefined || wikiStore.wikifier.state === undefined) return;
     const { qnodeData } = wikiStore.wikifier.state;
     if (qnodeData === undefined) return;

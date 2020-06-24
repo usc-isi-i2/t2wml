@@ -51,9 +51,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     this.tempWikifyFlagRef = React.createRef();
     this.tempWikifyContextRef = React.createRef();
 
-    // init global variables
-    (window as any).Wikifier = this;
-
     // init state
     this.state = {
 
@@ -74,6 +71,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
       errorMessage: {} as ErrorMessage,
     };
+
+    (wikiStore.wikifier as any).updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
   }
 
   onGridReady(params: WikifierData) {
@@ -217,11 +216,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
 
     // before sending request
-
-    // this.setState({
-    //   showSpinner: true,
-    //   showCallWikifier: false
-    // });
     this.setState({
       showCallWikifier: false
     });
@@ -249,10 +243,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // else, success
 
       const { qnodes, rowData } = json;
-      (window as any).TableViewer.updateQnodeCells(qnodes, rowData);
+      wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
-    //   this.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
@@ -261,8 +254,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      (window as any).TableViewer.updateQnodeCells();
-    //   this.setState({ showSpinner: false });
+      wikiStore.table.updateQnodeCells();
         wikiStore.wikifier.showSpinner = false;
     });
   }
@@ -452,19 +444,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   //   }
   // }
 
-//   (wikiStore.wikifier as any).updateWikifier = (qnodeData = {}, rowData = []) => {
-//     // update
-//     this.setState({
-//       qnodeData: qnodeData,
-//       rowData: rowData,
-//     });
-//   }
-updateWikifier(qnodeData = {}, rowData = []) {
-    // update
-    // this.setState({
-    //   qnodeData: qnodeData,
-    //   rowData: rowData,
-    // });
+  updateWikifier(qnodeData = {}, rowData = []) {
     this.setState({
         rowData: rowData,
     });
@@ -778,11 +758,6 @@ updateWikifier(qnodeData = {}, rowData = []) {
                 { display: "flex", overflow: "hidden" }
             }
             >
-
-            {/* loading spinner */}
-            {/* <div className="mySpinner" hidden={!this.state.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
-                <Spinner animation="border" />
-            </div> */}
 
             <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
                 <Spinner animation="border" />

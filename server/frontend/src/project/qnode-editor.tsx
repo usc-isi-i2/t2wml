@@ -34,7 +34,6 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
     //   cancelAfterEnd: true,
     //   isValidValue: true,
     // };
-    // (window as any).Wikifier.setState({ scope: 0 });
     wikiStore.wikifier.scope = 0;
 
     // init functions
@@ -119,7 +118,6 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
 
   handleChangeScope(scope: number) {
     this.setState({ scope: scope });
-    // (window as any).Wikifier.setState({ scope: scope });
     wikiStore.wikifier.scope = scope;
   }
 
