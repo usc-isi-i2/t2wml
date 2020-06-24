@@ -170,8 +170,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
     });
 
     // before fetching project files
-    // (window as any).TableViewer.setState({ showSpinner: true });
-    // (window as any).Wikifier.setState({ showSpinner: true });
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
 
@@ -186,23 +184,22 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
       // load table data
       if (tableData !== null) {
-        (window as any).TableViewer.updateTableData(tableData);
+          wikiStore.table.updateTableData(tableData);
       }
 
       // load wikifier data
       if (wikifierData !== null) {
-        (window as any).TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+          wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        (window as any).TableViewer.updateQnodeCells(); // reset
+          wikiStore.table.updateQnodeCells(); // reset
       }
 
       // load yaml data
       if (yamlData !== null) {
-        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
-        (window as any).TableViewer.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.table.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
-        // (window as any).Output.setState({ isDownloadDisabled: false });
       } else {
         wikiStore.table.isCellSelectable = false;
       }
@@ -213,8 +210,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
       }
 
       // follow-ups (success)
-    //   (window as any).TableViewer.setState({ showSpinner: false });
-      // (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
@@ -225,9 +220,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 //    alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
-    //   (window as any).TableViewer.setState({ showSpinner: false });
       wikiStore.table.showSpinner = false;
-      // (window as any).Wikifier.setState({ showSpinner: false });
       wikiStore.wikifier.showSpinner = false;
     });
   }
