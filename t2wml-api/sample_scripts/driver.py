@@ -2,12 +2,11 @@ import os
 from pathlib import Path
 import logging
 from etk.wikidata import serialize_change_record
-from app_config import DEFAULT_SPARQL_ENDPOINT
-#IMPORTANT: the import from models must happen before the other backend_code imports because of flask circular imports
-from backend_code.cell_mapper import CellMapper
-from backend_code.item_table import ItemTable
-from backend_code.t2wml_handling import generate_download_file, download_kgtk
-from backend_code.spreadsheets.utilities import get_first_sheet_name
+from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.wikification.item_table import ItemTable
+from t2wml.mapping.t2wml_handling import generate_download_file, download_kgtk
+from t2wml.spreadsheets.utilities import get_first_sheet_name
+from t2wml.settings import DEFAULT_SPARQL_ENDPOINT
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
               sheet_name: str = None, sparql_endpoint: str = DEFAULT_SPARQL_ENDPOINT, 
