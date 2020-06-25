@@ -116,6 +116,7 @@ config/*
 /frontend/.env*.local
 !/frontend/.env
 /static
+/backend/static
 
 # user files
 uploads
