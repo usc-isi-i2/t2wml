@@ -3,7 +3,6 @@ import os
 
 REQUIREMENTS = [
     'PyYAML>=5.1.2',
-    'SPARQLWrapper>=1.8.4',
     'pandas>=1.0.3',
     'etk>=2.1.7',
     'en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz',

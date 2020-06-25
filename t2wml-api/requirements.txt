@@ -1,6 +1,5 @@
 PyYAML==5.3.1
 pandas==1.0.3 #included in etk
-SPARQLWrapper==1.8.5 #included in etk
 etk==2.2.1
 thinc==7.4.1
 wheel==0.34.2
