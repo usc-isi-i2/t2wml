@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import { Button, ButtonGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+import wikiStore from '../data/store';
+
 interface qnodeProperties {
   charPress: string;
   keyPress: number;
@@ -32,7 +34,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
     //   cancelAfterEnd: true,
     //   isValidValue: true,
     // };
-    (window as any).Wikifier.setState({ scope: 0 });
+    wikiStore.wikifier.scope = 0;
 
     // init functions
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -116,7 +118,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
 
   handleChangeScope(scope: number) {
     this.setState({ scope: scope });
-    (window as any).Wikifier.setState({ scope: scope });
+    wikiStore.wikifier.scope = scope;
   }
 
   handleClickUpdateQnode() {
@@ -236,7 +238,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
                   variant="outline-light"
                   size="sm"
                   style={(scope === 1) ? currScopeStyle : otherScopeStyle}
-                  disabled={(window as any).Wikifier.state.currRegion === "All"}
+                  disabled={wikiStore.wikifier.state && wikiStore.wikifier.state.currRegion === "All"}
                   onClick={() => this.handleChangeScope(1)}
                 >
                   Region

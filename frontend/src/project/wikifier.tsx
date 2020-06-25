@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 // App
 import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
@@ -9,12 +9,15 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 // console.log
-import { LOG, WikifierData } from '../common/general';
+import { LOG, WikifierData, ErrorMessage } from '../common/general';
 import * as utils from '../common/utils'
 
 import QnodeEditor from './qnode-editor';
 import RequestService from '../common/service';
+import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react"
+import wikiStore from '../data/store';
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -27,8 +30,10 @@ interface WikifierState {
   rowData: Array<any>,
   flag: number;
   scope: number;
+  errorMessage: ErrorMessage;
 }
 
+@observer
 class Wikifier extends Component<WikifierProperties, WikifierState> {
   public gridApi: any;
   public gridColumnApi: any;
@@ -46,18 +51,15 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     this.tempWikifyFlagRef = React.createRef();
     this.tempWikifyContextRef = React.createRef();
 
-    // init global variables
-    (window as any).Wikifier = this;
-
     // init state
     this.state = {
 
       // appearance
-      showSpinner: false,
+      showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
 
-      qnodeData: {},  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
+      qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in Africa" }]
 
       // call wikifier service
@@ -65,8 +67,12 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       flag: 0,
 
       // qnode editor
-      scope: 0,
+      scope: wikiStore.wikifier.scope,
+
+      errorMessage: {} as ErrorMessage,
     };
+
+    (wikiStore.wikifier as any).updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
   }
 
   onGridReady(params: WikifierData) {
@@ -210,11 +216,11 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
 
     // before sending request
-
     this.setState({
-      showSpinner: true,
-      showCallWikifier: false
+      showCallWikifier: false,
+      errorMessage: {} as ErrorMessage,
     });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
@@ -223,7 +229,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     formData.append("region", region);
     formData.append("context", context);
     formData.append("flag", flag);
-    this.requestService.callWikifierService((window as any).pid, formData).then((json) => {
+    this.requestService.callWikifierService(wikiStore.project.pid, formData).then((json) => {
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -238,17 +244,19 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // else, success
 
       const { qnodes, rowData } = json;
-      (window as any).TableViewer.updateQnodeCells(qnodes, rowData);
+      wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
-      this.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
+      error.errorDescription += "\n\nCannot call wikifier servie!";
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      (window as any).TableViewer.updateQnodeCells();
-      this.setState({ showSpinner: false });
+      wikiStore.table.updateQnodeCells();
+        wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -438,11 +446,12 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   // }
 
   updateWikifier(qnodeData = {}, rowData = []) {
-    // update
     this.setState({
-      qnodeData: qnodeData,
-      rowData: rowData,
+        rowData: rowData,
     });
+    if (wikiStore.wikifier.state) {
+       wikiStore.wikifier.state.qnodeData = qnodeData;
+    }
   }
 
   renderCallWikifier() {
@@ -690,100 +699,103 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     );
 
     return (
-      <Card
-        className="w-100 shadow-sm"
-        style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
-      >
-
-        {this.renderCallWikifier()}
-
-        {/* header */}
-        <Card.Header
-          style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-          onClick={() => (window as any).Editors.setState({ nowShowing: "Wikifier" })}
+    <Fragment>
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
+    
+        <Card
+            className="w-100 shadow-sm"
+            style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
 
-          {/* title */}
-          <div
-            className="text-white font-weight-bold d-inline-block text-truncate"
+            {this.renderCallWikifier()}
 
-            // style={{ width: "calc(100% - 75px)", cursor: "default" }}
-            style={{ width: "calc(100% - 150px)", cursor: "default" }}
-          >
-            Wikifier
-          </div>
-
-          {/* button to upload wikifier file */}
-          <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-            <Button
-              className="d-inline-block float-right"
-              variant="outline-light"
-              size="sm"
-              style={{ padding: "0rem 0.5rem" }}
-              onClick={() => { document!.getElementById("file_wikifier")!.click(); }}
+            {/* header */}
+            <Card.Header
+            style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
+            onClick={() => wikiStore.editors.nowShowing = "Wikifier" }
             >
-              Upload
+
+            {/* title */}
+            <div
+                className="text-white font-weight-bold d-inline-block text-truncate"
+
+                // style={{ width: "calc(100% - 75px)", cursor: "default" }}
+                style={{ width: "calc(100% - 150px)", cursor: "default" }}
+            >
+                Wikifier
+            </div>
+
+            {/* button to upload wikifier file */}
+            <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
+                <Button
+                className="d-inline-block float-right"
+                variant="outline-light"
+                size="sm"
+                style={{ padding: "0rem 0.5rem" }}
+                onClick={() => { document!.getElementById("file_wikifier")!.click(); }}
+                >
+                Upload
+                </Button>
+            </OverlayTrigger>
+
+
+            <Button
+                className="d-inline-block float-right"
+                variant="outline-light"
+                size="sm"
+                style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
+                onClick={() => { this.setState({ showCallWikifier: true }) }}
+            >
+                Wikify
             </Button>
-          </OverlayTrigger>
+
+            </Card.Header>
+
+            {/* wikifier */}
+            <Card.Body
+            className="w-100 h-100 p-0"
+            style={
+                // (this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }
+                { display: "flex", overflow: "hidden" }
+            }
+            >
+
+            <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
+                <Spinner animation="border" />
+            </div>
 
 
-          <Button
-            className="d-inline-block float-right"
-            variant="outline-light"
-            size="sm"
-            style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
-            onClick={() => { this.setState({ showCallWikifier: true }) }}
-          >
-            Wikify
-          </Button>
+            {/* wikifier output */}
+            <div
+                className="ag-theme-balham w-100 h-100"
+                style={{
+                display: "inline-block",
+                overflow: "hidden"
+                }}
+            >
+                {this.renderWikifierOutput()}
+            </div>
+            </Card.Body>
 
-        </Card.Header>
+            {/* card footer */}
+            {/* <Card.Footer
+            style={
+                (this.props.isShowing) ? { height: "40px", padding: "0.5rem 1rem", background: "whitesmoke" } : { display: "none" }
+            }
+            >
+            <Button
+                className="d-inline-block float-right"
+                size="sm"
+                style={{ borderColor: "#006699", background: "#006699", padding: "0rem 0.5rem" }}
+            // onClick={this.handleApply.bind(this)}
+            // disabled={!this.state.isValidYaml}
+            >
+                Download
+            </Button>
+            </Card.Footer> */}
 
-        {/* wikifier */}
-        <Card.Body
-          className="w-100 h-100 p-0"
-          style={
-            // (this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }
-            { display: "flex", overflow: "hidden" }
-          }
-        >
-
-          {/* loading spinner */}
-          <div className="mySpinner" hidden={!this.state.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
-            <Spinner animation="border" />
-          </div>
-
-
-          {/* wikifier output */}
-          <div
-            className="ag-theme-balham w-100 h-100"
-            style={{
-              display: "inline-block",
-              overflow: "hidden"
-            }}
-          >
-            {this.renderWikifierOutput()}
-          </div>
-        </Card.Body>
-
-        {/* card footer */}
-        {/* <Card.Footer
-          style={
-            (this.props.isShowing) ? { height: "40px", padding: "0.5rem 1rem", background: "whitesmoke" } : { display: "none" }
-          }
-        >
-          <Button
-            className="d-inline-block float-right"
-            size="sm"
-            style={{ borderColor: "#006699", background: "#006699", padding: "0rem 0.5rem" }}
-          // onClick={this.handleApply.bind(this)}
-          // disabled={!this.state.isValidYaml}
-          >
-            Download
-          </Button>
-        </Card.Footer> */}
-
-      </Card >
+        </Card >
+    </Fragment>
     );
   }
 }
