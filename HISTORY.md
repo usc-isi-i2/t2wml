@@ -1,6 +1,11 @@
 T2WML History
 ===================
 
+Changes in version 2.0a15:
+-------------------------
+* server no longer uses gunicorn, enabling error logs to be displayed
+* many error displays added to frontend 
+
 Changes in version 2.0a14:
 -------------------------
 * performance improvements:
