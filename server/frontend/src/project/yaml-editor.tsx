@@ -97,6 +97,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
           // else, success
           const { yamlRegions } = json;
+          const internalError = yamlRegions.error;
+          if (internalError){
+              this.setState({errMsg: "⚠️There was an error applying YAML. Check browser console for details."})
+              console.log("ERRORS while applying yaml:")
+              console.log(internalError)
+          }
           wikiStore.table.updateYamlRegions(yamlRegions);
 
           // follow-ups (success)
@@ -120,7 +126,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const yamlText = (this.refs.monaco as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
-      let yamlJson = yaml.safeLoad(yamlText);
+      let yamlJson = (yaml.safeLoad(yamlText) as JSON);
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
@@ -152,7 +158,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       const yamlText = reader.result;
       this.setState({ yamlText: yamlText as string });
       try {
-        const yamlJson = yaml.safeLoad((yamlText as string));
+        const yamlJson = (yaml.safeLoad((yamlText as string))) as JSON;
         this.setState({
           yamlJson: yamlJson,
           isValidYaml: true,
@@ -178,7 +184,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
     this.setState({ yamlText: newYamlText });
     try {
-      const yamlJson = yaml.safeLoad(newYamlText);
+      const yamlJson = (yaml.safeLoad(newYamlText)) as JSON;
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
