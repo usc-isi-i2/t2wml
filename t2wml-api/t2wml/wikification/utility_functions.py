@@ -3,9 +3,9 @@ import csv
 from pathlib import Path
 from typing import Sequence, Union, Tuple, List, Dict, Any
 from string import punctuation
-from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
-from t2wml_api.wikification.wikidata_provider import SparqlProvider
-from t2wml_api.settings import t2wml_settings
+from t2wml.utils import t2wml_exceptions as T2WMLExceptions
+from t2wml.wikification.wikidata_provider import SparqlProvider
+from t2wml.settings import t2wml_settings
 
 def get_provider():
     provider=t2wml_settings["wikidata_provider"]

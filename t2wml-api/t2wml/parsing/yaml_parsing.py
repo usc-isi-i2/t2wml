@@ -1,9 +1,9 @@
 import sys
 import yaml
-import t2wml_api.utils.t2wml_exceptions as T2WMLExceptions
-from t2wml_api.utils.bindings import bindings
-from t2wml_api.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode, iter_on_n_for_code
-from t2wml_api.spreadsheets.conversions import _cell_range_str_to_tuples
+import t2wml.utils.t2wml_exceptions as T2WMLExceptions
+from t2wml.utils.bindings import bindings
+from t2wml.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode, iter_on_n_for_code
+from t2wml.spreadsheets.conversions import _cell_range_str_to_tuples
 
 
 class ForwardSlashEscape(Exception):

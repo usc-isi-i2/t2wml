@@ -1,10 +1,10 @@
 from collections import defaultdict
-from t2wml_api.spreadsheets.caching import cache_settings, PandasLoader, PickleCacher
-from t2wml_api.mapping.cell_mapper import CellMapper
-from t2wml_api.wikification.item_table import ItemTable
-from t2wml_api.wikification.wikify_handling import wikifier
-from t2wml_api.mapping.t2wml_handling import download_kgtk, generate_download_file, resolve_cell, get_all_template_statements
-from t2wml_api.settings import settings
+from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
+from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.wikification.item_table import ItemTable
+from t2wml.wikification.wikify_handling import wikifier
+from t2wml.mapping.t2wml_handling import download_kgtk, generate_download_file, resolve_cell, get_all_template_statements
+from t2wml.settings import t2wml_settings
 
 class DataFile:
     def __init__(self, file_path, use_cache=False):

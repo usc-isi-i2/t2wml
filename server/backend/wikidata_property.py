@@ -52,7 +52,7 @@ class WikidataItem(db.Model):
             db.session.commit()
 
 
-from t2wml_api.wikification.wikidata_provider import FallbackSparql
+from t2wml.wikification.wikidata_provider import FallbackSparql
 
 class DatabaseProvider(FallbackSparql):
     def __init__(self, sparql_endpoint):

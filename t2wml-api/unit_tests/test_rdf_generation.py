@@ -4,11 +4,11 @@ import unittest
 from pathlib import Path
 import tempfile
 
-from t2wml_api.wikification.item_table import ItemTable
-from t2wml_api.mapping.cell_mapper import CellMapper
-from t2wml_api.mapping.t2wml_handling import generate_download_file
-from t2wml_api.wikification.utility_functions import add_properties_from_file
-from t2wml_api.spreadsheets.utilities import get_first_sheet_name
+from t2wml.wikification.item_table import ItemTable
+from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.mapping.t2wml_handling import generate_download_file
+from t2wml.wikification.utility_functions import add_properties_from_file
+from t2wml.spreadsheets.utilities import get_first_sheet_name
 
 
 

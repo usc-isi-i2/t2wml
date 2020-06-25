@@ -1,9 +1,9 @@
-from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
-from t2wml_api.utils.bindings import bindings
-from t2wml_api.parsing.classes import (CellExpression, ItemExpression,
+from t2wml.utils import t2wml_exceptions as T2WMLExceptions
+from t2wml.utils.bindings import bindings
+from t2wml.parsing.classes import (CellExpression, ItemExpression,
                                           ReturnClass)
-from t2wml_api.parsing.constants import char_dict
-from t2wml_api.parsing.functions import functions_dict
+from t2wml.parsing.constants import char_dict
+from t2wml.parsing.functions import functions_dict
 
 eval_globals=dict()
 eval_globals.update(char_dict)

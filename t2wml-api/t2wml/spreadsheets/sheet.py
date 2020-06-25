@@ -1,9 +1,9 @@
 import pandas as pd
 import json
-from t2wml_api.settings import t2wml_settings
-from t2wml_api.spreadsheets.caching import PandasLoader, PickleCacher, FakeCacher
-from t2wml_api.spreadsheets.conversions import to_excel, _column_index_to_letter
-import t2wml_api.utils.t2wml_exceptions as T2WMLExceptions
+from t2wml.settings import t2wml_settings
+from t2wml.spreadsheets.caching import PandasLoader, PickleCacher, FakeCacher
+from t2wml.spreadsheets.conversions import to_excel, _column_index_to_letter
+import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 
 def get_cache_class():
     cache_class = FakeCacher

@@ -10,14 +10,14 @@ from app_config import app
 from models import User, Project, ProjectFile, YamlFile, WikiRegionFile
 import web_exceptions
 from web_exceptions import WebException
-from t2wml_api.wikification.wikify_handling import wikifier
-from t2wml_api.utils.t2wml_exceptions import T2WMLException
+from t2wml.wikification.wikify_handling import wikifier
+from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
 
 
 debug_mode = False
 
-from t2wml_api.settings import t2wml_settings
+from t2wml.settings import t2wml_settings
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
 

@@ -3,9 +3,9 @@ from collections import defaultdict
 import json
 import numpy as np
 import pandas as pd
-from t2wml_api.spreadsheets.sheet import Sheet
-from t2wml_api.wikification.utility_functions import get_labels_and_descriptions
-from t2wml_api.spreadsheets.conversions import  _column_index_to_letter, from_excel, to_excel
+from t2wml.spreadsheets.sheet import Sheet
+from t2wml.wikification.utility_functions import get_labels_and_descriptions
+from t2wml.spreadsheets.conversions import  _column_index_to_letter, from_excel, to_excel
 
 def patch_get_string_table(cell_table):
     #a patch workaround until we rewrite item table

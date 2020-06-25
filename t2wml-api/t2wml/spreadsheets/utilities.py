@@ -3,10 +3,10 @@ import pickle
 import uuid
 from pathlib import Path
 
-from t2wml_api.utils import t2wml_exceptions as T2WMLExceptions
-from t2wml_api.spreadsheets.conversions import _column_index_to_letter, _cell_range_str_to_tuples
-from t2wml_api.spreadsheets.sheet import Sheet
-from t2wml_api.spreadsheets.caching import PandasLoader
+from t2wml.utils import t2wml_exceptions as T2WMLExceptions
+from t2wml.spreadsheets.conversions import _column_index_to_letter, _cell_range_str_to_tuples
+from t2wml.spreadsheets.sheet import Sheet
+from t2wml.spreadsheets.caching import PandasLoader
 
 
 def create_temporary_csv_file(cell_range: str, data_file_path: str, sheet_name: str = None) -> str:
