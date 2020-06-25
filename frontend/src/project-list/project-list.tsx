@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+
 import './project-list.css';
 import * as utils from '../common/utils'
 import Navbar from '../common/navbar/navbar'
@@ -15,10 +16,14 @@ import DeleteProject from './delete-project';
 import RenameProject from './rename-project';
 import DownloadProject from './dowmload-project';
 import CreateProject from './create-project';
+import ToastMessage from '../common/toast';
 
 // console.log
-import { LOG } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
+
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
 
 interface ProjectListProperties {
 
@@ -46,8 +51,11 @@ interface ProjectListState {
   projectData: any;
   sortBy: string;
   isAscending: boolean;
+
+  errorMessage: ErrorMessage;
 }
 
+@observer
 class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   private requestService: RequestService;
   constructor(props: ProjectListProperties) {
@@ -85,17 +93,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
       // projects
       projectData: [],
-      // projectData: [
-      //   { pid: "4444", ptitle: "Project 4", cdate: 1566282771986, mdate: 1566282771986 },
-      //   { pid: "1111", ptitle: "Project 1", cdate: 1565807259582, mdate: 1565807259582 },
-      //   { pid: "2222", ptitle: "Project 2", cdate: 1565720859582, mdate: 1565720859582 },
-      //   { pid: "3333", ptitle: "Project 3", cdate: 1563906459582, mdate: 1563906459582 },
-      // ],
       sortBy: "mdate",
       isAscending: false,
-
+      errorMessage: {} as ErrorMessage,
     };
-
   }
 
   async componentDidMount() {
@@ -134,17 +135,20 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
-      console.log(error);
-      alert("Cannot fetch project details!\n\n" + error);
+    }).catch((error: ErrorMessage) => {
+    //   console.log(error);
+      error.errorDescription += "\n\nCannot fetch project details!";
+      this.setState({ errorMessage: error });
+    //   alert("Cannot fetch project details!\n\n" + error);
 
       // follow-ups (failure)
-      // this.setState({ showSpinner: false });
-      this.handleLogout();
+      this.setState({ showSpinner: false });
+    //   this.handleLogout();
     });
   }
 
   handleCreateProject(name: string) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
@@ -171,13 +175,12 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showCreateProject: false, showSpinner: false });
 
-    }).catch((error) => {
-      // console.log(error);
-      alert("Cannot create new project!\n\n" + error);
+    }).catch((error: ErrorMessage) => {
+      error.errorDescription += "\n\nCannot create new project!";
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ showCreateProject: false, showSpinner: false });
-      this.handleLogout();
     });
   }
 
@@ -186,6 +189,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   }
 
   handleDeleteProject(pid = "") {
+    this.setState({ errorMessage: {} as ErrorMessage });
     if (pid === "") {
       pid = this.state.deletingPid;
       if (pid === "") return;
@@ -218,9 +222,11 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
-      alert("Cannot delete project!\n\n" + error);
+      error.errorDescription += "\n\nCannot delete project!";
+      this.setState({ errorMessage: error });
+    //   alert("Cannot delete project!\n\n" + error.errorTitle);
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
@@ -232,6 +238,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   }
 
   handleDownloadProject(pid = "") {
+    this.setState({ errorMessage: {} as ErrorMessage });
     if (pid === "") {
       pid = this.state.downloadingPid;
       if (pid === "") return;
@@ -259,9 +266,11 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
-      alert("Cannot download project!\n\n" + error);
+      error.errorDescription += "\n\nCannot download project!";
+      this.setState({ errorMessage: error });
+    //   alert("Cannot download project!\n\n" + error);
 
       // follow-ups (failure)
       // nothing
@@ -277,6 +286,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   }
 
   handleRenameProject(name: string) {
+    this.setState({ errorMessage: {} as ErrorMessage });
     let pid = this.state.tempRenamePid;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
@@ -310,9 +320,11 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // follow-ups (success)
       this.setState({ showRenameProject: false, showSpinner: false });
 
-    }).catch((error) => {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
-      alert("Cannot rename project!\n\n" + error);
+      error.errorDescription += "\n\nCannot rename project!";
+      this.setState({ errorMessage: error });
+    //   alert("Cannot rename project!\n\n" + error);
 
       // follow-ups (failure)
       this.setState({ showRenameProject: false, showSpinner: false });
@@ -368,6 +380,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     });
   }
 
+  projectClicked(pid: string) {
+    wikiStore.project.pid = pid; // Is it needed?
+  }
+
   renderProjects() {
     const { projectData, tempSearch } = this.state;
     const keywords = tempSearch.toLowerCase().split(/ +/);
@@ -381,7 +397,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
             {/* title */}
             <td>
-              <span>
+              <span onClick={() => this.projectClicked(pid)}>
                 <a
                   href={"/project/" + pid}
                   target="_self" // open project on this page
@@ -620,6 +636,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
+          {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
           <Card className="shadow-sm" style={{ width: "90%", maxWidth: "800px", height: "calc(100vh - 90px)", margin: "0 auto" }}>
             <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#343a40" }}>
               <div

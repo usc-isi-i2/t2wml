@@ -22,8 +22,6 @@ debug_mode = False
 class UserNotFoundException(Exception):
     pass
 
-class ProjectNotFoundException(Exception):
-    pass
 
 def get_user():
     if 'uid' not in session:
@@ -46,7 +44,7 @@ def get_project(project_id):
             raise ValueError("unauthenticated project access")
         return project
     except:
-        raise ProjectNotFoundException
+        raise T2WMLExceptions.ProjectsNotFoundException(str(project_id)+" not found")
 
 
 def file_upload_validator(file_extensions=ALLOWED_EXCEL_FILE_EXTENSIONS):
@@ -71,8 +69,6 @@ def json_response(func):
             return json.dumps(data, indent=3), return_code
         except UserNotFoundException as e:
             return "", 401
-        except ProjectNotFoundException as e:
-            return "", 404
         except T2WMLException as e:
             data = {"error": e.error_dict} #error code from the exception
             return json.dumps(data, indent=3), e.code
@@ -196,7 +192,7 @@ def delete_project(pid):
         'projects':None,
         'error':None
     }
-    
+
     user=get_user()
     project=get_project(pid)
     Project.delete(project.id)

@@ -13,14 +13,22 @@ import { GoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline } from 're
 import RequestService from '../common/service';
 
 // console.log
-import { LOG } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
+import ToastMessage from '../common/toast';
 
+interface LoginState {
+    errorMessage: ErrorMessage;
+}
 
-class Login extends React.Component {
+class Login extends React.Component<{}, LoginState> {
   private requestService: RequestService;
   constructor(props: {}) {
       super(props)
       this.requestService = new RequestService();
+
+      this.state = {
+          errorMessage: {} as ErrorMessage,
+      };
   }
 
   async componentDidMount() {
@@ -37,11 +45,14 @@ class Login extends React.Component {
 
   onGoogleFailure(googleUser: any) {
     console.log(googleUser);
-    alert("Login failed!\n\nError: " + googleUser.error);
+    const error = { errorDescription: "\n\nLogin failed", errorTitle: googleUser.error } as ErrorMessage;
+    this.setState({ errorMessage: error });
+    // alert("Login failed!\n\nError: " + googleUser.error);
   }
 
   onGoogleSuccess(googleUser: GoogleLoginResponse | GoogleLoginResponseOffline) {
     // send request
+    this.setState({ errorMessage: {} as ErrorMessage });
     console.log("<App> -> %c/login%c to verify id_token", LOG.link, LOG.default);
     let formData = new FormData();
     formData.append("source", "Google");
@@ -62,9 +73,14 @@ class Login extends React.Component {
         alert("Login failed!\n\nError: " + json["error"]);
       }
 
-    }).catch((error) => {
-      console.log(error);
-      alert("Login failed!\n\n" + error);
+    }).catch((error: ErrorMessage) => {
+    //   console.log(error);
+      if ((error as any).message) {
+        error.errorDescription = (error as any).message; 
+      }
+      error.errorDescription += "\n\nLogin failed!";
+      this.setState({ errorMessage: error });
+    //   alert("Login failed!\n\n" + error);
     });
   }
 
@@ -72,6 +88,7 @@ class Login extends React.Component {
     return (
       <div>
         <Navbar loginPage></Navbar>
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>

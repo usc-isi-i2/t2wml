@@ -7,9 +7,13 @@ import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip }
 import Downloader from 'js-file-download';
 
 // console.log
-import { LOG } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
 import * as utils from '../common/utils'
 import RequestService from '../common/service';
+import ToastMessage from '../common/toast';
+
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
 
 interface OutputProperties {
 
@@ -39,23 +43,24 @@ interface OutputState {
   isDownloading: boolean;
 
   propertyName: string;
+  errorMessage: ErrorMessage;
 }
 
+@observer
 class Output extends Component<OutputProperties, OutputState> {
   private requestService: RequestService;
+  private pid: string;
   
   constructor(props: OutputProperties) {
     super(props);
     this.requestService = new RequestService();
-
-    // init global variables
-    (window as any).Output = this;
+    this.pid = wikiStore.project.pid;
 
     // init state
     this.state = {
 
       // appearance
-      showSpinner: false,
+      showSpinner: wikiStore.output.showSpinner,
 
       // data
       valueCol: null,
@@ -71,21 +76,28 @@ class Output extends Component<OutputProperties, OutputState> {
 
       // download
       showDownload: false,
-      isDownloadDisabled: true,
-      downloadFileName: (window as any).pid,
+      isDownloadDisabled: wikiStore.output.isDownloadDisabled,
+      downloadFileName: this.pid,
       downloadFileType: "json",
       isDownloading: false,
+
+      errorMessage: {} as ErrorMessage,
     } as OutputState;
+
+
+    wikiStore.output.removeOutput = () => this.removeOutput();
+    wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
   }
 
   handleDoDownload() {
+    this.setState({ errorMessage: {} as ErrorMessage });  
     const filename = this.state.downloadFileName + "." + this.state.downloadFileType;
 
     // before sending request
     this.setState({ isDownloading: true, showDownload: false });
     // send request
     console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadResults((window as any).pid, this.state.downloadFileType).then((json) => {
+    this.requestService.downloadResults(this.pid, this.state.downloadFileType).then((json) => {
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -104,8 +116,10 @@ class Output extends Component<OutputProperties, OutputState> {
       // follow-ups (success)
       this.setState({ isDownloading: false });
 
-    }).catch((error) => {
-      console.log(error);
+    }).catch((error: ErrorMessage) => {
+    //   console.log(error);
+      error.errorDescription += "\n\nCannot download!";
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ isDownloading: false });
@@ -117,14 +131,14 @@ class Output extends Component<OutputProperties, OutputState> {
     let col: string | undefined = this.state.currCol;
     let row: string | undefined = this.state.currRow;
     if (col !== undefined && row !== undefined) {
-      (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
+        wikiStore.table.updateStyleByCell(col, row, { "border": "" });
     }
 
     // remove item border
     col = this.state.itemCol;
     row = this.state.itemRow;
     if (col !== undefined && row !== undefined) {
-      (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
+      wikiStore.table.updateStyleByCell(col, row, { "border": "" });
     }
 
     // remove qualifier borders
@@ -133,7 +147,9 @@ class Output extends Component<OutputProperties, OutputState> {
       for (let i = 0, len = qualifiers.length; i < len; i++) {
         col = qualifiers[i]["col"];
         row = qualifiers[i]["row"];
-        (window as any).TableViewer.updateStyleByCell(col, row, { "border": "" });
+        if (col && row) {
+            wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+        }
       }
     }
   }
@@ -166,7 +182,7 @@ class Output extends Component<OutputProperties, OutputState> {
     
     if (json["statement"]["cell"]) {
     let [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
-    (window as any).TableViewer.updateStyleByCell(col, row, { "border": "1px solid black !important" });
+    wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
     this.setState({ itemCol: col, itemRow: row });
     }
     // property
@@ -182,7 +198,7 @@ class Output extends Component<OutputProperties, OutputState> {
     // value
     const value = json["statement"]["value"];
     this.setState({ value: value });
-    (window as any).TableViewer.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
+    wikiStore.table.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
     this.setState({ currCol: colName, currRow: rowName });
 
     // qualifiers
@@ -217,7 +233,7 @@ class Output extends Component<OutputProperties, OutputState> {
           qualifier["row"] = q_row;
           // let hue = utils.getHueByRandom(10); // first param is the total number of colors
           let hue = utils.getHueByQnode(10, qualifier["propertyID"]);
-          (window as any).TableViewer.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
+          wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
 
         qualifiers.push(qualifier);
@@ -226,7 +242,7 @@ class Output extends Component<OutputProperties, OutputState> {
     this.setState({ qualifiers: qualifiers });
 
     if (isAllCached) {
-      this.setState({ showSpinner: false });
+        wikiStore.output.showSpinner = false;
     }
   }
 
@@ -247,11 +263,11 @@ class Output extends Component<OutputProperties, OutputState> {
 
   queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
     // FUTURE: use <local stroage> to store previous query result even longer
-    const api = (window as any).sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
+    const api = wikiStore.settings.sparqlEndpoint + "?format=json&query=SELECT%20DISTINCT%20%2a%20WHERE%20%7B%0A%20%20wd%3A" + node + "%20rdfs%3Alabel%20%3Flabel%20.%20%0A%20%20FILTER%20%28langMatches%28%20lang%28%3Flabel%29%2C%20%22EN%22%20%29%20%29%20%20%0A%7D%0ALIMIT%201";
     // console.log("<Output> made query to Wikidata: " + api);
 
     // before send request
-    this.setState({ showSpinner: true });
+    wikiStore.output.showSpinner = true;
 
     // send both "no-cors" and default requests
     fetch(api)
@@ -275,10 +291,11 @@ class Output extends Component<OutputProperties, OutputState> {
           }
           let cache = this.state.cache;
           cache[node] = name;
-          this.setState({ cache: cache, showSpinner: false });
+          this.setState({ cache: cache });
+          wikiStore.output.showSpinner = false;
         } catch (error) {
           // console.log(error)
-          this.setState({ showSpinner: false });
+          wikiStore.output.showSpinner = false;
         }
       });
   }
@@ -483,6 +500,7 @@ class Output extends Component<OutputProperties, OutputState> {
     return (
       <div className="w-100 h-100 p-1">
         {this.renderDownload()}
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
 
         <Card className="w-100 h-100 shadow-sm">
 
@@ -502,7 +520,7 @@ class Output extends Component<OutputProperties, OutputState> {
               size="sm"
               style={{ padding: "0rem 0.5rem", width: "83px" }}
               onClick={() => this.setState({ showDownload: true, downloadFileType: "json" })}
-              disabled={this.state.isDownloadDisabled || this.state.isDownloading}
+              disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >
               {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Download"}
             </Button>
@@ -512,7 +530,7 @@ class Output extends Component<OutputProperties, OutputState> {
           <Card.Body className="w-100 h-100 p-0" style={{ overflow: "auto" }}>
 
             {/* loading spinner */}
-            <div className="mySpinner" hidden={!this.state.showSpinner}>
+            <div className="mySpinner" hidden={!wikiStore.output.showSpinner}>
               <Spinner animation="border" />
             </div>
 
