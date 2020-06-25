@@ -163,7 +163,7 @@ class DictionaryFileProvider(DictionaryProvider):
     def __init__(self, file_path, sparql_endpoint, *args, **kwargs):
         with open(file_path, 'r') as f:
             ref_dict=json.load(f)
-        super().init(ref_dict, sparql_endpoint)
+        super().__init__(ref_dict, sparql_endpoint)
         self.file_path=file_path
     
     def __exit__(self, exc_type, exc_value, exc_traceback):
