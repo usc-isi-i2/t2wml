@@ -12,6 +12,9 @@ import { LOG, ErrorMessage, ErrorCell } from '../common/general';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react"
+import wikiStore from '../data/store';
+
 
 interface yamlProperties {
   isShowing: boolean;
@@ -28,15 +31,13 @@ interface yamlState {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class YamlEditor extends Component<yamlProperties, yamlState> {
   private requestService: RequestService;
 
   constructor(props: yamlProperties) {
     super(props);
     this.requestService = new RequestService();
-
-    // init global variables
-    (window as any).YamlEditor = this;
 
     // init state
     const defaultYamlText = "### A simplest sample of T2WML.\n### Replace all #PLACEHOLDER below to start.\nstatementMapping:\n  region:\n    - left: #CHAR\n      right: #CHAR\n      top: #INT\n      bottom: #INT\n  template:\n    item: #EXPRESSION/QNODE\n    property: #EXPRESSION/PNODE\n    value: #EXPRESSION/VALUE\n    qualifier:\n      - property: #EXPRESSION/PNODE\n        value: #EXPRESSION/VALUE";
@@ -55,6 +56,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // init functions
     this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
+
+    wikiStore.yaml.updateYamlText = (yamlText: string | null = null) => this.updateYamlText(yamlText);
   }
 
   handleApplyYaml() {
@@ -62,11 +65,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     console.log("<YamlEditor> clicked apply");
 
     // remove current status
-    (window as any).TableViewer.updateYamlRegions();
-    (window as any).Output.removeOutput();
+    wikiStore.table.updateYamlRegions();
+    wikiStore.output.removeOutput();
 
     // before sending request
-    (window as any).TableViewer.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
 
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
@@ -76,7 +79,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)
     // }
-    this.requestService.uploadYaml((window as any).pid, formData).then(json => {
+    this.requestService.uploadYaml(wikiStore.project.pid, formData).then(json => {
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -100,12 +103,18 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
           // else, success
           const { yamlRegions } = json;
-          (window as any).TableViewer.updateYamlRegions(yamlRegions);
+          const internalError = yamlRegions.error;
+          if (internalError){
+              this.setState({errMsg: "⚠️There was an error applying YAML. Check browser console for details."})
+              console.log("ERRORS while applying yaml:")
+              console.log(internalError)
+          }
+          wikiStore.table.updateYamlRegions(yamlRegions);
 
           // follow-ups (success)
-          (window as any).TableViewer.setState({ showSpinner: false });
-          (window as any).Output.setState({ isDownloadDisabled: false });
-          (window as any).isCellSelectable = true;
+          wikiStore.table.showSpinner = false;
+          wikiStore.output.isDownloadDisabled = false;
+          wikiStore.table.isCellSelectable = true;
 
     }).catch((error: ErrorMessage) => {
     //   alert("Failed to apply. 🙁\n\n" + error);
@@ -113,17 +122,17 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      (window as any).TableViewer.setState({ showSpinner: false });
+        wikiStore.table.showSpinner = false;
     });
   }
 
   handleChangeYaml() {
-    (window as any).isCellSelectable = false;
+    wikiStore.table.isCellSelectable = false;
 
     const yamlText = (this.refs.monaco as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
-      let yamlJson = yaml.safeLoad(yamlText);
+      let yamlJson = (yaml.safeLoad(yamlText) as JSON);
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
@@ -146,7 +155,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     if (!file) return;
     console.log("<YamlEditor> opened file: " + file.name);
 
-    (window as any).isCellSelectable = false;
+    wikiStore.table.isCellSelectable = false;
 
     // upload local yaml
     let reader = new FileReader();
@@ -155,7 +164,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       const yamlText = reader.result;
       this.setState({ yamlText: yamlText as string });
       try {
-        const yamlJson = yaml.safeLoad((yamlText as string));
+        const yamlJson = (yaml.safeLoad((yamlText as string))) as JSON;
         this.setState({
           yamlJson: yamlJson,
           isValidYaml: true,
@@ -181,7 +190,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
     this.setState({ yamlText: newYamlText });
     try {
-      const yamlJson = yaml.safeLoad(newYamlText);
+      const yamlJson = (yaml.safeLoad(newYamlText)) as JSON;
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
@@ -222,7 +231,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             {/* header */}
             <Card.Header
             style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-            onClick={() => (window as any).Editors.setState({ nowShowing: "YamlEditor" })}
+            onClick={() => wikiStore.editors.nowShowing = "YamlEditor" }
             >
 
             {/* title */}

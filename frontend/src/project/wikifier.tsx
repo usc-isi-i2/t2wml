@@ -16,6 +16,8 @@ import QnodeEditor from './qnode-editor';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react"
+import wikiStore from '../data/store';
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -31,6 +33,7 @@ interface WikifierState {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class Wikifier extends Component<WikifierProperties, WikifierState> {
   public gridApi: any;
   public gridColumnApi: any;
@@ -48,18 +51,15 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     this.tempWikifyFlagRef = React.createRef();
     this.tempWikifyContextRef = React.createRef();
 
-    // init global variables
-    (window as any).Wikifier = this;
-
     // init state
     this.state = {
 
       // appearance
-      showSpinner: false,
+      showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
 
-      qnodeData: {},  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
+      qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in Africa" }]
 
       // call wikifier service
@@ -67,10 +67,12 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       flag: 0,
 
       // qnode editor
-      scope: 0,
+      scope: wikiStore.wikifier.scope,
 
       errorMessage: {} as ErrorMessage,
     };
+
+    (wikiStore.wikifier as any).updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
   }
 
   onGridReady(params: WikifierData) {
@@ -214,11 +216,11 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
 
     // before sending request
-
     this.setState({
-      showSpinner: true,
-      showCallWikifier: false
+      showCallWikifier: false,
+      errorMessage: {} as ErrorMessage,
     });
+    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
@@ -227,7 +229,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     formData.append("region", region);
     formData.append("context", context);
     formData.append("flag", flag);
-    this.requestService.callWikifierService((window as any).pid, formData).then((json) => {
+    this.requestService.callWikifierService(wikiStore.project.pid, formData).then((json) => {
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -242,10 +244,10 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // else, success
 
       const { qnodes, rowData } = json;
-      (window as any).TableViewer.updateQnodeCells(qnodes, rowData);
+      wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
-      this.setState({ showSpinner: false });
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
@@ -253,8 +255,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      (window as any).TableViewer.updateQnodeCells();
-      this.setState({ showSpinner: false });
+      wikiStore.table.updateQnodeCells();
+        wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -444,11 +446,12 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   // }
 
   updateWikifier(qnodeData = {}, rowData = []) {
-    // update
     this.setState({
-      qnodeData: qnodeData,
-      rowData: rowData,
+        rowData: rowData,
     });
+    if (wikiStore.wikifier.state) {
+       wikiStore.wikifier.state.qnodeData = qnodeData;
+    }
   }
 
   renderCallWikifier() {
@@ -709,7 +712,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             {/* header */}
             <Card.Header
             style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-            onClick={() => (window as any).Editors.setState({ nowShowing: "Wikifier" })}
+            onClick={() => wikiStore.editors.nowShowing = "Wikifier" }
             >
 
             {/* title */}
@@ -757,8 +760,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             }
             >
 
-            {/* loading spinner */}
-            <div className="mySpinner" hidden={!this.state.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
+            <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
                 <Spinner animation="border" />
             </div>
 

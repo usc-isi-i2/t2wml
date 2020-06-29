@@ -1,5 +1,23 @@
 T2WML History
 ===================
+
+Changes in version 2.0a15:
+-------------------------
+* server no longer uses gunicorn, enabling error logs to be displayed
+* many error displays added to frontend 
+
+Changes in version 2.0a14:
+-------------------------
+* performance improvements:
+  - set prefer_language_date_order to False
+  - faster json saving
+  - precompile for code in skips
+* bug fixes:
+  - kgtk output: don't enclose unit node in quotes
+  - when loading csv, treat whitespace-only cells as empty strings
+  - don't skip 0 value cells
+
+
 Changes in version 2.0a13:
 -------------------------
 * backwards compatibility breaking: property_type_map has been removed. those properties must be added manually to the project

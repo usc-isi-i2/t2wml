@@ -5,8 +5,8 @@
 import os
 
 def run_server():
-    if os.name == 'nt':
-        os.system('waitress-serve --listen=0.0.0.0:5000 --threads 4 backend.wsgi:app')
-    else:
-        os.system('gunicorn --workers 4 --bind 0.0.0.0:5000 backend.wsgi:app')
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    print('Launching Flask from ', dirname)
+    os.environ['FLASK_APP'] = 'backend.wsgi'
+    os.system('flask run')
 

@@ -23,6 +23,9 @@ import TableViewer from './table-viewer';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
+
 interface ProjectProperties {
 
 }
@@ -37,9 +40,11 @@ interface ProjectState {
   errorCells: ErrorCell;
 }
 
+@observer
 class Project extends Component<ProjectProperties, ProjectState> {
   private tempSparqlEndpointRef: React.RefObject<HTMLInputElement>;
   private requestService: RequestService;
+  private pid: string;
 
   constructor(props: ProjectProperties) {
     super(props);
@@ -48,16 +53,24 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     // Get the pid from the URL - the URL is ..../project/<pid>
     // This will be put in an app wide store at some point
+    
+    // this.pid = wikiStore.project.pid; //?
+    // if (this.pid === "") {
+    //     const parts = window.location.href.split('/');
+    //     this.pid = parts[parts.length - 1];
+    //     wikiStore.project.pid = this.pid
+    // }
+
     const parts = window.location.href.split('/');
-    const pid = parts[parts.length - 1];
+    this.pid = parts[parts.length - 1];
+    wikiStore.project.pid = this.pid;
 
     // fetch data from flask
-     console.log("<App> opened project: %c" + pid, LOG.highlight);
+     console.log("<App> opened project: %c" + this.pid, LOG.highlight);
 
     // init global variables
-    (window as any).pid = pid;
-    (window as any).isCellSelectable = false;
-    (window as any).sparqlEndpoint = Config.sparql;
+    wikiStore.table.isCellSelectable = false;
+    wikiStore.settings.sparqlEndpoint = Config.sparql;
     (window as any).onbeforeunload = () => {
       return null; // only "null" cannot prevent leave/reload page
     };
@@ -82,7 +95,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
       userData: { },
 
       // settings
-      tempSparqlEndpoint: (window as any).sparqlEndpoint,
+      tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint,
 
       errorMessage: {} as ErrorMessage,
 
@@ -100,12 +113,12 @@ class Project extends Component<ProjectProperties, ProjectState> {
     }
 
     // before fetching project files
-    (window as any).TableViewer.setState({ showSpinner: true });
-    (window as any).Wikifier.setState({ showSpinner: true });
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
 
     // fetch project files
     console.log("<App> -> %c/get_project_files%c for previous files", LOG.link, LOG.default);
-    this.requestService.getProjectFiles((window as any).pid).then(json => {
+    this.requestService.getProjectFiles(this.pid).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
       document.title = json.name;
@@ -122,34 +135,34 @@ class Project extends Component<ProjectProperties, ProjectState> {
   
       // load table data
       if (tableData !== null) {
-        (window as any).TableViewer.updateTableData(tableData);
+          wikiStore.table.updateTableData(tableData);
       }
 
       // load wikifier data
       if (wikifierData !== null) {
-        (window as any).TableViewer.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+          wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        (window as any).TableViewer.updateQnodeCells(); // reset
+          wikiStore.table.updateQnodeCells(); // reset
       }
 
       // load yaml data
       if (yamlData !== null) {
-        (window as any).YamlEditor.updateYamlText(yamlData.yamlFileContent);
-        (window as any).TableViewer.updateYamlRegions(yamlData.yamlRegions);
-        (window as any).isCellSelectable = true;
-        (window as any).Output.setState({ isDownloadDisabled: false });
+        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.table.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.table.isCellSelectable = true;
+        wikiStore.output.isDownloadDisabled = false;
       } else {
-        (window as any).isCellSelectable = false;
+        wikiStore.table.isCellSelectable = false;
       }
 
       // load settings
       if (settings !== null) {
-        (window as any).sparqlEndpoint = settings.endpoint;
+        wikiStore.settings.sparqlEndpoint = settings.endpoint;
       }
 
       // follow-ups (success)
-      (window as any).TableViewer.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
@@ -158,8 +171,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
 //    alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
-      (window as any).TableViewer.setState({ showSpinner: false });
-      (window as any).Wikifier.setState({ showSpinner: false });
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
@@ -175,15 +188,15 @@ class Project extends Component<ProjectProperties, ProjectState> {
     console.log("<App> updated settings");
 
     // update settings
-    (window as any).sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
+    wikiStore.settings.sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
     // window.sparqlEndpoint = this.state.tempSparqlEndpoint;
-    this.setState({ showSettings: false, tempSparqlEndpoint: (window as any).sparqlEndpoint });
+    this.setState({ showSettings: false, tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint });
 
     // notify backend
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     let formData = new FormData();
-    formData.append("endpoint", (window as any).sparqlEndpoint);
-    this.requestService.updateSettings((window as any).pid, formData).catch((error: ErrorMessage) => {
+    formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
+    this.requestService.updateSettings(this.pid, formData).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
@@ -231,7 +244,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={(window as any).sparqlEndpoint}
+                    defaultValue={wikiStore.settings.sparqlEndpoint}
                     ref={this.tempSparqlEndpointRef}
                     onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
@@ -249,7 +262,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false, tempSparqlEndpoint: (window as any).sparqlEndpoint })}>
+          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false, tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint })}>
             Cancel
           </Button>
           <Button variant="dark" onClick={() => this.handleSaveSettings()}>

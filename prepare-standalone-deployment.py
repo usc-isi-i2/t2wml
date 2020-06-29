@@ -38,7 +38,7 @@ def copy_frontend_to_static():
 
 def build_package():
     print("Building package...")
-    os.system("python setup.py sdist")
+    os.system("python setup.py sdist bdist_wheel")
 
 
 def run():

@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+
 import './project-list.css';
 import * as utils from '../common/utils'
 import Navbar from '../common/navbar/navbar'
@@ -20,6 +21,9 @@ import ToastMessage from '../common/toast';
 // console.log
 import { LOG, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
+
+import { observer } from "mobx-react";
+import wikiStore from '../data/store';
 
 interface ProjectListProperties {
 
@@ -51,6 +55,7 @@ interface ProjectListState {
   errorMessage: ErrorMessage;
 }
 
+@observer
 class ProjectList extends Component<ProjectListProperties, ProjectListState> {
   private requestService: RequestService;
   constructor(props: ProjectListProperties) {
@@ -88,18 +93,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
       // projects
       projectData: [],
-      // projectData: [
-      //   { pid: "4444", ptitle: "Project 4", cdate: 1566282771986, mdate: 1566282771986 },
-      //   { pid: "1111", ptitle: "Project 1", cdate: 1565807259582, mdate: 1565807259582 },
-      //   { pid: "2222", ptitle: "Project 2", cdate: 1565720859582, mdate: 1565720859582 },
-      //   { pid: "3333", ptitle: "Project 3", cdate: 1563906459582, mdate: 1563906459582 },
-      // ],
       sortBy: "mdate",
       isAscending: false,
       errorMessage: {} as ErrorMessage,
-
     };
-
   }
 
   async componentDidMount() {
@@ -383,6 +380,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     });
   }
 
+  projectClicked(pid: string) {
+    wikiStore.project.pid = pid; // Is it needed?
+  }
+
   renderProjects() {
     const { projectData, tempSearch } = this.state;
     const keywords = tempSearch.toLowerCase().split(/ +/);
@@ -396,7 +397,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
             {/* title */}
             <td>
-              <span>
+              <span onClick={() => this.projectClicked(pid)}>
                 <a
                   href={"/project/" + pid}
                   target="_self" // open project on this page

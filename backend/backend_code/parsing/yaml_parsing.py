@@ -171,7 +171,7 @@ class RegionParser(CodeParser):
             #fill in the remainder
             for boundary in ["left", "right", "top", "bottom"]:
                 key="t_var_"+boundary
-                if not region_props[key]:
+                if region_props[key] is None:
                     try:
                         region_props[key]=self.parse_region_expression(str(yaml_region[boundary]), region_props)
                     except Exception as e:
@@ -286,7 +286,7 @@ def validate_yaml(yaml_file_path):
                             if 'range' not in yaml_region[i]:
                                 for required_key in ['left', 'right', 'top', 'bottom']:
                                     present = yaml_region[i].get(required_key, None)
-                                    if not present:
+                                    if present is None:
                                         errors+= "Key"+required_key+ "(statementMapping -> region[" + str(i) + "] -> X) not found or empty\n"
                             elif not yaml_region[i]['range']:
                                 errors+="Value of range cannot be empty"
