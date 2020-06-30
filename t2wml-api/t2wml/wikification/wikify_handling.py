@@ -9,11 +9,9 @@ from t2wml.wikification.item_table import ItemTable
 from t2wml.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml.spreadsheets.utilities import create_temporary_csv_file
 
-def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_name: str, flag, context,
-             sparql_endpoint) -> dict:
+def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_name: str, flag, context) -> dict:
     """
     This function processes the calls to the wikifier service and adds the output to the ItemTable object
-    :param sparql_endpoint:
     :param item_table:
     :param region:
     :param excel_file_path:
@@ -27,8 +25,7 @@ def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_nam
         context = '__NO_CONTEXT__'
     cell_qnode_map['context'] = context
     item_table.update_table(cell_qnode_map, excel_file_path, sheet_name, flag)
-    # item_table.add_region(region, cell_qnode_map)
-    return item_table.serialize_table(sparql_endpoint)
+    return item_table.serialize_table()
 
 def wikify_region(cell_range: str, excel_file_path: str, sheet_name: str = None):
     """

@@ -21,7 +21,6 @@ class TestBelgiumRegex(unittest.TestCase):
         self.data_file=os.path.join(unit_test_folder, "belgium-regex", "Belgium.csv")
         self.wikifier_file=os.path.join(unit_test_folder, "belgium-regex", "wikifier.csv")
         self.yaml_file=os.path.join(unit_test_folder, "belgium-regex", "Belgium.yaml")
-        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
         self.expected_result_dir=os.path.join(unit_test_folder, "belgium-regex")
         
 
@@ -30,7 +29,7 @@ class TestBelgiumRegex(unittest.TestCase):
         item_table=ItemTable()
         sheet_name="Belgium.csv"
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
-        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
+        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
         result= download_kgtk(cm, "TestKGTK", self.data_file, sheet_name)["data"]
         expected_result_name="results.tsv"
         #with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
@@ -53,7 +52,6 @@ class TestOECDWithCustomProperties(unittest.TestCase):
         self.wikifier_file=os.path.join(unit_test_folder, "custom_properties", "properties_wikifier.csv")
         self.yaml_file=os.path.join(unit_test_folder, "custom_properties", "oecd.yaml")
         self.custom_properties_file=os.path.join(unit_test_folder, "custom_properties", "kgtk_properties.tsv")
-        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
         self.expected_result_dir=os.path.join(unit_test_folder, "custom_properties")
         
 
@@ -64,7 +62,7 @@ class TestOECDWithCustomProperties(unittest.TestCase):
         add_props = add_properties_from_file(self.custom_properties_file)
         assert len(add_props["failed"])==0
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
-        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
+        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
         result= download_kgtk(cm, "TestKGTK", self.data_file, sheet_name)["data"]
         expected_result_name="results.tsv"
         csv_args_dict=dict(delimiter="\t", lineterminator="\n",

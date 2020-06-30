@@ -37,7 +37,6 @@ class TestHomicideData(JsonTest):
         self.data_file=os.path.join(dataset_folder, "homicide", "homicide_report_total_and_sex.xlsx")
         self.wikifier_file=os.path.join(dataset_folder, "wikifier_general.csv")
         self.yaml_folder=os.path.join(dataset_folder, "homicide", "t2mwl")
-        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
         self.expected_result_dir=os.path.join(unit_test_folder, "homicide_results")
         add_properties_from_file(os.path.join(unit_test_folder, "property_type_map.json"))
         
@@ -49,7 +48,7 @@ class TestHomicideData(JsonTest):
 
         item_table=ItemTable()
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
-        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
+        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
         result=generate_download_file(cm, "json")
         result_dict=json.loads(result['data'])
         
@@ -139,7 +138,6 @@ class TestBelgiumRegex(JsonTest):
         self.data_file=os.path.join(unit_test_folder, "belgium-regex", "Belgium.csv")
         self.wikifier_file=os.path.join(unit_test_folder, "belgium-regex", "wikifier.csv")
         self.yaml_file=os.path.join(unit_test_folder, "belgium-regex", "Belgium.yaml")
-        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
         self.expected_result_dir=os.path.join(unit_test_folder, "belgium-regex")
         
 
@@ -148,7 +146,7 @@ class TestBelgiumRegex(JsonTest):
         item_table=ItemTable()
         sheet_name="Belgium.csv"
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
-        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
+        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
         result=generate_download_file(cm, "json")
         result_dict=json.loads(result['data'])
         expected_result_name="results.json"
@@ -165,7 +163,6 @@ class TestErrorCatching(JsonTest):
         self.data_file=os.path.join(test_folder, "input_1.csv")
         self.wikifier_file=os.path.join(test_folder, "wikifier_1.csv")
         self.yaml_file=os.path.join(test_folder, "error.yaml")
-        self.sparql_endpoint = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
         self.expected_result_dir=test_folder
         
 
@@ -174,7 +171,7 @@ class TestErrorCatching(JsonTest):
         item_table=ItemTable()
         sheet_name="input_1.csv"
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
-        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
+        cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
         result=generate_download_file(cm, "json")
         result_dict= {"data":json.loads(result['data']), "error":result['internalErrors']}
         expected_result_name="results.json"

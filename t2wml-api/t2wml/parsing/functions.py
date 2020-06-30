@@ -3,6 +3,7 @@ import re
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper import SPARQLWrapper, JSON
 from t2wml.utils.bindings import bindings
+from t2wml.settings import t2wml_settings
 from t2wml.parsing.classes import ReturnClass, RangeClass, Item
 
 def boolean_modifer(func):
@@ -34,7 +35,7 @@ def ends_with(input, section):
 @boolean_modifer
 def instance_of(input, qnode):
     query="ASK {wd:"+str(input)+" wdt:P31/wdt:P279* wd:"+ str(qnode) +"}"
-    sparql = SPARQLWrapper(bindings.sparql_endpoint)
+    sparql = SPARQLWrapper(t2wml_settings["sparql_endpoint"])
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()

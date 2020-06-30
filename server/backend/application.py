@@ -164,7 +164,7 @@ def get_project_files(pid):
     if project_file:
         response["tableData"]=project_file.tableData()
         item_table=project_file.current_sheet.item_table
-        serialized_item_table = item_table.serialize_table(project.sparql_endpoint)
+        serialized_item_table = item_table.serialize_table()
         response["wikifierData"] = serialized_item_table
         
 
@@ -399,7 +399,7 @@ def wikify_region(pid):
             current_sheet=project.current_file.current_sheet
             item_table = current_sheet.item_table
             #handler
-            x=wikifier(item_table, region, project.current_file.filepath, current_sheet.name, flag, context, project.sparql_endpoint)
+            x=wikifier(item_table, region, project.current_file.filepath, current_sheet.name, flag, context)
             
             wrf=WikiRegionFile.get_or_create(current_sheet)
             wrf.update_table(item_table)

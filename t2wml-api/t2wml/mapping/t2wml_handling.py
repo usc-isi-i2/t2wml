@@ -24,13 +24,13 @@ not_found_cache=set()
 property_cache=dict()
 
 
-def get_property_type(prop, sparql_endpoint):
+def get_property_type(prop):
     try:
         if prop in not_found_cache:
             raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
         prop_type=property_cache.get(prop, None)
         if not prop_type:
-            prop_type= _get_property_type(prop, sparql_endpoint)
+            prop_type= _get_property_type(prop)
             property_cache[prop]=prop_type
         return prop_type
     except QueryBadFormed:
@@ -41,9 +41,9 @@ def get_property_type(prop, sparql_endpoint):
 
 
 
-def parse_time_for_dict(response, sparql_endpoint):
+def parse_time_for_dict(response):
     if "property" in response:
-        prop_type=get_property_type(response["property"], sparql_endpoint)
+        prop_type=get_property_type(response["property"])
         if prop_type=="Time":
             if "format" in response:
                 with warnings.catch_warnings(record=True) as w: #use this line to make etk stop harassing us with "no lang features detected" warnings
@@ -95,7 +95,7 @@ def _parse_template(entry, context):
     else:
         return entry, None
 
-def get_template_statement(cell_mapper, context, sparql_endpoint):
+def get_template_statement(cell_mapper, context):
     parsed_template=dict()
     errors=dict()
     for key in cell_mapper.template:
@@ -141,7 +141,7 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
                     except AttributeError: #eg hardcoded string
                         pass
                     try:
-                        parse_time_for_dict(new_dict, sparql_endpoint)
+                        parse_time_for_dict(new_dict)
                     except Exception as e:
                         mini_error_dict['property']=str(e)
 
@@ -165,7 +165,7 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
         template["item"]=item_parsed
     
     try:
-        parse_time_for_dict(template, sparql_endpoint)
+        parse_time_for_dict(template)
     except Exception as e: #we treat this as a critical failure of value
         errors["value"]=str(e)
 
@@ -178,14 +178,13 @@ def get_template_statement(cell_mapper, context, sparql_endpoint):
     
     
 def get_all_template_statements(cell_mapper):
-    sparql_endpoint=cell_mapper.sparql_endpoint
     statements={}
     errors={}
     for col, row in cell_mapper.region:
         cell=to_excel(col-1, row-1)
         context={"t_var_row":row, "t_var_col":col}
         try:
-            statement, inner_errors=get_template_statement(cell_mapper, context, sparql_endpoint)
+            statement, inner_errors=get_template_statement(cell_mapper, context)
             statements[cell]=statement
             if inner_errors:
                 errors[cell]=inner_errors
@@ -247,10 +246,9 @@ def highlight_region(cell_mapper):
 
 
 def resolve_cell(cell_mapper, col, row):
-    sparql_endpoint=cell_mapper.sparql_endpoint
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     try:
-        statement, errors=get_template_statement(cell_mapper, context, sparql_endpoint)
+        statement, errors=get_template_statement(cell_mapper, context)
         data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
     except T2WMLExceptions.TemplateDidNotApplyToInput as e:
         data=dict(error=e.errors)
@@ -266,7 +264,6 @@ def generate_download_file(cell_mapper, filetype):
     if filetype not in ["json", "ttl"]:
         raise T2WMLExceptions.FileTypeNotSupportedException("Unsupported file type")
 
-    sparql_endpoint=cell_mapper.sparql_endpoint
     response=dict()
     errors=[]
     data=[]
@@ -283,7 +280,7 @@ def generate_download_file(cell_mapper, filetype):
         return response
     
     elif filetype == 'ttl':
-        response["data"] = generate_triples("n/a", data, sparql_endpoint, created_by=cell_mapper.created_by)
+        response["data"] = generate_triples("n/a", data, created_by=cell_mapper.created_by)
         response["internalErrors"] = errors
         response["error"]=None
         return response
@@ -294,8 +291,8 @@ def enclose_in_quotes(value):
         return "\""+str(value)+"\""
     return ""
 
-def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_endpoint):
-    property_type= get_property_type(property_dict["property"], sparql_endpoint)
+def kgtk_add_property_type_specific_fields(property_dict, result_dict):
+    property_type= get_property_type(property_dict["property"])
     
     #The only property that doesn't require value
     if property_type=="GlobeCoordinate": 
@@ -355,18 +352,10 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict, sparql_en
         else:
             raise T2WMLExceptions.UnsupportedPropertyType("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
 
-def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
-    response=dict()
-    errors=[]
-    data=[]
-    if cell_mapper.use_cache:
-        data, errors=cell_mapper.result_cacher.get_download()
-    if not data:
-        data, errors = get_all_template_statements(cell_mapper)
-
+def create_kgtk(data, file_path, sheet_name, project_name):
     file_name=Path(file_path).stem
-    file_extension=Path(file_path).suffix
 
+    file_extension=Path(file_path).suffix
     if file_extension==".csv":
         sheet_name=""
 
@@ -376,7 +365,7 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
             statement=data[cell]
             id = project_name + ";" + file_name + "." + sheet_name + file_extension + ";" + cell
             cell_result_dict=dict(id=id, node1=statement["item"], label=statement["property"])
-            kgtk_add_property_type_specific_fields(statement, cell_result_dict, cell_mapper.sparql_endpoint)
+            kgtk_add_property_type_specific_fields(statement, cell_result_dict)
             tsv_data.append(cell_result_dict)
 
             qualifiers=statement.get("qualifier", [])
@@ -385,7 +374,7 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
                 #second_cell=qualifier.get("cell", "")
                 #q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
                 qualifier_result_dict=dict(node1=id, label=qualifier["property"])
-                kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict, cell_mapper.sparql_endpoint)
+                kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict)
                 tsv_data.append(qualifier_result_dict)
 
             references = statement.get("reference", [])
@@ -412,8 +401,21 @@ def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
     for entry in tsv_data:
         writer.writerow(entry)
     
-    response["data"]=string_stream.getvalue()
+    data=string_stream.getvalue()
     string_stream.close()
+    return data
+
+def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
+    response=dict()
+    errors=[]
+    data=[]
+    if cell_mapper.use_cache:
+        data, errors=cell_mapper.result_cacher.get_download()
+    if not data:
+        data, errors = get_all_template_statements(cell_mapper)
+
+    response["data"]=create_kgtk(data, file_path, sheet_name, project_name)
+
 
     response["error"]=None
     response["internalErrors"] = errors

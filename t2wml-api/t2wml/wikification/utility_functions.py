@@ -54,9 +54,9 @@ def translate_precision_to_integer(precision: str) -> int:
     return precision_map[precision.lower()]
 
 
-def get_property_type(wikidata_property, *args, **kwargs):
+def get_property_type(wikidata_property):
     provider=get_provider()
-    property_type= provider.get_property_type(wikidata_property, *args, **kwargs)
+    property_type= provider.get_property_type(wikidata_property)
     if property_type=="Property Not Found":
         raise ValueError("Property "+wikidata_property+" not found")
     return property_type

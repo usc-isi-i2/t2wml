@@ -181,7 +181,7 @@ class ItemTable:
             f.write(json.dumps(json_object, indent=3))
 
 
-    def serialize_table(self, sparql_endpoint: str):
+    def serialize_table(self):
         serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
         items_not_in_wiki = set()
         for cell, desc in self.table.items():
@@ -208,8 +208,8 @@ class ItemTable:
                         items_not_in_wiki.add(item)
                     serialized_table['rowData'].append(row_data)
         
-        if sparql_endpoint and items_not_in_wiki:
-            labels_and_descriptions = get_labels_and_descriptions(items_not_in_wiki, sparql_endpoint)
+        if items_not_in_wiki:
+            labels_and_descriptions = get_labels_and_descriptions(items_not_in_wiki)
             if labels_and_descriptions:
                 self.item_wiki.update(labels_and_descriptions)
 

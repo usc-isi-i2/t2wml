@@ -9,8 +9,8 @@ from etk.wikidata import serialize_change_record, WDReference
 from t2wml.wikification.utility_functions import get_property_type, translate_precision_to_integer
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 
-def handle_property_value(attribute, sparql_endpoint):
-    property_type=get_property_type(attribute["property"], sparql_endpoint)
+def handle_property_value(attribute):
+    property_type=get_property_type(attribute["property"])
 
     value=None
 
@@ -56,13 +56,12 @@ def handle_property_value(attribute, sparql_endpoint):
         
     return value
 
-def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, filetype: str = 'ttl',
+def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl',
                      created_by: str = 't2wml', debug=False) -> str:
     """
     This function uses ETK to generate the RDF triples
     :param user_id:
     :param resolved_excel:
-    :param sparql_endpoint:
     :param filetype:
     :return:
     """
@@ -102,7 +101,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
             _item = statement["item"]
             if _item is not None:
                 item = WDItem(_item, creator='http://www.isi.edu/{}'.format(created_by))
-                value = handle_property_value(statement, sparql_endpoint)
+                value = handle_property_value(statement)
                 if debug:
                     s = item.add_statement(statement["property"], value,
                                         statement_id='debugging-{}'.format(statement_id))
@@ -114,7 +113,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
                 if "reference" in statement:
                     reference = WDReference()
                     for attribute in statement["reference"]:
-                        value = handle_property_value(attribute, sparql_endpoint)
+                        value = handle_property_value(attribute)
                         if value:
                             reference.add_value(attribute["property"], value)
                         else:
@@ -125,7 +124,7 @@ def generate_triples(user_id: str, resolved_excel: list, sparql_endpoint: str, f
 
                 if "qualifier" in statement:
                     for attribute in statement["qualifier"]:
-                        value = handle_property_value(attribute, sparql_endpoint)
+                        value = handle_property_value(attribute)
                         if value:
                             s.add_qualifier(attribute["property"], value)
                         else:

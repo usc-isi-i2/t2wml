@@ -141,7 +141,7 @@ class MappingResultsCacher(Cacher):
     
  
 class CellMapper:
-    def __init__(self, yaml_file_path, item_table, data_file_path, sheet_name, sparql_endpoint, use_cache=False):
+    def __init__(self, yaml_file_path, item_table, data_file_path, sheet_name, use_cache=False):
         self.yaml_data=validate_yaml(yaml_file_path)
         self.use_cache=use_cache
 
@@ -149,7 +149,7 @@ class CellMapper:
             sheet=Sheet(data_file_path, sheet_name)
         except IOError:
             raise IOError('Excel File cannot be found or opened')
-        update_bindings(item_table=item_table, sheet=sheet, sparql_endpoint=sparql_endpoint)
+        update_bindings(item_table=item_table, sheet=sheet)
         
         self.init_region(yaml_file_path, data_file_path, sheet_name)
 
@@ -157,7 +157,6 @@ class CellMapper:
         template_parser=TemplateParser(self.template, self.region)
         self.eval_template=template_parser.eval_template
         
-        self.sparql_endpoint=sparql_endpoint
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
         
         self.result_cacher=MappingResultsCacher(yaml_file_path, data_file_path, sheet_name)

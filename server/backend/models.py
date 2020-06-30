@@ -347,17 +347,13 @@ class YamlFile(db.Model):
         return yf
     
     @property
-    def sparql_endpoint(self):
-        return self.sheet.project_file.project.sparql_endpoint
-
-    @property
     def cell_mapper(self):
         try:
             yc=self._cell_mapper
             return yc
         except:
             self._cell_mapper=CellMapper(self.yaml_file_path, 
-                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name, self.sparql_endpoint, 
+                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name,
                                 use_cache=True)
             return self._cell_mapper
 
@@ -437,9 +433,7 @@ class WikiRegionFile(db.Model):
     def project(self):
         return self.sheet.project_file.project
     
-    @property
-    def sparql_endpoint(self):
-        return self.project.sparql_endpoint
+
     
     @property
     def wikifier_file_path(self):
@@ -464,7 +458,7 @@ class WikiRegionFile(db.Model):
     def handle(self):
         self.update_from_wikifier_file() #make sure table is up to date
         #serialize
-        return self.item_table.serialize_table(self.sparql_endpoint)
+        return self.item_table.serialize_table()
     
     def update_from_wikifier_file(self):
         item_table=ItemTable()
@@ -485,5 +479,5 @@ class WikiRegionFile(db.Model):
         self._item_table=item_table
     @property
     def serialized_table(self):
-        serialized_table = self.item_table.serialize_table(self.sparql_endpoint)
+        serialized_table = self.item_table.serialize_table()
         return serialized_table
