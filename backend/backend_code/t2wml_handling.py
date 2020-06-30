@@ -239,7 +239,7 @@ def highlight_region(cell_mapper):
     highlight_data['item'] = list(highlight_data['item'])
     highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
-    highlight_data['error']=errors
+    highlight_data['error']=errors if errors else None
 
     if cell_mapper.use_cache:
         cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
