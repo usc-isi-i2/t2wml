@@ -63,9 +63,10 @@ def json_response(func):
             data = {"error": e.error_dict} 
             return json.dumps(data, indent=3), e.code
         except T2WMLException as e:
-            data = {"error": e.error_dict}
+            print(e.detail_message)
             return json.dumps(data, indent=3), e.code
         except Exception as e:
+            print(str(e))
             data = {"error": make_frontend_err_dict(e)}
             return json.dumps(data, indent=3), 500
         

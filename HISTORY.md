@@ -1,6 +1,19 @@
 T2WML History
 ===================
 
+Changes in version 2.0a16:
+-------------------------
+* server no longer uses gunicorn, enabling error logs to be displayed
+* various error printouts added
+* many error displays added to frontend 
+* bug fixes:
+   - display cells with errors in qualifier in preview window
+   - warn user about errors in download but download anyway
+   - treat None in cell[] or item[] as a bug that causes a qualifier to be errored
+      - (possible fix to empty qualifier cell bug (needs to be verified))
+   - if a qualifier has no Value and is not a coordinate, treat as fatal error in qualifier.
+        
+
 Changes in version 2.0a14:
 -------------------------
 * performance improvements:

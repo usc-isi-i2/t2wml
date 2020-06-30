@@ -176,7 +176,7 @@ class TestErrorCatching(JsonTest):
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name, self.sparql_endpoint)
         result=generate_download_file(cm, "json")
-        result_dict= {"data":json.loads(result['data']), "error":result['error']}
+        result_dict= {"data":json.loads(result['data']), "error":result['internalErrors']}
         expected_result_name="results.json"
         with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
             expected_result=json.load(f)

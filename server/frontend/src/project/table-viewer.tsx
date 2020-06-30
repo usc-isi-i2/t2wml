@@ -315,11 +315,15 @@ class TableViewer extends Component<TableProperties, TableState> {
       const { error } = json;
 
       // if failure
-      if (error !== null) {
+      if (error) {
         throw Error(error);
       }
 
       // else, success
+      const {internalErrors} = json;
+      if (internalErrors){
+            console.log(internalErrors);
+      }
       wikiStore.output.updateOutput(colName, rowName, json)
 
       // follow-ups (success)
