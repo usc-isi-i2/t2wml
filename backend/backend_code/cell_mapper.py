@@ -124,7 +124,7 @@ class MappingResultsCacher(Cacher):
             try:
                 with open(self.cache_path, 'r') as f:
                     data=json.load(f)
-                return data["download"]
+                return data["download"], data["errors"]
             except:
                 pass
         return []

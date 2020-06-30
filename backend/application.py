@@ -70,9 +70,11 @@ def json_response(func):
         except UserNotFoundException as e:
             return "", 401
         except T2WMLException as e:
+            print(e.detail_message)
             data = {"error": e.error_dict} #error code from the exception
             return json.dumps(data, indent=3), e.code
         except Exception as e:
+            print(str(e))
             data = {"error": make_frontend_err_dict(e)}
             return json.dumps(data, indent=3), 500
         

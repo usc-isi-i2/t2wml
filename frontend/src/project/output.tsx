@@ -110,7 +110,16 @@ class Output extends Component<OutputProperties, OutputState> {
       }
 
       // else, success
-      const { data } = json;
+      const { data, internalErrors} = json;
+      if (internalErrors){
+          console.log("ERRORS in input to download:")
+          console.log(internalErrors);
+          this.setState({errorMessage:     
+            {errorCode: 400,
+            errorTitle: "Problems within statements",
+            errorDescription: "Although the file downloaded, there were errors in the input, check console for details"} as ErrorMessage
+        })
+      }
       Downloader(data, filename);
 
       // follow-ups (success)
