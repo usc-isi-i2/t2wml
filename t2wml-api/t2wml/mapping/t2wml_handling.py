@@ -207,16 +207,8 @@ def get_all_template_statements(cell_mapper):
 
 def resolve_cell(cell_mapper, col, row):
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
-    try:
-        statement, errors=get_template_statement(cell_mapper, context)
-        data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
-    except T2WMLExceptions.TemplateDidNotApplyToInput as e:
-        data=dict(error=e.errors)
-    except T2WMLException as e:
-        data=dict(error=e.error_dict)
-    return data
-
-
+    statement, errors=get_template_statement(cell_mapper, context)
+    return statement, errors
 
 
 

@@ -13,7 +13,7 @@ from web_exceptions import WebException
 from t2wml.wikification.wikify_handling import wikifier
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
-from t2wml_web import update_t2wml_settings, download, highlight_region, handle_yaml
+from t2wml_web import update_t2wml_settings, download, highlight_region, handle_yaml, get_cell
 
 debug_mode = False
 update_t2wml_settings()
@@ -347,7 +347,7 @@ def get_cell_statement(pid, col, row):
     yaml_file = project.current_file.current_sheet.yaml_file
     if not yaml_file:
         raise web_exception.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
-    data = yaml_file.resolve_cell(col, row)
+    data = get_cell(yaml_file.cell_mapper, col, row)
     return data, 200
 
 

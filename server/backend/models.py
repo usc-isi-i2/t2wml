@@ -9,8 +9,6 @@ from t2wml.mapping.cell_mapper import CellMapper
 from t2wml.wikification.item_table import ItemTable
 from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
 from t2wml.spreadsheets.utilities import excel_to_json
-from t2wml.utils.t2wml_exceptions import T2WMLException
-from t2wml.mapping.t2wml_handling import resolve_cell
 from t2wml.wikification.utility_functions import add_properties_from_file
 
 
@@ -358,8 +356,6 @@ class YamlFile(db.Model):
             return self._cell_mapper
 
 
-    def resolve_cell(self, column, row):
-        return resolve_cell(self.cell_mapper, column, row)
 
 
 

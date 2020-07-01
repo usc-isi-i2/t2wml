@@ -1,6 +1,6 @@
 import json
-from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
-
+from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data, resolve_cell
+from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
@@ -81,3 +81,13 @@ def handle_yaml(sheet):
         except Exception as e:
             return None #TODO: can't return a better error here yet, it breaks the frontend
     return None
+
+def get_cell(cell_mapper, col, row):
+    try:
+        statement, errors= resolve_cell(cell_mapper, col, row)
+        data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
+    except TemplateDidNotApplyToInput as e:
+        data=dict(error=e.errors)
+    except T2WMLException as e:
+        data=dict(error=e.error_dict)
+    return data
