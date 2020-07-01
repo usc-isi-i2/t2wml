@@ -258,32 +258,6 @@ def resolve_cell(cell_mapper, col, row):
 
 
 
-def generate_download_file(cell_mapper, filetype):
-    if filetype in ["tsv", "kgtk"]:
-        raise ValueError("Please use download_kgtk function to create tsv files for the kgtk format")
-    if filetype not in ["json", "ttl"]:
-        raise T2WMLExceptions.FileTypeNotSupportedException("Unsupported file type")
-
-    response=dict()
-    errors=[]
-    data=[]
-    if cell_mapper.use_cache:
-        data, errors=cell_mapper.result_cacher.get_download()
-    
-    if not data:
-        data, errors = get_all_template_statements(cell_mapper)
-
-    if filetype == 'json':
-        response["data"] = json.dumps(data, indent=3, sort_keys=False) #insertion-ordered
-        response["internalErrors"] = errors
-        response["error"]=None
-        return response
-    
-    elif filetype == 'ttl':
-        response["data"] = generate_triples("n/a", data, created_by=cell_mapper.created_by)
-        response["internalErrors"] = errors
-        response["error"]=None
-        return response
 
 
 def enclose_in_quotes(value):
@@ -405,18 +379,14 @@ def create_kgtk(data, file_path, sheet_name, project_name):
     string_stream.close()
     return data
 
-def download_kgtk(cell_mapper, project_name, file_path, sheet_name):
-    response=dict()
-    errors=[]
-    data=[]
-    if cell_mapper.use_cache:
-        data, errors=cell_mapper.result_cacher.get_download()
-    if not data:
-        data, errors = get_all_template_statements(cell_mapper)
 
-    response["data"]=create_kgtk(data, file_path, sheet_name, project_name)
-
-
-    response["error"]=None
-    response["internalErrors"] = errors
-    return response
+def get_file_output_from_data(data, filetype, project_name="", file_path=None, sheet_name=None, created_by="t2wml"):
+    if filetype not in ["json", "ttl", "tsv", "kgtk"]:
+        raise T2WMLExceptions.FileTypeNotSupportedException("No support for "+filetype+" format")
+    if filetype == 'json':
+        output = json.dumps(data, indent=3, sort_keys=False) #insertion-ordered
+    elif filetype == 'ttl':
+        output = generate_triples("n/a", data, created_by=cell_mapper.created_by)
+    elif filetype in ["kgkt", "tsv"]:
+        output = create_kgtk(data, file_path, sheet_name, project_name)
+    return output

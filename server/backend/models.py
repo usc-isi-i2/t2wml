@@ -10,7 +10,7 @@ from t2wml.wikification.item_table import ItemTable
 from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
 from t2wml.spreadsheets.utilities import excel_to_json
 from t2wml.utils.t2wml_exceptions import T2WMLException
-from t2wml.mapping.t2wml_handling import download_kgtk, generate_download_file, highlight_region, resolve_cell
+from t2wml.mapping.t2wml_handling import highlight_region, resolve_cell
 from t2wml.wikification.utility_functions import add_properties_from_file
 
 
@@ -363,11 +363,7 @@ class YamlFile(db.Model):
 
     def resolve_cell(self, column, row):
         return resolve_cell(self.cell_mapper, column, row)
-    
-    def generate_download_file(self, filetype):
-        if filetype=="tsv":
-            return download_kgtk(self.cell_mapper, self.sheet.project_file.project.name, self.sheet.project_file.name, self.sheet.name)
-        return generate_download_file(self.cell_mapper, filetype)
+
 
 
     @staticmethod

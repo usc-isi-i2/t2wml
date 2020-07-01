@@ -4,7 +4,7 @@ import logging
 from etk.wikidata import serialize_change_record
 from t2wml.mapping.cell_mapper import CellMapper
 from t2wml.wikification.item_table import ItemTable
-from t2wml.mapping.t2wml_handling import generate_download_file, download_kgtk
+from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.spreadsheets.utilities import get_first_sheet_name
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
@@ -41,12 +41,8 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         logging.error("Invalid YAML File")
         return
 
-    if filetype in ["ttl", "json"]:
-        response = generate_download_file(yc, filetype)
-    elif filetype in ["tsv"]:
-        response=download_kgtk(yc, project_name, data_file_path, sheet_name)
-    else:
-        raise ValueError("Unsupported result file type")
+    data, errors = get_all_template_statements(cell_mapper)
+    response=get_file_output_from_data(data, filetype, project_name, data_file_path, sheet_name)
 
     result_directory = '.'.join(file_name.split(".")[:-1])
 
@@ -61,7 +57,7 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
     output_file_name="results."+filetype
 
     with open(str(output_path / output_file_name), "w") as fp:
-        fp.write(response["data"])
+        fp.write(response)
 
     with open(str(output_path / "changes.tsv"), "w") as fp:
         serialize_change_record(fp)

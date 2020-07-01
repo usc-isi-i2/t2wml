@@ -6,7 +6,7 @@ import tempfile
 
 from t2wml.wikification.item_table import ItemTable
 from t2wml.mapping.cell_mapper import CellMapper
-from t2wml.mapping.t2wml_handling import generate_download_file
+from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.wikification.utility_functions import add_properties_from_file
 from t2wml.spreadsheets.utilities import get_first_sheet_name
 from t2wml.settings import t2wml_settings
@@ -20,7 +20,10 @@ _path = Path(__file__).parent
 output_directory = os.path.join(_path, "tmp")
 os.makedirs(output_directory, exist_ok=True)
 
-
+def download(cm):
+    data, errors=get_all_template_statements(cm)
+    output= get_file_output_from_data(data, "ttl")
+    return output
 
 # output_directory = os.path.join(_path, "tmp")
 # os.makedirs(output_directory, exist_ok=True)
@@ -55,10 +58,8 @@ class TestRDFGeneration(unittest.TestCase):
 
         yc = CellMapper(self.t2wml_spec_path_1, item_table, file_path, sheet_name)
 
-        filetype = "ttl"
-
-        response = generate_download_file(yc, filetype)
-        self.assertEqual(response['data'], results)
+        response = download(yc)
+        self.assertEqual(response, results)
 
     def test_rdf_generation_with_units(self, sheet_name: str = None):
         with open(self.results_path_2, 'r') as f:
@@ -72,12 +73,8 @@ class TestRDFGeneration(unittest.TestCase):
 
         yc = CellMapper(self.t2wml_spec_path_2, item_table, file_path, sheet_name)
 
-
-        filetype = "ttl"
-
-        response = generate_download_file(yc, filetype)
-
-        self.assertEqual(response['data'], results)
+        response = download(yc)
+        self.assertEqual(response, results)
 
     def test_rdf_generation_with_geo_coordinates_as_qualifiers(self, sheet_name: str = None):
         with open(self.results_path_3, 'r') as f:
@@ -92,11 +89,8 @@ class TestRDFGeneration(unittest.TestCase):
 
         yc= CellMapper(self.t2wml_spec_path_3, item_table, file_path, sheet_name)
 
-        filetype = "ttl"
-
-        response = generate_download_file(yc, filetype)
-
-        self.assertEqual(response['data'], results)
+        response = download(yc)
+        self.assertEqual(response, results)
 
     def test_rdf_generation_with_geo_coordinates(self, sheet_name: str = None):
         with open(self.results_path_4, 'r') as f:
@@ -110,9 +104,8 @@ class TestRDFGeneration(unittest.TestCase):
 
         yc = CellMapper(self.t2wml_spec_path_4, item_table, file_path, sheet_name)
 
-        filetype = "ttl"
-
-        response = generate_download_file(yc, filetype)
+        response = download(yc)
+        self.assertEqual(response, results)
 
 
 if __name__ == '__main__':

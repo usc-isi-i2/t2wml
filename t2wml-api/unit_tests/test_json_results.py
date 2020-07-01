@@ -3,7 +3,7 @@ import os
 import unittest
 from pathlib import Path
 from t2wml.mapping.cell_mapper import CellMapper
-from t2wml.mapping.t2wml_handling import generate_download_file
+from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.wikification.item_table import ItemTable
 from t2wml.wikification.utility_functions import add_properties_from_file
 from t2wml.wikification.wikidata_provider import DictionaryProvider
@@ -14,6 +14,11 @@ repo_folder=Path(__file__).parents[2]
 dataset_folder=os.path.join(repo_folder, "Datasets")
 unit_test_folder=os.path.join(repo_folder, "t2wml-api", "unit_tests", "ground_truth")
 add_properties_from_file(os.path.join(unit_test_folder, "property_type_map.json"))
+
+def download(cm):
+    data, errors=get_all_template_statements(cm)
+    output= get_file_output_from_data(data, "json")
+    return output, errors
 
 
 class JsonTest(unittest.TestCase):
@@ -49,8 +54,8 @@ class TestHomicideData(JsonTest):
         item_table=ItemTable()
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
-        result=generate_download_file(cm, "json")
-        result_dict=json.loads(result['data'])
+        result, errors = download(cm)
+        result_dict=json.loads(result)
         
         #code for saving results in an initial run (insertion-ordered and indented as mercy to future users)
         #with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
@@ -147,8 +152,8 @@ class TestBelgiumRegex(JsonTest):
         sheet_name="Belgium.csv"
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
-        result=generate_download_file(cm, "json")
-        result_dict=json.loads(result['data'])
+        result, errors = download(cm)
+        result_dict=json.loads(result)
         expected_result_name="results.json"
         with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
             expected_result=json.load(f)
@@ -172,8 +177,8 @@ class TestErrorCatching(JsonTest):
         sheet_name="input_1.csv"
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
-        result=generate_download_file(cm, "json")
-        result_dict= {"data":json.loads(result['data']), "error":result['internalErrors']}
+        result, errors = download(cm)
+        result_dict= {"data":json.loads(result), "error":errors}
         expected_result_name="results.json"
         with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
             expected_result=json.load(f)

@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from t2wml.wikification.item_table import ItemTable
 from t2wml.mapping.cell_mapper import CellMapper
-from t2wml.mapping.t2wml_handling import download_kgtk
+from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.wikification.utility_functions import add_properties_from_file
 from t2wml.wikification.wikidata_provider import DictionaryProvider
 from t2wml.settings import t2wml_settings
@@ -14,6 +14,10 @@ t2wml_settings["wikidata_provider"]=DictionaryProvider({}, t2wml_settings["sparq
 repo_folder=Path(__file__).parents[2]
 unit_test_folder=os.path.join(repo_folder, "t2wml-api", "unit_tests", "ground_truth")
 
+def download(cm, project_name, data_file, sheet_name):
+    data, errors=get_all_template_statements(cm)
+    output= get_file_output_from_data(data, "tsv", project_name, data_file, sheet_name)
+    return output, errors
 
 class TestBelgiumRegex(unittest.TestCase):
     maxDiff = None
@@ -30,7 +34,7 @@ class TestBelgiumRegex(unittest.TestCase):
         sheet_name="Belgium.csv"
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
-        result= download_kgtk(cm, "TestKGTK", self.data_file, sheet_name)["data"]
+        result, errors= download(cm, "TestKGTK", self.data_file, sheet_name)
         expected_result_name="results.tsv"
         #with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
         #    f.write(result)
@@ -63,7 +67,7 @@ class TestOECDWithCustomProperties(unittest.TestCase):
         assert len(add_props["failed"])==0
         item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
         cm=CellMapper(yaml_file, item_table, self.data_file, sheet_name)
-        result= download_kgtk(cm, "TestKGTK", self.data_file, sheet_name)["data"]
+        result, errors= download(cm, "TestKGTK", self.data_file, sheet_name)
         expected_result_name="results.tsv"
         csv_args_dict=dict(delimiter="\t", lineterminator="\n",
                             escapechar='', quotechar='',

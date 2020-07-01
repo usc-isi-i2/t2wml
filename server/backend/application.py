@@ -13,7 +13,7 @@ from web_exceptions import WebException
 from t2wml.wikification.wikify_handling import wikifier
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
-
+from t2wml_web import download
 
 debug_mode = False
 
@@ -29,7 +29,6 @@ t2wml_settings.update({
             #"storage_folder":UPLOAD_FOLDER
             })
 
-debug_mode = False
 
 def get_user():
     if 'uid' not in session:
@@ -64,6 +63,7 @@ def json_response(func):
             return json.dumps(data, indent=3), e.code
         except T2WMLException as e:
             print(e.detail_message)
+            data = {"error": e.error_dict} #error code from the exception
             return json.dumps(data, indent=3), e.code
         except Exception as e:
             print(str(e))
@@ -373,8 +373,8 @@ def downloader(pid, filetype):
     yaml_file = project.current_file.current_sheet.yaml_file
     if not yaml_file: #the frontend disables this, this is just another layer of checking
         raise web_exception.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
-
-    response = yaml_file.generate_download_file(filetype)
+    sheet=yaml_file.sheet
+    response = download(yaml_file.cell_mapper, filetype, project.name, sheet.project_file.name, sheet.name)
     return response, 200
 
 
