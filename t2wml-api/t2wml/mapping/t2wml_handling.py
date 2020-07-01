@@ -204,46 +204,6 @@ def get_all_template_statements(cell_mapper):
                 
 
 
-def highlight_region(cell_mapper):
-    if cell_mapper.use_cache:
-        highlight_data=cell_mapper.result_cacher.get_highlight_region()
-        if highlight_data:
-            return highlight_data
-
-    highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
-    statement_data, errors= get_all_template_statements(cell_mapper)
-    for cell in statement_data:
-        highlight_data["dataRegion"].add(cell)
-        statement = statement_data[cell]
-        item_cell=statement.get("cell", None)
-        if item_cell:
-            highlight_data["item"].add(item_cell)
-        qualifiers = statement.get("qualifier", None)
-        if qualifiers:
-            for qualifier in qualifiers:
-                qual_cell=qualifier.get("cell", None)
-                if qual_cell:
-                    highlight_data["qualifierRegion"].add(qual_cell)
-    
-        references = statement.get("reference", None)
-        if references:
-            for ref in references:
-                ref_cell=ref.get("cell", None)
-                if ref_cell:
-                    highlight_data["referenceRegion"].add(ref_cell)
-
-
-
-    highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
-    highlight_data['item'] = list(highlight_data['item'])
-    highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
-    highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
-    highlight_data['error']=errors if errors else None
-
-    if cell_mapper.use_cache:
-        cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
-    return highlight_data
-
 
 def resolve_cell(cell_mapper, col, row):
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}

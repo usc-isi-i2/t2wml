@@ -13,21 +13,10 @@ from web_exceptions import WebException
 from t2wml.wikification.wikify_handling import wikifier
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
-from t2wml_web import download
+from t2wml_web import update_t2wml_settings, download, highlight_region, handle_yaml
 
 debug_mode = False
-
-from t2wml.settings import t2wml_settings
-from app_config import DEFAULT_SPARQL_ENDPOINT
-from wikidata_property import DatabaseProvider
-
-t2wml_settings.update({
-            "cache_data_files":True,
-            "cache_results":True,
-            "wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
-            #"sparql_endpoint":project.sparql_endpoint,
-            #"storage_folder":UPLOAD_FOLDER
-            })
+update_t2wml_settings()
 
 
 def get_user():
@@ -168,7 +157,7 @@ def get_project_files(pid):
         response["wikifierData"] = serialized_item_table
         
 
-        y=YamlFile.get_handler(project_file.current_sheet)
+        y=handle_yaml(project_file.current_sheet)
         response["yamlData"]=y
 
     return response, 200
@@ -263,7 +252,7 @@ def upload_data_file(pid):
     response["wikifierData"]=w.handle()
 
 
-    y=YamlFile.get_handler(current_sheet)
+    y=handle_yaml(current_sheet)
     response["yamlData"]=y
     return response, 200
 
@@ -296,7 +285,7 @@ def change_sheet(pid, sheet_name):
     response["wikifierData"]=w.handle()
 
 
-    y=YamlFile.get_handler(current_sheet)
+    y=handle_yaml(current_sheet)
     response["yamlData"]=y
 
     return response, 200
@@ -338,7 +327,7 @@ def upload_yaml(pid):
     else:
         if project.current_file:
             yf=YamlFile.create(project.current_file.current_sheet, yaml_data)
-            response['yamlRegions']=yf.highlight_region()
+            response['yamlRegions']=highlight_region(yf.cell_mapper)
         else:
             response['yamlRegions'] = None
             raise web_exception.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")

@@ -10,7 +10,7 @@ from t2wml.wikification.item_table import ItemTable
 from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
 from t2wml.spreadsheets.utilities import excel_to_json
 from t2wml.utils.t2wml_exceptions import T2WMLException
-from t2wml.mapping.t2wml_handling import highlight_region, resolve_cell
+from t2wml.mapping.t2wml_handling import resolve_cell
 from t2wml.wikification.utility_functions import add_properties_from_file
 
 
@@ -358,22 +358,9 @@ class YamlFile(db.Model):
             return self._cell_mapper
 
 
-    def highlight_region(self):
-        return highlight_region(self.cell_mapper)
-
     def resolve_cell(self, column, row):
         return resolve_cell(self.cell_mapper, column, row)
 
-
-
-    @staticmethod
-    def get_handler(sheet):
-        if sheet.yaml_file:
-            try:
-                return sheet.yaml_file.handle()
-            except Exception as e:
-                return None #TODO: can't return a better error here yet, it breaks the frontend
-        return None
 
 
     
@@ -392,13 +379,6 @@ class YamlFile(db.Model):
         return str(base_upload_path(self.user_id, self.project_id)/ "yf" / yaml_file_name())
 
 
-    
-    def handle(self):
-        response=dict()
-        with open(self.yaml_file_path, "r") as f:
-            response["yamlFileContent"]= f.read()
-        response['yamlRegions'] = self.highlight_region()
-        return response
 
 
 
