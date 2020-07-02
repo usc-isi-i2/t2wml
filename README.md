@@ -30,7 +30,7 @@ You can write your own code using the T2WML programming API
 
 1. make a fresh virtual environment
 2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-api`
-3. You can now use `from t2wml import...` to write code (see the [API guide](t2wml-api\API.md))
+3. You can now use `from t2wml import...` to write code (see the [API guide](t2wml-api/API.md))
 
 <span id="development"></span>
 ## Running T2WML for development
