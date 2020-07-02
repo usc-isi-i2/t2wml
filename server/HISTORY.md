@@ -1,5 +1,25 @@
-T2WML History
-===================
+T2WML Standalone Server App History
+===================================
+
+Changes in version 2.0a17:
+-------------------------
+MASSIVE Backwards compatibility breaking change. API moved to its own package. Database completely refactored.
+
+If you have installed a version prior to this one, and are now installing this or subsequent versions in the same virtual environment, you will need to manually delete your database. 
+
+run `pip uninstall t2wml-standalone` 
+
+You should see a list of files that will be removed, followed by:
+
+> Would not remove (might be manually added):
+> {ENV DIR}\lib\site-packages\backend\app.db
+
+where {ENV DIR} is your environment directory
+
+if you do not remove the app.db file, then you will get the following fatal error message when attempting to launch the t2wml server:
+
+> ERROR [root] Error: Can't locate revision identified by 'a19320d46380'
+
 
 Changes in version 2.0a16:
 -------------------------
@@ -136,4 +156,3 @@ Changes in version 2.0a2
   - = replaced with ==
   - contains, starts_with, ends_with are now functions
 * added a long list of functions to the T2WML language
-
