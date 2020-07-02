@@ -240,6 +240,6 @@ class ItemTable:
         except:
             raise KeyError("Item for that string and context not found")
 
-    def update_table_from_wikifier_file(self, wikifier_file_path, data_file_path, sheet_name, context=None):
+    def update_table_from_wikifier_file(self, wikifier_file_path, data_file_path, sheet_name, context=None, flag=None):
         df = pd.read_csv(wikifier_file_path)
         self.update_table(df, data_file_path, sheet_name)

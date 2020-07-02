@@ -9,7 +9,7 @@ from t2wml.wikification.item_table import ItemTable
 from t2wml.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml.spreadsheets.utilities import create_temporary_csv_file
 
-def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_name: str, flag, context) -> dict:
+def wikifier(region: str, excel_file_path: str, sheet_name: str, context) -> dict:
     """
     This function processes the calls to the wikifier service and adds the output to the ItemTable object
     :param item_table:
@@ -18,14 +18,12 @@ def wikifier(item_table: ItemTable, region: str, excel_file_path: str, sheet_nam
     :param sheet_name:
     :return:
     """
-    if not item_table:
-        item_table = ItemTable()
+
     cell_qnode_map = wikify_region(region, excel_file_path, sheet_name)
     if not context:
         context = '__NO_CONTEXT__'
     cell_qnode_map['context'] = context
-    item_table.update_table(cell_qnode_map, excel_file_path, sheet_name, flag)
-    return item_table.serialize_table()
+    return cell_qnode_map
 
 def wikify_region(cell_range: str, excel_file_path: str, sheet_name: str = None):
     """

@@ -102,73 +102,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
   async componentDidMount() {
 
-    // before sending request
-    this.setState({ showSpinner: true });
-    // fetch user data from the server
-    try {
-      const userData = await this.requestService.getUserInfo();
-      this.setState( { userData: userData });
-    } catch(error) {
-      this.handleLogout();
-    }
-
-    // fetch project meta
-    console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
-    this.requestService.getProjects().then(json => {
-      console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-          if (json['error'] !== null){
-              console.log(json['error'])
-          }
-          else{
-              let projectData = json['projects'];
-
-              // sort
-              projectData.sort(function (p1: any, p2: any) {
-                  if (p1['mdate'] < p2['mdate']) return 1;
-                  else if (p1['mdate'] > p2['mdate']) return -1;
-                  else return 0;
-              });
-
-              // update state
-              this.setState({ projectData: projectData });
-
-              // update document title
-              let ptitle = null;
-              for (let i = 0, len = projectData.length; i < len; i++) {
-                  if (projectData[i].pid === this.pid) {
-                      ptitle = projectData[i].ptitle;
-                      break;
-                  }
-              }
-              if (ptitle !== null) {
-                  document.title = ptitle;
-              } else {
-                  throw Error("No matched pid");
-              }
-          }
-
-
-      } else {
-        throw Error("No project meta");
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      console.log(error);
-      error.errorDescription += "\n\nCannot fetch project meta data!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot fetch project meta data!\n\n" + error);
-
-      // follow-ups (failure)
-      this.setState({ showSpinner: false });
-    });
-
     // before fetching project files
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
@@ -180,7 +113,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
       console.log(json);
 
       // do something here
-      const { tableData, yamlData, wikifierData, settings } = json;
+      const { tableData, yamlData, wikifierData, settings, title } = json;
+      document.title = title;
 
       // load table data
       if (tableData !== null) {

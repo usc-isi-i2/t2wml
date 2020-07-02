@@ -1,33 +1,20 @@
-import os
-import json
 from datetime import datetime
 from pathlib import Path
-from uuid import uuid4
 from werkzeug.utils import secure_filename
-from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
-from t2wml.mapping.cell_mapper import CellMapper
-from t2wml.wikification.item_table import ItemTable
-from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
-from t2wml.spreadsheets.utilities import excel_to_json
+
 from t2wml.wikification.utility_functions import add_properties_from_file
 
+from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
-def generate_id() -> str:
-    """
-    This function generate unique ids
-    :return:
-    """
-    return uuid4().hex
 
-def base_upload_path(user_id, project_id):
-    return Path(UPLOAD_FOLDER) / user_id / project_id
+def get_project_folder(project):
+    return Path(UPLOAD_FOLDER)/(project.name+"_"+str(project.id))
 
 class User(db.Model):
     uid= db.Column(db.String(64), primary_key=True)
     given_name = db.Column(db.String(64))
     family_name = db.Column(db.String(64))
     email = db.Column(db.String(120), index=True)
-    projects=db.relationship("Project", back_populates="user")
     picture = db.Column(db.String(120))
     #self.__locale = locale
 
@@ -50,8 +37,6 @@ class User(db.Model):
                 raise ValueError("No user fields provided and user does not already exist")
         u=User(uid=uid, given_name=given_name, family_name=family_name, email=email)
         db.session.add(u)
-        up_dir=Path(UPLOAD_FOLDER)/ uid
-        up_dir.mkdir(parents=True, exist_ok=True)
         db.session.commit()  
         return u
 
@@ -68,7 +53,7 @@ class User(db.Model):
     
     def get_project_details(self):
         projects = list()
-        for project in self.projects:
+        for project in Project.query.all():
             project_detail = dict()
             project_detail["pid"] = project.id
             project_detail["ptitle"] = project.name
@@ -77,26 +62,19 @@ class User(db.Model):
             projects.append(project_detail)
         return projects
 
+
 class Project(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     creation_date=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     modification_date=db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     sparql_endpoint=db.Column(db.String(64), nullable=True, default=DEFAULT_SPARQL_ENDPOINT)
-
-    user_id=db.Column(db.Integer, db.ForeignKey('user.uid'))
-    user=db.relationship("User", back_populates="projects")
-
-    projectfiles=db.relationship("ProjectFile", back_populates="project")
-    current_file = db.relationship("ProjectFile",
-                    primaryjoin="and_(Project.id==ProjectFile.project_id, "
-                        "ProjectFile.current==True)",
-                    back_populates="project",
-                    uselist=False)
+    files= db.relationship("SavedFile", back_populates="project")
 
     def __repr__(self):
         return '<Project {}: {}>'.format(self.name, self.id)  
-    
+
+
     @staticmethod
     def delete(pid):
         proj=Project.query.get(pid)
@@ -104,352 +82,217 @@ class Project(db.Model):
         db.session.commit()
 
     @staticmethod
-    def create(user_id, title):
-        pid=generate_id()
-        p=Project(id=pid, name=title, user_id=user_id)
+    def create(title):
+        p=Project(name=title)
         db.session.add(p)
-        Project.make_directories(user_id, pid)
         db.session.commit()
+        p.make_directories()
         return p
     
-    @staticmethod
-    def make_directories(uid, pid):
-        """
-        This function creates the project directory along with the project_config.json
-        current_working_directory
-                                |__config/
-                                        |__uploads/
-                                                |__<user_id>/
-                                                            |__<project_id>/
-                                                                        |__df/
-                                                                        |__wf/
-                                                                        |__yf/
-                                                                        |__project_config.json
-        :param upload_directory:
-        :param uid:
-        :param pid:
-        :param ptitle:
-        :return:
-        """
-        project_path=base_upload_path(uid, pid)
-        Path(project_path/ "df").mkdir(parents=True, exist_ok=True)
-        Path(project_path/ "wf").mkdir(parents=True, exist_ok=True)
-        Path(project_path/ "yf").mkdir(parents=True, exist_ok=True)
+    def make_directories(self):
+        project_path=get_project_folder(self)
+        project_path.mkdir(parents=True, exist_ok=True)
 
-    def get_current_file_and_sheet(self):
-        try:
-            current_file = self.current_file.id
-            current_sheet = current_file.current_sheet_name
-            return current_file, current_sheet
-        except IndexError:
-            return None, None
-        
     def modify(self):
         self.modificationdate=datetime.utcnow()
         db.session.commit()
+
+    @property
+    def current_file(self):
+        #this is a temporary measure while we are only supporting a single file
+        data_file=DataFile.query.filter_by(project_id=self.id).order_by(DataFile.id.desc()).first()
+        if data_file:
+            return data_file
     
     @property
-    def wikifier_folder_path(self):
-        return str(base_upload_path(self.user_id, self.id) / "wf")
-    
-    @property
-    def wikifier_file_path(self):
-        return str(Path(self.wikifier_folder_path) / "wikifier.csv")
+    def wikifier_file(self):
+        #this is a temporary measure while we are only supporting a single file
+        current=WikifierFile.query.filter_by(project_id=self.id).order_by(WikifierFile.id.desc()).first()
+        if current:
+            return current
 
-    
-    def change_wikifier_file(self, file):
-        file.save(self.wikifier_file_path)
-        self.modify()
+class SavedFile(db.Model):
+    sub_folder=""
+    id = db.Column(db.Integer, primary_key=True)
+    file_path= db.Column(db.String(300))
+    extension=db.Column(db.String(20))
+    name= db.Column(db.String(100))
+    project_id=db.Column(db.ForeignKey("project.id"))
+    project=db.relationship("Project", back_populates="files")
+    type=db.Column(db.String(50))
 
-    def update_sparql_endpoint(self, endpoint):
-        self.sparql_endpoint=endpoint
-        self.modify()
-    
-    def update_project_title(self, title):
-        self.name=title
-        self.modify()
 
-    def upload_property_file(self, in_file):
+    __mapper_args__ = {
+        'polymorphic_identity': 'savedfile',
+        "polymorphic_on": type
+    }
+
+    @classmethod
+    def get_folder(cls, project):
+        sub_folder=cls.sub_folder
+        folder=get_project_folder(project)/sub_folder
+        folder.mkdir(parents=True, exist_ok=True)
+        return folder
+
+    @classmethod
+    def save_file(cls, project, in_file):
+        folder = cls.get_folder(project)
         filename = secure_filename(in_file.filename)
-        property_folder=str(base_upload_path(self.user_id, self.id) / "pf")
-        if not os.path.isdir(property_folder):
-            os.mkdir(property_folder)
-        file_path=os.path.join(property_folder, filename)
-        in_file.save(file_path)
-        return add_properties_from_file(file_path)
-
-
-class ProjectFile(db.Model):
-    id = db.Column(db.String, primary_key=True)
-    filepath = db.Column(db.String(200), index=True)
-    name = db.Column(db.String(64))
-
-    current=db.Column(db.Boolean, default=False)
-
-    project_id=db.Column(db.Integer, db.ForeignKey('project.id'))
-    project=db.relationship("Project", back_populates="projectfiles")
-
-    sheets=db.relationship("ProjectSheet", back_populates="project_file")
-    current_sheet = db.relationship("ProjectSheet",
-                    primaryjoin="and_(ProjectFile.id==ProjectSheet.file_id, "
-                        "ProjectSheet.current==True)",
-                    back_populates="project_file",
-                    uselist=False)
+        file_path = folder/filename
+        in_file.save(str(file_path))
+        return file_path
     
-    def __repr__(self):
-        return '<ProjectFile {} {}>'.format(self.name, self.id)  
-
-    @property
-    def new_filename(self):
-        return self.id + Path(self.name).suffix
-    
-    @property
-    def current_sheet_name(self):
-        if self.current_sheet:
-            return self.current_sheet.name
-        return None
-
-    @property
-    def sheet_names(self):
-        if self.sheets:
-            return [sheet.name for sheet in self.sheets]
-        return None #also for all csvs
-        
-    @property
-    def is_csv(self):
-        file_path=self.filepath
-        file_extension=Path(file_path).suffix
-        is_csv = True if file_extension.lower() == ".csv" else False
-        return is_csv
-
-    @staticmethod
-    def create(file, project):
-        pid=project.id
-        uid=project.user_id
-        pf_id=generate_id()
-        file_extension=Path(file.filename).suffix
-        new_filename=pf_id+file_extension
-        file_path = str(base_upload_path(uid, pid)/ "df" / new_filename)
-        file.save(file_path)
-        pf=ProjectFile(id=pf_id, filepath=file_path, project_id=pid, name=file.filename)
-        db.session.add(pf)
+    @classmethod
+    def create(cls, project, in_file):
+        try:
+            file_path= cls.save_file(project, in_file)
+            extension= file_path.suffix
+        except:
+            raise IOError("Failed to save file")
+        saved_file= cls(file_path=str(file_path), name=in_file.filename, project_id=project.id, extension=extension)
+        db.session.add(saved_file)
         db.session.commit()
-        pf.init_sheets()
-        #pf.modify()
-        return pf
+        return saved_file
+    
+    @classmethod
+    def create_from_filepath(cls, project, file_path):
+        #this function is primarily for convenience when testing the database schema
+        name= Path(file_path).stem
+        extension=Path(file_path).suffix
+        saved_file=cls(file_path=file_path, name=name, project_id=project.id, extension=extension)
+        db.session.add(saved_file)
+        db.session.commit()
+        return saved_file
+
+    def __repr__(self):
+        return '<File {} : {}>'.format(self.name+self.extension, self.id)
+
+class YamlFile(SavedFile):
+    __tablename__ = 'yamlfile'
+    id = db.Column(db.Integer, db.ForeignKey('saved_file.id'), primary_key=True)
+    sub_folder="yf"
+    __mapper_args__ = {
+        'polymorphic_identity':'yamlfile',
+    }
+
+    @classmethod
+    def create_from_formdata(cls, project, form_data):
+        #placeholder function until we start uploading yaml files properly, as files
+        folder=cls.get_folder(project)
+        filepath= str(folder/"1.yaml")
+        with open(filepath, 'w', newline='') as f:
+            f.write(form_data)
+        yf=cls.create_from_filepath(project, filepath)
+        return yf
+
+
+
+class WikifierFile(SavedFile):
+    __tablename__ = 'wikifierfile'
+    id = db.Column(db.Integer, db.ForeignKey('saved_file.id'), primary_key=True)
+    sub_folder="wf"
+    __mapper_args__ = {
+        'polymorphic_identity':'wikifierfile',
+    }
+
+    @classmethod
+    def create_from_dataframe(cls, project, df):
+        folder=cls.get_folder(project)
+        filepath= str(folder/"wikify_region_output.csv")
+        df.to_csv(filepath)
+        wf= cls.create_from_filepath(project, filepath)
+        return wf
+
+class PropertiesFile(SavedFile):
+    __tablename__ = 'propertyfile'
+    id = db.Column(db.Integer, db.ForeignKey('saved_file.id'), primary_key=True)
+    sub_folder="pf"
+    __mapper_args__ = {
+        'polymorphic_identity':'propertyfile',
+    }
+
+    @classmethod
+    def create(cls, project, in_file):
+        pf= super().create(project, in_file)
+        return_dict= add_properties_from_file(pf.file_path)
+        return return_dict
+    
+    @classmethod
+    def create_from_filepath(cls, project, in_file):
+        pf= super().create_from_filepath(project, in_file)
+        return_dict=add_properties_from_file(pf.file_path)
+        return return_dict
+        
+class DataFile(SavedFile):
+    __tablename__ = 'datafile'
+    sub_folder="df"
+    id = db.Column(db.Integer, db.ForeignKey('saved_file.id'), primary_key=True)
+    current_sheet_id=db.Column(db.Integer())
+    sheets=db.relationship("DataSheet", back_populates="data_file")
+    wikifiles=db.relationship('WikifierFile', 
+    secondary="datafile_wiki", lazy='subquery', backref=db.backref('datafiles', lazy=True))
+    __mapper_args__ = {
+        'polymorphic_identity':'datafile',
+    }
+
+    @classmethod
+    def create_from_filepath(cls, project, in_file):
+        df = super().create_from_filepath(project, in_file) #cls.create(project, in_file)
+        df.init_sheets()
+        return df
+    
+    @classmethod
+    def create(cls, project, in_file):
+        df = super().create(project, in_file)
+        df.init_sheets()
+        return df
+    
     
     def init_sheets(self):
-        pw=PandasLoader(self.filepath)
+        from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
+        pw=PandasLoader(self.file_path)
         sheet_data=pw.load_file()
         for sheet_name in sheet_data:
-            first=sheet_name
-            break
-        for sheet_name in sheet_data:
-            pc=PickleCacher(self.filepath, sheet_name)
+            pc=PickleCacher(self.file_path, sheet_name)
             pc.save_pickle(sheet_data[sheet_name])
-            ps = ProjectSheet(name=sheet_name, file_id=self.id, current=sheet_name==first)
+            ps = DataSheet(name=sheet_name, data_file_id=self.id)
             db.session.add(ps)
+        self.current_sheet_id=self.sheets[0].id
         db.session.commit()
     
+    @property
+    def current_sheet(self):
+        return DataSheet.query.get(self.current_sheet_id)
+
     def change_sheet(self, sheet_name):
-        newcurrsheet=ProjectSheet.query.filter_by(name=sheet_name, file_id=self.id).first()
+        newcurrsheet=DataSheet.query.filter_by(name=sheet_name, data_file_id=self.id).order_by(DataSheet.id.desc()).first()
         if newcurrsheet:
-            newcurrsheet.set_as_current()
+            self.current_sheet_id=newcurrsheet.id
+            db.session.commit()
         else:
             raise ValueError("No such sheet")
-
-    def modify(self):
-        self.project.modify()
-    
-    def set_as_current(self):
-        if self.project.current_file:
-            self.project.current_file.current=False
-        self.current=True
-        self.modify()
-    
-    def tableData(self):
-        data=excel_to_json(self.filepath, self.current_sheet_name)
-        return {
-            "filename":self.name,
-            "isCSV":self.is_csv,
-            "sheetNames": self.sheet_names,
-            "currSheetName": self.current_sheet_name,
-            "sheetData": data
-        }
-
-class ProjectSheet(db.Model):
+class DataSheet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-
-    current=db.Column(db.Boolean, default=False)
-
-    file_id=db.Column(db.Integer, db.ForeignKey('project_file.id'))
-    project_file=db.relationship("ProjectFile", back_populates="sheets")
-    
-    yaml_file=db.relationship("YamlFile", uselist=False, back_populates="sheet",
-    primaryjoin="YamlFile.sheet_id==ProjectSheet.id")
-
-    wiki_region_file=db.relationship("WikiRegionFile", uselist=False, back_populates="sheet",
-    primaryjoin="WikiRegionFile.sheet_id==ProjectSheet.id")
-
-    def __repr__(self):
-        return '<Project sheet {}>'.format(self.id)  
-    
-    @staticmethod
-    def create(name, file_id):
-        ps=ProjectSheet(name=name, file_id=file_id)
-        db.session.add(ps)
-        db.session.commit()
-        ps.modify()
-        return ps
-        
-    def modify(self):
-        self.project_file.modify()
-    
-    def set_as_current(self):
-        if self.project_file.current_sheet:
-            self.project_file.current_sheet.current=False
-        self.current=True
-        self.modify()
+    data_file_id=db.Column(db.Integer, db.ForeignKey('datafile.id'))
+    data_file=db.relationship("DataFile", back_populates="sheets")
+    yamlfiles=db.relationship('YamlFile', 
+    secondary="yaml_sheet", lazy='subquery', backref=db.backref('sheets', lazy=True))
 
     @property
-    def item_table(self):
-        if self.wiki_region_file:
-            return self.wiki_region_file.item_table
-        else:
-            return ItemTable(None)
-    
+    def yaml_file(self):
+        #a temporary function while we are still supporting single files only
+        if len(self.yamlfiles):
+            return self.yamlfiles[-1]
+        return None
 
-class YamlFile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sheet_id=db.Column(db.Integer, db.ForeignKey('project_sheet.id'))
-    sheet=db.relationship("ProjectSheet", back_populates="yaml_file")
-    
-    @staticmethod
-    def create(sheet, yaml_data):
-        try:
-            yamls_to_delete=YamlFile.query.filter_by(sheet_id=sheet.id)
-            for yaml in yamls_to_delete:
-                db.session.delete(yaml)
-            db.session.commit()
-        except:
-            pass #it's a cleanup section, don't break on it
-        yf=YamlFile(sheet_id=sheet.id)
-        db.session.add(yf)
-        db.session.commit()
-        
-        with open(yf.yaml_file_path, "w", newline='') as f:
-            f.write(yaml_data)
-
-        yf.sheet.modify()
-        return yf
-    
-    @property
-    def cell_mapper(self):
-        try:
-            yc=self._cell_mapper
-            return yc
-        except:
-            self._cell_mapper=CellMapper(self.yaml_file_path, 
-                                self.sheet.item_table, self.sheet.project_file.filepath, self.sheet.name,
-                                use_cache=True)
-            return self._cell_mapper
+yaml_sheet=db.Table('yaml_sheet',
+    db.Column('sheet_id', db.Integer, db.ForeignKey('data_sheet.id')),
+    db.Column('yaml_id', db.Integer, db.ForeignKey('yamlfile.id'))
+)
 
 
-
-
-
-    
-    @property
-    def user_id(self):
-        return self.sheet.project_file.project.user_id
-    
-    @property
-    def project_id(self):
-        return self.sheet.project_file.project_id
-
-    @property
-    def yaml_file_path(self):
-        def yaml_file_name(): 
-            return str(self.id) + ".yaml"
-        return str(base_upload_path(self.user_id, self.project_id)/ "yf" / yaml_file_name())
-
-
-
-
-
-
-
-class WikiRegionFile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sheet_id=db.Column(db.Integer, db.ForeignKey('project_sheet.id'))
-    sheet=db.relationship("ProjectSheet", back_populates="wiki_region_file")
-    
-    @property
-    def item_table(self):
-        try:
-            if self._item_table:
-                return self._item_table
-            raise ValueError("item table not yet initialized")
-        except:
-            region_map=None
-            try:
-                with open(self.region_file_path) as json_data:
-                    region_map = json.load(json_data)
-                    self._item_table = ItemTable(region_map)
-                    return self._item_table
-            except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
-                return ItemTable(None)
-
-    @property 
-    def project(self):
-        return self.sheet.project_file.project
-    
-
-    
-    @property
-    def wikifier_file_path(self):
-        return self.project.wikifier_file_path
-
-    @property
-    def region_file_path(self):
-        def region_file_name():
-            return str(self.id)+".json"
-        return str(Path(self.project.wikifier_folder_path) / region_file_name())
-    
-    @staticmethod
-    def get_or_create(sheet):
-        if sheet.wiki_region_file:
-            return sheet.wiki_region_file
-        w=WikiRegionFile(sheet_id=sheet.id)
-        db.session.add(w)
-        db.session.commit()
-        sheet.modify()
-        return w
-
-    def handle(self):
-        self.update_from_wikifier_file() #make sure table is up to date
-        #serialize
-        return self.item_table.serialize_table()
-    
-    def update_from_wikifier_file(self):
-        item_table=ItemTable()
-
-        #update from wikifier file
-        project_file=self.sheet.project_file
-        if Path(self.wikifier_file_path).exists():
-            item_table.update_table_from_wikifier_file(self.wikifier_file_path, project_file.filepath, self.sheet.name, context=None)
-
-        self.update_table(item_table)
-
-    def update_table(self, item_table):
-        #this function is also called from outside, if someone uses wikifier
-        #cache item table for later
-        item_table.save_to_file(self.region_file_path)
-        
-        #set property
-        self._item_table=item_table
-    @property
-    def serialized_table(self):
-        serialized_table = self.item_table.serialize_table()
-        return serialized_table
+datafile_wiki=db.Table('datafile_wiki',
+    db.Column('wikifier_id', db.Integer, db.ForeignKey('wikifierfile.id')),
+    db.Column('data_file_id', db.Integer, db.ForeignKey('datafile.id'))
+)

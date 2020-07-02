@@ -1,9 +1,17 @@
 import json
+from pathlib import Path
+
 from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data, resolve_cell
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
+from t2wml.spreadsheets.utilities import excel_to_json
+from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.wikification.item_table import ItemTable
+
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
+
+
 
 def update_t2wml_settings():
     t2wml_settings.update({
@@ -69,19 +77,6 @@ def highlight_region(cell_mapper):
     return highlight_data
 
 
-def handle_yaml(sheet):
-    if sheet.yaml_file:
-        yaml_file=sheet.yaml_file
-        try:
-            response=dict()
-            with open(yaml_file.yaml_file_path, "r") as f:
-                response["yamlFileContent"]= f.read()
-            response['yamlRegions'] = highlight_region(yaml_file.cell_mapper)
-            return response
-        except Exception as e:
-            return None #TODO: can't return a better error here yet, it breaks the frontend
-    return None
-
 def get_cell(cell_mapper, col, row):
     try:
         statement, errors= resolve_cell(cell_mapper, col, row)
@@ -91,3 +86,73 @@ def get_cell(cell_mapper, col, row):
     except T2WMLException as e:
         data=dict(error=e.error_dict)
     return data
+
+def table_data(data_file, sheet_name=None):
+    sheet_names= [sheet.name for sheet in data_file.sheets]
+    if sheet_name is None:
+        sheet_name = sheet_names[0]
+
+    data=excel_to_json(data_file.file_path, sheet_name)
+    
+    is_csv = True if data_file.extension.lower() == ".csv" else False
+
+    return {
+            "filename":data_file.name,
+            "isCSV":is_csv,
+            "sheetNames": sheet_names,
+            "currSheetName": sheet_name,
+            "sheetData": data
+        }
+
+
+def create_item_table(wikifier_file, sheet, context=None, flag=None):
+    item_table=ItemTable()
+    item_table.update_table_from_wikifier_file(wikifier_file.file_path, 
+                                                sheet.data_file.file_path, 
+                                                sheet.name, 
+                                                context=context, flag=flag)
+    return item_table
+
+def get_item_table(wikifier_file, sheet, context=None, flag=None):
+    if not wikifier_file:
+        return ItemTable(None)
+
+    cache_folder=Path(wikifier_file.file_path).parent/"cache"
+    cache_path=cache_folder/(wikifier_file.name+"_"+sheet.name+".json")
+    try:
+        with open(str(cache_path)) as json_data:
+            region_map = json.load(json_data)
+            item_table = ItemTable(region_map)
+            return item_table
+    except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
+            if not cache_folder.is_dir():
+                cache_folder.mkdir()
+            item_table=create_item_table(wikifier_file, sheet, context=context, flag=flag)
+            item_table.save_to_file(cache_path)
+            return item_table
+
+def get_cell_mapper(sheet, yaml, item_table=None):
+    if item_table is None:
+        item_table=ItemTable(None)
+
+    cm = CellMapper(yaml.file_path, 
+                    item_table, 
+                    sheet.data_file.file_path, 
+                    sheet.name,
+                    use_cache=True)
+    return cm
+
+
+def handle_yaml(sheet, item_table=None):
+    if sheet.yaml_file:
+        yaml_file=sheet.yaml_file
+        try:
+            response=dict()
+            with open(yaml_file.file_path, "r") as f:
+                response["yamlFileContent"]= f.read()
+            cell_mapper=get_cell_mapper(sheet, yaml_file, item_table)
+            response['yamlRegions'] = highlight_region(cell_mapper)
+            return response
+        except Exception as e:
+            return None #TODO: can't return a better error here yet, it breaks the frontend
+    return None

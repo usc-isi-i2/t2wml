@@ -7,13 +7,14 @@ from flask import request, render_template, redirect, url_for, session, make_res
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
 from app_config import app
-from models import User, Project, ProjectFile, YamlFile, WikiRegionFile
+from models import User, Project, DataFile, YamlFile, WikifierFile, PropertiesFile
 import web_exceptions
 from web_exceptions import WebException
 from t2wml.wikification.wikify_handling import wikifier
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
-from t2wml_web import update_t2wml_settings, download, highlight_region, handle_yaml, get_cell
+from t2wml_web import (update_t2wml_settings, download, highlight_region, handle_yaml, 
+                       get_cell, table_data, get_cell_mapper, get_item_table)
 
 debug_mode = False
 update_t2wml_settings()
@@ -33,11 +34,8 @@ def get_user():
         raise web_exceptions.UserNotFoundException
 
 def get_project(project_id):
-    user=get_user()
     try:
         project = Project.query.get(project_id)
-        if project.user_id!=user.uid:
-            raise ValueError("unauthenticated project access")
         return project
     except:
         raise web_exceptions.ProjectNotFoundException
@@ -118,14 +116,13 @@ def login():
 @json_response
 def create_project():
     """
-    This route creates a project by generating a unique id and creating a upload directory for that project
+    This route creates a project and an upload directory for that project
     :return:
     """
-    user=get_user()
     response = dict()
     if 'ptitle' in request.form:
         project_title = request.form['ptitle']
-        project= Project.create(user.uid, project_title)
+        project= Project.create(project_title)
         response['pid'] = project.id
         return response, 201
 
@@ -139,28 +136,222 @@ def get_project_files(pid):
     This function fetches the last session of the last opened files in a project when that project is reopened later.
     :return:
     """
+    project=get_project(pid)
+
     response = {
                 "tableData": None,
                 "yamlData": None,
                 "wikifierData": None,
-                "settings": {"endpoint": None}
+                "settings": {"endpoint": project.sparql_endpoint},
+                "title": project.name
             }
-    project=get_project(pid)
     
-    response["settings"]["endpoint"] = project.sparql_endpoint
 
-    project_file=project.current_file
-    if project_file:
-        response["tableData"]=project_file.tableData()
-        item_table=project_file.current_sheet.item_table
+    data_file=project.current_file
+    if data_file:
+        sheet = data_file.current_sheet
+        response["tableData"]=table_data(data_file, sheet_name=sheet.name)
+        item_table=get_item_table(project.wikifier_file, sheet)
         serialized_item_table = item_table.serialize_table()
         response["wikifierData"] = serialized_item_table
         
-
-        y=handle_yaml(project_file.current_sheet)
+        y=handle_yaml(sheet, item_table)
         response["yamlData"]=y
 
     return response, 200
+
+
+@app.route('/api/project/<pid>/properties', methods=['POST'])
+@json_response
+def upload_properties(pid):
+    project = get_project(pid)
+    in_file = file_upload_validator({"json", "tsv"})
+    return_dict=PropertiesFile.create(project, in_file)
+    return return_dict, 200
+
+
+@app.route('/api/data/<pid>', methods=['POST'])
+@json_response
+def upload_data_file(pid):
+    """
+    This function uploads the data file
+    :return:
+    """
+    project=get_project(pid)
+    response = {
+                    "tableData": dict(),
+                    "wikifierData": dict(),
+                    "yamlData": dict(), #this is never not empty
+                    "error": None
+                }
+    new_file=file_upload_validator({'xlsx', 'xls', 'csv'})
+    data_file=DataFile.create(project, new_file)
+    response["tableData"]=table_data(data_file)
+    
+    sheet=data_file.current_sheet
+    item_table=get_item_table(project.wikifier_file, sheet)
+    serialized_item_table = item_table.serialize_table()
+    response["wikifierData"]=serialized_item_table
+
+
+    y=handle_yaml(sheet, item_table)
+    response["yamlData"]=y
+
+    return response, 200
+
+
+
+@app.route('/api/data/<pid>/<sheet_name>', methods=['GET'])
+@json_response
+def change_sheet(pid, sheet_name):
+    """
+    This route is used when a user switches a sheet in an excel data file.
+    :return:
+    """
+    project=get_project(pid)
+    response = {
+                "tableData": dict(),
+                "wikifierData": dict(),
+                "yamlData": dict(),
+                "error": None
+            }
+    
+    data_file=project.current_file
+    data_file.change_sheet(sheet_name)
+    sheet = data_file.current_sheet
+    
+    response["tableData"]=table_data(data_file, sheet.name)
+
+
+    item_table=get_item_table(project.wikifier_file, sheet)
+    serialized_item_table = item_table.serialize_table()
+    response["wikifierData"]=serialized_item_table
+
+    y=handle_yaml(sheet, item_table)
+    response["yamlData"]=y
+
+    return response, 200
+
+
+@app.route('/api/wikifier/<pid>', methods=['POST'])
+@json_response
+def upload_wikifier_output(pid):
+    """
+    This function uploads the wikifier output
+    :return:
+    """
+    project=get_project(pid)
+    response={"error":None}
+    in_file = file_upload_validator({"csv"})
+    
+    wikifier_file = WikifierFile.create(project, in_file)
+    
+    if project.current_file:
+        sheet=project.current_file.current_sheet
+        item_table=get_item_table(wikifier_file, sheet)
+        serialized_item_table = item_table.serialize_table()
+        response.update(serialized_item_table) #does not go into field wikifierData but is dumped directly
+
+
+    return response, 200
+
+
+@app.route('/api/yaml/<pid>', methods=['POST'])
+@json_response
+def upload_yaml(pid):
+    """
+    This function uploads and processes the yaml file
+    :return:
+    """
+    project=get_project(pid)
+    yaml_data = request.form["yaml"]
+    response={"error":None,
+            "yamlRegions":None}
+    if not string_is_valid(yaml_data):
+        raise web_exceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
+    else:
+        if project.current_file:
+            yf=YamlFile.create_from_formdata(project, yaml_data)
+            sheet=project.current_file.current_sheet
+            sheet.yamlfiles.append(yf)
+            project.modify()
+
+            item_table=get_item_table(project.wikifier_file, sheet)
+            cell_mapper=get_cell_mapper(sheet, yf, item_table)
+            response['yamlRegions']=highlight_region(cell_mapper)
+        else:
+            response['yamlRegions'] = None
+            raise web_exception.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
+
+    return response, 200
+
+
+@app.route('/api/data/<pid>/cell/<col>/<row>', methods=['GET'])
+@json_response
+def get_cell_statement(pid, col, row):
+    """
+    This function returns the statement of a particular cell
+    :return:
+    """
+    project = get_project(pid)
+    data={}
+
+    sheet=project.current_file.current_sheet
+    yaml_file = sheet.yaml_file
+    if not yaml_file:
+        raise web_exception.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
+    item_table=get_item_table(project.wikifier_file, sheet)
+    cell_mapper=get_cell_mapper(sheet, yaml_file, item_table)
+    data = get_cell(cell_mapper, col, row)
+    return data, 200
+
+
+@app.route('/api/project/<pid>/download/<filetype>', methods=['GET'])
+@json_response
+def downloader(pid, filetype):
+    """
+    This functions initiates the download
+    :return:
+    """
+    project = get_project(pid)
+    sheet=project.current_file.current_sheet
+    yaml_file = sheet.yaml_file
+    if not yaml_file: #the frontend disables this, this is just another layer of checking
+        raise web_exception.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
+    item_table=get_item_table(project.wikifier_file, sheet)
+    cell_mapper=get_cell_mapper(sheet, yaml_file, item_table)
+    response = download(cell_mapper, filetype, project.name, sheet.data_file.name, sheet.name)
+    return response, 200
+
+
+
+@app.route('/api/wikifier_service/<pid>', methods=['POST'])
+@json_response
+def wikify_region(pid):
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project(pid)
+    action = request.form["action"]
+    region = request.form["region"]
+    context = request.form["context"]
+    flag = int(request.form["flag"])
+    if action == "wikify_region":
+            if not project.current_file:
+                raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
+            sheet=project.current_file.current_sheet
+
+            cell_qnode_map=wikifier(region, project.current_file.file_path, sheet.name, context)
+            wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
+            
+            item_table=get_item_table(wf, sheet, flag)
+            serialized_item_table = item_table.serialize_table()
+
+            data = item_table.serialize_table()
+
+    return data, 200
+
 
 
 
@@ -182,8 +373,6 @@ def delete_project(pid):
     data['projects']=user.get_project_details()
     return data, 200
 
-
-
 @app.route('/api/project/<pid>', methods=['PUT'])
 @json_response
 def rename_project(pid):
@@ -198,12 +387,11 @@ def rename_project(pid):
     }
     ptitle = request.form["ptitle"]
     project=get_project(pid)
-    project.update_project_title(ptitle)
+    project.title=ptitle
+    project.modify()
     data['projects']=user.get_project_details()
     return data, 200
         
-
-
 @app.route('/api/project/<pid>/sparql', methods=['PUT'])
 @json_response
 def update_settings(pid):
@@ -213,189 +401,9 @@ def update_settings(pid):
     """
     project = get_project(pid)
     endpoint = request.form["endpoint"]
-    project.update_sparql_endpoint(endpoint)
+    project.sparql_endpoint=endpoint
+    project.modify()
     return None, 200 #can become 204 eventually, need to check frontend compatibility
-
-
-
-
-@app.route('/api/project/<pid>/properties', methods=['POST'])
-@json_response
-def upload_properties(pid):
-    project = get_project(pid)
-    in_file = file_upload_validator({"json", "tsv"})
-    return_dict=project.upload_property_file(in_file)
-    return return_dict, 200
-
-
-@app.route('/api/data/<pid>', methods=['POST'])
-@json_response
-def upload_data_file(pid):
-    """
-    This function uploads the data file
-    :return:
-    """
-    project=get_project(pid)
-    response = {
-                    "tableData": dict(),
-                    "wikifierData": dict(),
-                    "yamlData": dict(),
-                    "error": None
-                }
-    new_file=file_upload_validator({'xlsx', 'xls', 'csv'})
-    project_file=ProjectFile.create(new_file, project)
-    project_file.set_as_current()
-    response["tableData"]=project_file.tableData()
-    current_sheet=project_file.current_sheet
-
-    w=WikiRegionFile.get_or_create(current_sheet)
-    response["wikifierData"]=w.handle()
-
-
-    y=handle_yaml(current_sheet)
-    response["yamlData"]=y
-    return response, 200
-
-
-
-@app.route('/api/data/<pid>/<sheet_name>', methods=['GET'])
-@json_response
-def change_sheet(pid, sheet_name):
-    """
-    This route is used when a user switches a sheet in an excel data file.
-    :return:
-    """
-    project=get_project(pid)
-    response = {
-                "tableData": dict(),
-                "wikifierData": dict(),
-                "yamlData": dict(),
-                "error": None
-            }
-    
-    new_sheet_name = sheet_name
-    project_file=project.current_file
-    project_file.change_sheet(new_sheet_name)
-    
-    response["tableData"]=project_file.tableData()
-
-    current_sheet=project_file.current_sheet
-
-    w=WikiRegionFile.get_or_create(current_sheet)
-    response["wikifierData"]=w.handle()
-
-
-    y=handle_yaml(current_sheet)
-    response["yamlData"]=y
-
-    return response, 200
-
-
-@app.route('/api/wikifier/<pid>', methods=['POST'])
-@json_response
-def upload_wikifier_output(pid):
-    """
-    This function uploads the wikifier output
-    :return:
-    """
-    project=get_project(pid)
-    response={"error":None}
-    in_file = file_upload_validator({"csv"})
-    project.change_wikifier_file(in_file)
-    if project.current_file:
-        sheet=project.current_file.current_sheet
-        w=WikiRegionFile.get_or_create(sheet)
-        response.update(w.handle()) #does not go into field wikifierData but is dumped directly
-
-
-    return response, 200
-
-
-@app.route('/api/yaml/<pid>', methods=['POST'])
-@json_response
-def upload_yaml(pid):
-    """
-    This function process the yaml
-    :return:
-    """
-    project=get_project(pid)
-    yaml_data = request.form["yaml"]
-    response={"error":None,
-            "yamlRegions":None}
-    if not string_is_valid(yaml_data):
-        raise web_exceptions.InvalidYAMLFileException( "YAML file is either empty or not valid")
-    else:
-        if project.current_file:
-            yf=YamlFile.create(project.current_file.current_sheet, yaml_data)
-            response['yamlRegions']=highlight_region(yf.cell_mapper)
-        else:
-            response['yamlRegions'] = None
-            raise web_exception.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
-
-    return response, 200
-
-
-@app.route('/api/data/<pid>/cell/<col>/<row>', methods=['GET'])
-@json_response
-def get_cell_statement(pid, col, row):
-    """
-    This function returns the statement of a particular cell
-    :return:
-    """
-    project = get_project(pid)
-    data={}
-    yaml_file = project.current_file.current_sheet.yaml_file
-    if not yaml_file:
-        raise web_exception.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
-    data = get_cell(yaml_file.cell_mapper, col, row)
-    return data, 200
-
-
-@app.route('/api/project/<pid>/download/<filetype>', methods=['GET'])
-@json_response
-def downloader(pid, filetype):
-    """
-    This functions initiates the download
-    :return:
-    """
-    project = get_project(pid)
-    yaml_file = project.current_file.current_sheet.yaml_file
-    if not yaml_file: #the frontend disables this, this is just another layer of checking
-        raise web_exception.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
-    sheet=yaml_file.sheet
-    response = download(yaml_file.cell_mapper, filetype, project.name, sheet.project_file.name, sheet.name)
-    return response, 200
-
-
-
-
-
-@app.route('/api/wikifier_service/<pid>', methods=['POST'])
-@json_response
-def wikify_region(pid):
-    """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
-    """
-    project = get_project(pid)
-    action = request.form["action"]
-    region = request.form["region"]
-    context = request.form["context"]
-    flag = int(request.form["flag"])
-    if action == "wikify_region":
-            if not project.current_file:
-                raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
-            current_sheet=project.current_file.current_sheet
-            item_table = current_sheet.item_table
-            #handler
-            x=wikifier(item_table, region, project.current_file.filepath, current_sheet.name, flag, context)
-            
-            wrf=WikiRegionFile.get_or_create(current_sheet)
-            wrf.update_table(item_table)
-            data = wrf.serialized_table
-
-    return data, 200
-
 
 
 
