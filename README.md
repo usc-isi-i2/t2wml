@@ -14,10 +14,23 @@
 </table>
 
 <span id="server"></span>
-See the documentation for the standalone server for [install instructions using pip](server/README.md#install). 
+## The T2WML standalone local server
+
+A locally hosted web GUI version of t2wml can be installed quickly using pip
+
+1. make a fresh virtual environment
+2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a17`
+3. run `t2wml-server`
+4. navigate to [`http://localhost:5000/`](http://localhost:5000/) in a Chrome browser
 
 <span id="api"></span>
-See the documentation for the api for [install instructions using pip](t2wml-api/README.md#install). 
+## The T2WML programming API
+
+You can write your own code using the T2WML programming API
+
+1. make a fresh virtual environment
+2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-api`
+3. You can now use `from t2wml import...` to write code (see the [API guide](t2wml-api\API.md))
 
 <span id="development"></span>
 ## Running T2WML for development

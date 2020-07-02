@@ -8,6 +8,6 @@
 A locally hosted web GUI version of t2wml can be installed quickly using pip
 
 1. make a fresh virtual environment
-2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a6`
+2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a17`
 3. run `t2wml-server`
 4. navigate to [`http://localhost:5000/`](http://localhost:5000/) in a Chrome browser
