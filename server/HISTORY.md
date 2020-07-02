@@ -12,6 +12,7 @@ run `pip uninstall t2wml-standalone`
 You should see a list of files that will be removed, followed by:
 
 > Would not remove (might be manually added):
+
 > {ENV DIR}\lib\site-packages\backend\app.db
 
 where {ENV DIR} is your environment directory
