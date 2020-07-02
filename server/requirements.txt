@@ -3,7 +3,4 @@ Flask-Cors==3.0.8
 Flask-SQLAlchemy==2.4.1
 Flask-Migrate==2.5.3
 google-api-python-client==1.8.2
-t2wml-api==0.0.1 #includes etk
-etk==2.2.1
-#since we're anyway dealing with a proper etk install in t2wml-api for now, no point doubling the spacey handling
-#https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
+t2wml-api==0.0.1
