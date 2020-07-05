@@ -47,18 +47,5 @@ class Sheet:
     def __len__(self):
         return len(self.data)
             
-    def to_json(self):
-        #rename cols
-        col_names=[]
-        for i in range(len(self.data.iloc[0])):
-            column = _column_index_to_letter(i)
-            col_names.append(column)
-        data=self.data.copy()
-        data.columns=col_names
-        #rename rows
-        data.index+=1
-        #get json
-        json_string=data.to_json(orient='table')
-        return_dict=json.loads(json_string)
-        return return_dict
+
     

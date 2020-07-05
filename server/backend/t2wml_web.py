@@ -5,7 +5,8 @@ from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_o
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider
-from t2wml.spreadsheets.utilities import excel_to_json
+from t2wml.spreadsheets.sheet import Sheet
+from t2wml.spreadsheets.conversions import _column_index_to_letter
 from t2wml.mapping.cell_mapper import CellMapper
 from t2wml.wikification.item_table import ItemTable
 
@@ -95,7 +96,7 @@ def table_data(data_file, sheet_name=None):
     if sheet_name is None:
         sheet_name = sheet_names[0]
 
-    data=excel_to_json(data_file.file_path, sheet_name)
+    data=sheet_to_json(data_file.file_path, sheet_name)
     
     is_csv = True if data_file.extension.lower() == ".csv" else False
 
@@ -158,3 +159,30 @@ def handle_yaml(sheet, item_table=None):
         except Exception as e:
             return None #TODO: can't return a better error here yet, it breaks the frontend
     return None
+
+
+def sheet_to_json(data_file_path, sheet_name):
+    sheet=Sheet(data_file_path, sheet_name)
+    data=sheet.data.copy()
+    json_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}], 
+                'rowData': []}
+    #get col names
+    col_names=[]
+    for i in range(len(sheet.data.iloc[0])):
+        column = _column_index_to_letter(i)
+        col_names.append(column)
+        json_data['columnDefs'].append({'headerName': column, 'field': column})
+    #rename cols
+    data.columns=col_names
+    #rename rows
+    data.index+=1
+    #get json
+    json_string=data.to_json(orient='table')
+    json_dict=json.loads(json_string)
+    initial_json=json_dict['data']
+    #add the ^ column
+    for i, row in enumerate(initial_json):
+        row["^"]=str(i+1)
+    #add to the response
+    json_data['rowData']=initial_json
+    return json_data
