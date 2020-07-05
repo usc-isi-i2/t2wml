@@ -1,6 +1,6 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 import json
-
+from t2wml import settings
 
 class WikidataProvider:
     def get_property_type(self, wikidata_property, *args, **kwargs):
@@ -27,8 +27,11 @@ class SparqlProvider(WikidataProvider):
     Provides responses to queries purely from sparql. 
     Will fail if item/property not in wikidata
     '''
-    def __init__(self, sparql_endpoint, *args, **kwargs):
+    def __init__(self, sparql_endpoint=None, *args, **kwargs):
+        if sparql_endpoint is None:
+            sparql_endpoint=settings.sparql_endpoint
         self.sparql_endpoint=sparql_endpoint
+        self.cache={}
 
     def query_wikidata_for_label_and_description(self, items: str):
         items = ' wd:'.join(items)
@@ -80,44 +83,23 @@ class SparqlProvider(WikidataProvider):
 
 
     def get_property_type(self, wikidata_property: str):
-        property_type=self.query_wikidata_for_property_type(wikidata_property)
-        if property_type=="Property Not Found":
-            raise ValueError("Property "+wikidata_property+" not found")
+        property_type=self.cache.get(wikidata_property, False)
+        if not property_type:
+            property_type=self.query_wikidata_for_property_type(wikidata_property)
+            self.save_property(wikidata_property, property_type)
+            if property_type=="Property Not Found":
+                raise ValueError("Property "+wikidata_property+" not found")
+            
         return property_type
 
     def get_labels_and_descriptions(self, items: set):
         response=dict()
-        new_items=self.query_wikidata_for_label_and_description(items)
-        response.update(new_items)
-        return response
-
-    def save_property(self, property, property_type):
-        raise NotImplementedError("Cannot save properties to wikidata")
-    
-    def save_item(self, item_id, item_dict):
-        raise NotImplementedError("Cannot save items to wikidata")
-
-class FallbackSparql(SparqlProvider):
-    '''
-    A class for querying some source, and if the source does not have a response to the query, 
-    falling back to sparql queries (and then optionally saving query response to the main source)
-    '''
-    def get_property_type(self, wikidata_property, *args, **kwargs):
-        try:
-            property_type=self._get_property_type(wikidata_property, *args, **kwargs)
-        except:
-            property_type=self.query_wikidata_for_property_type(wikidata_property)
-            self.save_property(wikidata_property, property_type)
-        return property_type
-    
-    def get_labels_and_descriptions(self, items, *args, **kwargs):
-        response=dict()
         items_not_found=[]
         for item in items:
             try:
-                item_dict= self._get_item(item)
+                item_dict= self.cache[item]
                 response[item] =  item_dict
-            except:
+            except KeyError:
                 items_not_found.append(item)
         if items_not_found:
             new_items=self.query_wikidata_for_label_and_description(items_not_found)
@@ -126,48 +108,55 @@ class FallbackSparql(SparqlProvider):
                 item_dict=new_items[wd_id]
                 self.save_item(wd_id, item_dict)
         return response
-    
-    def _get_property_type(self, wikidata_property, *args, **kwargs):
-        raise NotImplementedError
-    
-    def _get_item(self, item, *args, **kwargs):
-        raise NotImplementedError
-    
 
-class DictionaryProvider(FallbackSparql):
-    def __init__(self, ref_dict, sparql_endpoint, *args, **kwargs):
-        super().__init__(sparql_endpoint)
-        self.ref_dict=ref_dict
-
-    def _get_property_type(self, wikidata_property, *args, **kwargs):
-        property_type=self.ref_dict.get(wikidata_property, None)
-        if not property_type:
-            raise ValueError("Property not found")
-        return property_type
-    
-    def _get_item(self, item, *args, **kwargs):
-        item_dict=self.ref_dict.get(item, None)
-        if not item_dict:
-            raise ValueError("Item not found")
-        return item_dict
-    
     def save_property(self, property, property_type):
-        added=self.ref_dict.get(property, True)
-        self.ref_dict[property]=property_type
-        return added
+        self.cache[property]=property_type
     
     def save_item(self, item_id, item_dict):
-        self.ref_dict[item_id]=item_dict
+        self.cache[item_id]=item_dict
 
-class DictionaryFileProvider(DictionaryProvider):
-    def __init__(self, file_path, sparql_endpoint, *args, **kwargs):
-        with open(file_path, 'r') as f:
-            ref_dict=json.load(f)
-        super().__init__(ref_dict, sparql_endpoint)
-        self.file_path=file_path
+
+
+class FallbackSparql(SparqlProvider):
+    '''
+    A class for querying some source, and if the source does not have a response to the query, 
+    falling back to sparql queries (and then optionally saving query response to the main source)
+    '''
+    def get_property_type(self, wikidata_property, *args, **kwargs):
+        try:
+            property_type=self.try_get_property_type(wikidata_property, *args, **kwargs)
+        except:
+            property_type=super().get_property_type(wikidata_property)
+        return property_type
     
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        ref_dict_str=json.dumps(self.ref_dict)
-        with open(self.file_path, 'w') as f:
-            f.write(ref_dict_str)
+    def get_labels_and_descriptions(self, items, *args, **kwargs):
+        response=dict()
+        items_not_found=[]
+        for item in items:
+            try:
+                item_dict= self.try_get_item(item)
+                response[item] =  item_dict
+            except:
+                items_not_found.append(item)
+        if items_not_found:
+            new_items=super().get_labels_and_descriptions(items_not_found)
+            response.update(new_items)
+            for wd_id in new_items:
+                item_dict=new_items[wd_id]
+                self.save_item(wd_id, item_dict)
+        return response
+    
+    def try_get_property_type(self, wikidata_property, *args, **kwargs):
+        raise NotImplementedError
+    
+    def try_get_item(self, item, *args, **kwargs):
+        raise NotImplementedError
+    
+
+class DictionaryProvider(SparqlProvider):
+    def __init__(self, ref_dict, sparql_endpoint=None, *args, **kwargs):
+        super().__init__(sparql_endpoint)
+        self.cache=ref_dict
+
+
 

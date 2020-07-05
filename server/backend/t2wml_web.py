@@ -4,6 +4,7 @@ from pathlib import Path
 from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data, resolve_cell
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
+from t2wml.api import set_sparql_endpoint, set_wikidata_provider
 from t2wml.spreadsheets.utilities import excel_to_json
 from t2wml.mapping.cell_mapper import CellMapper
 from t2wml.wikification.item_table import ItemTable
@@ -14,10 +15,12 @@ from wikidata_property import DatabaseProvider
 
 
 def update_t2wml_settings():
+    set_sparql_endpoint(DEFAULT_SPARQL_ENDPOINT)
+    set_wikidata_provider(DatabaseProvider(DEFAULT_SPARQL_ENDPOINT))
     t2wml_settings.update({
                 "cache_data_files":True,
                 "cache_results":True,
-                "wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
+                #"wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
                 #"sparql_endpoint":project.sparql_endpoint,
                 #"storage_folder":UPLOAD_FOLDER
                 })

@@ -59,13 +59,13 @@ class DatabaseProvider(FallbackSparql):
     def save_item(self, item_id, item_dict):
         WikidataItem.add(item_id, item_dict['label'], item_dict['desc'], do_session_commit=False)
     
-    def _get_property_type(self, wikidata_property, *args, **kwargs):
+    def try_get_property_type(self, wikidata_property, *args, **kwargs):
         prop = WikidataProperty.query.filter_by(wd_id=wikidata_property).first()
         if prop is None:
             raise ValueError("Not found")
         return prop.property_type
     
-    def _get_item(self, item, *args, **kwargs):
+    def try_get_item(self, item, *args, **kwargs):
         wdi= WikidataItem.query.filter_by(wd_id=item).first()
         return  {'label': wdi.label, 'desc': wdi.description}
     

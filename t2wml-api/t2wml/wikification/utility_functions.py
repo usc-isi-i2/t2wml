@@ -5,13 +5,13 @@ from typing import Sequence, Union, Tuple, List, Dict, Any
 from string import punctuation
 from t2wml.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml.wikification.wikidata_provider import SparqlProvider
-from t2wml.settings import t2wml_settings
+from t2wml.settings import t2wml_settings, wikidata_provider, sparql_endpoint
 
 def get_provider():
-    provider=t2wml_settings["wikidata_provider"]
-    if provider is None:
-        provider=SparqlProvider(t2wml_settings["sparql_endpoint"])
-    return provider
+    global wikidata_provider, sparql_endpoint
+    if wikidata_provider is None:
+        wikidata_provider=SparqlProvider(sparql_endpoint)
+    return wikidata_provider
 
 def translate_precision_to_integer(precision: str) -> int:
     """
