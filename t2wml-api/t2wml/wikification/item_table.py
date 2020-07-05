@@ -212,7 +212,7 @@ class ItemTable:
                         serialized_table['rowData'].append(row_data)
             except Exception as e:
                 raise e
-        
+            
         if items_not_in_wiki:
             labels_and_descriptions = get_labels_and_descriptions(items_not_in_wiki)
             if labels_and_descriptions:

@@ -4,10 +4,12 @@ from pathlib import Path
 import requests
 from typing import List
 import pandas as pd
+import numpy as np
 import uuid
 from t2wml.wikification.item_table import ItemTable
 from t2wml.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml.spreadsheets.utilities import create_temporary_csv_file
+from t2wml.spreadsheets.conversions import to_excel
 
 def wikifier(region: str, excel_file_path: str, sheet_name: str, context) -> dict:
     """
@@ -19,11 +21,11 @@ def wikifier(region: str, excel_file_path: str, sheet_name: str, context) -> dic
     :return:
     """
 
-    cell_qnode_map = wikify_region(region, excel_file_path, sheet_name)
+    df = wikify_region(region, excel_file_path, sheet_name)
     if not context:
         context = '__NO_CONTEXT__'
-    cell_qnode_map['context'] = context
-    return cell_qnode_map
+    df['context'] = context
+    return df
 
 def wikify_region(cell_range: str, excel_file_path: str, sheet_name: str = None):
     """
@@ -70,11 +72,21 @@ def call_wikify_service(csv_file_path: str, cell_range):
         data = [x.split(",") for x in data]
 
         output = pd.DataFrame(data, columns=["column", "row", "item"])
+        output = output.replace(r'^\s*$', np.nan, regex=True)
+        empty_vals = np.where(pd.isnull(output))
+        if len(empty_vals[0]):
+            problems=[]
+            for problem_index in empty_vals[0]:
+                col=int(data[problem_index][0])
+                row=int(data[problem_index][1])+row_offset
+                problem_cell=to_excel(col, row)
+                problems.append(problem_cell)
+            raise T2WMLExceptions.WikificationFailureException("Failed to wikify: "+ str(problems))
         for index in range(output.shape[0]):
             output.at[index, 'column'] = int(output.at[index, 'column'])
             output.at[index, 'row'] = int(output.at[index, 'row']) + row_offset
         return output
     else:
-        raise requests.HTTPError("Received an error from the wikifier backend")
+        raise requests.HTTPError("Failed to wikify: Received an error from the wikifier endpoint")
 
 

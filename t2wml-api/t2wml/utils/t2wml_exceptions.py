@@ -55,3 +55,6 @@ class InvalidT2WMLExpressionException(T2WMLException):
 
 class ConstraintViolationErrorException(T2WMLException):
     message = "Constraint on a given set of values have been violated"
+
+class WikificationFailureException(T2WMLException):
+    message = "Faield to wikify provided input"
