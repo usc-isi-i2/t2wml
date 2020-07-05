@@ -108,20 +108,19 @@ def table_data(data_file, sheet_name=None):
         }
 
 
-def create_item_table(wikifier_file, sheet, context=None, flag=None):
+def create_item_table(wikifier_file, sheet, flag=None):
     item_table=ItemTable()
     item_table.update_table_from_wikifier_file(wikifier_file.file_path, 
                                                 sheet.data_file.file_path, 
-                                                sheet.name, 
-                                                context=context, flag=flag)
+                                                sheet.name, flag=flag)
     return item_table
 
-def get_item_table(wikifier_file, sheet, context=None, flag=None):
+def get_item_table(wikifier_file, sheet, flag=None):
     if not wikifier_file:
         return ItemTable(None)
 
     cache_folder=Path(wikifier_file.file_path).parent/"cache"
-    cache_path=cache_folder/(wikifier_file.name+"_"+sheet.name+".json")
+    cache_path=cache_folder/(wikifier_file.name+str(wikifier_file.id)+"_"+sheet.name+".json")
     try:
         with open(str(cache_path)) as json_data:
             region_map = json.load(json_data)
@@ -130,7 +129,7 @@ def get_item_table(wikifier_file, sheet, context=None, flag=None):
     except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
             if not cache_folder.is_dir():
                 cache_folder.mkdir()
-            item_table=create_item_table(wikifier_file, sheet, context=context, flag=flag)
+            item_table=create_item_table(wikifier_file, sheet, flag=flag)
             item_table.save_to_file(cache_path)
             return item_table
 

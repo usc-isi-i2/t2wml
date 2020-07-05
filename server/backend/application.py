@@ -277,7 +277,7 @@ def wikify_region(pid):
             cell_qnode_map=wikifier(region, project.current_file.file_path, sheet.name, context)
             wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
             
-            item_table=get_item_table(wf, sheet, flag)
+            item_table=get_item_table(wf, sheet, flag=flag)
             serialized_item_table = item_table.serialize_table()
 
             data = item_table.serialize_table()

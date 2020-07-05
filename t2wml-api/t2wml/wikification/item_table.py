@@ -11,7 +11,7 @@ def patch_get_string_table(cell_table):
     #a patch workaround until we rewrite item table
     string_table=dict()
     for key in cell_table:
-        item_string=cell_table[key].pop("__CELL_VALUE__")
+        item_string=cell_table[key].get("__CELL_VALUE__")
         if item_string not in string_table:
             string_table[item_string]={}
             for context_key in cell_table[key]: #contexts:
@@ -61,6 +61,8 @@ class ItemTable:
             self.update_cells_by_row(data_frame, sheet)
             # update specific cells
             self.update_specific_cells(data_frame, sheet)
+        if not len(self.string_table):
+            self.string_table=patch_get_string_table(self.table)
 
     def update_specific_cells(self, data_frame, sheet, has_to_filter_data_frame=False):
         if not has_to_filter_data_frame:
@@ -185,28 +187,31 @@ class ItemTable:
         serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
         items_not_in_wiki = set()
         for cell, desc in self.table.items():
-            col = _column_index_to_letter(int(cell[0]))
-            row = str(int(cell[1]) + 1)
-            cell = col+row
-            value = desc['__CELL_VALUE__']
-            for context, item in desc.items():
-                if context != '__CELL_VALUE__':
-                    if context == '__NO_CONTEXT__':
-                        context = ''
-                    serialized_table['qnodes'][cell][context] = {"item": item}
-                    row_data = {
-                        'context': context,
-                        'col': col,
-                        'row': row,
-                        'value': value,
-                        'item': item
-                    }
-                    if item in self.item_wiki:
-                        row_data['label'] = self.item_wiki[item]['label']
-                        row_data['desc'] = self.item_wiki[item]['desc']
-                    else:
-                        items_not_in_wiki.add(item)
-                    serialized_table['rowData'].append(row_data)
+            try:
+                col = _column_index_to_letter(int(cell[0]))
+                row = str(int(cell[1]) + 1)
+                cell = col+row
+                value = desc['__CELL_VALUE__']
+                for context, item in desc.items():
+                    if context != '__CELL_VALUE__':
+                        if context == '__NO_CONTEXT__':
+                            context = ''
+                        serialized_table['qnodes'][cell][context] = {"item": item}
+                        row_data = {
+                            'context': context,
+                            'col': col,
+                            'row': row,
+                            'value': value,
+                            'item': item
+                        }
+                        if item in self.item_wiki:
+                            row_data['label'] = self.item_wiki[item]['label']
+                            row_data['desc'] = self.item_wiki[item]['desc']
+                        else:
+                            items_not_in_wiki.add(item)
+                        serialized_table['rowData'].append(row_data)
+            except Exception as e:
+                raise e
         
         if items_not_in_wiki:
             labels_and_descriptions = get_labels_and_descriptions(items_not_in_wiki)
@@ -240,6 +245,6 @@ class ItemTable:
         except:
             raise KeyError("Item for that string and context not found")
 
-    def update_table_from_wikifier_file(self, wikifier_file_path, data_file_path, sheet_name, context=None, flag=None):
+    def update_table_from_wikifier_file(self, wikifier_file_path, data_file_path, sheet_name, flag=None):
         df = pd.read_csv(wikifier_file_path)
-        self.update_table(df, data_file_path, sheet_name)
+        self.update_table(df, data_file_path, sheet_name, flag=flag)
