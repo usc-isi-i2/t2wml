@@ -256,6 +256,37 @@ def upload_wikifier_output(pid):
     return response, 200
 
 
+
+@app.route('/api/wikifier_service/<pid>', methods=['POST'])
+@json_response
+def wikify_region(pid):
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project(pid)
+    action = request.form["action"]
+    region = request.form["region"]
+    context = request.form["context"]
+    flag = int(request.form["flag"])
+    if action == "wikify_region":
+            if not project.current_file:
+                raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
+            sheet=project.current_file.current_sheet
+
+            cell_qnode_map=wikifier(region, project.current_file.file_path, sheet.name, context)
+            wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
+            
+            item_table=get_item_table(wf, sheet, flag)
+            serialized_item_table = item_table.serialize_table()
+
+            data = item_table.serialize_table()
+
+    return data, 200
+
+
+
+
 @app.route('/api/yaml/<pid>', methods=['POST'])
 @json_response
 def upload_yaml(pid):
@@ -322,35 +353,6 @@ def downloader(pid, filetype):
     cell_mapper=get_cell_mapper(sheet, yaml_file, item_table)
     response = download(cell_mapper, filetype, project.name, sheet.data_file.name, sheet.name)
     return response, 200
-
-
-
-@app.route('/api/wikifier_service/<pid>', methods=['POST'])
-@json_response
-def wikify_region(pid):
-    """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
-    """
-    project = get_project(pid)
-    action = request.form["action"]
-    region = request.form["region"]
-    context = request.form["context"]
-    flag = int(request.form["flag"])
-    if action == "wikify_region":
-            if not project.current_file:
-                raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
-            sheet=project.current_file.current_sheet
-
-            cell_qnode_map=wikifier(region, project.current_file.file_path, sheet.name, context)
-            wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
-            
-            item_table=get_item_table(wf, sheet, flag)
-            serialized_item_table = item_table.serialize_table()
-
-            data = item_table.serialize_table()
-
-    return data, 200
 
 
 
