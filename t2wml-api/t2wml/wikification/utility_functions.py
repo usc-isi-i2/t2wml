@@ -83,7 +83,8 @@ def add_properties_from_file(file_path):
         for prop in input_dict:
             prop_type=input_dict[prop]
             try:
-                if prop_type not in ["GlobeCoordinate", "Quantity", "Time","String", "MonolingualText", "ExternalIdentifier", "WikibaseItem", "WikibaseProperty"]:
+                if prop_type not in ["GlobeCoordinate", "Quantity", "Time","String", "MonolingualText", 
+                                     "ExternalIdentifier", "WikibaseItem", "WikibaseProperty", "Url"]:
                     raise ValueError("Property type: "+prop_type+" not supported")
                 added=p.save_property(prop, prop_type)
                 if added:

@@ -6,6 +6,7 @@ Changes in version 0.0.2:
 * when wikify_region fails on specific cells, return error listing those cells
 * add support for $filename to t2wml syntax
 * continued cleaning of server-specific code from the API
+* add support for Url as property type
 
 Changes in version 0.0.1:
 -------------------------
