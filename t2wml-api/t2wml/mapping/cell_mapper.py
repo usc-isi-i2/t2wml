@@ -52,6 +52,16 @@ class Region:
         for key in self.indices:
             return key
 
+    @staticmethod
+    def create_from_yaml(yaml_data, data_file_path, sheet_name, item_table):
+        try:
+            sheet=Sheet(data_file_path, sheet_name)
+            update_bindings(item_table=item_table, sheet=sheet)
+        except IOError:
+            raise IOError('Excel File cannot be found or opened')
+        region_parser=RegionParser(yaml_data)
+        return Region(region_parser.parsed_region)
+
 class Template:
     def __init__(self, dict_template, eval_template, created_by="t2wml"):
         self.dict_template=dict_template
@@ -59,14 +69,8 @@ class Template:
         self.created_by=created_by
     
     @staticmethod
-    def create_from_yaml(yaml_file_path, data_file_path, sheet_name, item_table):
-        yaml_data=validate_yaml(yaml_file_path)
-        try:
-            sheet=Sheet(data_file_path, sheet_name)
-        except IOError:
-            raise IOError('Excel File cannot be found or opened')
-        update_bindings(item_table=item_table, sheet=sheet)
-        template=dict(self.yaml_data['statementMapping']['template'])
+    def create_from_yaml(yaml_data):
+        template=dict(yaml_data['statementMapping']['template'])
         template_parser=TemplateParser(template)
         eval_template=template_parser.eval_template
         created_by=yaml_data['statementMapping'].get('created_by', 't2wml')
@@ -76,23 +80,12 @@ class Template:
 
 class CellMapper:
     def __init__(self, yaml_file_path, item_table, data_file_path, sheet_name):
-        self.region= self.init_region(yaml_file_path, data_file_path, sheet_name)
-        t=Template(yaml_file_path, data_file_path, sheet_name, item_table)
+        yaml_data=validate_yaml(yaml_file_path)
+        self.region= Region.create_from_yaml(yaml_data, data_file_path, sheet_name, item_table)
+        t=Template.create_from_yaml(yaml_data)
 
         self.template=t.dict_template
         self.eval_template=t.eval_template
         self.created_by=t.created_by
     
-    def init_region(self, yaml_file_path, data_file_path, sheet_name):
-        region=None
-        if self.use_cache:
-            region_cacher=RegionCacher(yaml_file_path, data_file_path, sheet_name)
-            region=region_cacher.load_from_cache()
-            
-        if not region:
-            region_parser=RegionParser(self.yaml_data)
-            region=Region(region_parser.parsed_region)
-            if self.use_cache:
-                region_cacher.save(region_parser.parsed_region)
 
-        return region
