@@ -6,7 +6,7 @@ import tempfile
 
 from t2wml.wikification.item_table import ItemTable
 from t2wml.mapping.cell_mapper import get_region_and_template
-from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
+from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_statements
 from t2wml.wikification.utility_functions import add_properties_from_file
 from t2wml.spreadsheets.utilities import get_first_sheet_name
 
@@ -19,8 +19,8 @@ output_directory = os.path.join(_path, "tmp")
 os.makedirs(output_directory, exist_ok=True)
 
 def download(region, template):
-    data, errors=get_all_template_statements(region, template)
-    output= get_file_output_from_data(data, "ttl")
+    statements, errors=get_all_template_statements(region, template)
+    output= get_file_output_from_statements(statements, "ttl")
     return output
 
 # output_directory = os.path.join(_path, "tmp")

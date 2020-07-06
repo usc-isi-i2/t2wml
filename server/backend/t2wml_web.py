@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data, resolve_cell
+from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_statements, resolve_cell
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider
@@ -29,11 +29,11 @@ def download(sheet, yaml_file, item_table, filetype, project_name=""):
     cell_mapper=CellMapper(sheet, yaml_file, item_table)
     response=dict()
     errors=[]
-    data, errors=cell_mapper.result_cacher.get_download()
-    if not data:
-        data, errors = get_all_template_statements(cell_mapper.region, cell_mapper.template)
+    statements, errors=cell_mapper.result_cacher.get_download()
+    if not statements:
+        statements, errors = get_all_template_statements(cell_mapper.region, cell_mapper.template)
     
-    response["data"]=get_file_output_from_data(data, filetype, project_name, sheet.data_file.name, sheet.name, cell_mapper.created_by)
+    response["data"]=get_file_output_from_statements(statements, filetype, project_name, sheet.data_file.name, sheet.name, cell_mapper.template.created_by)
     response["error"]=None
     response["internalErrors"] = errors
     return response

@@ -329,7 +329,7 @@ def create_kgtk(data, file_path, sheet_name, project_name):
     return data
 
 
-def get_file_output_from_data(data, filetype, project_name="", file_path=None, sheet_name=None, created_by="t2wml"):
+def get_file_output_from_statements(data, filetype, project_name="", file_path=None, sheet_name=None, created_by="t2wml"):
     if filetype not in ["json", "ttl", "tsv", "kgtk"]:
         raise T2WMLExceptions.FileTypeNotSupportedException("No support for "+filetype+" format")
     if filetype == 'json':

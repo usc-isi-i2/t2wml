@@ -5,6 +5,7 @@ Changes in version 2.0a18:
 -------------------------
 * upgrade to api v0.0.2
 * get error listing cells when specific cells fail in wikify_region
+* (from 2.0a17): files are saved under their original names.
 
 Changes in version 2.0a17:
 -------------------------
