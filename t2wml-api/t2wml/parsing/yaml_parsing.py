@@ -1,7 +1,6 @@
 import sys
 import yaml
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
-from t2wml.utils.bindings import bindings
 from t2wml.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode, iter_on_n_for_code
 from t2wml.spreadsheets.conversions import _cell_range_str_to_tuples
 
@@ -47,27 +46,19 @@ class CodeParser:
             return False
 
 class TemplateParser(CodeParser):    
-    def __init__(self, template, region):
-        self.region=region
+    def __init__(self, template):
         self.template=template
         self.eval_template=self.create_eval_template(self.template)
 
     def get_code_replacement(self, input_str):
-        fake_context=dict(t_var_row=self.region.top, t_var_col=self.region.left, t_var_n=0)
         try:
             if self.is_code_string(input_str):
                 try:
                     fixed=self.fix_code_string(input_str)
-                    #t2wml_parse(fixed, fake_context) #for debugging
                     compiled_statement=compile(fixed, "<string>", "eval")
-                    result=t2wml_parse(compiled_statement, fake_context)
+                    return T2WMLCode(compiled_statement, fixed)
                 except Exception as e:
                     raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(input_str))
-                if "t_var" in fixed: #variable code expression
-                    return T2WMLCode(compiled_statement, fixed)
-                else: #invariable, result from anywhere is the same and we've already calculated it
-                    return result
-
             else:
                 return input_str
         except ForwardSlashEscape as e:

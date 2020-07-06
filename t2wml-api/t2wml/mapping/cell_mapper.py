@@ -52,24 +52,36 @@ class Region:
         for key in self.indices:
             return key
 
-
-class CellMapper:
-    def __init__(self, yaml_file_path, item_table, data_file_path, sheet_name):
-        self.yaml_data=validate_yaml(yaml_file_path)
-
+class Template:
+    def __init__(self, dict_template, eval_template, created_by="t2wml"):
+        self.dict_template=dict_template
+        self.eval_template=eval_template
+        self.created_by=created_by
+    
+    @staticmethod
+    def create_from_yaml(yaml_file_path, data_file_path, sheet_name, item_table):
+        yaml_data=validate_yaml(yaml_file_path)
         try:
             sheet=Sheet(data_file_path, sheet_name)
         except IOError:
             raise IOError('Excel File cannot be found or opened')
         update_bindings(item_table=item_table, sheet=sheet)
-        
-        self.init_region(yaml_file_path, data_file_path, sheet_name)
+        template=dict(self.yaml_data['statementMapping']['template'])
+        template_parser=TemplateParser(template)
+        eval_template=template_parser.eval_template
+        created_by=yaml_data['statementMapping'].get('created_by', 't2wml')
+        return Template(template, eval_template, created_by)
 
-        self.template=dict(self.yaml_data['statementMapping']['template'])
-        template_parser=TemplateParser(self.template, self.region)
-        self.eval_template=template_parser.eval_template
-        
-        self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
+
+
+class CellMapper:
+    def __init__(self, yaml_file_path, item_table, data_file_path, sheet_name):
+        self.region= self.init_region(yaml_file_path, data_file_path, sheet_name)
+        t=Template(yaml_file_path, data_file_path, sheet_name, item_table)
+
+        self.template=t.dict_template
+        self.eval_template=t.eval_template
+        self.created_by=t.created_by
     
     def init_region(self, yaml_file_path, data_file_path, sheet_name):
         region=None
@@ -83,4 +95,4 @@ class CellMapper:
             if self.use_cache:
                 region_cacher.save(region_parser.parsed_region)
 
-        self.region=region
+        return region
