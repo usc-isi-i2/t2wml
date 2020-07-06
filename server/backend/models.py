@@ -3,6 +3,7 @@ from pathlib import Path
 from werkzeug.utils import secure_filename
 
 from t2wml.wikification.utility_functions import add_properties_from_file
+from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
 
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
@@ -249,7 +250,6 @@ class DataFile(SavedFile):
     
     
     def init_sheets(self):
-        from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
         pw=PandasLoader(self.file_path)
         sheet_data=pw.load_file()
         for sheet_name in sheet_data:
