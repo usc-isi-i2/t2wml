@@ -2,8 +2,9 @@
 
 * [Installing the API and using within code](#install)
 
-<span id="install"></span>
+
 ## Installing the T2WML API
+<span id="install"></span>
 
 1. make a fresh virtual environment
 2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-api`

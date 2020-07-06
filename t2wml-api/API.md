@@ -1,7 +1,11 @@
 # The T2WML API: A programmatic way of using T2WML
+* [The WikidataProvider](#wikiprov)
+* [Examples of using the API](#examples)
+
+
 
 ## The WikidataProvider
-
+<span id="wikiprov"></span>
 The WikidataProvider class is responsible for providing property types for property IDs and for providing labels and descriptions for item IDs. 
 
 Two already-implemented WikidataProvider classes are provided in t2wml.wikification.wikidata_provider:
@@ -95,10 +99,14 @@ class DatabaseProvider(FallbackSparql):
             raise ValueError("Failed to commit to database session")
 ```
 
+## KnowledgeGraph
 
+## Region
 
-example code:
+## Template
 
+## Examples of code
+<span id="examples"></span>
 ```
 # a script that iterates over a directory of csvs that can all be parsed using the same yaml file
 import os

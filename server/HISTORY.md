@@ -1,6 +1,11 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.0a18:
+-------------------------
+* upgrade to api v0.0.2
+* get error listing cells when specific cells fail in wikify_region
+
 Changes in version 2.0a17:
 -------------------------
 MASSIVE Backwards compatibility breaking change. API moved to its own package. Database completely refactored.

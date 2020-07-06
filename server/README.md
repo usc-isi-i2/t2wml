@@ -2,8 +2,9 @@
 
 * [Installing the server using pip](#install)
 
-<span id="install"></span>
+
 ## Installing the server with pip
+<span id="install"></span>
 
 A locally hosted web GUI version of t2wml can be installed quickly using pip
 

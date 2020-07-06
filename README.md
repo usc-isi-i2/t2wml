@@ -13,8 +13,9 @@
   <tr><td><b>Python version:</b></td><td>Python 3.6+</td></tr>
 </table>
 
-<span id="server"></span>
+
 ## The T2WML standalone local server
+<span id="server"></span>
 
 A locally hosted web GUI version of t2wml can be installed quickly using pip
 
@@ -23,8 +24,9 @@ A locally hosted web GUI version of t2wml can be installed quickly using pip
 3. run `t2wml-server`
 4. navigate to [`http://localhost:5000/`](http://localhost:5000/) in a Chrome browser
 
-<span id="api"></span>
+
 ## The T2WML programming API
+<span id="api"></span>
 
 You can write your own code using the T2WML programming API
 
@@ -32,8 +34,9 @@ You can write your own code using the T2WML programming API
 2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-api`
 3. You can now use `from t2wml import...` to write code (see the [API guide](t2wml-api/API.md))
 
-<span id="development"></span>
+
 ## Running T2WML for development
+<span id="development"></span>
 
 1. Clone the repository
 2. Create a virtual environment
@@ -60,8 +63,9 @@ The repo also contains vscode configurations for the convenience of those workin
 
 
 
-<span id="usage_with_gui"></span>
+
 ## Usage with GUI
+<span id="usage_with_gui"></span>
 
 1. Open the GUI
 2. In **Table Viewer**,
@@ -79,13 +83,15 @@ The repo also contains vscode configurations for the convenience of those workin
 	2. click **Download** to get all results
 
 
-<span id="writing_t2wml"></span>
+
 ## Writing T2WML
+<span id="writing_t2wml"></span>
 
 Check out the [grammar guide](docs/grammar.md)
 
-<span id="features"></span>
+
 ## Features
+<span id="features"></span>
 
 > Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
@@ -98,8 +104,9 @@ Check out the [grammar guide](docs/grammar.md)
 <span id="preview_result"></span>⬇️ Preview result
 ![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-output.gif)
 
-<span id="faqs"></span>
+
 ## FAQs
+<span id="faqs"></span>
 
 * **Installation failed due to `etk`?**
 
