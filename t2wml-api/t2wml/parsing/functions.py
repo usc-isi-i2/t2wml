@@ -3,7 +3,7 @@ import re
 from etk.wikidata.utils import parse_datetime_string
 from SPARQLWrapper import SPARQLWrapper, JSON
 from t2wml.utils.bindings import bindings
-from t2wml.settings import sparql_endpoint
+from t2wml.settings import t2wml_settings
 from t2wml.parsing.classes import ReturnClass, RangeClass, Item
 
 def boolean_modifer(func):

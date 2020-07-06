@@ -5,15 +5,13 @@ from t2wml.mapping.cell_mapper import get_region_and_template
 from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.mapping.triple_generator import generate_triples
 from t2wml.utils.t2wml_exceptions import FileTypeNotSupportedException
-from t2wml.settings import sparql_endpoint, wikidata_provider
+from t2wml.settings import t2wml_settings
 
 def set_wikidata_provider(wp):
-    global wikidata_provider
-    wikidata_provider=wp
+    t2wml_settings["wikidata_provider"]=wp
 
 def set_sparql_endpoint(se):
-    global sparql_endpoint
-    sparql_endpoint=se
+    t2wml_settings["sparql_endpoint"]=se
 
 def get_template_statements(data_file_path, sheet_name, yaml_file_path, wikifier_filepath):
     item_table=ItemTable()
