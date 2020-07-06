@@ -1,14 +1,9 @@
-import csv
-import json
+
 import warnings
 import sys
 from copy import deepcopy
-from io import StringIO
-from pathlib import Path
 from collections import defaultdict
 from etk.wikidata.utils import parse_datetime_string
-from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
-
 from t2wml.utils.t2wml_exceptions import T2WMLException
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.parsing.classes import ReturnClass
@@ -16,28 +11,9 @@ from t2wml.parsing.constants import char_dict
 from t2wml.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from t2wml.spreadsheets.conversions import to_excel
 
-from t2wml.mapping.triple_generator import generate_triples
+
 from t2wml.wikification.utility_functions import translate_precision_to_integer
-from t2wml.wikification.utility_functions import get_property_type as _get_property_type
-
-not_found_cache=set()
-property_cache=dict()
-
-
-def get_property_type(prop):
-    try:
-        if prop in not_found_cache:
-            raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
-        prop_type=property_cache.get(prop, None)
-        if not prop_type:
-            prop_type= _get_property_type(prop)
-            property_cache[prop]=prop_type
-        return prop_type
-    except QueryBadFormed:
-        raise T2WMLExceptions.MissingWikidataEntryException("The value given for property is not a valid property:" +str(prop))
-    except ValueError:
-        not_found_cache.add(prop)
-        raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
+from t2wml.wikification.utility_functions import get_property_type
 
 
 
@@ -200,142 +176,9 @@ def get_all_template_statements(region, template):
 
 
 
-
-
 def resolve_cell(template, col, row):
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     statement, errors=get_template_statement(template, context)
     return statement, errors
 
 
-
-def enclose_in_quotes(value):
-    if value != "" and value is not None:
-        return "\""+str(value)+"\""
-    return ""
-
-def kgtk_add_property_type_specific_fields(property_dict, result_dict):
-    property_type= get_property_type(property_dict["property"])
-    
-    #The only property that doesn't require value
-    if property_type=="GlobeCoordinate": 
-        '''
-        node2;kgtk:latitude: for coordinates, the latitude
-        node2;kgtk:longitude: for coordinates, the longitude
-        '''
-        result_dict["node2;kgtk:data_type"]="coordinate" #not defined for sure yet
-        result_dict["node2;kgtk:latitude"]=property_dict["latitude"]
-        result_dict["node2;kgtk:longitude"]=property_dict["longitude"]
-        result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
-        result_dict[" node2;kgtk:globe"]=property_dict.get("globe", "")
-
-    else:
-        value=property_dict["value"]
-
-        if property_type=="Quantity":
-            '''
-            node2;kgtk:magnitude: for quantities, the number
-            node2;kgtk:units_node: for quantities, the unit
-            node2;kgtk:low_tolerance: for quantities, the lower bound of the value (cannot do it in T2WML yet)
-            node2;kgtk:high_tolerance: for quantities, the upper bound of the value (cannot do it in T2WML yet)
-            '''
-            result_dict["node2;kgtk:data_type"]="quantity"
-            result_dict["node2;kgtk:number"]= value
-            result_dict["node2;kgtk:units_node"]= property_dict.get("unit", "")
-            result_dict["node2;kgtk:low_tolerance"]= property_dict.get("lower-bound", "")
-            result_dict["node2;kgtk:high_tolerance"]= property_dict.get("upper-bound", "")
-
-        elif property_type=="Time":
-            '''
-            node2;kgtk:date_and_time: for dates, the ISO-formatted data
-            node2;kgtk:precision: for dates, the precision, as an integer (need to verify this with KGTK folks, could be that we use human readable strings such as year, month
-            node2;kgtk:calendar: for dates, the qnode of the calendar, if specified
-            '''
-            result_dict["node2;kgtk:data_type"]="date_and_times"
-            result_dict["node2;kgtk:date_and_time"]=enclose_in_quotes(value)
-            result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
-            result_dict["node2;kgtk:calendar"]=property_dict.get("calendar", "")
-
-        elif property_type in ["String", "MonolingualText", "ExternalIdentifier", "Url"]:
-            '''
-            node2;kgtk:text: for text, the text without the language tag
-            node2;kgtk:language: for text, the language tag
-            '''
-            result_dict["node2;kgtk:data_type"]="string"
-            result_dict["node2;kgtk:text"]=enclose_in_quotes(value)
-            result_dict["node2;kgtk:language"]=enclose_in_quotes(property_dict.get("lang", ""))
-
-        elif property_type in ["WikibaseItem", "WikibaseProperty"]:
-            '''
-            node2;kgtk:symbol: when node2 is another item, the item goes here"
-            '''
-            result_dict["node2;kgtk:data_type"]="symbol"
-            result_dict["node2;kgtk:symbol"]=value
-        
-        else:
-            raise T2WMLExceptions.UnsupportedPropertyType("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
-
-def create_kgtk(data, file_path, sheet_name, project_name):
-    file_name=Path(file_path).stem
-
-    file_extension=Path(file_path).suffix
-    if file_extension==".csv":
-        sheet_name=""
-
-    tsv_data=[]
-    for cell in data:
-        try:
-            statement=data[cell]
-            id = project_name + ";" + file_name + "." + sheet_name + file_extension + ";" + cell
-            cell_result_dict=dict(id=id, node1=statement["item"], label=statement["property"])
-            kgtk_add_property_type_specific_fields(statement, cell_result_dict)
-            tsv_data.append(cell_result_dict)
-
-            qualifiers=statement.get("qualifier", [])
-            for qualifier in qualifiers:
-                #commented out. for now, do not generate an id at all for qualifier edges.
-                #second_cell=qualifier.get("cell", "")
-                #q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
-                qualifier_result_dict=dict(node1=id, label=qualifier["property"])
-                kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict)
-                tsv_data.append(qualifier_result_dict)
-
-            references = statement.get("reference", [])
-            #todo: handle references
-        except Exception as e:
-            raise(e)
-        
-
-
-    string_stream= StringIO("", newline="")
-    fieldnames=["id", "node1", "label","node2", "node2;kgtk:data_type",
-                "node2;kgtk:number","node2;kgtk:low_tolerance","node2;kgtk:high_tolerance", "node2;kgtk:units_node",
-                "node2;kgtk:date_and_time", "node2;kgtk:precision", "node2;kgtk:calendar",
-                "node2;kgtk:truth", 
-                "node2;kgtk:symbol",
-                "node2;kgtk:latitude", "node2;kgtk:longitude",
-                "node2;kgtk:text", "node2;kgtk:language", ]
-
-    writer = csv.DictWriter(string_stream, fieldnames,
-                            restval="", delimiter="\t", lineterminator="\n",
-                            escapechar='', quotechar='',
-                            dialect=csv.unix_dialect, quoting=csv.QUOTE_NONE)
-    writer.writeheader()
-    for entry in tsv_data:
-        writer.writerow(entry)
-    
-    data=string_stream.getvalue()
-    string_stream.close()
-    return data
-
-
-def get_file_output_from_statements(data, filetype, project_name="", file_path=None, sheet_name=None, created_by="t2wml"):
-    if filetype not in ["json", "ttl", "tsv", "kgtk"]:
-        raise T2WMLExceptions.FileTypeNotSupportedException("No support for "+filetype+" format")
-    if filetype == 'json':
-        output = json.dumps(data, indent=3, sort_keys=False) #insertion-ordered
-    elif filetype == 'ttl':
-        output = generate_triples("n/a", data, created_by=created_by)
-    elif filetype in ["kgkt", "tsv"]:
-        output = create_kgtk(data, file_path, sheet_name, project_name)
-    return output

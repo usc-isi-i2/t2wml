@@ -3,7 +3,8 @@ import os
 import unittest
 from pathlib import Path
 from t2wml.mapping.cell_mapper import get_region_and_template
-from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_statements
+from t2wml.mapping.t2wml_handling import get_all_template_statements
+from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.wikification.item_table import ItemTable
 from t2wml.wikification.utility_functions import add_properties_from_file
 

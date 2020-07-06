@@ -3,6 +3,7 @@ import csv
 from pathlib import Path
 from typing import Sequence, Union, Tuple, List, Dict, Any
 from string import punctuation
+from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 from t2wml.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml.wikification.wikidata_provider import SparqlProvider
 from t2wml.settings import t2wml_settings
@@ -13,6 +14,25 @@ def get_provider():
         wikidata_provider=SparqlProvider(t2wml_settings["sparql_endpoint"])
         t2wml_settings["wikidata_provider"]=wikidata_provider
     return wikidata_provider
+
+not_found_cache=set()
+property_cache=dict()
+
+def get_property_type(prop):
+    try:
+        if prop in not_found_cache:
+            raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
+        prop_type=property_cache.get(prop, None)
+        if not prop_type:
+            prop_type= _get_property_type(prop)
+            property_cache[prop]=prop_type
+        return prop_type
+    except QueryBadFormed:
+        raise T2WMLExceptions.MissingWikidataEntryException("The value given for property is not a valid property:" +str(prop))
+    except ValueError:
+        not_found_cache.add(prop)
+        raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
+
 
 def translate_precision_to_integer(precision: str) -> int:
     """
@@ -54,8 +74,7 @@ def translate_precision_to_integer(precision: str) -> int:
     }
     return precision_map[precision.lower()]
 
-
-def get_property_type(wikidata_property):
+def _get_property_type(wikidata_property):
     provider=get_provider()
     property_type= provider.get_property_type(wikidata_property)
     if property_type=="Property Not Found":

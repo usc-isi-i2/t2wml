@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
 
-from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_statements, resolve_cell
+from t2wml.mapping.t2wml_handling import get_all_template_statements, resolve_cell
+from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider

@@ -4,7 +4,8 @@ import logging
 from etk.wikidata import serialize_change_record
 from t2wml.mapping.cell_mapper import get_region_and_template
 from t2wml.wikification.item_table import ItemTable
-from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_statements
+from t2wml.mapping.t2wml_handling import get_all_template_statements
+from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.spreadsheets.utilities import get_first_sheet_name
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
