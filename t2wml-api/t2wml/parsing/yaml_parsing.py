@@ -5,7 +5,7 @@ from t2wml.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode, iter_
 from t2wml.spreadsheets.conversions import _cell_range_str_to_tuples
 
 
-class ForwardSlashEscape(Exception):
+class ForwardSlashEscape(Exception): #used for a little hack down below
     def __init__(self, new_str):
         self.new_str=new_str
 
@@ -32,8 +32,10 @@ class CodeParser:
         if statement[0]!="/": #everything but the edge case
             return False
 
-        #deal with edge cases involving escaping an initial equal sign- we raise a forward slash escape error and modify the strting outside
-        if "/=" not in statement: #it just starts with a forward slash, nothing is being escaped
+        #deal with edge cases involving escaping an initial equal sign
+        # small hack: we use a forward slash escape error to avoid needing to return True/False
+        # and instead catch and deal with it separately
+        if "/=" not in statement: #it just happens to start with a forward slash, nothing is being escaped
             return False
         else:
             i=0
@@ -41,7 +43,7 @@ class CodeParser:
                 i+=1
             #it has x number of forward slashes followed by an equal sign
             if statement[i]=="=":
-                raise ForwardSlashEscape(statement[1:]) #(using an exception here is a bit of a cheat/hack)
+                raise ForwardSlashEscape(statement[1:])
             #it happens to have /= somewhere in the string, but NOT in the beginning, eg ///hello /=you, return the whole thing
             return False
 
@@ -56,7 +58,7 @@ class TemplateParser(CodeParser):
                 try:
                     fixed=self.fix_code_string(input_str)
                     compiled_statement=compile(fixed, "<string>", "eval")
-                    return T2WMLCode(compiled_statement, fixed)
+                    return T2WMLCode(compiled_statement, fixed, input_str)
                 except Exception as e:
                     raise T2WMLExceptions.InvalidYAMLFileException("Invalid expression: "+str(input_str))
             else:
@@ -182,7 +184,7 @@ class RegionParser(CodeParser):
     def get_code_replacement(self, input_str):
         fixed=self.fix_code_string(input_str)
         compiled_statement=compile(fixed, "<string>", "eval")
-        return T2WMLCode(compiled_statement, fixed)
+        return T2WMLCode(compiled_statement, fixed, input_str)
 
     def get_skips(self, yaml_region, region_props):
         skip_row=skip_cell=skip_column=[]

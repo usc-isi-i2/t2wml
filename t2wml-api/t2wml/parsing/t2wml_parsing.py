@@ -10,12 +10,18 @@ eval_globals.update(char_dict)
 eval_globals.update(functions_dict)
 
 class T2WMLCode:
-    def __init__(self, code, original_str):
+    def __init__(self, code, code_str, unmodified_str):
+        '''
+        code: the compiled eval expression
+        code_str: the string sent to be compiled (used to init some variables)
+        unmodified_str: the user's original string (used for error messages)
+        '''
         self.code=code
-        self.has_n="t_var_n" in original_str
-        self.sheet_dependent = "t_var_sheet" in original_str
-        self.is_variable ="t_var" in original_str
-        self.original_str=original_str
+        self.has_n="t_var_n" in code_str
+        self.sheet_dependent = "t_var_sheet" in code_str
+        self.is_variable ="t_var" in code_str
+        self.code_str=code_str
+        self.unmodified_str=unmodified_str
 
 
 def t2wml_parse(e_str, context={}):
