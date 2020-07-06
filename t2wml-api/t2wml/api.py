@@ -1,7 +1,7 @@
 import json
 from t2wml.wikification.item_table import ItemTable
 from t2wml.wikification.utility_functions import add_properties_from_file
-from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.mapping.cell_mapper import get_region_and_template
 from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.mapping.triple_generator import generate_triples
 from t2wml.utils.t2wml_exceptions import FileTypeNotSupportedException
@@ -18,8 +18,8 @@ def set_sparql_endpoint(se):
 def get_template_statements(data_file_path, sheet_name, yaml_file_path, wikifier_filepath):
     item_table=ItemTable()
     item_table.update_table_from_wikifier_file(wikifier_filepath, data_file_path, sheet_name)
-    cell_mapper=CellMapper(yaml_file_path, item_table, data_file_path, sheet_name, use_cache=False)
-    data, errors = get_all_template_statements(cell_mapper)
+    region, template = get_region_and_template(yaml_file_path, item_table, data_file_path, sheet_name, use_cache=False)
+    data, errors = get_all_template_statements(region, template)
     return data, errors
 
 

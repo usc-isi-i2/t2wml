@@ -1,4 +1,7 @@
-from t2wml.mapping.cell_mapper import Region
+import os
+import json
+from pathlib import Path
+from t2wml.mapping.cell_mapper import Region, get_region, get_template
 
 class Cacher:
     title=""
@@ -52,8 +55,6 @@ class MappingResultsCacher(Cacher):
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
     
-
-        
     def save(self, highlight_data, statement_data, errors=[]):
         d={
             "highlight region": highlight_data,
@@ -85,3 +86,34 @@ class MappingResultsCacher(Cacher):
         return []
     
  
+class CellMapper:
+    def __init__(self, sheet, yaml, item_table=None):
+        self.result_cacher=MappingResultsCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
+        self.region_cacher=RegionCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
+        self.item_table=item_table
+        self.yaml=yaml
+        self.sheet=sheet
+    
+    @property
+    def region(self):
+        try:
+            return self._region
+        except:
+            region=self.region_cacher.load_from_cache()
+            if not region:
+                if self.item_table is None:
+                    self.item_table=ItemTable(None)
+                region= get_region(self.yaml.file_path, self.sheet.data_file.file_path, self.sheet.name, self.item_table)
+            self._region=region
+            return self._region
+    
+    @property
+    def template(self):
+        try:
+            return self._template
+        except:
+            self._template=get_template(self.yaml.file_path)
+            return self._template
+    
+
+    

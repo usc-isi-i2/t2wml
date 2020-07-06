@@ -1,6 +1,3 @@
-import os
-import json
-from pathlib import Path
 from collections import OrderedDict
 from t2wml.parsing.yaml_parsing import TemplateParser, RegionParser, validate_yaml
 from t2wml.spreadsheets.sheet import Sheet
@@ -45,13 +42,6 @@ class Region:
         for key in self.indices:
             yield key
             
-    def get(self, key, fallback=None):
-        return self.indices.get(key, fallback)
-    
-    def get_head(self):
-        for key in self.indices:
-            return key
-
     @staticmethod
     def create_from_yaml(yaml_data, data_file_path, sheet_name, item_table):
         try:
@@ -77,15 +67,19 @@ class Template:
         return Template(template, eval_template, created_by)
 
 
+def get_region_and_template(yaml_file_path, item_table, data_file_path, sheet_name):
+        yaml_data= validate_yaml(yaml_file_path)
+        region= Region.create_from_yaml(yaml_data, data_file_path, sheet_name, item_table)
+        template= Template.create_from_yaml(yaml_data)
+        return region, template
 
-class CellMapper:
-    def __init__(self, yaml_file_path, item_table, data_file_path, sheet_name):
-        yaml_data=validate_yaml(yaml_file_path)
-        self.region= Region.create_from_yaml(yaml_data, data_file_path, sheet_name, item_table)
-        t=Template.create_from_yaml(yaml_data)
+def get_template(yaml_file_path):
+    yaml_data= validate_yaml(yaml_file_path)
+    template= Template.create_from_yaml(yaml_data)
+    return template
 
-        self.template=t.dict_template
-        self.eval_template=t.eval_template
-        self.created_by=t.created_by
-    
+def get_region(yaml_file_path, data_file_path, sheet_name, item_table):
+    yaml_data= validate_yaml(yaml_file_path)
+    region= Region.create_from_yaml(yaml_data, data_file_path, sheet_name, item_table)
+    return region
 

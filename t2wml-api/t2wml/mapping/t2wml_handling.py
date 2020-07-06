@@ -95,12 +95,12 @@ def _parse_template(entry, context):
     else:
         return entry, None
 
-def get_template_statement(cell_mapper, context):
+def get_template_statement(template, context):
     parsed_template=dict()
     errors=dict()
-    for key in cell_mapper.template:
+    for key in template.dict_template:
         try:
-            entry_parsed, inner_errors=_parse_template(cell_mapper.eval_template[key], context)
+            entry_parsed, inner_errors=_parse_template(template.eval_template[key], context)
             if inner_errors:
                 errors[key]=inner_errors
             parsed_template[key]=entry_parsed
@@ -177,14 +177,14 @@ def get_template_statement(cell_mapper, context):
     return template, errors
     
     
-def get_all_template_statements(cell_mapper):
+def get_all_template_statements(region, template):
     statements={}
     errors={}
-    for col, row in cell_mapper.region:
+    for col, row in region:
         cell=to_excel(col-1, row-1)
         context={"t_var_row":row, "t_var_col":col}
         try:
-            statement, inner_errors=get_template_statement(cell_mapper, context)
+            statement, inner_errors=get_template_statement(template, context)
             statements[cell]=statement
             if inner_errors:
                 errors[cell]=inner_errors
@@ -201,13 +201,10 @@ def get_all_template_statements(cell_mapper):
 
 
 
-                
 
-
-
-def resolve_cell(cell_mapper, col, row):
+def resolve_cell(template, col, row):
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
-    statement, errors=get_template_statement(cell_mapper, context)
+    statement, errors=get_template_statement(template, context)
     return statement, errors
 
 
@@ -338,7 +335,7 @@ def get_file_output_from_data(data, filetype, project_name="", file_path=None, s
     if filetype == 'json':
         output = json.dumps(data, indent=3, sort_keys=False) #insertion-ordered
     elif filetype == 'ttl':
-        output = generate_triples("n/a", data, created_by=cell_mapper.created_by)
+        output = generate_triples("n/a", data, created_by=created_by)
     elif filetype in ["kgkt", "tsv"]:
         output = create_kgtk(data, file_path, sheet_name, project_name)
     return output

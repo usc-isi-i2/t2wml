@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import logging
 from etk.wikidata import serialize_change_record
-from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.mapping.cell_mapper import get_region_and_template
 from t2wml.wikification.item_table import ItemTable
 from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.spreadsheets.utilities import get_first_sheet_name
@@ -36,7 +36,7 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
         return
 
     try:
-        yc = CellMapper(t2wml_spec, item_table, data_file_path, sheet_name)
+        region, template = get_region_and_template(t2wml_spec, item_table, data_file_path, sheet_name)
     except Exception as e:
         logging.error("Invalid YAML File")
         return

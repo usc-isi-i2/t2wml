@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 
 from t2wml.wikification.item_table import ItemTable
-from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.mapping.cell_mapper import get_region_and_template
 from t2wml.mapping.t2wml_handling import get_all_template_statements, get_file_output_from_data
 from t2wml.wikification.utility_functions import add_properties_from_file
 from t2wml.spreadsheets.utilities import get_first_sheet_name
@@ -20,8 +20,8 @@ _path = Path(__file__).parent
 output_directory = os.path.join(_path, "tmp")
 os.makedirs(output_directory, exist_ok=True)
 
-def download(cm):
-    data, errors=get_all_template_statements(cm)
+def download(region, template):
+    data, errors=get_all_template_statements(region, template)
     output= get_file_output_from_data(data, "ttl")
     return output
 
@@ -56,9 +56,9 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
-        yc = CellMapper(self.t2wml_spec_path_1, item_table, file_path, sheet_name)
+        region, template = get_region_and_template(self.t2wml_spec_path_1, item_table, file_path, sheet_name)
 
-        response = download(yc)
+        response = download(region, template)
         self.assertEqual(response, results)
 
     def test_rdf_generation_with_units(self, sheet_name: str = None):
@@ -71,9 +71,9 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
-        yc = CellMapper(self.t2wml_spec_path_2, item_table, file_path, sheet_name)
+        r, t = get_region_and_template(self.t2wml_spec_path_2, item_table, file_path, sheet_name)
 
-        response = download(yc)
+        response = download(r, t)
         self.assertEqual(response, results)
 
     def test_rdf_generation_with_geo_coordinates_as_qualifiers(self, sheet_name: str = None):
@@ -87,9 +87,9 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
-        yc= CellMapper(self.t2wml_spec_path_3, item_table, file_path, sheet_name)
+        r,t= get_region_and_template(self.t2wml_spec_path_3, item_table, file_path, sheet_name)
 
-        response = download(yc)
+        response = download(r, t)
         self.assertEqual(response, results)
 
     def test_rdf_generation_with_geo_coordinates(self, sheet_name: str = None):
@@ -102,9 +102,9 @@ class TestRDFGeneration(unittest.TestCase):
         item_table = ItemTable()
         item_table.update_table_from_wikifier_file(self.wikifier_path, file_path, sheet_name)
 
-        yc = CellMapper(self.t2wml_spec_path_4, item_table, file_path, sheet_name)
+        r, t=get_region_and_template(self.t2wml_spec_path_4, item_table, file_path, sheet_name)
 
-        response = download(yc)
+        response = download(r, t)
         self.assertEqual(response, results)
 
 

@@ -7,9 +7,8 @@ from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.spreadsheets.conversions import _column_index_to_letter
-from t2wml.mapping.cell_mapper import CellMapper
 from t2wml.wikification.item_table import ItemTable
-
+from caching import CellMapper
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
 
@@ -26,28 +25,27 @@ def update_t2wml_settings():
                 #"storage_folder":UPLOAD_FOLDER
                 })
 
-def download(cell_mapper, filetype, project_name="", file_path=None, sheet_name=None):
+def download(sheet, yaml_file, item_table, filetype, project_name=""):
+    cell_mapper=CellMapper(sheet, yaml_file, item_table)
     response=dict()
     errors=[]
-    data=[]
-    if cell_mapper.use_cache:
-        data, errors=cell_mapper.result_cacher.get_download()
+    data, errors=cell_mapper.result_cacher.get_download()
     if not data:
-        data, errors = get_all_template_statements(cell_mapper)
+        data, errors = get_all_template_statements(cell_mapper.region, cell_mapper.template)
     
-    response["data"]=get_file_output_from_data(data, filetype, project_name, file_path, sheet_name, cell_mapper.created_by)
+    response["data"]=get_file_output_from_data(data, filetype, project_name, sheet.data_file.name, sheet.name, cell_mapper.created_by)
     response["error"]=None
     response["internalErrors"] = errors
     return response
 
-def highlight_region(cell_mapper):
-    if cell_mapper.use_cache:
-        highlight_data=cell_mapper.result_cacher.get_highlight_region()
-        if highlight_data:
-            return highlight_data
+def highlight_region(sheet, yaml_file, item_table):
+    cell_mapper=CellMapper(sheet, yaml_file, item_table)
+    highlight_data=cell_mapper.result_cacher.get_highlight_region()
+    if highlight_data:
+        return highlight_data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
-    statement_data, errors= get_all_template_statements(cell_mapper)
+    statement_data, errors= get_all_template_statements(cell_mapper.region, cell_mapper.template)
     for cell in statement_data:
         highlight_data["dataRegion"].add(cell)
         statement = statement_data[cell]
@@ -76,14 +74,13 @@ def highlight_region(cell_mapper):
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
     highlight_data['error']=errors if errors else None
 
-    if cell_mapper.use_cache:
-        cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
+    cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
     return highlight_data
 
-
-def get_cell(cell_mapper, col, row):
+def get_cell(sheet, yaml_file, item_table, col, row):
+    cell_mapper=CellMapper(sheet, yaml_file, item_table)
     try:
-        statement, errors= resolve_cell(cell_mapper, col, row)
+        statement, errors= resolve_cell(cell_mapper.template, col, row)
         data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
     except TemplateDidNotApplyToInput as e:
         data=dict(error=e.errors)
@@ -134,30 +131,16 @@ def get_item_table(wikifier_file, sheet, flag=None):
             item_table.save_to_file(cache_path)
             return item_table
 
-def get_cell_mapper(sheet, yaml, item_table=None):
-    if item_table is None:
-        item_table=ItemTable(None)
-
-    cm = CellMapper(yaml.file_path, 
-                    item_table, 
-                    sheet.data_file.file_path, 
-                    sheet.name,
-                    use_cache=True)
-    return cm
 
 
 def handle_yaml(sheet, item_table=None):
     if sheet.yaml_file:
         yaml_file=sheet.yaml_file
-        try:
-            response=dict()
-            with open(yaml_file.file_path, "r") as f:
-                response["yamlFileContent"]= f.read()
-            cell_mapper=get_cell_mapper(sheet, yaml_file, item_table)
-            response['yamlRegions'] = highlight_region(cell_mapper)
-            return response
-        except Exception as e:
-            return None #TODO: can't return a better error here yet, it breaks the frontend
+        response=dict()
+        with open(yaml_file.file_path, "r") as f:
+            response["yamlFileContent"]= f.read()
+        response['yamlRegions'] = highlight_region(sheet, yaml_file, item_table)
+        return response
     return None
 
 

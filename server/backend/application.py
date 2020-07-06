@@ -14,7 +14,7 @@ from t2wml.wikification.wikify_handling import wikifier
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
 from t2wml_web import (update_t2wml_settings, download, highlight_region, handle_yaml, 
-                       get_cell, table_data, get_cell_mapper, get_item_table)
+                       get_cell, table_data, get_item_table)
 
 debug_mode = False
 update_t2wml_settings()
@@ -308,8 +308,7 @@ def upload_yaml(pid):
             project.modify()
 
             item_table=get_item_table(project.wikifier_file, sheet)
-            cell_mapper=get_cell_mapper(sheet, yf, item_table)
-            response['yamlRegions']=highlight_region(cell_mapper)
+            response['yamlRegions']=highlight_region(sheet, yf, item_table)
         else:
             response['yamlRegions'] = None
             raise web_exception.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
@@ -332,8 +331,7 @@ def get_cell_statement(pid, col, row):
     if not yaml_file:
         raise web_exception.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
     item_table=get_item_table(project.wikifier_file, sheet)
-    cell_mapper=get_cell_mapper(sheet, yaml_file, item_table)
-    data = get_cell(cell_mapper, col, row)
+    data = get_cell(sheet, yaml_file, item_table, col, row)
     return data, 200
 
 
@@ -350,8 +348,7 @@ def downloader(pid, filetype):
     if not yaml_file: #the frontend disables this, this is just another layer of checking
         raise web_exception.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
     item_table=get_item_table(project.wikifier_file, sheet)
-    cell_mapper=get_cell_mapper(sheet, yaml_file, item_table)
-    response = download(cell_mapper, filetype, project.name, sheet.data_file.name, sheet.name)
+    response = download(sheet, yaml_file, item_table, filetype, project.name)
     return response, 200
 
 
