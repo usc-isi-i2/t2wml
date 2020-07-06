@@ -509,8 +509,12 @@ class TableViewer extends Component<TableProperties, TableState> {
     // Save the cell list in store, to reset it in the next time
     wikiStore.table.errorCells = cells;
     for (i = 0; i < cells.length; i++) {
+        let color = 'orange'; // qualifier -> orange, item -> red
+        if (internalError[cells[i]].item) {
+            color = 'red';
+        }
         const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
-        wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": "red !important" });
+        wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": `${color} !important` });
     }
   }
 
