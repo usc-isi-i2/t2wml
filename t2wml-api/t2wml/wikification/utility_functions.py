@@ -11,6 +11,7 @@ def get_provider():
     wikidata_provider=t2wml_settings["wikidata_provider"]
     if wikidata_provider is None:
         wikidata_provider=SparqlProvider(t2wml_settings["sparql_endpoint"])
+        t2wml_settings["wikidata_provider"]=wikidata_provider
     return wikidata_provider
 
 def translate_precision_to_integer(precision: str) -> int:
