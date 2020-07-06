@@ -16,10 +16,11 @@ class CodeParser:
         # we made various compromises between valid code from the get-go and easy for the user code. 
         # this function transforms user code into python-acceptable code
         e_str=str(e_str)
-        #deal with reserved variables with defined meanings ($end, $sheet, $filename)
-        e_str = e_str.replace("$end", str(len(bindings.excel_sheet)))
-        e_str = e_str.replace("$sheet", "\""+bindings.excel_sheet.sheet_name+"\"")
-        #dollar sign is easy and visually distinctive for users, but invalid python code. so we replace it with t_var_ (for t2wml variable)
+        #deal with sheet-dependent reserved variables
+        e_str = e_str.replace("$end", "t_var_sheet_end()")
+        e_str = e_str.replace("$sheet", "t_var_sheet_name()")
+        e_str = e_str.replace("$filename", "t_var_sheet_file_name()")
+        #replace $row, $col, and $n with t_var_ equivalents ($ isn't valid python name but visually distinct for users)
         e_str= e_str.replace("$", "t_var_") 
         # "condition and result" is equivalent to "if condition, result"
         e_str = e_str.replace("->", "and")
@@ -41,7 +42,7 @@ class CodeParser:
                 i+=1
             #it has x number of forward slashes followed by an equal sign
             if statement[i]=="=":
-                raise ForwardSlashEscape(statement[1:])
+                raise ForwardSlashEscape(statement[1:]) #(using an exception here is a bit of a cheat/hack)
             #it happens to have /= somewhere in the string, but NOT in the beginning, eg ///hello /=you, return the whole thing
             return False
 

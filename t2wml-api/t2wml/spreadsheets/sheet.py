@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+from pathlib import Path
 from t2wml.settings import t2wml_settings
 from t2wml.spreadsheets.caching import PandasLoader, PickleCacher, FakeCacher
 from t2wml.spreadsheets.conversions import to_excel, _column_index_to_letter
@@ -35,8 +36,14 @@ class Sheet:
     def __init__(self, data_file_path, sheet_name):
         cache_class=get_cache_class()
         sc=cache_class(data_file_path, sheet_name)
+        self.data_file_path=data_file_path
         self.sheet_name=sheet_name
         self.data=sc.get_sheet()
+    
+    @property
+    def data_file_name(self):
+        return Path(self.data_file_path).stem
+
     
     def __getitem__(self, params):
         try:

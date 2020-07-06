@@ -160,7 +160,14 @@ def get_item(input, context="__NO_CONTEXT__"):
     return value
     
 
+def t_var_sheet_end():
+    return len(bindings.excel_sheet)
 
+def t_var_sheet_name():
+    return bindings.excel_sheet.sheet_name
+
+def t_var_sheet_file_name():
+    return bindings.excel_sheet.data_file_name
 
 functions_dict=dict(
     contains=contains,
@@ -178,5 +185,8 @@ functions_dict=dict(
     extract_date=extract_date,
     regex=regex,
     concat=concat,
-    get_item=get_item
+    get_item=get_item,
+    t_var_sheet_end=t_var_sheet_end,
+    t_var_sheet_name=t_var_sheet_name,
+    t_var_sheet_file_name=t_var_sheet_file_name
 )
