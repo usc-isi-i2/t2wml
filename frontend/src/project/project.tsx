@@ -37,7 +37,6 @@ interface ProjectState {
   userData: any; //todo: add user class{ },
   tempSparqlEndpoint: string;
   errorMessage: ErrorMessage;
-  errorCells: ErrorCell;
 }
 
 @observer
@@ -98,8 +97,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
       tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint,
 
       errorMessage: {} as ErrorMessage,
-
-      errorCells: {} as any,
     };
   }
 
@@ -123,12 +120,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
       console.log(json);
       document.title = json.name;
 
-      if (json.yamlData) {
-        const { error } = json.yamlData.yamlRegions;
-        if (error) {
-            this.showErrorCellsInTable(error);
-        }
-      }
       
       // do something here
       const { tableData, yamlData, wikifierData, settings } = json;
@@ -158,6 +149,13 @@ class Project extends Component<ProjectProperties, ProjectState> {
       // load settings
       if (settings !== null) {
         wikiStore.settings.sparqlEndpoint = settings.endpoint;
+      }
+
+      if (json.yamlData) {
+        const { error } = json.yamlData.yamlRegions;
+        if (error) {
+            this.showErrorCellsInTable(error);
+        }
       }
 
       // follow-ups (success)
@@ -204,7 +202,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
   }
 
   showErrorCellsInTable(error: ErrorCell) {
-    this.setState({errorCells: error});
+    wikiStore.table.updateErrorCells(error);
   }
 
   renderSettings() {
@@ -298,7 +296,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
         {/* content */}
         <div>
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-            <TableViewer errorCells={this.state.errorCells}/>
+            <TableViewer/>
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors showErrorCellsInTable={(error) => this.showErrorCellsInTable(error)} />
               <Output />

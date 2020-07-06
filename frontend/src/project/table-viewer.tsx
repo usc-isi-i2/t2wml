@@ -46,7 +46,6 @@ interface TableData {
 }
 
 interface TableProperties  {
-    errorCells: ErrorCell;
 }
 
 interface TableState  {
@@ -66,7 +65,6 @@ interface TableState  {
   yamlRegions: any; // null,
 
   errorMessage: ErrorMessage;
-  errorCells: ErrorCell;
 }
 
 @observer
@@ -104,7 +102,6 @@ class TableViewer extends Component<TableProperties, TableState> {
       yamlRegions: null,
 
       errorMessage: {} as ErrorMessage,
-      errorCells: {},
     };
 
     // init functions
@@ -118,11 +115,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
     wikiStore.table.updateTableData = (tableData: TableData) => this.updateTableData(tableData);
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
-    
-  }
-
-  componentWillReceiveProps(nextProps: TableProperties) {
-    this.setState({ errorCells: nextProps.errorCells });
+    wikiStore.table.updateErrorCells = (internalError: any) => this.updateErrorCells(internalError);
   }
 
   onGridReady(params: WikifierData) {
@@ -322,7 +315,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // if failure
       if (error !== null) {
-        throw Error(error);
+        // TODO: Show the internal error message
       }
 
       // else, success
@@ -362,14 +355,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.requestService.changeSheet(this.pid, sheetName).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
-      this.setState({ errorCells: {} as ErrorCell });
-
-      if (json.yamlData) {
-        const { error } = json.yamlData.yamlRegions;
-        if (error) {
-          this.setState({ errorCells: error });
-        }
-      }
+      debugger
+      this.updateErrorCells({} as ErrorCell);
 
       let { tableData, wikifierData, yamlData } = json;
 
@@ -401,6 +388,13 @@ class TableViewer extends Component<TableProperties, TableState> {
         wikiStore.output.isDownloadDisabled = false;
       } else {
         wikiStore.table.isCellSelectable = false;
+      }
+
+      if (json.yamlData) {
+        const { error } = json.yamlData.yamlRegions;
+        if (error) {
+          this.updateErrorCells(error);
+        }
       }
 
       // follow-ups (success)
@@ -494,6 +488,29 @@ class TableViewer extends Component<TableProperties, TableState> {
       }
     } else {
       // console.log("<TableViewer> updated nothing.");
+    }
+  }
+
+  getColAndRow(cellName: string) {
+    var chars = cellName.slice(0, cellName.search(/\d/));
+    var nums = cellName.replace(chars, '');
+    return {col: chars, row: nums};
+  }
+
+  updateErrorCells(internalError: any) {
+    const cells = Object.keys(internalError);
+    // reset the old errorCells
+    if (wikiStore.table.errorCells) {
+        for (var i = 0; i < wikiStore.table.errorCells.length; i++) {
+            const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
+            wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": "none !important" });
+        }
+    }
+    // Save the cell list in store, to reset it in the next time
+    wikiStore.table.errorCells = cells;
+    for (i = 0; i < cells.length; i++) {
+        const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
+        wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": "red !important" });
     }
   }
 
@@ -687,11 +704,6 @@ class TableViewer extends Component<TableProperties, TableState> {
       </Tooltip>
     );
 
-    const cellsItems = [];
-    for (let cell in this.state.errorCells) {
-        cellsItems.push(<label key={cell}>{cell}, </label>)
-    }
-
     return (
       <div className="w-100 h-100 p-1">
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
@@ -769,8 +781,6 @@ class TableViewer extends Component<TableProperties, TableState> {
           {/* table */}
           <Card.Body className="ag-theme-balham w-100 h-100 p-0" style={{ overflow: "hidden" }}>
            
-            {cellsItems}
-
             {/* loading spinner */}
             <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
               <Spinner animation="border" />

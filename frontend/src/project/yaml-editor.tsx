@@ -105,9 +105,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           const { yamlRegions } = json;
           const internalError = yamlRegions.error;
           if (internalError){
-              this.setState({errMsg: "⚠️There was an error applying YAML. Check browser console for details."})
-              console.log("ERRORS while applying yaml:")
-              console.log(internalError)
+              console.log("ERRORS while applying yaml:");
+              console.log(internalError);
+              wikiStore.table.updateErrorCells(internalError);
           }
           wikiStore.table.updateYamlRegions(yamlRegions);
 

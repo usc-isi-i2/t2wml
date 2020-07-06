@@ -17,19 +17,23 @@ class TabletState {
     @observable public isCellSelectable: boolean;
 
     @observable public showSpinner: boolean;
+    @observable public errorCells: string[] | undefined;
     @observable public updateYamlRegions: (newYamlRegions?: any) => void;
     @observable public updateQnodeCells: (qnodes?: any, rowData?: any) => void;
     @observable public updateTableData: (tableData: any) => void; // tableData as type TableData
-    @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: {border: string}, override?: boolean) => void;
-
+    @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) => void;
+    @observable public updateErrorCells: (internalError: any) => void;
+    
     constructor() {
         this.isCellSelectable = false;
 
         this.showSpinner = false;
+        this.errorCells = undefined;
         this.updateYamlRegions = () => {};
         this.updateQnodeCells = () => {};
         this.updateTableData = () => {};
         this.updateStyleByCell = () => {};
+        this.updateErrorCells = () => {};
     }
 }
 
