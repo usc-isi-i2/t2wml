@@ -34,7 +34,7 @@ def download(sheet, yaml_file, item_table, filetype, project_name=""):
     errors=[]
     statements, errors=cell_mapper.result_cacher.get_download()
     if not statements:
-        statements, errors = get_all_template_statements(cell_mapper, sheet, item_table)
+        statements, errors, metadata = get_all_template_statements(cell_mapper, sheet, item_table)
     
     response["data"]=get_file_output_from_statements(statements, filetype, project_name, sheet.data_file.name, sheet.name, cell_mapper.template.created_by)
     response["error"]=None
@@ -48,7 +48,7 @@ def highlight_region(sheet, yaml_file, item_table):
         return highlight_data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
-    statement_data, errors= get_all_template_statements(cell_mapper, sheet, item_table)
+    statement_data, errors, metadata= get_all_template_statements(cell_mapper, sheet, item_table)
     for cell in statement_data:
         highlight_data["dataRegion"].add(cell)
         statement = statement_data[cell]

@@ -2,49 +2,16 @@ import os
 from pathlib import Path
 import logging
 from etk.wikidata import serialize_change_record
-from t2wml.mapping.cell_mapper import CellMapper
-from t2wml.wikification.item_table import ItemTable
-from t2wml.mapping.t2wml_handling import get_all_template_statements
-from t2wml.mapping.download import get_file_output_from_statements
+from t2wml.api import create_output_from_files
 from t2wml.spreadsheets.utilities import get_first_sheet_name
 
 def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, output_directory: str,
-              sheet_name: str = None, filetype: str="ttl", project_name="DriverProject",
+              sheet_name: str = None, filetype: str="ttl",
               debug=False):
     
-    try:
-        if not sheet_name:
-            sheet_name = get_first_sheet_name(data_file_path)
-        file_name = Path(data_file_path).name
-        try:
-            file_extension = file_name.split(".")[-1]
-        except:
-            logging.error("Data file has no extension")
-            return
-    except KeyError as e:
-        logging.error("Invalid sheet name:"+str(e))
-        return
-    except Exception as e:
-        logging.error("Invalid data file"+str(e))
-        return
 
-    try:
-        item_table = ItemTable()
-        item_table.update_table_from_wikifier_file(wikified_output_path, data_file_path, sheet_name)
-    except Exception as e:
-        print(e)
-        logging.error("Invalid Wikfied Output File")
-        return
-
-    try:
-        yf=CellMapper(t2wml_spec)
-    except Exception as e:
-        logging.error("Invalid YAML File")
-        return
-    
-    sheet=Sheet(data_file_path, sheet_name)
-    statements, errors = get_all_template_statements(yf, sheet, item_table)
-    response=get_file_output_from_statements(statements, filetype, project_name, data_file_path, sheet_name)
+    if not sheet_name:
+        sheet_name = get_first_sheet_name(data_file_path)
 
     result_directory = '.'.join(file_name.split(".")[:-1])
 
@@ -57,6 +24,8 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
     Path.mkdir(output_path, parents=True, exist_ok=True)
 
     output_file_name="results."+filetype
+
+    response=create_output_from_files(data_file_path, sheet_name, t2wml_spec, wikified_output_path, output_format=filetype)
 
     with open(str(output_path / output_file_name), "w") as fp:
         fp.write(response)

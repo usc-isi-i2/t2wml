@@ -154,6 +154,11 @@ def get_all_template_statements(cell_mapper, sheet, item_table):
     update_bindings(item_table=item_table, sheet=sheet)
     statements={}
     errors={}
+    metadata={
+        "data_file":sheet.data_file_name,
+        "sheet_name":sheet.name,
+        "created_by":cell_mapper.template.created_by
+    }
     for col, row in cell_mapper.region:
         cell=to_excel(col-1, row-1)
         context={"t_var_row":row, "t_var_col":col}
@@ -170,7 +175,7 @@ def get_all_template_statements(cell_mapper, sheet, item_table):
     if errors:
         for cell in errors:
             print("error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
-    return statements, errors
+    return statements, errors, metadata
 
 
 

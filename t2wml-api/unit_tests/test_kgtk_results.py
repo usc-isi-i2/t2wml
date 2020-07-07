@@ -3,20 +3,11 @@ from io import StringIO
 import csv
 import unittest
 from pathlib import Path
-from t2wml.wikification.item_table import ItemTable
-from t2wml.mapping.cell_mapper import CellMapper
-from t2wml.spreadsheets.sheet import Sheet
-from t2wml.mapping.t2wml_handling import get_all_template_statements
-from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.wikification.utility_functions import add_properties_from_file
+from t2wml.api import KnowledgeGraph
 
 repo_folder=Path(__file__).parents[2]
 unit_test_folder=os.path.join(repo_folder, "t2wml-api", "unit_tests", "ground_truth")
-
-def download(yf, sheet, item_table, project_name):
-    statements, errors=get_all_template_statements(yf, sheet, item_table)
-    output= get_file_output_from_statements(statements, "tsv", project_name, sheet.data_file_path, sheet.name)
-    return output, errors
 
 class TestBelgiumRegex(unittest.TestCase):
     maxDiff = None
@@ -29,12 +20,9 @@ class TestBelgiumRegex(unittest.TestCase):
 
     def test_regex(self):
         yaml_file=self.yaml_file
-        item_table=ItemTable()
         sheet_name="Belgium.csv"
-        item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
-        yf=CellMapper(yaml_file)
-        sheet=Sheet(self.data_file, sheet_name)
-        result, errors = download(yf, sheet, item_table, "TestKGTK")
+        kg=KnowledgeGraph.generate_from_files(self.data_file, sheet_name, yaml_file, self.wikifier_file)
+        result= kg.get_output("kgtk")
         expected_result_name="results.tsv"
         #with open(os.path.join(self.expected_result_dir, expected_result_name), 'w') as f:
         #    f.write(result)
@@ -61,14 +49,11 @@ class TestOECDWithCustomProperties(unittest.TestCase):
 
     def test_custom_properties(self):
         yaml_file=self.yaml_file
-        item_table=ItemTable()
         sheet_name="oecd.csv"
         add_props = add_properties_from_file(self.custom_properties_file)
         assert len(add_props["failed"])==0
-        item_table.update_table_from_wikifier_file(self.wikifier_file, self.data_file, sheet_name)
-        yf=CellMapper(yaml_file)
-        sheet=Sheet(self.data_file, sheet_name)
-        result, errors = download(yf, sheet, item_table, "TestKGTK")
+        kg=KnowledgeGraph.generate_from_files(self.data_file, sheet_name, yaml_file, self.wikifier_file)
+        result= kg.get_output("kgtk")
         expected_result_name="results.tsv"
         csv_args_dict=dict(delimiter="\t", lineterminator="\n",
                             escapechar='', quotechar='',

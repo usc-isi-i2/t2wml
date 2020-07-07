@@ -1,11 +1,12 @@
 
-from pathlib import Path
 import csv
 import json
 from io import StringIO
+from pathlib import Path
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
-from t2wml.wikification.utility_functions import get_property_type
 from t2wml.mapping.triple_generator import generate_triples
+from t2wml.wikification.utility_functions import get_property_type
+
 
 def enclose_in_quotes(value):
     if value != "" and value is not None:
@@ -73,18 +74,20 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
         else:
             raise T2WMLExceptions.UnsupportedPropertyType("Property type "+property_type+" is not currently supported"+ "(" +property_dict["property"] +")")
 
-def create_kgtk(data, file_path, sheet_name, project_name):
-    file_name=Path(file_path).stem
+def create_kgtk(data, file_path, sheet_name):
+    file_name=Path(file_path).name
 
     file_extension=Path(file_path).suffix
     if file_extension==".csv":
         sheet_name=""
+    else:
+        sheet_name= "."+sheet_name
 
     tsv_data=[]
     for cell in data:
         try:
             statement=data[cell]
-            id = project_name + ";" + file_name + "." + sheet_name + file_extension + ";" + cell
+            id = file_name + sheet_name + ";" + cell
             cell_result_dict=dict(id=id, node1=statement["item"], label=statement["property"])
             kgtk_add_property_type_specific_fields(statement, cell_result_dict)
             tsv_data.append(cell_result_dict)
@@ -93,7 +96,7 @@ def create_kgtk(data, file_path, sheet_name, project_name):
             for qualifier in qualifiers:
                 #commented out. for now, do not generate an id at all for qualifier edges.
                 #second_cell=qualifier.get("cell", "")
-                #q_id = project_name + ";" + file_name + "." + sheet_name + "." + file_extension + ";" + cell +";"+second_cell
+                #q_id = file_name + "." + sheet_name + ";" + cell +";"+second_cell
                 qualifier_result_dict=dict(node1=id, label=qualifier["property"])
                 kgtk_add_property_type_specific_fields(qualifier, qualifier_result_dict)
                 tsv_data.append(qualifier_result_dict)
@@ -127,13 +130,18 @@ def create_kgtk(data, file_path, sheet_name, project_name):
     return data
 
 
-def get_file_output_from_statements(data, filetype, project_name="", file_path=None, sheet_name=None, created_by="t2wml"):
-    if filetype not in ["json", "ttl", "tsv", "kgtk"]:
-        raise T2WMLExceptions.FileTypeNotSupportedException("No support for "+filetype+" format")
+def get_file_output_from_statements(knowledge_graph, filetype):
+    data=knowledge_graph.statements
+    file_path=knowledge_graph.metadata.get("data_file", "")
+    sheet_name=knowledge_graph.metadata.get("sheet_name", "")
+    created_by=knowledge_graph.metadata.get("created_by", "")
+
     if filetype == 'json':
         output = json.dumps(data, indent=3, sort_keys=False) #insertion-ordered
     elif filetype == 'ttl':
         output = generate_triples("n/a", data, created_by=created_by)
-    elif filetype in ["kgkt", "tsv"]:
-        output = create_kgtk(data, file_path, sheet_name, project_name)
+    elif filetype in ["kgtk", "tsv"]:
+        output = create_kgtk(data, file_path, sheet_name)
+    else:
+        raise T2WMLExceptions.FileTypeNotSupportedException("No support for "+filetype+" format")
     return output
