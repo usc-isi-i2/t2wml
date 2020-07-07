@@ -30,7 +30,7 @@ class ToastMessage extends Component<ToastProperties, ToastState> {
             position: 'absolute',
             zIndex: 999,
             top: 0,
-            right: 0,
+            right: '40%',
             minHeight: '100px',
             minWidth: '300px',
             background: 'pink',

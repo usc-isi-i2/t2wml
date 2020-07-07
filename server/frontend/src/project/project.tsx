@@ -14,7 +14,7 @@ import { logout } from '../common/session';
 import Config from '../common/config';
 
 // console.log
-import { LOG, ErrorMessage } from '../common/general';
+import { LOG, ErrorMessage, ErrorCell } from '../common/general';
 
 // components
 import Editors from './editor';
@@ -111,11 +111,12 @@ class Project extends Component<ProjectProperties, ProjectState> {
     this.requestService.getProjectFiles(this.pid).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
+      document.title = json.name;
 
+      
       // do something here
-      const { tableData, yamlData, wikifierData, settings, title } = json;
-      document.title = title;
-
+      const { tableData, yamlData, wikifierData, settings} = json;
+  
       // load table data
       if (tableData !== null) {
           wikiStore.table.updateTableData(tableData);
@@ -141,6 +142,13 @@ class Project extends Component<ProjectProperties, ProjectState> {
       // load settings
       if (settings !== null) {
         wikiStore.settings.sparqlEndpoint = settings.endpoint;
+      }
+
+      if (json.yamlData) {
+        const { error } = json.yamlData.yamlRegions;
+        if (error) {
+            this.showErrorCellsInTable(error);
+        }
       }
 
       // follow-ups (success)
@@ -184,6 +192,10 @@ class Project extends Component<ProjectProperties, ProjectState> {
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
     });
+  }
+
+  showErrorCellsInTable(error: ErrorCell) {
+    wikiStore.table.updateErrorCells(error);
   }
 
   renderSettings() {
@@ -277,9 +289,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
         {/* content */}
         <div>
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-            <TableViewer />
+            <TableViewer/>
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-              <Editors />
+              <Editors showErrorCellsInTable={(error) => this.showErrorCellsInTable(error)} />
               <Output />
             </SplitPane>
           </SplitPane>

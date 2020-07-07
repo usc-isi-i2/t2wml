@@ -142,10 +142,9 @@ def get_project_files(pid):
                 "tableData": None,
                 "yamlData": None,
                 "wikifierData": None,
-                "settings": {"endpoint": project.sparql_endpoint},
-                "title": project.name
             }
     
+    response["name"] = project.name
 
     data_file=project.current_file
     if data_file:

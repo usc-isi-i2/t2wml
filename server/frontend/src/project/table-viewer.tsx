@@ -14,7 +14,8 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData, ErrorMessage } from '../common/general';
+
+import { LOG, WikifierData, ErrorMessage, ErrorCell } from '../common/general';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
@@ -46,7 +47,6 @@ interface TableData {
 }
 
 interface TableProperties  {
-
 }
 
 interface TableState  {
@@ -116,7 +116,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
     wikiStore.table.updateTableData = (tableData: TableData) => this.updateTableData(tableData);
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
-    
+    wikiStore.table.updateErrorCells = (internalError: any) => this.updateErrorCells(internalError);
   }
 
   onGridReady(params: WikifierData) {
@@ -315,8 +315,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       const { error } = json;
 
       // if failure
+      
       if (error) {
-        throw Error(error);
+        // TODO: Show the internal error message
       }
 
       // else, success
@@ -361,15 +362,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
 
-      // do something here
-      const { error } = json;
+      this.updateErrorCells({} as ErrorCell);
 
-      // if failure
-      if (error !== null) {
-        throw Error(error);
-      }
-
-      // else, success
+    
       let { tableData, wikifierData, yamlData } = json;
 
       // load table data
@@ -400,6 +395,13 @@ class TableViewer extends Component<TableProperties, TableState> {
         wikiStore.output.isDownloadDisabled = false;
       } else {
         wikiStore.table.isCellSelectable = false;
+      }
+
+      if (json.yamlData) {
+        const { error } = json.yamlData.yamlRegions;
+        if (error) {
+          this.updateErrorCells(error);
+        }
       }
 
       // follow-ups (success)
@@ -493,6 +495,33 @@ class TableViewer extends Component<TableProperties, TableState> {
       }
     } else {
       // console.log("<TableViewer> updated nothing.");
+    }
+  }
+
+  getColAndRow(cellName: string) {
+    var chars = cellName.slice(0, cellName.search(/\d/));
+    var nums = cellName.replace(chars, '');
+    return {col: chars, row: nums};
+  }
+
+  updateErrorCells(internalError: any) {
+    const cells = Object.keys(internalError);
+    // reset the old errorCells
+    if (wikiStore.table.errorCells) {
+        for (var i = 0; i < wikiStore.table.errorCells.length; i++) {
+            const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
+            wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": "none !important" });
+        }
+    }
+    // Save the cell list in store, to reset it in the next time
+    wikiStore.table.errorCells = cells;
+    for (i = 0; i < cells.length; i++) {
+        let color = 'orange'; // qualifier -> orange, item -> red
+        if (internalError[cells[i]].item) {
+            color = 'red';
+        }
+        const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
+        wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": `${color} !important` });
     }
   }
 
@@ -759,10 +788,10 @@ class TableViewer extends Component<TableProperties, TableState> {
             />
 
           </Card.Header>
-
+          
           {/* table */}
           <Card.Body className="ag-theme-balham w-100 h-100 p-0" style={{ overflow: "hidden" }}>
-
+           
             {/* loading spinner */}
             <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
               <Spinner animation="border" />
