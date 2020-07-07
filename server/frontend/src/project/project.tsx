@@ -140,7 +140,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
       }
 
       // load settings
-      if (settings !== null) {
+      if (settings) {
         wikiStore.settings.sparqlEndpoint = settings.endpoint;
       }
 

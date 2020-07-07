@@ -314,10 +314,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       // do something here
       const { error } = json;
 
-      // if failure
-      
+      // if failure      
       if (error) {
-        // TODO: Show the internal error message
+        throw {errorDescription: error.value} as ErrorMessage;
       }
 
       // else, success
@@ -329,10 +328,10 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
-
+      wikiStore.output.showSpinner = false;
     }).catch((error: ErrorMessage) => {
       console.log(error);
-      error.errorDescription += "\n\nCannot resolve cell!";
+    //   error.errorDescription += "\n\nCannot resolve cell!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
@@ -516,8 +515,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     // Save the cell list in store, to reset it in the next time
     wikiStore.table.errorCells = cells;
     for (i = 0; i < cells.length; i++) {
-        let color = 'orange'; // qualifier -> orange, item -> red
-        if (internalError[cells[i]].item) {
+        let color = 'orange'; //"item", "property", or "value: red, else: orange
+        if (internalError[cells[i]].item || internalError[cells[i]].property || internalError[cells[i]].value) {
             color = 'red';
         }
         const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
