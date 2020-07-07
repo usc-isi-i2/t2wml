@@ -10,10 +10,7 @@ from t2wml.parsing.classes import ReturnClass
 from t2wml.parsing.constants import char_dict
 from t2wml.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from t2wml.spreadsheets.conversions import to_excel
-
-
-from t2wml.wikification.utility_functions import translate_precision_to_integer
-from t2wml.wikification.utility_functions import get_property_type
+from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
 
 
 
@@ -177,8 +174,11 @@ def get_all_template_statements(region, template):
 
 
 def resolve_cell(template, col, row):
+    '''
+    col: a column string character (eg A, B)
+    row: resolves to an int (eg '1', 1.0, 1)
+    '''
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     statement, errors=get_template_statement(template, context)
     return statement, errors
-
 

@@ -2,7 +2,23 @@
 * [The WikidataProvider](#wikiprov)
 * [Examples of using the API](#examples)
 
+## Generator
+<span id="gen"></span>
 
+## DataSheet
+<span id="data"></span>
+
+## ItemTable
+<span id="data"></span>
+
+## Region
+<span id="region"></span>
+
+## Template
+<span id="template"></span>
+
+## KnowledgeGraph
+<span id="kg"></span>
 
 ## The WikidataProvider
 <span id="wikiprov"></span>
@@ -99,11 +115,7 @@ class DatabaseProvider(FallbackSparql):
             raise ValueError("Failed to commit to database session")
 ```
 
-## KnowledgeGraph
 
-## Region
-
-## Template
 
 ## Examples of code
 <span id="examples"></span>
