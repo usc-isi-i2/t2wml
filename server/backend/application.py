@@ -10,11 +10,10 @@ from app_config import app
 from models import User, Project, DataFile, YamlFile, WikifierFile, PropertiesFile
 import web_exceptions
 from web_exceptions import WebException
-from t2wml.wikification.wikify_handling import wikifier
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
 from t2wml_web import (update_t2wml_settings, download, highlight_region, handle_yaml, 
-                       get_cell, table_data, get_item_table)
+                       get_cell, table_data, get_item_table, wikifier)
 
 debug_mode = False
 update_t2wml_settings()
@@ -273,7 +272,7 @@ def wikify_region(pid):
                 raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
             sheet=project.current_file.current_sheet
 
-            cell_qnode_map=wikifier(region, project.current_file.file_path, sheet.name, context)
+            cell_qnode_map=wikify(region, project.current_file.file_path, sheet.name, context)
             wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
             
             item_table=get_item_table(wf, sheet, flag=flag)

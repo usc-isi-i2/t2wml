@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from t2wml.parsing.yaml_parsing import TemplateParser, RegionParser, validate_yaml
 from t2wml.spreadsheets.sheet import Sheet
-from t2wml.utils.bindings import bindings, update_bindings
+from t2wml.utils.bindings import bindings
 from string import punctuation
 
 def string_is_valid(text: str) -> bool:
@@ -43,12 +43,7 @@ class Region:
             yield key
             
     @staticmethod
-    def create_from_yaml(yaml_data, data_file_path, sheet_name, item_table):
-        try:
-            sheet=Sheet(data_file_path, sheet_name)
-            update_bindings(item_table=item_table, sheet=sheet)
-        except IOError:
-            raise IOError('Excel File cannot be found or opened')
+    def create_from_yaml(yaml_data):
         region_parser=RegionParser(yaml_data)
         return Region(region_parser.parsed_region)
 
@@ -67,19 +62,24 @@ class Template:
         return Template(template, eval_template, created_by)
 
 
-def get_region_and_template(yaml_file_path, item_table, data_file_path, sheet_name):
-        yaml_data= validate_yaml(yaml_file_path)
-        region= Region.create_from_yaml(yaml_data, data_file_path, sheet_name, item_table)
-        template= Template.create_from_yaml(yaml_data)
-        return region, template
 
-def get_template(yaml_file_path):
-    yaml_data= validate_yaml(yaml_file_path)
-    template= Template.create_from_yaml(yaml_data)
-    return template
-
-def get_region(yaml_file_path, data_file_path, sheet_name, item_table):
-    yaml_data= validate_yaml(yaml_file_path)
-    region= Region.create_from_yaml(yaml_data, data_file_path, sheet_name, item_table)
-    return region
-
+class CellMapper:
+    def __init__(self, file_path):
+        self.file_path=file_path
+        self.yaml_data=validate_yaml(file_path)
+    
+    @property
+    def region(self):
+        try:
+            return self._region
+        except:
+            self._region= Region.create_from_yaml(self.yaml_data)
+            return self._region
+    
+    @property
+    def template(self):
+        try:
+            return self._template
+        except:
+            self._template=Template.create_from_yaml(self.yaml_data)
+            return self._template

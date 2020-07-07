@@ -11,7 +11,7 @@ from t2wml.parsing.constants import char_dict
 from t2wml.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from t2wml.spreadsheets.conversions import to_excel
 from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
-
+from t2wml.utils.bindings import update_bindings
 
 
 def parse_time_for_dict(response):
@@ -150,14 +150,15 @@ def get_template_statement(template, context):
     return template, errors
     
     
-def get_all_template_statements(region, template):
+def get_all_template_statements(cell_mapper, sheet, item_table):
+    update_bindings(item_table=item_table, sheet=sheet)
     statements={}
     errors={}
-    for col, row in region:
+    for col, row in cell_mapper.region:
         cell=to_excel(col-1, row-1)
         context={"t_var_row":row, "t_var_col":col}
         try:
-            statement, inner_errors=get_template_statement(template, context)
+            statement, inner_errors=get_template_statement(cell_mapper.template, context)
             statements[cell]=statement
             if inner_errors:
                 errors[cell]=inner_errors
@@ -173,12 +174,13 @@ def get_all_template_statements(region, template):
 
 
 
-def resolve_cell(template, col, row):
+def resolve_cell(cell_mapper, sheet, item_table, col, row):
     '''
     col: a column string character (eg A, B)
     row: resolves to an int (eg '1', 1.0, 1)
     '''
+    update_bindings(item_table=item_table, sheet=sheet)
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
-    statement, errors=get_template_statement(template, context)
+    statement, errors=get_template_statement(cell_mapper.template, context)
     return statement, errors
 

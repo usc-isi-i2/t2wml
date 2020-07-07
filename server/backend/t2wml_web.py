@@ -9,11 +9,13 @@ from t2wml.api import set_sparql_endpoint, set_wikidata_provider
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.spreadsheets.conversions import _column_index_to_letter
 from t2wml.wikification.item_table import ItemTable
-from caching import CellMapper
+from t2wml.wikification.wikify_handling import wikifier
+from caching import CacheCellMapper
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
 
-
+def wikify(region, filepath, sheet_name, context):
+    return wikifier(region, filepath, sheet_name, context)
 
 def update_t2wml_settings():
     set_sparql_endpoint(DEFAULT_SPARQL_ENDPOINT)
@@ -32,7 +34,7 @@ def download(sheet, yaml_file, item_table, filetype, project_name=""):
     errors=[]
     statements, errors=cell_mapper.result_cacher.get_download()
     if not statements:
-        statements, errors = get_all_template_statements(cell_mapper.region, cell_mapper.template)
+        statements, errors = get_all_template_statements(cell_mapper, sheet, item_table)
     
     response["data"]=get_file_output_from_statements(statements, filetype, project_name, sheet.data_file.name, sheet.name, cell_mapper.template.created_by)
     response["error"]=None
@@ -46,7 +48,7 @@ def highlight_region(sheet, yaml_file, item_table):
         return highlight_data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
-    statement_data, errors= get_all_template_statements(cell_mapper.region, cell_mapper.template)
+    statement_data, errors= get_all_template_statements(cell_mapper, sheet, item_table)
     for cell in statement_data:
         highlight_data["dataRegion"].add(cell)
         statement = statement_data[cell]
@@ -81,7 +83,7 @@ def highlight_region(sheet, yaml_file, item_table):
 def get_cell(sheet, yaml_file, item_table, col, row):
     cell_mapper=CellMapper(sheet, yaml_file, item_table)
     try:
-        statement, errors= resolve_cell(cell_mapper.template, col, row)
+        statement, errors= resolve_cell(cell_mapper, sheet, item_table, col, row)
         data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
     except TemplateDidNotApplyToInput as e:
         data=dict(error=e.errors)

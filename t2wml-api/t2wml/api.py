@@ -1,6 +1,7 @@
 import json
 
-from t2wml.mapping.cell_mapper import get_region_and_template
+from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.spreadsheets.sheet import Sheet
 from t2wml.mapping.t2wml_handling import get_all_template_statements
 from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.mapping.triple_generator import generate_triples
@@ -8,6 +9,8 @@ from t2wml.settings import t2wml_settings
 from t2wml.utils.t2wml_exceptions import FileTypeNotSupportedException
 from t2wml.wikification.item_table import ItemTable
 from t2wml.wikification.utility_functions import add_properties_from_file
+
+
 
 
 
@@ -47,8 +50,9 @@ class KnowledgeGraph:
     def generate_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath):
         item_table=ItemTable()
         item_table.update_table_from_wikifier_file(wikifier_filepath, data_file_path, sheet_name)
-        region, template = get_region_and_template(yaml_file_path, item_table, data_file_path, sheet_name, use_cache=False)
-        statements, errors = get_all_template_statements(region, template)
+        yf=CellMapper(yaml_file_path)
+        sheet=Sheet(data_file_path, sheet_name)
+        statements, errors = get_all_template_statements(yf, sheet, item_table)
         return cls(statements, errors)
 
     def save_json(self, output_filename):

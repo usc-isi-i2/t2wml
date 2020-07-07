@@ -1,7 +1,7 @@
 import os
 import json
 from pathlib import Path
-from t2wml.mapping.cell_mapper import Region, get_region, get_template
+from t2wml.mapping.cell_mapper import Region, CellMapper
 
 class Cacher:
     title=""
@@ -86,13 +86,12 @@ class MappingResultsCacher(Cacher):
         return []
     
  
-class CellMapper:
+class CacheCellMapper():
     def __init__(self, sheet, yaml, item_table=None):
         self.result_cacher=MappingResultsCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.region_cacher=RegionCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.item_table=item_table
-        self.yaml=yaml
-        self.sheet=sheet
+        self.yf=CellMapper(yaml.file_path)
     
     @property
     def region(self):
@@ -103,7 +102,7 @@ class CellMapper:
             if not region:
                 if self.item_table is None:
                     self.item_table=ItemTable(None)
-                region= get_region(self.yaml.file_path, self.sheet.data_file.file_path, self.sheet.name, self.item_table)
+                region= self.yf.region
             self._region=region
             return self._region
     
@@ -112,7 +111,7 @@ class CellMapper:
         try:
             return self._template
         except:
-            self._template=get_template(self.yaml.file_path)
+            self._template=self.yf.template
             return self._template
     
 

@@ -37,7 +37,7 @@ class Sheet:
         cache_class=get_cache_class()
         sc=cache_class(data_file_path, sheet_name)
         self.data_file_path=data_file_path
-        self.sheet_name=sheet_name
+        self.name=sheet_name
         self.data=sc.get_sheet()
     
     @property
