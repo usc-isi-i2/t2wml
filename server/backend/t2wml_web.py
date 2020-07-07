@@ -3,9 +3,10 @@ from pathlib import Path
 
 from t2wml.mapping.t2wml_handling import get_all_template_statements, resolve_cell
 from t2wml.mapping.download import get_file_output_from_statements
+from t2wml.spreadsheets.sheet import Sheet
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
-from t2wml.api import set_sparql_endpoint, set_wikidata_provider
+from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.spreadsheets.conversions import _column_index_to_letter
 from t2wml.wikification.item_table import ItemTable
@@ -28,27 +29,36 @@ def update_t2wml_settings():
                 #"storage_folder":UPLOAD_FOLDER
                 })
 
-def download(sheet, yaml_file, item_table, filetype, project_name=""):
-    cell_mapper=CacheCellMapper(sheet, yaml_file, item_table)
+def get_kg(data_sheet, cell_mapper, wikifier_file):
+    item_table=get_item_table(wikifier_file, data_sheet)
+    sheet=Sheet(data_sheet.data_file.file_path, data_sheet.name)
+    kg=KnowledgeGraph.generate(cell_mapper, sheet, item_table)
+    return kg
+
+def download(data_sheet, yaml_file, wikifier_file, filetype, project_name=""):
+    cell_mapper=CacheCellMapper(data_sheet, yaml_file)
     response=dict()
     errors=[]
-    statements, errors=cell_mapper.result_cacher.get_download()
-    if not statements:
-        statements, errors, metadata = get_all_template_statements(cell_mapper, sheet, item_table)
+    kg=cell_mapper.result_cacher.get_kg()
+    if not kg:
+        kg=get_kg(data_sheet, cell_mapper, wikifier_file)
     
-    response["data"]=get_file_output_from_statements(statements, filetype, project_name, sheet.data_file.name, sheet.name, cell_mapper.template.created_by)
+    response["data"]=get_file_output_from_statements(kg, filetype)
     response["error"]=None
     response["internalErrors"] = errors
     return response
 
-def highlight_region(sheet, yaml_file, item_table):
-    cell_mapper=CacheCellMapper(sheet, yaml_file, item_table)
+def highlight_region(data_sheet, yaml_file, wikifier_file):
+    item_table=get_item_table(wikifier_file, data_sheet)
+    cell_mapper=CacheCellMapper(data_sheet, yaml_file)
     highlight_data=cell_mapper.result_cacher.get_highlight_region()
     if highlight_data:
         return highlight_data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
-    statement_data, errors, metadata= get_all_template_statements(cell_mapper, sheet, item_table)
+    kg=get_kg(data_sheet, cell_mapper, wikifier_file)
+    statement_data=kg.statements
+    errors=kg.errors
     for cell in statement_data:
         highlight_data["dataRegion"].add(cell)
         statement = statement_data[cell]
@@ -69,8 +79,6 @@ def highlight_region(sheet, yaml_file, item_table):
                 if ref_cell:
                     highlight_data["referenceRegion"].add(ref_cell)
 
-
-
     highlight_data['dataRegion'] = list(highlight_data['dataRegion'])
     highlight_data['item'] = list(highlight_data['item'])
     highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
@@ -80,8 +88,10 @@ def highlight_region(sheet, yaml_file, item_table):
     cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
     return highlight_data
 
-def get_cell(sheet, yaml_file, item_table, col, row):
-    cell_mapper=CacheCellMapper(sheet, yaml_file, item_table)
+def get_cell(data_sheet, yaml_file, wikifier_file, col, row):
+    item_table=get_item_table(wikifier_file, data_sheet)
+    cell_mapper=CacheCellMapper(data_sheet, yaml_file)
+    sheet=Sheet(data_sheet.data_file.file_path, data_sheet.name)
     try:
         statement, errors= resolve_cell(cell_mapper, sheet, item_table, col, row)
         data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
@@ -136,13 +146,13 @@ def get_item_table(wikifier_file, sheet, flag=None):
 
 
 
-def handle_yaml(sheet, item_table=None):
+def handle_yaml(sheet, wikifier_file):
     if sheet.yaml_file:
         yaml_file=sheet.yaml_file
         response=dict()
         with open(yaml_file.file_path, "r") as f:
             response["yamlFileContent"]= f.read()
-        response['yamlRegions'] = highlight_region(sheet, yaml_file, item_table)
+        response['yamlRegions'] = highlight_region(sheet, yaml_file, wikifier_file)
         return response
     return None
 
