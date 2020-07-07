@@ -20,20 +20,8 @@ def set_wikidata_provider(wp):
 def set_sparql_endpoint(se):
     t2wml_settings["sparql_endpoint"]=se
 
-class Template:
-    # a class that defines a per-cell output
-    pass
 
-class DataRegion:
-    # a class that provides an iter over a data region
-    pass
-
-class Wikifier:
-    def __init__(self, w_file, *wikifier_files):
-        self.wikifier_files=[w_file]
-        self.wikifier_files+=wikifier_files
-    def add_files(*files):
-        self.wikifier_files+=files
+        
 
 class KnowledgeGraph:
     def __init__(self, statements, errors=[]):
