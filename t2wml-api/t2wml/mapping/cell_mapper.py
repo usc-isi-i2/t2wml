@@ -61,6 +61,7 @@ class Template:
         created_by=yaml_data['statementMapping'].get('created_by', 't2wml')
         return Template(template, eval_template, created_by)
 
+
 class CellMapper:
     def __init__(self, file_path):
         self.file_path=file_path

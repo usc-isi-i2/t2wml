@@ -259,4 +259,7 @@ class Wikifier:
     def get_item_table(self, sheet):
         it=ItemTable(None)
         for f in self.wikifier_files:
-            it.update_table_from_wikifier_file()
+            #TODO: Not at all clear this will work for wikifier files created from wikify_region
+            it.update_table_from_wikifier_file(f, sheet.data_file_path, sheet.name)
+        return it
+        

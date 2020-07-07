@@ -29,7 +29,7 @@ def update_t2wml_settings():
                 })
 
 def download(sheet, yaml_file, item_table, filetype, project_name=""):
-    cell_mapper=CellMapper(sheet, yaml_file, item_table)
+    cell_mapper=CacheCellMapper(sheet, yaml_file, item_table)
     response=dict()
     errors=[]
     statements, errors=cell_mapper.result_cacher.get_download()
@@ -42,7 +42,7 @@ def download(sheet, yaml_file, item_table, filetype, project_name=""):
     return response
 
 def highlight_region(sheet, yaml_file, item_table):
-    cell_mapper=CellMapper(sheet, yaml_file, item_table)
+    cell_mapper=CacheCellMapper(sheet, yaml_file, item_table)
     highlight_data=cell_mapper.result_cacher.get_highlight_region()
     if highlight_data:
         return highlight_data
@@ -81,7 +81,7 @@ def highlight_region(sheet, yaml_file, item_table):
     return highlight_data
 
 def get_cell(sheet, yaml_file, item_table, col, row):
-    cell_mapper=CellMapper(sheet, yaml_file, item_table)
+    cell_mapper=CacheCellMapper(sheet, yaml_file, item_table)
     try:
         statement, errors= resolve_cell(cell_mapper, sheet, item_table, col, row)
         data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
