@@ -45,7 +45,7 @@ def download(data_sheet, yaml_file, wikifier_file, filetype, project_name=""):
     
     response["data"]=get_file_output_from_statements(kg, filetype)
     response["error"]=None
-    response["internalErrors"] = errors
+    response["internalErrors"] = kg.errors
     return response
 
 def highlight_region(data_sheet, yaml_file, wikifier_file):
