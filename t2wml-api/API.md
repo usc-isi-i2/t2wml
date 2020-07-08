@@ -1,24 +1,32 @@
 # The T2WML API: A programmatic way of using T2WML
+* [KnowledgeGraph](#kg)
+* [DataSheet and DataFile](#data)
+* [CellMapper](#mapper)
+   * [Region](#region)
+   * [Template](#template)
+* [ItemTable](#wikifier)
 * [The WikidataProvider](#wikiprov)
+* [Convenience Functions](#convenience)
 * [Examples of using the API](#examples)
 
-## Generator
-<span id="gen"></span>
-
-## DataSheet
-<span id="data"></span>
-
-## ItemTable
-<span id="data"></span>
-
-## Region
-<span id="region"></span>
-
-## Template
-<span id="template"></span>
 
 ## KnowledgeGraph
 <span id="kg"></span>
+
+## DataSheet and DataFile
+<span id="data"></span>
+
+## CellMapper
+<span id="mapper"></span>
+
+### Region
+<span id="region"></span>
+
+### Template
+<span id="template"></span>
+
+## ItemTable
+<span id="wikifier"></span>
 
 ## The WikidataProvider
 <span id="wikiprov"></span>
@@ -116,6 +124,9 @@ class DatabaseProvider(FallbackSparql):
 ```
 
 
+
+## Convenience Functions
+<span id="convenience"></span>
 
 ## Examples of code
 <span id="examples"></span>
