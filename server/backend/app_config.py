@@ -12,8 +12,8 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 if BASEDIR not in sys.path:
     sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
-UPLOAD_FOLDER = (Path.cwd() / "storage")
-DOWNLOAD_FOLDER = str(Path.cwd() / "downloads")
+UPLOAD_FOLDER = os.path.join(BASEDIR, "storage")
+DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
 
 app = Flask(__name__, static_folder=None)
 CORS(app, supports_credentials=True)

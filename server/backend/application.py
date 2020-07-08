@@ -10,11 +10,10 @@ from app_config import app
 from models import User, Project, DataFile, YamlFile, WikifierFile, PropertiesFile
 import web_exceptions
 from web_exceptions import WebException
-from t2wml.wikification.wikify_handling import wikifier
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
 from t2wml_web import (update_t2wml_settings, download, highlight_region, handle_yaml, 
-                       get_cell, table_data, get_item_table)
+                       get_cell, table_data, get_item_table, wikify)
 
 debug_mode = False
 update_t2wml_settings()
@@ -154,7 +153,7 @@ def get_project_files(pid):
         serialized_item_table = item_table.serialize_table()
         response["wikifierData"] = serialized_item_table
         
-        y=handle_yaml(sheet, item_table)
+        y=handle_yaml(sheet, project.wikifier_file)
         response["yamlData"]=y
 
     return response, 200
@@ -193,7 +192,7 @@ def upload_data_file(pid):
     response["wikifierData"]=serialized_item_table
 
 
-    y=handle_yaml(sheet, item_table)
+    y=handle_yaml(sheet, project.wikifier_file)
     response["yamlData"]=y
 
     return response, 200
@@ -226,7 +225,7 @@ def change_sheet(pid, sheet_name):
     serialized_item_table = item_table.serialize_table()
     response["wikifierData"]=serialized_item_table
 
-    y=handle_yaml(sheet, item_table)
+    y=handle_yaml(sheet, project.wikifier_file)
     response["yamlData"]=y
 
     return response, 200
@@ -273,7 +272,7 @@ def wikify_region(pid):
                 raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
             sheet=project.current_file.current_sheet
 
-            cell_qnode_map=wikifier(region, project.current_file.file_path, sheet.name, context)
+            cell_qnode_map=wikify(region, project.current_file.file_path, sheet.name, context)
             wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
             
             item_table=get_item_table(wf, sheet, flag=flag)
@@ -306,8 +305,7 @@ def upload_yaml(pid):
             sheet.yamlfiles.append(yf)
             project.modify()
 
-            item_table=get_item_table(project.wikifier_file, sheet)
-            response['yamlRegions']=highlight_region(sheet, yf, item_table)
+            response['yamlRegions']=highlight_region(sheet, yf, project.wikifier_file)
         else:
             response['yamlRegions'] = None
             raise web_exception.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
@@ -329,8 +327,7 @@ def get_cell_statement(pid, col, row):
     yaml_file = sheet.yaml_file
     if not yaml_file:
         raise web_exception.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
-    item_table=get_item_table(project.wikifier_file, sheet)
-    data = get_cell(sheet, yaml_file, item_table, col, row)
+    data = get_cell(sheet, yaml_file, project.wikifier_file, col, row)
     return data, 200
 
 
@@ -346,8 +343,7 @@ def downloader(pid, filetype):
     yaml_file = sheet.yaml_file
     if not yaml_file: #the frontend disables this, this is just another layer of checking
         raise web_exception.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
-    item_table=get_item_table(project.wikifier_file, sheet)
-    response = download(sheet, yaml_file, item_table, filetype, project.name)
+    response = download(sheet, yaml_file, project.wikifier_file, filetype, project.name)
     return response, 200
 
 

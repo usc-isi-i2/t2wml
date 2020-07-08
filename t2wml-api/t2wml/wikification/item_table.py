@@ -248,3 +248,18 @@ class ItemTable:
     def update_table_from_wikifier_file(self, wikifier_file_path, data_file_path, sheet_name, flag=None):
         df = pd.read_csv(wikifier_file_path)
         self.update_table(df, data_file_path, sheet_name, flag=flag)
+
+
+class Wikifier:
+    def __init__(self, w_file, *wikifier_files):
+        self.wikifier_files=[w_file]
+        self.wikifier_files+=wikifier_files
+    def add_files(*files):
+        self.wikifier_files+=files
+    def get_item_table(self, sheet):
+        it=ItemTable(None)
+        for f in self.wikifier_files:
+            #TODO: Not at all clear this will work for wikifier files created from wikify_region
+            it.update_table_from_wikifier_file(f, sheet.data_file_path, sheet.name)
+        return it
+        

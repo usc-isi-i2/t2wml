@@ -1,7 +1,8 @@
 import os
 import json
 from pathlib import Path
-from t2wml.mapping.cell_mapper import Region, get_region, get_template
+from t2wml.mapping.cell_mapper import Region, CellMapper
+from t2wml.api import KnowledgeGraph
 
 class Cacher:
     title=""
@@ -55,11 +56,12 @@ class MappingResultsCacher(Cacher):
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
     
-    def save(self, highlight_data, statement_data, errors=[]):
+    def save(self, highlight_data, statement_data, errors=[], metadata={}):
         d={
             "highlight region": highlight_data,
-            "download": statement_data,
-            "errors": errors
+            "statements": statement_data,
+            "errors": errors, 
+            "metadata":metadata
         }
         s=json.dumps(d)
         with open(self.cache_path, 'w') as f:
@@ -75,24 +77,20 @@ class MappingResultsCacher(Cacher):
                 pass
         return None
 
-    def get_download(self):
+    def get_kg(self):
         if self.is_fresh():
             try:
-                with open(self.cache_path, 'r') as f:
-                    data=json.load(f)
-                return data["download"], data["errors"]
+                return KnowledgeGraph.load_json(self.cache_path)
             except:
                 pass
-        return []
+        return None
     
  
-class CellMapper:
-    def __init__(self, sheet, yaml, item_table=None):
+class CacheCellMapper():
+    def __init__(self, sheet, yaml):
         self.result_cacher=MappingResultsCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.region_cacher=RegionCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
-        self.item_table=item_table
-        self.yaml=yaml
-        self.sheet=sheet
+        self.yf=CellMapper(yaml.file_path)
     
     @property
     def region(self):
@@ -101,9 +99,7 @@ class CellMapper:
         except:
             region=self.region_cacher.load_from_cache()
             if not region:
-                if self.item_table is None:
-                    self.item_table=ItemTable(None)
-                region= get_region(self.yaml.file_path, self.sheet.data_file.file_path, self.sheet.name, self.item_table)
+                region= self.yf.region
             self._region=region
             return self._region
     
@@ -112,7 +108,7 @@ class CellMapper:
         try:
             return self._template
         except:
-            self._template=get_template(self.yaml.file_path)
+            self._template=self.yf.template
             return self._template
     
 

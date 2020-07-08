@@ -36,15 +36,14 @@ class Sheet:
     def __init__(self, data_file_path, sheet_name):
         cache_class=get_cache_class()
         sc=cache_class(data_file_path, sheet_name)
-        self.data_file_path=data_file_path
-        self.sheet_name=sheet_name
         self.data=sc.get_sheet()
+        
+        self.data_file_path=data_file_path
+        self.data_file_name=Path(data_file_path).name
+        self.name=sheet_name
+        
     
-    @property
-    def data_file_name(self):
-        return Path(self.data_file_path).stem
 
-    
     def __getitem__(self, params):
         try:
             return self.data.iloc[params]

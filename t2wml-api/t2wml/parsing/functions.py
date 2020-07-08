@@ -164,7 +164,7 @@ def t_var_sheet_end():
     return len(bindings.excel_sheet)
 
 def t_var_sheet_name():
-    return bindings.excel_sheet.sheet_name
+    return bindings.excel_sheet.name
 
 def t_var_sheet_file_name():
     return bindings.excel_sheet.data_file_name
