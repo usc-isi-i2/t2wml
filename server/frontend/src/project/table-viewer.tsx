@@ -316,6 +316,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // if failure      
       if (error) {
+        // this.updateErrorCells()
         throw {errorDescription: error.value} as ErrorMessage;
       }
 

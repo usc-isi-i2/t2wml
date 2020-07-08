@@ -18,8 +18,6 @@ import wikiStore from '../data/store';
 
 interface yamlProperties {
   isShowing: boolean;
-
-  showErrorCells: (error: ErrorCell) => void;
 }
 
 interface yamlState {
@@ -83,12 +81,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 
-      // do something here
-      const { error } = json.yamlRegions;
-      if (error) {
-        this.props.showErrorCells(error as ErrorCell);
-      }
-      
     //   const { error } = json;
     //   // if failure
     //   if (error !== null) {
@@ -102,20 +94,20 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     //   }
 
           // else, success
-          const { yamlRegions } = json;
-          const internalError = yamlRegions.error;
-          if (internalError){
-             
-              console.log("ERRORS while applying yaml:");
-              console.log(internalError);
-              wikiStore.table.updateErrorCells(internalError);
-          }
-          wikiStore.table.updateYamlRegions(yamlRegions);
+        const { yamlRegions } = json;
+        const internalError = yamlRegions.error;
+        if (internalError){
+            
+            console.log("ERRORS while applying yaml:");
+            console.log(internalError);
+            wikiStore.table.updateErrorCells(internalError);
+        }
+        wikiStore.table.updateYamlRegions(yamlRegions);
 
-          // follow-ups (success)
-          wikiStore.table.showSpinner = false;
-          wikiStore.output.isDownloadDisabled = false;
-          wikiStore.table.isCellSelectable = true;
+        // follow-ups (success)
+        wikiStore.table.showSpinner = false;
+        wikiStore.output.isDownloadDisabled = false;
+        wikiStore.table.isCellSelectable = true;
 
     }).catch((error: ErrorMessage) => {
     //   alert("Failed to apply. 🙁\n\n" + error);

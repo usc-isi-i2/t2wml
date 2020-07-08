@@ -34,6 +34,7 @@ interface OutputState {
   propertyID: string | null;
   qualifiers: any; //  null;
   cache: any; // cache for Wikidata queries
+  errors: string;
 
   // download
   showDownload: boolean,
@@ -72,7 +73,8 @@ class Output extends Component<OutputProperties, OutputState> {
       itemRow: undefined,
       propertyID: null,
       qualifiers: null,
-      cache: {}, // cache for Wikidata queries
+      cache: {}, // cache for Wikidata queries,
+      errors: '',
 
       // download
       showDownload: false,
@@ -105,7 +107,7 @@ class Output extends Component<OutputProperties, OutputState> {
       const { error } = json;
 
       // if failure
-      if (error !== null) {
+      if (error) {
         throw Error(error);
       }
 
@@ -164,11 +166,12 @@ class Output extends Component<OutputProperties, OutputState> {
   }
 
   updateOutput(colName: string, rowName: string, json: any) {
-    if (json["statement"] === undefined) return;
-
     // remove current status
     this.removeOutput();
-
+    if(json["error"]) {
+        this.setState({errors: JSON.stringify(json["error"])});
+    }
+    
     this.setState({
       valueCol: colName,
       valueRow: rowName
@@ -177,6 +180,8 @@ class Output extends Component<OutputProperties, OutputState> {
     // retrieve cache
     let { cache } = this.state;
     let isAllCached = true;
+
+    if (json["statement"] === undefined) return;
 
     // item
     const itemID = json["statement"]["item"];
@@ -267,6 +272,7 @@ class Output extends Component<OutputProperties, OutputState> {
       itemRow: undefined,
       propertyID: null,
       qualifiers: null,
+      errors: '',
     });
   }
 
@@ -277,8 +283,15 @@ class Output extends Component<OutputProperties, OutputState> {
 
     // before send request
     wikiStore.output.showSpinner = true;
-
+    
     // send both "no-cors" and default requests
+    // 
+    //  fetch(api, {
+    //     headers : { 
+    //       'Content-Type': 'application/json',
+    //       'Accept': 'application/json'
+    //      }
+    //   })
     fetch(api)
       .then(response => response.json())
       .then(json => {
@@ -367,6 +380,14 @@ class Output extends Component<OutputProperties, OutputState> {
 
   renderOutput() {
     let outputDiv = [];
+
+    let errorsDiv;
+    if (this.state.errors) {
+        errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
+            Errors: {this.state.errors}
+        </div>
+    }
+
     let itemName = this.state.itemName;
     if (itemName) {
 
@@ -502,6 +523,9 @@ class Output extends Component<OutputProperties, OutputState> {
         </table>
       );
     }
+
+    outputDiv.push(errorsDiv);
+
     return outputDiv;
   }
 

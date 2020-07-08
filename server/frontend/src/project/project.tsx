@@ -291,7 +291,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
             <TableViewer/>
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-              <Editors showErrorCellsInTable={(error) => this.showErrorCellsInTable(error)} />
+              <Editors/>
               <Output />
             </SplitPane>
           </SplitPane>
