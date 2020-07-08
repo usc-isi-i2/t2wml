@@ -51,8 +51,10 @@ def download(data_sheet, yaml_file, wikifier_file, filetype, project_name=""):
 def highlight_region(data_sheet, yaml_file, wikifier_file):
     item_table=get_item_table(wikifier_file, data_sheet)
     cell_mapper=CacheCellMapper(data_sheet, yaml_file)
-    highlight_data=cell_mapper.result_cacher.get_highlight_region()
+    highlight_data, statement_data, errors=cell_mapper.result_cacher.get_highlight_region()
     if highlight_data:
+        highlight_data['error']=errors if errors else None
+        highlight_data['cellStatements']=statement_data
         return highlight_data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
@@ -83,9 +85,10 @@ def highlight_region(data_sheet, yaml_file, wikifier_file):
     highlight_data['item'] = list(highlight_data['item'])
     highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
-    highlight_data['error']=errors if errors else None
-
     cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
+    
+    highlight_data['error']=errors if errors else None
+    highlight_data['cellStatements']=statement_data
     return highlight_data
 
 def get_cell(data_sheet, yaml_file, wikifier_file, col, row):

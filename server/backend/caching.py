@@ -72,10 +72,10 @@ class MappingResultsCacher(Cacher):
             try:
                 with open(self.cache_path, 'r') as f:
                     data=json.load(f)
-                return data["highlight region"]
+                return data["highlight region"], data["statements"], data["errors"]
             except:
                 pass
-        return None
+        return None, None, None
 
     def get_kg(self):
         if self.is_fresh():
@@ -84,6 +84,7 @@ class MappingResultsCacher(Cacher):
             except:
                 pass
         return None
+    
     
  
 class CacheCellMapper():
