@@ -272,13 +272,20 @@ def wikify_region(pid):
                 raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
             sheet=project.current_file.current_sheet
 
-            cell_qnode_map=wikify(region, project.current_file.file_path, sheet.name, context)
+            cell_qnode_map, problem_cells=wikify(region, project.current_file.file_path, sheet.name, context)
             wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
             
             item_table=get_item_table(wf, sheet, flag=flag)
-            serialized_item_table = item_table.serialize_table()
-
             data = item_table.serialize_table()
+            if problem_cells:
+                error_dict={
+                    "errorCode": 400,
+                    "errorTitle": "Failed to wikify some cellsr",
+                    "errorDescription": "Failed to wikify: "+",".join(problem_cells)
+                            }
+                data['problemCells']=error_dict
+            else:
+                data['problemCells']=False
 
     return data, 200
 

@@ -243,7 +243,10 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
       // else, success
 
-      const { qnodes, rowData } = json;
+      const { qnodes, rowData, problemCells} = json;
+      if (problemCells){
+        this.setState({ errorMessage: problemCells as ErrorMessage });
+      }
       wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)

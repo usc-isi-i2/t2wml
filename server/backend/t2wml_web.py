@@ -16,7 +16,8 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
 
 def wikify(region, filepath, sheet_name, context):
-    return wikifier(region, filepath, sheet_name, context)
+    df, problem_cells= wikifier(region, filepath, sheet_name, context)
+    return df, problem_cells
 
 def update_t2wml_settings():
     set_sparql_endpoint(DEFAULT_SPARQL_ENDPOINT)
