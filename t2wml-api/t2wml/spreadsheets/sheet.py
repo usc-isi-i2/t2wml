@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from t2wml.settings import t2wml_settings
 from t2wml.spreadsheets.caching import PandasLoader, PickleCacher, FakeCacher
-from t2wml.spreadsheets.conversions import to_excel, _column_index_to_letter
+from t2wml.spreadsheets.conversions import to_excel
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 
 def get_cache_class():
