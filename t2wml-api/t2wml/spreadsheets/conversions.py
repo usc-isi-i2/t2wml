@@ -29,6 +29,21 @@ def cell_str_to_tuple(cell: str):
     row = re.search('[0-9]+', cell).group(0)
     return column_letter_to_index(column), int(row)-1
 
+def column_letter_to_index(column: str) -> int:
+    """
+    used exclusively in conversions
+    This function converts a letter column to its respective 0-indexed column index
+    viz. 'A' to 0
+    'AZ' to 51
+    :param column:
+    :return: column index of type int
+    """
+    index = 0
+    column = column.upper()
+    column = column[::-1]
+    for i in range(len(column)):
+        index += ((ord(column[i]) % 65 + 1) * (26 ** i))
+    return index - 1
 
 def column_index_to_letter(n: int) -> str:
     """
