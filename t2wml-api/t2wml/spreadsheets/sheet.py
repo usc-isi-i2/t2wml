@@ -2,7 +2,8 @@ import pandas as pd
 import json
 from pathlib import Path
 from t2wml.settings import t2wml_settings
-from t2wml.spreadsheets.caching import PandasLoader, PickleCacher, FakeCacher
+from t2wml.spreadsheets.utilities import PandasLoader
+from t2wml.spreadsheets.caching import PickleCacher, FakeCacher
 from t2wml.spreadsheets.conversions import to_excel
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 
