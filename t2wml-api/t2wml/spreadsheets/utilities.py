@@ -1,38 +1,4 @@
-import os
-import pickle
-import uuid
-from pathlib import Path
-
-from t2wml.utils import t2wml_exceptions as T2WMLExceptions
-from t2wml.spreadsheets.conversions import  cell_range_str_to_tuples
-from t2wml.spreadsheets.sheet import Sheet
 from t2wml.spreadsheets.caching import PandasLoader
-
-
-def create_temporary_csv_file(cell_range: str, data_file_path: str, sheet_name: str = None) -> str:
-    """
-    This function creates a temporary csv file of the region which has to be sent to the wikifier service for wikification
-    :param cell_range:
-    :param excel_file_path:
-    :param sheet_name:
-    :return:
-    """
-    file_name = uuid.uuid4().hex + ".csv"
-    csv_file_path = str(Path.cwd() / "temporary_files" / file_name)
-    if not os.path.exists(str(Path.cwd() / "temporary_files")):
-        os.mkdir(str(Path.cwd() / "temporary_files"))
-    (start_col, start_row), (end_col, end_row) = cell_range_str_to_tuples(cell_range)
-    end_col+=1
-    end_row+=1
-    try:
-        sheet=Sheet(data_file_path, sheet_name)
-        data=sheet[start_row:end_row, start_col:end_col]
-        data.to_csv(csv_file_path, header=False, index=False)
-    except IOError:
-        raise IOError('Excel File cannot be found or opened')
-    return csv_file_path, ((start_col, start_row), (end_col, end_row))
-
-
 def get_first_sheet_name(file_path: str):
     """
     This function returns the first sheet name of the excel file
@@ -41,5 +7,7 @@ def get_first_sheet_name(file_path: str):
     """
     pw=PandasLoader(file_path)
     return pw.get_sheet_names()[0]
+
+
 
 
