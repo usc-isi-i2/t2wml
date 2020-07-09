@@ -65,6 +65,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // remove current status
     wikiStore.table.updateYamlRegions();
     wikiStore.output.removeOutput();
+    wikiStore.table.updateErrorCells({} as ErrorCell);
 
     // before sending request
     wikiStore.table.showSpinner = true;

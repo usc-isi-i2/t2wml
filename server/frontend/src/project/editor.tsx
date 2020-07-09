@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import Wikifier from './wikifier';
 import YamlEditor from './yaml-editor';
-import { ErrorCell } from '../common/general';
 import { observer } from "mobx-react"
 import wikiStore from '../data/store';
 

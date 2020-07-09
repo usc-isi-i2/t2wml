@@ -251,7 +251,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       const { error } = json;
 
       // if failure
-      if (error !== null) {
+      if (error) {
         throw Error(error);
       }
 
@@ -473,7 +473,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
   }
 
-  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: {border: string}, override: boolean = false) {
+  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: any, override: boolean = false) {
     if (rowName && colName) {
       const col = colName;
       const row = Number(rowName) - 1;
@@ -510,7 +510,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     if (wikiStore.table.errorCells) {
         for (var i = 0; i < wikiStore.table.errorCells.length; i++) {
             const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
-            wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": "none !important" });
+            this.updateStyleByCell(cell.col, cell.row, { "background-color": "none !important" });
         }
     }
     // Save the cell list in store, to reset it in the next time
@@ -521,7 +521,7 @@ class TableViewer extends Component<TableProperties, TableState> {
             color = 'red';
         }
         const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
-        wikiStore.table.updateStyleByCell(cell.col, cell.row, { "background-color": `${color} !important` });
+        this.updateStyleByCell(cell.col, cell.row, { "background-color": `${color} !important` });
     }
   }
 
