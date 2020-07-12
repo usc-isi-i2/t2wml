@@ -1,9 +1,6 @@
-import React, { Component, Fragment } from "react";
-import { Image, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import React, { Component } from "react";
+import { Navbar } from 'react-bootstrap';
 
-// icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 import T2WMLLogo from './T2WMLLogo';
 
@@ -27,12 +24,9 @@ class T2wmlNavbar extends Component<NavbarProperteis> {
             {/* settings */}
             {(this.props.showSettings && 
             this.props.onShowSettingsClicked !== undefined) ? 
-            <Fragment>
-            <NavDropdown.Divider />
-            <NavDropdown.Item onClick={this.props.onShowSettingsClicked.bind(this)}>
+            <button style={{ position: 'absolute', right: '1rem' }} onClick={this.props.onShowSettingsClicked.bind(this)}>
                 Settings
-            </NavDropdown.Item>
-            </Fragment> : null }
+            </button>: null }
 
         </Navbar>
       </div>

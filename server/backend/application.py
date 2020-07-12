@@ -25,7 +25,7 @@ def get_project(project_id):
     except:
         raise web_exceptions.ProjectNotFoundException
 
-def get_project_details(self):
+def get_project_details():
     projects = list()
     for project in Project.query.all():
         project_detail = dict()

@@ -33,7 +33,6 @@ interface ProjectState {
   showSettings: boolean;
   showSpinner: boolean;
   projectData:  any; //todo: add project class[]
-  userData: any; //todo: add user class{ },
   tempSparqlEndpoint: string;
   errorMessage: ErrorMessage;
 }
@@ -88,9 +87,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
       //   { pid: "2222", ptitle: "Project 2", cdate: 1565720859582, mdate: 1565720859582 },
       //   { pid: "3333", ptitle: "Project 3", cdate: 1563906459582, mdate: 1563906459582 },
       // ],
-
-      // user
-      userData: { },
 
       // settings
       tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint,
@@ -261,7 +257,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
   }
 
   render() {
-    const { showSpinner, userData } = this.state;
+    const { showSpinner } = this.state;
     return (
       <div>
         <Navbar 
@@ -277,8 +273,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
         {/* modal */}
         {this.renderSettings()}
-
-
 
         {/* content */}
         <div>
