@@ -68,8 +68,8 @@ class KnowledgeGraph:
         self.save_download(output_filename, "ttl")
 
 def create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath, output_filepath=None, output_format="json"):
-    kg=KnowledgeGraph.generate_from_filesgenerate_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath)
-    output=kg.get_output(filetype)
+    kg=KnowledgeGraph.generate_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath)
+    output=kg.get_output(output_format)
     if output_filepath:
          with open(output_filepath, 'w') as f:
             f.write(output)

@@ -13,13 +13,9 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
     if not sheet_name:
         sheet_name = get_first_sheet_name(data_file_path)
 
-    result_directory = '.'.join(file_name.split(".")[:-1])
+    result_directory = '.'.join(data_file_path.split(".")[:-1])
 
-    output_path = Path()
-    if file_extension == "csv":
-        output_path = Path(output_directory) / result_directory
-    elif file_extension == "xls" or file_extension == "xlsx":
-        output_path = Path(output_directory) / result_directory / sheet_name
+    output_path = Path(output_directory) / result_directory / sheet_name
 
     Path.mkdir(output_path, parents=True, exist_ok=True)
 
