@@ -21,6 +21,7 @@ script:
 - python -m spacy download en_core_web_sm
 - python -m unittest unit_tests.test_json_results 
 - python -m unittest unit_tests.test_kgtk_results
+- python -m unittest unit_tests.test_api_scripts
 
 notifications:
   slack:

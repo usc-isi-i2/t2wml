@@ -21,7 +21,8 @@
             "args": [
                //"unit_tests.test_rdf_generation",
                 "unit_tests.test_kgtk_results", 
-                "unit_tests.test_json_results"
+                "unit_tests.test_json_results",
+                "unit_tests.test_api_scripts"
             ],
             "cwd": "${workspaceFolder}",
         },
