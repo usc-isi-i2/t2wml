@@ -11,7 +11,7 @@ from models import Project, DataFile, YamlFile, WikifierFile, PropertiesFile
 import web_exceptions
 from web_exceptions import WebException
 from t2wml.utils.t2wml_exceptions import T2WMLException
-from utils import make_frontend_err_dict, string_is_valid, verify_google_login, file_upload_validator
+from utils import make_frontend_err_dict, string_is_valid, file_upload_validator, get_project_details
 from t2wml_web import (update_t2wml_settings, download, highlight_region, handle_yaml, 
                        get_cell, table_data, get_item_table, wikify)
 
@@ -24,17 +24,6 @@ def get_project(project_id):
         return project
     except:
         raise web_exceptions.ProjectNotFoundException
-
-def get_project_details():
-    projects = list()
-    for project in Project.query.all():
-        project_detail = dict()
-        project_detail["pid"] = project.id
-        project_detail["ptitle"] = project.name
-        project_detail["cdate"] = str(project.creation_date)
-        project_detail["mdate"] = str(project.modification_date)
-        projects.append(project_detail)
-    return projects
 
 def json_response(func):
     def wrapper(*args, **kwargs):
@@ -369,19 +358,6 @@ def update_settings(pid):
     project.modify()
     return None, 200 #can become 204 eventually, need to check frontend compatibility
 
-
-
-
-@app.route('/api/logout', methods=['POST'])
-@json_response
-def logout():
-    """
-    This function initiate request to end the session and logs them out.
-    :return:
-    """
-    if 'uid' in session:
-        del session['uid']
-    return '', 204
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
 # In that case, we only have one webserver - Flask. The following two routes are for this.

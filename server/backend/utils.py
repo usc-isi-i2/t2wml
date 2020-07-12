@@ -1,9 +1,7 @@
-from google.oauth2 import id_token
-from google.auth.transport import requests 
 from string import punctuation
 from flask import request
 import web_exceptions
-from app_config import GOOGLE_CLIENT_ID
+from models import Project
 
 def make_frontend_err_dict(error):
     '''
@@ -25,28 +23,6 @@ def string_is_valid(text: str) -> bool:
         return False
     return True
 
-def verify_google_login(tn):
-    """
-    This function verifies the oauth token by sending a request to Google's server.
-    :param tn:
-    :return:
-    """
-    error = None
-    try:
-        # client_id = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
-        request = requests.Request()
-        user_info = id_token.verify_oauth2_token(tn, request, GOOGLE_CLIENT_ID)
-
-        if user_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise web_exceptions.AuthenticationFailureException("Token issued by an invalid issuer")
-            user_info = None
-
-    except ValueError as e:
-        user_info = None
-        raise web_exceptions.AuthenticationFailureException(str(e))
-    return user_info, error
-
-
 
 def file_upload_validator(file_extensions):
     if 'file' not in request.files:
@@ -62,3 +38,15 @@ def file_upload_validator(file_extensions):
         raise web_exceptions.FileTypeNotSupportedException("File with extension '"+file_extension+"' is not allowed")
 
     return in_file
+
+
+def get_project_details():
+    projects = list()
+    for project in Project.query.all():
+        project_detail = dict()
+        project_detail["pid"] = project.id
+        project_detail["ptitle"] = project.name
+        project_detail["cdate"] = str(project.creation_date)
+        project_detail["mdate"] = str(project.modification_date)
+        projects.append(project_detail)
+    return projects

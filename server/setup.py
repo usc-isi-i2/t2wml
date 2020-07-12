@@ -25,7 +25,6 @@ REQUIREMENTS = [
     'flask-sqlalchemy>=2.4.1',
     'flask-migrate>=2.5.3',
     'SPARQLWrapper>=1.8.4',
-    'google-api-python-client>=1.7.11',
     't2wml-api==0.0.1'
 ]
 
