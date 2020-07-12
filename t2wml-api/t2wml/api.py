@@ -62,11 +62,10 @@ class KnowledgeGraph:
 
     def save_json(self, output_filename):
         self.save_download(output_filename, "json")
-    def save_kgtk(self, output_filename, project_name, data_filepath, sheet_name):
+    def save_kgtk(self, output_filename):
         self.save_download(output_filename, "tsv")
     def save_ttl(self, filename):
         self.save_download(output_filename, "ttl")
-
 
 def create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath, output_filepath=None, output_format="json"):
     kg=KnowledgeGraph.generate_from_filesgenerate_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath)
@@ -76,22 +75,6 @@ def create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifie
             f.write(output)
     return output
 
-
-
 def add_properties(filepath):
     return add_properties_from_file(filepath)
 
-
-if __name__ == "__main__":
-    import os
-    add_properties_from_file(r"D:\UserData\devora\Sources\pedro\various files\property_type_map.json")
-
-    source_folder=r"D:\UserData\devora\Sources\pedro\t2wml\t2wml-api\unit_tests\ground_truth\error-catching"
-    data_filepath=os.path.join(source_folder, "input_1.csv")
-    sheet_name="input_1.csv"
-    yaml_filepath=os.path.join(source_folder, "error.yaml")
-    wikifier_filepath=os.path.join(source_folder, "wikifier_1.csv")
-    output_filename=r"D:\UserData\devora\Sources\pedro\temp\test_api_script_results.tsv"
-    
-    kg=KnowledgeGraph.generate_from_files(data_filepath, sheet_name, yaml_filepath, wikifier_filepath)
-    kg.save_kgtk(output_filename, "Project", data_filepath, sheet_name)
