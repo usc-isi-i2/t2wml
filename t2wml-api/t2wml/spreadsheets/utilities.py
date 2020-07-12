@@ -1,36 +1,58 @@
-import os
-import pickle
-import uuid
 from pathlib import Path
+import pandas as pd
 
-from t2wml.utils import t2wml_exceptions as T2WMLExceptions
-from t2wml.spreadsheets.conversions import _column_index_to_letter, _cell_range_str_to_tuples
-from t2wml.spreadsheets.sheet import Sheet
-from t2wml.spreadsheets.caching import PandasLoader
+class PandasLoader:
+    #a wrapper to centralize and make uniform any loading of data files/sheets from pandas
+    def __init__(self, file_path):
+        self.file_path=file_path
+        file_extension=Path(file_path).suffix
+        self.is_csv = True if file_extension.lower() == ".csv" else False
+        self.pd_args=dict(dtype=object, header=None)
 
+    def post_process_data(self, data):
+        data=data.fillna("")
+        data=data.replace(r'^\s+$', "", regex=True)
+        return data
 
-def create_temporary_csv_file(cell_range: str, data_file_path: str, sheet_name: str = None) -> str:
-    """
-    This function creates a temporary csv file of the region which has to be sent to the wikifier service for wikification
-    :param cell_range:
-    :param excel_file_path:
-    :param sheet_name:
-    :return:
-    """
-    file_name = uuid.uuid4().hex + ".csv"
-    csv_file_path = str(Path.cwd() / "temporary_files" / file_name)
-    if not os.path.exists(str(Path.cwd() / "temporary_files")):
-        os.mkdir(str(Path.cwd() / "temporary_files"))
-    (start_col, start_row), (end_col, end_row) = _cell_range_str_to_tuples(cell_range)
-    end_col+=1
-    end_row+=1
-    try:
-        sheet=Sheet(data_file_path, sheet_name)
-        data=sheet[start_row:end_row, start_col:end_col]
-        data.to_csv(csv_file_path, header=False, index=False)
-    except IOError:
-        raise IOError('Excel File cannot be found or opened')
-    return csv_file_path, ((start_col, start_row), (end_col, end_row))
+    def load_sheet(self, sheet_name):
+        """
+        returns a single sheet's data frame
+        """
+        if self.is_csv:
+            data=pd.read_csv(self.file_path, **self.pd_args)
+        else:
+            data=pd.read_excel(self.file_path, sheet_name=sheet_name, **self.pd_args)
+        return self.post_process_data(data)
+    
+    def load_file(self):
+        """
+        returns a dictionary of sheet_names and their data frames
+        """
+        if self.is_csv:
+            data=pd.read_csv(self.file_path, **self.pd_args)
+            data=self.post_process_data(data)
+            sheet_name=Path(self.file_path).name
+            return {sheet_name:data}
+        else:
+            return_dict={}
+            loaded_file=pd.read_excel(self.file_path, sheet_name=None, **self.pd_args)
+            for sheet_name in loaded_file:
+                data=loaded_file[sheet_name]
+                data=self.post_process_data(data)
+                return_dict[sheet_name]=data
+            return return_dict
+
+    def get_sheet_names(self):
+        if self.is_csv:
+            return [Path(self.file_path).name]
+        else:
+            xl=pd.ExcelFile(self.file_path)
+            return xl.sheet_names
+    
+    def load_pickle(self, pickle_path):
+        data=pd.read_pickle(pickle_path)
+        return self.post_process_data(data)
+
 
 
 def get_first_sheet_name(file_path: str):
@@ -41,5 +63,7 @@ def get_first_sheet_name(file_path: str):
     """
     pw=PandasLoader(file_path)
     return pw.get_sheet_names()[0]
+
+
 
 

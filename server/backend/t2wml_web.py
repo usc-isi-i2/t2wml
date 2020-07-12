@@ -8,7 +8,7 @@ from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToIn
 from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
 from t2wml.spreadsheets.sheet import Sheet
-from t2wml.spreadsheets.conversions import _column_index_to_letter
+from t2wml.spreadsheets.conversions import column_index_to_letter
 from t2wml.wikification.item_table import ItemTable
 from t2wml.wikification.wikify_handling import wikifier
 from caching import CacheCellMapper
@@ -16,7 +16,8 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_property import DatabaseProvider
 
 def wikify(region, filepath, sheet_name, context):
-    return wikifier(region, filepath, sheet_name, context)
+    df, problem_cells= wikifier(region, filepath, sheet_name, context)
+    return df, problem_cells
 
 def update_t2wml_settings():
     set_sparql_endpoint(DEFAULT_SPARQL_ENDPOINT)
@@ -168,7 +169,7 @@ def sheet_to_json(data_file_path, sheet_name):
     #get col names
     col_names=[]
     for i in range(len(sheet.data.iloc[0])):
-        column = _column_index_to_letter(i)
+        column = column_index_to_letter(i)
         col_names.append(column)
         json_data['columnDefs'].append({'headerName': column, 'field': column})
     #rename cols

@@ -2,7 +2,7 @@ import sys
 import yaml
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode, iter_on_n_for_code
-from t2wml.spreadsheets.conversions import _cell_range_str_to_tuples
+from t2wml.spreadsheets.conversions import cell_range_str_to_tuples
 
 
 class ForwardSlashEscape(Exception): #used for a little hack down below
@@ -140,7 +140,7 @@ class RegionParser(CodeParser):
         if 'range' in yaml_region:
             cell_range=yaml_region["range"]
             try:
-                (left, top), (right, bottom) = _cell_range_str_to_tuples(cell_range)
+                (left, top), (right, bottom) = cell_range_str_to_tuples(cell_range)
             except Exception as e:
                 raise T2WMLExceptions.ErrorInYAMLFileException("range expression for region invalid")
 
