@@ -9,5 +9,4 @@ def run_server():
     print('Launching Flask from ', dirname)
     os.environ['FLASK_APP'] = 'backend.wsgi'
     os.system('flask run --port 13000')
-    print("Visit localhost:13000 to use")
 
