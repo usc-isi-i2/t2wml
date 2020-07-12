@@ -22,7 +22,7 @@ A locally hosted web GUI version of t2wml can be installed quickly using pip
 1. make a fresh virtual environment
 2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a17`
 3. run `t2wml-server`
-4. navigate to [`http://localhost:5000/`](http://localhost:5000/) in a Chrome browser
+4. navigate to [`http://localhost:13000/`](http://localhost:13000/) in a Chrome browser
 
 
 ## The T2WML programming API
@@ -57,7 +57,7 @@ You can write your own code using the T2WML programming API
 7. Run the frontend server: 
    In the folder "frontend", run `npm run start`
 
-The backend will be running on port 5000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
+The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
 
 The repo also contains vscode configurations for the convenience of those working in VS Code.
 
@@ -118,7 +118,7 @@ Check out the [grammar guide](docs/grammar.md)
 
 * **Login failed or encountered an authentication error like `400 (OAuth2 Error)`?**
   
-    Access T2WML at `http://localhost:5000/` instead of `http://127.0.0.1:5000`.
+    Access T2WML at `http://localhost:13000/` instead of `http://127.0.0.1:13000`.
 
 * **Error saying can't find static/index.html?**
   
