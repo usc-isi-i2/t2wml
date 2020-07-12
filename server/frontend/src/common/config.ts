@@ -4,7 +4,7 @@ export default class Config {
     }
 
     public static get sparql(): string {
-        return process.env.REACT_APP_SPARQL_ENDPOINT!;
+        return process.env.REACT_APP_DEFAULT_SPARQL_ENDPOINT!;
     }
 
     public static get googleClientId(): string {
