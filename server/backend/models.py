@@ -13,49 +13,6 @@ def get_project_folder(project):
 
 
 
-class User(db.Model):
-    uid= db.Column(db.String(64), primary_key=True)
-    given_name = db.Column(db.String(64))
-    family_name = db.Column(db.String(64))
-    email = db.Column(db.String(120), index=True)
-    picture = db.Column(db.String(120))
-    #self.__locale = locale
-
-    @property
-    def name(self):
-        return self.given_name + " " + self.family_name
-
-    def __repr__(self):
-        return '<User {} : {}>'.format(self.name, self.uid)
-
-    @staticmethod
-    def get_or_create(uid, given_name=None, family_name=None, email=None, *args, **kwargs):
-        try:
-            u=User.query.get(uid)
-            if u is None:
-                raise ValueError("user not found") 
-            return u
-        except:
-            if email is None:
-                raise ValueError("No user fields provided and user does not already exist")
-        u=User(uid=uid, given_name=given_name, family_name=family_name, email=email)
-        db.session.add(u)
-        db.session.commit()  
-        return u
-
-    @property
-    def json_dict(self):
-        return {
-            'email':self.email,
-            'familyName':self.family_name,
-            'givenName':self.given_name,
-            'name':self.name,
-            'picture':self.picture, 
-            'projects':{} #this is always empty, as far as I can tell
-        }
-    
-
-
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)

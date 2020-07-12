@@ -14,10 +14,6 @@ class WebException(Exception):
             "errorDescription": self.detail_message
         }
 
-class UserNotFoundException(WebException):
-    code=401
-    message="User not found"
-
 class ProjectNotFoundException(WebException):
     code=404
     message="Project not found"
