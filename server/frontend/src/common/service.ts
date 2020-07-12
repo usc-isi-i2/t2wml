@@ -4,18 +4,8 @@ import { backendGet, backendPost, backendPut, backendDelete } from './comm';
 
 class RequestService {
 
-  public async getUserInfo() {
-    const response = await backendGet('/user');
-    return response;
-  }
-
   public async logout() {
     const response = await backendPost('/logout');
-    return response;
-  }
-
-  public async login(formData: any) {
-    const response = await backendPost('/login', formData);
     return response;
   }
 

@@ -10,7 +10,6 @@ import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTras
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
-import { logout } from '../common/session';
 
 import DeleteProject from './delete-project';
 import RenameProject from './rename-project';
@@ -101,16 +100,6 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
   async componentDidMount() {
     document.title = "T2WML - Projects";
-    // fetch user data from the server
-    try {
-      const userData = await this.requestService.getUserInfo();
-      this.setState( { userData: userData });
-    } catch(error) {
-      // User is not logged in
-      window.location.href = '/';
-      return;
-    }
-
     // fetch project meta
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
     this.requestService.getProjects().then(json => {
@@ -143,7 +132,6 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
-    //   this.handleLogout();
     });
   }
 
@@ -279,10 +267,6 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
   cancelDownloadProject() {
     this.setState({ showDownloadProject: false, downloadingPid: "" });
-  }
-
-  handleLogout() {
-    logout();
   }
 
   handleRenameProject(name: string) {
@@ -630,10 +614,8 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
         {this.renderModals()}
 
-        <Navbar userData={this.state.userData}
-        handleLogout={() => this.handleLogout()} />
+        <Navbar/>
         
-
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
           {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }

@@ -10,7 +10,6 @@ import SplitPane from 'react-split-pane'
 import { Button, Col, Dropdown, Form, Modal, Row, Spinner, InputGroup } from 'react-bootstrap';
 
 
-import { logout } from '../common/session';
 import Config from '../common/config';
 
 // console.log
@@ -167,10 +166,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
     });
   }
 
-  handleLogout() {
-    logout();
-  }
-
   onShowSettingsClicked() {
     this.setState({ showSettings: true });
   }
@@ -269,10 +264,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
     const { showSpinner, userData } = this.state;
     return (
       <div>
-        <Navbar userData={userData}
+        <Navbar 
         showSettings={true}
-        onShowSettingsClicked={() => this.onShowSettingsClicked()}
-        handleLogout={() => this.handleLogout()} />
+        onShowSettingsClicked={() => this.onShowSettingsClicked()}/>
 
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
 
