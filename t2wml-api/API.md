@@ -13,6 +13,16 @@
 ## KnowledgeGraph
 <span id="kg"></span>
 
+
+The KnowledgeGraph class stores the statements generated for a spreadsheet.
+
+It can be created with the class method `generate`, which expects to receive a CellMapper, a DataSheet, and an ItemTable (soon to be Wikifier)
+
+For convenience, it can also be created from files, with the class method `generate_from_files`. This expects to receive one data_file_path (location of the data spreadsheet), one sheet_name, one yaml_file_path (location of the yaml file defining how to build statements), and one wikifier_file_path (location of the wikifier file for creating the item table).
+
+After generation, it contains as properties the `statements`, `metadata`, and `errors` from the generation. The user can examine and process these properties themselves, or they can use KnowledgeGraph's functions to generate 
+
+
 ## DataSheet and DataFile
 <span id="data"></span>
 
