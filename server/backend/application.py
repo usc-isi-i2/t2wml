@@ -7,7 +7,7 @@ from flask import request, render_template, redirect, url_for, session, make_res
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
 from app_config import app
-from models import User, Project, DataFile, YamlFile, WikifierFile, PropertiesFile
+from models import Project, DataFile, YamlFile, WikifierFile, PropertiesFile
 import web_exceptions
 from web_exceptions import WebException
 from t2wml.utils.t2wml_exceptions import T2WMLException
@@ -18,26 +18,23 @@ from t2wml_web import (update_t2wml_settings, download, highlight_region, handle
 debug_mode = False
 update_t2wml_settings()
 
-
-def get_user():
-    if 'uid' not in session:
-        raise UserNotFoundException
-
-    user_id = session['uid']
-    try:
-        u=User.get_or_create(user_id)
-        assert isinstance(u, User) #safety guard against weirdness
-        return u
-    except:
-        del session['uid']
-        raise web_exceptions.UserNotFoundException
-
 def get_project(project_id):
     try:
         project = Project.query.get(project_id)
         return project
     except:
         raise web_exceptions.ProjectNotFoundException
+
+def get_project_details(self):
+    projects = list()
+    for project in Project.query.all():
+        project_detail = dict()
+        project_detail["pid"] = project.id
+        project_detail["ptitle"] = project.name
+        project_detail["cdate"] = str(project.creation_date)
+        project_detail["mdate"] = str(project.modification_date)
+        projects.append(project_detail)
+    return projects
 
 def json_response(func):
     def wrapper(*args, **kwargs):
@@ -67,45 +64,13 @@ def get_project_meta():
     This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
     :return:
     """
-    user=get_user()
     data={
         'projects':None,
         'error':None
     }
-    data['projects']=user.get_project_details()
+    data['projects']=get_project_details()
     return data, 200
 
-
-@app.route('/api/user', methods=['GET'])
-@json_response
-def user_info():
-    user=get_user()
-    return user.json_dict, 200
-
-
-@app.route('/api/login', methods=['POST'])
-@json_response
-def login():
-    """
-    This function verifies the oath token and returns the authorization response
-    :return:
-    """
-    verification_status = False
-    response = {"vs": None, 'error': None}
-    if 'token' in request.form and 'source' in request.form:
-        token = request.form['token']
-        source = request.form['source']
-        user_info, error = verify_google_login(token)
-        if user_info:
-            if source == "Google":
-                user_id = "G"+user_info["sub"]
-                u=User.get_or_create(user_id, **user_info)
-                session['uid'] = u.uid
-                verification_status = True
-    else:
-        raise web_exceptions.InvalidRequestException("Missing 'token' and/or 'source' parameters in the login request")
-    response["vs"] = verification_status
-    return response, 200
 
 
 
@@ -203,7 +168,7 @@ def upload_data_file(pid):
 @json_response
 def change_sheet(pid, sheet_name):
     """
-    This route is used when a user switches a sheet in an excel data file.
+    This route is used when switching a sheet in an excel data file.
     :return:
     """
     project=get_project(pid)
@@ -368,10 +333,9 @@ def delete_project(pid):
         'error':None
     }
     
-    user=get_user()
     project=get_project(pid)
     Project.delete(project.id)
-    data['projects']=user.get_project_details()
+    data['projects']=get_project_details()
     return data, 200
 
 @app.route('/api/project/<pid>', methods=['PUT'])
@@ -381,7 +345,6 @@ def rename_project(pid):
     This route is used to rename a project.
     :return:
     """
-    user=get_user()
     data={
         'projects':None,
         'error':None
@@ -390,7 +353,7 @@ def rename_project(pid):
     project=get_project(pid)
     project.title=ptitle
     project.modify()
-    data['projects']=user.get_project_details()
+    data['projects']=get_project_details()
     return data, 200
         
 @app.route('/api/project/<pid>/sparql', methods=['PUT'])
@@ -413,7 +376,7 @@ def update_settings(pid):
 @json_response
 def logout():
     """
-    This function initiate request to end a user's session and logs them out.
+    This function initiate request to end the session and logs them out.
     :return:
     """
     if 'uid' in session:

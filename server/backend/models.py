@@ -11,6 +11,8 @@ from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 def get_project_folder(project):
     return Path(UPLOAD_FOLDER)/(project.name+"_"+str(project.id))
 
+
+
 class User(db.Model):
     uid= db.Column(db.String(64), primary_key=True)
     given_name = db.Column(db.String(64))
@@ -52,16 +54,7 @@ class User(db.Model):
             'projects':{} #this is always empty, as far as I can tell
         }
     
-    def get_project_details(self):
-        projects = list()
-        for project in Project.query.all():
-            project_detail = dict()
-            project_detail["pid"] = project.id
-            project_detail["ptitle"] = project.name
-            project_detail["cdate"] = str(project.creation_date)
-            project_detail["mdate"] = str(project.modification_date)
-            projects.append(project_detail)
-        return projects
+
 
 
 class Project(db.Model):
