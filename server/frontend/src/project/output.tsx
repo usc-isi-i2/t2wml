@@ -113,7 +113,7 @@ class Output extends Component<OutputProperties, OutputState> {
 
       // else, success
       const { data, internalErrors} = json;
-      if (internalErrors){
+      if (internalErrors!=undefined){
           console.log("ERRORS in input to download:")
           console.log(internalErrors);
           this.setState({errorMessage:     

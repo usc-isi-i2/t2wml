@@ -39,14 +39,13 @@ def get_kg(data_sheet, cell_mapper, wikifier_file):
 def download(data_sheet, yaml_file, wikifier_file, filetype, project_name=""):
     cell_mapper=CacheCellMapper(data_sheet, yaml_file)
     response=dict()
-    errors=[]
     kg=cell_mapper.result_cacher.get_kg()
     if not kg:
         kg=get_kg(data_sheet, cell_mapper, wikifier_file)
     
     response["data"]=get_file_output_from_statements(kg, filetype)
     response["error"]=None
-    response["internalErrors"] = kg.errors
+    response["internalErrors"] = kg.errors if kg.errors else None
     return response
 
 def highlight_region(data_sheet, yaml_file, wikifier_file):
