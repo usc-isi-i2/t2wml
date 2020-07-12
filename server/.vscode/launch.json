@@ -31,7 +31,7 @@
             "program": "prepare-standalone-deployment.py",
             "args": [
                 "--version",
-                "2.0a16",
+                "2.0a18",
             ],
             "cwd": "${workspaceFolder}",
             "jinja": true

@@ -3,9 +3,13 @@ T2WML Standalone Server App History
 
 Changes in version 2.0a18:
 -------------------------
-* upgrade to api v0.0.2
+* get rid of user login
+* switch to port 13000
 * get error listing cells when specific cells fail in wikify_region
 * (from 2.0a17): files are saved under their original names.
+* bug fix: storage folder was created based on cwd
+* color code cells based on their errors
+* upgrade to t2wml-api 0.0.2
 
 Changes in version 2.0a17:
 -------------------------
