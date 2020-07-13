@@ -13,11 +13,11 @@ def get_cache_class():
         cache_class = PickleCacher
     return cache_class
 
-class DataFile:
+class SpreadsheetFile:
     def __init__(self, file_path):
         self.file_path=file_path
         self.pandas_loader=PandasLoader(file_path)
-        self.sheets=self.pandas_loader.get_sheet_names()
+        self.sheet_names=self.pandas_loader.get_sheet_names()
         self.use_cache=use_cache
         if t2wml_settings["cache_data_files"]:
             self.init_cache()
