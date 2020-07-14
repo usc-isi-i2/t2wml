@@ -85,6 +85,11 @@ class RequestService {
     return response;
   }
 
+  public async getQnode(node: string) {
+    const response = await backendGet(`/qnode/${node}`);
+    return response;
+  }
+
 }
 
 export default RequestService;
