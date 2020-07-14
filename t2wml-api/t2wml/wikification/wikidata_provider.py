@@ -9,10 +9,10 @@ class WikidataProvider:
     def get_labels_and_descriptions(self, items, *args, **kwargs):
         raise NotImplementedError
     
-    def save_property(self, property, property_type):
+    def save_property(self, property, property_type, *args, **kwargs):
         pass
     
-    def save_item(self, item_id, item_dict):
+    def save_item(self, item_id, item_dict, *args, **kwargs):
         pass
 
     def __enter__(self):
@@ -109,7 +109,7 @@ class SparqlProvider(WikidataProvider):
                 self.save_item(wd_id, item_dict)
         return response
 
-    def save_property(self, property, property_type):
+    def save_property(self, property, property_type, *args, **kwargs):
         self.cache[property]=property_type
     
     def save_item(self, item_id, item_dict):

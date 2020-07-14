@@ -90,27 +90,48 @@ def add_properties_from_file(file_path):
     if Path(file_path).suffix == ".json":
         with open(file_path, 'r') as f:
             input_dict= json.load(f)
-    if Path(file_path).suffix == ".tsv":     
+    if Path(file_path).suffix == ".tsv":    
+        property_dict={} 
+        input_dict={}
         with open(file_path, 'r') as f:
             reader=csv.DictReader(f, delimiter="\t")
-            input_dict={row_dict["node1"]: str(row_dict["node2"]) for row_dict in reader if row_dict["label"]=="data_type"}
+            for row_dict in reader:
+                node1=row_dict["node1"]
+                label=row_dict["label"]
+                value=row_dict["node2"]
+                
+                if label=="data_type":
+                    input_dict[node1]={"property_type":value}
+                if label in ["label", "description"]:
+                    property_dict[(node1, label)]=value
+        for node1 in input_dict:
+            label=property_dict.get((node1, "label"))
+            description=property_dict.get((node1, "description"))
+            input_dict[node1].update({"label":label, "description":description})
+
 
     return_dict={"added":[], "present":[], "failed":[]}
     
     provider=get_provider()
     with provider as p:
-        for prop in input_dict:
-            prop_type=input_dict[prop]
+        for node_id in input_dict:
+            prop_info=input_dict[node_id]
+            if isinstance(prop_info, dict):
+                property_type=prop_info["property_type"]
+            else:
+                property_type=prop_info
+                prop_info={"property_type":property_type}
+
             try:
-                if prop_type not in ["GlobeCoordinate", "Quantity", "Time","String", "MonolingualText", 
+                if property_type not in ["GlobeCoordinate", "Quantity", "Time","String", "MonolingualText", 
                                      "ExternalIdentifier", "WikibaseItem", "WikibaseProperty", "Url"]:
-                    raise ValueError("Property type: "+prop_type+" not supported")
-                added=p.save_property(prop, prop_type)
+                    raise ValueError("Property type: "+property_type+" not supported")
+                added=p.save_property(node_id, **prop_info)
                 if added:
-                    return_dict["added"].append(prop)
+                    return_dict["added"].append(node_id)
                 else:
-                    return_dict["present"].append(prop)
+                    return_dict["present"].append(node_id)
             except Exception as e:
                 print(e)
-                return_dict["failed"].append((prop, str(e)))
+                return_dict["failed"].append((node_id, str(e)))
     return return_dict

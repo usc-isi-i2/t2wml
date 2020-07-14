@@ -2,22 +2,59 @@ from string import punctuation
 from flask import request
 import web_exceptions
 from models import Project
+from wikidata_models import WikidataItem, WikidataProperty
 from SPARQLWrapper import SPARQLWrapper, JSON
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
+wikidata_label_query_cache={}
+
+def query_wikidata_for_label(node):
+    try:
+        query="""SELECT DISTINCT * WHERE {
+                wd:""" +  node +  """ rdfs:label ?label . 
+                FILTER (langMatches( lang(?label), "EN" ) )  
+                }
+                LIMIT 1"""
+        sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
+        sparql = SPARQLWrapper(sparql_endpoint)
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+        label = results["results"]["bindings"][0]["label"]["value"]
+        return label
+    except:
+        #print("got an error from query result parsing")
+        return None
+    
+
 def get_qnode_label(node):
-    query="""SELECT DISTINCT * WHERE {
-        wd:""" +  node +  """ rdfs:label ?label . 
-        FILTER (langMatches( lang(?label), "EN" ) )  
-        }
-        LIMIT 1"""
-    sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
-    sparql = SPARQLWrapper(sparql_endpoint)
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-    label = results["results"]["bindings"][0]["label"]["value"]
+    cached_label=wikidata_label_query_cache.get(node)
+    if cached_label:
+        #print("used cache")
+        return cached_label
+
+    try:
+        wp= WikidataProperty.query.filter_by(wd_id=node).first()
+        if wp:
+            if wp.label:
+                #print("got from wp")
+                wikidata_label_query_cache[node]=wp.label
+                return wp.label
+        wp= WikidataItem.query.filter_by(wd_id=node).first()
+        if wp:
+            if wp.label:
+                #print("got from wi")
+                wikidata_label_query_cache[node]=wp.label
+                return wp.label
+    except Exception as e:
+        pass #continue directly to sparql query
+    
+    #print("queried wikidata")
+    label=query_wikidata_for_label(node)
+    wikidata_label_query_cache[node]=label
     return label
+    
+
 
 def make_frontend_err_dict(error):
     '''

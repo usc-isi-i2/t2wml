@@ -8,10 +8,16 @@ class WikidataProperty(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     wd_id = db.Column(db.String(64), index=True)
     property_type= db.Column(db.String(64))
+    label= db.Column(db.String(64))
+    description= db.Column(db.String(200))
 
     @staticmethod
-    def add(wikidata_property, property_type):
+    def add(wikidata_property, property_type, label=None, description=None):
         wp=WikidataProperty(wd_id=wikidata_property, property_type=property_type)
+        if label is not None:
+            wp.label=label
+        if description is not None:
+            wp.description=description
         try:
             db.session.add(wp)
             db.session.commit()
@@ -20,7 +26,7 @@ class WikidataProperty(db.Model):
             raise ValueAlreadyPresentError
 
     @staticmethod
-    def add_or_update(wikidata_property, property_type, do_session_commit=True):
+    def add_or_update(wikidata_property, property_type, label=None, description=None, do_session_commit=True):
         wp= WikidataProperty.query.filter_by(wd_id=wikidata_property).first()
         if wp:
             wp.property_type=property_type
@@ -29,6 +35,12 @@ class WikidataProperty(db.Model):
             wp=WikidataProperty(wd_id=wikidata_property, property_type=property_type)
             db.session.add(wp)
             added=True
+        
+        if label is not None:
+            wp.label=label
+        if description is not None:
+            wp.description=description
+
         if do_session_commit:
             db.session.commit()
         return added
@@ -53,8 +65,8 @@ class DatabaseProvider(FallbackSparql):
     def __init__(self, sparql_endpoint):
         super().__init__(sparql_endpoint)
     
-    def save_property(self, wd_property, property_type):
-        return WikidataProperty.add_or_update(wd_property, property_type, do_session_commit=False)
+    def save_property(self, wd_property, property_type, label=None, description=None):
+        return WikidataProperty.add_or_update(wd_property, property_type, label, description, do_session_commit=False)
     
     def save_item(self, item_id, item_dict):
         WikidataItem.add(item_id, item_dict['label'], item_dict['desc'], do_session_commit=False)
