@@ -13,7 +13,7 @@ from t2wml.wikification.item_table import ItemTable
 from t2wml.wikification.wikify_handling import wikifier
 from caching import CacheCellMapper
 from app_config import DEFAULT_SPARQL_ENDPOINT
-from wikidata_property import DatabaseProvider
+from wikidata_models import DatabaseProvider
 
 def wikify(region, filepath, sheet_name, context):
     df, problem_cells= wikifier(region, filepath, sheet_name, context)
