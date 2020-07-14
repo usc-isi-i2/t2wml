@@ -90,6 +90,11 @@ class RequestService {
     return response;
   }
 
+  public async addItemDefinitions(pid: string, formData: any) {
+    const response = await backendPost(`/project/${pid}/items`, formData);
+    return response;
+  }
+
 }
 
 export default RequestService;

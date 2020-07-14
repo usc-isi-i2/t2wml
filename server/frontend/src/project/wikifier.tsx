@@ -72,7 +72,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       errorMessage: {} as ErrorMessage,
     };
 
-    (wikiStore.wikifier as any).updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
+    wikiStore.wikifier.updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
   }
 
   onGridReady(params: WikifierData) {
@@ -688,6 +688,53 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     );
   }
 
+  uploadDefinitionsFile(event: any) {
+    // get definitions file
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // before sending request
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+
+    // send request
+    let formData = new FormData();
+    formData.append("file", file);
+    this.requestService.addItemDefinitions(wikiStore.project.pid, formData).then((json) => {
+      console.log("<Wikifier> <- %c/upload_definitions_file%c with:", LOG.link, LOG.default);
+      console.log(json);
+
+      // do something here
+      const { error } = json;
+
+      // if failure
+      if (error) {
+        throw Error(error);
+      }
+
+      // else, success
+      let { tableData, wikifierData, yamlData } = json;
+
+      debugger
+      // load table data
+     // TODO- update data here
+
+      // follow-ups (success)
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
+
+    }).catch((error: ErrorMessage) => {
+      console.log(error);
+      error.errorDescription += "\n\nCannot upload definitions file!";
+      this.setState({ errorMessage: error });
+    
+      // follow-ups (failure)
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
+    });
+  }
+
+
   render() {
 
     // render upload tooltip
@@ -750,6 +797,29 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             >
                 Wikify
             </Button>
+
+            {/* button to upload definitions file */}
+            <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
+                <Button
+                    className="d-inline-block float-right"
+                    variant="outline-light"
+                    size="sm"
+                    style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
+                    onClick={() => { document!.getElementById("file_definitions")!.click(); }}
+                >
+                    Add item definitions
+                </Button>
+            </OverlayTrigger>
+
+             {/* hidden input of item definitions file */}
+             <input
+              type="file"
+              id="file_definitions"
+              accept=".tsv"
+              style={{ display: "none" }}
+              onChange={this.uploadDefinitionsFile.bind(this)}
+              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
+            />
 
             </Card.Header>
 

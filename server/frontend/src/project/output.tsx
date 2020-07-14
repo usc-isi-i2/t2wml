@@ -284,24 +284,29 @@ class Output extends Component<OutputProperties, OutputState> {
     
     this.requestService.getQnode(node).then((res) => {
         const name = res.label;
-          if (field === "itemName") {
-            this.setState({ itemName: name });
-          } else if (field === "propertyName") {
-            this.setState({ propertyName: name });
-          } else if (field === "qualifiers") {
-            let qualifiers = this.state.qualifiers;
-            if (subfield === "propertyName") {
-              qualifiers[index]["propertyName"] = name;
-            } else if (subfield === "valueName") {
-              qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
-              qualifiers[index]["valueName"] = name;
-            }
-            this.setState({ qualifiers: qualifiers });
-          }
-          let cache = this.state.cache;
-          cache[node] = name;
-          this.setState({ cache: cache });
-          wikiStore.output.showSpinner = false;
+        if (field === "itemName") {
+        this.setState({ itemName: name });
+        } else if (field === "propertyName") {
+        this.setState({ propertyName: name });
+        } else if (field === "qualifiers") {
+        let qualifiers = this.state.qualifiers;
+        if (subfield === "propertyName") {
+            qualifiers[index]["propertyName"] = name;
+        } else if (subfield === "valueName") {
+            qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
+            qualifiers[index]["valueName"] = name;
+        }
+        this.setState({ qualifiers: qualifiers });
+        }
+        let cache = this.state.cache;
+        cache[node] = name;
+        this.setState({ cache: cache });
+        wikiStore.output.showSpinner = false;
+    }).catch((error: ErrorMessage) => {
+        //   console.log(error);
+        error.errorDescription += "\n\nCannot get qnode!";
+        this.setState({ errorMessage: error });
+        wikiStore.output.showSpinner = false;
     });
   }
 
