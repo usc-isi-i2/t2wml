@@ -1,6 +1,12 @@
 T2WML API History
 ===================================
 
+Changes in version 0.0.3:
+------------------------
+* DataFile is now SpreadsheetFile
+* bug fix:  bad access to sparql endpoint
+* add support for adding label and description when uploading properties in tsv
+
 Changes in version 0.0.2:
 -------------------------
 * when wikify_region fails on specific cells, return error listing those cells, and wikify the rest
