@@ -20,36 +20,38 @@ def query_wikidata_for_label(node):
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
+    except Exception as e:
+        print("got an error while making sparql query", str(e))
+        return None
+    
+    try:
         label = results["results"]["bindings"][0]["label"]["value"]
         return label
-    except:
-        #print("got an error from query result parsing")
+    except Exception as e:
+        print("results did not include a label")
         return None
     
 
 def get_qnode_label(node):
     cached_label=wikidata_label_query_cache.get(node)
     if cached_label:
-        #print("used cache")
         return cached_label
 
     try:
         wp= WikidataProperty.query.filter_by(wd_id=node).first()
         if wp:
             if wp.label:
-                #print("got from wp")
                 wikidata_label_query_cache[node]=wp.label
                 return wp.label
         wp= WikidataItem.query.filter_by(wd_id=node).first()
         if wp:
             if wp.label:
-                #print("got from wi")
                 wikidata_label_query_cache[node]=wp.label
                 return wp.label
     except Exception as e:
         pass #continue directly to sparql query
     
-    #print("queried wikidata")
+
     label=query_wikidata_for_label(node)
     wikidata_label_query_cache[node]=label
     return label
@@ -103,3 +105,4 @@ def get_project_details():
         project_detail["mdate"] = str(project.modification_date)
         projects.append(project_detail)
     return projects
+
