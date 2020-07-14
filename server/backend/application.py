@@ -128,7 +128,7 @@ def add_item_definitions(pid):
     response={}
     if project.current_file:
         sheet=project.current_file.current_sheet
-        item_table=get_item_table(wikifier_file, sheet)
+        item_table=get_item_table(project.wikifier_file, sheet)
         serialized_item_table = item_table.serialize_table()
         response.update(serialized_item_table)
     return response, 200
