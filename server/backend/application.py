@@ -127,6 +127,8 @@ def upload_properties(pid):
 @json_response
 def get_qnode_info(qid):
     label=get_qnode_label(qid)
+    if label is None:
+        return {}, 404
     return {"label":label}, 200
 
 
