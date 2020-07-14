@@ -694,7 +694,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     if (!file) return;
 
     // before sending request
-    wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
 
     // send request
@@ -713,14 +712,11 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       }
 
       // else, success
-      let { tableData, wikifierData, yamlData } = json;
-
-      debugger
-      // load table data
-     // TODO- update data here
+      // load wikifier data
+      let { qnodes, rowData } = json;
+      this.updateWikifier(qnodes, rowData);
 
       // follow-ups (success)
-      wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
@@ -729,7 +725,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       this.setState({ errorMessage: error });
     
       // follow-ups (failure)
-      wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     });
   }
@@ -746,6 +741,15 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
         </div>
       </Tooltip>
     );
+
+    const uploadDefToolTipHtml = (
+        <Tooltip style={{ width: "fit-content" }} id="upload">
+          <div className="text-left small">
+            <b>Accepted file types:</b><br />
+            • Comma-Separated Values (.tsv)
+          </div>
+        </Tooltip>
+      );
 
     return (
     <Fragment>
@@ -769,7 +773,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                 className="text-white font-weight-bold d-inline-block text-truncate"
 
                 // style={{ width: "calc(100% - 75px)", cursor: "default" }}
-                style={{ width: "calc(100% - 150px)", cursor: "default" }}
+                style={{ width: "calc(100% - 300px)", cursor: "default" }}
             >
                 Wikifier
             </div>
@@ -797,9 +801,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             >
                 Wikify
             </Button>
-
+        
             {/* button to upload definitions file */}
-            <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
+            <OverlayTrigger overlay={uploadDefToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
                 <Button
                     className="d-inline-block float-right"
                     variant="outline-light"
@@ -807,7 +811,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                     style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
                     onClick={() => { document!.getElementById("file_definitions")!.click(); }}
                 >
-                    Add item definitions
+                    Add item definitions 
                 </Button>
             </OverlayTrigger>
 
