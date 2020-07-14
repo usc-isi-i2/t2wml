@@ -200,21 +200,28 @@ def change_sheet(pid, sheet_name):
                 "error": None
             }
     
-    data_file=project.current_file
-    data_file.change_sheet(sheet_name)
-    sheet = data_file.current_sheet
     
-    response["tableData"]=table_data(data_file, sheet.name)
+    data_file=project.current_file
+    old_sheet=data_file.current_sheet
+    data_file.change_sheet(sheet_name)
+    try:
+        sheet = data_file.current_sheet
+        
+        response["tableData"]=table_data(data_file, sheet.name)
 
 
-    item_table=get_item_table(project.wikifier_file, sheet)
-    serialized_item_table = item_table.serialize_table()
-    response["wikifierData"]=serialized_item_table
+        item_table=get_item_table(project.wikifier_file, sheet)
+        serialized_item_table = item_table.serialize_table()
+        response["wikifierData"]=serialized_item_table
 
-    y=handle_yaml(sheet, project.wikifier_file)
-    response["yamlData"]=y
+        y=handle_yaml(sheet, project.wikifier_file)
+        response["yamlData"]=y
 
-    return response, 200
+        return response, 200
+    except Exception as e: #otherwise we can end up stuck on a corrupted sheet
+        data_file.change_sheet(old_sheet)
+        raise e
+
 
 
 @app.route('/api/wikifier/<pid>', methods=['POST'])
