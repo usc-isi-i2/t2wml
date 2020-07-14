@@ -71,13 +71,10 @@ def upload_item_defs(file_path):
                 property_dict[(node1, label)]=value
                 items.append(node1)
 
-    added_items=[]
     for node1 in items:
         label=property_dict.get((node1, "label"))
         description=property_dict.get((node1, "description"))
         added=WikidataItem.add_or_update(node1, label, description, do_session_commit=False)
-        if added:
-            added_items.append(node1)
     
     WikidataItem.do_commit()
 
