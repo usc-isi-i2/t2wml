@@ -2,6 +2,22 @@ from string import punctuation
 from flask import request
 import web_exceptions
 from models import Project
+from SPARQLWrapper import SPARQLWrapper, JSON
+from app_config import DEFAULT_SPARQL_ENDPOINT
+
+def get_qnode_label(node):
+    query="""SELECT DISTINCT * WHERE {
+        wd:""" +  node +  """ rdfs:label ?label . 
+        FILTER (langMatches( lang(?label), "EN" ) )  
+        }
+        LIMIT 1"""
+    sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
+    sparql = SPARQLWrapper(sparql_endpoint)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    label = results["results"]["bindings"][0]["label"]["value"]
+    return label
 
 def make_frontend_err_dict(error):
     '''

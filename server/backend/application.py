@@ -11,7 +11,8 @@ from models import Project, DataFile, YamlFile, WikifierFile, PropertiesFile
 import web_exceptions
 from web_exceptions import WebException
 from t2wml.utils.t2wml_exceptions import T2WMLException
-from utils import make_frontend_err_dict, string_is_valid, file_upload_validator, get_project_details
+from utils import (make_frontend_err_dict, string_is_valid, file_upload_validator, 
+                   get_project_details, get_qnode_label)
 from t2wml_web import (update_t2wml_settings, download, highlight_region, handle_yaml, 
                        get_cell, table_data, get_item_table, wikify)
 
@@ -120,6 +121,14 @@ def upload_properties(pid):
     in_file = file_upload_validator({"json", "tsv"})
     return_dict=PropertiesFile.create(project, in_file)
     return return_dict, 200
+
+
+@app.route('/api/qnode/<qid>', methods=['GET'])
+@json_response
+def get_qnode_info(qid):
+    label=get_qnode_label(qid)
+    return {"label":label}, 200
+
 
 
 @app.route('/api/data/<pid>', methods=['POST'])
