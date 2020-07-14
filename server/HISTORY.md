@@ -1,6 +1,14 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.0a19:
+-------------------------
+* added support for labels and descriptions when uploading kgtk property file
+* added button for uploading supplementary item information (labels and descriptions) in kgtk format
+* get labels from backend, including custom uploaded ones, not directly from wikidata
+   * includes small performance boost from caching
+* bug fix: items weren't being saved to database
+
 Changes in version 2.0a18:
 -------------------------
 * get rid of user login
