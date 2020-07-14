@@ -94,7 +94,7 @@ class DatabaseProvider(FallbackSparql):
         return WikidataProperty.add_or_update(wd_property, property_type, label, description, do_session_commit=False)
     
     def save_item(self, item_id, item_dict):
-        WikidataItem.add(item_id, item_dict['label'], item_dict['desc'], do_session_commit=True)
+        WikidataItem.add(item_id, item_dict['label'], item_dict['desc'])
     
     def try_get_property_type(self, wikidata_property, *args, **kwargs):
         prop = WikidataProperty.query.filter_by(wd_id=wikidata_property).first()
