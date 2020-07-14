@@ -1,6 +1,6 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 import json
-from t2wml import settings
+from t2wml.settings import t2wml_settings
 
 class WikidataProvider:
     def get_property_type(self, wikidata_property, *args, **kwargs):
@@ -29,7 +29,7 @@ class SparqlProvider(WikidataProvider):
     '''
     def __init__(self, sparql_endpoint=None, *args, **kwargs):
         if sparql_endpoint is None:
-            sparql_endpoint=settings.sparql_endpoint
+            sparql_endpoint=t2wml_settings["sparql_endpoint"]
         self.sparql_endpoint=sparql_endpoint
         self.cache={}
 
@@ -157,6 +157,4 @@ class DictionaryProvider(SparqlProvider):
     def __init__(self, ref_dict, sparql_endpoint=None, *args, **kwargs):
         super().__init__(sparql_endpoint)
         self.cache=ref_dict
-
-
 
