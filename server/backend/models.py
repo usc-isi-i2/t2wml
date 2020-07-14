@@ -173,7 +173,19 @@ class PropertiesFile(SavedFile):
         pf= super().create_from_filepath(project, in_file)
         return_dict=add_properties_from_file(pf.file_path)
         return return_dict
-        
+
+
+class ItemsFile(SavedFile):
+    __tablename__ = 'itemfile'
+    id = db.Column(db.Integer, db.ForeignKey('saved_file.id'), primary_key=True)
+    sub_folder="if"
+    __mapper_args__ = {
+        'polymorphic_identity':'itemfile',
+    }
+
+    
+     
+
 class DataFile(SavedFile):
     __tablename__ = 'datafile'
     sub_folder="df"

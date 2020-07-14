@@ -1,20 +1,24 @@
 import json
+import os
 import shutil
 import sys
-import os
 from pathlib import Path
-from flask import request, render_template, redirect, url_for, session, make_response
+
+from flask import (make_response, redirect, render_template, request, session,
+                   url_for)
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
-from app_config import app
-from models import Project, DataFile, YamlFile, WikifierFile, PropertiesFile
+
 import web_exceptions
-from web_exceptions import WebException
+from app_config import app
+from models import (DataFile, ItemsFile, Project, PropertiesFile, WikifierFile, YamlFile)
 from t2wml.utils.t2wml_exceptions import T2WMLException
-from utils import (make_frontend_err_dict, string_is_valid, file_upload_validator, 
-                   get_project_details, get_qnode_label)
-from t2wml_web import (update_t2wml_settings, download, highlight_region, handle_yaml, 
-                       get_cell, table_data, get_item_table, wikify)
+from t2wml_web import (download, get_cell, get_item_table, handle_yaml,
+                       highlight_region, table_data, update_t2wml_settings,
+                       wikify)
+from utils import (file_upload_validator, get_project_details, get_qnode_label,
+                    make_frontend_err_dict, string_is_valid, upload_item_defs)
+from web_exceptions import WebException
 
 debug_mode = False
 update_t2wml_settings()
@@ -112,6 +116,23 @@ def get_project_files(pid):
         response["yamlData"]=y
 
     return response, 200
+
+
+@app.route('/api/project/<pid>/items', methods=['POST'])
+@json_response
+def add_item_definitions(pid):
+    project = get_project(pid)
+    in_file = file_upload_validator({"tsv"})
+    i_f=ItemsFile.create(project, in_file)
+    upload_item_defs(i_f.file_path)
+    response={}
+    if project.current_file:
+        sheet=project.current_file.current_sheet
+        item_table=get_item_table(wikifier_file, sheet)
+        serialized_item_table = item_table.serialize_table()
+        response.update(serialized_item_table)
+    return response, 200
+    
 
 
 @app.route('/api/project/<pid>/properties', methods=['POST'])

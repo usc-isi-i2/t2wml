@@ -57,6 +57,25 @@ def get_qnode_label(node):
     return label
     
 
+def upload_item_defs(file_path):
+    property_dict={} 
+    items=[]
+    with open(file_path, 'r') as f:
+        reader=csv.DictReader(f, delimiter="\t")
+        for row_dict in reader:
+            node1=row_dict["node1"]
+            label=row_dict["label"]
+            value=row_dict["node2"]
+            if label in ["label", "description"]:
+                property_dict[(node1, label)]=value
+                items.append(node1)
+
+    for node1 in items:
+        label=property_dict.get((node1, "label"))
+        description=property_dict.get((node1, "description"))
+        WikidataItem.add_or_update(node1, label, description, do_session_commit=False)
+    
+    WikidataItem.do_commit()
 
 def make_frontend_err_dict(error):
     '''

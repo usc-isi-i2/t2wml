@@ -52,11 +52,36 @@ class WikidataItem(db.Model):
     description = db.Column(db.String(1000))
 
     @staticmethod
-    def add(wd_id, label, desc, do_session_commit=True):
-        wi=WikidataItem(wd_id=wd_id, label=label, description=desc)
+    def add(wd_id, label, description):
+        wi=WikidataItem(wd_id=wd_id, label=label, description=description)
         db.session.add(wi)
+        db.session.commit()
+    
+    @staticmethod
+    def add_or_update(wd_id, label=None, description=None, do_session_commit=True):
+        wi= WikidataItem.query.filter_by(wd_id=wd_id).first()
+        if wi:
+            added=False
+        else:
+            wi=WikidataItem(wd_id=wd_id)
+            db.session.add(wi)
+            added=True
+        if label:
+            wi.label=label
+        if description:
+            wi.description=description
         if do_session_commit:
             db.session.commit()
+        return added
+    
+    @staticmethod
+    def do_commit():
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            raise ValueError("Failed to commit to database session")
+
 
 
 from t2wml.wikification.wikidata_provider import FallbackSparql
