@@ -1,3 +1,4 @@
+import csv
 from string import punctuation
 from flask import request
 import web_exceptions
@@ -125,3 +126,5 @@ def get_project_details():
         projects.append(project_detail)
     return projects
 
+
+upload_item_defs(r"D:\UserData\devora\Sources\pedro\various files\aid-worker\template-output\extra_edges.tsv")
