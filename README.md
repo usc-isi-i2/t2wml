@@ -1,8 +1,8 @@
 # T2WML: A Cell-Based Language To Map Tables Into Wikidata Records
 
-* [Installing the server using pip](#serverinstall)
+* [The T2WML standalone local server](#server)
+* [The T2WML programming API](#api)
 * [Running T2WML for development](#development)
-* [Usage Within Code](#usage_within_code)
 * [Usage with GUI](#usage_with_gui)
 * [Writing T2WML](#writing_t2wml)
 * [Features](#features)
@@ -13,88 +13,59 @@
   <tr><td><b>Python version:</b></td><td>Python 3.6+</td></tr>
 </table>
 
-<span id="serverinstall"></span>
-## Installing the server with pip
+
+## The T2WML standalone local server
+<span id="server"></span>
 
 A locally hosted web GUI version of t2wml can be installed quickly using pip
 
 1. make a fresh virtual environment
-2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a6`
+2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a17`
 3. run `t2wml-server`
-4. navigate to [`http://localhost:5000/`](http://localhost:5000/) in a Chrome browser
+4. navigate to [`http://localhost:13000/`](http://localhost:13000/) in a Chrome browser
 
-<span id="development"></span>
+
+## The T2WML programming API
+<span id="api"></span>
+
+You can write your own code using the T2WML programming API
+
+1. make a fresh virtual environment
+2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-api`
+3. You can now use `from t2wml import...` to write code (see the [API guide](t2wml-api/API.md))
+
+
 ## Running T2WML for development
+<span id="development"></span>
 
 1. Clone the repository
-2. Install the python requirements
-	`pip install -r requirements.txt`
+2. Create a virtual environment
+3. Install the t2wml API (optional: in editable mode with the -e flag)
+	`pip install t2wml-api -e`
 	
 	On Windows you may encounter an error saying that `etk.wikidata` cannot be imported when you run the backend.
     If you encounter it, run:
 
     `pip install --force-reinstall etk`
-3. Run the backend server: 
+4. Install the remaining requirements from server/requirements.txt
+   `pip install -r server\requirements.txt`
+
+5. In the folder server/backend, run the backend server: 
     `python application.py`
-4. Install the frontend requirements:
+6. Install the frontend requirements:
    In the folder "frontend", run `npm install`
-5. Run the frontend server: 
+7. Run the frontend server: 
    In the folder "frontend", run `npm run start`
 
-The backend will be running on port 5000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
+The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
+
+The repo also contains vscode configurations for the convenience of those working in VS Code.
 
 
 
-<span id="usage_within_code"></span>
-## Usage Within Code
 
-For now, using within code requires running from the repo (not via pip install). It is not necessary to follow the steps for installing the frontend, only the backend.
-
-```
-from driver import run_t2wml
-run_t2wml(data_file_path,  wikified_output_path, t2wml_spec, output_directory, sheet_name, sparql_endpoint, filetype, project_name)
-```
-Arguments:
-```
-Mandatory Arguments:
-    data_file_path: string
-    wikified_output_path: string 
-    t2wml_spec: string
-    output_directory: string 
-Optional Arguments:
-    sheet_name: string
-    sparql_endpoint: string
-    filetype: valid values "ttl", "json", "tsv"
-    project_name: string
-```
-
-Default Values:
-``` 
-    sparql_endpoint = DEFAULT_SPARQL_ENDPOINT ("https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql")
-    filetype = "ttl"
-    project_name = "DriverProject"
-```
-
-> You can edit DEFAULT_SPARQL_ENDPOINT in [/app_config.py](https://github.com/usc-isi-i2/t2wml/blob/master/app_config.py)
-
-Output:
-
-The function will create a directory structure in the output directory which will have the results file and changes.tsv files.
-
-Output Directory Structure:
-```
-output_directory/
-├── excel_file_name/
-│   └── sheet_name/
-|       ├── results.ttl
-|       └── changes.tsv
-└── csv_file_name/
-    ├── results.ttl (or results.json or results.tsv)
-    └── changes.tsv
-```
-
-<span id="usage_with_gui"></span>
 ## Usage with GUI
+<span id="usage_with_gui"></span>
 
 1. Open the GUI
 2. In **Table Viewer**,
@@ -112,13 +83,15 @@ output_directory/
 	2. click **Download** to get all results
 
 
-<span id="writing_t2wml"></span>
+
 ## Writing T2WML
+<span id="writing_t2wml"></span>
 
 Check out the [grammar guide](docs/grammar.md)
 
-<span id="features"></span>
+
 ## Features
+<span id="features"></span>
 
 > Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
@@ -131,8 +104,9 @@ Check out the [grammar guide](docs/grammar.md)
 <span id="preview_result"></span>⬇️ Preview result
 ![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-output.gif)
 
-<span id="faqs"></span>
+
 ## FAQs
+<span id="faqs"></span>
 
 * **Installation failed due to `etk`?**
 
@@ -144,7 +118,7 @@ Check out the [grammar guide](docs/grammar.md)
 
 * **Login failed or encountered an authentication error like `400 (OAuth2 Error)`?**
   
-    Access T2WML at `http://localhost:5000/` instead of `http://127.0.0.1:5000`.
+    Access T2WML at `http://localhost:13000/` instead of `http://127.0.0.1:13000`.
 
 * **Error saying can't find static/index.html?**
   
