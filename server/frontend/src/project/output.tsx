@@ -302,10 +302,8 @@ class Output extends Component<OutputProperties, OutputState> {
         cache[node] = name;
         this.setState({ cache: cache });
         wikiStore.output.showSpinner = false;
-    }).catch((error: ErrorMessage) => {
+    }).catch((error: any) => {
         //   console.log(error);
-        error.errorDescription += "\n\nCannot get qnode!";
-        this.setState({ errorMessage: error });
         wikiStore.output.showSpinner = false;
     });
   }
