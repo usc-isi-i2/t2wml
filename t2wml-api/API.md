@@ -4,8 +4,10 @@
 * [CellMapper](#mapper)
    * [Region](#region)
    * [Template](#template)
-* [ItemTable](#wikifier)
-* [The WikidataProvider](#wikiprov)
+* [Wikifier](#wikifier)
+   * [ItemTable](#itemtable)
+* [WikifierService](#wikiservice)
+* [The WikidataProvider](#wikiprovider)
 * [Convenience Functions](#convenience)
 * [Examples of using the API](#examples)
 
@@ -23,23 +25,47 @@ For convenience, it can also be created from files, with the class method `gener
 After generation, it contains as properties the `statements`, `metadata`, and `errors` from the generation. The user can examine and process these properties themselves, or they can use KnowledgeGraph's functions to generate 
 
 
-## DataSheet and DataFile
+## Sheet and SpreadsheetFile
 <span id="data"></span>
+
+A Sheet is created with a path to a data file and a sheet name. 
+
+For csv files, the sheet name is the same as the file name, so for a file example.csv, the sheet name would also be "example.csv".
+
+A SpreadsheetFile is a convenience class for holding a collection of sheets within one file. IT is initialized with the path to the data file.
+
 
 ## CellMapper
 <span id="mapper"></span>
 
+The CellMapper class is responsible for holding the logic for mapping a sheet to a collection of statements. This consists of two parts, the `region` and the `template` properties respectively.
+
 ### Region
 <span id="region"></span>
+
+The region is an iterator over column+row indices. It must define the function __iter__ which yields (column, row) tuples. The default implementation is created from the region section of the statement mapping in a yaml file.
 
 ### Template
 <span id="template"></span>
 
-## ItemTable
+The template class is used to define how to create a statement from a single cell within a sheet. The implementation details are currently too internal to allow easy customizing. It is created from the template section of the statement mapping in a yaml file. 
+
+## Wikifier
 <span id="wikifier"></span>
 
+### ItemTable
+<span id="itemtable"></span>
+
+## Wikifier
+<span id="wikiservice"></span>
+
+You can send a spreadsheet to a wikifier service endpoint and receive back a wikified result.
+
+The service returns a dataframe. The dataframe is created in the wikifier format, with row, column, and value defined. 
+
+
 ## The WikidataProvider
-<span id="wikiprov"></span>
+<span id="wikiprovider"></span>
 The WikidataProvider class is responsible for providing property types for property IDs and for providing labels and descriptions for item IDs. 
 
 Two already-implemented WikidataProvider classes are provided in t2wml.wikification.wikidata_provider:
@@ -137,6 +163,11 @@ class DatabaseProvider(FallbackSparql):
 
 ## Convenience Functions
 <span id="convenience"></span>
+
+* `set_wikidata_provider(wikidata_provider)`
+* `set_sparql_endpoint(sparql_endpoint)`
+* `add_properties(properties_file_path)`
+* `create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath, output_filepath=None, output_format="json")`
 
 ## Examples of code
 <span id="examples"></span>
