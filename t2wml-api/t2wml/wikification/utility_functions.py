@@ -81,11 +81,6 @@ def _get_property_type(wikidata_property):
         raise ValueError("Property "+wikidata_property+" not found")
     return property_type
 
-def get_labels_and_descriptions(items, *args, **kwargs):
-    provider=get_provider()
-    return provider.get_labels_and_descriptions(items, *args, **kwargs)
-
-
 def add_properties_from_file(file_path):
     if Path(file_path).suffix == ".json":
         with open(file_path, 'r') as f:
