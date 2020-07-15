@@ -11,6 +11,7 @@ unit_test_folder=os.path.join(repo_folder, "t2wml-api", "unit_tests", "ground_tr
 add_properties_from_file(os.path.join(unit_test_folder, "property_type_map.json"))
 
 class JsonTest(unittest.TestCase):
+    maxDiff = None
     def validate_results(self, results, expected):
         #for now this compares cell by cell. 
         #we could eventually have this compare more granularly, if we see there's specific properties we need to ignore
@@ -26,7 +27,6 @@ class JsonTest(unittest.TestCase):
 
 
 class TestHomicideData(JsonTest):
-    maxDiff = None
     def setUp(self):
         self.data_file=os.path.join(dataset_folder, "homicide", "homicide_report_total_and_sex.xlsx")
         self.wikifier_file=os.path.join(dataset_folder, "wikifier_general.csv")
@@ -125,7 +125,6 @@ class TestHomicideData(JsonTest):
         self.run_test_on_sheet(sheet_name)
 
 class TestBelgiumRegex(JsonTest):
-    maxDiff = None
     def setUp(self):
         self.data_file=os.path.join(unit_test_folder, "belgium-regex", "Belgium.csv")
         self.wikifier_file=os.path.join(unit_test_folder, "belgium-regex", "wikifier.csv")
@@ -147,7 +146,6 @@ class TestBelgiumRegex(JsonTest):
 
 
 class TestErrorCatching(JsonTest):
-    maxDiff = None
     def setUp(self):
         test_folder=os.path.join(unit_test_folder, "error-catching")
         self.data_file=os.path.join(test_folder, "input_1.csv")
