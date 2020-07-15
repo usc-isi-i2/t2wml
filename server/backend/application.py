@@ -13,7 +13,7 @@ import web_exceptions
 from app_config import app
 from models import (DataFile, ItemsFile, Project, PropertiesFile, WikifierFile, YamlFile)
 from t2wml.utils.t2wml_exceptions import T2WMLException
-from t2wml_web import (download, get_cell, get_item_table, handle_yaml,
+from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        highlight_region, table_data, update_t2wml_settings,
                        wikify)
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
@@ -66,10 +66,6 @@ def get_project_meta():
     return data, 200
 
 
-
-
-
-
 @app.route('/api/project', methods=['POST'])
 @json_response
 def create_project():
@@ -83,8 +79,6 @@ def create_project():
         project= Project.create(project_title)
         response['pid'] = project.id
         return response, 201
-
-
 
 
 @app.route('/api/project/<pid>', methods=['GET'])
@@ -108,11 +102,9 @@ def get_project_files(pid):
     if data_file:
         sheet = data_file.current_sheet
         response["tableData"]=table_data(data_file, sheet_name=sheet.name)
-        item_table=get_item_table(project.wikifier_file, sheet)
-        serialized_item_table = item_table.serialize_table()
-        response["wikifierData"] = serialized_item_table
+        response["wikifierData"] = serialize_item_table(project, sheet)
         
-        y=handle_yaml(sheet, project.wikifier_file)
+        y=handle_yaml(sheet, project)
         response["yamlData"]=y
 
     return response, 200
@@ -128,8 +120,7 @@ def add_item_definitions(pid):
     response={}
     if project.current_file:
         sheet=project.current_file.current_sheet
-        item_table=get_item_table(project.wikifier_file, sheet)
-        serialized_item_table = item_table.serialize_table()
+        serialized_item_table = serialize_item_table(project, sheet)
         response.update(serialized_item_table)
     return response, 200
     
@@ -173,12 +164,10 @@ def upload_data_file(pid):
     response["tableData"]=table_data(data_file)
     
     sheet=data_file.current_sheet
-    item_table=get_item_table(project.wikifier_file, sheet)
-    serialized_item_table = item_table.serialize_table()
-    response["wikifierData"]=serialized_item_table
+    response["wikifierData"]=serialize_item_table(project, sheet)
 
 
-    y=handle_yaml(sheet, project.wikifier_file)
+    y=handle_yaml(sheet, project)
     response["yamlData"]=y
 
     return response, 200
@@ -209,12 +198,9 @@ def change_sheet(pid, sheet_name):
         
         response["tableData"]=table_data(data_file, sheet.name)
 
+        response["wikifierData"]=serialize_item_table(project, sheet)
 
-        item_table=get_item_table(project.wikifier_file, sheet)
-        serialized_item_table = item_table.serialize_table()
-        response["wikifierData"]=serialized_item_table
-
-        y=handle_yaml(sheet, project.wikifier_file)
+        y=handle_yaml(sheet, project)
         response["yamlData"]=y
 
         return response, 200
@@ -236,11 +222,9 @@ def upload_wikifier_output(pid):
     in_file = file_upload_validator({"csv"})
     
     wikifier_file = WikifierFile.create(project, in_file)
-    
     if project.current_file:
         sheet=project.current_file.current_sheet
-        item_table=get_item_table(wikifier_file, sheet)
-        serialized_item_table = item_table.serialize_table()
+        serialized_item_table = serialize_item_table(project, sheet)
         response.update(serialized_item_table) #does not go into field wikifierData but is dumped directly
 
 
@@ -268,8 +252,8 @@ def wikify_region(pid):
             cell_qnode_map, problem_cells=wikify(region, project.current_file.file_path, sheet.name, context)
             wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
             
-            item_table=get_item_table(wf, sheet, flag=flag)
-            data = item_table.serialize_table()
+            data = serialize_item_table(project, sheet)
+
             if problem_cells:
                 error_dict={
                     "errorCode": 400,
@@ -305,7 +289,7 @@ def upload_yaml(pid):
             sheet.yamlfiles.append(yf)
             project.modify()
 
-            response['yamlRegions']=highlight_region(sheet, yf, project.wikifier_file)
+            response['yamlRegions']=highlight_region(sheet, yf, project)
         else:
             response['yamlRegions'] = None
             raise web_exception.YAMLEvaluatedWithoutDataFileException("Upload data file before applying YAML.")
@@ -327,7 +311,7 @@ def get_cell_statement(pid, col, row):
     yaml_file = sheet.yaml_file
     if not yaml_file:
         raise web_exception.CellResolutionWithoutYAMLFileException("Upload YAML file before resolving cell.")
-    data = get_cell(sheet, yaml_file, project.wikifier_file, col, row)
+    data = get_cell(sheet, yaml_file, project, col, row)
     return data, 200
 
 
@@ -343,7 +327,7 @@ def downloader(pid, filetype):
     yaml_file = sheet.yaml_file
     if not yaml_file: #the frontend disables this, this is just another layer of checking
         raise web_exception.CellResolutionWithoutYAMLFileException("Cannot download report without uploading YAML file first")
-    response = download(sheet, yaml_file, project.wikifier_file, filetype, project.name)
+    response = download(sheet, yaml_file, project, filetype, project.name)
     return response, 200
 
 

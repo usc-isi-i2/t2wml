@@ -9,7 +9,7 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache={}
 
-def query_wikidata_for_label_and_description(self, items: str):
+def query_wikidata_for_label_and_description(items):
         items = ' wd:'.join(items)
         items="wd:"+items
         
@@ -23,7 +23,7 @@ def query_wikidata_for_label_and_description(self, items: str):
                 FILTER (langMatches(lang(?desc),"EN"))
                 }
                 GROUP BY ?qnode"""
-        sparql = SPARQLWrapper(self.sparql_endpoint)
+        sparql = SPARQLWrapper(DEFAULT_SPARQL_ENDPOINT)
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         try:
