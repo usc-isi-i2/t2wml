@@ -746,7 +746,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
         <Tooltip style={{ width: "fit-content" }} id="upload">
           <div className="text-left small">
             <b>Accepted file types:</b><br />
-            • Comma-Separated Values (.tsv)
+            • Tab-Separated kgtk files(.tsv)
           </div>
         </Tooltip>
       );
