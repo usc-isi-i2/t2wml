@@ -10,7 +10,6 @@ from t2wml.spreadsheets.sheet import Sheet
 def wikifier(cell_range: str, data_file_path: str, sheet_name: str, context) -> dict:
     """
     This function processes the calls to the wikifier service
-    :param item_table:
     :param cell_range: (called region in UI)
     :param excel_file_path:
     :param sheet_name:
@@ -18,7 +17,7 @@ def wikifier(cell_range: str, data_file_path: str, sheet_name: str, context) -> 
     """
     df, problem_cells = wikify(cell_range, data_file_path, sheet_name)
     if not context:
-        context = '__NO_CONTEXT__'
+        context = ''
     df['context'] = context
     return df, problem_cells
 

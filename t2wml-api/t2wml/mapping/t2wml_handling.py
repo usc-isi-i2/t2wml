@@ -150,8 +150,8 @@ def get_template_statement(template, context):
     return template, errors
     
     
-def get_all_template_statements(cell_mapper, sheet, item_table):
-    update_bindings(item_table=item_table, sheet=sheet)
+def get_all_template_statements(cell_mapper, sheet, wikifier):
+    update_bindings(item_table=wikifier.item_table, sheet=sheet)
     statements={}
     errors={}
     metadata={
@@ -179,12 +179,12 @@ def get_all_template_statements(cell_mapper, sheet, item_table):
 
 
 
-def resolve_cell(cell_mapper, sheet, item_table, col, row):
+def resolve_cell(cell_mapper, sheet, wikifier, col, row):
     '''
     col: a column string character (eg A, B)
     row: resolves to an int (eg '1', 1.0, 1)
     '''
-    update_bindings(item_table=item_table, sheet=sheet)
+    update_bindings(item_table=wikifier.item_table, sheet=sheet)
     context={"t_var_row":int(row), "t_var_col":char_dict[col]}
     statement, errors=get_template_statement(cell_mapper.template, context)
     return statement, errors

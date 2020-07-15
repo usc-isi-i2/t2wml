@@ -7,7 +7,7 @@ from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.mapping.triple_generator import generate_triples
 from t2wml.settings import t2wml_settings
 from t2wml.utils.t2wml_exceptions import FileTypeNotSupportedException
-from t2wml.wikification.item_table import ItemTable
+from t2wml.wikification.item_table import Wikifier
 from t2wml.wikification.utility_functions import add_properties_from_file
 
 
@@ -39,17 +39,17 @@ class KnowledgeGraph:
         return cls(statements, errors, metadata)
             
     @classmethod
-    def generate(cls, cell_mapper, sheet, item_table):
-        statements, errors, metadata = get_all_template_statements(cell_mapper, sheet, item_table)
+    def generate(cls, cell_mapper, sheet, wikifier):
+        statements, errors, metadata = get_all_template_statements(cell_mapper, sheet, wikifier)
         return cls(statements, errors, metadata)
     
     @classmethod
     def generate_from_files(cls, data_file_path, sheet_name, yaml_file_path, wikifier_filepath):
-        item_table=ItemTable()
-        item_table.update_table_from_wikifier_file(wikifier_filepath, data_file_path, sheet_name)
+        wikifier=Wikifier()
+        wikifier.add_file(wikifier_filepath)
         cell_mapper=CellMapper(yaml_file_path)
         sheet=Sheet(data_file_path, sheet_name)
-        return cls.generate(cell_mapper, sheet, item_table)
+        return cls.generate(cell_mapper, sheet, wikifier)
     
     def get_output(self, filetype):
         download_data=get_file_output_from_statements(self, filetype)

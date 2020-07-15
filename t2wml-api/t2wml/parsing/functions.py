@@ -153,7 +153,7 @@ def concat(*args):
     r=ReturnClass(None, None, return_str)
     return r
 
-def get_item(input, context="__NO_CONTEXT__"):
+def get_item(input, context=''):
     value= bindings.item_table.get_item_by_string(str(input), context)
     if isinstance(input, ReturnClass):
         return ReturnClass(input.col, input.row, value)
