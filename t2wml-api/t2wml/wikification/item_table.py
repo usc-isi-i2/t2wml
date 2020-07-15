@@ -6,8 +6,6 @@ from t2wml.utils.t2wml_exceptions import ItemNotFoundException
 from t2wml.utils.bindings import bindings
 
 
-
-
 class ItemTable:
     def __init__(self, lookup_table={}):
         self.lookup_table=defaultdict(dict, lookup_table)
@@ -53,21 +51,6 @@ class ItemTable:
             return item
         raise ItemNotFoundException("Could not find item for value: "+value)
 
-    def serialize(self):
-        return {
-            "lookup_table":self.lookup_table
-        }
-    def save_to_file(self, file_path):
-        output=json.dumps(self.serialize())
-        with open(file_path, 'w') as f:
-            f.write(output)
-
-    @classmethod
-    def load_from_file(cls, file_path):
-        with open(file_path, 'r') as f:
-            args=json.load(f)
-        return cls(**args)
-
     def update_table_from_dataframe(self, df):
         df=df.fillna('')
         df=df.replace(r'^\s+$', '', regex=True)
@@ -99,7 +82,6 @@ class Wikifier:
         self._data_frames=[]
         self._item_table=ItemTable()
 
-    @property
     def print_data(self):
         print("The wikifier contains {} wiki files as well as {} non-file dataframes".format(len(self.wiki_files), self.non_file_df_count))
         if len(self.wiki_files):
@@ -121,7 +103,6 @@ class Wikifier:
         self._data_frames.append(df)
         return overwritten
         
-
     def add_dataframe(self, df):
         expected_columns=set(['row', 'column', 'value', 'context', 'item'])
         columns=set(df.columns)
@@ -139,8 +120,9 @@ class Wikifier:
     def save(self, filename):
         output=json.dumps({
             "wiki_files":self.wiki_files,
-            "df_count":self.non_file_df_count,
-            "item_table":self.item_table.serialize()
+            "non_file_df_count":self.non_file_df_count,
+            "lookup_table":self.item_table.lookup_table,
+            "dataframes":[df.to_json() for df in self._data_frames]
         })
         with open(filename, 'w') as f:
             f.write(output)
@@ -151,8 +133,9 @@ class Wikifier:
             wiki_args=json.load(f)
         wikifier=Wikifier()
         wikifier.wiki_files=wiki_args["wiki_files"]
-        wikifier.non_file_df_count=wiki_args["df_count"]
-        wikifier.item_table=ItemTable(**wiki_args["item_table"])
+        wikifier.non_file_df_count=wiki_args["non_file_df_count"]
+        wikifier._item_table=ItemTable(lookup_table=wiki_args["lookup_table"])
+        wikifier._data_frames=[pd.read_json(json_string) for json_string in wiki_args["dataframes"]]
         return wikifier
 
 
