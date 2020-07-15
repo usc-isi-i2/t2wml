@@ -10,7 +10,7 @@ from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.spreadsheets.conversions import column_index_to_letter
-from t2wml.wikification.wikifier_service import service_wikifier
+from t2wml.wikification.wikifier_service import WikifierService
 from t2wml.wikification.item_table import Wikifier
 from caching import CacheCellMapper
 from app_config import DEFAULT_SPARQL_ENDPOINT
@@ -18,7 +18,8 @@ from wikidata_models import DatabaseProvider
 from utils import query_wikidata_for_label_and_description
 
 def wikify(region, filepath, sheet_name, context):
-    df, problem_cells= service_wikifier(region, filepath, sheet_name, context)
+    ws=WikifierService()
+    df, problem_cells= ws.wikify_region(region, filepath, sheet_name, context)
     return df, problem_cells
 
 def update_t2wml_settings():
