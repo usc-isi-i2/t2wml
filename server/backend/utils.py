@@ -9,6 +9,38 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache={}
 
+def query_wikidata_for_label_and_description(self, items: str):
+        items = ' wd:'.join(items)
+        items="wd:"+items
+        
+        query = """PREFIX wd: <http://www.wikidata.org/entity/>
+                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT ?qnode (MIN(?label) AS ?label) (MIN(?desc) AS ?desc) WHERE { 
+                VALUES ?qnode {""" + items + """} 
+                ?qnode rdfs:label ?label; <http://schema.org/description> ?desc.
+                FILTER (langMatches(lang(?label),"EN"))
+                FILTER (langMatches(lang(?desc),"EN"))
+                }
+                GROUP BY ?qnode"""
+        sparql = SPARQLWrapper(self.sparql_endpoint)
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        try:
+            results = sparql.query().convert()
+        except Exception as e:
+            raise e
+        response = dict()
+        try:
+            for i in range(len(results["results"]["bindings"])):
+                qnode = results["results"]["bindings"][i]["qnode"]["value"].split("/")[-1]
+                label = results["results"]["bindings"][i]["label"]["value"]
+                desc = results["results"]["bindings"][i]["desc"]["value"]
+                response[qnode] = {'label': label, 'desc': desc}
+        except IndexError:
+            pass
+        return response
+
 def query_wikidata_for_label(node):
     try:
         query="""SELECT DISTINCT * WHERE {

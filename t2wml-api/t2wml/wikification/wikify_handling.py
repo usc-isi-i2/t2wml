@@ -7,7 +7,7 @@ from t2wml.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml.spreadsheets.conversions import to_excel,  cell_range_str_to_tuples
 from t2wml.spreadsheets.sheet import Sheet
 
-def wikifier(cell_range: str, data_file_path: str, sheet_name: str, context) -> dict:
+def service_wikifier(cell_range: str, data_file_path: str, sheet_name: str, context) -> dict:
     """
     This function processes the calls to the wikifier service
     :param cell_range: (called region in UI)

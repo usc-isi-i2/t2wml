@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from ast import literal_eval
 
 from t2wml.mapping.t2wml_handling import get_all_template_statements, resolve_cell
 from t2wml.mapping.download import get_file_output_from_statements
@@ -9,14 +10,13 @@ from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.spreadsheets.conversions import column_index_to_letter
-from t2wml.wikification.item_table import ItemTable
-from t2wml.wikification.wikify_handling import wikifier
+from t2wml.wikification.wikify_handling import service_wikifier
 from caching import CacheCellMapper
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_models import DatabaseProvider
 
 def wikify(region, filepath, sheet_name, context):
-    df, problem_cells= wikifier(region, filepath, sheet_name, context)
+    df, problem_cells= service_wikifier(region, filepath, sheet_name, context)
     return df, problem_cells
 
 def update_t2wml_settings():
@@ -185,3 +185,75 @@ def sheet_to_json(data_file_path, sheet_name):
     #add to the response
     json_data['rowData']=initial_json
     return json_data
+
+
+
+def serialize_item_table(item_table, sheet):
+    serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
+    items_not_in_wiki = set()
+
+    for context in item_table.lookup_table:
+        context_table=item_table.lookup_table[context]
+        for str_key in context_table:
+            item=context_table[str_key]
+            tuple_key=literal_eval(str_key)
+            column, row, value = tuple_key
+
+            col = column_index_to_letter(column))
+            row = str(row + 1)
+            cell = col+row
+
+            serialized_table['qnodes'][cell][context]=  {"item": item}
+            row_data = {
+                        'context': context,
+                        'col': col,
+                        'row': row,
+                        'value': value,
+                        'item': item
+                    }
+
+
+    for cell, desc in item_table.table.items():
+        try:
+            col = column_index_to_letter(int(cell[0]))
+            row = str(int(cell[1]) + 1)
+            cell = col+row
+            value = desc['__CELL_VALUE__']
+            for context, item in desc.items():
+                if context != '__CELL_VALUE__':
+                    if context == '__NO_CONTEXT__':
+                        context = ''
+                    serialized_table['qnodes'][cell][context] = {"item": item}
+                    row_data = {
+                        'context': context,
+                        'col': col,
+                        'row': row,
+                        'value': value,
+                        'item': item
+                    }
+                    if item in item_table.item_wiki:
+                        row_data['label'] = item_table.item_wiki[item]['label']
+                        row_data['desc'] = item_table.item_wiki[item]['desc']
+                    else:
+                        items_not_in_wiki.add(item)
+                    serialized_table['rowData'].append(row_data)
+        except Exception as e:
+            raise e
+        
+    if items_not_in_wiki:
+        labels_and_descriptions = get_labels_and_descriptions(items_not_in_wiki)
+        if labels_and_descriptions:
+            item_table.item_wiki.update(labels_and_descriptions)
+
+            # add label and descriptions for items whose label and desc were not in wiki earlier
+            for i in range(len(serialized_table['rowData'])):
+                if serialized_table['rowData'][i]['item'] in item_table.item_wiki:
+                    serialized_table['rowData'][i]['label'] = item_table.item_wiki[serialized_table['rowData'][i]['item']]['label']
+                    serialized_table['rowData'][i]['desc'] = item_table.item_wiki[serialized_table['rowData'][i]['item']]['desc']
+
+            for cell, desc in serialized_table["qnodes"].items():
+                for context, context_desc in desc.items():
+                    if context_desc['item'] in item_table.item_wiki:
+                        serialized_table['qnodes'][cell][context]['label'] = item_table.item_wiki[context_desc['item']]['label']
+                        serialized_table['qnodes'][cell][context]['desc'] = item_table.item_wiki[context_desc['item']]['desc']
+    return serialized_table
