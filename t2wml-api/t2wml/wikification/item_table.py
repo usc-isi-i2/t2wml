@@ -9,9 +9,8 @@ from t2wml.utils.bindings import bindings
 
 
 class ItemTable:
-    def __init__(self, lookup_table={}, item_library={}):
+    def __init__(self, lookup_table={}):
         self.lookup_table=defaultdict(dict, lookup_table)
-        self.item_library=item_library
 
     def lookup_func(self, lookup, column, row, value):
         #order of priority: cell+value> cell> col+value> col> row+value> row> value
@@ -56,8 +55,7 @@ class ItemTable:
 
     def serialize(self):
         return {
-            "lookup_table":self.lookup_table,
-            "item_library":self.item_library
+            "lookup_table":self.lookup_table
         }
     def save_to_file(self, file_path):
         output=json.dumps(self.serialize())
