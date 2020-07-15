@@ -37,7 +37,7 @@ def t2wml_parse(e_str, context={}):
 def iter_on_n(expression, context={}, upper_limit=None):
     #handle iter on variable n. if there is no variable n this will anyway return in first iteration
     if upper_limit is None:
-        upper_limit= max(len(bindings.excel_sheet), len(bindings.excel_sheet[0]))
+        upper_limit= max(bindings.excel_sheet.row_len, bindings.excel_sheet.col_len)
     for n in range(0, upper_limit):
         try:
             context_dir={"t_var_n":n}

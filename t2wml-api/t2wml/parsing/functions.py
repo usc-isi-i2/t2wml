@@ -161,7 +161,7 @@ def get_item(input, context=''):
     
 
 def t_var_sheet_end():
-    return len(bindings.excel_sheet)
+    return bindings.excel_sheet.row_len
 
 def t_var_sheet_name():
     return bindings.excel_sheet.name
