@@ -5,6 +5,7 @@
 * [WikifierService](#wikifierservice)
 * [StatementMapper](#statementmapper)
   * [YamlMapper](#yamlmapper)
+  * [A custom mapper class](#custommapper)
 * [The WikidataProvider](#wikiprovider)
 * [Convenience Functions](#convenience)
 * [Examples of using the API](#examples)
@@ -156,6 +157,43 @@ sh=Sheet("datafile.csv", "datafile.csv")
 wf=Wikifier()
 wf.add_file("mywikifier.csv")
 kg=KnowledgeGraph.generate(ym, sh, wf)
+```
+
+### A custom StatementMapper class
+<span id="custommapper"></span>
+
+Here's a simple custom StatementMapper class, for a sheet where the item is always next to the value and the property is a known constant. 
+
+```
+from t2wml.mapping.statement_mapper import BaseStatementMapper
+
+class SimpleSheetMapper(BaseStatementMapper):
+    def __init__(self, cols, rows):
+        self.cols=cols
+        self.rows=rows
+    def _iterator(self):
+        for col in self.cols:
+            for row in self.rows:
+                yield(col, row)
+    def get_statement(self, sheet, wikifier, col, row):
+        error={}
+        statement={}
+        try:
+            item=wikifier.item_table.get_item(col-1, row)
+            statement["item"]=item
+        except Exception as e:
+            error["item"]=str(e)
+        
+        try:
+            value=sheet[col, row]
+            statement["value"]=value
+        except Exception as e:
+            error["value"]=value
+        
+        statement["property"]="P123"
+        
+        return statement, error
+
 ```
 
 
