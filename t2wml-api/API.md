@@ -2,8 +2,9 @@
 * [KnowledgeGraph](#kg)
 * [DataSheet and DataFile](#data)
 * [Wikifier](#wikifier)
-* [WikifierService](#wikiservice)
-* [StatementMapper](#mapper)
+* [WikifierService](#wikifierservice)
+* [StatementMapper](#statementmapper)
+  * [YamlMapper](#yamlmapper)
 * [The WikidataProvider](#wikiprovider)
 * [Convenience Functions](#convenience)
 * [Examples of using the API](#examples)
@@ -15,7 +16,7 @@
 
 The KnowledgeGraph class stores the statements generated for a spreadsheet.
 
-It can be created with the class method `generate`, which expects to receive a CellMapper, a DataSheet, and an ItemTable (soon to be Wikifier)
+It can be created with the class method `generate`, which expects to receive a StatementMapper, a DataSheet, and an ItemTable (soon to be Wikifier)
 
 For convenience, it can also be created from files, with the class method `generate_from_files`. This expects to receive one data_file_path (location of the data spreadsheet), one sheet_name, one yaml_file_path (location of the yaml file defining how to build statements), and one wikifier_file_path (location of the wikifier file for creating the item table).
 
@@ -51,6 +52,7 @@ Internally, the wikifier creates an ItemTable, for looking up items by string or
 Example code:
 
 ```
+    from t2wml.api import Wikifier
     wikifier_file="my_wikifier.csv"
     wf = Wikifier()
     wf.add_file(wikifier_file)
@@ -68,18 +70,32 @@ Example code:
 
 
 ## WikifierService
-<span id="wikiservice"></span>
+<span id="wikifierservice"></span>
 
-You can send a spreadsheet to a wikifier service endpoint and receive back a wikified result.
+You can send a spreadsheet, a region, and optionally a context to a wikifier service for wikification,  and receive back a wikified dataframe plus a list of any cells that were not successfully wikified. 
+
+The wikifier service has a default endpoint but a different one can be set, as long as the endpoint in question knows how to receive wikification requests. (standardizing the API for this is a work in progress that has not yet been completed)
 
 The service returns a dataframe. This dataframe can be loaded into the Wikifier class with the Wikifier's function `add_dataframe`.
 
+Example code:
+
+```
+from t2wml.api import WikifierService, Sheet, Wikifier
+ws=WikifierService()
+sheet=Sheet("mydata.xlsx", "sheet2")
+df, problem_cells= ws.wikify_region("A4:B7", sheet, "from wikifier service")
+wf=Wikifier()
+wf.add_dataframe(df)
+```
+
 
 ## StatementMapper
-<span id="mapper"></span>
+<span id="statementmapper"></span>
 
-A StatementMapper is a class responsible for holding the logic for creating statements, metadata, and error reports from a Sheet plus Wikifier. All StatementMappers should implement the base template 
-BaseStatementMapper, which defines the public interface of the class:
+A StatementMapper is a class responsible for holding the logic for creating statements, metadata, and error reports from a Sheet plus Wikifier. 
+
+All StatementMappers should implement the base template BaseStatementMapper, which defines the public interface of the class:
 
 * `get_statement(self, sheet, wikifier, col, row, *args, **kwargs)`: returns statement, errors. Must be defined by inheriting classes.
 * `iterator(self)`: yields col, row pairs. Must be defined by inheriting classes.
@@ -122,6 +138,25 @@ error can also be returned as simply an empty dictionary, or the user can choose
 `errors`, like `statements`, is simply a dictionary of `error`s with cells as keys. 
 
 `metadata` is a dictionary. It ideally should define "data_file" (the name of the file we are processing) and "sheet_name" (the name of the sheet in that file we are processing). These keys are used when generating IDs for the kgtk format, and without them, the IDs may not be unique. It can also define "created_by" (used when generating ttl files). Any other information the user feels interested in preserving can also be stuck here. However, the code will continue to work even if an empty dictionary is returned.
+
+### The YamlMapper
+<span id="yamlmapper"></span>
+
+The T2WML API already contains a fully implemented version of this class, the YamlMapper. 
+
+It is initialized with the path to a yaml file that conforms to the standards described in the [grammar documentation](..\docs\grammar.md)
+
+Example usage:
+
+```
+from t2wml import KnowledgeGraph, YamlMapper, Wikifier, Sheet
+
+ym=YamlMapper("template.yaml")
+sh=Sheet("datafile.csv", "datafile.csv")
+wf=Wikifier()
+wf.add_file("mywikifier.csv")
+kg=KnowledgeGraph.generate(ym, sh, wf)
+```
 
 
 ## The WikidataProvider

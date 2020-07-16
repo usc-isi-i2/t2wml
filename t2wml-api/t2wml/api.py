@@ -1,15 +1,13 @@
 import json
 
-from t2wml.spreadsheets.sheet import Sheet
-from t2wml.mapping.t2wml_handling import YamlMapper
 from t2wml.mapping.download import get_file_output_from_statements
-from t2wml.mapping.triple_generator import generate_triples
 from t2wml.settings import t2wml_settings
 from t2wml.utils.t2wml_exceptions import FileTypeNotSupportedException
 from t2wml.wikification.item_table import Wikifier
+from t2wml.spreadsheets.sheet import Sheet
+from t2wml.mapping.t2wml_handling import YamlMapper
+from t2wml.wikification.wikifier_service import WikifierService
 from t2wml.wikification.utility_functions import add_properties_from_file
-
-
 
 
 
