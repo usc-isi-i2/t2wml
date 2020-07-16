@@ -92,7 +92,7 @@ class TemplateParser(CodeParser):
 
 class RegionParser(CodeParser):
     def __init__(self, yaml_data):
-        self.parsed_region=self.parse_region(yaml_data['statementMapping']['region'][0])
+        self.parsed_region=self.parse_region(yaml_data)
 
     def parse_region_expression(self, statement, context={}):
         try:

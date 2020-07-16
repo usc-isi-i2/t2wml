@@ -157,7 +157,7 @@ def get_all_template_statements(cell_mapper, sheet, item_table):
     metadata={
         "data_file":sheet.data_file_name,
         "sheet_name":sheet.name,
-        "created_by":cell_mapper.template.created_by
+        "created_by":cell_mapper.created_by
     }
     for col, row in cell_mapper.region:
         cell=to_excel(col-1, row-1)
