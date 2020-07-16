@@ -51,6 +51,16 @@ class ItemTable:
             return item
         raise ItemNotFoundException("Could not find item for value: "+value)
 
+    def get_cell_info(self, column, row):
+        #used to serialize table
+        for context in self.lookup_table:
+            try:
+                item = self.get_item(column, row, context)
+                return item, context, bindings.excel_sheet[row, column]
+            except:
+                pass
+        return None, None, None
+
     def update_table_from_dataframe(self, df):
         df=df.fillna('')
         df=df.replace(r'^\s+$', '', regex=True)

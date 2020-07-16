@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from ast import literal_eval
 from collections import defaultdict
 from t2wml.mapping.t2wml_handling import get_all_template_statements, resolve_cell
 from t2wml.mapping.download import get_file_output_from_statements
@@ -8,8 +7,7 @@ from t2wml.spreadsheets.sheet import Sheet
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
-from t2wml.spreadsheets.sheet import Sheet
-from t2wml.spreadsheets.conversions import column_index_to_letter
+from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel
 from t2wml.wikification.wikifier_service import WikifierService
 from t2wml.wikification.item_table import Wikifier
 from caching import CacheCellMapper
@@ -172,40 +170,33 @@ def sheet_to_json(data_file_path, sheet_name):
 
 
 def serialize_item_table(project, sheet):
+    sheet=Sheet(sheet.data_file.file_path, sheet.name)
     wikifier=get_wikifier(project)
     item_table=wikifier.item_table
     serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
-    items_to_get = set()
+    items_to_get = dict()
 
-    for context in item_table.lookup_table:
-        context_table=item_table.lookup_table[context]
-        for str_key in context_table:
-            item=context_table[str_key]
-            tuple_key=literal_eval(str_key)
-            column, row_str, value = tuple_key
 
-            col=row=cell=''
-            if column:
-                col = column_index_to_letter(int(column))
-            if row_str:
-                row = str(int(row_str) + 1)
-            if column and row_str:
-                cell = col+row
-
-            serialized_table['qnodes'][cell][context]=  {"item": item}
-            row_data = {
+    for col in range(sheet.col_len):
+        for row in range(sheet.row_len):
+            item, context, value=item_table.get_cell_info(col, row)
+            if item:
+                cell=to_excel(col, row)
+                items_to_get[item]=(cell, context)
+                #rowData:
+                row_data = {
                         'context': context,
-                        'col': col,
-                        'row': row,
+                        'col': column_index_to_letter(int(col)),
+                        'row': str(int(row) + 1),
                         'value': value,
                         'item': item
                     }
+                serialized_table['rowData'].append(row_data)
+    
+    labels_and_descriptions = query_wikidata_for_label_and_description(list(items_to_get.keys()))
 
-
-            items_to_get.add(item)
-            serialized_table['rowData'].append(row_data)
-
-    labels_and_descriptions = query_wikidata_for_label_and_description(list(items_to_get))
+                
+    #update rowData
     for i in range(len(serialized_table['rowData'])):
         item_key=serialized_table['rowData'][i]['item']
         if item_key in labels_and_descriptions:
@@ -214,12 +205,14 @@ def serialize_item_table(project, sheet):
             serialized_table['rowData'][i]['label'] = label
             serialized_table['rowData'][i]['desc'] = desc
 
-        for cell, con in serialized_table["qnodes"].items():
-            for context, context_desc in con.items():
-                item_key=context_desc['item']
-                if item_key in labels_and_descriptions:
-                    label=labels_and_descriptions[item_key]['label']
-                    desc=labels_and_descriptions[item_key]['desc']
-                    serialized_table['qnodes'][cell][context]['label'] = label
-                    serialized_table['qnodes'][cell][context]['desc'] = desc
+    #qnodes
+    for item in items_to_get:
+        (cell, context) = items_to_get[item]
+        serialized_table['qnodes'][cell][context]=  {"item": item}
+        if item in labels_and_descriptions:
+            label=labels_and_descriptions[item_key]['label']
+            desc=labels_and_descriptions[item_key]['desc']
+            serialized_table['qnodes'][cell][context]['label'] = label
+            serialized_table['qnodes'][cell][context]['desc'] = desc
+
     return serialized_table
