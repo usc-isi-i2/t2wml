@@ -153,7 +153,7 @@ def concat(*args):
     r=ReturnClass(None, None, return_str)
     return r
 
-def get_item(input, context="__NO_CONTEXT__"):
+def get_item(input, context=''):
     value= bindings.item_table.get_item_by_string(str(input), context)
     if isinstance(input, ReturnClass):
         return ReturnClass(input.col, input.row, value)
@@ -161,7 +161,7 @@ def get_item(input, context="__NO_CONTEXT__"):
     
 
 def t_var_sheet_end():
-    return len(bindings.excel_sheet)
+    return bindings.excel_sheet.row_len
 
 def t_var_sheet_name():
     return bindings.excel_sheet.name

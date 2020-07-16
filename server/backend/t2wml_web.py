@@ -1,22 +1,23 @@
 import json
 from pathlib import Path
-
+from collections import defaultdict
 from t2wml.mapping.t2wml_handling import get_all_template_statements, resolve_cell
 from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
 from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
-from t2wml.spreadsheets.sheet import Sheet
-from t2wml.spreadsheets.conversions import column_index_to_letter
-from t2wml.wikification.item_table import ItemTable
-from t2wml.wikification.wikify_handling import wikifier
+from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel
+from t2wml.wikification.wikifier_service import WikifierService
+from t2wml.wikification.item_table import Wikifier
 from caching import CacheCellMapper
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_models import DatabaseProvider
+from utils import query_wikidata_for_label_and_description
 
 def wikify(region, filepath, sheet_name, context):
-    df, problem_cells= wikifier(region, filepath, sheet_name, context)
+    ws=WikifierService()
+    df, problem_cells= ws.wikify_region(region, filepath, sheet_name, context)
     return df, problem_cells
 
 def update_t2wml_settings():
@@ -30,26 +31,33 @@ def update_t2wml_settings():
                 #"storage_folder":UPLOAD_FOLDER
                 })
 
-def get_kg(data_sheet, cell_mapper, wikifier_file):
-    item_table=get_item_table(wikifier_file, data_sheet)
+
+def get_wikifier(project):
+    #one day this will handle multiple wikifier files
+    wikifier=Wikifier()
+    if project.wikifier_file:
+        wikifier.add_file(project.wikifier_file.file_path)
+    return wikifier
+
+def get_kg(data_sheet, cell_mapper, project):
+    wikifier=get_wikifier(project)
     sheet=Sheet(data_sheet.data_file.file_path, data_sheet.name)
-    kg=KnowledgeGraph.generate(cell_mapper, sheet, item_table)
+    kg=KnowledgeGraph.generate(cell_mapper, sheet, wikifier)
     return kg
 
-def download(data_sheet, yaml_file, wikifier_file, filetype, project_name=""):
+def download(data_sheet, yaml_file, project, filetype, project_name=""):
     cell_mapper=CacheCellMapper(data_sheet, yaml_file)
     response=dict()
     kg=cell_mapper.result_cacher.get_kg()
     if not kg:
-        kg=get_kg(data_sheet, cell_mapper, wikifier_file)
+        kg=get_kg(data_sheet, cell_mapper, project)
     
     response["data"]=get_file_output_from_statements(kg, filetype)
     response["error"]=None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
 
-def highlight_region(data_sheet, yaml_file, wikifier_file):
-    item_table=get_item_table(wikifier_file, data_sheet)
+def highlight_region(data_sheet, yaml_file, project):
     cell_mapper=CacheCellMapper(data_sheet, yaml_file)
     highlight_data, statement_data, errors=cell_mapper.result_cacher.get_highlight_region()
     if highlight_data:
@@ -58,7 +66,7 @@ def highlight_region(data_sheet, yaml_file, wikifier_file):
         return highlight_data
 
     highlight_data = {"dataRegion": set(), "item": set(), "qualifierRegion": set(), 'referenceRegion': set(), 'error': dict()}
-    kg=get_kg(data_sheet, cell_mapper, wikifier_file)
+    kg=get_kg(data_sheet, cell_mapper, project)
     statement_data=kg.statements
     errors=kg.errors
     for cell in statement_data:
@@ -91,12 +99,12 @@ def highlight_region(data_sheet, yaml_file, wikifier_file):
     highlight_data['cellStatements']=statement_data
     return highlight_data
 
-def get_cell(data_sheet, yaml_file, wikifier_file, col, row):
-    item_table=get_item_table(wikifier_file, data_sheet)
+def get_cell(data_sheet, yaml_file, project, col, row):
+    wikifier=get_wikifier(project)
     cell_mapper=CacheCellMapper(data_sheet, yaml_file)
     sheet=Sheet(data_sheet.data_file.file_path, data_sheet.name)
     try:
-        statement, errors= resolve_cell(cell_mapper, sheet, item_table, col, row)
+        statement, errors= resolve_cell(cell_mapper, sheet, wikifier, col, row)
         data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
     except TemplateDidNotApplyToInput as e:
         data=dict(error=e.errors)
@@ -122,40 +130,13 @@ def table_data(data_file, sheet_name=None):
         }
 
 
-def create_item_table(wikifier_file, sheet, flag=None):
-    item_table=ItemTable()
-    item_table.update_table_from_wikifier_file(wikifier_file.file_path, 
-                                                sheet.data_file.file_path, 
-                                                sheet.name, flag=flag)
-    return item_table
-
-def get_item_table(wikifier_file, sheet, flag=None):
-    if not wikifier_file:
-        return ItemTable(None)
-
-    cache_folder=Path(wikifier_file.file_path).parent/"cache"
-    cache_path=cache_folder/(wikifier_file.name+str(wikifier_file.id)+"_"+sheet.name+".json")
-    try:
-        with open(str(cache_path)) as json_data:
-            region_map = json.load(json_data)
-            item_table = ItemTable(region_map)
-            return item_table
-    except (AttributeError, FileNotFoundError, json.decoder.JSONDecodeError):
-            if not cache_folder.is_dir():
-                cache_folder.mkdir()
-            item_table=create_item_table(wikifier_file, sheet, flag=flag)
-            item_table.save_to_file(cache_path)
-            return item_table
-
-
-
-def handle_yaml(sheet, wikifier_file):
+def handle_yaml(sheet, project):
     if sheet.yaml_file:
         yaml_file=sheet.yaml_file
         response=dict()
         with open(yaml_file.file_path, "r") as f:
             response["yamlFileContent"]= f.read()
-        response['yamlRegions'] = highlight_region(sheet, yaml_file, wikifier_file)
+        response['yamlRegions'] = highlight_region(sheet, yaml_file, project)
         return response
     return None
 
@@ -185,3 +166,55 @@ def sheet_to_json(data_file_path, sheet_name):
     #add to the response
     json_data['rowData']=initial_json
     return json_data
+
+
+
+def serialize_item_table(project, sheet):
+    sheet=Sheet(sheet.data_file.file_path, sheet.name)
+    wikifier=get_wikifier(project)
+    item_table=wikifier.item_table
+    qnodes=defaultdict(defaultdict)
+    rowData=list()
+    items_to_get = set()
+
+    for col in range(sheet.col_len):
+        for row in range(sheet.row_len):
+            item, context, value=item_table.get_cell_info(col, row, sheet)
+            if item:
+                items_to_get.add(item)
+                #rowData:
+                row_data = {
+                        'context': context,
+                        'col': column_index_to_letter(int(col)),
+                        'row': str(int(row) + 1),
+                        'value': value,
+                        'item': item
+                    }
+                rowData.append(row_data)
+                #qnodes:
+                cell=to_excel(col, row)
+                qnodes[cell][context]=  {"item": item}
+    
+    labels_and_descriptions = query_wikidata_for_label_and_description(list(items_to_get))
+
+    #update rowData
+    for i in range(len(rowData)):
+        item_key=rowData[i]['item']
+        if item_key in labels_and_descriptions:
+            label=labels_and_descriptions[item_key]['label']
+            desc=labels_and_descriptions[item_key]['desc']
+            rowData[i]['label'] = label
+            rowData[i]['desc'] = desc
+
+    #qnodes
+    for cell, con in qnodes.items():
+        for context, context_desc in con.items():
+            item_key=context_desc['item']
+            if item_key in labels_and_descriptions:
+                label=labels_and_descriptions[item_key]['label']
+                desc=labels_and_descriptions[item_key]['desc']
+                qnodes[cell][context]['label'] = label
+                qnodes[cell][context]['desc'] = desc
+
+    serialized_table = {'qnodes': qnodes, 'rowData': rowData}
+    return serialized_table

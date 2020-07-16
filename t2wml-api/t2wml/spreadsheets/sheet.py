@@ -43,16 +43,17 @@ class Sheet:
         self.data_file_name=Path(data_file_path).name
         self.name=sheet_name
         
-    
-
     def __getitem__(self, params):
         try:
             return self.data.iloc[params]
         except IndexError:
             raise T2WMLExceptions.ValueOutOfBoundException("Cell " + to_excel(params[1], params[0]) + " is outside the bounds of the current data file")
 
-    def __len__(self):
+    @property    
+    def row_len(self):
         return len(self.data)
-            
-
+    
+    @property
+    def col_len(self):
+        return len(self.data[0])
     

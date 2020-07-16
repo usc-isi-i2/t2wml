@@ -111,7 +111,7 @@ class ItemExpression:
         if len(args)>2:
             context=args[2]
         else:
-            context='__NO_CONTEXT__'
+            context=''
         col=index_converter(args[0])
         row=index_converter(args[1])
         if isinstance(col, int) and isinstance(row, int):
