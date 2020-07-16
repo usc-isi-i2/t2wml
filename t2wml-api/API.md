@@ -163,7 +163,7 @@ kg=KnowledgeGraph.generate(ym, sh, wf)
 <span id="wikiprovider"></span>
 The WikidataProvider class is responsible for providing property types for property IDs and for providing labels and descriptions for item IDs. 
 
-Two already-implemented WikidataProvider classes are provided in t2wml.wikification.wikidata_provider:
+Two already-implemented WikidataProvider classes are provided in t2wml.api:
 
 1. SparqlProvider- send a sparql query to sparql endpoint. save results in local cache in memory for faster future queries
 2. DictionaryProvider- same as SparqlProvider but initialized with a dictionary loaded into cache
