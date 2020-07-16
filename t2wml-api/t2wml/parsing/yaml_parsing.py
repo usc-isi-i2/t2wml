@@ -233,6 +233,17 @@ class RegionParser(CodeParser):
         return skip_row, skip_column, skip_cell
 
 
+class Template:
+    def __init__(self, dict_template, eval_template):
+        self.dict_template=dict_template
+        self.eval_template=eval_template
+    
+    @staticmethod
+    def create_from_yaml(yaml_data):
+        template=dict(yaml_data)
+        template_parser=TemplateParser(template)
+        eval_template=template_parser.eval_template
+        return Template(template, eval_template)
 
   
 def validate_yaml(yaml_file_path):

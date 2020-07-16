@@ -1,8 +1,7 @@
 import json
 
-from t2wml.mapping.cell_mapper import YamlMapper
 from t2wml.spreadsheets.sheet import Sheet
-from t2wml.mapping.t2wml_handling import get_all_template_statements
+from t2wml.mapping.t2wml_handling import YamlMapper
 from t2wml.mapping.download import get_file_output_from_statements
 from t2wml.mapping.triple_generator import generate_triples
 from t2wml.settings import t2wml_settings
@@ -40,7 +39,7 @@ class KnowledgeGraph:
             
     @classmethod
     def generate(cls, cell_mapper, sheet, wikifier):
-        statements, errors, metadata = get_all_template_statements(cell_mapper, sheet, wikifier)
+        statements, errors, metadata = cell_mapper.get_all_statements(sheet, wikifier)
         return cls(statements, errors, metadata)
     
     @classmethod

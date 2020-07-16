@@ -1,7 +1,8 @@
 import os
 import json
 from pathlib import Path
-from t2wml.mapping.cell_mapper import Region, YamlMapper
+from t2wml.mapping.t2wml_handling import YamlMapper
+from t2wml.mapping.region import Region
 from t2wml.api import KnowledgeGraph
 
 class Cacher:
@@ -87,31 +88,18 @@ class MappingResultsCacher(Cacher):
     
     
  
-class CacheCellMapper():
+class CacheHolder():
     def __init__(self, sheet, yaml):
         self.result_cacher=MappingResultsCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.region_cacher=RegionCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
-        self.yf=YamlMapper(yaml.file_path)
-        self.created_by=self.yf.created_by
+        self.cell_mapper=YamlMapper(yaml.file_path)
+        self.check_for_region_cache()
     
-    @property
-    def region(self):
-        try:
-            return self._region
-        except:
-            region=self.region_cacher.load_from_cache()
-            if not region:
-                region= self.yf.region
-            self._region=region
-            return self._region
+    def check_for_region_cache(self):
+        region=self.region_cacher.load_from_cache()
+        if region:
+            self.cell_mapper._region=region
     
-    @property
-    def template(self):
-        try:
-            return self._template
-        except:
-            self._template=self.yf.template
-            return self._template
     
 
     
