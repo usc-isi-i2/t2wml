@@ -92,6 +92,7 @@ class CacheCellMapper():
         self.result_cacher=MappingResultsCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.region_cacher=RegionCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.yf=YamlMapper(yaml.file_path)
+        self.created_by=self.yf.created_by
     
     @property
     def region(self):
