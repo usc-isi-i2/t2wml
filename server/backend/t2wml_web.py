@@ -9,7 +9,7 @@ from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
 from t2wml.wikification.wikifier_service import WikifierService
 from t2wml.wikification.item_table import Wikifier
-from t2wml.mapping.t2wml_handling import YamlMapper 
+from t2wml.mapping.statement_mapper import YamlMapper 
 from caching import CacheHolder
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_models import DatabaseProvider

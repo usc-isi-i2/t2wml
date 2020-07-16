@@ -1,7 +1,7 @@
 import os
 import json
 from pathlib import Path
-from t2wml.mapping.t2wml_handling import YamlMapper
+from t2wml.mapping.statement_mapper import YamlMapper
 from t2wml.mapping.region import Region
 from t2wml.api import KnowledgeGraph
 
