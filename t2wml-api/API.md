@@ -1,9 +1,9 @@
 # The T2WML API: A programmatic way of using T2WML
 * [KnowledgeGraph](#kg)
 * [DataSheet and DataFile](#data)
-* [StatementMapper](#mapper)
 * [Wikifier](#wikifier)
 * [WikifierService](#wikiservice)
+* [StatementMapper](#mapper)
 * [The WikidataProvider](#wikiprovider)
 * [Convenience Functions](#convenience)
 * [Examples of using the API](#examples)
