@@ -12,7 +12,7 @@ class WikifierService:
     def __init__(self, wikifier_endpoint='https://dsbox02.isi.edu:8888/wikifier/wikify'):
         self.wikifier_endpoint=wikifier_endpoint
     
-    def wikify_region(self, cell_range:str, data_file_path, sheet_name, context):
+    def wikify_region(self, cell_range:str, sheet, context):
         (start_col, start_row), (end_col, end_row) = cell_range_str_to_tuples(cell_range)
         end_col+=1
         end_row+=1
@@ -27,7 +27,6 @@ class WikifierService:
             'case_sensitive': 'false'
         }
 
-        sheet=Sheet(data_file_path, sheet_name)
         sheet_data=sheet[start_row:end_row]
         flattened_sheet_data=sheet[start_row:end_row, start_col:end_col].to_numpy().flatten()
 

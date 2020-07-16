@@ -249,7 +249,7 @@ def wikify_region(pid):
                 raise web_exception.WikifyWithoutDataFileException("Upload data file before wikifying a region")
             sheet=project.current_file.current_sheet
 
-            cell_qnode_map, problem_cells=wikify(region, project.current_file.file_path, sheet.name, context)
+            cell_qnode_map, problem_cells=wikify(region, sheet, context)
             wf= WikifierFile.create_from_dataframe(project, cell_qnode_map)
             
             data = serialize_item_table(project, sheet)

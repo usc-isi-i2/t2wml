@@ -15,9 +15,10 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_models import DatabaseProvider
 from utils import query_wikidata_for_label_and_description
 
-def wikify(region, filepath, sheet_name, context):
+def wikify(region, data_sheet, context):
     ws=WikifierService()
-    df, problem_cells= ws.wikify_region(region, filepath, sheet_name, context)
+    sheet=Sheet(data_sheet.data_file.file_path, data_sheet.name)
+    df, problem_cells= ws.wikify_region(region, sheet, context)
     return df, problem_cells
 
 def update_t2wml_settings():
