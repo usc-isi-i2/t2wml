@@ -51,8 +51,9 @@ class ItemTable:
             return item
         raise ItemNotFoundException("Could not find item for value: "+value)
 
-    def get_cell_info(self, column, row):
+    def get_cell_info(self, column, row, sheet):
         #used to serialize table
+        bindings.excel_sheet=sheet
         for context in self.lookup_table:
             try:
                 item = self.get_item(column, row, context)

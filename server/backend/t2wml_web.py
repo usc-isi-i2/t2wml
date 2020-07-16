@@ -173,16 +173,15 @@ def serialize_item_table(project, sheet):
     sheet=Sheet(sheet.data_file.file_path, sheet.name)
     wikifier=get_wikifier(project)
     item_table=wikifier.item_table
-    serialized_table = {'qnodes': defaultdict(defaultdict), 'rowData': list(), 'error': None}
-    items_to_get = dict()
-
+    qnodes=defaultdict(defaultdict)
+    rowData=list()
+    items_to_get = set()
 
     for col in range(sheet.col_len):
         for row in range(sheet.row_len):
-            item, context, value=item_table.get_cell_info(col, row)
+            item, context, value=item_table.get_cell_info(col, row, sheet)
             if item:
-                cell=to_excel(col, row)
-                items_to_get[item]=(cell, context)
+                items_to_get.add(item)
                 #rowData:
                 row_data = {
                         'context': context,
@@ -191,28 +190,31 @@ def serialize_item_table(project, sheet):
                         'value': value,
                         'item': item
                     }
-                serialized_table['rowData'].append(row_data)
+                rowData.append(row_data)
+                #qnodes:
+                cell=to_excel(col, row)
+                qnodes[cell][context]=  {"item": item}
     
-    labels_and_descriptions = query_wikidata_for_label_and_description(list(items_to_get.keys()))
+    labels_and_descriptions = query_wikidata_for_label_and_description(list(items_to_get))
 
-                
     #update rowData
-    for i in range(len(serialized_table['rowData'])):
-        item_key=serialized_table['rowData'][i]['item']
+    for i in range(len(rowData)):
+        item_key=rowData[i]['item']
         if item_key in labels_and_descriptions:
             label=labels_and_descriptions[item_key]['label']
             desc=labels_and_descriptions[item_key]['desc']
-            serialized_table['rowData'][i]['label'] = label
-            serialized_table['rowData'][i]['desc'] = desc
+            rowData[i]['label'] = label
+            rowData[i]['desc'] = desc
 
     #qnodes
-    for item in items_to_get:
-        (cell, context) = items_to_get[item]
-        serialized_table['qnodes'][cell][context]=  {"item": item}
-        if item in labels_and_descriptions:
-            label=labels_and_descriptions[item_key]['label']
-            desc=labels_and_descriptions[item_key]['desc']
-            serialized_table['qnodes'][cell][context]['label'] = label
-            serialized_table['qnodes'][cell][context]['desc'] = desc
+    for cell, con in qnodes.items():
+        for context, context_desc in con.items():
+            item_key=context_desc['item']
+            if item_key in labels_and_descriptions:
+                label=labels_and_descriptions[item_key]['label']
+                desc=labels_and_descriptions[item_key]['desc']
+                qnodes[cell][context]['label'] = label
+                qnodes[cell][context]['desc'] = desc
 
+    serialized_table = {'qnodes': qnodes, 'rowData': rowData}
     return serialized_table
