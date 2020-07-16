@@ -14,11 +14,36 @@ class Template:
         eval_template=template_parser.eval_template
         return Template(template, eval_template)
 
-class CellMapper:
+
+class BaseStatementMapper:
+    def __init__(self):
+        pass
+
+    def get_statement(self, sheet, item_table, col, row):
+        raise NotImplementedError
+
+    def get_all_statements(self, sheet, item_table):
+        raise NotImplementedError
+
+    def _build_cell_statement(self):
+        raise NotImplementedError
+
+
+class YamlMapper(BaseStatementMapper):
     def __init__(self, file_path):
         self.file_path=file_path
         self.yaml_data=validate_yaml(file_path)
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
+
+    def get_statement(self, sheet, item_table, col, row):
+        raise NotImplementedError
+
+    def get_all_statements(self, sheet, item_table):
+        raise NotImplementedError
+
+    def _build_cell_statement(self):
+        raise NotImplementedError
+
     
     @property
     def region(self):

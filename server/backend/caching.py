@@ -1,7 +1,7 @@
 import os
 import json
 from pathlib import Path
-from t2wml.mapping.cell_mapper import Region, CellMapper
+from t2wml.mapping.cell_mapper import Region, YamlMapper
 from t2wml.api import KnowledgeGraph
 
 class Cacher:
@@ -91,7 +91,7 @@ class CacheCellMapper():
     def __init__(self, sheet, yaml):
         self.result_cacher=MappingResultsCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.region_cacher=RegionCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
-        self.yf=CellMapper(yaml.file_path)
+        self.yf=YamlMapper(yaml.file_path)
     
     @property
     def region(self):

@@ -1,6 +1,6 @@
 import json
 
-from t2wml.mapping.cell_mapper import CellMapper
+from t2wml.mapping.cell_mapper import YamlMapper
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.mapping.t2wml_handling import get_all_template_statements
 from t2wml.mapping.download import get_file_output_from_statements
@@ -47,7 +47,7 @@ class KnowledgeGraph:
     def generate_from_files(cls, data_file_path, sheet_name, yaml_file_path, wikifier_filepath):
         item_table=ItemTable()
         item_table.update_table_from_wikifier_file(wikifier_filepath, data_file_path, sheet_name)
-        cell_mapper=CellMapper(yaml_file_path)
+        cell_mapper=YamlMapper(yaml_file_path)
         sheet=Sheet(data_file_path, sheet_name)
         return cls.generate(cell_mapper, sheet, item_table)
     
