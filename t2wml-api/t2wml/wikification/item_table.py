@@ -76,6 +76,9 @@ class ItemTable:
             if not item:
                 raise ValueError("Item definition missing")
             
+            if not column and not row and not value:
+                raise ValueError("at least one of column, row, or value must be defined")
+            
             key=str((column, row, value))
             if self.lookup_table[context].get(key):
                 overwritten[key]=self.lookup_table[context][key]
@@ -89,12 +92,11 @@ class ItemTable:
 class Wikifier:
     def __init__(self):
         self.wiki_files=[]
-        self.non_file_df_count=0
         self._data_frames=[]
         self._item_table=ItemTable()
 
     def print_data(self):
-        print("The wikifier contains {} wiki files as well as {} non-file dataframes".format(len(self.wiki_files), self.non_file_df_count))
+        print("The wikifier contains {} wiki files, and a total of {} dataframes".format(len(self.wiki_files), len(self._data_frames)))
         if len(self.wiki_files):
             print("The files are:")
             for filename in self.wiki_files:
@@ -124,14 +126,12 @@ class Wikifier:
             overwritten=self.item_table.update_table_from_dataframe(df)
         except Exception as e:
             raise ValueError("Could not apply dataframe: "+str(e))
-        self.non_file_df_count+=1
         self._data_frames.append(df)
         return overwritten
     
     def save(self, filename):
         output=json.dumps({
             "wiki_files":self.wiki_files,
-            "non_file_df_count":self.non_file_df_count,
             "lookup_table":self.item_table.lookup_table,
             "dataframes":[df.to_json() for df in self._data_frames]
         })
@@ -144,7 +144,6 @@ class Wikifier:
             wiki_args=json.load(f)
         wikifier=Wikifier()
         wikifier.wiki_files=wiki_args["wiki_files"]
-        wikifier.non_file_df_count=wiki_args["non_file_df_count"]
         wikifier._item_table=ItemTable(lookup_table=wiki_args["lookup_table"])
         wikifier._data_frames=[pd.read_json(json_string) for json_string in wiki_args["dataframes"]]
         return wikifier

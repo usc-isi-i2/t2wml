@@ -42,8 +42,34 @@ class BaseStatementMapper:
     def get_statement(self, sheet, wikifier, col, row, *args, **kwargs):
         raise NotImplementedError
 
-    def get_all_statements(self, sheet, wikifier, *args, **kwargs):
+    def _iterator(self):
         raise NotImplementedError
+
+    def get_all_statements(self, sheet, wikifier):
+        update_bindings(item_table=wikifier.item_table, sheet=sheet)
+        statements={}
+        cell_errors={}
+        metadata={
+            "data_file":sheet.data_file_name,
+            "sheet_name":sheet.name,
+            "created_by":self.created_by
+        }
+        for col, row in self.iterator():
+            cell=to_excel(col-1, row-1)
+            try:
+                statement, inner_errors=self.get_cell_statement(None, None, col, row, True)
+                statements[cell]=statement
+                if inner_errors:
+                    cell_errors[cell]=inner_errors
+            except T2WMLExceptions.TemplateDidNotApplyToInput as e:
+                cell_errors[cell]=e.errors
+            except Exception as e:
+                cell_errors[cell]=str(e)
+
+        if cell_errors:
+            for cell in cell_errors:
+                print("error in cell "+ cell+ ": "+str(cell_errors[cell]), file=sys.stderr)
+        return statements, cell_errors, metadata
 
 
 class YamlMapper(BaseStatementMapper):
@@ -59,32 +85,9 @@ class YamlMapper(BaseStatementMapper):
         statement, errors=self._apply_template(self.template, context)
         return statement, errors
 
-    def get_all_statements(self, sheet, wikifier):
-        update_bindings(item_table=wikifier.item_table, sheet=sheet)
-        statements={}
-        errors={}
-        metadata={
-            "data_file":sheet.data_file_name,
-            "sheet_name":sheet.name,
-            "created_by":self.created_by
-        }
+    def iterator(self):
         for col, row in self.region:
-            cell=to_excel(col-1, row-1)
-            try:
-                statement, inner_errors=self.get_cell_statement(None, None, col, row, True)
-                statements[cell]=statement
-                if inner_errors:
-                    errors[cell]=inner_errors
-            except T2WMLExceptions.TemplateDidNotApplyToInput as e:
-                errors[cell]=e.errors
-            except Exception as e:
-                errors[cell]=str(e)
-
-        if errors:
-            for cell in errors:
-                print("error in cell "+ cell+ ": "+str(errors[cell]), file=sys.stderr)
-        return statements, errors, metadata
-
+            yield col, row
     @property
     def region(self):
         try:

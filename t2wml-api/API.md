@@ -1,11 +1,8 @@
 # The T2WML API: A programmatic way of using T2WML
 * [KnowledgeGraph](#kg)
 * [DataSheet and DataFile](#data)
-* [CellMapper](#mapper)
-   * [Region](#region)
-   * [Template](#template)
+* [StatementMapper](#mapper)
 * [Wikifier](#wikifier)
-   * [ItemTable](#itemtable)
 * [WikifierService](#wikiservice)
 * [The WikidataProvider](#wikiprovider)
 * [Convenience Functions](#convenience)
@@ -35,33 +32,96 @@ For csv files, the sheet name is the same as the file name, so for a file exampl
 A SpreadsheetFile is a convenience class for holding a collection of sheets within one file. IT is initialized with the path to the data file.
 
 
-## CellMapper
-<span id="mapper"></span>
-
-The CellMapper class is responsible for holding the logic for mapping a sheet to a collection of statements. This consists of two parts, the `region` and the `template` properties respectively.
-
-### Region
-<span id="region"></span>
-
-The region is an iterator over column+row indices. It must define the function __iter__ which yields (column, row) tuples. The default implementation is created from the region section of the statement mapping in a yaml file.
-
-### Template
-<span id="template"></span>
-
-The template class is used to define how to create a statement from a single cell within a sheet. The implementation details are currently too internal to allow easy customizing. It is created from the template section of the statement mapping in a yaml file. 
-
 ## Wikifier
 <span id="wikifier"></span>
 
-### ItemTable
-<span id="itemtable"></span>
+A wikifier is created without any starting arguments.
 
-## Wikifier
+Thereaafter, wikification information can be added to the wikifier with either the `add_file` or `add_dataframe` functions. The file must be a csv file. Both file and dataframes are expected to have 
+"column", "row", "value", "context", and "item" columns defined. (other than "item", the columns can be empty, although it is not valid for column AND row AND value to be empty simultaneously for a given row)
+
+Adding wikification information is order-sensitive, because later additions will overwrite earlier ones. A message to the user will be printed when this occurs.
+
+A wikifier can be saved to a file with the function `save(filename)` and then loaded from that file with `load(filename)`
+
+The wikifier keeps track of the filepaths of any files added with add_file, and keeps a list of all of its dataframes (those loaded from a file and those loaded directly). A small convenience function for printing out information about the wikifier is included, `print_data`.
+
+Internally, the wikifier creates an ItemTable, for looking up items by string or by cell, and is used extensively in creating statements.
+
+Example code:
+
+```
+    wikifier_file="my_wikifier.csv"
+    wf = Wikifier()
+    wf.add_file(wikifier_file)
+    df=pd.DataFrame.from_dict({"column":[''], "row":[''], "value":'Burundi', "item":['Q99'], "context":['']})
+    wf.add_dataframe(df)
+    wf.save(r"wiki_save")
+    new_wf=Wikifier.load(r"wiki_save")
+    new_wf.print_data()
+```
+
+> Wikifier update overwrote existing values: {"('', '', 'Burundi')": 'Q967'}
+> The wikifier contains 1 wiki files, and a total of 2 dataframes
+> The files are: my_wikifier.csv
+
+
+
+## WikifierService
 <span id="wikiservice"></span>
 
 You can send a spreadsheet to a wikifier service endpoint and receive back a wikified result.
 
-The service returns a dataframe. The dataframe is created in the wikifier format, with row, column, and value defined. 
+The service returns a dataframe. This dataframe can be loaded into the Wikifier class with the Wikifier's function `add_dataframe`.
+
+
+## StatementMapper
+<span id="mapper"></span>
+
+A StatementMapper is a class responsible for holding the logic for creating statements, metadata, and error reports from a Sheet plus Wikifier. All StatementMappers should implement the base template 
+BaseStatementMapper, which defines the public interface of the class:
+
+* `get_statement(self, sheet, wikifier, col, row, *args, **kwargs)`: returns statement, errors. Must be defined by inheriting classes.
+* `iterator(self)`: yields col, row pairs. Must be defined by inheriting classes.
+* `get_all_statements(self, sheet, wikifier)`: returns statements, cell_errors, metadata. By default calls `get_statement` in a loop using `iterator`. Does not need to be redefined unless user wants to customize something specific.
+
+a `statement` is a dictionary representation of the statement for a cell. It must define `item`, `property`, and `value`, and can also define a list of qualifiers (`qualifier`) and a list of references (`reference`), as well as any additional optional keys such as `unit`. 
+
+Example statement:
+
+```
+{
+    "item": "Q190",
+    "value": 3,
+    "property": "P123",
+    "qualifier": [
+        {"property": "P333", "value":7}
+    ]
+}
+```
+
+`error` is a dictionary, containing information about any errors that occured while processing the cell, matched to the key of the error's location in the result statement. For example, if the cell attempts to set a value for item that is invalid, error should contain "item":error message. If the property of a qualifier is invalid, that would be "qualifier":{index:{"property":error message}}
+
+Example error:
+
+```
+{
+    "item": "Not found",
+    "qualifier": [
+        2: {
+            "property": invalid date format
+        }
+    ]
+}
+```
+
+error can also be returned as simply an empty dictionary, or the user can choose to raise Exceptions and abort the process instead of handling returning errors. 
+
+`statements` is simply a dictionary of `statement`s, where the keys are excel-style cell identifiers (eg "A5")
+
+`errors`, like `statements`, is simply a dictionary of `error`s with cells as keys. 
+
+`metadata` is a dictionary. It ideally should define "data_file" (the name of the file we are processing) and "sheet_name" (the name of the sheet in that file we are processing). These keys are used when generating IDs for the kgtk format, and without them, the IDs may not be unique. It can also define "created_by" (used when generating ttl files). Any other information the user feels interested in preserving can also be stuck here. However, the code will continue to work even if an empty dictionary is returned.
 
 
 ## The WikidataProvider

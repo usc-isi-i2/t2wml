@@ -13,7 +13,6 @@ class JsonTest(unittest.TestCase):
         wikifier_file=os.path.join(test_folder, "wikifier_1.csv")
         
         wf = Wikifier()
-        
         wf.add_file(wikifier_file)
         df=pd.DataFrame.from_dict({"column":[''], "row":[''], "value":'Burundi', "item":['Q99'], "context":['']})
         wf.add_dataframe(df)
