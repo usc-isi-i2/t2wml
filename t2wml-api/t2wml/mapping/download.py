@@ -26,7 +26,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
         result_dict["node2;kgtk:latitude"]=property_dict["latitude"]
         result_dict["node2;kgtk:longitude"]=property_dict["longitude"]
         result_dict["node2;kgtk:precision"]=property_dict.get("precision", "")
-        result_dict[" node2;kgtk:globe"]=property_dict.get("globe", "")
+        result_dict["node2;kgtk:globe"]=property_dict.get("globe", "")
 
     else:
         value=property_dict["value"]

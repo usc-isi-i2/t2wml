@@ -51,7 +51,7 @@ class RegionCacher(Cacher):
             f.write(s)
 
 class MappingResultsCacher(Cacher):
-    title="result_j" #j is a modifier for backwards incompatible changes in cache format as of version 2.0a13
+    title="result_ל" #j is a modifier for backwards incompatible changes in cache format as of version 2.0a18
 
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)

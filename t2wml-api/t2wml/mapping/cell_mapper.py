@@ -2,6 +2,7 @@ from collections import OrderedDict
 from t2wml.parsing.yaml_parsing import TemplateParser, RegionParser, validate_yaml
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.utils.bindings import bindings
+from t2wml.utils.t2wml_exceptions import InvalidYAMLFileException
 from string import punctuation
 
 def string_is_valid(text: str) -> bool:
@@ -38,6 +39,9 @@ class Region:
                                 self.indices[(column, row)]=True
                         except Exception as e:
                             print(e)
+        if len(self.indices)==0:
+            raise InvalidYAMLFileException("Defined range includes no cells")
+        
     def __iter__(self):
         for key in self.indices:
             yield key
