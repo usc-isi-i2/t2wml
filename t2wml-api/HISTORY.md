@@ -1,5 +1,12 @@
 T2WML API History
 ===================================
+Changes in version 0.0.4:
+-------------------------
+* A lot more classes:
+    * Wikifier class fully working, supports multiple wikifier definitions
+    * ItemTable completely revamped, totally different storage and lookup mechanism including preferential lookup
+    * Revamp of cell mapping, now with base class BaseStatementMapper and implementation YamlMapper
+    * WikifierService class 
 
 Changes in version 0.0.3:
 ------------------------
