@@ -94,7 +94,7 @@ def highlight_region(data_sheet, yaml_file, project):
     highlight_data['item'] = list(highlight_data['item'])
     highlight_data['qualifierRegion'] = list(highlight_data['qualifierRegion'])
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
-    cell_mapper.result_cacher.save(highlight_data, statement_data, errors)
+    cache_holder.result_cacher.save(highlight_data, statement_data, errors)
     
     highlight_data['error']=errors if errors else None
     highlight_data['cellStatements']=statement_data
