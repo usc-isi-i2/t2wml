@@ -1,5 +1,12 @@
 T2WML Standalone Server App History
 ===================================
+Changes in version 2.0a20:
+-------------------------
+* upgrade to t2wml-api version 0.0.4
+* bug fixes: 
+   * if there's a problem in sheet, don't switch current sheet (and get stuck)
+   * metadata information was not being created in kgtk download for already-stored projects
+   * return better error message if the problem with the yaml file is a nonexistent range
 
 Changes in version 2.0a19:
 -------------------------
