@@ -237,7 +237,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       const { error } = json;
 
       // if failure
-      if (error !== null) {
+      if (error !== undefined && error!==null) {
         throw Error(error);
       }
 
