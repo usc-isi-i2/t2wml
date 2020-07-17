@@ -12,7 +12,7 @@ class WikifierService:
     def __init__(self, wikifier_endpoint='https://dsbox02.isi.edu:8888/wikifier/wikify'):
         self.wikifier_endpoint=wikifier_endpoint
     
-    def wikify_region(self, cell_range:str, sheet, context):
+    def wikify_region(self, cell_range:str, sheet, context=None):
         (start_col, start_row), (end_col, end_row) = cell_range_str_to_tuples(cell_range)
         end_col+=1
         end_row+=1

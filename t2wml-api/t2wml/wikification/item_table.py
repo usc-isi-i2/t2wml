@@ -29,11 +29,13 @@ class ItemTable:
         
         raise ValueError("Not found")
 
-    def get_item(self, column, row, context=''):
+    def get_item(self, column, row, context='', sheet=None):
         lookup=self.lookup_table.get(context)
         if not lookup:
             raise ItemNotFoundException("No values defined for context: {}".format(context))
-        value=bindings.excel_sheet[row, column]
+        if not sheet:
+            sheet=bindings.excel_sheet
+        value=sheet[row, column]
         try:
             item= self.lookup_func(lookup, column, row, value)
             return item

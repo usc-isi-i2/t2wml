@@ -42,22 +42,28 @@ class BaseStatementMapper:
     def get_statement(self, sheet, wikifier, col, row, *args, **kwargs):
         raise NotImplementedError
 
-    def _iterator(self):
+    def iterator(self):
         raise NotImplementedError
 
+    def do_init(self, sheet, wikifier):
+        pass
+
     def get_all_statements(self, sheet, wikifier):
-        update_bindings(item_table=wikifier.item_table, sheet=sheet)
+        self.do_init(sheet, wikifier)
         statements={}
         cell_errors={}
         metadata={
             "data_file":sheet.data_file_name,
             "sheet_name":sheet.name,
-            "created_by":self.created_by
         }
+        try:
+            metadata["created_by"]=self.created_by
+        except:
+            pass
         for col, row in self.iterator():
             cell=to_excel(col-1, row-1)
             try:
-                statement, inner_errors=self.get_cell_statement(None, None, col, row, True)
+                statement, inner_errors=self.get_cell_statement(None, None, col, row, do_init=False)
                 statements[cell]=statement
                 if inner_errors:
                     cell_errors[cell]=inner_errors
@@ -78,9 +84,12 @@ class YamlMapper(BaseStatementMapper):
         self.yaml_data=validate_yaml(file_path)
         self.created_by=self.yaml_data['statementMapping'].get('created_by', 't2wml')
     
-    def get_cell_statement(self, sheet, wikifier, col, row, bindings_initialized=False):
-        if not bindings_initialized:
-            update_bindings(item_table=wikifier.item_table, sheet=sheet)
+    def do_init(self, sheet, wikifier):
+        update_bindings(item_table=wikifier.item_table, sheet=sheet)
+    
+    def get_cell_statement(self, sheet, wikifier, col, row, do_init=True):
+        if do_init:
+            self.do_init(sheet, wikifier)
         context={"t_var_row":row, "t_var_col":col}
         statement, errors=self._apply_template(self.template, context)
         return statement, errors
@@ -88,6 +97,7 @@ class YamlMapper(BaseStatementMapper):
     def iterator(self):
         for col, row in self.region:
             yield col, row
+
     @property
     def region(self):
         try:

@@ -53,6 +53,7 @@ Internally, the wikifier creates an ItemTable, for looking up items by string or
 Example code:
 
 ```
+    import pandas as pd
     from t2wml.api import Wikifier
     wikifier_file="my_wikifier.csv"
     wf = Wikifier()
@@ -98,9 +99,10 @@ A StatementMapper is a class responsible for holding the logic for creating stat
 
 All StatementMappers should implement the base template BaseStatementMapper, which defines the public interface of the class:
 
-* `get_statement(self, sheet, wikifier, col, row, *args, **kwargs)`: returns statement, errors. Must be defined by inheriting classes.
+* `get_cell_statement(self, sheet, wikifier, col, row, do_init=True)`: returns statement, errors. Must be defined by inheriting classes.
 * `iterator(self)`: yields col, row pairs. Must be defined by inheriting classes.
-* `get_all_statements(self, sheet, wikifier)`: returns statements, cell_errors, metadata. By default calls `get_statement` in a loop using `iterator`. Does not need to be redefined unless user wants to customize something specific.
+* `get_all_statements(self, sheet, wikifier)`: returns statements, cell_errors, metadata. By default calls `get_cell_statement` in a loop using `iterator`. Does not need to be redefined unless user wants to customize something specific.
+* `do_init(self, sheet, wikifier)`: optional. used for any initalization needed before running get_cell_statement or get_all_statements. the argument `do_init=True` in get_cell_statement allows skipping the init function if calling from get_all_statements (it is set to false in get_all_statements). Other than passing sheet and wikifier, any other arguments needed for do_init would need to be set as properties of self and then accessed.
 
 a `statement` is a dictionary representation of the statement for a cell. It must define `item`, `property`, and `value`, and can also define a list of qualifiers (`qualifier`) and a list of references (`reference`), as well as any additional optional keys such as `unit`. 
 
@@ -171,11 +173,11 @@ class SimpleSheetMapper(BaseStatementMapper):
     def __init__(self, cols, rows):
         self.cols=cols
         self.rows=rows
-    def _iterator(self):
+    def iterator(self):
         for col in self.cols:
             for row in self.rows:
                 yield(col, row)
-    def get_statement(self, sheet, wikifier, col, row):
+    def get_cell_statement(self, sheet, wikifier, col, row, *args, **kwargs):
         error={}
         statement={}
         try:
