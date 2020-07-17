@@ -28,6 +28,25 @@ class TestScripts(unittest.TestCase):
         output_directory=os.path.join(self.test_folder, "driver_output")
         run_t2wml(self.data_filepath, self.wikifier_filepath, self.yaml_filepath, 
                 output_directory, filetype="json")
+    
+    def test_docs_loop_script(self):
+        import os
+        from t2wml.api import create_output_from_files, add_properties
+        from pathlib import Path
+        
+        properties_file= os.path.join(unit_test_folder, "property_type_map.json")
+        add_properties(properties_file)
+
+        test_folder=os.path.join(unit_test_folder, "loop")
+        data_folder=os.path.join(test_folder, "data")
+        wikifier_filepath=os.path.join(test_folder, "country-wikifier.csv")
+        yaml_filepath=os.path.join(test_folder, "oecd.yaml")
+        output_folder=os.path.join(test_folder, "output")
+        for file_name in os.listdir(data_folder):
+            data_filepath=os.path.join(data_folder, file_name)
+            csv_sheet=file_name
+            output_filename=os.path.join(output_folder, Path(file_name).stem+".tsv")
+            create_output_from_files(data_filepath, csv_sheet, yaml_filepath, wikifier_filepath,     output_filename, output_format="kgtk")
 
 
 

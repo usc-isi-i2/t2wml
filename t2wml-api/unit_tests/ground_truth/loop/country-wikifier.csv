@@ -1,0 +1,858 @@
+column,row,value,context,item
+,,Aruba,,Q21203
+,,Afghanistan,,Q889
+,,Angola,,Q916
+,,Anguilla,,Q25228
+,,Albania,,Q222
+,,Andorra,,Q228
+,,Arab World,,Q143487
+,,United Arab Emirates,,Q878
+,,Argentina,,Q414
+,,ARGENTINA,,Q414
+,,Armenia,,Q399
+,,American Samoa,,Q16641
+,,Antigua and Barbuda,,Q781
+,,Australia,,Q408
+,,AUSTRALIA,,Q408
+,,Austria,,Q40
+,,Azerbaijan,,Q227
+,,Burundi,,Q967
+,,Belgium,,Q31
+,,Benin,,Q962
+,,Burkina Faso,,Q965
+,,Bangladesh,,Q902
+,,Bulgaria,,Q219
+,,Bahrain,,Q398
+,,"Bahamas, The",,Q778
+,,Bahamas,,Q778
+,,Bosnia and Herzegovina,,Q225
+,,Belarus,,Q184
+,,Belize,,Q242
+,,Bermuda,,Q23635
+,,Bolivia,,Q750
+,,Brazil,,Q155
+,,BRAZIL,,Q155
+,,Barbados,,Q244
+,,Brunei Darussalam,,Q921
+,,Bhutan,,Q917
+,,Botswana,,Q963
+,,Central African Republic,,Q929
+,,Canada,,Q16
+,,CANADA,,Q16
+,,Cape Verde,,Q1011
+,,Cabo Verde,,Q1011
+,,Cook Islands,,Q26988
+,,French Guiana,,Q3769
+,,"Jersey, Channel Islands",,Q785
+,,Switzerland,,Q39
+,,Channel Islands,,Q42314
+,,Chile,,Q298
+,,China,,Q148
+,,CHINA,,Q148
+,,"Taiwan, China",,Q865
+,,Taiwan,,Q865
+,,Cote d'Ivoire,,Q1008
+,,Cameroon,,Q1009
+,,"Congo, Dem. Rep.",,Q974
+,,Congo Democratic Republic,,Q974
+,,Democratic Republic of the Congo,,Q974
+,,DR Congo,,Q974
+,,"Congo, Rep.",,Q971
+,,Congo,,Q971
+,,Colombia,,Q739
+,,Comoros,,Q970
+,,Costa Rica,,Q800
+,,Cuba,,Q241
+,,Curacao,,Q25279
+,,Cayman Islands,,Q5785
+,,Cyprus,,Q229
+,,Northern Cyprus,,Q23681
+,,Czech Republic,,Q213
+,,Germany,,Q183
+,,Djibouti,,Q977
+,,Dominica,,Q784
+,,Denmark,,Q35
+,,Dominican Republic,,Q786
+,,Algeria,,Q262
+,,Europe & Central Asia,,Q232
+,,Ecuador,,Q736
+,,"Egypt, Arab Rep.",,Q79
+,,Egypt,,Q79
+,,EGYPT,,Q79
+,,Euro area,,Q8268
+,,EU,,Q8268
+,,Eritrea,,Q986
+,,Spain,,Q29
+,,Estonia,,Q191
+,,Ethiopia,,Q115
+,,European Union,,Q458
+,,EUROPEAN UNION,,Q458
+,,Finland,,Q33
+,,Fiji,,Q712
+,,France,,Q142
+,,Faroe Islands,,Q4628
+,,"Micronesia, Fed. Sts.",,Q702
+,,Gabon,,Q1000
+,,United Kingdom,,Q145
+,,Georgia,,Q230
+,,Ghana,,Q117
+,,Gibraltar,,Q1410
+,,Guinea,,Q1006
+,,"Gambia, The",,Q1005
+,,Gambia,,Q1005
+,,Guinea-Bissau,,Q1007
+,,Guinea Bissau,,Q1007
+,,Equatorial Guinea,,Q983
+,,Greece,,Q41
+,,Grenada,,Q769
+,,Greenland,,Q223
+,,Guatemala,,Q774
+,,Guam,,Q16635
+,,Guyana,,Q734
+,,"Hong Kong SAR, China",,Q8646
+,,Hong Kong,,Q8646
+,,Honduras,,Q783
+,,Heavily indebted poor countries (HIPC),,Q1433120
+,,Croatia,,Q224
+,,Haiti,,Q790
+,,Hungary,,Q28
+,,Indonesia,,Q252
+,,INDONESIA,,Q252
+,,Isle of Man,,Q9676
+,,India,,Q668
+,,INDIA,,Q668
+,,Ireland,,Q27
+,,"Iran, Islamic Rep.",,Q794
+,,Iran,,Q794
+,,Iraq,,Q796
+,,Iceland,,Q189
+,,Israel,,Q801
+,,Israel and West Bank,,Q801
+,,Italy,,Q38
+,,Jamaica,,Q766
+,,Jordan,,Q810
+,,Japan,,Q17
+,,JAPAN,,Q17
+,,Kazakhstan,,Q232
+,,KAZAKHSTAN,,Q232
+,,Kenya,,Q114
+,,Kyrgyz Republic,,Q813
+,,Kyrgyzstan,,Q813
+,,Cambodia,,Q424
+,,Kiribati,,Q710
+,,St. Kitts and Nevis,,Q763
+,,"Korea, Rep.",,Q884
+,,South Korea,,Q884
+,,"Korea, South",,Q884
+,,REPUBLIC OF KOREA,,Q884
+,,Kuwait,,Q817
+,,Latin America & Caribbean (excluding high income),,Q12585
+,,Lao PDR,,Q819
+,,Lebanon,,Q822
+,,Liberia,,Q1014
+,,Libya,,Q1016
+,,St. Lucia,,Q760
+,,Saint Lucia,,Q760
+,,Latin America & Caribbean,,Q12585
+,,Least developed countries: UN classification,,Q752401
+,,Liechtenstein,,Q347
+,,Sri Lanka,,Q854
+,,Lesotho,,Q1013
+,,Lithuania,,Q37
+,,Luxembourg,,Q32
+,,Latvia,,Q211
+,,"Macao SAR, China",,Q14773
+,,St. Martin (French part),,Q126125
+,,Morocco,,Q1028
+,,Monaco,,Q235
+,,Moldova,,Q217
+,,Madagascar,,Q1019
+,,Maldives,,Q826
+,,Martinique,,Q17054
+,,Mexico,,Q96
+,,MEXICO,,Q96
+,,Marshall Islands,,Q709
+,,North Macedonia,,Q221
+,,Macedonia,,Q221
+,,Mali,,Q912
+,,Malta,,Q233
+,,Myanmar,,Q836
+,,Montenegro,,Q236
+,,Mongolia,,Q711
+,,Northern Mariana Islands,,Q16644
+,,Mozambique,,Q1029
+,,Mauritania,,Q1025
+,,Mauritius,,Q1027
+,,Malawi,,Q1020
+,,Malaysia,,Q833
+,,North America,,Q49
+,,Namibia,,Q1030
+,,New Caledonia,,Q33788
+,,Niger,,Q1032
+,,Niue,,Q34020
+,,Nigeria,,Q1033
+,,NIGERIA,,Q1033
+,,Nicaragua,,Q811
+,,Netherlands,,Q29999
+,,Netherlands Antilles,,Q25227
+,,Norway,,Q20
+,,Nepal,,Q837
+,,Nauru,,Q697
+,,New Zealand,,Q664
+,,Oman,,Q842
+,,Pakistan,,Q843
+,,Panama,,Q804
+,,Peru,,Q419
+,,Philippines,,Q928
+,,PHILIPPINES,,Q928
+,,Palau,,Q695
+,,Papua New Guinea,,Q691
+,,Poland,,Q36
+,,Puerto Rico,,Q1183
+,,"Korea, Dem. PeopleÂ’s Rep.",,Q423
+,,"Korea, Dem. People's Rep.",,Q423
+,,"Korea, Dem. People’s Rep.",,Q423
+,,North Korea,,Q423
+,,"Korea, North",,Q423
+,,Portugal,,Q45
+,,Paraguay,,Q733
+,,West Bank and Gaza,,Q407199
+,,French Polynesia,,Q30971
+,,Qatar,,Q846
+,,Romania,,Q218
+,,Reunion,,Q17070
+,,Russian Federation,,Q159
+,,RUSSIAN FEDERATION,,Q159
+,,Russia,,Q159
+,,Rwanda,,Q1037
+,,South Asia,,Q771405
+,,Saudi Arabia,,Q851
+,,SAUDI ARABIA,,Q851
+,,Sudan,,Q1049
+,,Senegal,,Q1041
+,,Singapore,,Q334
+,,Solomon Islands,,Q685
+,,Sierra Leone,,Q1044
+,,El Salvador,,Q792
+,,San Marino,,Q238
+,,Somalia,,Q1045
+,,Serbia,,Q403
+,,South Sudan,,Q958
+,,Sub-Saharan Africa,,Q132959
+,,Sao Tome and Principe,,Q1039
+,,Suriname,,Q730
+,,Slovak Republic,,Q214
+,,Slovakia,,Q214
+,,Slovenia,,Q215
+,,Sweden,,Q34
+,,Eswatini,,Q1050
+,,Swaziland,,Q1050
+,,Sint Maarten (Dutch part),,Q26273
+,,Seychelles,,Q1042
+,,Syrian Arab Republic,,Q858
+,,Syria,,Q858
+,,Turks and Caicos Islands,,Q18221
+,,Chad,,Q657
+,,Laos,,Q819
+,,Togo,,Q945
+,,Thailand,,Q869
+,,THAILAND,,Q869
+,,Tajikistan,,Q863
+,,Turkmenistan,,Q874
+,,Latin America & the Caribbean (IDA & IBRD countries),,Q12585
+,,Timor-Leste,,Q574
+,,East Timor,,Q574
+,,Tonga,,Q678
+,,South Asia (IDA & IBRD),,Q771405
+,,Sub-Saharan Africa (IDA & IBRD countries),,Q132959
+,,Trinidad and Tobago,,Q754
+,,Tunisia,,Q948
+,,Turkey,,Q43
+,,TURKEY,,Q43
+,,Tuvalu,,Q672
+,,Tanzania,,Q924
+,,Uganda,,Q1036
+,,Ukraine,,Q212
+,,UKRAINE,,Q212
+,,Uruguay,,Q77
+,,United States,,Q30
+,,United States of America,,Q30
+,,UNITED STATES OF AMERICA,,Q30
+,,USA,,Q30
+,,Uzbekistan,,Q265
+,,St. Vincent and the Grenadines,,Q757
+,,Saint Vincent and the Grenadines,,Q757
+,,"Venezuela, RB",,Q717
+,,Venezuela,,Q717
+,,British Virgin Islands,,Q25305
+,,Virgin Islands (U.S.),,Q11703
+,,Vietnam,,Q881
+,,Vanuatu,,Q686
+,,World,,Q16502
+,,Samoa,,Q683
+,,Kosovo,,Q1246
+,,"Yemen, Rep.",,Q805
+,,Yemen,,Q805
+,,South Africa,,Q258
+,,SOUTH AFRICA,,Q258
+,,Zambia,,Q953
+,,Zimbabwe,,Q954
+,,USA,,Q30
+,,Trinidad & Tobago,,Q754
+,,Brunei,,Q921
+,,Viet Nam,,Q881
+,,VIET NAM,,Q881
+,,Bosnia-Herzegovina,,Q225
+,,Czechia,,Q213
+,,Czechoslovakia,,Q33946
+,,USSR,,Q15180
+,,UK,,Q145
+,,UAE,,Q878
+,,eSwatini,,Q1050
+,,bra,,Q155
+,,frg,,Q183
+,,brd,,Q183
+,,ger,,Q183
+,,bah,,Q398
+,,isr,,Q801
+,,tha,,Q869
+,,uae,,Q878
+,,ang,,Q916
+,,sud,,Q1049
+,,tur,,Q43
+,,czr,,Q213
+,,cze,,Q213
+,,mon,,Q235
+,,alg,,Q262
+,,nzl,,Q664
+,,ven,,Q717
+,,car,,Q929
+,,caf,,Q929
+,,tun,,Q948
+,,gbs,,Q1007
+,,uga,,Q1036
+,,irl,,Q27
+,,isl,,Q189
+,,mkd,,Q221
+,,tls,,Q574
+,,fij,,Q712
+,,guy,,Q734
+,,col,,Q739
+,,hon,,Q783
+,,pak,,Q843
+,,frn,,Q1033
+,,nga,,Q1033
+,,ngr,,Q1033
+,,svk,,Q214
+,,mne,,Q236
+,,uzb,,Q265
+,,lie,,Q347
+,,grn,,Q769
+,,irq,,Q796
+,,brn,,Q921
+,,bru,,Q921
+,,zam,,Q953
+,,bot,,Q963
+,,cpv,,Q1011
+,,mda,,Q217
+,,bar,,Q244
+,,srb,,Q403
+,,mdv,,Q826
+,,bhu,,Q917
+,,dji,,Q977
+,,lbr,,Q1014
+,,mtn,,Q1025
+,,moz,,Q1029
+,,nor,,Q20
+,,swe,,Q34
+,,ltu,,Q37
+,,uru,,Q77
+,,vat,,Q237
+,,esa,,Q792
+,,jor,,Q810
+,,npl,,Q837
+,,nep,,Q837
+,,ksa,,Q851
+,,ban,,Q902
+,,ben,,Q962
+,,com,,Q970
+,,geq,,Q983
+,,civ,,Q1008
+,,les,,Q1013
+,,can,,Q16
+,,cdn,,Q16
+,,esp,,Q29
+,,sui,,Q39
+,,che,,Q39
+,,mex,,Q96
+,,fra,,Q142
+,,blr,,Q184
+,,bih,,Q225
+,,kaz,,Q232
+,,jam,,Q766
+,,cri,,Q800
+,,crc,,Q800
+,,syr,,Q858
+,,maw,,Q1020
+,,sey,,Q1042
+,,aut,,Q40
+,,geo,,Q230
+,,prk,,Q423
+,,mng,,Q711
+,,mgl,,Q711
+,,mas,,Q833
+,,mys,,Q833
+,,nam,,Q1030
+,,swz,,Q1050
+,,bel,,Q31
+,,prc,,Q148
+,,chn,,Q148
+,,mlt,,Q233
+,,chi,,Q298
+,,vut,,Q686
+,,van,,Q686
+,,lao,,Q819
+,,tjk,,Q863
+,,mli,,Q912
+,,sle,,Q1044
+,,usa,,Q30
+,,ita,,Q38
+,,ina,,Q252
+,,idn,,Q252
+,,rsa,,Q258
+,,zaf,,Q258
+,,ind,,Q668
+,,tuv,,Q672
+,,fsm,,Q702
+,,kir,,Q710
+,,gui,,Q1006
+,,mri,,Q1027
+,,eth,,Q115
+,,gbr,,Q145
+,,ukr,,Q212
+,,alb,,Q222
+,,png,,Q691
+,,ecu,,Q736
+,,bol,,Q750
+,,ant,,Q781
+,,yem,,Q805
+,,tkm,,Q874
+,,afg,,Q889
+,,phl,,Q928
+,,phi,,Q928
+,,stp,,Q1039
+,,ken,,Q114
+,,rus,,Q159
+,,lat,,Q211
+,,lva,,Q211
+,,hrv,,Q224
+,,cro,,Q224
+,,cub,,Q241
+,,sgp,,Q334
+,,aus,,Q408
+,,gua,,Q774
+,,kgz,,Q813
+,,lbn,,Q822
+,,sri,,Q854
+,,lke,,Q854
+,,vie,,Q881
+,,tog,,Q945
+,,gam,,Q1005
+,,sen,,Q1041
+,,fin,,Q33
+,,and,,Q228
+,,arg,,Q414
+,,sol,,Q685
+,,cmr,,Q1009
+,,cam,,Q1009
+,,som,,Q1045
+,,jpn,,Q17
+,,jap,,Q17
+,,dnk,,Q756617
+,,dek,,Q35
+,,den,,Q35
+,,tan,,Q35
+,,gre,,Q41
+,,est,,Q191
+,,svn,,Q215
+,,slo,,Q215
+,,smr,,Q238
+,,arm,,Q399
+,,tga,,Q678
+,,tto,,Q754
+,,nic,,Q811
+,,nca,,Q811
+,,kuw,,Q817
+,,bur,,Q836
+,,mya,,Q836
+,,zim,,Q954
+,,bdi,,Q967
+,,drc,,Q974
+,,cod,,Q974
+,,gab,,Q1000
+,,lba,,Q1016
+,,hun,,Q28
+,,pol,,Q36
+,,aze,,Q227
+,,cha,,Q657
+,,gum,,Q657
+,,mhl,,Q709
+,,dom,,Q786
+,,dma,,Q784
+,,egy,,Q79
+,,lux,,Q32
+,,gha,,Q117
+,,bul,,Q219
+,,bgr,,Q219
+,,sur,,Q730
+,,hai,,Q790
+,,rok,,Q884
+,,kor,,Q884
+,,ssd,,Q958
+,,cgo,,Q971
+,,eri,,Q986
+,,iri,,Q986
+,,mad,,Q1019
+,,mar,,Q1028
+,,grc,,Q41
+,,prt,,Q45
+,,ury,,Q77
+,,deu,,Q183
+,,rou,,Q218
+,,cyp,,Q229
+,,mco,,Q235
+,,blz,,Q242
+,,brb,,Q244
+,,dza,,Q262
+,,chl,,Q298
+,,bhr,,Q398
+,,per,,Q419
+,,khm,,Q424
+,,tcd,,Q657
+,,ton,,Q678
+,,wsm,,Q683
+,,slb,,Q685
+,,plw,,Q695
+,,nru,,Q697
+,,fji,,Q712
+,,pry,,Q733
+,,vct,,Q757
+,,lca,,Q760
+,,kna,,Q763
+,,grd,,Q769
+,,gtm,,Q774
+,,bhs,,Q778
+,,atg,,Q781
+,,hnd,,Q783
+,,hti,,Q790
+,,slv,,Q792
+,,irn,,Q794
+,,pan,,Q804
+,,kwt,,Q817
+,,mmr,,Q836
+,,omn,,Q842
+,,qat,,Q846
+,,sau,,Q851
+,,lka,,Q854
+,,are,,Q878
+,,vnm,,Q881
+,,bgd,,Q902
+,,ago,,Q916
+,,btn,,Q917
+,,tza,,Q924
+,,tgo,,Q945
+,,zmb,,Q953
+,,zwe,,Q954
+,,bwa,,Q963
+,,bfa,,Q965
+,,cog,,Q971
+,,gnq,,Q983
+,,gmb,,Q1005
+,,gin,,Q1006
+,,gnb,,Q1007
+,,lso,,Q1013
+,,lby,,Q1016
+,,mdg,,Q1019
+,,mwi,,Q1020
+,,mrt,,Q1025
+,,mus,,Q1027
+,,ner,,Q1032
+,,rwa,,Q1037
+,,syc,,Q1042
+,,sdn,,Q1049
+,,nld,,Q29999
+,,BRA,,Q155
+,,FRG,,Q183
+,,BRD,,Q183
+,,GER,,Q183
+,,BAH,,Q398
+,,ISR,,Q801
+,,THA,,Q869
+,,UAE,,Q878
+,,ANG,,Q916
+,,SUD,,Q1049
+,,TUR,,Q43
+,,CZR,,Q213
+,,CZE,,Q213
+,,MON,,Q235
+,,ALG,,Q262
+,,NZL,,Q664
+,,VEN,,Q717
+,,CAR,,Q929
+,,CAF,,Q929
+,,TUN,,Q948
+,,GBS,,Q1007
+,,UGA,,Q1036
+,,IRL,,Q27
+,,ISL,,Q189
+,,MKD,,Q221
+,,TLS,,Q574
+,,FIJ,,Q712
+,,GUY,,Q734
+,,COL,,Q739
+,,HON,,Q783
+,,PAK,,Q843
+,,FRN,,Q1033
+,,NGA,,Q1033
+,,NGR,,Q1033
+,,SVK,,Q214
+,,MNE,,Q236
+,,UZB,,Q265
+,,LIE,,Q347
+,,GRN,,Q769
+,,IRQ,,Q796
+,,BRN,,Q921
+,,BRU,,Q921
+,,ZAM,,Q953
+,,BOT,,Q963
+,,CPV,,Q1011
+,,MDA,,Q217
+,,BAR,,Q244
+,,SRB,,Q403
+,,MDV,,Q826
+,,BHU,,Q917
+,,DJI,,Q977
+,,LBR,,Q1014
+,,MTN,,Q1025
+,,MOZ,,Q1029
+,,NOR,,Q20
+,,SWE,,Q34
+,,LTU,,Q37
+,,URU,,Q77
+,,VAT,,Q237
+,,ESA,,Q792
+,,JOR,,Q810
+,,NPL,,Q837
+,,NEP,,Q837
+,,KSA,,Q851
+,,BAN,,Q902
+,,BEN,,Q962
+,,COM,,Q970
+,,GEQ,,Q983
+,,CIV,,Q1008
+,,LES,,Q1013
+,,CAN,,Q16
+,,CDN,,Q16
+,,ESP,,Q29
+,,SUI,,Q39
+,,CHE,,Q39
+,,MEX,,Q96
+,,FRA,,Q142
+,,BLR,,Q184
+,,BIH,,Q225
+,,KAZ,,Q232
+,,JAM,,Q766
+,,CRI,,Q800
+,,CRC,,Q800
+,,SYR,,Q858
+,,MAW,,Q1020
+,,SEY,,Q1042
+,,AUT,,Q40
+,,GEO,,Q230
+,,PRK,,Q423
+,,MNG,,Q711
+,,MGL,,Q711
+,,MAS,,Q833
+,,MYS,,Q833
+,,NAM,,Q1030
+,,SWZ,,Q1050
+,,BEL,,Q31
+,,PRC,,Q148
+,,CHN,,Q148
+,,MLT,,Q233
+,,CHI,,Q298
+,,VUT,,Q686
+,,VAN,,Q686
+,,LAO,,Q819
+,,TJK,,Q863
+,,MLI,,Q912
+,,SLE,,Q1044
+,,USA,,Q30
+,,ITA,,Q38
+,,INA,,Q252
+,,IDN,,Q252
+,,RSA,,Q258
+,,ZAF,,Q258
+,,IND,,Q668
+,,TUV,,Q672
+,,FSM,,Q702
+,,KIR,,Q710
+,,GUI,,Q1006
+,,MRI,,Q1027
+,,ETH,,Q115
+,,GBR,,Q145
+,,UKR,,Q212
+,,ALB,,Q222
+,,PNG,,Q691
+,,ECU,,Q736
+,,BOL,,Q750
+,,ANT,,Q781
+,,YEM,,Q805
+,,TKM,,Q874
+,,AFG,,Q889
+,,PHL,,Q928
+,,PHI,,Q928
+,,STP,,Q1039
+,,KEN,,Q114
+,,RUS,,Q159
+,,LAT,,Q211
+,,LVA,,Q211
+,,HRV,,Q224
+,,CRO,,Q224
+,,CUB,,Q241
+,,SGP,,Q334
+,,AUS,,Q408
+,,GUA,,Q774
+,,KGZ,,Q813
+,,LBN,,Q822
+,,SRI,,Q854
+,,LKE,,Q854
+,,VIE,,Q881
+,,TOG,,Q945
+,,GAM,,Q1005
+,,SEN,,Q1041
+,,FIN,,Q33
+,,AND,,Q228
+,,ARG,,Q414
+,,SOL,,Q685
+,,CMR,,Q1009
+,,CAM,,Q1009
+,,SOM,,Q1045
+,,JPN,,Q17
+,,JAP,,Q17
+,,DNK,,Q756617
+,,DEK,,Q35
+,,DEN,,Q35
+,,TAN,,Q35
+,,GRE,,Q41
+,,EST,,Q191
+,,SVN,,Q215
+,,SLO,,Q215
+,,SMR,,Q238
+,,ARM,,Q399
+,,TGA,,Q678
+,,TTO,,Q754
+,,NIC,,Q811
+,,NCA,,Q811
+,,KUW,,Q817
+,,BUR,,Q836
+,,MYA,,Q836
+,,ZIM,,Q954
+,,BDI,,Q967
+,,DRC,,Q974
+,,COD,,Q974
+,,GAB,,Q1000
+,,LBA,,Q1016
+,,HUN,,Q28
+,,POL,,Q36
+,,AZE,,Q227
+,,CHA,,Q657
+,,GUM,,Q657
+,,MHL,,Q709
+,,DOM,,Q786
+,,DMA,,Q784
+,,EGY,,Q79
+,,LUX,,Q32
+,,GHA,,Q117
+,,BUL,,Q219
+,,BGR,,Q219
+,,SUR,,Q730
+,,HAI,,Q790
+,,ROK,,Q884
+,,KOR,,Q884
+,,SSD,,Q958
+,,CGO,,Q971
+,,ERI,,Q986
+,,IRI,,Q986
+,,MAD,,Q1019
+,,MAR,,Q1028
+,,GRC,,Q41
+,,PRT,,Q45
+,,URY,,Q77
+,,DEU,,Q183
+,,ROU,,Q218
+,,CYP,,Q229
+,,MCO,,Q235
+,,BLZ,,Q242
+,,BRB,,Q244
+,,DZA,,Q262
+,,CHL,,Q298
+,,BHR,,Q398
+,,PER,,Q419
+,,KHM,,Q424
+,,TCD,,Q657
+,,TON,,Q678
+,,WSM,,Q683
+,,SLB,,Q685
+,,PLW,,Q695
+,,NRU,,Q697
+,,FJI,,Q712
+,,PRY,,Q733
+,,VCT,,Q757
+,,LCA,,Q760
+,,KNA,,Q763
+,,GRD,,Q769
+,,GTM,,Q774
+,,BHS,,Q778
+,,ATG,,Q781
+,,HND,,Q783
+,,HTI,,Q790
+,,SLV,,Q792
+,,IRN,,Q794
+,,PAN,,Q804
+,,KWT,,Q817
+,,MMR,,Q836
+,,OMN,,Q842
+,,QAT,,Q846
+,,SAU,,Q851
+,,LKA,,Q854
+,,ARE,,Q878
+,,VNM,,Q881
+,,BGD,,Q902
+,,AGO,,Q916
+,,BTN,,Q917
+,,TZA,,Q924
+,,TGO,,Q945
+,,ZMB,,Q953
+,,ZWE,,Q954
+,,BWA,,Q963
+,,BFA,,Q965
+,,COG,,Q971
+,,GNQ,,Q983
+,,GMB,,Q1005
+,,GIN,,Q1006
+,,GNB,,Q1007
+,,LSO,,Q1013
+,,LBY,,Q1016
+,,MDG,,Q1019
+,,MWI,,Q1020
+,,MRT,,Q1025
+,,MUS,,Q1027
+,,NER,,Q1032
+,,RWA,,Q1037
+,,SYC,,Q1042
+,,SDN,,Q1049
+,,NLD,,Q29999
+,,Organisation of Eastern Caribbean States,,Q392770
+,,Ivory Coast,,Q1008
+,,Palestinian National Authority,,Q219060
