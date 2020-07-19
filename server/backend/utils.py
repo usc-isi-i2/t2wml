@@ -41,6 +41,27 @@ def query_wikidata_for_label_and_description(items):
             pass
         return response
 
+def get_labels_and_descriptions(items):
+    response=dict()
+    missing_items=[]
+    for item in items:
+            wp= WikidataItem.query.filter_by(wd_id=item).first()
+            if wp:
+                label=desc=""
+                if wp.label:
+                    label=wp.label
+                if wp.description:
+                    desc=wp.description
+                response[item]=dict(label=label, desc=desc)
+            else:
+                missing_items.append(item)
+    try:
+        additional_items=query_wikidata_for_label_and_description(missing_items)
+        response.update(additional_items)
+    except: #eg 502 bad gateway error
+        pass
+    return response
+
 def query_wikidata_for_label(node):
     try:
         query="""SELECT DISTINCT * WHERE {

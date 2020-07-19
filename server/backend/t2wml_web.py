@@ -13,7 +13,7 @@ from t2wml.mapping.statement_mapper import YamlMapper
 from caching import CacheHolder
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_models import DatabaseProvider
-from utils import query_wikidata_for_label_and_description
+from utils import get_labels_and_descriptions
 
 def wikify(region, data_sheet, context):
     ws=WikifierService()
@@ -198,7 +198,7 @@ def serialize_item_table(project, sheet):
                 cell=to_excel(col, row)
                 qnodes[cell][context]=  {"item": item}
     
-    labels_and_descriptions = query_wikidata_for_label_and_description(list(items_to_get))
+    labels_and_descriptions = get_labels_and_descriptions(list(items_to_get))
 
     #update rowData
     for i in range(len(rowData)):
