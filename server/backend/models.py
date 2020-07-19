@@ -3,7 +3,7 @@ from pathlib import Path
 from werkzeug.utils import secure_filename
 
 from t2wml.wikification.utility_functions import add_properties_from_file
-from t2wml.spreadsheets.caching import PandasLoader, PickleCacher
+from t2wml.spreadsheets.sheet import SpreadsheetFile
 
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
@@ -212,11 +212,8 @@ class DataFile(SavedFile):
     
     
     def init_sheets(self):
-        pw=PandasLoader(self.file_path)
-        sheet_data=pw.load_file()
-        for sheet_name in sheet_data:
-            pc=PickleCacher(self.file_path, sheet_name)
-            pc.save_pickle(sheet_data[sheet_name])
+        spreadsheet=SpreadsheetFile(self.file_path)
+        for sheet_name in spreadsheet:
             ps = DataSheet(name=sheet_name, data_file_id=self.id)
             db.session.add(ps)
         self.current_sheet_id=self.sheets[0].id
