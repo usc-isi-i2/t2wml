@@ -22,10 +22,10 @@
 # a script that iterates over a directory of csvs that can all be parsed using the same yaml file
 import os
 from pathlib import Path
-from t2wml.api import create_output_from_files, add_properties
+from t2wml.api import create_output_from_files, add_properties_from_file
 
 properties_file= "custom_properties.json"
-add_properties(properties_file)
+add_properties_from_file(properties_file)
 
 data_folder="my_drive\my_data"
 wikifier_filepath="my_drive\wikiers\wiki.csv"
@@ -68,7 +68,7 @@ for sheet_name, sheet in spreadsheet_file.items():
 
 * `set_wikidata_provider(wikidata_provider)`: set the wikidata provider for t2wml to the provided argument (should be an initialized class instance)
 * `set_sparql_endpoint(sparql_endpoint)`: set the sparql endpoint used throughout the code for wikidata queries
-* `add_properties(properties_file_path)`: add properties to the wikidata provider from the provided file path, which must be in json or kgtk format
+* `add_properties_from_file(properties_file_path)`: add properties to the wikidata provider from the provided file path, which must be in json or kgtk format
 * `create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath, output_filepath=None, output_format="json")`: 
 
 

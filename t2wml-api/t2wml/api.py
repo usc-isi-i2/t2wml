@@ -73,6 +73,4 @@ def create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifie
             f.write(output)
     return output
 
-def add_properties(filepath):
-    return add_properties_from_file(filepath)
 

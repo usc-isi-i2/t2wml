@@ -2,8 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from werkzeug.utils import secure_filename
 
-from t2wml.wikification.utility_functions import add_properties_from_file
-from t2wml.spreadsheets.sheet import SpreadsheetFile
+from t2wml.api import add_properties_from_file, SpreadsheetFile
 
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 

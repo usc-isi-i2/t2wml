@@ -31,11 +31,11 @@ class TestScripts(unittest.TestCase):
     
     def test_docs_folder_loop_script(self):
         import os
-        from t2wml.api import create_output_from_files, add_properties
+        from t2wml.api import create_output_from_files, add_properties_from_file
         from pathlib import Path
         
         properties_file= os.path.join(unit_test_folder, "property_type_map.json")
-        add_properties(properties_file)
+        add_properties_from_file(properties_file)
 
         test_folder=os.path.join(unit_test_folder, "loop")
         data_folder=os.path.join(test_folder, "data")
@@ -50,10 +50,10 @@ class TestScripts(unittest.TestCase):
 
     def test_docs_sheet_loop_script(self):
         import os
-        from t2wml.api import KnowledgeGraph, Wikifier, YamlMapper, SpreadsheetFile
+        from t2wml.api import KnowledgeGraph, Wikifier, YamlMapper, SpreadsheetFile, add_properties_from_file
 
         properties_file= os.path.join(unit_test_folder, "property_type_map.json")
-        add_properties(properties_file)
+        add_properties_from_file(properties_file)
 
         data_file=os.path.join(unit_test_folder, "loop", "oecd.xlsx")
         data_folder=os.path.join(test_folder, "data")
