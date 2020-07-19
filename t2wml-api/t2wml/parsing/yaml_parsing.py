@@ -94,48 +94,6 @@ class RegionParser(CodeParser):
     def __init__(self, yaml_data):
         self.parsed_region=self.parse_region(yaml_data)
 
-    def parse_region_expression(self, statement, context={}):
-        try:
-            if isinstance(statement, T2WMLCode):
-                return iter_on_n_for_code(statement, context)
-
-            if self.is_code_string(statement):
-                statement=self.fix_code_string(statement)
-        #we run parser even if it's not a string, so that we get back number values for A, B, etc
-            if "t_var_n" in statement:
-                return iter_on_n(statement, context)
-            else:
-                return t2wml_parse(statement, context)
-        except Exception as e:
-            raise T2WMLExceptions.InvalidYAMLFileException("Failed to parse:"+str(statement))
-
-
-
-    def check_for_recursive_regions(self, region):
-        if "right" in str(region["right"]) \
-            or "left" in str(region["left"]) \
-            or ("left" in str(region["right"]) and "right" in str(region["left"])):
-            raise T2WMLExceptions.ConstraintViolationErrorException("Recursive definition of left and right region parameters.")
-        if "top" in str(region["top"]) or \
-            "bottom" in str(region["bottom"]) \
-            or ("top" in str(region["bottom"]) and "bottom" in str(region["top"])):
-            raise T2WMLExceptions.ConstraintViolationErrorException( "Recursive definition of top and bottom region parameters.")
-    
-    def check_region_boundaries(self, region):
-        if region['t_var_left'] > region['t_var_right']:
-            raise T2WMLExceptions.ConstraintViolationErrorException("Value of left should be less than or equal to right")
-        if region['t_var_top'] > region['t_var_bottom']:
-            raise T2WMLExceptions.ConstraintViolationErrorException("Value of top should be less than or equal to bottom")
-    
-    def fill_dependent_variables(self, yaml_region, region, independent_key:str, dependent_key:str):
-        #first get the value for the independent key (eg "left")
-        region["t_var_"+independent_key]=self.parse_region_expression(str(yaml_region[independent_key]))
-        #using the value of the independent key, iter on n to get value of dependent key (eg "right")
-        try:
-            region["t_var_"+dependent_key]=self.parse_region_expression(yaml_region[dependent_key], region)
-        except:
-            raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
-
     def parse_region(self, yaml_region):
         if 'range' in yaml_region:
             cell_range=yaml_region["range"]
@@ -181,6 +139,50 @@ class RegionParser(CodeParser):
 
         return region_props
     
+
+    def parse_region_expression(self, statement, context={}):
+        try:
+            if isinstance(statement, T2WMLCode):
+                return iter_on_n_for_code(statement, context)
+
+            if self.is_code_string(statement):
+                statement=self.fix_code_string(statement)
+        #we run parser even if it's not a string, so that we get back number values for A, B, etc
+            if "t_var_n" in statement:
+                return iter_on_n(statement, context)
+            else:
+                return t2wml_parse(statement, context)
+        except Exception as e:
+            raise T2WMLExceptions.InvalidYAMLFileException("Failed to parse:"+str(statement))
+
+
+
+    def check_for_recursive_regions(self, region):
+        if "right" in str(region["right"]) \
+            or "left" in str(region["left"]) \
+            or ("left" in str(region["right"]) and "right" in str(region["left"])):
+            raise T2WMLExceptions.ConstraintViolationErrorException("Recursive definition of left and right region parameters.")
+        if "top" in str(region["top"]) or \
+            "bottom" in str(region["bottom"]) \
+            or ("top" in str(region["bottom"]) and "bottom" in str(region["top"])):
+            raise T2WMLExceptions.ConstraintViolationErrorException( "Recursive definition of top and bottom region parameters.")
+    
+    def check_region_boundaries(self, region):
+        if region['t_var_left'] > region['t_var_right']:
+            raise T2WMLExceptions.ConstraintViolationErrorException("Value of left should be less than or equal to right")
+        if region['t_var_top'] > region['t_var_bottom']:
+            raise T2WMLExceptions.ConstraintViolationErrorException("Value of top should be less than or equal to bottom")
+    
+    def fill_dependent_variables(self, yaml_region, region, independent_key:str, dependent_key:str):
+        #first get the value for the independent key (eg "left")
+        region["t_var_"+independent_key]=self.parse_region_expression(str(yaml_region[independent_key]))
+        #using the value of the independent key, iter on n to get value of dependent key (eg "right")
+        try:
+            region["t_var_"+dependent_key]=self.parse_region_expression(yaml_region[dependent_key], region)
+        except:
+            raise T2WMLExceptions.ConstraintViolationErrorException("Dyamically defined region did not resolve to value")    
+
+
     def get_code_replacement(self, input_str):
         fixed=self.fix_code_string(input_str)
         compiled_statement=compile(fixed, "<string>", "eval")
