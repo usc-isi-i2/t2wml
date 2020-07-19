@@ -825,6 +825,16 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
+            {/* hidden input of wikifier file */}
+            <input
+              type="file"
+              id="file_wikifier"
+              accept=".csv"
+              style={{ display: "none" }}
+              onChange={wikiStore.table.handleOpenWikifierFile}
+              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
+            />
+
             </Card.Header>
 
             {/* wikifier */}

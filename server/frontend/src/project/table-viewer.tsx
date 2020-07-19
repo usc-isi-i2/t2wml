@@ -117,6 +117,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     wikiStore.table.updateTableData = (tableData: TableData) => this.updateTableData(tableData);
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
     wikiStore.table.updateErrorCells = (internalError: any) => this.updateErrorCells(internalError);
+    wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
 
   onGridReady(params: WikifierData) {
@@ -776,17 +777,6 @@ class TableViewer extends Component<TableProperties, TableState> {
               onChange={this.handleOpenTableFile}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
-
-            {/* hidden input of wikifier file */}
-            <input
-              type="file"
-              id="file_wikifier"
-              accept=".csv"
-              style={{ display: "none" }}
-              onChange={this.handleOpenWikifierFile}
-              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
-            />
-
           </Card.Header>
           
           {/* table */}
