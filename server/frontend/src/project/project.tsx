@@ -17,13 +17,14 @@ import { LOG, ErrorMessage, ErrorCell } from '../common/general';
 
 // components
 import Editors from './editor';
-import Output from './output';
+import Output from './output/output';
 import TableViewer from './table-viewer';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
+import Settings from './settings';
 
 interface ProjectProperties {
 
@@ -33,20 +34,17 @@ interface ProjectState {
   showSettings: boolean;
   showSpinner: boolean;
   projectData:  any; //todo: add project class[]
-  tempSparqlEndpoint: string;
   errorMessage: ErrorMessage;
 }
 
 @observer
 class Project extends Component<ProjectProperties, ProjectState> {
-  private tempSparqlEndpointRef: React.RefObject<HTMLInputElement>;
   private requestService: RequestService;
   private pid: string;
 
   constructor(props: ProjectProperties) {
     super(props);
     this.requestService = new RequestService();
-    this.tempSparqlEndpointRef = React.createRef();
 
     // Get the pid from the URL - the URL is ..../project/<pid>
     // This will be put in an app wide store at some point
@@ -87,9 +85,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
       //   { pid: "2222", ptitle: "Project 2", cdate: 1565720859582, mdate: 1565720859582 },
       //   { pid: "3333", ptitle: "Project 3", cdate: 1563906459582, mdate: 1563906459582 },
       // ],
-
-      // settings
-      tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -170,9 +165,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
     console.log("<App> updated settings");
 
     // update settings
-    wikiStore.settings.sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
-    // window.sparqlEndpoint = this.state.tempSparqlEndpoint;
-    this.setState({ showSettings: false, tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint });
+    this.setState({ showSettings: false});
 
     // notify backend
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
@@ -185,75 +178,12 @@ class Project extends Component<ProjectProperties, ProjectState> {
     });
   }
 
-  showErrorCellsInTable(error: ErrorCell) {
-    wikiStore.table.updateErrorCells(error);
+  cancelSaveSettings() {
+      this.setState({ showSettings: false });
   }
 
-  renderSettings() {
-    const { showSettings } = this.state;
-    const sparqlEndpoints = [
-      Config.sparql,
-      "https://query.wikidata.org/sparql"
-    ];
-    return (
-      <Modal show={showSettings} size="lg" onHide={() => { /* do nothing */ }}>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Settings</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-
-            {/* project id */}
-            {/* <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Project&nbsp;ID
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Form.Control type="text" defaultValue={window.pid} readOnly />
-              </Col>
-            </Form.Group> */}
-
-            {/* sparql endpoint */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                SPARQL&nbsp;endpoint
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Dropdown as={InputGroup} alignRight>
-                  <Form.Control
-                    type="text"
-                    defaultValue={wikiStore.settings.sparqlEndpoint}
-                    ref={this.tempSparqlEndpointRef}
-                    onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
-                  />
-                  <Dropdown.Toggle split variant="outline-dark" id="endpoint"/>
-                  <Dropdown.Menu style={{ width: "100%" }}>
-                    <Dropdown.Item onClick={() => (this.tempSparqlEndpointRef as any).current.value = sparqlEndpoints[0]}>{sparqlEndpoints[0]}</Dropdown.Item>
-                    <Dropdown.Item onClick={() => (this.tempSparqlEndpointRef as any).current.value = sparqlEndpoints[1]}>{sparqlEndpoints[1]}</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </Col>
-            </Form.Group>
-
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showSettings: false, tempSparqlEndpoint: wikiStore.settings.sparqlEndpoint })}>
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={() => this.handleSaveSettings()}>
-            Save
-          </Button>
-        </Modal.Footer>
-
-      </Modal >
-    );
+  showErrorCellsInTable(error: ErrorCell) {
+    wikiStore.table.updateErrorCells(error);
   }
 
   render() {
@@ -271,8 +201,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
           <Spinner animation="border" />
         </div>
 
-        {/* modal */}
-        {this.renderSettings()}
+        <Settings showSettings={this.state.showSettings}
+            handleSaveSettings={() => this.handleSaveSettings()}
+            cancelSaveSettings={() =>this.cancelSaveSettings()} />
 
         {/* content */}
         <div>

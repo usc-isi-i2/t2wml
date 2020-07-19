@@ -219,6 +219,15 @@ class TableViewer extends Component<TableProperties, TableState> {
     this.requestService.uploadProperties(this.pid, formData).then((json) => {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
+          const { added, failed, present } = json;
+          let message = `✅ Properties file loaded: ${added.length} added, ${failed.length} failed, ${present.length} present.`;
+          if (failed.length) {
+              message += '\n\nCheck the console for the failures reasons.'
+          }
+          this.setState({
+            msgInToast1: message,
+            showToast1: true,
+          });
 
         }).catch((error: ErrorMessage) => {
           console.log(error);
@@ -807,7 +816,7 @@ class TableViewer extends Component<TableProperties, TableState> {
               {/* toast 1: showing message */}
               <Toast
                 onClose={() => this.setState({ showToast1: false })}
-                autohide delay={5000}
+                autohide delay={7000}
                 show={showToast1} // this "show" and the following "display: none", both are needed
                 style={showToast1 ? { display: "block" } : { display: "none" }}
               >

@@ -7,13 +7,15 @@ import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip }
 import Downloader from 'js-file-download';
 
 // console.log
-import { LOG, ErrorMessage } from '../common/general';
-import * as utils from '../common/utils'
-import RequestService from '../common/service';
-import ToastMessage from '../common/toast';
+import { LOG, ErrorMessage } from '../../common/general';
+import * as utils from '../../common/utils'
+import RequestService from '../../common/service';
+import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react";
-import wikiStore from '../data/store';
+import wikiStore from '../../data/store';
+import Download from './download';
+import ShowOutput from './show-output';
 
 interface OutputProperties {
 
@@ -39,8 +41,6 @@ interface OutputState {
   // download
   showDownload: boolean,
   isDownloadDisabled: boolean,
-  downloadFileName: string;
-  downloadFileType: string;
   isDownloading: boolean;
 
   propertyName: string;
@@ -79,8 +79,6 @@ class Output extends Component<OutputProperties, OutputState> {
       // download
       showDownload: false,
       isDownloadDisabled: wikiStore.output.isDownloadDisabled,
-      downloadFileName: this.pid,
-      downloadFileType: "json",
       isDownloading: false,
 
       errorMessage: {} as ErrorMessage,
@@ -91,15 +89,17 @@ class Output extends Component<OutputProperties, OutputState> {
     wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
   }
 
-  handleDoDownload() {
+  handleDoDownload(fileName: string, fileType: string) {
+      console.log("------", fileType)
+      debugger
     this.setState({ errorMessage: {} as ErrorMessage });  
-    const filename = this.state.downloadFileName + "." + this.state.downloadFileType;
+    const filename = fileName + "." + fileType;
 
     // before sending request
     this.setState({ isDownloading: true, showDownload: false });
     // send request
     console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadResults(this.pid, this.state.downloadFileType).then((json) => {
+    this.requestService.downloadResults(this.pid, fileType).then((json) => {
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -135,6 +135,10 @@ class Output extends Component<OutputProperties, OutputState> {
       // follow-ups (failure)
       this.setState({ isDownloading: false });
     });
+  }
+
+  cancelDownload() {
+      this.setState({showDownload: false});
   }
 
   removeBorders() {
@@ -308,217 +312,12 @@ class Output extends Component<OutputProperties, OutputState> {
     });
   }
 
-  renderDownload() {
-    return (
-      <Modal show={this.state.showDownload} onHide={() => { /* do nothing */ }}>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Download</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Col xs="9" md="9" className="pr-0">
-                <Form.Control
-                  type="text"
-                  defaultValue={this.state.downloadFileName}
-                  onChange={(event) => this.setState({ downloadFileName: event.target.value })}
-                />
-              </Col>
-              <Col xs="3" md="3" className="pl-0">
-                <Form.Control as="select" onChange={(event) => this.setState({ downloadFileType: event.target.value })}>
-                  <option value="json">.json</option>
-                  <option value="ttl">.ttl</option>
-                  <option value="tsv">kgtk (.tsv)</option>
-                </Form.Control>
-              </Col>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showDownload: false })}>
-            Cancel
-          </Button>
-          <OverlayTrigger placement="bottom" trigger={["hover", "focus"]}
-            // defaultShow="true"
-            overlay={
-              <Tooltip style={{ width: "fit-content" }} id="file">
-                <div className="text-left small">
-                  Your file will be prepared shortly. Once the file is ready, it will be downloaded automatically.
-                </div>
-              </Tooltip>
-            }
-          >
-            <Button variant="dark" onClick={this.handleDoDownload.bind(this)}>
-              Start
-            </Button>
-          </OverlayTrigger>
-
-        </Modal.Footer>
-      </Modal >
-    );
-  }
-
-  renderOutput() {
-    let outputDiv = [];
-
-    let errorsDiv;
-    if (this.state.errors) {
-        errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
-            Errors: {this.state.errors}
-        </div>
-    }
-
-    let itemName = this.state.itemName;
-    if (itemName) {
-
-      // item
-      let itemID = this.state.itemID;
-      let itemIDDiv = (
-        <a
-          href={"https://www.wikidata.org/wiki/" + itemID}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ "color": "hsl(200, 100%, 30%)" }}
-        >{itemID}</a>
-      );
-
-      // property
-      let propertyDiv;
-      let propertyID = this.state.propertyID;
-      let propertyName = this.state.propertyName;
-      if (propertyName) {
-        propertyDiv =
-          <span key="property">
-            <a
-              href={"https://www.wikidata.org/wiki/Property:" + propertyID}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ "color": "hsl(200, 100%, 30%)" }}
-            >{propertyName}</a>
-          </span>
-          ;
-      } else {
-        propertyDiv =
-          <span key="property">
-            <a
-              href={"https://www.wikidata.org/wiki/Property:" + propertyID}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ "color": "hsl(200, 100%, 30%)" }}
-            >{propertyID}</a>
-          </span>
-          ;
-      }
-
-      // value
-      let valueDiv = this.state.value;
-
-      // qualifiers
-      let qualifiersDiv = [];
-      let qualifiers = this.state.qualifiers;
-      if (qualifiers) {
-        for (let i = 0, len = qualifiers.length; i < len; i++) {
-          let qualifier = qualifiers[i];
-
-          // qualifier property
-          let qualifierPropertyDiv;
-          let qualifierPropertyID = qualifier["propertyID"];
-          let qualifierPropertyName = qualifier["propertyName"];
-          if (qualifierPropertyName) {
-            qualifierPropertyDiv =
-              <a
-                href={"https://www.wikidata.org/wiki/Property:" + qualifierPropertyID}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierProperty"
-              >{qualifierPropertyName}</a>
-              ;
-          } else {
-            qualifierPropertyDiv =
-              <a
-                href={"https://www.wikidata.org/wiki/Property:" + qualifierPropertyID}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierProperty"
-              >{qualifierPropertyID}</a>
-              ;
-          }
-
-          // qualifier value
-          let qualifierValueDiv;
-          let qualifierValueID = qualifier["valueID"];
-          let qualifierValueName = qualifier["valueName"];
-          if (qualifierValueID) {
-            qualifierValueDiv =
-              <a
-                href={"https://www.wikidata.org/wiki/" + qualifierValueID}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierValue"
-              >{qualifierValueName}</a>
-              ;
-          } else {
-            qualifierValueDiv = qualifierValueName;
-          }
-
-          // append to qualifiersDiv
-          qualifiersDiv.push(
-            <div key={i}>- {qualifierPropertyDiv}: {qualifierValueDiv}</div>
-          );
-        }
-      }
-
-      // final output
-      outputDiv.push(
-        <Card.Title key="item">
-          <span style={{ fontSize: "24px", fontWeight: "bolder" }}>
-            {itemName}
-          </span>
-          &nbsp;
-          <span style={{ fontSize: "20px" }}>
-            ({itemIDDiv})
-          </span>
-        </Card.Title>
-      );
-      outputDiv.push(
-        <table className="w-100" key="outputTable" style={{ borderCollapse: "collapse" }}>
-          <tbody>
-            <tr style={{ borderTop: "1px solid lightgray", borderBottom: "1px solid lightgray" }}>
-              <td className="p-2" style={{ fontSize: "16px", fontWeight: "bold", verticalAlign: "top", width: "40%" }}>
-                {propertyDiv}
-              </td>
-              <td className="p-2">
-                <div style={{ fontSize: "16px", fontWeight: "bold" }}>
-                  {valueDiv}
-                </div>
-                <div style={{ fontSize: "14px" }}>
-                  {qualifiersDiv}
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      );
-    }
-
-    outputDiv.push(errorsDiv);
-
-    return outputDiv;
-  }
-
   render() {
     return (
       <div className="w-100 h-100 p-1">
-        {this.renderDownload()}
+        <Download showDownload={this.state.showDownload}
+            handleDoDownload={(fileName: string, fileType: string) => this.handleDoDownload(fileName, fileType)}
+            cancelDownload={() => this.cancelDownload()} />
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
 
         <Card className="w-100 h-100 shadow-sm">
@@ -538,7 +337,7 @@ class Output extends Component<OutputProperties, OutputState> {
               variant="outline-light"
               size="sm"
               style={{ padding: "0rem 0.5rem", width: "83px" }}
-              onClick={() => this.setState({ showDownload: true, downloadFileType: "json" })}
+              onClick={() => this.setState({ showDownload: true })}
               disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >
               {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Download"}
@@ -555,7 +354,15 @@ class Output extends Component<OutputProperties, OutputState> {
 
             {/* output */}
             <div className="w-100 p-3" style={{ height: "1px" }}>
-              {this.renderOutput()}
+              <ShowOutput
+                errors={this.state.errors}
+                itemName={this.state.itemName}
+                itemID={this.state.itemID}
+                propertyID={this.state.propertyID}
+                propertyName={this.state.propertyName}
+                value={this.state.value}
+                qualifiers={this.state.qualifiers}
+              />
             </div>
           </Card.Body>
         </Card>
