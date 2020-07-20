@@ -59,9 +59,9 @@ class Sheet:
 
     @property    
     def row_len(self):
-        return len(self.data)
+        return self.data.shape[0]
     
     @property
     def col_len(self):
-        return len(self.data[0])
+        return self.data.shape[1]
     
