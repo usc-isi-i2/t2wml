@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 
 // App
-import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 
 
 import { observer } from "mobx-react";
-import wikiStore from '../../data/store';
 
 interface ShowOutputProperties {
     errors: string;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 // App
-import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, Card, Spinner } from 'react-bootstrap';
 
 // Output
 import Downloader from 'js-file-download';
@@ -90,8 +90,6 @@ class Output extends Component<OutputProperties, OutputState> {
   }
 
   handleDoDownload(fileName: string, fileType: string) {
-      console.log("------", fileType)
-      debugger
     this.setState({ errorMessage: {} as ErrorMessage });  
     const filename = fileName + "." + fileType;
 

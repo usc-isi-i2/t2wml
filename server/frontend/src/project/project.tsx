@@ -6,8 +6,8 @@ import Navbar from '../common/navbar/navbar';
 
 
 // App
-import SplitPane from 'react-split-pane'
-import { Button, Col, Dropdown, Form, Modal, Row, Spinner, InputGroup } from 'react-bootstrap';
+import SplitPane from 'react-split-pane';
+import { Spinner } from 'react-bootstrap';
 
 
 import Config from '../common/config';
