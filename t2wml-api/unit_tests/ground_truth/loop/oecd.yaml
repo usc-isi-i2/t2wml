@@ -4,7 +4,7 @@ statementMapping:
     - left: D
       right: K
       top: 6
-      bottom: $end
+      bottom: =$end
       skip_cell:
         - =value[$col, $row] == " .."
         - =contains(value[$col, $row], "c") 

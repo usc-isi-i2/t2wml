@@ -55,18 +55,18 @@ class TestScripts(unittest.TestCase):
         properties_file= os.path.join(unit_test_folder, "property_type_map.json")
         add_properties_from_file(properties_file)
 
-        data_file=os.path.join(unit_test_folder, "loop", "oecd.xlsx")
-        data_folder=os.path.join(test_folder, "data")
-        wikifier_filepath=os.path.join(test_folder, "country-wikifier.csv")
+        
+        test_folder=os.path.join(unit_test_folder, "loop")
+        data_file=os.path.join(test_folder, "oecd.xlsx")
+        wikifier_filepath1=os.path.join(test_folder, "country-wikifier.csv")
         yaml_filepath=os.path.join(test_folder, "oecd.yaml")
         output_folder=os.path.join(test_folder, "output")
 
         yaml_mapper=YamlMapper(yaml_filepath)
         wikifier=Wikifier()
         wikifier.add_file(wikifier_filepath1)
-        wikifier.add_file(wikifier_filepath2)
         spreadsheet_file=SpreadsheetFile(data_file)
-        for sheet_name, sheet in spreadsheet_file:
+        for sheet_name, sheet in spreadsheet_file.items():
             print("processing sheet "+sheet_name)
             kg=KnowledgeGraph.generate(yaml_mapper, sheet, wikifier)
             out_filepath=os.path.join(output_folder, sheet_name+".tsv")
