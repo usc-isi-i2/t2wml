@@ -15,37 +15,38 @@ def string_is_valid(text: str) -> bool:
     return True
 
 class Region:
-    def __init__(self, region_data):
-        self.left=region_data["t_var_left"]
-        self.right=region_data["t_var_right"]
-        self.top=region_data["t_var_top"]
-        self.bottom=region_data["t_var_bottom"]
-        self.create_holes(region_data)
-
-    def create_holes(self, region_data):
-        self.indices=OrderedDict()
+    def __init__(self, index_pairs):
+        if len(index_pairs)==0:
+            raise ValueError("Defined region does not include any cells")
+        self.index_pairs=index_pairs
+    
+    def __iter__(self):
+        for pair in self.index_pairs:
+            yield pair
+    
+    @classmethod
+    def create_from_region_data(cls, region_data):
+        index_pairs=[]
+        left=region_data["t_var_left"]
+        right=region_data["t_var_right"]
+        top=region_data["t_var_top"]
+        bottom=region_data["t_var_bottom"]
+        
         skip_rows=set(region_data.get("skip_row", []))
         skip_cols=set(region_data.get("skip_column", []))
         skip_cells=region_data.get("skip_cell", [])
-        skip_cells=[tuple(i) for i in skip_cells]
         skip_cells=set(skip_cells)
-        for column in range(self.left, self.right+1):
+
+        for column in range(left, right+1):
             if column not in skip_cols:
-                for row in range(self.top, self.bottom+1):
+                for row in range(top, bottom+1):
                     if row not in skip_rows:
-                        try:
                             if (column, row) not in skip_cells and string_is_valid(str(bindings.excel_sheet[row-1][column-1])):
-                                self.indices[(column, row)]=True
-                        except Exception as e:
-                            print(e)
-        if len(self.indices)==0:
-            raise InvalidYAMLFileException("Defined range includes no cells")
+                                index_pairs.append([column, row])
         
-    def __iter__(self):
-        for key in self.indices:
-            yield key
-            
+        return cls(index_pairs)
+
     @staticmethod
     def create_from_yaml(yaml_data):
         region_parser=RegionParser(yaml_data)
-        return Region(region_parser.parsed_region)
+        return Region.create_from_region_data(region_parser.parsed_region)
