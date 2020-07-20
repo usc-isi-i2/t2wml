@@ -1,13 +1,11 @@
 import json
 from pathlib import Path
 from collections import defaultdict
-from t2wml.spreadsheets.sheet import Sheet
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
-from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
+from t2wml.api import set_sparql_endpoint, set_wikidata_provider, Sheet, KnowledgeGraph, Wikifier, WikifierService
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
-from t2wml.wikification.wikifier_service import WikifierService
-from t2wml.wikification.item_table import Wikifier 
+ 
 from caching import CacheHolder
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_models import DatabaseProvider
