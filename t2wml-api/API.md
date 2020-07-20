@@ -251,7 +251,7 @@ class SimpleSheetMapper(BaseStatementMapper):
             value=sheet[col, row]
             statement["value"]=value
         except Exception as e:
-            error["value"]=value
+            error["value"]=str(e)
         
         statement["property"]="P123"
         
