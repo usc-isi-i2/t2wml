@@ -12,6 +12,8 @@ class ItemTable:
 
     def lookup_func(self, lookup, column, row, value):
         #order of priority: cell+value> cell> col+value> col> row+value> row> value
+        column=int(column)
+        row=int(row)
         tuples=[
             (column, row, value),
             (column, row, ''),
@@ -57,11 +59,9 @@ class ItemTable:
         #used to serialize table
         bindings.excel_sheet=sheet
         for context in self.lookup_table:
-            try:
-                item = self.get_item(column, row, context)
+            item = self.get_item(column, row, context)
+            if item:
                 return item, context, bindings.excel_sheet[row, column]
-            except:
-                pass
         return None, None, None
 
     def update_table_from_dataframe(self, df):
@@ -81,6 +81,10 @@ class ItemTable:
             if not column and not row and not value:
                 raise ValueError("at least one of column, row, or value must be defined")
             
+            if column:
+                column=int(column)
+            if row:
+                row=int(row)
             key=str((column, row, value))
             if self.lookup_table[context].get(key):
                 overwritten[key]=self.lookup_table[context][key]
@@ -112,8 +116,8 @@ class Wikifier:
         df=pd.read_csv(file_path)
         try:
             overwritten=self.item_table.update_table_from_dataframe(df)
-        except:
-            raise ValueError("Could not apply {}".format(file_path))
+        except Exception as e:
+            raise ValueError("Could not apply {} : {}".format(file_path, str(e)))
         self.wiki_files.append(file_path)
         self._data_frames.append(df)
         return overwritten

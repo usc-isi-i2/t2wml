@@ -105,9 +105,11 @@ def get_qnode_label(node):
     except Exception as e:
         pass #continue directly to sparql query
     
-
-    label=query_wikidata_for_label(node)
-    wikidata_label_query_cache[node]=label
+    try:
+        label=query_wikidata_for_label(node)
+        wikidata_label_query_cache[node]=label
+    except: #eg 502 bad gateway
+        return None
     return label
     
 

@@ -1,15 +1,11 @@
 import json
 from pathlib import Path
 from collections import defaultdict
-from t2wml.mapping.download import get_file_output_from_statements
-from t2wml.spreadsheets.sheet import Sheet
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.settings import t2wml_settings
-from t2wml.api import set_sparql_endpoint, set_wikidata_provider, KnowledgeGraph
+from t2wml.api import set_sparql_endpoint, set_wikidata_provider, Sheet, KnowledgeGraph, Wikifier, WikifierService
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
-from t2wml.wikification.wikifier_service import WikifierService
-from t2wml.wikification.item_table import Wikifier
-from t2wml.mapping.statement_mapper import YamlMapper 
+ 
 from caching import CacheHolder
 from app_config import DEFAULT_SPARQL_ENDPOINT
 from wikidata_models import DatabaseProvider
@@ -21,12 +17,11 @@ def wikify(region, data_sheet, context):
     df, problem_cells= ws.wikify_region(region, sheet, context)
     return df, problem_cells
 
-def update_t2wml_settings():
-    set_sparql_endpoint(DEFAULT_SPARQL_ENDPOINT)
-    set_wikidata_provider(DatabaseProvider(DEFAULT_SPARQL_ENDPOINT))
+def update_t2wml_settings(project):
+    set_sparql_endpoint(project.sparql_endpoint)
+    set_wikidata_provider(DatabaseProvider(project.sparql_endpoint))
     t2wml_settings.update({
                 "cache_data_files":True,
-                "cache_results":True,
                 #"wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
                 #"sparql_endpoint":project.sparql_endpoint,
                 #"storage_folder":UPLOAD_FOLDER
@@ -53,7 +48,7 @@ def download(data_sheet, yaml_file, project, filetype, project_name=""):
     if not kg:
         kg=get_kg(data_sheet, cache_holder.cell_mapper, project)
     
-    response["data"]=get_file_output_from_statements(kg, filetype)
+    response["data"]=kg.get_output(filetype)
     response["error"]=None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
@@ -102,12 +97,12 @@ def highlight_region(data_sheet, yaml_file, project):
 
 def get_cell(data_sheet, yaml_file, project, col, row):
     wikifier=get_wikifier(project)
+    cache_holder=CacheHolder(data_sheet, yaml_file)
     sheet=Sheet(data_sheet.data_file.file_path, data_sheet.name)
-    cell_mapper=YamlMapper(yaml_file.file_path)
     try:
         row=int(row)
         col=column_letter_to_index(col)+1
-        statement, errors= cell_mapper.get_cell_statement(sheet, wikifier, col, row)
+        statement, errors= cache_holder.cell_mapper.get_cell_statement(sheet, wikifier, col, row)
         data = {'statement': statement, 'internalErrors': errors if errors else None, "error":None}
     except TemplateDidNotApplyToInput as e:
         data=dict(error=e.errors)

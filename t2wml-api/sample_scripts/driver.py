@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import logging
-from etk.wikidata import serialize_change_record
 from t2wml.api import create_output_from_files
 from t2wml.spreadsheets.utilities import get_first_sheet_name
 
@@ -26,7 +25,5 @@ def run_t2wml(data_file_path: str, wikified_output_path: str, t2wml_spec: str, o
     with open(str(output_path / output_file_name), "w") as fp:
         fp.write(response)
 
-    with open(str(output_path / "changes.tsv"), "w") as fp:
-        serialize_change_record(fp)
     
 

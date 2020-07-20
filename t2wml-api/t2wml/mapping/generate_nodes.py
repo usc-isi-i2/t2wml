@@ -5,14 +5,16 @@ from pathlib import Path
 
 CWD = os.getcwd()
 from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
-from etk.etk import ETK
-from etk.knowledge_graph.schema import KGSchema
-from etk.etk_module import ETKModule
-from etk.wikidata.entity import WDProperty, WDItem
-from etk.wikidata.value import Datatype, Item, Property, StringValue, URLValue, TimeValue, QuantityValue, \
-    MonolingualText, ExternalIdentifier, GlobeCoordinate
-from etk.wikidata import serialize_change_record
-
+try:
+    from etk.etk import ETK
+    from etk.knowledge_graph.schema import KGSchema
+    from etk.etk_module import ETKModule
+    from etk.wikidata.entity import WDProperty, WDItem
+    from etk.wikidata.value import Datatype, Item, Property, StringValue, URLValue, TimeValue, QuantityValue, \
+        MonolingualText, ExternalIdentifier, GlobeCoordinate
+    from etk.wikidata import serialize_change_record
+except ImportError:
+    raise ImportError("Cannot use generate_nodes.py without etk installed")
 
 def model_data(properties_file_path, output_file_path) -> None:
     """

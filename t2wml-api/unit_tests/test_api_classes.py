@@ -21,6 +21,7 @@ class JsonTest(unittest.TestCase):
         new_wf=Wikifier.load(output_file)
         item=new_wf.item_table.get_item_by_string('Burundi')
         new_wf.print_data()
+
     def test_wikifier_service(self):
         from t2wml.api import Wikifier, WikifierService, Sheet
         test_folder=os.path.join(unit_test_folder, "error-catching")
@@ -32,6 +33,7 @@ class JsonTest(unittest.TestCase):
         wf=Wikifier()
         wf.add_dataframe(df)
         wf.item_table.get_item(0, 5, sheet=sheet)
+
     def test_custom_statement_mapper(self):
         from t2wml.mapping.statement_mapper import BaseStatementMapper
         from t2wml.api import KnowledgeGraph, Wikifier, Sheet
@@ -56,7 +58,7 @@ class JsonTest(unittest.TestCase):
                     value=sheet[col, row]
                     statement["value"]=value
                 except Exception as e:
-                    error["value"]=value
+                    error["value"]=str(e)
                 
                 statement["property"]="P123"
                 
@@ -74,7 +76,7 @@ class JsonTest(unittest.TestCase):
         kg=KnowledgeGraph.generate(ym, sh, wf)
 
     def test_basic_imports(self):
-        from t2wml.api import KnowledgeGraph, YamlMapper, Wikifier, Sheet
+        from t2wml.api import KnowledgeGraph, YamlMapper, Wikifier, Sheet, SpreadsheetFile
         test_folder=os.path.join(unit_test_folder, "error-catching")
         data_file=os.path.join(test_folder, "input_1.csv")
         yaml_file=os.path.join(test_folder, "error.yaml")
@@ -85,6 +87,7 @@ class JsonTest(unittest.TestCase):
         wf=Wikifier()
         wf.add_file(w_file)
         kg=KnowledgeGraph.generate(ym, sheet, wf)
+    
 
 
 

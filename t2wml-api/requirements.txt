@@ -1,6 +1,3 @@
 PyYAML==5.3.1
-pandas==1.0.3 #included in etk
-etk==2.2.1
-thinc==7.4.1
+pandas==1.0.3
 wheel==0.34.2
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.0/en_core_web_sm-2.3.0.tar.gz

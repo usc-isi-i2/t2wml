@@ -29,13 +29,13 @@ class TestScripts(unittest.TestCase):
         run_t2wml(self.data_filepath, self.wikifier_filepath, self.yaml_filepath, 
                 output_directory, filetype="json")
     
-    def test_docs_loop_script(self):
+    def test_docs_folder_loop_script(self):
         import os
-        from t2wml.api import create_output_from_files, add_properties
+        from t2wml.api import create_output_from_files, add_properties_from_file
         from pathlib import Path
         
         properties_file= os.path.join(unit_test_folder, "property_type_map.json")
-        add_properties(properties_file)
+        add_properties_from_file(properties_file)
 
         test_folder=os.path.join(unit_test_folder, "loop")
         data_folder=os.path.join(test_folder, "data")
@@ -48,7 +48,29 @@ class TestScripts(unittest.TestCase):
             output_filename=os.path.join(output_folder, Path(file_name).stem+".tsv")
             create_output_from_files(data_filepath, csv_sheet, yaml_filepath, wikifier_filepath,     output_filename, output_format="kgtk")
 
+    def test_docs_sheet_loop_script(self):
+        import os
+        from t2wml.api import KnowledgeGraph, Wikifier, YamlMapper, SpreadsheetFile, add_properties_from_file
 
+        properties_file= os.path.join(unit_test_folder, "property_type_map.json")
+        add_properties_from_file(properties_file)
+
+        
+        test_folder=os.path.join(unit_test_folder, "loop")
+        data_file=os.path.join(test_folder, "oecd.xlsx")
+        wikifier_filepath1=os.path.join(test_folder, "country-wikifier.csv")
+        yaml_filepath=os.path.join(test_folder, "oecd.yaml")
+        output_folder=os.path.join(test_folder, "output")
+
+        yaml_mapper=YamlMapper(yaml_filepath)
+        wikifier=Wikifier()
+        wikifier.add_file(wikifier_filepath1)
+        spreadsheet_file=SpreadsheetFile(data_file)
+        for sheet_name, sheet in spreadsheet_file.items():
+            print("processing sheet "+sheet_name)
+            kg=KnowledgeGraph.generate(yaml_mapper, sheet, wikifier)
+            out_filepath=os.path.join(output_folder, sheet_name+".tsv")
+            kg.save_kgtk(out_filepath)
 
 
 

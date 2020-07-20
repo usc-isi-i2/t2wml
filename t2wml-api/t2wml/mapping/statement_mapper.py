@@ -1,9 +1,6 @@
-
-import warnings
 import sys
 from copy import deepcopy
 from collections import defaultdict
-from etk.wikidata.utils import parse_datetime_string
 from t2wml.utils.t2wml_exceptions import T2WMLException
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.parsing.classes import ReturnClass
@@ -13,25 +10,26 @@ from t2wml.wikification.utility_functions import translate_precision_to_integer,
 from t2wml.utils.bindings import update_bindings
 from t2wml.parsing.yaml_parsing import validate_yaml, Template
 from t2wml.mapping.region import Region
+from t2wml.utils.utilities import parse_datetime
+
 
 def parse_time_for_dict(response):
     if "property" in response:
         prop_type=get_property_type(response["property"])
         if prop_type=="Time":
             if "format" in response:
-                with warnings.catch_warnings(record=True) as w: #use this line to make etk stop harassing us with "no lang features detected" warnings
                     try:
-                        datetime_string, precision = parse_datetime_string(
+                        datetime_string, precision = parse_datetime(
                             str(response["value"]),
-                            additional_formats= [response["format"]],
-                            prefer_language_date_order = False 
+                            additional_formats= [response["format"]]
                             )
 
                     except ValueError:
                         raise T2WMLExceptions.BadDateFormatException("Attempting to parse datetime string that isn't a datetime:" + str(response["value"]))
 
                     if "precision" not in response:
-                        response["precision"] = int(precision.value.__str__())
+                        if precision is not None:
+                            response["precision"] = int(precision.value.__str__())
                     else:
                         response["precision"] = translate_precision_to_integer(response["precision"])
                     response["value"] = datetime_string
@@ -63,7 +61,7 @@ class BaseStatementMapper:
         for col, row in self.iterator():
             cell=to_excel(col-1, row-1)
             try:
-                statement, inner_errors=self.get_cell_statement(None, None, col, row, do_init=False)
+                statement, inner_errors=self.get_cell_statement(sheet, wikifier, col, row, do_init=False)
                 statements[cell]=statement
                 if inner_errors:
                     cell_errors[cell]=inner_errors
@@ -127,8 +125,11 @@ class YamlMapper(BaseStatementMapper):
                             new_dict.pop(key)
                             raise ValueError("Failed to resolve for "+key)
                         new_dict[key]=q_parsed
+                except ValueError:
+                    errors[str(i+1)][key]=str(e)
                 except Exception as e:
                     errors[str(i+1)][key]=str(e)
+                    new_dict.pop(key)
             attributes_parsed.append(new_dict)
 
         return attributes_parsed, errors

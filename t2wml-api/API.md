@@ -1,14 +1,75 @@
 # The T2WML API: A programmatic way of using T2WML
+* [Examples of using the API](#examples)
+* [Convenience Functions](#convenience)
 * [KnowledgeGraph](#kg)
-* [DataSheet and DataFile](#data)
+* [SpreadsheetFile and Sheet](#sheet)
 * [Wikifier](#wikifier)
 * [WikifierService](#wikifierservice)
 * [StatementMapper](#statementmapper)
   * [YamlMapper](#yamlmapper)
   * [A custom mapper class](#custommapper)
 * [The WikidataProvider](#wikiprovider)
-* [Convenience Functions](#convenience)
-* [Examples of using the API](#examples)
+
+
+
+
+## Examples of code
+<span id="examples"></span>
+
+**Example one: Using the API's convenience functions**
+
+```
+# a script that iterates over a directory of csvs that can all be parsed using the same yaml file
+import os
+from pathlib import Path
+from t2wml.api import create_output_from_files, add_properties_from_file
+
+properties_file= "custom_properties.json"
+add_properties_from_file(properties_file)
+
+data_folder="my_drive\my_data"
+wikifier_filepath="my_drive\wikiers\wiki.csv"
+yaml_filepath="my_drive\yaml1.yaml"
+output_folder="my_drive\out"
+for file_name in os.listdir(data_folder):
+    data_filepath=os.path.join(data_folder, file_name)
+    csv_sheet=file_name
+    output_filename=os.path.join(output_folder, Path(file_name).stem+".tsv")
+    create_output_from_files(data_filepath, csv_sheet, yaml_filepath, wikifier_filepath,     output_filename, output_format="kgtk")
+
+```
+
+**Example two: Using the API's classes**
+
+```
+#a script that iterates over the sheets of a single excel file that can all be parsed with the same yaml file
+from t2wml.api import KnowledgeGraph, Wikifier, YamlMapper, SpreadsheetFile
+data_file="my_drive\my_data\mydata.xlsx"
+wikifier_filepath1="my_drive\wikiers\wiki.csv"
+wikifier_filepath2="my_drive\wikiers\wiki2.csv"
+yaml_filepath="my_drive\yaml1.yaml"
+output_folder="my_drive\out"
+
+yaml_mapper=YamlMapper(yaml_filepath)
+wikifier=Wikifier()
+wikifier.add_file(wikifier_filepath1)
+wikifier.add_file(wikifier_filepath2)
+spreadsheet_file=SpreadsheetFile(data_file)
+for sheet_name, sheet in spreadsheet_file.items():
+    print("processing sheet "+sheet_name)
+    sheet=spreadsheet_file[sheet_name]
+    kg=KnowledgeGraph.generate(yaml_mapper, sheet, wikifier)
+    out_filepath=sheet_name+".tsv"
+    kg.save_kgtk(out_filepath)
+```
+
+## Convenience Functions
+<span id="convenience"></span>
+
+* `set_wikidata_provider(wikidata_provider)`: set the wikidata provider for t2wml to the provided argument (should be an initialized class instance)
+* `set_sparql_endpoint(sparql_endpoint)`: set the sparql endpoint used throughout the code for wikidata queries
+* `add_properties_from_file(properties_file_path)`: add properties to the wikidata provider from the provided file path, which must be in json or kgtk format
+* `create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath, output_filepath=None, output_format="json")`: 
 
 
 ## KnowledgeGraph
@@ -17,7 +78,7 @@
 
 The KnowledgeGraph class stores the statements generated for a spreadsheet.
 
-It can be created with the class method `generate`, which expects to receive a StatementMapper, a DataSheet, and an ItemTable (soon to be Wikifier)
+It can be created with the class method `generate`, which expects to receive a StatementMapper, a Sheet, and a Wikifier
 
 For convenience, it can also be created from files, with the class method `generate_from_files`. This expects to receive one data_file_path (location of the data spreadsheet), one sheet_name, one yaml_file_path (location of the yaml file defining how to build statements), and one wikifier_file_path (location of the wikifier file for creating the item table).
 
@@ -25,13 +86,13 @@ After generation, it contains as properties the `statements`, `metadata`, and `e
 
 
 ## Sheet and SpreadsheetFile
-<span id="data"></span>
+<span id="sheet"></span>
 
 A Sheet is created with a path to a data file and a sheet name. 
 
 For csv files, the sheet name is the same as the file name, so for a file example.csv, the sheet name would also be "example.csv".
 
-A SpreadsheetFile is a convenience class for holding a collection of sheets within one file. IT is initialized with the path to the data file.
+A SpreadsheetFile is a convenience class for holding a collection of sheets within one file. It is initialized with the path to the data file. It inherits from immutable Mapping/Dictionary and therefore all mapping methods (len, get, keys, items, indexing, iteration) are available on it. The keys are the sheet names and the values are the sheets.
 
 
 ## Wikifier
@@ -39,7 +100,7 @@ A SpreadsheetFile is a convenience class for holding a collection of sheets with
 
 A wikifier is created without any starting arguments.
 
-Thereaafter, wikification information can be added to the wikifier with either the `add_file` or `add_dataframe` functions. The file must be a csv file. Both file and dataframes are expected to have 
+Thereafter, wikification information can be added to the wikifier with either the `add_file` or `add_dataframe` functions. The file must be a csv file. Both file and dataframes are expected to have 
 "column", "row", "value", "context", and "item" columns defined. (other than "item", the columns can be empty, although it is not valid for column AND row AND value to be empty simultaneously for a given row)
 
 Adding wikification information is order-sensitive, because later additions will overwrite earlier ones. A message to the user will be printed when this occurs.
@@ -190,7 +251,7 @@ class SimpleSheetMapper(BaseStatementMapper):
             value=sheet[col, row]
             statement["value"]=value
         except Exception as e:
-            error["value"]=value
+            error["value"]=str(e)
         
         statement["property"]="P123"
         
@@ -279,33 +340,4 @@ class DatabaseProvider(FallbackSparql):
 
 
 
-## Convenience Functions
-<span id="convenience"></span>
 
-* `set_wikidata_provider(wikidata_provider)`
-* `set_sparql_endpoint(sparql_endpoint)`
-* `add_properties(properties_file_path)`
-* `create_output_from_files(data_file_path, sheet_name, yaml_file_path, wikifier_filepath, output_filepath=None, output_format="json")`
-
-## Examples of code
-<span id="examples"></span>
-```
-# a script that iterates over a directory of csvs that can all be parsed using the same yaml file
-import os
-from pathlib import Path
-from t2wml.api import create_output_from_files, add_properties
-
-properties_file= "custom_properties.json"
-add_properties(properties_file)
-
-data_folder="my_drive\my_data"
-wikifier_filepath="my_drive\wikiers\wiki.csv"
-yaml_filepath="my_drive\yaml1.yaml"
-output_folder="my_drive\out"
-for file_name in os.listdir(data_folder):
-    data_filepath=os.path.join(data_folder, file_name)
-    csv_sheet=file_name
-    output_filename=os.path.join(output_folder, Path(file_name).stem+".tsv")
-    create_output_from_files(data_filepath, csv_sheet, yaml_filepath, wikifier_filepath,     output_filename, output_format="kgtk")
-
-```
