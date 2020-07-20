@@ -10,6 +10,10 @@ except ImportError:
 
 
 def parse_datetime(value, additional_formats=[]):
+    #check if additional formats is a list of lists
+    if isinstance(additional_formats[0], list):
+        #flatten
+        additional_formats=additional_formats[0]
     value=str(value)
     for date_format in additional_formats:
         try:
