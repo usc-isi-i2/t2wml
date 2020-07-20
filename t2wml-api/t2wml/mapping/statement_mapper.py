@@ -125,8 +125,11 @@ class YamlMapper(BaseStatementMapper):
                             new_dict.pop(key)
                             raise ValueError("Failed to resolve for "+key)
                         new_dict[key]=q_parsed
+                except ValueError:
+                    errors[str(i+1)][key]=str(e)
                 except Exception as e:
                     errors[str(i+1)][key]=str(e)
+                    new_dict.pop(key)
             attributes_parsed.append(new_dict)
 
         return attributes_parsed, errors
