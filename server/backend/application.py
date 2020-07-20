@@ -21,7 +21,7 @@ from utils import (file_upload_validator, get_project_details, get_qnode_label,
 from web_exceptions import WebException
 
 debug_mode = False
-update_t2wml_settings()
+
 
 def get_project(project_id):
     try:
@@ -89,7 +89,7 @@ def get_project_files(pid):
     :return:
     """
     project=get_project(pid)
-
+    update_t2wml_settings(project)
     response = {
                 "tableData": None,
                 "yamlData": None,
@@ -379,6 +379,7 @@ def update_settings(pid):
     endpoint = request.form["endpoint"]
     project.sparql_endpoint=endpoint
     project.modify()
+    update_t2wml_settings(project)
     return None, 200 #can become 204 eventually, need to check frontend compatibility
 
 

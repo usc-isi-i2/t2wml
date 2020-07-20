@@ -17,9 +17,9 @@ def wikify(region, data_sheet, context):
     df, problem_cells= ws.wikify_region(region, sheet, context)
     return df, problem_cells
 
-def update_t2wml_settings():
-    set_sparql_endpoint(DEFAULT_SPARQL_ENDPOINT)
-    set_wikidata_provider(DatabaseProvider(DEFAULT_SPARQL_ENDPOINT))
+def update_t2wml_settings(project):
+    set_sparql_endpoint(project.sparql_endpoint)
+    set_wikidata_provider(DatabaseProvider(project.sparql_endpoint))
     t2wml_settings.update({
                 "cache_data_files":True,
                 #"wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
