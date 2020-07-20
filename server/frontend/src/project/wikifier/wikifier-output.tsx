@@ -24,11 +24,6 @@ class WikifierOutput extends Component<WikifierOutputProperties, WikifierOutputS
   public gridApi: any;
   public gridColumnApi: any;
 
-  constructor(props: WikifierOutputProperties) {
-    super(props);
-
-  }
-
   onGridReady(params: WikifierData) {
     // store the api
     this.gridApi = params.api;

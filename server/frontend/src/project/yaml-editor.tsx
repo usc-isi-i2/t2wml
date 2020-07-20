@@ -32,10 +32,12 @@ interface yamlState {
 @observer
 class YamlEditor extends Component<yamlProperties, yamlState> {
   private requestService: RequestService;
+  private monacoRef: React.RefObject<MonacoEditor>;
 
   constructor(props: yamlProperties) {
     super(props);
     this.requestService = new RequestService();
+    this.monacoRef = React.createRef();
 
     // init state
     const defaultYamlText = "### A simplest sample of T2WML.\n### Replace all #PLACEHOLDER below to start.\nstatementMapping:\n  region:\n    - left: #CHAR\n      right: #CHAR\n      top: #INT\n      bottom: #INT\n  template:\n    item: #EXPRESSION/QNODE\n    property: #EXPRESSION/PNODE\n    value: #EXPRESSION/VALUE\n    qualifier:\n      - property: #EXPRESSION/PNODE\n        value: #EXPRESSION/VALUE";
@@ -123,7 +125,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   handleChangeYaml() {
     wikiStore.table.isCellSelectable = false;
 
-    const yamlText = (this.refs.monaco as any).editor.getModel().getValue();
+    const yamlText = (this.monacoRef as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
       let yamlJson = (yaml.safeLoad(yamlText) as JSON);
@@ -268,7 +270,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             style={(this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }}
             >
             <MonacoEditor
-                ref="monaco"
+                ref={this.monacoRef}
                 width="100%"
                 height="100%"
                 language="yaml"
