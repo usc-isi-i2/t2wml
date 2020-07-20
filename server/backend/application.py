@@ -26,6 +26,7 @@ debug_mode = False
 def get_project(project_id):
     try:
         project = Project.query.get(project_id)
+        update_t2wml_settings(project)
         return project
     except:
         raise web_exceptions.ProjectNotFoundException
@@ -89,7 +90,6 @@ def get_project_files(pid):
     :return:
     """
     project=get_project(pid)
-    update_t2wml_settings(project)
     response = {
                 "tableData": None,
                 "yamlData": None,
