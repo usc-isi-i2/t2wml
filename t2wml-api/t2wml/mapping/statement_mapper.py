@@ -63,7 +63,7 @@ class BaseStatementMapper:
         for col, row in self.iterator():
             cell=to_excel(col-1, row-1)
             try:
-                statement, inner_errors=self.get_cell_statement(None, None, col, row, do_init=False)
+                statement, inner_errors=self.get_cell_statement(sheet, wikifier, col, row, do_init=False)
                 statements[cell]=statement
                 if inner_errors:
                     cell_errors[cell]=inner_errors
