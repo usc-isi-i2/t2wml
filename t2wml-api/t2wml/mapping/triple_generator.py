@@ -1,11 +1,14 @@
-from etk.etk import ETK
-from etk.knowledge_graph.schema import KGSchema
-from etk.knowledge_graph import URI, Literal, BNode
-from etk.etk_module import ETKModule
-from etk.wikidata.entity import WDItem
-from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, \
-    ExternalIdentifier, GlobeCoordinate
-from etk.wikidata import serialize_change_record, WDReference
+try:
+    from etk.etk import ETK
+    from etk.knowledge_graph.schema import KGSchema
+    from etk.knowledge_graph import URI, Literal, BNode
+    from etk.etk_module import ETKModule
+    from etk.wikidata.entity import WDItem
+    from etk.wikidata.value import Item, Property, StringValue, URLValue, TimeValue, QuantityValue, MonolingualText, \
+        ExternalIdentifier, GlobeCoordinate
+    from etk.wikidata import serialize_change_record, WDReference
+except ImportError:
+    raise ImportError("Cannot use triple_generator without etk installed")
 from t2wml.wikification.utility_functions import get_property_type, translate_precision_to_integer
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 

@@ -1,6 +1,6 @@
 import ftfy
 import re
-from etk.wikidata.utils import parse_datetime_string
+from t2wml.utils.utilities import parse_datetime
 from SPARQLWrapper import SPARQLWrapper, JSON
 from t2wml.utils.bindings import bindings
 from t2wml.settings import t2wml_settings
@@ -111,7 +111,7 @@ def substring(input, start, end=None):
 
 @string_modifier
 def extract_date(input, date_format):
-    date_str, precision= parse_datetime_string(str(input),
+    date_str, precision= parse_datetime(str(input),
                                 additional_formats=[date_format])
     return date_str
 
