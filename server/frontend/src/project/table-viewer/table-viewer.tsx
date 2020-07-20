@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 
-// icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuestion } from '@fortawesome/free-solid-svg-icons'
-
 // App
-import { Button, Card, OverlayTrigger, Popover, Spinner, Toast, Tooltip } from 'react-bootstrap';
+import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 // Table
 import { AgGridReact } from 'ag-grid-react';
@@ -14,25 +10,21 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-
-import { LOG, WikifierData, ErrorMessage, ErrorCell } from '../common/general';
-import RequestService from '../common/service';
-import ToastMessage from '../common/toast';
+import { LOG, WikifierData, ErrorMessage, ErrorCell, Cell } from '../../common/general';
+import RequestService from '../../common/service';
+import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react";
-import wikiStore from '../data/store';
+import wikiStore from '../../data/store';
+import TableLegend from './table-legend';
+import SheetSelector from './sheet-selector';
+import TableToast from './table-toast';
 
 interface Column {
   headerName: string;
   field: string;
   pinned?: "left" | "right";
   width?: number;
-}
-
-interface Cell {
-  col: string | null;
-  row: number | null;
-  value: string | null;
 }
 
 interface TableData {
@@ -605,106 +597,25 @@ class TableViewer extends Component<TableProperties, TableState> {
     }
   }
 
-  renderSheetSelector() {
-    const { sheetNames, currSheetName } = this.state;
-
-    // if csv file, sheetNames === null && currSheetName === null
-    if (sheetNames === null) return;
-
-    // else, excel file
-    const currSheetStyle = { borderColor: "#339966", background: "#339966", padding: "0rem 0.5rem", margin: "0rem 0.25rem" };
-    const otherSheetStyle = { borderColor: "#339966", background: "whitesmoke", color: "#339966", padding: "0rem 0.5rem", margin: "0rem 0.25rem" };
-    let sheetSelectorHtml = [];
-    for (let i = 0, len = sheetNames.length; i < len; i++) {
-      sheetSelectorHtml.push(
-        <Button
-          key={i}
-          variant="success"
-          size="sm"
-          style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
-          onClick={(event: any) => { this.handleSelectSheet(event) }}
-        >{sheetNames[i]}</Button>
-      );
-    }
-    return sheetSelectorHtml;
-  }
-
-  renderTableLegend() {
-    return (
-      <Popover className="shadow" style={{ backgroundColor: "rgba(255,255,255,0.8)" }} id="table">
-        <div style={{ margin: "10px 30px" }}>
-          <span><strong>Legend</strong>:&nbsp;</span>
-          <span className="legend" style={{ backgroundColor: "white", color: "hsl(200, 100%, 30%)", marginLeft: "0" }}>wikified</span>
-          <span className="legend" style={{ backgroundColor: "hsl(200, 50%, 90%)" }}>item</span>
-          <span className="legend" style={{ backgroundColor: "hsl(250, 50%, 90%)" }}>qualifier</span>
-          <span className="legend" style={{ backgroundColor: "hsl(150, 50%, 90%)" }}>data</span>
-          <span className="legend" style={{ backgroundColor: "hsl(0, 0%, 90%)" }}>data&nbsp;(skipped)</span>
-        </div>
-      </Popover>
-    );
-  }
-
-  renderToastBody() {
-    // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    if (wikiStore.wikifier === undefined || wikiStore.wikifier.state === undefined) return;
-    const { qnodeData } = wikiStore.wikifier.state;
-    if (qnodeData === undefined) return;
-
-    // get qnode according to cell index, e.g. "Q967"
-    const { selectedCell } = this.state;
-
-    if (selectedCell === null || selectedCell.col === null || selectedCell.row === null) return;
-    const selectedCellIndex = String(selectedCell.col) + String(selectedCell.row);
-
-    // fill in data
-    if (qnodeData[selectedCellIndex] === undefined) return;
-    const contexts = Object.keys(qnodeData[selectedCellIndex]);
-    if (contexts.length === 0) return;
-    let items = [], labels = [], descs = [];
-    for (let i = 0; i < contexts.length; i++) {
-      items.push(qnodeData[selectedCellIndex][contexts[i]]["item"]);
-      labels.push(qnodeData[selectedCellIndex][contexts[i]]["label"]);
-      descs.push(qnodeData[selectedCellIndex][contexts[i]]["desc"]);
-    }
-
-    // render qnode
-    let itemHref;
-    const itemType = items[0].match(/[a-z]+|\d+/gi)[0];
-    if (itemType.charAt(itemType.length - 1) === "Q") {
-      itemHref = "https://www.wikidata.org/wiki/" + items[0];
-    } else {
-      itemHref = "https://www.wikidata.org/wiki/Property:" + items[0];
-    }
-
-    const itemHtml = (
-      <a
-        href={itemHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ "color": "hsl(200, 100%, 30%)" }}
-      >{items[0]}</a>
-    );
-
-    return (
-      <Toast.Body>
-        <strong>{labels[0]}</strong>&nbsp;({itemHtml})<br />
-        <br />
-        {descs[0]}
-      </Toast.Body>
-    );
+  onCloseToast(toastNum: string) {
+      if (toastNum === 'showToast0') {
+        this.setState({ showToast0: false });
+      } else {
+        this.setState({ showToast1: false });
+      }
   }
 
   render() {
-    const { showToast0, showToast1, msgInToast1 } = this.state;
+    // const { showToast0, showToast1, msgInToast1 } = this.state;
     const { filename, isCSV, columnDefs, rowData } = this.state;
-    const { selectedCell } = this.state;
+    // const { selectedCell } = this.state;
 
-    let msgInToast0;
-    if (selectedCell === null) {
-      msgInToast0 = "No cell selected";
-    } else {
-      msgInToast0 = "{ $col: " + selectedCell.col + ", $row: " + selectedCell.row + " }";
-    }
+    // let msgInToast0;
+    // if (selectedCell === null) {
+    //   msgInToast0 = "No cell selected";
+    // } else {
+    //   msgInToast0 = "{ $col: " + selectedCell.col + ", $row: " + selectedCell.row + " }";
+    // }
 
     // render title
     let titleHtml;
@@ -740,8 +651,6 @@ class TableViewer extends Component<TableProperties, TableState> {
             >
               {titleHtml}
             </div>
-
-
 
             {/* button to upload table file */}
             <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
@@ -796,49 +705,15 @@ class TableViewer extends Component<TableProperties, TableState> {
               <Spinner animation="border" />
             </div>
 
-            {/* toasts */}
-            <div className="myToast">
+            <TableToast 
+                selectedCell={this.state.selectedCell}
+                showToast0={this.state.showToast0}
+                showToast1={this.state.showToast1}
+                msgInToast1={this.state.msgInToast1}
+                onCloseToast={(toastNum) => this.onCloseToast(toastNum)}
+            />
 
-              {/* toast 0: showing details of selected cell */}
-              <Toast
-                onClose={() => this.setState({ showToast0: false })}
-                style={showToast0 ? { display: "block" } : { display: "none" }}
-              >
-                <Toast.Header style={{ background: "whitesmoke" }}>
-                  <span className="mr-auto font-weight-bold">
-                    {msgInToast0}
-                  </span>
-                  <small>Pinned</small>
-                </Toast.Header>
-                {this.renderToastBody()}
-              </Toast>
-
-              {/* toast 1: showing message */}
-              <Toast
-                onClose={() => this.setState({ showToast1: false })}
-                autohide delay={7000}
-                show={showToast1} // this "show" and the following "display: none", both are needed
-                style={showToast1 ? { display: "block" } : { display: "none" }}
-              >
-                <Toast.Header style={{ background: "whitesmoke" }}>
-                  <span className="mr-auto font-weight-bold">
-                    {msgInToast1}
-                  </span>
-                </Toast.Header>
-              </Toast>
-
-            </div>
-
-            {/* popover */}
-            <OverlayTrigger overlay={this.renderTableLegend()} trigger={["hover", "focus"]} placement="left">
-              <Button
-                className="myPopover shadow"
-                variant="secondary"
-                style={this.state.isCSV ? { cursor: "default" } : { cursor: "default", bottom: "70px" }}
-              >
-                <FontAwesomeIcon icon={faQuestion} />
-              </Button>
-            </OverlayTrigger>
+            <TableLegend isCSV={this.state.isCSV} />
 
             {/* table */}
             {/* FUTURE: adapt large dataset by: https://github.com/NeXTs/Clusterize.js */}
@@ -913,7 +788,11 @@ class TableViewer extends Component<TableProperties, TableState> {
               whiteSpace: "nowrap"
             }}
           >
-            {this.renderSheetSelector()}
+            <SheetSelector
+                sheetNames={this.state.sheetNames}
+                currSheetName={this.state.currSheetName}
+                handleSelectSheet={(event) => this.handleSelectSheet(event)}
+            />
           </Card.Footer>
         </Card>
       </div>

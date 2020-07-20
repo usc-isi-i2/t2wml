@@ -18,7 +18,7 @@ import { LOG, ErrorMessage, ErrorCell } from '../common/general';
 // components
 import Editors from './editor';
 import Output from './output/output';
-import TableViewer from './table-viewer';
+import TableViewer from './table-viewer/table-viewer';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 
