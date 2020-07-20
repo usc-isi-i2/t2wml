@@ -32,24 +32,6 @@ class Cacher:
                 return True
         return False
 
-class RegionCacher(Cacher):
-    title="region"
-    
-    def __init__(self, yaml_file_path, data_file_path, sheet_name):
-        super().__init__(yaml_file_path, data_file_path, sheet_name)
-
-
-    def load_from_cache(self):
-        if self.is_fresh():
-            with open(self.cache_path, 'r') as f:
-                region_data=json.load(f)
-            return Region(region_data)
-        return None
-    
-    def save(self, region_data):
-        s=json.dumps(region_data)
-        with open(self.cache_path, 'w') as f:
-            f.write(s)
 
 class MappingResultsCacher(Cacher):
     title="result_ל" #j is a modifier for backwards incompatible changes in cache format as of version 2.0a18
@@ -91,14 +73,7 @@ class MappingResultsCacher(Cacher):
 class CacheHolder():
     def __init__(self, sheet, yaml):
         self.result_cacher=MappingResultsCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
-        self.region_cacher=RegionCacher(yaml.file_path, sheet.data_file.file_path, sheet.name)
         self.cell_mapper=YamlMapper(yaml.file_path)
-        self.check_for_region_cache()
-    
-    def check_for_region_cache(self):
-        region=self.region_cacher.load_from_cache()
-        if region:
-            self.cell_mapper._region=region
     
     
 
