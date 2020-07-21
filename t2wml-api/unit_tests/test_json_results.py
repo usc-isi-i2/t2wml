@@ -16,9 +16,11 @@ class JsonTest(unittest.TestCase):
         #for now this compares cell by cell. 
         #we could eventually have this compare more granularly, if we see there's specific properties we need to ignore
         #or we could pop those properties out before the comparison and deal with them separately
-        for cell in results:
-            r_dict=results[cell]
+        for cell in expected:
             e_dict=expected[cell]
+            r_dict=results.get(cell)
+            if r_dict is None:
+                raise ValueError("Could not find result for cell:"+cell)
             try:
                 self.assertEqual(e_dict, r_dict)
             except:
@@ -165,7 +167,8 @@ class TestErrorCatching(JsonTest):
         with open(os.path.join(self.expected_result_dir, expected_result_name), 'r') as f:
             expected_result=json.load(f)
 
-        self.validate_results(result_dict, expected_result)
+        self.validate_results(result_dict["data"], expected_result["data"])
+        self.validate_results(result_dict["error"], expected_result["error"])
 
 
 
