@@ -4,7 +4,11 @@ import json
 from io import StringIO
 from pathlib import Path
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
-from t2wml.mapping.triple_generator import generate_triples
+try:
+    from t2wml.mapping.triple_generator import generate_triples
+except ImportError:
+    def generate_triplets(*args, **kwargs):
+        raise ImportError("Missing optional dependency 'etk'. Install etk to enable triplet generation")
 from t2wml.wikification.utility_functions import get_property_type
 
 

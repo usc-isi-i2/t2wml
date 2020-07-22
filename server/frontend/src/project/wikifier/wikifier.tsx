@@ -1,23 +1,19 @@
 import React, { Component, Fragment } from 'react';
 
 // App
-import { Button, Card, Col, Form, Modal, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
-
-// Table
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG, WikifierData, ErrorMessage } from '../common/general';
-import * as utils from '../common/utils'
+import { LOG, ErrorMessage } from '../../common/general';
+import * as utils from '../../common/utils'
 
-import QnodeEditor from './qnode-editor';
-import RequestService from '../common/service';
-import ToastMessage from '../common/toast';
+import RequestService from '../../common/service';
+import ToastMessage from '../../common/toast';
+import CallWikifier from './call-wikifier';
+import WikifierOutput from './wikifier-output';
 
 import { observer } from "mobx-react"
-import wikiStore from '../data/store';
+import wikiStore from '../../data/store';
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -40,16 +36,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
   private requestService: RequestService
 
-  private tempWikifyRegionRef: React.RefObject<HTMLInputElement>;
-  private tempWikifyFlagRef: React.RefObject<HTMLSelectElement>;
-  private tempWikifyContextRef: React.RefObject<HTMLInputElement>;
-
   constructor(props: WikifierProperties) {
     super(props);
     this.requestService = new RequestService();
-    this.tempWikifyRegionRef = React.createRef();
-    this.tempWikifyFlagRef = React.createRef();
-    this.tempWikifyContextRef = React.createRef();
 
     // init state
     this.state = {
@@ -58,7 +47,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
-
       qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in Africa" }]
 
@@ -73,27 +61,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     };
 
     wikiStore.wikifier.updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
-  }
-
-  onGridReady(params: WikifierData) {
-    // store the api
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-    // console.log("<Wikifier> inited ag-grid and retrieved its API");
-
-    // FOR TEST ONLY
-    // const qnodeData = { "A1": { "Context 1": { "item": "Q967", "label": "label", "desc": "dsc" }, "Context 2": { "item": "Q971", "label": "label", "desc": "dsc" } }, "B1": { "Context 1": { "item": "Q97", "label": "label", "desc": "dsc" }, "Context 2": { "item": "Q67", "label": "label", "desc": "dsc" } }, "C1": { "Context 1": { "item": "Q9", "label": "label", "desc": "dsc" } }, "D1": { "Context 3": { "item": "Q967", "label": "label", "desc": "dsc" } } };
-    // const rowData = [{ "context": "country", "col": "A", "row": "148989", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "country", "col": "B", "row": "1", "value": "Bundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "", "col": "D", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "city", "col": "C", "row": "1", "value": "Bu", "item": "Q967", "label": "Burundi", "desc": "country in ..." }];
-    // this.updateWikifier(qnodeData, rowData);
-
-    this.gridApi.sizeColumnsToFit();
-
-    // default sort
-    const defaultSortModel = [
-      { colId: "col", sort: "asc" },
-      { colId: "row", sort: "asc" }
-    ];
-    params.api.setSortModel(defaultSortModel);
   }
 
   // handleAddRegion() {
@@ -204,11 +171,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   //   });
   // }
 
-  handleDoCall() {
-    const region = (this.tempWikifyRegionRef as any).current.value.trim();
-    const flag = (this.tempWikifyFlagRef as any).current.value;
-    const context = (this.tempWikifyContextRef as any).current.value.trim();
-
+  handleDoCall(region: string, flag: string, context: string) {
     // validate input
     if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(region) || !utils.isValidRegion(region)) {
       alert("Error: Invalid region.\n\nRegion must:\n* be defined as A1:B2, etc.\n* start from top left cell and end in bottom right cell.");
@@ -242,7 +205,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       }
 
       // else, success
-
       const { qnodes, rowData, problemCells} = json;
       if (problemCells){
         this.setState({ errorMessage: problemCells as ErrorMessage });
@@ -262,6 +224,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     });
   }
 
+  cancelCallWikifier() {
+    this.setState({ showCallWikifier: false });
+  }
 
   // handleSelectRegion(region) {
   //   if (region === this.state.currRegion) return;
@@ -327,18 +292,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   //     this.setState({ showSpinner: false });
   //   });
   // }
-
-  tableColComparator(col1: string, col2: string) {
-    const col1Idx = utils.colName2colIdx(col1);
-    const col2Idx = utils.colName2colIdx(col2);
-    return col1Idx - col2Idx;
-  }
-
-  tableRowComparator(row1: string, row2: string) {
-    const row1Idx = parseInt(row1);
-    const row2Idx = parseInt(row2);
-    return row1Idx - row2Idx;
-  }
 
   // updateCacheQnode(qnodes = null) {
   //   // param: qnodes, e.g. ["Q111", "Q222", "Q333", ...]
@@ -447,90 +400,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   //   }
   // }
 
-  updateWikifier(qnodeData = {}, rowData = []) {
-    this.setState({
-        rowData: rowData,
-    });
-    if (wikiStore.wikifier.state) {
-       wikiStore.wikifier.state.qnodeData = qnodeData;
-    }
-  }
-
-  renderCallWikifier() {
-    return (
-      <Modal show={this.state.showCallWikifier} onHide={() => { /* do nothing */ }}>
-
-        {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Wikify region</Modal.Title>
-        </Modal.Header>
-
-        {/* body */}
-        <Modal.Body>
-          <Form className="container">
-
-            {/* region */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Region
-              </Form.Label>
-              <Col xs="9" md="9" className="pr-0">
-                <Form.Control
-                  type="text"
-                  ref={this.tempWikifyRegionRef}
-                  placeholder="e.g. A1:A10"
-                />
-              </Col>
-            </Form.Group>
-
-            {/* flag */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Flag
-              </Form.Label>
-              <Col xs="9" md="9" className="pr-0">
-                <Form.Control
-                  as="select"
-                  ref={this.tempWikifyFlagRef}
-                >
-                  <option value="0">{"record col & row"}</option>
-                  <option value="1">{"record col"}</option>
-                  <option value="2">{"record row"}</option>
-                  <option value="3">{"don't record"}</option>
-                </Form.Control>
-              </Col>
-            </Form.Group>
-
-            {/* context */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-                Context
-              </Form.Label>
-              <Col xs="9" md="9" className="pr-0">
-                <Form.Control
-                  type="text"
-                  ref={this.tempWikifyContextRef}
-                  placeholder="(optional)"
-                />
-              </Col>
-            </Form.Group>
-
-          </Form>
-        </Modal.Body>
-
-        {/* footer */}
-        <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.setState({ showCallWikifier: false })}>
-            Cancel
-          </Button>
-          <Button variant="dark" onClick={this.handleDoCall.bind(this)}>
-            Wikify
-          </Button>
-        </Modal.Footer>
-      </Modal >
-    );
-  }
-
   // renderRegionSelector() {
   //   const { regionData, currRegion } = this.state;
   //   const regions = Object.keys(regionData);
@@ -631,61 +500,13 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   //   return regionSelectorHtml;
   // }
 
-  renderWikifierOutput() {
-    const { rowData } = this.state;
-    return (
-      <AgGridReact
-        onGridReady={this.onGridReady.bind(this)}
-        frameworkComponents={{
-          qnodeEditor: QnodeEditor
-        }}
-        columnDefs={[
-          {
-
-            headerName: "",
-            children: [
-              { headerName: "context", field: "context", width: 60 }
-            ]
-          },
-          {
-            headerName: "Table",
-            children: [
-              { headerName: "col", field: "col", width: 60, comparator: this.tableColComparator, sortable: true },
-              { headerName: "row", field: "row", width: 60, comparator: this.tableRowComparator, sortable: true },
-              { headerName: "value", field: "value", width: 80 },
-            ]
-          },
-          {
-            headerName: "Wikidata",
-            children: [
-              {
-
-                headerName: "item", field: "item", width: 60,
-                cellStyle: { color: "hsl(200, 100%, 30%)" },
-                // **** QNODE EDITOR ************************************************
-                // editable: true, cellEditor: "qnodeEditor",
-                // onCellValueChanged: (params) => { this.handleUpdateQnode(params) }
-                // ******************************************************************
-              },
-              { headerName: "label", field: "label", width: 80 },
-              { headerName: "description", field: "desc", width: 160 }
-            ]
-          }
-        ]}
-        rowData={rowData}
-        suppressScrollOnNewData={true}
-        headerHeight={18}
-        rowHeight={18}
-        rowStyle={{ background: "white" }}
-        defaultColDef={{
-          minWidth: 40,
-          lockPosition: true,
-          resizable: true,
-          sortable: false,
-        }}
-      >
-      </AgGridReact>
-    );
+  updateWikifier(qnodeData = {}, rowData = []) {
+    this.setState({
+        rowData: rowData,
+    });
+    if (wikiStore.wikifier.state) {
+       wikiStore.wikifier.state.qnodeData = qnodeData;
+    }
   }
 
   uploadDefinitionsFile(event: any) {
@@ -760,7 +581,10 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
 
-            {this.renderCallWikifier()}
+            <CallWikifier
+                showCallWikifier={this.state.showCallWikifier}
+                cancelCallWikifier={() => this.cancelCallWikifier()}
+                handleDoCall={(region, flag, context) => this.handleDoCall(region, flag, context)} />
 
             {/* header */}
             <Card.Header
@@ -825,6 +649,16 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
+            {/* hidden input of wikifier file */}
+            <input
+              type="file"
+              id="file_wikifier"
+              accept=".csv"
+              style={{ display: "none" }}
+              onChange={wikiStore.table.handleOpenWikifierFile}
+              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
+            />
+
             </Card.Header>
 
             {/* wikifier */}
@@ -842,15 +676,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
 
             {/* wikifier output */}
-            <div
-                className="ag-theme-balham w-100 h-100"
-                style={{
-                display: "inline-block",
-                overflow: "hidden"
-                }}
-            >
-                {this.renderWikifierOutput()}
-            </div>
+            <WikifierOutput 
+                rowData={this.state.rowData} />
             </Card.Body>
 
             {/* card footer */}

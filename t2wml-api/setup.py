@@ -4,6 +4,10 @@ import os
 REQUIREMENTS = [
     'PyYAML>=5.1.2',
     'pandas>=1.0.3',
+    'SPARQLWrapper>=1.8.5',
+    'ftfy>=5.8',
+    'requests>=2.24.0',
+    'xlrd>=1.0.0'
 ]
 
 setuptools.setup(
