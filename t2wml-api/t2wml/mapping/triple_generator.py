@@ -8,7 +8,7 @@ try:
         ExternalIdentifier, GlobeCoordinate
     from etk.wikidata import serialize_change_record, WDReference
 except ImportError:
-    raise ImportError("Cannot use triple_generator without etk installed")
+    raise ImportError("Missing optional dependency 'etk'. Install etk to enable triplet generation")
 from t2wml.wikification.utility_functions import get_property_type, translate_precision_to_integer
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 

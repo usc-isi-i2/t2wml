@@ -14,7 +14,7 @@ try:
         MonolingualText, ExternalIdentifier, GlobeCoordinate
     from etk.wikidata import serialize_change_record
 except ImportError:
-    raise ImportError("Cannot use generate_nodes.py without etk installed")
+    raise ImportError("Missing optional dependency 'etk'. Install etk to enable generate_nodes")
 
 def model_data(properties_file_path, output_file_path) -> None:
     """
