@@ -85,7 +85,7 @@ def add_properties_from_file(file_path):
     if Path(file_path).suffix == ".json":
         with open(file_path, 'r') as f:
             input_dict= json.load(f)
-    if Path(file_path).suffix == ".tsv":    
+    elif Path(file_path).suffix == ".tsv":    
         property_dict={} 
         input_dict={}
         with open(file_path, 'r') as f:
@@ -103,6 +103,8 @@ def add_properties_from_file(file_path):
             label=property_dict.get((node1, "label"))
             description=property_dict.get((node1, "description"))
             input_dict[node1].update({"label":label, "description":description})
+    else:
+        raise ValueError("Only .json and .tsv property files are currently supported")
 
 
     return_dict={"added":[], "present":[], "failed":[]}
