@@ -15,22 +15,14 @@ def get_provider():
         t2wml_settings["wikidata_provider"]=wikidata_provider
     return wikidata_provider
 
-not_found_cache=set()
-property_cache=dict()
 
 def get_property_type(prop):
     try:
-        if prop in not_found_cache:
-            raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
-        prop_type=property_cache.get(prop, None)
-        if not prop_type:
-            prop_type= _get_property_type(prop)
-            property_cache[prop]=prop_type
+        prop_type= _get_property_type(prop)
         return prop_type
     except QueryBadFormed:
         raise T2WMLExceptions.MissingWikidataEntryException("The value given for property is not a valid property:" +str(prop))
     except ValueError:
-        not_found_cache.add(prop)
         raise T2WMLExceptions.MissingWikidataEntryException("Property not found:" +str(prop))
 
 

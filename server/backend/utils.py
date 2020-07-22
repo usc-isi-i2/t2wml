@@ -87,10 +87,6 @@ def query_wikidata_for_label(node):
     
 
 def get_qnode_label(node):
-    cached_label=wikidata_label_query_cache.get(node)
-    if cached_label:
-        return cached_label
-
     try:
         wp= WikidataProperty.query.filter_by(wd_id=node).first()
         if wp:
@@ -105,6 +101,10 @@ def get_qnode_label(node):
     except Exception as e:
         pass #continue directly to sparql query
     
+    #no point making many wikidata queries, results won't change
+    cached_label=wikidata_label_query_cache.get(node)
+    if cached_label:
+        return cached_label
     try:
         label=query_wikidata_for_label(node)
         wikidata_label_query_cache[node]=label

@@ -26,6 +26,7 @@ class SparqlProvider(WikidataProvider):
             sparql_endpoint=t2wml_settings["sparql_endpoint"]
         self.sparql_endpoint=sparql_endpoint
         self.cache={}
+        self.failed_queries_cache={}
 
     def query_wikidata_for_property_type(self, wikidata_property):
         query = """SELECT ?type WHERE {
@@ -45,9 +46,13 @@ class SparqlProvider(WikidataProvider):
     def get_property_type(self, wikidata_property: str):
         property_type=self.cache.get(wikidata_property, False)
         if not property_type:
+            already_failed=self.failed_queries_cache.get(wikidata_property, False)
+            if already_failed: #Don't retry
+                raise ValueError("Property "+wikidata_property+" not found")
             property_type=self.query_wikidata_for_property_type(wikidata_property)
             self.save_property(wikidata_property, property_type)
             if property_type=="Property Not Found":
+                self.failed_queries_cache[wikidata_property]=True
                 raise ValueError("Property "+wikidata_property+" not found")
             
         return property_type
