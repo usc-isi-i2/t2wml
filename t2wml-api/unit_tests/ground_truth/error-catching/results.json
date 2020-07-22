@@ -1,9 +1,9 @@
 {
     "data": {
         "D4": {
-            "item": "Q967",
             "property": "P100024",
             "value": "1",
+            "item": "Q967",
             "qualifier": [
                 {
                     "property": "P585",
@@ -28,9 +28,9 @@
             "cell": "A4"
         },
         "D6": {
-            "item": "Q970",
             "property": "P100024",
             "value": "2",
+            "item": "Q970",
             "qualifier": [
                 {
                     "property": "P585",
@@ -50,9 +50,9 @@
             "cell": "A6"
         },
         "D7": {
-            "item": "Q970",
             "property": "P100024",
             "value": "4",
+            "item": "Q970",
             "qualifier": [
                 {
                     "property": "P585",
@@ -72,9 +72,9 @@
             "cell": "A7"
         },
         "D8": {
-            "item": "Q977",
             "property": "P100024",
             "value": "2",
+            "item": "Q977",
             "qualifier": [
                 {
                     "property": "P585",
@@ -99,9 +99,9 @@
             "cell": "A8"
         },
         "D9": {
-            "item": "Q977",
             "property": "P100024",
             "value": "1",
+            "item": "Q977",
             "qualifier": [
                 {
                     "property": "P585",
@@ -126,9 +126,9 @@
             "cell": "A9"
         },
         "E4": {
-            "item": "Q967",
             "property": "P100024",
             "value": "2",
+            "item": "Q967",
             "qualifier": [
                 {
                     "property": "P585",
@@ -153,9 +153,9 @@
             "cell": "A4"
         },
         "E6": {
-            "item": "Q970",
             "property": "P100024",
             "value": "1",
+            "item": "Q970",
             "qualifier": [
                 {
                     "property": "P585",
@@ -175,9 +175,9 @@
             "cell": "A6"
         },
         "E7": {
-            "item": "Q970",
             "property": "P100024",
             "value": "4",
+            "item": "Q970",
             "qualifier": [
                 {
                     "property": "P585",
@@ -197,9 +197,9 @@
             "cell": "A7"
         },
         "E8": {
-            "item": "Q977",
             "property": "P100024",
             "value": "1",
+            "item": "Q977",
             "qualifier": [
                 {
                     "property": "P585",
@@ -224,9 +224,9 @@
             "cell": "A8"
         },
         "E9": {
-            "item": "Q977",
             "property": "P100024",
             "value": "1",
+            "item": "Q977",
             "qualifier": [
                 {
                     "property": "P585",
@@ -251,19 +251,10 @@
             "cell": "A9"
         },
         "F4": {
-            "item": "Q967",
             "property": "P100024",
             "value": "2",
+            "item": "Q967",
             "qualifier": [
-                {
-                    "property": "P585",
-                    "value": "Bad date time",
-                    "calendar": "Q1985727",
-                    "precision": "year",
-                    "time_zone": 0,
-                    "format": "%Y",
-                    "cell": "F3"
-                },
                 {
                     "property": "P6001",
                     "value": "Q6581072",
@@ -278,19 +269,10 @@
             "cell": "A4"
         },
         "F6": {
-            "item": "Q970",
             "property": "P100024",
             "value": "3",
+            "item": "Q970",
             "qualifier": [
-                {
-                    "property": "P585",
-                    "value": "Bad date time",
-                    "calendar": "Q1985727",
-                    "precision": "year",
-                    "time_zone": 0,
-                    "format": "%Y",
-                    "cell": "F3"
-                },
                 {
                     "property": "P6001",
                     "value": "Q6581072",
@@ -300,19 +282,10 @@
             "cell": "A6"
         },
         "F7": {
-            "item": "Q970",
             "property": "P100024",
             "value": "8",
+            "item": "Q970",
             "qualifier": [
-                {
-                    "property": "P585",
-                    "value": "Bad date time",
-                    "calendar": "Q1985727",
-                    "precision": "year",
-                    "time_zone": 0,
-                    "format": "%Y",
-                    "cell": "F3"
-                },
                 {
                     "property": "P123",
                     "value": "Q6039400",
@@ -322,19 +295,10 @@
             "cell": "A7"
         },
         "F8": {
-            "item": "Q977",
             "property": "P100024",
             "value": "3",
+            "item": "Q977",
             "qualifier": [
-                {
-                    "property": "P585",
-                    "value": "Bad date time",
-                    "calendar": "Q1985727",
-                    "precision": "year",
-                    "time_zone": 0,
-                    "format": "%Y",
-                    "cell": "F3"
-                },
                 {
                     "property": "P6001",
                     "value": "Q6581072",
@@ -351,78 +315,78 @@
     },
     "error": {
         "D5": {
-            "item": "Not found"
+            "item": "Failed to resolve"
         },
         "D6": {
             "qualifier": {
-                "3": {
-                    "value": "Failed to resolve for value"
+                "2": {
+                    "value": "Failed to resolve"
                 }
             }
         },
         "D7": {
             "qualifier": {
-                "2": {
-                    "value": "Failed to resolve for value"
+                "1": {
+                    "value": "Failed to resolve"
                 }
             }
         },
         "E5": {
-            "item": "Not found"
+            "item": "Failed to resolve"
         },
         "E6": {
             "qualifier": {
-                "3": {
-                    "value": "Failed to resolve for value"
+                "2": {
+                    "value": "Failed to resolve"
                 }
             }
         },
         "E7": {
             "qualifier": {
-                "2": {
-                    "value": "Failed to resolve for value"
+                "1": {
+                    "value": "Failed to resolve"
                 }
             }
         },
         "F4": {
             "qualifier": {
-                "1": {
-                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "0": {
+                    "value": "Invalid datetime: Bad date time"
                 }
             }
         },
         "F5": {
-            "item": "Not found",
+            "item": "Failed to resolve",
             "qualifier": {
-                "1": {
-                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "0": {
+                    "value": "Invalid datetime: Bad date time"
                 }
             }
         },
         "F6": {
             "qualifier": {
-                "3": {
-                    "value": "Failed to resolve for value"
+                "0": {
+                    "value": "Invalid datetime: Bad date time"
                 },
-                "1": {
-                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "2": {
+                    "value": "Failed to resolve"
                 }
             }
         },
         "F7": {
             "qualifier": {
-                "2": {
-                    "value": "Failed to resolve for value"
+                "0": {
+                    "value": "Invalid datetime: Bad date time"
                 },
                 "1": {
-                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                    "value": "Failed to resolve"
                 }
             }
         },
         "F8": {
             "qualifier": {
-                "1": {
-                    "property": "Attempting to parse datetime string that isn't a datetime:Bad date time"
+                "0": {
+                    "value": "Invalid datetime: Bad date time"
                 }
             }
         }
