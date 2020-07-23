@@ -22,7 +22,6 @@ class TabletState {
     @observable public updateQnodeCells: (qnodes?: any, rowData?: any) => void;
     @observable public updateTableData: (tableData: any) => void; // tableData as type TableData
     @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) => void;
-    @observable public updateErrorCells: (internalError: any) => void;
     @observable public handleOpenWikifierFile:(event: any) => void;
     
     constructor() {
@@ -34,7 +33,6 @@ class TabletState {
         this.updateQnodeCells = () => {};
         this.updateTableData = () => {};
         this.updateStyleByCell = () => {};
-        this.updateErrorCells = () => {};
         this.handleOpenWikifierFile = () => {};
     }
 }

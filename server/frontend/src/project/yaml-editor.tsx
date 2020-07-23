@@ -65,7 +65,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // remove current status
     wikiStore.table.updateYamlRegions();
     wikiStore.output.removeOutput();
-    wikiStore.table.updateErrorCells({} as ErrorCell);
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -101,7 +100,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             
             console.log("ERRORS while applying yaml:");
             console.log(internalError);
-            wikiStore.table.updateErrorCells(internalError);
         }
         wikiStore.table.updateYamlRegions(yamlRegions);
 

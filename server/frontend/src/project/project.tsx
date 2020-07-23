@@ -134,12 +134,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
         wikiStore.settings.sparqlEndpoint = settings.endpoint;
       }
 
-      if (json.yamlData) {
-        const { error } = json.yamlData.yamlRegions;
-        if (error) {
-            this.showErrorCellsInTable(error);
-        }
-      }
 
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
@@ -182,9 +176,6 @@ class Project extends Component<ProjectProperties, ProjectState> {
       this.setState({ showSettings: false });
   }
 
-  showErrorCellsInTable(error: ErrorCell) {
-    wikiStore.table.updateErrorCells(error);
-  }
 
   render() {
     const { showSpinner } = this.state;
