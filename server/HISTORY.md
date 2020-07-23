@@ -1,7 +1,7 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version 2.1a0:
+Changes in version 2.0a21:
 -------------------------
 * upgrade to t2wml-api version 0.0.5
 * added display for uploading properties of added/present/failed
