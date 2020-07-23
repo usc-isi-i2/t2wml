@@ -412,5 +412,6 @@ if __name__ == "__main__":
             if not os.path.isdir(profiles_dir):
                 os.mkdir(profiles_dir)
             app.wsgi_app = ProfilerMiddleware(app.wsgi_app,restrictions = [100], profile_dir=profiles_dir)
-            app.run(debug = True)
-    app.run(threaded=True)
+        app.run(debug = True, port=13000)
+    else:
+        app.run(threaded=True, port=13000)
