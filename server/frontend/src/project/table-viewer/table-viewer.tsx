@@ -110,7 +110,6 @@ class TableViewer extends Component<TableProperties, TableState> {
     wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
     wikiStore.table.updateTableData = (tableData: TableData) => this.updateTableData(tableData);
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
-    wikiStore.table.updateErrorCells = (internalError: any) => this.updateErrorCells(internalError);
     wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
 
@@ -366,8 +365,6 @@ class TableViewer extends Component<TableProperties, TableState> {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
 
-      this.updateErrorCells({} as ErrorCell);
-
     
       let { tableData, wikifierData, yamlData } = json;
 
@@ -401,12 +398,6 @@ class TableViewer extends Component<TableProperties, TableState> {
         wikiStore.table.isCellSelectable = false;
       }
 
-      if (json.yamlData) {
-        const { error } = json.yamlData.yamlRegions;
-        if (error) {
-          this.updateErrorCells(error);
-        }
-      }
 
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
@@ -508,26 +499,6 @@ class TableViewer extends Component<TableProperties, TableState> {
     return {col: chars, row: nums};
   }
 
-  updateErrorCells(internalError: any) {
-    const cells = Object.keys(internalError);
-    // reset the old errorCells
-    if (wikiStore.table.errorCells) {
-        for (var i = 0; i < wikiStore.table.errorCells.length; i++) {
-            const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
-            this.updateStyleByCell(cell.col, cell.row, { "background-color": "none !important" });
-        }
-    }
-    // Save the cell list in store, to reset it in the next time
-    wikiStore.table.errorCells = cells;
-    for (i = 0; i < cells.length; i++) {
-        let color = 'orange'; //"item", "property", or "value: red, else: orange
-        if (internalError[cells[i]].item || internalError[cells[i]].property || internalError[cells[i]].value) {
-            color = 'red';
-        }
-        const cell = this.getColAndRow(wikiStore.table.errorCells[i]);
-        this.updateStyleByCell(cell.col, cell.row, { "background-color": `${color} !important` });
-    }
-  }
 
   updateStyleByDict(dict: any, presets: any, override = false) {
     // dict = { "styleName": ["A1", "A2", ...] }
@@ -592,7 +563,9 @@ class TableViewer extends Component<TableProperties, TableState> {
         item: { backgroundColor: "hsl(200, 50%, 90%)" }, // blue
         qualifierRegion: { backgroundColor: "hsl(250, 50%, 90%)" }, // violet
         dataRegion: { backgroundColor: "hsl(150, 50%, 90%)" }, // green
-        skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" } // gray
+        skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
+        FF3333: { backgroundColor: '#FF3333' },
+        FF8000: { backgroundColor: 'FF8000' },
       }
       this.updateStyleByDict(newYamlRegions, presets);
       this.setState({ yamlRegions: newYamlRegions });
