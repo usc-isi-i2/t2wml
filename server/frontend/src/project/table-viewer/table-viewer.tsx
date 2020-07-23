@@ -565,7 +565,7 @@ class TableViewer extends Component<TableProperties, TableState> {
         dataRegion: { backgroundColor: "hsl(150, 50%, 90%)" }, // green
         skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
         FF3333: { backgroundColor: '#FF3333' },
-        FF8000: { backgroundColor: 'FF8000' },
+        FF8000: { backgroundColor: '#FF8000' },
       }
       this.updateStyleByDict(newYamlRegions, presets);
       this.setState({ yamlRegions: newYamlRegions });
