@@ -32,7 +32,7 @@ class Node:
                 try:
                     property_type=get_property_type(self.property)            
                 except Exception as e:
-                    self._errors["property"]+="Could not get property type "
+                    self._errors["property"]+="Could not get property type for "+str(self.property)
                     property_type="Not found"
             else:
                 self._errors["property"]+="Missing property "
