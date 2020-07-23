@@ -7,7 +7,7 @@ from t2wml.api import set_sparql_endpoint, set_wikidata_provider, Sheet, Knowled
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
  
 from caching import CacheHolder
-from app_config import DEFAULT_SPARQL_ENDPOINT
+from app_config import DEFAULT_SPARQL_ENDPOINT, db
 from wikidata_models import DatabaseProvider
 from utils import get_labels_and_descriptions
 
@@ -39,6 +39,7 @@ def get_kg(data_sheet, cell_mapper, project):
     wikifier=get_wikifier(project)
     sheet=Sheet(data_sheet.data_file.file_path, data_sheet.name)
     kg=KnowledgeGraph.generate(cell_mapper, sheet, wikifier)
+    db.session.commit() #save any queried properties
     return kg
 
 def download(data_sheet, yaml_file, project, filetype, project_name=""):
