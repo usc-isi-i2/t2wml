@@ -1,5 +1,16 @@
 T2WML API History
 ===================================
+
+Changes in version 0.0.5:
+-------------------------
+* add support for list of date formats
+* etk is now optional
+* class SpreadsheetFile has been refined
+* added class Statement
+* statements are returned if they are valid (no errors in value, property, and item)
+* qualifiers are included if they are valid (no errors in value, property)
+* yet more docs, examples, tests
+
 Changes in version 0.0.4:
 -------------------------
 * A lot more classes:

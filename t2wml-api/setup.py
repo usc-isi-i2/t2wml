@@ -12,7 +12,7 @@ REQUIREMENTS = [
 
 setuptools.setup(
     name="t2wml-api", 
-    version="0.0.4",
+    version="0.0.5",
     description="Programming API for T2WML, a cell-based Language for mapping tables into wikidata records",
 	author="USC ISI and The Research Software Company",
     url="https://github.com/usc-isi-i2/t2wml/",

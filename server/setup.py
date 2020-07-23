@@ -25,7 +25,7 @@ REQUIREMENTS = [
     'flask-sqlalchemy>=2.4.1',
     'flask-migrate>=2.5.3',
     'SPARQLWrapper>=1.8.4',
-    't2wml-api==0.0.4'
+    't2wml-api==0.0.5'
 ]
 
 PACKAGES = find_packages() + ['.']

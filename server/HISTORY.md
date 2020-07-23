@@ -1,5 +1,18 @@
 T2WML Standalone Server App History
 ===================================
+
+Changes in version 2.1a0:
+-------------------------
+* upgrade to t2wml-api version 0.0.5
+* added display for uploading properties of added/present/failed
+* bug fixes:
+   * sparql endpoint wasn't setting properly
+   * table serialization was broken
+   * properties and items weren't uploading properly because the provider setting was broken
+   * use the database for get_labels_descriptions
+* performance improvements: better performance when applying a yaml with missing properties
+
+
 Changes in version 2.0a20:
 -------------------------
 * upgrade to t2wml-api version 0.0.4
