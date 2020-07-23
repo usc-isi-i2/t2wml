@@ -214,7 +214,7 @@ class TableViewer extends Component<TableProperties, TableState> {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
           const { added, failed, present } = json;
-          let message = `✅ Properties file loaded: ${added.length} added, ${failed.length} failed, ${present.length} present.`;
+          let message = `✅ Properties file loaded: ${added.length} added, ${failed.length} failed, ${present.length} updated.`;
           if (failed.length) {
               message += '\n\nCheck the console for the failures reasons.'
           }
@@ -318,11 +318,11 @@ class TableViewer extends Component<TableProperties, TableState> {
       // do something here
       const { error } = json;
 
-      // if failure      
-      if (error) {
-        // this.updateErrorCells()
-        throw {errorDescription: error.value} as ErrorMessage;
-      }
+    //   // if failure      
+    //   if (error) {
+    //     // this.updateErrorCells()
+    //     throw {errorDescription: error.value} as ErrorMessage;
+    //   }
 
       // else, success
       const {internalErrors} = json;
@@ -638,6 +638,15 @@ class TableViewer extends Component<TableProperties, TableState> {
       </Tooltip>
     );
 
+    const uploadPropsToolTipHtml = (
+        <Tooltip style={{ width: "fit-content" }} id="upload">
+          <div className="text-left small">
+            <b>Accepted file types:</b><br />
+            • Tab-Separated Values (.tsv)<br />
+          </div>
+        </Tooltip>
+      );
+
     return (
       <div className="w-100 h-100 p-1">
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
@@ -668,7 +677,8 @@ class TableViewer extends Component<TableProperties, TableState> {
             </OverlayTrigger>
             
             {/* button to upload properties file */}
-            <Button
+            <OverlayTrigger overlay={uploadPropsToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
+              <Button
                 className="d-inline-block float-right"
                 variant="outline-light"
                 size="sm"
@@ -677,6 +687,7 @@ class TableViewer extends Component<TableProperties, TableState> {
               >
                 Upload properties
               </Button>
+            </OverlayTrigger>
 
             {/* hidden input of properties button */}
             <input
