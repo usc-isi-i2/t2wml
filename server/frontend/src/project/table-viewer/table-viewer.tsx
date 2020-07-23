@@ -213,7 +213,7 @@ class TableViewer extends Component<TableProperties, TableState> {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
           const { added, failed, present } = json;
-          let message = `✅ Properties file loaded: ${added.length} added, ${failed.length} failed, ${present.length} present.`;
+          let message = `✅ Properties file loaded: ${added.length} added, ${present.length} updated, ${failed.length} failed.`;
           if (failed.length) {
               message += '\n\nCheck the console for the failures reasons.'
           }
