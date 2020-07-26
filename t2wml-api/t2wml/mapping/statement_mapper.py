@@ -1,12 +1,9 @@
 import sys
-from copy import deepcopy
-from collections import defaultdict
-from t2wml.utils.t2wml_exceptions import T2WMLException
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.mapping.statements import EvaluatedStatement
 from t2wml.utils.bindings import update_bindings
 from t2wml.parsing.yaml_parsing import validate_yaml, Template
-from t2wml.mapping.region import Region
+from t2wml.parsing.region import Region
 from t2wml.spreadsheets.conversions import to_excel
 
 

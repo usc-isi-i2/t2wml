@@ -1,15 +1,9 @@
-import sys
-from copy import deepcopy
 from collections import defaultdict
-from t2wml.utils.t2wml_exceptions import T2WMLException
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.parsing.classes import ReturnClass
 from t2wml.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from t2wml.spreadsheets.conversions import to_excel
 from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
-from t2wml.utils.bindings import update_bindings
-from t2wml.parsing.yaml_parsing import validate_yaml, Template
-from t2wml.mapping.region import Region
 from t2wml.utils.utilities import parse_datetime
 
 
