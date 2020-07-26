@@ -10,7 +10,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData, ErrorMessage, ErrorCell, Cell } from '../../common/general';
+import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
 import RequestService from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -509,6 +509,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     for (let i = 0; i < styleNames.length; i++) {
       const styleName = styleNames[i];
     
+      debugger
       let cells = undefined;
       if (dict[styleName]){
        cells = dict[styleName]['list'];
@@ -566,10 +567,10 @@ class TableViewer extends Component<TableProperties, TableState> {
     } else {
       // update
       const presets = {
-        item: { backgroundColor: "hsl(200, 50%, 90%)" }, // blue
-        qualifierRegion: { backgroundColor: "hsl(250, 50%, 90%)" }, // violet
-        dataRegion: { backgroundColor: "hsl(150, 50%, 90%)" }, // green
-        skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
+        item: { backgroundColor: newYamlRegions!['errorCells']['color'] }, // blue
+        qualifierRegion: { backgroundColor: newYamlRegions!['qualifierRegion']['color'] }, // violet
+        dataRegion: { backgroundColor: newYamlRegions!['dataRegion']['color'] }, // green
+        // skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
         errorCells: { backgroundColor: newYamlRegions!['errorCells']['color'] },
         dangerCells: { backgroundColor: newYamlRegions!['dangerCells']['color'] },
       }
