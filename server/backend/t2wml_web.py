@@ -92,16 +92,18 @@ def highlight_region(data_sheet, yaml_file, project):
     highlight_data['referenceRegion'] = list(highlight_data['referenceRegion'])
     
     #handle error colors:
-    orange='FF8000'
-    red="FF3333"
+    orange = '#FF8000'
+    red = '#FF3333'
+
     highlight_data['error']=errors if errors else None
-    highlight_data[orange]=[]
-    highlight_data[red]=[]
+    highlight_data['dangerCells'] = {'color': orange, 'list': []}
+    highlight_data['errorCells'] = {'color': red, 'list': []}
+
     for cell in errors:
         if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):
-            highlight_data[red].append(cell)
+            highlight_data['errorCells']['list'].append(cell)
         else:
-            highlight_data[orange].append(cell)
+            highlight_data['dangerCell']['list'].append(cell)
     
     cache_holder.result_cacher.save(highlight_data, statement_data, errors)
 

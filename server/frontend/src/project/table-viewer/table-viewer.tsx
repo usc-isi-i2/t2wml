@@ -508,7 +508,11 @@ class TableViewer extends Component<TableProperties, TableState> {
     const styleNames = Object.keys(presets);
     for (let i = 0; i < styleNames.length; i++) {
       const styleName = styleNames[i];
-      const cells = dict[styleName];
+    
+      let cells = undefined;
+      if (dict[styleName]){
+       cells = dict[styleName]['list'];
+      }
       if (cells === undefined) continue;
       for (let j = 0; j < cells.length; j++) {
         let [col, row] = cells[j].match(/[a-z]+|[^a-z]+/gi);
@@ -553,7 +557,9 @@ class TableViewer extends Component<TableProperties, TableState> {
         item: { backgroundColor: "" },
         qualifierRegion: { backgroundColor: "" },
         dataRegion: { backgroundColor: "" },
-        skippedRegion: { backgroundColor: "" }
+        skippedRegion: { backgroundColor: "" },
+        errorCells: { backgroundColor: "" },
+        dangerCells: { backgroundColor: "" }
       }
       this.updateStyleByDict(yamlRegions, presets);
       this.setState({ yamlRegions: null });
@@ -564,8 +570,8 @@ class TableViewer extends Component<TableProperties, TableState> {
         qualifierRegion: { backgroundColor: "hsl(250, 50%, 90%)" }, // violet
         dataRegion: { backgroundColor: "hsl(150, 50%, 90%)" }, // green
         skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
-        FF3333: { backgroundColor: '#FF3333' },
-        FF8000: { backgroundColor: '#FF8000' },
+        errorCells: { backgroundColor: newYamlRegions!['errorCells']['color'] },
+        dangerCells: { backgroundColor: newYamlRegions!['dangerCells']['color'] },
       }
       this.updateStyleByDict(newYamlRegions, presets);
       this.setState({ yamlRegions: newYamlRegions });
