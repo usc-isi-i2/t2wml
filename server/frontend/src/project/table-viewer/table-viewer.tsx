@@ -567,7 +567,7 @@ class TableViewer extends Component<TableProperties, TableState> {
     } else {
       // update
       const presets = {
-        item: { backgroundColor: newYamlRegions!['errorCells']['color'] }, // blue
+        item: { backgroundColor: newYamlRegions!['item']['color'] }, // blue
         qualifierRegion: { backgroundColor: newYamlRegions!['qualifierRegion']['color'] }, // violet
         dataRegion: { backgroundColor: newYamlRegions!['dataRegion']['color'] }, // green
         // skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray

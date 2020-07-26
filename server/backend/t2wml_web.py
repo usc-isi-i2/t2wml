@@ -63,38 +63,38 @@ def highlight_region(data_sheet, yaml_file, project):
         return highlight_data
 
     highlight_data = {
-        "dataRegion": {"color": "hsl(150, 50%, 90%)", "list": []},
-        "item": {"color": "hsl(200, 50%, 90%)", "list": []},
-        "qualifierRegion": {"color": "hsl(250, 50%, 90%)", "list": []},
-        'referenceRegion': {"color": "yellow", "list": []},
+        "dataRegion": {"color": "hsl(150, 50%, 90%)", "list": set()},
+        "item": {"color": "hsl(200, 50%, 90%)", "list": set()},
+        "qualifierRegion": {"color": "hsl(250, 50%, 90%)", "list": set()},
+        'referenceRegion': {"color": "yellow", "list": set()},
         'error': dict()}
     kg=get_kg(data_sheet, cache_holder.cell_mapper, project)
     statement_data=kg.statements
     errors=kg.errors
     for cell in statement_data:
-        highlight_data["dataRegion"]["list"].append(cell)
+        highlight_data["dataRegion"]["list"].add(cell)
         statement = statement_data[cell]
         item_cell=statement.get("cell", None)
         if item_cell:
-            highlight_data["item"]["list"].append(item_cell)
+            highlight_data["item"]["list"].add(item_cell)
         qualifiers = statement.get("qualifier", None)
         if qualifiers:
             for qualifier in qualifiers:
                 qual_cell=qualifier.get("cell", None)
                 if qual_cell:
-                    highlight_data["qualifierRegion"]["list"].append(qual_cell)
+                    highlight_data["qualifierRegion"]["list"].add(qual_cell)
     
         references = statement.get("reference", None)
         if references:
             for ref in references:
                 ref_cell=ref.get("cell", None)
                 if ref_cell:
-                    highlight_data["referenceRegion"]["list"].append(ref_cell)
+                    highlight_data["referenceRegion"]["list"].add(ref_cell)
 
-    # highlight_data['dataRegion']['list'] = list(highlight_data['dataRegion']['list'])
-    # highlight_data['item']['list'] = list(highlight_data['item']['list'])
-    # highlight_data['qualifierRegion']['list'] = list(highlight_data['qualifierRegion']['list'])
-    # highlight_data['referenceRegion']['list'] = list(highlight_data['referenceRegion']['list'])
+    highlight_data['dataRegion']['list'] = list(highlight_data['dataRegion']['list'])
+    highlight_data['item']['list'] = list(highlight_data['item']['list'])
+    highlight_data['qualifierRegion']['list'] = list(highlight_data['qualifierRegion']['list'])
+    highlight_data['referenceRegion']['list'] = list(highlight_data['referenceRegion']['list'])
     
     #handle error colors:
     orange = '#FF8000'
@@ -102,7 +102,7 @@ def highlight_region(data_sheet, yaml_file, project):
 
     highlight_data['error']=errors if errors else None
     highlight_data['dangerCells'] = {'color': orange, 'list': []}
-    highlight_data['errorCells'] = {'color': 'pink', 'list': []}
+    highlight_data['errorCells'] = {'color': red, 'list': []}
 
     for cell in errors:
         if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):
