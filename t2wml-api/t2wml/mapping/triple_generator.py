@@ -8,15 +8,16 @@ try:
         ExternalIdentifier, GlobeCoordinate
     from etk.wikidata import serialize_change_record, WDReference
 except ImportError:
-    raise ImportError("Missing optional dependency 'etk'. Install etk to enable triplet generation")
+    raise ImportError(
+        "Missing optional dependency 'etk'. Install etk to enable triplet generation")
 from t2wml.wikification.utility_functions import get_property_type, translate_precision_to_integer
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 
+
 def handle_property_value(attribute):
-    property_type=get_property_type(attribute["property"])
+    property_type = get_property_type(attribute["property"])
 
-    value=None
-
+    value = None
 
     if property_type == "WikibaseItem":
         value = Item(str(attribute["value"]))
@@ -25,14 +26,14 @@ def handle_property_value(attribute):
     elif property_type == "String":
         value = StringValue(attribute["value"])
     elif property_type == "Quantity":
-    ##	# Quick hack to avoid generating empty or bad qualifiers for quantities -Amandeep
+        # Quick hack to avoid generating empty or bad qualifiers for quantities -Amandeep
         _value = attribute["value"]
         _value = str(_value).replace(',', '')
         _value_no_decimal = _value.replace('.', '')
         if _value == "":
             value = None
         if _value_no_decimal.isnumeric():
-            unit=attribute.get('unit', None)
+            unit = attribute.get('unit', None)
             if unit:
                 value = QuantityValue(_value, Item(unit))
             else:
@@ -41,8 +42,9 @@ def handle_property_value(attribute):
             value = None
     elif property_type == "Time":
         value = TimeValue(str(attribute["value"]), Item(attribute["calendar"]),
-                        translate_precision_to_integer(attribute["precision"]),
-                        attribute["time_zone"])
+                          translate_precision_to_integer(
+                              attribute["precision"]),
+                          attribute["time_zone"])
     elif property_type == "Url":
         value = URLValue(attribute["value"])
     elif property_type == "Monolingualtext":
@@ -50,14 +52,16 @@ def handle_property_value(attribute):
     elif property_type == "ExternalId":
         value = ExternalIdentifier(attribute["value"])
     elif property_type == "GlobeCoordinate":
-        value = GlobeCoordinate(attribute["latitude"], attribute["longitude"], 
+        value = GlobeCoordinate(attribute["latitude"], attribute["longitude"],
                                 attribute["precision"], globe=StringValue('Earth'))
     elif property_type == "Property Not Found":
-        raise T2WMLExceptions.MissingWikidataEntryException("Property "+attribute["property"]+" not found")
+        raise T2WMLExceptions.MissingWikidataEntryException(
+            "Property "+attribute["property"]+" not found")
     else:
         print("Unsupported property type: "+property_type)
-        
+
     return value
+
 
 def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl',
                      created_by: str = 't2wml', debug=False) -> str:
@@ -86,56 +90,62 @@ def generate_triples(user_id: str, resolved_excel: list, filetype: str = 'ttl',
     doc.kg.bind('p', 'http://www.wikidata.org/prop/')
     doc.kg.bind('pr', 'http://www.wikidata.org/prop/reference/')
     doc.kg.bind('prv', 'http://www.wikidata.org/prop/reference/value/')
-    doc.kg.bind('prn', 'http://www.wikidata.org/prop/reference/value-normalized/')
+    doc.kg.bind(
+        'prn', 'http://www.wikidata.org/prop/reference/value-normalized/')
     doc.kg.bind('ps', 'http://www.wikidata.org/prop/statement/')
     doc.kg.bind('psv', 'http://www.wikidata.org/prop/statement/value/')
-    doc.kg.bind('psn', 'http://www.wikidata.org/prop/statement/value-normalized/')
+    doc.kg.bind(
+        'psn', 'http://www.wikidata.org/prop/statement/value-normalized/')
     doc.kg.bind('pq', 'http://www.wikidata.org/prop/qualifier/')
     doc.kg.bind('pqv', 'http://www.wikidata.org/prop/qualifier/value/')
-    doc.kg.bind('pqn', 'http://www.wikidata.org/prop/qualifier/value-normalized/')
+    doc.kg.bind(
+        'pqn', 'http://www.wikidata.org/prop/qualifier/value-normalized/')
     doc.kg.bind('skos', 'http://www.w3.org/2004/02/skos/core#')
     doc.kg.bind('prov', 'http://www.w3.org/ns/prov#')
     doc.kg.bind('schema', 'http://schema.org/')
 
-
     statement_id = 0
     for cell in resolved_excel:
-            statement=resolved_excel[cell]
-            _item = statement["item"]
-            if _item is not None:
-                item = WDItem(_item, creator='http://www.isi.edu/{}'.format(created_by))
-                value = handle_property_value(statement)
-                if debug:
-                    s = item.add_statement(statement["property"], value,
-                                        statement_id='debugging-{}'.format(statement_id))
-                    statement_id += 1
-                else:
-                    s = item.add_statement(statement["property"], value)
-                doc.kg.add_subject(item)
+        statement = resolved_excel[cell]
+        _item = statement["item"]
+        if _item is not None:
+            item = WDItem(
+                _item, creator='http://www.isi.edu/{}'.format(created_by))
+            value = handle_property_value(statement)
+            if debug:
+                s = item.add_statement(statement["property"], value,
+                                       statement_id='debugging-{}'.format(statement_id))
+                statement_id += 1
+            else:
+                s = item.add_statement(statement["property"], value)
+            doc.kg.add_subject(item)
 
-                if "reference" in statement:
-                    reference = WDReference()
-                    for attribute in statement["reference"]:
-                        value = handle_property_value(attribute)
-                        if value:
-                            reference.add_value(attribute["property"], value)
-                        else:
-                            print("Invalid numeric value '{}' in cell {}".format(attribute["value"], attribute["cell"]))
-                            print("Skipping qualifier {} for cell {}".format(attribute["property"], cell))
-                    if reference:
-                        s.add_reference(reference)
+            if "reference" in statement:
+                reference = WDReference()
+                for attribute in statement["reference"]:
+                    value = handle_property_value(attribute)
+                    if value:
+                        reference.add_value(attribute["property"], value)
+                    else:
+                        print("Invalid numeric value '{}' in cell {}".format(
+                            attribute["value"], attribute["cell"]))
+                        print("Skipping qualifier {} for cell {}".format(
+                            attribute["property"], cell))
+                if reference:
+                    s.add_reference(reference)
 
-                if "qualifier" in statement:
-                    for attribute in statement["qualifier"]:
-                        value = handle_property_value(attribute)
-                        if value:
-                            s.add_qualifier(attribute["property"], value)
-                        else:
-                            print("Invalid numeric value '{}' in cell {}".format(attribute["value"], attribute["cell"]))
-                            print("Skipping qualifier {} for cell {}".format(attribute["property"], statement["cell"]))
+            if "qualifier" in statement:
+                for attribute in statement["qualifier"]:
+                    value = handle_property_value(attribute)
+                    if value:
+                        s.add_qualifier(attribute["property"], value)
+                    else:
+                        print("Invalid numeric value '{}' in cell {}".format(
+                            attribute["value"], attribute["cell"]))
+                        print("Skipping qualifier {} for cell {}".format(
+                            attribute["property"], statement["cell"]))
 
-                doc.kg.add_subject(s)
+            doc.kg.add_subject(s)
 
-    
     data = doc.kg.serialize(filetype)
     return data

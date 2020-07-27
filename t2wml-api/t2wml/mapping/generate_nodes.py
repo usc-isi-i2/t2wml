@@ -1,10 +1,8 @@
+from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
 import os
 import yaml
-import sys
-from pathlib import Path
 
 CWD = os.getcwd()
-from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
 try:
     from etk.etk import ETK
     from etk.knowledge_graph.schema import KGSchema
@@ -14,7 +12,9 @@ try:
         MonolingualText, ExternalIdentifier, GlobeCoordinate
     from etk.wikidata import serialize_change_record
 except ImportError:
-    raise ImportError("Missing optional dependency 'etk'. Install etk to enable generate_nodes")
+    raise ImportError(
+        "Missing optional dependency 'etk'. Install etk to enable generate_nodes")
+
 
 def model_data(properties_file_path, output_file_path) -> None:
     """
@@ -42,13 +42,16 @@ def model_data(properties_file_path, output_file_path) -> None:
     doc.kg.bind('p', 'http://www.wikidata.org/prop/')
     doc.kg.bind('pr', 'http://www.wikidata.org/prop/reference/')
     doc.kg.bind('prv', 'http://www.wikidata.org/prop/reference/value/')
-    doc.kg.bind('prn', 'http://www.wikidata.org/prop/reference/value-normalized/')
+    doc.kg.bind(
+        'prn', 'http://www.wikidata.org/prop/reference/value-normalized/')
     doc.kg.bind('ps', 'http://www.wikidata.org/prop/statement/')
     doc.kg.bind('psv', 'http://www.wikidata.org/prop/statement/value/')
-    doc.kg.bind('psn', 'http://www.wikidata.org/prop/statement/value-normalized/')
+    doc.kg.bind(
+        'psn', 'http://www.wikidata.org/prop/statement/value-normalized/')
     doc.kg.bind('pq', 'http://www.wikidata.org/prop/qualifier/')
     doc.kg.bind('pqv', 'http://www.wikidata.org/prop/qualifier/value/')
-    doc.kg.bind('pqn', 'http://www.wikidata.org/prop/qualifier/value-normalized/')
+    doc.kg.bind(
+        'pqn', 'http://www.wikidata.org/prop/qualifier/value-normalized/')
     doc.kg.bind('skos', 'http://www.w3.org/2004/02/skos/core#')
     doc.kg.bind('prov', 'http://www.w3.org/ns/prov#')
     doc.kg.bind('schema', 'http://schema.org/')
@@ -61,7 +64,8 @@ def model_data(properties_file_path, output_file_path) -> None:
         if k.startswith('Q'):
             p = WDItem(k, creator='http://www.isi.edu/t2wml')
         elif k.startswith('P'):
-            p = WDProperty(k, type_map[v['type']], creator='http://www.isi.edu/t2wml')
+            p = WDProperty(k, type_map[v['type']],
+                           creator='http://www.isi.edu/t2wml')
         for lang, value in v['label'].items():
             if not isinstance(value, list):
                 value = [value]
@@ -107,7 +111,8 @@ def model_data(properties_file_path, output_file_path) -> None:
                 elif property_type == "ExternalId":
                     value = ExternalIdentifier(item['value'])
                 elif property_type == "GlobeCoordinate":
-                    value = GlobeCoordinate(item["latitude"], item["longitude"], item["precision"])
+                    value = GlobeCoordinate(
+                        item["latitude"], item["longitude"], item["precision"])
 
                 for val in value:
                     p.add_statement(pnode, val)

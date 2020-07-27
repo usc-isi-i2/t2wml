@@ -2,8 +2,8 @@
 
 * [Installing the API and using within code](#install)
 
-
 ## Installing the T2WML API
+
 <span id="install"></span>
 
 1. make a fresh virtual environment
