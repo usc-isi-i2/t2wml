@@ -29,6 +29,7 @@ def cell_str_to_tuple(cell: str):
     row = re.search('[0-9]+', cell).group(0)
     return column_letter_to_index(column), int(row)-1
 
+
 def column_letter_to_index(column: str) -> int:
     """
     used exclusively in conversions
@@ -45,6 +46,7 @@ def column_letter_to_index(column: str) -> int:
         index += ((ord(column[i]) % 65 + 1) * (26 ** i))
     return index - 1
 
+
 def column_index_to_letter(n: int) -> str:
     """
     used elsewhere in the code
@@ -55,11 +57,12 @@ def column_index_to_letter(n: int) -> str:
     :return:
     """
     string = ""
-    n=n+1
+    n = n+1
     while n > 0:
         n, remainder = divmod(n-1, 26)
         string = chr(65 + remainder) + string
     return string
+
 
 def cell_range_str_to_tuples(cell_range: str) -> Tuple[Sequence[int], Sequence[int]]:
     """
@@ -75,8 +78,9 @@ def cell_range_str_to_tuples(cell_range: str) -> Tuple[Sequence[int], Sequence[i
     return start_cell, end_cell
 
 
-def from_excel(cell:str):
+def from_excel(cell: str):
     return cell_str_to_tuple(cell)
+
 
 def to_excel(col, row):
     if col is None and row is None:
