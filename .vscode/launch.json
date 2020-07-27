@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "Backend",
             "type": "python",
@@ -21,8 +20,20 @@
                 "--port",
                 "13000"
             ],
-            "cwd": "${workspaceFolder}\\backend",
+            "cwd": "${workspaceFolder}/backend",
             "jinja": true
+        },
+        {
+            "name": "Package",
+            "type": "python",
+            "request": "launch",
+            "program": "packaging/prepare_installation.py",
+            "args": [
+                "--version",
+                "2.1a1",
+                "--skip-frontend",
+            ],
+            "cwd": "${workspaceFolder}/backend",
         },
     ]
 }
