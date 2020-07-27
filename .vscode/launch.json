@@ -24,17 +24,5 @@
             "cwd": "${workspaceFolder}\\backend",
             "jinja": true
         },
-        {
-            "name": "Create Package",
-            "type": "python",
-            "request": "launch",
-            "program": "prepare-standalone-deployment.py",
-            "args": [
-                "--version",
-                "2.0a21",
-            ],
-            "cwd": "${workspaceFolder}",
-            "jinja": true
-        },
     ]
 }

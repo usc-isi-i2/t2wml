@@ -4,26 +4,12 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Flask Backend",
-            "type": "shell",
-            "command": [
-                "${config:python.pythonPath}"
-            ],
-            "args": [
-                "${workspaceFolder}/backend/application.py"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": []
-        },
-        {
             "type": "npm",
             "script": "start",
             "path": "frontend/",
             "problemMatcher": [],
             "label": "npm: start - frontend",
-            "detail": "react-scripts start"
+            "detail": "react-app-rewired start"
         }
     ]
 }
