@@ -9,8 +9,8 @@ from sqlalchemy import MetaData
 from flask_migrate import Migrate, upgrade, current, init
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
-if BASEDIR not in sys.path:
-    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
+#if BASEDIR not in sys.path:
+#    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
 UPLOAD_FOLDER = os.path.join(BASEDIR, "storage")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
