@@ -81,9 +81,9 @@ class ItemTable:
             if not column and not row and not value:
                 raise ValueError("at least one of column, row, or value must be defined")
             
-            if column:
+            if column != "":
                 column=int(column)
-            if row:
+            if row != "":
                 row=int(row)
             key=str((column, row, value))
             if self.lookup_table[context].get(key):

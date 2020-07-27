@@ -10,7 +10,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData, ErrorMessage, ErrorCell, Cell } from '../../common/general';
+import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
 import RequestService from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -508,7 +508,12 @@ class TableViewer extends Component<TableProperties, TableState> {
     const styleNames = Object.keys(presets);
     for (let i = 0; i < styleNames.length; i++) {
       const styleName = styleNames[i];
-      const cells = dict[styleName];
+    
+      debugger
+      let cells = undefined;
+      if (dict[styleName]){
+       cells = dict[styleName]['list'];
+      }
       if (cells === undefined) continue;
       for (let j = 0; j < cells.length; j++) {
         let [col, row] = cells[j].match(/[a-z]+|[^a-z]+/gi);
@@ -553,19 +558,21 @@ class TableViewer extends Component<TableProperties, TableState> {
         item: { backgroundColor: "" },
         qualifierRegion: { backgroundColor: "" },
         dataRegion: { backgroundColor: "" },
-        skippedRegion: { backgroundColor: "" }
+        skippedRegion: { backgroundColor: "" },
+        errorCells: { backgroundColor: "" },
+        dangerCells: { backgroundColor: "" }
       }
       this.updateStyleByDict(yamlRegions, presets);
       this.setState({ yamlRegions: null });
     } else {
       // update
       const presets = {
-        item: { backgroundColor: "hsl(200, 50%, 90%)" }, // blue
-        qualifierRegion: { backgroundColor: "hsl(250, 50%, 90%)" }, // violet
-        dataRegion: { backgroundColor: "hsl(150, 50%, 90%)" }, // green
-        skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
-        FF3333: { backgroundColor: '#FF3333' },
-        FF8000: { backgroundColor: '#FF8000' },
+        item: { backgroundColor: newYamlRegions!['item']['color'] }, // blue
+        qualifierRegion: { backgroundColor: newYamlRegions!['qualifierRegion']['color'] }, // violet
+        dataRegion: { backgroundColor: newYamlRegions!['dataRegion']['color'] }, // green
+        // skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
+        errorCells: { backgroundColor: newYamlRegions!['errorCells']['color'] },
+        dangerCells: { backgroundColor: newYamlRegions!['dangerCells']['color'] },
       }
       this.updateStyleByDict(newYamlRegions, presets);
       this.setState({ yamlRegions: newYamlRegions });
