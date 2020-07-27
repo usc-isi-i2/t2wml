@@ -6,9 +6,11 @@ import sys
 #if BASEDIR not in sys.path:
 #    sys.path.append(BASEDIR) 
 
-print('WSGI is here, from ', __file__)
-print(sys.path)
+try:
+    port = int(sys.argv[1])
+except:
+    port = 13000
 
 from application import app
 if __name__ == '__main__':
-    app.run()
+    app.run(port=port)
