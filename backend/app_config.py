@@ -7,12 +7,18 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate, upgrade, current, init
+import pathlib
+
+home_dir = str(pathlib.Path.home())
+DATADIR = os.path.join(home_dir, ".t2wml")
+if not os.path.exists(DATADIR):
+    os.makedirs(DATADIR)
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 #if BASEDIR not in sys.path:
 #    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
-UPLOAD_FOLDER = os.path.join(BASEDIR, "storage")
+UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
 
 app = Flask(__name__, static_folder=None)
@@ -24,7 +30,7 @@ class AppConfig:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
     downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(BASEDIR, 'app.db')
+        'sqlite:///' + os.path.join(DATADIR, 't2wml.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
 

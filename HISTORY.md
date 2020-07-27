@@ -1,6 +1,10 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.1a1:
+-------------------------
+* Use PyInstaller instead of a PyPI package
+
 Changes in version 2.0a21:
 -------------------------
 * upgrade to t2wml-api version 0.0.5
