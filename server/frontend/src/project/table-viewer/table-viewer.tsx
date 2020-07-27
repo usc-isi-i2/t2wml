@@ -421,7 +421,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;
       const qnodes = Object.keys(wikiStore.wikifier.state.qnodeData);
       if (qnodes.length === 0) return;
-      const cells = { qnode: qnodes };
+      const cells = { qnode: { list: qnodes } };
       const presets = {
         qnode: { color: "" }
       };
@@ -435,7 +435,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
       // const qnodes = Object.keys(Object.fromEntries(Object.entries(qnodeData).filter(([k, v]) => v !== "")));
       const qnodes = Object.keys(qnodeData);
-      const cells = { qnode: qnodes };
+      const cells = { qnode: { list: qnodes } };
       const presets = {
         qnode: { color: "hsl(200, 100%, 30%)" }
       };
@@ -509,7 +509,6 @@ class TableViewer extends Component<TableProperties, TableState> {
     for (let i = 0; i < styleNames.length; i++) {
       const styleName = styleNames[i];
     
-      debugger
       let cells = undefined;
       if (dict[styleName]){
        cells = dict[styleName]['list'];
