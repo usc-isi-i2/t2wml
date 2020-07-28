@@ -21,7 +21,7 @@ class CodeParser:
         # replace $row, $col, and $n with t_var_ equivalents ($ isn't valid python name but visually distinct for users)
         e_str = e_str.replace("$", "t_var_")
         # "condition and result" is equivalent to "if condition, result"
-        e_str = e_str.replace("->", "and")
+        e_str = e_str.replace("->", " and ")
         return e_str[1:]  # get rid of starting equal sign
 
     def is_code_string(self, statement):
