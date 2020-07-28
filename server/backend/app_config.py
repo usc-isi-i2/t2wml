@@ -1,5 +1,3 @@
-from wikidata_models import *
-from models import *
 import sys
 import os
 from pathlib import Path
@@ -67,6 +65,8 @@ metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(app, metadata=metadata)
 
+from wikidata_models import *
+from models import *
 
 migrate = Migrate(app, db, render_as_batch=True)  # , directory=MIGRATE_DIR
 
