@@ -3,7 +3,7 @@ from t2wml.utils.bindings import bindings
 from t2wml.parsing.yaml_parsing import CodeParser
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.parsing.t2wml_parsing import iter_on_n, t2wml_parse, T2WMLCode, iter_on_n_for_code
-from t2wml.spreadsheets.conversions import cell_range_str_to_tuples
+from t2wml.spreadsheets.conversions import cell_range_str_to_tuples, cell_str_to_tuple
 
 
 def string_is_valid(text: str) -> bool:
@@ -173,7 +173,8 @@ class YamlRegion(CodeParser, Region):
                         if parsed_cell != False:
                             new_cells.append(parsed_cell)
             else: #need to parse it anyway to translate A->1
-                new_columns.append(self.parse_region_expression(cell_arg))
+                (col, row) = cell_str_to_tuple(cell_arg)
+                new_columns.append((col+1, row+1)) #switch to one-indexed
         return new_columns, new_rows, new_cells
     
     def get_select_arguments(self, yaml_data):
