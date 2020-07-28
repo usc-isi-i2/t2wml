@@ -4,7 +4,7 @@ statementMapping:
       right: D
       top: 4
       bottom: =$end-2
-      skip_row:
+      skip_rows:
         - =value[A:B, $row] == "" and value[C:D, $row] != ""
         - =contains(value[B, $row], "year")
   template:

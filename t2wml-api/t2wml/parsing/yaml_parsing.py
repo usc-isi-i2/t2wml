@@ -146,12 +146,12 @@ def validate_yaml(yaml_file_path):
                 if isinstance(yaml_region, list):
                     for i in range(len(yaml_region)):
                         for key in yaml_region[i].keys():
-                            if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell', 'columns', 'rows', 'cells'}:
+                            if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_rows', 'skip_columns', 'skip_cells', 'columns', 'rows', 'cells'}:
                                 errors += "Unrecognized key '" + key + \
                                     "' (statementMapping -> region[" + \
                                     str(i) + "] -> " + key + ") found\n"
 
-                        for optional_list_key in ['skip_row', 'skip_column', 'skip_cell', 'columns', 'rows', 'cells']:
+                        for optional_list_key in ['skip_rows', 'skip_columns', 'skip_cells', 'columns', 'rows', 'cells']:
                             if optional_list_key in yaml_region[i]:
                                 if not isinstance(yaml_region[i][optional_list_key], list):
                                     errors += "Value of key '"+optional_list_key+" should be a list.\n"

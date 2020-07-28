@@ -4,7 +4,7 @@ statementMapping:
       right: J
       top: 6
       bottom: 8
-      skip_column:
+      skip_columns:
         - =value[$col, 5] == "Source"
   template:
     item: =item[$col-$n, 4]

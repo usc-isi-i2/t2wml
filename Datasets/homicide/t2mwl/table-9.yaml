@@ -4,9 +4,9 @@ statementMapping:
       right: D
       top: 5
       bottom: 23
-      skip_row:
+      skip_rows:
         - =value[A, $row] != "" and value[B:D, $row] == ""
-      # skip_row: item[A, $row].instance_of Q48277
+      # skip_rows: item[A, $row].instance_of Q48277
   template:
     item: =item[A, $row-$n]
     property: P100024 # murder

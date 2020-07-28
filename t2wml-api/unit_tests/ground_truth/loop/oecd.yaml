@@ -5,7 +5,7 @@ statementMapping:
       right: K
       top: 6
       bottom: =$end
-      skip_cell:
+      skip_cells:
         - =value[$col, $row] == " .."
         - =contains(value[$col, $row], "c") 
   template:

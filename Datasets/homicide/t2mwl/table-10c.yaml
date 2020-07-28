@@ -4,7 +4,7 @@ statementMapping:
       right: E
       top: 5
       bottom: 24
-      skip_row:
+      skip_rows:
         - =value[A:D, $row] == ""
   template:
     item: =item[B, $row-$n]

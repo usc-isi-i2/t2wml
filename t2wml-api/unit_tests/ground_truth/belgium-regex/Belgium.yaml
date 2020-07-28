@@ -2,7 +2,7 @@
 statementMapping:
   region: 
     - range: D6:K20
-      skip_cell:
+      skip_cells:
         - =value[$col, $row] == " .."
   template:
     item: '=get_item(regex(value[B, 2], "profile: (.*) \d{4}", 1))' 

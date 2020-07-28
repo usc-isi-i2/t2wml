@@ -4,9 +4,9 @@ statementMapping:
       right: F
       top: 5
       bottom: 13 # =value[B:, $] == ""
-      skip_row:
+      skip_rows:
         - =value[C, $row] == "Total"
-      skip_cell:
+      skip_cells:
         - =value[$col, $row] == "n/a"
   template:
     item: =item[A, $row]

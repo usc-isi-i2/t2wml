@@ -35,7 +35,7 @@ class YamlRegion(CodeParser, Region):
         self.range_args = self.get_range_arguments(yaml_data)
         self.check_range_boundaries(self.range_args)
         self.columns, self.rows, self.cells = self.get_select_arguments(yaml_data)
-        self.skip_cols, self.skip_row, self.skip_cell = self.get_skip_arguments(yaml_data)
+        self.skip_cols, self.skip_rows, self.skip_cells = self.get_skip_arguments(yaml_data)
         self.index_pairs= self.build_pairs()
 
     def check_range_boundaries(self, region):
@@ -134,7 +134,7 @@ class YamlRegion(CodeParser, Region):
                     col_arg+=" -> $col"
                 code_arg=self.get_code_replacement(col_arg)
                 if "$row" in str(col_arg):
-                    raise T2WMLExceptions.InvalidYAMLFileException("Cannot use $row in columns or skip_column")
+                    raise T2WMLExceptions.InvalidYAMLFileException("Cannot use $row in columns or skip_columns")
                 for col in range(self.range_args["t_var_left"], self.range_args["t_var_right"]+1):
                     context={"t_var_col":col}
                     context.update(self.range_args)
@@ -150,7 +150,7 @@ class YamlRegion(CodeParser, Region):
                     row_arg+=" -> $row"
                 code_arg=self.get_code_replacement(row_arg)
                 if "$col" in str(row_arg):
-                    raise T2WMLExceptions.InvalidYAMLFileException("Cannot use $col in rows or skip_row")
+                    raise T2WMLExceptions.InvalidYAMLFileException("Cannot use $col in rows or skip_rows")
                 for row in range(self.range_args["t_var_top"], self.range_args["t_var_bottom"]+1):
                     context={"t_var_row":row}
                     context.update(self.range_args)
@@ -184,11 +184,11 @@ class YamlRegion(CodeParser, Region):
         return columns, rows, cells
     
     def get_skip_arguments(self, yaml_data):
-        columns=yaml_data.get("skip_column", [])
-        rows=yaml_data.get("skip_row", [])
-        cells=yaml_data.get("skip_cell", [])
-        skip_column, skip_row, skip_cell = self._get_list_args(columns, rows, cells)
-        return skip_column, skip_row, skip_cell
+        columns=yaml_data.get("skip_columns", [])
+        rows=yaml_data.get("skip_rows", [])
+        cells=yaml_data.get("skip_cells", [])
+        skip_columns, skip_rows, skip_cells = self._get_list_args(columns, rows, cells)
+        return skip_columns, skip_rows, skip_cells
 
     def build_pairs(self):
         index_pairs=[]
@@ -209,25 +209,25 @@ class YamlRegion(CodeParser, Region):
 
             for col in self.skip_cols:
                 self.columns.remove(col)
-            for row in self.skip_row:
+            for row in self.skip_rows:
                 self.rows.remove(row)
 
-            skip_cell=set(self.skip_cell)
+            skip_cells=set(self.skip_cells)
             for column in self.columns:
                 for row in self.rows:
-                    if (column, row) not in skip_cell and \
+                    if (column, row) not in skip_cells and \
                         string_is_valid(str(bindings.excel_sheet[row-1][column-1])):
                             index_pairs.append((column, row))
             
             for cell in self.cells:
-                if cell not in skip_cell:
+                if cell not in skip_cells:
                     index_pairs.append(cell)
 
         else:
             for (col, row) in self.cells:
                 if col not in self.skip_cols \
-                    and row not in self.skip_row\
-                        and (col, row) not in self.skip_cell and\
+                    and row not in self.skip_rows\
+                        and (col, row) not in self.skip_cells and\
                             string_is_valid(str(bindings.excel_sheet[row-1][col-1])):
                     index_pairs.append((col, row))
 

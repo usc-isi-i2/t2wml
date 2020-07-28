@@ -7,7 +7,7 @@ statementMapping:
       # in addition to skipping, we name the row years, there will be
       # multiple rows named years. % symbol assigns a name to the row
       # one could also specify % years[B:D] to name a range of cells
-      skip_row:
+      skip_rows:
         - =value[A:B, $row] == "" and value[C:D, $row] != "" % years
   template:
     item: =item[A, $row]
