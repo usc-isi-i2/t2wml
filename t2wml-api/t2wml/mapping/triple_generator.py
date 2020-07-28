@@ -19,13 +19,13 @@ def handle_property_value(attribute):
 
     value = None
 
-    if property_type == "WikibaseItem":
+    if property_type == "wikibaseitem":
         value = Item(str(attribute["value"]))
-    elif property_type == "WikibaseProperty":
+    elif property_type == "wikibaseproperty":
         value = Property(attribute["value"])
-    elif property_type == "String":
+    elif property_type == "string":
         value = StringValue(attribute["value"])
-    elif property_type == "Quantity":
+    elif property_type == "quantity":
         # Quick hack to avoid generating empty or bad qualifiers for quantities -Amandeep
         _value = attribute["value"]
         _value = str(_value).replace(',', '')
@@ -40,21 +40,21 @@ def handle_property_value(attribute):
                 value = QuantityValue(_value)
         else:
             value = None
-    elif property_type == "Time":
+    elif property_type == "time":
         value = TimeValue(str(attribute["value"]), Item(attribute["calendar"]),
                           translate_precision_to_integer(
                               attribute["precision"]),
                           attribute["time_zone"])
-    elif property_type == "Url":
+    elif property_type == "url":
         value = URLValue(attribute["value"])
-    elif property_type == "Monolingualtext":
+    elif property_type == "monolingualtext":
         value = MonolingualText(attribute["value"], attribute["lang"])
-    elif property_type == "ExternalId":
+    elif property_type == "externalId":
         value = ExternalIdentifier(attribute["value"])
-    elif property_type == "GlobeCoordinate":
+    elif property_type == "globecoordinate":
         value = GlobeCoordinate(attribute["latitude"], attribute["longitude"],
                                 attribute["precision"], globe=StringValue('Earth'))
-    elif property_type == "Property Not Found":
+    elif str(property_type).lower() == "property not found":
         raise T2WMLExceptions.MissingWikidataEntryException(
             "Property "+attribute["property"]+" not found")
     else:

@@ -18,7 +18,7 @@ def get_provider():
 def get_property_type(prop):
     try:
         prop_type = _get_property_type(prop)
-        return prop_type
+        return str(prop_type).lower()
     except QueryBadFormed:
         raise T2WMLExceptions.MissingWikidataEntryException(
             "The value given for property is not a valid property:" + str(prop))

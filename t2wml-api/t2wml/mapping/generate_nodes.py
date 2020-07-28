@@ -87,30 +87,30 @@ def model_data(properties_file_path, output_file_path) -> None:
                     property_type = get_property_type(pnode)
                     property_type_cache[pnode] = property_type
 
-                if property_type == "WikibaseItem":
+                if property_type == "wikibaseitem":
                     values = item['value']
                     if not isinstance(values, list):
                         values = [values]
                     value = [Item(v) for v in values if v is not None]
-                elif property_type == "WikibaseProperty":
+                elif property_type == "wikibaseproperty":
                     value = Property(item['value'])
-                elif property_type == "String":
+                elif property_type == "string":
                     value = StringValue(item['value'])
-                elif property_type == "Quantity":
+                elif property_type == "quantity":
                     values = item['value']
                     if not isinstance(values, list):
                         values = [values]
                     value = [QuantityValue(v) for v in values]
-                elif property_type == "Time":
+                elif property_type == "time":
                     value = TimeValue(str(item['value']), Item(item["calendar"]),
                                       translate_precision_to_integer(item["precision"]), item["time_zone"])
-                elif property_type == "Url":
+                elif property_type == "url":
                     value = URLValue(item['value'])
-                elif property_type == "Monolingualtext":
+                elif property_type == "monolingualtext":
                     value = MonolingualText(item['value'], item["lang"])
-                elif property_type == "ExternalId":
+                elif property_type == "externalid":
                     value = ExternalIdentifier(item['value'])
-                elif property_type == "GlobeCoordinate":
+                elif property_type == "globecoordinate":
                     value = GlobeCoordinate(
                         item["latitude"], item["longitude"], item["precision"])
 

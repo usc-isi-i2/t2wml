@@ -35,16 +35,16 @@ class Node:
 
         try:
             if self.value is not None:
-                if property_type == "Quantity":
+                if property_type == "quantity":
                     try:
                         float(self.value)
                     except:
                         self._errors["value"] += "Quantity type property must have numeric value "
 
-                if property_type == "Time":
+                if property_type == "time":
                     self.validate_datetime()
             else:
-                if property_type == "GlobeCoordinate":
+                if property_type == "globecoordinate":
                     try:
                         test_coordinate_presence = [
                             self.longitude, self.latitude]
@@ -55,8 +55,8 @@ class Node:
         except AttributeError:  # we init value, but it might be popped elsewhere, don't assume it exists
             pass
 
-        if property_type not in ["Not found", "GlobeCoordinate", "Quantity", "Time", "String", "MonolingualText",
-                                 "ExternalIdentifier", "WikibaseItem", "WikibaseProperty", "Url"]:
+        if property_type not in ["Not found", "globecoordinate", "quantity", "time", "string", "monolingualtext",
+                                 "externalidentifier", "wikibaseitem", "wikibaseproperty", "url"]:
             self._errors["property"] += "Unsupported property type: "+property_type
 
     def validate_datetime(self):

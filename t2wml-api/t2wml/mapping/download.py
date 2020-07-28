@@ -23,7 +23,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
     property_type = get_property_type(property_dict["property"])
 
     # The only property that doesn't require value
-    if property_type == "GlobeCoordinate":
+    if property_type == "globecoordinate":
         '''
         node2;kgtk:latitude: for coordinates, the latitude
         node2;kgtk:longitude: for coordinates, the longitude
@@ -38,7 +38,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
     else:
         value = property_dict["value"]
 
-        if property_type == "Quantity":
+        if property_type == "quantity":
             '''
             node2;kgtk:magnitude: for quantities, the number
             node2;kgtk:units_node: for quantities, the unit
@@ -54,7 +54,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
             result_dict["node2;kgtk:high_tolerance"] = property_dict.get(
                 "upper-bound", "")
 
-        elif property_type == "Time":
+        elif property_type == "time":
             '''
             node2;kgtk:date_and_time: for dates, the ISO-formatted data
             node2;kgtk:precision: for dates, the precision, as an integer (need to verify this with KGTK folks, could be that we use human readable strings such as year, month
@@ -67,7 +67,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
             result_dict["node2;kgtk:calendar"] = property_dict.get(
                 "calendar", "")
 
-        elif property_type in ["String", "MonolingualText", "ExternalIdentifier", "Url"]:
+        elif property_type in ["string", "monolingualtext", "externalidentifier", "url"]:
             '''
             node2;kgtk:text: for text, the text without the language tag
             node2;kgtk:language: for text, the language tag
@@ -77,7 +77,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
             result_dict["node2;kgtk:language"] = enclose_in_quotes(
                 property_dict.get("lang", ""))
 
-        elif property_type in ["WikibaseItem", "WikibaseProperty"]:
+        elif property_type in ["wikibaseitem", "wikibaseproperty"]:
             '''
             node2;kgtk:symbol: when node2 is another item, the item goes here"
             '''
