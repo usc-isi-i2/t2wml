@@ -146,27 +146,15 @@ def validate_yaml(yaml_file_path):
                 if isinstance(yaml_region, list):
                     for i in range(len(yaml_region)):
                         for key in yaml_region[i].keys():
-                            if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell'}:
+                            if key not in {'range', 'left', 'right', 'top', 'bottom', 'skip_row', 'skip_column', 'skip_cell', 'columns', 'rows', 'cells'}:
                                 errors += "Unrecognized key '" + key + \
                                     "' (statementMapping -> region[" + \
                                     str(i) + "] -> " + key + ") found\n"
 
-                        if 'range' not in yaml_region[i]:
-                            for required_key in ['left', 'right', 'top', 'bottom']:
-                                present = yaml_region[i].get(
-                                    required_key, None)
-                                if present is None:
-                                    errors += "Key"+required_key + \
-                                        "(statementMapping -> region[" + str(
-                                            i) + "] -> X) not found or empty\n"
-                        elif not yaml_region[i]['range']:
-                            errors += "Value of range cannot be empty"
-
-                        for optional_list_key in ['skip_row', 'skip_column', 'skip_cell']:
+                        for optional_list_key in ['skip_row', 'skip_column', 'skip_cell', 'columns', 'rows', 'cells']:
                             if optional_list_key in yaml_region[i]:
-                                if not yaml_region[i][optional_list_key] or not isinstance(yaml_region[i][optional_list_key], list):
-                                    errors += "Value of key '"+optional_list_key+"' (statementMapping -> region[" + str(i) + "] -> skip_row) is not appropriate.\
-                                                Value should be a list of T2WML expressions.\n"
+                                if not isinstance(yaml_region[i][optional_list_key], list):
+                                    errors += "Value of key '"+optional_list_key+" should be a list.\n"
                 else:
                     errors += "Value of  key 'region' (statementMapping -> region) must be a list\n"
             else:

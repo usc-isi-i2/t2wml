@@ -3,7 +3,7 @@ import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.mapping.statements import EvaluatedStatement
 from t2wml.utils.bindings import update_bindings
 from t2wml.parsing.yaml_parsing import validate_yaml, Template
-from t2wml.parsing.region import Region
+from t2wml.parsing.region import YamlRegion
 from t2wml.spreadsheets.conversions import to_excel
 
 
@@ -58,6 +58,7 @@ class YamlMapper(BaseStatementMapper):
 
     def do_init(self, sheet, wikifier):
         update_bindings(item_table=wikifier.item_table, sheet=sheet)
+        
 
     def get_cell_statement(self, sheet, wikifier, col, row, do_init=True):
         if do_init:
@@ -68,17 +69,9 @@ class YamlMapper(BaseStatementMapper):
         return statement.serialize(), statement.errors
 
     def iterator(self):
-        for col, row in self.region:
+        region=YamlRegion(self.yaml_data['statementMapping']['region'][0])
+        for col, row in region:
             yield col, row
-
-    @property
-    def region(self):
-        try:
-            return self._region
-        except:
-            self._region = Region.create_from_yaml(
-                self.yaml_data['statementMapping']['region'][0])
-            return self._region
 
     @property
     def template(self):
