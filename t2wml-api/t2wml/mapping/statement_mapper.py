@@ -41,11 +41,10 @@ class BaseStatementMapper:
                 cell_errors[cell] = e.errors
             except Exception as e:
                 cell_errors[cell] = str(e)
-
-        if cell_errors:
-            for cell in cell_errors:
+            if cell in cell_errors:
                 print("error in cell " + cell + ": " +
                       str(cell_errors[cell]), file=sys.stderr)
+
         return statements, cell_errors, metadata
 
 
