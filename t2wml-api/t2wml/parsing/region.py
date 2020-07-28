@@ -92,7 +92,11 @@ class YamlRegion(CodeParser, Region):
     def parse_region_expression(self, statement, context={}):
         try:
             if isinstance(statement, T2WMLCode):
-                return iter_on_n_for_code(statement, context)
+                try:
+                    return iter_on_n_for_code(statement, context)
+                except Exception as e:
+                    raise T2WMLExceptions.InvalidYAMLFileException(
+                        "Failed to parse: "+statement.unmodified_str+ "(" + str(e) + ")")
 
             statement=str(statement)
             if self.is_code_string(statement):
@@ -104,7 +108,7 @@ class YamlRegion(CodeParser, Region):
                 return t2wml_parse(statement, context)
         except Exception as e:
             raise T2WMLExceptions.InvalidYAMLFileException(
-                "Failed to parse:"+str(statement))
+                "Failed to parse:"+str(statement)+ "(" + str(e) + ")")
 
     def _check_for_recursion(self, region):
         if "right" in str(region.get("right", "")) \
