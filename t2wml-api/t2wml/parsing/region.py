@@ -135,7 +135,7 @@ class YamlRegion(CodeParser, Region):
                 code_arg=self.get_code_replacement(col_arg)
                 if "$row" in str(col_arg):
                     raise T2WMLExceptions.InvalidYAMLFileException("Cannot use $row in columns or skip_column")
-                for col in range(self.range_args["t_var_left"], self.range_args["t_var_right"]):
+                for col in range(self.range_args["t_var_left"], self.range_args["t_var_right"]+1):
                     context={"t_var_col":col}
                     context.update(self.range_args)
                     parsed_col=self.parse_region_expression(code_arg, context)
@@ -151,7 +151,7 @@ class YamlRegion(CodeParser, Region):
                 code_arg=self.get_code_replacement(row_arg)
                 if "$col" in str(row_arg):
                     raise T2WMLExceptions.InvalidYAMLFileException("Cannot use $col in rows or skip_row")
-                for row in range(self.range_args["t_var_top"], self.range_args["t_var_bottom"]):
+                for row in range(self.range_args["t_var_top"], self.range_args["t_var_bottom"]+1):
                     context={"t_var_row":row}
                     context.update(self.range_args)
                     parsed_row=self.parse_region_expression(code_arg, context)
@@ -165,8 +165,8 @@ class YamlRegion(CodeParser, Region):
                 if "->" not in cell_arg:
                     cell_arg+=" -> ($col, $row)"
                 code_arg=self.get_code_replacement(cell_arg)
-                for col in range(self.range_args["t_var_left"], self.range_args["t_var_right"]):
-                    for row in range(self.range_args["t_var_top"], self.range_args["t_var_bottom"]):
+                for col in range(self.range_args["t_var_left"], self.range_args["t_var_right"]+1):
+                    for row in range(self.range_args["t_var_top"], self.range_args["t_var_bottom"]+1):
                         context={"t_var_col":col, "t_var_row":row}
                         context.update(self.range_args)
                         parsed_cell=self.parse_region_expression(code_arg, context)
@@ -191,26 +191,6 @@ class YamlRegion(CodeParser, Region):
         return skip_column, skip_row, skip_cell
 
     def build_pairs(self):
-        '''
-        index_pairs = []
-        left = region_data["t_var_left"]
-        right = region_data["t_var_right"]
-        top = region_data["t_var_top"]
-        bottom = region_data["t_var_bottom"]
-
-        skip_row = set(region_data.get("skip_row", []))
-        skip_cols = set(region_data.get("skip_column", []))
-        skip_cell = region_data.get("skip_cell", [])
-        skip_cell = set(skip_cell)
-
-        for column in range(left, right+1):
-            if column not in skip_cols:
-                for row in range(top, bottom+1):
-                    if row not in skip_row:
-                        if (column, row) not in skip_cell and string_is_valid(str(bindings.excel_sheet[row-1][column-1])):
-                            index_pairs.append([column, row])
-        '''
-
         index_pairs=[]
         #if we only specified cells, not any of the range args, don't build a range for pairs
         range_args=set(['range', 'top', 'bottom', 'right', 'left', 'columns', 'rows'])
