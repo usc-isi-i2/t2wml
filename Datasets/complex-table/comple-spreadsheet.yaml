@@ -3,17 +3,17 @@ statementMapping:
   region:
     - left: A
       right: AN+1
-      top: =value[B, 1+$n] = "2012/13" -> 1+$n
+      top: =value[B, 1+$n] == "2012/13" -> 1+$n
       bottom: 426 #value[A:G, 9+$n] = "" -> 9+$n
       skip_row:
-        - =value[C:G, $row] = ""
-        - =value[B, $row] = "2012/13"
+        - =value[C:G, $row] == ""
+        - =value[B, $row] == "2012/13"
   template:
     item: =item[A, $row]
     property: =item[B, 5, "property"] #value(B/$row-$n) = "TOTAL AREA IN HECTARES" -> item(B/$row-$n, "property")
     value: =value[$col, $row]
     qualifier:
       - property: P585
-        value: =value[A, $row-$n] = "" -> value[$col, $row-$n]
+        value: =value[A, $row-$n] == "" -> value[$col, $row-$n]
       - property: P6001
         value: =contains(value[B, $row-$n], "TOTAL AREA") -> item[B, $row-$n, "property"]
