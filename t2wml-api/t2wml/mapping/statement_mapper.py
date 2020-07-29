@@ -12,7 +12,7 @@ class StatementMapper(ABC):
     """an abstract class for creating statementmapper classes. refer to the api documentation for more details.
     """
     @abstractmethod
-    def get_statement(self, sheet, wikifier, col, row, *args, **kwargs):
+    def get_cell_statement(self, sheet, wikifier, col, row, *args, **kwargs):
         raise NotImplementedError
     
     @abstractmethod

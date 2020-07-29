@@ -2,8 +2,8 @@ from collections import defaultdict
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from t2wml.spreadsheets.conversions import to_excel
-from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
-from t2wml.utils.utilities import VALID_PROPERTY_TYPES, parse_datetime
+from t2wml.wikification.utility_functions import get_property_type
+from t2wml.utils.utilities import VALID_PROPERTY_TYPES, parse_datetime, translate_precision_to_integer
 
 
 class Node:
@@ -60,17 +60,14 @@ class Node:
 
     def validate_datetime(self):
         try:
-            additional_formats = self.__dict__.get("format", [])
             datetime_string, parsed_precision = parse_datetime(
                 self.value,
-                additional_formats=additional_formats
+                additional_formats=self.__dict__.get("format", []),
+                precisions=self.__dict__.get("precision", [])
             )
             self.value = datetime_string
-            try:
-                self.precision = translate_precision_to_integer(self.precision)
-            except AttributeError:
-                if parsed_precision:
-                    self.precision = int(parsed_precision.value.__str__())
+            if parsed_precision:
+                self.precision = parsed_precision
         except:
             self._errors["value"] += "Invalid datetime: "+str(self.value)
 

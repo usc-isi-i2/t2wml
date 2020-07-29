@@ -124,7 +124,7 @@ def substring(input, start, end=None):
 @string_modifier
 def extract_date(input, date_format):
     date_str, precision = parse_datetime(str(input),
-                                         additional_formats=[date_format])
+                                         additional_formats=date_format)
     return date_str
 
 
@@ -152,8 +152,9 @@ def concat(*args):
     for arg in args:
         if isinstance(arg, RangeClass):
             for thing in arg:
-                return_str += str(thing)
-                return_str += sep
+                if thing: #skip empty values
+                    return_str += str(thing)
+                    return_str += sep
         else:
             if arg:  # skip empty values:
                 return_str += str(arg)
