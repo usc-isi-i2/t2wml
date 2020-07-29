@@ -1,4 +1,5 @@
-from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
+from t2wml.utils.utilities import translate_precision_to_integer
+from t2wml.wikification.utility_functions import  get_property_type
 import os
 import yaml
 
