@@ -309,14 +309,7 @@ class Output extends Component<OutputProperties, OutputState> {
         wikiStore.output.showSpinner = false;
     });
   }
-
-  qualifierNamesExist() { // We want show property name in output, not property id.
-      return this.state.qualifiers && 
-      this.state.qualifiers[0].propertyName && 
-      this.state.qualifiers[1].propertyName && 
-      this.state.qualifiers[2].propertyName;
-  }
-
+  
   render() {
     return (
       <div className="w-100 h-100 p-1">
@@ -358,18 +351,17 @@ class Output extends Component<OutputProperties, OutputState> {
             </div>
 
             {/* output */}
-            { this.qualifierNamesExist() ?               
-                <div className="w-100 p-3" style={{ height: "1px" }}>
-                <ShowOutput
-                    errors={this.state.errors}
-                    itemName={this.state.itemName}
-                    itemID={this.state.itemID}
-                    propertyID={this.state.propertyID}
-                    propertyName={this.state.propertyName}
-                    value={this.state.value}
-                    qualifiers={this.state.qualifiers}
-                />
-                </div>: null}
+            <div className="w-100 p-3" style={{ height: "1px" }}>
+            <ShowOutput
+                errors={this.state.errors}
+                itemName={this.state.itemName}
+                itemID={this.state.itemID}
+                propertyID={this.state.propertyID}
+                propertyName={this.state.propertyName}
+                value={this.state.value}
+                qualifiers={this.state.qualifiers}
+            />
+            </div>
           </Card.Body>
         </Card>
       </div>
