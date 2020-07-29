@@ -14,6 +14,7 @@ import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react"
 import wikiStore from '../data/store';
+import { defaultYamlText } from "./default-values";
 
 
 interface yamlProperties {
@@ -38,11 +39,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.requestService = new RequestService();
 
     // init state
-    const defaultYamlText = "### A simplest sample of T2WML.\n### Replace all #PLACEHOLDER below to start.\nstatementMapping:\n  region:\n    - left: #CHAR\n      right: #CHAR\n      top: #INT\n      bottom: #INT\n  template:\n    item: #EXPRESSION/QNODE\n    property: #EXPRESSION/PNODE\n    value: #EXPRESSION/VALUE\n    qualifier:\n      - property: #EXPRESSION/PNODE\n        value: #EXPRESSION/VALUE";
     this.state = {
-
-      // appearance
-
       // yaml
       yamlText: defaultYamlText,
       yamlJson: null,
@@ -177,7 +174,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   updateYamlText(yamlText: string | null = null) {
     let newYamlText = yamlText;
     if (newYamlText === null) {
-      const defaultYamlText = "### A simplest sample of T2WML.\n### Replace all #PLACEHOLDER below to start.\nstatementMapping:\n  region:\n    - left: #CHAR\n      right: #CHAR\n      top: #INT\n      bottom: #INT\n  template:\n    item: #EXPRESSION/QNODE\n    property: #EXPRESSION/PNODE\n    value: #EXPRESSION/VALUE\n    qualifier:\n      - property: #EXPRESSION/PNODE\n        value: #EXPRESSION/VALUE";
       newYamlText = defaultYamlText;
     }
     this.setState({ yamlText: newYamlText });
