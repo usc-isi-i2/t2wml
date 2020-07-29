@@ -1,4 +1,5 @@
 import sys
+from abc import ABC, abstractmethod
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.mapping.statements import EvaluatedStatement
 from t2wml.utils.bindings import update_bindings
@@ -7,10 +8,12 @@ from t2wml.parsing.region import YamlRegion
 from t2wml.spreadsheets.conversions import to_excel
 
 
-class StatementMapper:
+class StatementMapper(ABC):
+    @abstractmethod
     def get_statement(self, sheet, wikifier, col, row, *args, **kwargs):
         raise NotImplementedError
-
+    
+    @abstractmethod
     def iterator(self):
         raise NotImplementedError
 

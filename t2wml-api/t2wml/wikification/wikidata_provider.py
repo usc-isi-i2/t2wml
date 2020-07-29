@@ -1,8 +1,10 @@
+from abc import ABC, abstractmethod
 from SPARQLWrapper import SPARQLWrapper, JSON
 from t2wml.settings import t2wml_settings
 
 
-class WikidataProvider:
+class WikidataProvider(ABC):
+    @abstractmethod
     def get_property_type(self, wikidata_property, *args, **kwargs):
         raise NotImplementedError
 
