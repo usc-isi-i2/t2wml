@@ -24,7 +24,12 @@ class SparqlProvider(WikidataProvider):
     Will fail if item/property not in wikidata
     '''
 
-    def __init__(self, sparql_endpoint=None, *args, **kwargs):
+    def __init__(self, sparql_endpoint:str=None, *args, **kwargs):
+        """[summary]
+        Args:
+            sparql_endpoint (str, optional): [description]. Defaults to None.
+            If None, the sparql endpoint from t2wml_settings is used.
+        """
         if sparql_endpoint is None:
             sparql_endpoint = t2wml_settings["sparql_endpoint"]
         self.sparql_endpoint = sparql_endpoint

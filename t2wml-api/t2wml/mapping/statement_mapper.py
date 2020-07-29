@@ -9,6 +9,8 @@ from t2wml.spreadsheets.conversions import to_excel
 
 
 class StatementMapper(ABC):
+    """an abstract class for creating statementmapper classes. refer to the api documentation for more details.
+    """
     @abstractmethod
     def get_statement(self, sheet, wikifier, col, row, *args, **kwargs):
         raise NotImplementedError
@@ -49,6 +51,8 @@ class StatementMapper(ABC):
 
 
 class YamlMapper(StatementMapper):
+    """A StatementMapper class that uses a yaml file to create a template and region for processing data
+    """
     def __init__(self, file_path):
         self.file_path = file_path
         self.yaml_data = validate_yaml(file_path)

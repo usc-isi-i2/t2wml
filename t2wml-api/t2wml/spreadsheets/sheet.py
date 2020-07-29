@@ -15,7 +15,11 @@ def get_cache_class():
 
 
 class SpreadsheetFile(Mapping):
-    def __init__(self, file_path):
+    """ A mapping class (immutable dict) for accessing sheets within a single file.
+    All immutable dict methods are available (access by key, iteration, len, etc)
+    Keys are sheet names, values are initialized Sheet instances.
+    """
+    def __init__(self, file_path: str):
         self.file_path = file_path
         self.dict = {}
         pandas_loader = PandasLoader(file_path)
@@ -40,7 +44,15 @@ class SpreadsheetFile(Mapping):
 
 class Sheet:
     # all access to spreadsheet goes through here
-    def __init__(self, data_file_path, sheet_name, data=None):
+    def __init__(self, data_file_path: str, sheet_name: str, data=None):
+        """[summary]
+
+        Args:
+            data_file_path (str): location of sheet file
+            sheet_name (str): name of sheet. for csv files, name of sheet file
+            data (dataframe, optional): dataframe of contents of sheet. For creating a sheet from already loaded data.
+                                        Defaults to None.
+        """
         self.data_file_path = data_file_path
         self.data_file_name = Path(data_file_path).name
         self.name = sheet_name

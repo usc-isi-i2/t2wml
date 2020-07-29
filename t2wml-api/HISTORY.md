@@ -7,6 +7,7 @@ Changes in version 0.0.6:
 * backwards incompatible: 
      * changed 'skip_column/row/cell' to 'skip_columns/rows/cells'
      * renamed BaseStatementMapper to StatementMapper
+     * KnowledgeGraph.save_download renamed to KnowledgeGraph.save_file
 * added case insensitivity to property typing (ie, url, Url, URL now all valid)
 * stop printing template errors
 * bug fixes:

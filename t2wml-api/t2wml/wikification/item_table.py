@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+from pandas import DataFrame
 from collections import defaultdict
 from t2wml.utils.t2wml_exceptions import ItemNotFoundException
 from t2wml.utils.bindings import bindings
@@ -30,7 +31,7 @@ class ItemTable:
 
         raise ValueError("Not found")
 
-    def get_item(self, column, row, context='', sheet=None):
+    def get_item(self, column:int, row:int, context:str='', sheet=None):
         lookup = self.lookup_table.get(context)
         if not lookup:
             raise ItemNotFoundException(
@@ -45,7 +46,7 @@ class ItemTable:
             return None  # currently this is what the rest of the API expects. could change later
         #   raise ItemNotFoundException("Item for cell "+to_excel(column, row)+"("+value+")"+"with context "+context+" not found")
 
-    def get_item_by_string(self, value, context=''):
+    def get_item_by_string(self, value: str, context:str=''):
         lookup = self.lookup_table.get(context)
         if not lookup:
             raise ItemNotFoundException(
@@ -65,7 +66,7 @@ class ItemTable:
                 return item, context, bindings.excel_sheet[row, column]
         return None, None, None
 
-    def update_table_from_dataframe(self, df):
+    def update_table_from_dataframe(self, df: DataFrame):
         df = df.fillna('')
         df = df.replace(r'^\s+$', '', regex=True)
         overwritten = {}
@@ -104,6 +105,8 @@ class Wikifier:
         self._item_table = ItemTable()
 
     def print_data(self):
+        """prints a little summary of the contents of the wikifier
+        """
         print("The wikifier contains {} wiki files, and a total of {} dataframes".format(
             len(self.wiki_files), len(self._data_frames)))
         if len(self.wiki_files):
@@ -115,7 +118,20 @@ class Wikifier:
     def item_table(self):
         return self._item_table
 
-    def add_file(self, file_path):
+    def add_file(self, file_path: str):
+        """add a wikifier file to the wikifier. loads the file and adds it to the item table.
+        file must be a csv file, and must contain the columns 'row', 'column', 'value', 'context', 'item'
+        (columns may be empty)
+
+        Args:
+            file_path (str): location of the wikifier file
+
+        Raises:
+            ValueError: if the wikifier file fails to apply
+
+        Returns:
+            dict: a dictionary describing which item definitions were already present and overwritten
+        """
         df = pd.read_csv(file_path)
         try:
             overwritten = self.item_table.update_table_from_dataframe(df)
@@ -126,7 +142,20 @@ class Wikifier:
         self._data_frames.append(df)
         return overwritten
 
-    def add_dataframe(self, df):
+    def add_dataframe(self, df: DataFrame):
+        """Add a wikifier dataframe to the Wikifier item table
+
+        Args:
+            df (DataFrame): a dataframe with columns 'row', 'column', 'value', 'context', 'item'        
+            (columns may be empty)
+
+        Raises:
+            ValueError: not all columns defined
+            ValueError: could not apply dataframe
+
+        Returns:
+            dict: a dictionary describing which item definitions were already present and overwritten
+        """
         expected_columns = set(['row', 'column', 'value', 'context', 'item'])
         columns = set(df.columns)
         missing_columns = expected_columns.difference(columns)
@@ -140,7 +169,12 @@ class Wikifier:
         self._data_frames.append(df)
         return overwritten
 
-    def save(self, filename):
+    def save(self, filename: str):
+        """save Wikifier to a json file
+
+        Args:
+            filename (str): location of save file
+        """
         output = json.dumps({
             "wiki_files": self.wiki_files,
             "lookup_table": self.item_table.lookup_table,
@@ -150,7 +184,15 @@ class Wikifier:
             f.write(output)
 
     @classmethod
-    def load(cls, filename):
+    def load(cls, filename:str):
+        """load Wikifier from saved json file (created by the wikifier save method)
+
+        Args:
+            filename (str): location of save file
+
+        Returns:
+            Wikifier: initialized wikifier
+        """
         with open(filename, 'r') as f:
             wiki_args = json.load(f)
         wikifier = Wikifier()

@@ -7,9 +7,24 @@ from t2wml.spreadsheets.conversions import to_excel,  cell_range_str_to_tuples
 
 class WikifierService:
     def __init__(self, wikifier_endpoint='https://dsbox02.isi.edu:8888/wikifier/wikify'):
+        """
+        Args:
+            wikifier_endpoint (str, optional): endpoint for wikification. Defaults to 'https://dsbox02.isi.edu:8888/wikifier/wikify'.
+        """
         self.wikifier_endpoint = wikifier_endpoint
 
-    def wikify_region(self, cell_range: str, sheet, context=None):
+    def wikify_region(self, cell_range: str, sheet, context:str=None):
+        """given a cell range and a sheet, wikify the cells of that cell range
+
+        Args:
+            cell_range (str): range string in format cell:cell (eg A2:D4)
+            sheet (Sheet): sheet class instance to be wikified
+            context (str, optional): add a context to the wikification results. Defaults to None.
+
+        Returns:
+            DataFrame: wikifier dataframe with columns 'row', 'column', 'value', 'context', 'item'
+            dict: dictionary of cells that failed to wikify
+        """
         (start_col, start_row), (end_col,
                                  end_row) = cell_range_str_to_tuples(cell_range)
         end_col += 1
