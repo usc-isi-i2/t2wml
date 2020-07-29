@@ -38,10 +38,10 @@ class JsonTest(unittest.TestCase):
         wf.item_table.get_item(0, 5, sheet=sheet)
 
     def test_custom_statement_mapper(self):
-        from t2wml.mapping.statement_mapper import BaseStatementMapper
+        from t2wml.mapping.statement_mapper import StatementMapper
         from t2wml.api import KnowledgeGraph, Wikifier, Sheet
 
-        class SimpleSheetMapper(BaseStatementMapper):
+        class SimpleSheetMapper(StatementMapper):
             def __init__(self, cols, rows):
                 self.cols = cols
                 self.rows = rows

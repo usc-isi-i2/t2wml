@@ -3,10 +3,12 @@ T2WML API History
 
 Changes in version 0.0.6:
 -------------------------
-* overhaul of region definition, added support for 'columns'/'rows'/'cells'
-* backwards incompatible: changed 'skip_column/row/cell' to 'skip_columns/rows/cells'
+* complete overhaul of region definition, added support for 'columns'/'rows'/'cells'
+* backwards incompatible: 
+     * changed 'skip_column/row/cell' to 'skip_columns/rows/cells'
+     * renamed BaseStatementMapper to StatementMapper
 * added case insensitivity to property typing (ie, url, Url, URL now all valid)
-* print template errors as they go rather than at the end
+* stop printing template errors
 * bug fixes:
   * critical bug: did not recognise 0 column/0 row when wikifying
   * x->y is now valid (previously only worked with spaces, x -> y)

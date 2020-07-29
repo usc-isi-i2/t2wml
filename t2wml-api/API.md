@@ -155,7 +155,7 @@ wf.add_dataframe(df)
 
 A StatementMapper is a class responsible for holding the logic for creating statements, metadata, and error reports from a Sheet plus Wikifier. 
 
-All StatementMappers should implement the base template BaseStatementMapper, which defines the public interface of the class:
+All StatementMappers should implement the base template StatementMapper, which defines the public interface of the class:
 
 * `get_cell_statement(self, sheet, wikifier, col, row, do_init=True)` : returns statement, errors. Must be defined by inheriting classes.
 * `iterator(self)` : yields col, row pairs. Must be defined by inheriting classes.
@@ -227,9 +227,9 @@ kg=KnowledgeGraph.generate(ym, sh, wf)
 Here's a simple custom StatementMapper class, for a sheet where the item is always next to the value and the property is a known constant. 
 
 ```python 
-from t2wml.mapping.statement_mapper import BaseStatementMapper
+from t2wml.mapping.statement_mapper import StatementMapper
 
-class SimpleSheetMapper(BaseStatementMapper):
+class SimpleSheetMapper(StatementMapper):
     def __init__(self, cols, rows):
         self.cols=cols
         self.rows=rows

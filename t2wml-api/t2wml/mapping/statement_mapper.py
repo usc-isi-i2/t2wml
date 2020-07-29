@@ -7,7 +7,7 @@ from t2wml.parsing.region import YamlRegion
 from t2wml.spreadsheets.conversions import to_excel
 
 
-class BaseStatementMapper:
+class StatementMapper:
     def get_statement(self, sheet, wikifier, col, row, *args, **kwargs):
         raise NotImplementedError
 
@@ -41,14 +41,11 @@ class BaseStatementMapper:
                 cell_errors[cell] = e.errors
             except Exception as e:
                 cell_errors[cell] = str(e)
-            if cell in cell_errors:
-                print("error in cell " + cell + ": " +
-                      str(cell_errors[cell]), file=sys.stderr)
 
         return statements, cell_errors, metadata
 
 
-class YamlMapper(BaseStatementMapper):
+class YamlMapper(StatementMapper):
     def __init__(self, file_path):
         self.file_path = file_path
         self.yaml_data = validate_yaml(file_path)
