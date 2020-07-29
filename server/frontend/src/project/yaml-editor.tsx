@@ -8,7 +8,7 @@ import yaml from 'js-yaml';
 import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG, ErrorMessage, ErrorCell } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
 import RequestService from '../common/service';
 import ToastMessage from '../common/toast';
 

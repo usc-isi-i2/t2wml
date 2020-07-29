@@ -45,6 +45,8 @@ interface OutputState {
 
   propertyName: string;
   errorMessage: ErrorMessage;
+
+  queryDataCount: number;
 }
 
 @observer
@@ -82,6 +84,7 @@ class Output extends Component<OutputProperties, OutputState> {
       isDownloading: false,
 
       errorMessage: {} as ErrorMessage,
+      queryDataCount: 0,
     } as OutputState;
 
 
@@ -280,7 +283,8 @@ class Output extends Component<OutputProperties, OutputState> {
 
   queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
     // FUTURE: use <local stroage> to store previous query result even longer
-
+    // Show output after all the qualifiers label returned.
+    this.setState({ queryDataCount: this.state.queryDataCount + 1 });
     // before send request
     wikiStore.output.showSpinner = true;
     
@@ -292,24 +296,27 @@ class Output extends Component<OutputProperties, OutputState> {
         this.setState({ propertyName: name });
         } else if (field === "qualifiers") {
         let qualifiers = this.state.qualifiers;
-        if (subfield === "propertyName") {
-            qualifiers[index]["propertyName"] = name;
-        } else if (subfield === "valueName") {
-            qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
-            qualifiers[index]["valueName"] = name;
-        }
-        this.setState({ qualifiers: qualifiers });
+            if (subfield === "propertyName") {
+                qualifiers[index]["propertyName"] = name;
+            } else if (subfield === "valueName") {
+                qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
+                qualifiers[index]["valueName"] = name;
+            }
+            this.setState({ qualifiers: qualifiers });
         }
         let cache = this.state.cache;
         cache[node] = name;
-        this.setState({ cache: cache });
+        this.setState({ 
+            cache: cache, 
+            queryDataCount: this.state.queryDataCount - 1 
+        });
         wikiStore.output.showSpinner = false;
     }).catch((error: any) => {
         //   console.log(error);
         wikiStore.output.showSpinner = false;
     });
   }
-  
+
   render() {
     return (
       <div className="w-100 h-100 p-1">
@@ -351,6 +358,7 @@ class Output extends Component<OutputProperties, OutputState> {
             </div>
 
             {/* output */}
+            { this.state.queryDataCount === 0 ? 
             <div className="w-100 p-3" style={{ height: "1px" }}>
             <ShowOutput
                 errors={this.state.errors}
@@ -361,7 +369,7 @@ class Output extends Component<OutputProperties, OutputState> {
                 value={this.state.value}
                 qualifiers={this.state.qualifiers}
             />
-            </div>
+            </div> : null }
           </Card.Body>
         </Card>
       </div>

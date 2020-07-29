@@ -314,12 +314,9 @@ class TableViewer extends Component<TableProperties, TableState> {
       console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
       console.log(json);
 
-      // do something here
-      const { error } = json;
-
+    //   const { error } = json;
     //   // if failure      
     //   if (error) {
-    //     // this.updateErrorCells()
     //     throw {errorDescription: error.value} as ErrorMessage;
     //   }
 

@@ -13,7 +13,7 @@ import { Spinner } from 'react-bootstrap';
 import Config from '../common/config';
 
 // console.log
-import { LOG, ErrorMessage, ErrorCell } from '../common/general';
+import { LOG, ErrorMessage } from '../common/general';
 
 // components
 import Editors from './editor';

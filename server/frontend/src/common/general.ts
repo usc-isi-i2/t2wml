@@ -26,9 +26,9 @@ interface ErrorCellData {
     }; 
 }
 
-export interface ErrorCell {
-    [key: string] : ErrorCellData;   
-}
+// export interface ErrorCell {
+//     [key: string] : ErrorCellData;   
+// }
 
 export class Cell {
     col: string | null = null;
