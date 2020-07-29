@@ -72,12 +72,14 @@ def parse_datetime(value, additional_formats=[], precisions=[]):
                 except IndexError: #no precision defined for that format
                     precision=None
             return datetime_string.isoformat(), precision
-        except:
+        except ValueError as e:
+            pass
+        except Exception as e:
             pass
     try:
         datetime_string = pandas.to_datetime(value, infer_datetime_format=True)
         return datetime_string.isoformat(), precision
-    except:
+    except Exception as e:
         pass
 
     if has_etk:
