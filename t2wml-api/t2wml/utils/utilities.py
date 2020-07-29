@@ -37,3 +37,6 @@ def parse_datetime(value, additional_formats=[]):
             )
         return datetime_string, precision
     raise ValueError('No date / datetime detected')
+
+VALID_PROPERTY_TYPES=["globecoordinate", "quantity", "time", "string", "monolingualtext",
+                        "externalidentifier", "wikibaseitem", "wikibaseproperty", "url"]

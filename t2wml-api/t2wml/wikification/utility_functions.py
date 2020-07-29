@@ -1,6 +1,7 @@
 import json
 import csv
 from pathlib import Path
+from t2wml.utils.utilities import VALID_PROPERTY_TYPES
 from SPARQLWrapper.SPARQLExceptions import QueryBadFormed
 from t2wml.utils import t2wml_exceptions as T2WMLExceptions
 from t2wml.wikification.wikidata_provider import SparqlProvider
@@ -132,8 +133,7 @@ def add_properties_from_file(file_path: str):
                 prop_info = {"property_type": property_type}
 
             try:
-                if str(property_type.lower()) not in ["globecoordinate", "quantity", "time", "string", "monolingualtext",
-                                         "externalidentifier", "wikibaseitem", "wikibaseproperty", "url"]:
+                if str(property_type.lower()) not in VALID_PROPERTY_TYPES:
                     raise ValueError("Property type: " +
                                      property_type+" not supported")
                 added = p.save_property(node_id, **prop_info)

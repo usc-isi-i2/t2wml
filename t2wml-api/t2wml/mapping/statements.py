@@ -3,7 +3,7 @@ import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 from t2wml.parsing.t2wml_parsing import iter_on_n_for_code, T2WMLCode
 from t2wml.spreadsheets.conversions import to_excel
 from t2wml.wikification.utility_functions import translate_precision_to_integer, get_property_type
-from t2wml.utils.utilities import parse_datetime
+from t2wml.utils.utilities import VALID_PROPERTY_TYPES, parse_datetime
 
 
 class Node:
@@ -55,8 +55,7 @@ class Node:
         except AttributeError:  # we init value, but it might be popped elsewhere, don't assume it exists
             pass
 
-        if property_type not in ["Not found", "globecoordinate", "quantity", "time", "string", "monolingualtext",
-                                 "externalidentifier", "wikibaseitem", "wikibaseproperty", "url"]:
+        if property_type not in VALID_PROPERTY_TYPES and property_type!="Not found":
             self._errors["property"] += "Unsupported property type: "+property_type
 
     def validate_datetime(self):

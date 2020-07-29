@@ -3,6 +3,7 @@ import csv
 import json
 from io import StringIO
 from pathlib import Path
+from t2wml.utils.utilities import VALID_PROPERTY_TYPES
 import t2wml.utils.t2wml_exceptions as T2WMLExceptions
 try:
     from t2wml.mapping.triple_generator import generate_triples
@@ -21,6 +22,11 @@ def enclose_in_quotes(value):
 
 def kgtk_add_property_type_specific_fields(property_dict, result_dict):
     property_type = get_property_type(property_dict["property"])
+
+    if property_type not in VALID_PROPERTY_TYPES:
+        raise T2WMLExceptions.UnsupportedPropertyType(
+                "Property type "+property_type+" is not currently supported" + "(" + property_dict["property"] + ")")
+
 
     # The only property that doesn't require value
     if property_type == "globecoordinate":
@@ -84,9 +90,6 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
             result_dict["node2;kgtk:data_type"] = "symbol"
             result_dict["node2;kgtk:symbol"] = value
 
-        else:
-            raise T2WMLExceptions.UnsupportedPropertyType(
-                "Property type "+property_type+" is not currently supported" + "(" + property_dict["property"] + ")")
 
 
 def create_kgtk(data, file_path, sheet_name):
