@@ -76,7 +76,23 @@ def _get_property_type(wikidata_property):
     return property_type
 
 
-def add_properties_from_file(file_path):
+def add_properties_from_file(file_path: str):
+    """load properties from a file and add them to the current WikidataProvider as defined in settings.
+    If a json file, format must be {"property id": "property type", "property id":"property type"}
+    If a kgtk-format tsv file, the property information will be loaded as follows:
+    If the "label" column of a row is "data_type", property id will be node1 of that row, and property type will be node2
+    If node1 of a row with "data_type" label also appears in rows with "label" or "description" labels, 
+    that information will be added to the property entry
+
+    Args:
+        file_path (str): location of the properties file
+
+    Raises:
+        ValueError: invalid filetype (only json and tsv files are supported)
+
+    Returns:
+        dict: a dictionary of "added", "present" (already present, updated), and "failed" properties from the file
+    """
     if Path(file_path).suffix == ".json":
         with open(file_path, 'r') as f:
             input_dict = json.load(f)
@@ -116,8 +132,8 @@ def add_properties_from_file(file_path):
                 prop_info = {"property_type": property_type}
 
             try:
-                if property_type not in ["GlobeCoordinate", "Quantity", "Time", "String", "MonolingualText",
-                                         "ExternalIdentifier", "WikibaseItem", "WikibaseProperty", "Url"]:
+                if str(property_type.lower()) not in ["globecoordinate", "quantity", "time", "string", "monolingualtext",
+                                         "externalidentifier", "wikibaseitem", "wikibaseproperty", "url"]:
                     raise ValueError("Property type: " +
                                      property_type+" not supported")
                 added = p.save_property(node_id, **prop_info)
