@@ -20,6 +20,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2-beta
       - name: Build frontend
+        env:
+          CI: false   # Otherwise React stops on warnings
         run: |
           cd $env:GITHUB_WORKSPACE/frontend
           yarn install
