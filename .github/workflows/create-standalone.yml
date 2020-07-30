@@ -15,8 +15,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Debug printouts
         run: |
-          echo $GITHUB_WORKSPACE
-          echo $HOME
+          echo $env:GITHUB_WORKSPACE
+          echo $env:HOME
           cd
       - name: Setup Python
         uses: actions/setup-python@v2
