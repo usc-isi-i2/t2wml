@@ -13,11 +13,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Debug printouts
-        run: |
-          echo $env:GITHUB_WORKSPACE
-          echo $env:HOME
-          cd
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -26,12 +21,12 @@ jobs:
         uses: actions/setup-node@v2-beta
       - name: Build frontend
         run: |
-          cd $GITHUB_WORKSPACE/t2wml/frontend
-          npm install
-          npm run build
+          cd $env:GITHUB_WORKSPACE/t2wml/frontend
+          yarn install
+          yarn build
       - name: Build backend environment
         run: |
-          cd $GITHUB_WORKSPACE/t2wml/backend
+          cd $env:GITHUB_WORKSPACE/t2wml/backend
           pip install -r requirements.txt
           pip install pyinstaller pywin32
           python packaging/prepare_installation.py --version ${{ github.ref }}
