@@ -21,13 +21,13 @@ jobs:
         uses: actions/setup-node@v2-beta
       - name: Build frontend
         run: |
-          cd frontend |
-          npm install |
+          cd $GITBUT_WORKSPACE/t2wml/frontend
+          npm install
           npm run build
       - name: Build backend environment
         run: |
-          cd ../backend |
-          pip install -r requirements.txt |
-          pip install pyinstaller pywin32 |
+          cd $GITBUT_WORKSPACE/t2wml/backend
+          pip install -r requirements.txt
+          pip install pyinstaller pywin32
           python packaging/prepare_installation.py --version ${{ github.ref }}
 
