@@ -26,10 +26,14 @@ jobs:
           cd $env:GITHUB_WORKSPACE/frontend
           yarn install
           yarn build
-      - name: Build backend environment
+      - name: Set backend environment
         run: |
           cd $env:GITHUB_WORKSPACE/backend
           pip install -r requirements.txt
           pip install pyinstaller pywin32
+      - name: Create executable
+        run: |
+          cd $env:GITHUB_WORKSPACE/backend
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           python packaging/prepare_installation.py --version ${{ github.ref }}
 
