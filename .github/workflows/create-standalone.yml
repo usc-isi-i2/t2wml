@@ -1,6 +1,8 @@
 name: Create Standalone Executables
 on:
-  release
+  push:
+    tags:
+      - v*
 
 jobs:
   windows:
