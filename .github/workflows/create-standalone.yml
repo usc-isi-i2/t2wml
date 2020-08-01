@@ -18,9 +18,11 @@ jobs:
         with:
           python-version: '3.7'
       - name: Try Python OutputEncoding
+        env:  # Replace unicode characters with ?
+           PYTHONIOENCODING: :replace
+           PYTHONLEGACYWINDOWSIOENCODING: true
         run: |
           cd $env:GITHUB_WORKSPACE/backend
-          pip install win-unicode-console
           python try_print_utf8.py
       - name: Setup Node
         uses: actions/setup-node@v2-beta
