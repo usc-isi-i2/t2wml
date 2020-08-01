@@ -62,17 +62,18 @@ jobs:
         env:
           CI: false   # Otherwise React stops on warnings
         run: |
-          cd $env:GITHUB_WORKSPACE/frontend
+          cd $GITHUB_WORKSPACE/frontend
           yarn install
           yarn build
       - name: Set backend environment
         run: |
-          cd $env:GITHUB_WORKSPACE/backend
+          cd $GITHUB_WORKSPACE/backend
+          pip install --upgrade setuptools
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip install pyinstaller
       - name: Create executable
         run: |
-          cd $env:GITHUB_WORKSPACE/backend
+          cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Upload to Release
         id: upload-release-asset 
@@ -85,7 +86,7 @@ jobs:
           overwrite: true
           body: "MacOS Executable"
   linux:
-    name: Create the Mac OS Executable
+    name: Create the Linux Executable
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -100,17 +101,18 @@ jobs:
         env:
           CI: false   # Otherwise React stops on warnings
         run: |
-          cd $env:GITHUB_WORKSPACE/frontend
+          cd $GITHUB_WORKSPACE/frontend
           yarn install
           yarn build
       - name: Set backend environment
         run: |
-          cd $env:GITHUB_WORKSPACE/backend
+          cd $GITHUB_WORKSPACE/backend
+          pip install --upgrade setuptools
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip install pyinstaller
       - name: Create executable
         run: |
-          cd $env:GITHUB_WORKSPACE/backend
+          cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Upload to Release
         id: upload-release-asset 
@@ -122,5 +124,4 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           body: "Linux Executable"
-
 
