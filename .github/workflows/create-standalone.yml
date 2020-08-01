@@ -6,7 +6,7 @@ on:
 
 jobs:
   windows:
-    name: Create the indows Executable
+    name: Create the Windows Executable
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -17,13 +17,6 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
-      - name: Build frontend
-        env:
-          CI: false   # Otherwise React stops on warnings
-        run: |
-          cd $env:GITHUB_WORKSPACE/frontend
-          yarn install
-          yarn build
       - name: Set backend environment
         run: |
           cd $env:GITHUB_WORKSPACE/backend
@@ -33,6 +26,7 @@ jobs:
         env:  # Replace unicode characters with ?
            PYTHONIOENCODING: :replace
            PYTHONLEGACYWINDOWSIOENCODING: true
+           CI: false   # Otherwise React stops on warnings
         run: |
           cd $env:GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
@@ -58,13 +52,6 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
-      - name: Build frontend
-        env:
-          CI: false   # Otherwise React stops on warnings
-        run: |
-          cd $GITHUB_WORKSPACE/frontend
-          yarn install
-          yarn build
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
@@ -72,6 +59,8 @@ jobs:
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip install pyinstaller
       - name: Create executable
+        env:
+          CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
@@ -81,7 +70,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: backend/dist/t2wml-server
-          asset_name: t2wml-server.macos.exe
+          asset_name: t2wml-server.macos
           tag: ${{ github.ref }}
           overwrite: true
           body: "MacOS Executable"
@@ -97,13 +86,6 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
-      - name: Build frontend
-        env:
-          CI: false   # Otherwise React stops on warnings
-        run: |
-          cd $GITHUB_WORKSPACE/frontend
-          yarn install
-          yarn build
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
@@ -111,6 +93,8 @@ jobs:
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip install pyinstaller
       - name: Create executable
+        env:
+          CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
@@ -120,7 +104,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: backend/dist/t2wml-server
-          asset_name: t2wml-server.linux.exe
+          asset_name: t2wml-server.linux
           tag: ${{ github.ref }}
           overwrite: true
           body: "Linux Executable"
