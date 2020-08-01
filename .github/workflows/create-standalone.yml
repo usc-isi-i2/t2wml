@@ -17,6 +17,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.7'
+      - name: Try Python OutputEncoding
+        run: |
+          cd $env:GITHUB_WORKSPACE/backend
+          pip install win-unicode-console
+          python try_print_utf8.py
       - name: Setup Node
         uses: actions/setup-node@v2-beta
       - name: Build frontend
@@ -29,7 +34,7 @@ jobs:
       - name: Set backend environment
         run: |
           cd $env:GITHUB_WORKSPACE/backend
-          pip install -r requirements.txt
+          pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip install pyinstaller pywin32
       - name: Create executable
         run: |
