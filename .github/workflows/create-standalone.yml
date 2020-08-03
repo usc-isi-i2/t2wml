@@ -29,14 +29,14 @@ jobs:
            CI: false   # Otherwise React stops on warnings
         run: |
           cd $env:GITHUB_WORKSPACE/backend
-          python packaging/prepare_installation.py --version ${{ github.ref }}
+          python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server.exe
-          asset_name: t2wml-server.windows.exe
+          file: backend/dist/t2wml-server.zip
+          asset_name: t2wml-server.windows.zip
           tag: ${{ github.ref }}
           overwrite: true
           body: "Windows Executable"
@@ -63,14 +63,14 @@ jobs:
           CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
-          python packaging/prepare_installation.py --version ${{ github.ref }}
+          python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server
-          asset_name: t2wml-server.macos
+          file: backend/dist/t2wml-server.zip
+          asset_name: t2wml-server.macos.zip
           tag: ${{ github.ref }}
           overwrite: true
           body: "MacOS Executable"
@@ -97,14 +97,14 @@ jobs:
           CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
-          python packaging/prepare_installation.py --version ${{ github.ref }}
+          python packaging/prepare_installation.py --version ${{ github.ref }} --zip t2wml-server.zip
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server
-          asset_name: t2wml-server.linux
+          file: backend/dist/t2wml-server.zip
+          asset_name: t2wml-server.linux.zip
           tag: ${{ github.ref }}
           overwrite: true
           body: "Linux Executable"

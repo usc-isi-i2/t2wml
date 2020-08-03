@@ -30,8 +30,10 @@
             "program": "packaging/prepare_installation.py",
             "args": [
                 "--version",
-                "2.1a1",
+                "2.1a4",
                 "--skip-frontend",
+                "--zip",
+                "dist/t2wml-server.zip"
             ],
             "cwd": "${workspaceFolder}/backend",
         },
