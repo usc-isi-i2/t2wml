@@ -69,7 +69,11 @@ def build_installer():
 
 def zip_output(zip_name):
     global backend_path
-    shutil.make_archive(zip_name, 'zip', os.path.join(backend_path, 'dist', 't2wml-server'))
+    base, ext = os.path.splitext(zip_name)
+    if ext and ext.lower() != '.zip':
+        raise ValueError(f"Can't save to {zip_name}, as it does not have a .zip extension")
+
+    shutil.make_archive(base, 'zip', os.path.join(backend_path, 'dist', 't2wml-server'))
 
 def run():
     args = parse_args()

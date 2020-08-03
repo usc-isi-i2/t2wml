@@ -30,7 +30,6 @@ jobs:
         run: |
           cd $env:GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
-          dir $env:GITHUB_WORKSPACE/backend/dist
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
@@ -65,7 +64,6 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
-          ls -l $GITHUB_WORKSPACE/backend/dist
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
@@ -100,7 +98,6 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
-          ls -l $GITHUB_WORKSPACE/backend/dist
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
