@@ -29,7 +29,7 @@ jobs:
            CI: false   # Otherwise React stops on warnings
         run: |
           cd $env:GITHUB_WORKSPACE/backend
-          python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
+          python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
@@ -63,7 +63,7 @@ jobs:
           CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
-          python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
+          python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
@@ -97,7 +97,7 @@ jobs:
           CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
-          python packaging/prepare_installation.py --version ${{ github.ref }} --zip dist/t2wml-server.zip
+          python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
