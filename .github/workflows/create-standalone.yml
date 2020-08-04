@@ -52,15 +52,10 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
-      - name: Install Code signing certificate
-        env:
-          CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-        run: |
-          echo $CERTIFICATE | base64 --decode > certificate.p12
-          security create-keychain -p mysecretpassword build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p mysecretpassword build.keychain
-          security import certificate.p12 -k build.keychain -T /usr/bin/codesign
+      - name: Install Code signing 
+        uses: apple-actions/import-codesign-certs@v1
+        with: 
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
