@@ -36,7 +36,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: backend/dist/t2wml-server.exe
-          asset_name: t2wml-server.exe
+          asset_name: t2wml-server.windows.exe
           tag: ${{ github.ref }}
           overwrite: true
           body: "Windows Executable"
@@ -69,8 +69,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server.app
-          asset_name: t2wml-server.macos.app
+          file: backend/dist/t2wml-server
+          asset_name: t2wml-server.macos
           tag: ${{ github.ref }}
           overwrite: true
           body: "MacOS App Bundle"
@@ -104,7 +104,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: backend/dist/t2wml-server
-          asset_name: t2wml-server
+          asset_name: t2wml-server.linux
           tag: ${{ github.ref }}
           overwrite: true
           body: "Linux Executable"
