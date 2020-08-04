@@ -5,41 +5,41 @@ on:
       - v*
 
 jobs:
-  # windows:
-  #   name: Create the Windows Executable
-  #   runs-on: windows-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Setup Python
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.7'
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v2-beta
-  #     - name: Set backend environment
-  #       run: |
-  #         cd $env:GITHUB_WORKSPACE/backend
-  #         pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
-  #         pip install pyinstaller pywin32
-  #     - name: Create executable
-  #       env:  # Replace unicode characters with ?
-  #          PYTHONIOENCODING: :replace
-  #          PYTHONLEGACYWINDOWSIOENCODING: true
-  #          CI: false   # Otherwise React stops on warnings
-  #       run: |
-  #         cd $env:GITHUB_WORKSPACE/backend
-  #         python packaging/prepare_installation.py --version ${{ github.ref }}
-  #     - name: Upload to Release
-  #       id: upload-release-asset 
-  #       uses: svenstaro/upload-release-action@v2
-  #       with:
-  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #         file: backend/dist/t2wml-server.exe
-  #         asset_name: t2wml-server.windows.exe
-  #         tag: ${{ github.ref }}
-  #         overwrite: true
-  #         body: "Windows Executable"
+  windows:
+    name: Create the Windows Executable
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+      - name: Set backend environment
+        run: |
+          cd $env:GITHUB_WORKSPACE/backend
+          pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
+          pip install pyinstaller pywin32
+      - name: Create executable
+        env:  # Replace unicode characters with ?
+           PYTHONIOENCODING: :replace
+           PYTHONLEGACYWINDOWSIOENCODING: true
+           CI: false   # Otherwise React stops on warnings
+        run: |
+          cd $env:GITHUB_WORKSPACE/backend
+          python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Upload to Release
+        id: upload-release-asset 
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: backend/dist/t2wml-server.exe
+          asset_name: t2wml-server.windows.exe
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Windows Executable"
   mac:
     name: Create the Mac OS Executable
     runs-on: macos-latest
@@ -92,38 +92,38 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           body: "MacOS Executable"
-  # linux:
-  #   name: Create the Linux Executable
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Setup Python
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.7'
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v2-beta
-  #     - name: Set backend environment
-  #       run: |
-  #         cd $GITHUB_WORKSPACE/backend
-  #         pip install --upgrade setuptools
-  #         pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
-  #         pip install pyinstaller
-  #     - name: Create executable
-  #       env:
-  #         CI: false   # Otherwise React stops on warnings
-  #       run: |
-  #         cd $GITHUB_WORKSPACE/backend
-  #         python packaging/prepare_installation.py --version ${{ github.ref }}
-  #     - name: Upload to Release
-  #       id: upload-release-asset 
-  #       uses: svenstaro/upload-release-action@v2
-  #       with:
-  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #         file: backend/dist/t2wml-server
-  #         asset_name: t2wml-server.linux
-  #         tag: ${{ github.ref }}
-  #         overwrite: true
-  #         body: "Linux Executable"
+  linux:
+    name: Create the Linux Executable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+      - name: Set backend environment
+        run: |
+          cd $GITHUB_WORKSPACE/backend
+          pip install --upgrade setuptools
+          pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
+          pip install pyinstaller
+      - name: Create executable
+        env:
+          CI: false   # Otherwise React stops on warnings
+        run: |
+          cd $GITHUB_WORKSPACE/backend
+          python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Upload to Release
+        id: upload-release-asset 
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: backend/dist/t2wml-server
+          asset_name: t2wml-server.linux
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Linux Executable"
 
