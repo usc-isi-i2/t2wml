@@ -68,6 +68,7 @@ jobs:
           security import certificate.p12 -k build.keychain -P 12345 -T /usr/bin/codesign -A
           # security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "12345" build.keychain
       - name: Test signing
+        run: |
           cd $GITHUB_WORKSPACE
           cc test.c -o test
           codesign --deep --verbose --force --sign "Test t2wml" test
