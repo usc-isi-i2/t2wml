@@ -67,11 +67,6 @@ jobs:
           security set-keychain-settings -lut 3600
           security import certificate.p12 -k build.keychain -P 12345 -T /usr/bin/codesign -A
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
-      - name: Test signing
-        run: |
-          cd $GITHUB_WORKSPACE
-          cc test.c -o test
-          codesign --deep --verbose --force --sign "Test t2wml" test
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
@@ -85,7 +80,8 @@ jobs:
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Sign Executable
-        run: codesign -deep --force --verbose --sign "Test t2wml" $GITHUB_WORKSPACE/backend/dist/t2wml-server
+        run: |
+          codesign --deep --verbose --force --sign "Test t2wml" $GITHUB_WORKSPACE/backend/dist/t2wml-server
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
