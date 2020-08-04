@@ -52,6 +52,15 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
+      - name: Install Code signing certificate
+        env:
+          CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+        run: |
+          echo $CERTIFICATE | base64 --decode > certificate.p12
+          security create-keychain -p mysecretpassword build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p mysecretpassword build.keychain
+          security import certificate.p12 -k build.keychain -T /usr/bin/codesign
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
@@ -64,6 +73,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Sign Executable
+        run: codesign -s "The t2wml Project Team" $GITHUB_WORKSPACE/backend/dist/t2wml-server
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
@@ -73,7 +84,7 @@ jobs:
           asset_name: t2wml-server.macos
           tag: ${{ github.ref }}
           overwrite: true
-          body: "MacOS App Bundle"
+          body: "MacOS Executable"
   linux:
     name: Create the Linux Executable
     runs-on: ubuntu-latest
