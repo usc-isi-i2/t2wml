@@ -10,7 +10,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--version', type=str, default=None, help='Version number for deployment')
     parser.add_argument('--skip-frontend', action="store_true", default=False, help='Skip building the frontend')
-    parser.add_argument('--zip', type=str, default=None, help='Zip file name for output')
+    # parser.add_argument('--zip', type=str, default=None, help='Zip file name for output')
     return parser.parse_args()
 
 def get_paths():
@@ -61,7 +61,7 @@ def build_installer():
     cwd = os.getcwd()
     try:
         os.chdir(backend_path)
-        cmd = f'pyinstaller --noconfirm --window --add-data "./migrations{sep}migrations" --add-data "./static{sep}static" --runtime-hook packaging/pyinstaller_hooks.py t2wml-server.py'
+        cmd = f'pyinstaller --onefile --noconfirm --windowed --add-data "./migrations{sep}migrations" --add-data "./static{sep}static" --runtime-hook packaging/pyinstaller_hooks.py t2wml-server.py'
         print('Running ', cmd)
         os.system(cmd)
     finally:
@@ -86,11 +86,11 @@ def run():
     copy_frontend_to_static()
     build_installer()
 
-    if args.zip:
-        zip_output(args.zip)
-        print(f"{args.zip} is ready")
-    else:
-        print("Done, look in the ", os.path.join(backend_path, 'dist'), ' directory')
+    #if args.zip:
+    #    zip_output(args.zip)
+    #    print(f"{args.zip} is ready")
+    #else:
+    print("Done, look in the ", os.path.join(backend_path, 'dist'), ' directory')
 
 if __name__ == '__main__':
     run()

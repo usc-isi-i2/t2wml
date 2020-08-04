@@ -35,8 +35,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server.zip
-          asset_name: t2wml-server.windows.zip
+          file: backend/dist/t2wml-server.exe
+          asset_name: t2wml-server.exe
           tag: ${{ github.ref }}
           overwrite: true
           body: "Windows Executable"
@@ -69,11 +69,11 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server.zip
-          asset_name: t2wml-server.macos.zip
+          file: backend/dist/t2wml-server.app
+          asset_name: t2wml-server.macos.app
           tag: ${{ github.ref }}
           overwrite: true
-          body: "MacOS Executable"
+          body: "MacOS App Bundle"
   linux:
     name: Create the Linux Executable
     runs-on: ubuntu-latest
@@ -103,8 +103,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server.zip
-          asset_name: t2wml-server.linux.zip
+          file: backend/dist/t2wml-server
+          asset_name: t2wml-server
           tag: ${{ github.ref }}
           overwrite: true
           body: "Linux Executable"
