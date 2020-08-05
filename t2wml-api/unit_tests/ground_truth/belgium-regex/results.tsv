@@ -1,203 +1,203 @@
-id	node1	label	node2	node2;kgtk:data_type	node2;kgtk:number	node2;kgtk:low_tolerance	node2;kgtk:high_tolerance	node2;kgtk:units_node	node2;kgtk:date_and_time	node2;kgtk:precision	node2;kgtk:calendar	node2;kgtk:truth	node2;kgtk:symbol	node2;kgtk:latitude	node2;kgtk:longitude	node2;kgtk:text	node2;kgtk:language
-Belgium.csv;D6	Q31	P1082		quantity	41450												
-	Belgium.csv;D6	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D7	Q31	P1082		quantity	41868												
-	Belgium.csv;D7	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D8	Q31	P1082		quantity	-0.5												
-	Belgium.csv;D8	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D10	Q31	P1082		quantity	1.8												
-	Belgium.csv;D10	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D11	Q31	P1082		quantity	6.5												
-	Belgium.csv;D11	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D12	Q31	P1082		quantity	4.2												
-	Belgium.csv;D12	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D14	Q31	P1082		quantity	0.7												
-	Belgium.csv;D14	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D15	Q31	P1082		quantity	17.3												
-	Belgium.csv;D15	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D16	Q31	P1082		quantity	5.7												
-	Belgium.csv;D16	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D17	Q31	P1082		quantity	20.2												
-	Belgium.csv;D17	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D18	Q31	P1082		quantity	4.2												
-	Belgium.csv;D18	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D19	Q31	P1082		quantity	6.3												
-	Belgium.csv;D19	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;D20	Q31	P1082		quantity	8.7												
-	Belgium.csv;D20	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E6	Q31	P1082		quantity	42585												
-	Belgium.csv;E6	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E7	Q31	P1082		quantity	43627												
-	Belgium.csv;E7	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E8	Q31	P1082		quantity	0.2												
-	Belgium.csv;E8	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E10	Q31	P1082		quantity	0.2												
-	Belgium.csv;E10	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E11	Q31	P1082		quantity	5.7												
-	Belgium.csv;E11	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E12	Q31	P1082		quantity	0.2												
-	Belgium.csv;E12	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E14	Q31	P1082		quantity	0.9												
-	Belgium.csv;E14	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E15	Q31	P1082		quantity	16.8												
-	Belgium.csv;E15	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E16	Q31	P1082		quantity	5.7												
-	Belgium.csv;E16	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E17	Q31	P1082		quantity	20.0												
-	Belgium.csv;E17	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E18	Q31	P1082		quantity	4.3												
-	Belgium.csv;E18	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E19	Q31	P1082		quantity	6.3												
-	Belgium.csv;E19	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;E20	Q31	P1082		quantity	8.7												
-	Belgium.csv;E20	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F6	Q31	P1082		quantity	43746												
-	Belgium.csv;F6	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F7	Q31	P1082		quantity	44467												
-	Belgium.csv;F7	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F8	Q31	P1082		quantity	0.2												
-	Belgium.csv;F8	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F10	Q31	P1082		quantity	0.2												
-	Belgium.csv;F10	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F11	Q31	P1082		quantity	5.1												
-	Belgium.csv;F11	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F12	Q31	P1082		quantity	-1.5												
-	Belgium.csv;F12	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F14	Q31	P1082		quantity	0.8												
-	Belgium.csv;F14	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F15	Q31	P1082		quantity	16.7												
-	Belgium.csv;F15	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F16	Q31	P1082		quantity	5.6												
-	Belgium.csv;F16	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F17	Q31	P1082		quantity	19.8												
-	Belgium.csv;F17	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F18	Q31	P1082		quantity	4.1												
-	Belgium.csv;F18	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F19	Q31	P1082		quantity	6.1												
-	Belgium.csv;F19	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;F20	Q31	P1082		quantity	8.6												
-	Belgium.csv;F20	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G6	Q31	P1082		quantity	44720												
-	Belgium.csv;G6	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G7	Q31	P1082		quantity	45029												
-	Belgium.csv;G7	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G8	Q31	P1082		quantity	1.1												
-	Belgium.csv;G8	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G10	Q31	P1082		quantity	1.3												
-	Belgium.csv;G10	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G11	Q31	P1082		quantity	5.1												
-	Belgium.csv;G11	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G12	Q31	P1082		quantity	5.8												
-	Belgium.csv;G12	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G14	Q31	P1082		quantity	0.7												
-	Belgium.csv;G14	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G15	Q31	P1082		quantity	16.5												
-	Belgium.csv;G15	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G16	Q31	P1082		quantity	5.5												
-	Belgium.csv;G16	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G17	Q31	P1082		quantity	19.7												
-	Belgium.csv;G17	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G18	Q31	P1082		quantity	4.1												
-	Belgium.csv;G18	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G19	Q31	P1082		quantity	6.0												
-	Belgium.csv;G19	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;G20	Q31	P1082		quantity	8.7												
-	Belgium.csv;G20	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H6	Q31	P1082		quantity	45739												
-	Belgium.csv;H6	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H7	Q31	P1082		quantity	45480												
-	Belgium.csv;H7	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H8	Q31	P1082		quantity	0.4												
-	Belgium.csv;H8	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H10	Q31	P1082		quantity	1.7												
-	Belgium.csv;H10	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H11	Q31	P1082		quantity	4.3												
-	Belgium.csv;H11	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H12	Q31	P1082		quantity	2.7												
-	Belgium.csv;H12	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H14	Q31	P1082		quantity	0.8												
-	Belgium.csv;H14	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H15	Q31	P1082		quantity	16.7												
-	Belgium.csv;H15	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H16	Q31	P1082		quantity	5.3												
-	Belgium.csv;H16	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H17	Q31	P1082		quantity	19.7												
-	Belgium.csv;H17	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H18	Q31	P1082		quantity	4.1												
-	Belgium.csv;H18	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H19	Q31	P1082		quantity	6.0												
-	Belgium.csv;H19	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;H20	Q31	P1082		quantity	8.7												
-	Belgium.csv;H20	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I6	Q31	P1082		quantity	47366												
-	Belgium.csv;I6	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I7	Q31	P1082		quantity	47420												
-	Belgium.csv;I7	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I8	Q31	P1082		quantity	1.3												
-	Belgium.csv;I8	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I10	Q31	P1082		quantity	1.5												
-	Belgium.csv;I10	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I11	Q31	P1082		quantity	3.9												
-	Belgium.csv;I11	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I12	Q31	P1082		quantity	3.8												
-	Belgium.csv;I12	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I14	Q31	P1082		quantity	0.7												
-	Belgium.csv;I14	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I15	Q31	P1082		quantity	16.6												
-	Belgium.csv;I15	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I16	Q31	P1082		quantity	5.3												
-	Belgium.csv;I16	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I17	Q31	P1082		quantity	19.7												
-	Belgium.csv;I17	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I18	Q31	P1082		quantity	4.1												
-	Belgium.csv;I18	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I19	Q31	P1082		quantity	6.4												
-	Belgium.csv;I19	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;I20	Q31	P1082		quantity	8.6												
-	Belgium.csv;I20	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J6	Q31	P1082		quantity	49526												
-	Belgium.csv;J6	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J7	Q31	P1082		quantity	50109												
-	Belgium.csv;J7	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J8	Q31	P1082		quantity	1.2												
-	Belgium.csv;J8	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J10	Q31	P1082		quantity	1.7												
-	Belgium.csv;J10	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J11	Q31	P1082		quantity	4.0												
-	Belgium.csv;J11	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J12	Q31	P1082		quantity	1.8												
-	Belgium.csv;J12	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J14	Q31	P1082		quantity	0.7												
-	Belgium.csv;J14	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J15	Q31	P1082		quantity	16.7												
-	Belgium.csv;J15	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J16	Q31	P1082		quantity	5.2												
-	Belgium.csv;J16	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J17	Q31	P1082		quantity	19.5												
-	Belgium.csv;J17	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J18	Q31	P1082		quantity	4.2												
-	Belgium.csv;J18	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J19	Q31	P1082		quantity	6.2												
-	Belgium.csv;J19	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;J20	Q31	P1082		quantity	8.6												
-	Belgium.csv;J20	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K6	Q31	P1082		quantity	50442												
-	Belgium.csv;K6	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K10	Q31	P1082		quantity	1.4												
-	Belgium.csv;K10	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K12	Q31	P1082		quantity	2.9												
-	Belgium.csv;K12	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K14	Q31	P1082		quantity	0.8												
-	Belgium.csv;K14	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K15	Q31	P1082		quantity	16.7												
-	Belgium.csv;K15	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K16	Q31	P1082		quantity	5.3												
-	Belgium.csv;K16	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K17	Q31	P1082		quantity	19.4												
-	Belgium.csv;K17	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K18	Q31	P1082		quantity	4.3												
-	Belgium.csv;K18	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K19	Q31	P1082		quantity	6.0												
-	Belgium.csv;K19	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
-Belgium.csv;K20	Q31	P1082		quantity	8.6												
-	Belgium.csv;K20	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727						
+id	node1	label	node2	node2;kgtk:data_type	node2;kgtk:number	node2;kgtk:low_tolerance	node2;kgtk:high_tolerance	node2;kgtk:units_node	node2;kgtk:date_and_time	node2;kgtk:precision	node2;kgtk:calendar	node2;kgtk:truth	node2;kgtk:symbol	node2;kgtk:latitude	node2;kgtk:longitude	node2;kgtk:globe	node2;kgtk:text	node2;kgtk:language
+Belgium.csv;D6	Q31	P1082		quantity	41450													
+	Belgium.csv;D6	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D7	Q31	P1082		quantity	41868													
+	Belgium.csv;D7	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D8	Q31	P1082		quantity	-0.5													
+	Belgium.csv;D8	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D10	Q31	P1082		quantity	1.8													
+	Belgium.csv;D10	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D11	Q31	P1082		quantity	6.5													
+	Belgium.csv;D11	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D12	Q31	P1082		quantity	4.2													
+	Belgium.csv;D12	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D14	Q31	P1082		quantity	0.7													
+	Belgium.csv;D14	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D15	Q31	P1082		quantity	17.3													
+	Belgium.csv;D15	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D16	Q31	P1082		quantity	5.7													
+	Belgium.csv;D16	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D17	Q31	P1082		quantity	20.2													
+	Belgium.csv;D17	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D18	Q31	P1082		quantity	4.2													
+	Belgium.csv;D18	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D19	Q31	P1082		quantity	6.3													
+	Belgium.csv;D19	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;D20	Q31	P1082		quantity	8.7													
+	Belgium.csv;D20	P585		date_and_times					"2011-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E6	Q31	P1082		quantity	42585													
+	Belgium.csv;E6	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E7	Q31	P1082		quantity	43627													
+	Belgium.csv;E7	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E8	Q31	P1082		quantity	0.2													
+	Belgium.csv;E8	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E10	Q31	P1082		quantity	0.2													
+	Belgium.csv;E10	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E11	Q31	P1082		quantity	5.7													
+	Belgium.csv;E11	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E12	Q31	P1082		quantity	0.2													
+	Belgium.csv;E12	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E14	Q31	P1082		quantity	0.9													
+	Belgium.csv;E14	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E15	Q31	P1082		quantity	16.8													
+	Belgium.csv;E15	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E16	Q31	P1082		quantity	5.7													
+	Belgium.csv;E16	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E17	Q31	P1082		quantity	20.0													
+	Belgium.csv;E17	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E18	Q31	P1082		quantity	4.3													
+	Belgium.csv;E18	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E19	Q31	P1082		quantity	6.3													
+	Belgium.csv;E19	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;E20	Q31	P1082		quantity	8.7													
+	Belgium.csv;E20	P585		date_and_times					"2012-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F6	Q31	P1082		quantity	43746													
+	Belgium.csv;F6	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F7	Q31	P1082		quantity	44467													
+	Belgium.csv;F7	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F8	Q31	P1082		quantity	0.2													
+	Belgium.csv;F8	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F10	Q31	P1082		quantity	0.2													
+	Belgium.csv;F10	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F11	Q31	P1082		quantity	5.1													
+	Belgium.csv;F11	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F12	Q31	P1082		quantity	-1.5													
+	Belgium.csv;F12	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F14	Q31	P1082		quantity	0.8													
+	Belgium.csv;F14	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F15	Q31	P1082		quantity	16.7													
+	Belgium.csv;F15	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F16	Q31	P1082		quantity	5.6													
+	Belgium.csv;F16	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F17	Q31	P1082		quantity	19.8													
+	Belgium.csv;F17	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F18	Q31	P1082		quantity	4.1													
+	Belgium.csv;F18	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F19	Q31	P1082		quantity	6.1													
+	Belgium.csv;F19	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;F20	Q31	P1082		quantity	8.6													
+	Belgium.csv;F20	P585		date_and_times					"2013-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G6	Q31	P1082		quantity	44720													
+	Belgium.csv;G6	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G7	Q31	P1082		quantity	45029													
+	Belgium.csv;G7	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G8	Q31	P1082		quantity	1.1													
+	Belgium.csv;G8	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G10	Q31	P1082		quantity	1.3													
+	Belgium.csv;G10	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G11	Q31	P1082		quantity	5.1													
+	Belgium.csv;G11	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G12	Q31	P1082		quantity	5.8													
+	Belgium.csv;G12	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G14	Q31	P1082		quantity	0.7													
+	Belgium.csv;G14	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G15	Q31	P1082		quantity	16.5													
+	Belgium.csv;G15	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G16	Q31	P1082		quantity	5.5													
+	Belgium.csv;G16	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G17	Q31	P1082		quantity	19.7													
+	Belgium.csv;G17	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G18	Q31	P1082		quantity	4.1													
+	Belgium.csv;G18	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G19	Q31	P1082		quantity	6.0													
+	Belgium.csv;G19	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;G20	Q31	P1082		quantity	8.7													
+	Belgium.csv;G20	P585		date_and_times					"2014-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H6	Q31	P1082		quantity	45739													
+	Belgium.csv;H6	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H7	Q31	P1082		quantity	45480													
+	Belgium.csv;H7	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H8	Q31	P1082		quantity	0.4													
+	Belgium.csv;H8	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H10	Q31	P1082		quantity	1.7													
+	Belgium.csv;H10	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H11	Q31	P1082		quantity	4.3													
+	Belgium.csv;H11	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H12	Q31	P1082		quantity	2.7													
+	Belgium.csv;H12	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H14	Q31	P1082		quantity	0.8													
+	Belgium.csv;H14	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H15	Q31	P1082		quantity	16.7													
+	Belgium.csv;H15	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H16	Q31	P1082		quantity	5.3													
+	Belgium.csv;H16	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H17	Q31	P1082		quantity	19.7													
+	Belgium.csv;H17	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H18	Q31	P1082		quantity	4.1													
+	Belgium.csv;H18	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H19	Q31	P1082		quantity	6.0													
+	Belgium.csv;H19	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;H20	Q31	P1082		quantity	8.7													
+	Belgium.csv;H20	P585		date_and_times					"2015-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I6	Q31	P1082		quantity	47366													
+	Belgium.csv;I6	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I7	Q31	P1082		quantity	47420													
+	Belgium.csv;I7	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I8	Q31	P1082		quantity	1.3													
+	Belgium.csv;I8	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I10	Q31	P1082		quantity	1.5													
+	Belgium.csv;I10	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I11	Q31	P1082		quantity	3.9													
+	Belgium.csv;I11	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I12	Q31	P1082		quantity	3.8													
+	Belgium.csv;I12	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I14	Q31	P1082		quantity	0.7													
+	Belgium.csv;I14	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I15	Q31	P1082		quantity	16.6													
+	Belgium.csv;I15	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I16	Q31	P1082		quantity	5.3													
+	Belgium.csv;I16	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I17	Q31	P1082		quantity	19.7													
+	Belgium.csv;I17	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I18	Q31	P1082		quantity	4.1													
+	Belgium.csv;I18	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I19	Q31	P1082		quantity	6.4													
+	Belgium.csv;I19	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;I20	Q31	P1082		quantity	8.6													
+	Belgium.csv;I20	P585		date_and_times					"2016-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J6	Q31	P1082		quantity	49526													
+	Belgium.csv;J6	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J7	Q31	P1082		quantity	50109													
+	Belgium.csv;J7	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J8	Q31	P1082		quantity	1.2													
+	Belgium.csv;J8	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J10	Q31	P1082		quantity	1.7													
+	Belgium.csv;J10	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J11	Q31	P1082		quantity	4.0													
+	Belgium.csv;J11	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J12	Q31	P1082		quantity	1.8													
+	Belgium.csv;J12	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J14	Q31	P1082		quantity	0.7													
+	Belgium.csv;J14	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J15	Q31	P1082		quantity	16.7													
+	Belgium.csv;J15	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J16	Q31	P1082		quantity	5.2													
+	Belgium.csv;J16	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J17	Q31	P1082		quantity	19.5													
+	Belgium.csv;J17	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J18	Q31	P1082		quantity	4.2													
+	Belgium.csv;J18	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J19	Q31	P1082		quantity	6.2													
+	Belgium.csv;J19	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;J20	Q31	P1082		quantity	8.6													
+	Belgium.csv;J20	P585		date_and_times					"2017-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K6	Q31	P1082		quantity	50442													
+	Belgium.csv;K6	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K10	Q31	P1082		quantity	1.4													
+	Belgium.csv;K10	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K12	Q31	P1082		quantity	2.9													
+	Belgium.csv;K12	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K14	Q31	P1082		quantity	0.8													
+	Belgium.csv;K14	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K15	Q31	P1082		quantity	16.7													
+	Belgium.csv;K15	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K16	Q31	P1082		quantity	5.3													
+	Belgium.csv;K16	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K17	Q31	P1082		quantity	19.4													
+	Belgium.csv;K17	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K18	Q31	P1082		quantity	4.3													
+	Belgium.csv;K18	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K19	Q31	P1082		quantity	6.0													
+	Belgium.csv;K19	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
+Belgium.csv;K20	Q31	P1082		quantity	8.6													
+	Belgium.csv;K20	P585		date_and_times					"2018-01-01T00:00:00"	9	Q1985727							
