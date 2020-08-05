@@ -174,7 +174,7 @@ class YamlRegion(CodeParser, Region):
                             new_cells.append(parsed_cell)
             else: #need to parse it anyway to translate A->1
                 (col, row) = cell_str_to_tuple(cell_arg)
-                new_columns.append((col+1, row+1)) #switch to one-indexed
+                new_cells.append((col+1, row+1)) #switch to one-indexed
         return new_columns, new_rows, new_cells
     
     def get_select_arguments(self, yaml_data):
@@ -221,7 +221,9 @@ class YamlRegion(CodeParser, Region):
                             index_pairs.append((column, row))
             
             for cell in self.cells:
-                if cell not in skip_cells:
+                (col, row)=cell
+                if cell not in skip_cells and\
+                        string_is_valid(str(bindings.excel_sheet[row-1][col-1])):
                     index_pairs.append(cell)
 
         else:
