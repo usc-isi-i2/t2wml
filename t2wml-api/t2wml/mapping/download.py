@@ -34,7 +34,7 @@ def kgtk_add_property_type_specific_fields(property_dict, result_dict):
         node2;kgtk:latitude: for coordinates, the latitude
         node2;kgtk:longitude: for coordinates, the longitude
         '''
-        result_dict["node2;kgtk:data_type"] = "location_coordinate"
+        result_dict["node2;kgtk:data_type"] = "location_coordinates"
         result_dict["node2;kgtk:latitude"] = property_dict["latitude"]
         result_dict["node2;kgtk:longitude"] = property_dict["longitude"]
         result_dict["node2;kgtk:precision"] = property_dict.get(
