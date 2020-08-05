@@ -314,6 +314,9 @@ class Output extends Component<OutputProperties, OutputState> {
     }).catch((error: any) => {
         //   console.log(error);
         wikiStore.output.showSpinner = false;
+        this.setState({ 
+            queryDataCount: this.state.queryDataCount - 1 
+        });
     });
   }
 
