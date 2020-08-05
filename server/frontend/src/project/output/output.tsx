@@ -356,9 +356,10 @@ class Output extends Component<OutputProperties, OutputState> {
           <Card.Body className="w-100 h-100 p-0" style={{ overflow: "auto" }}>
 
             {/* loading spinner */}
-            <div className="mySpinner" hidden={!wikiStore.output.showSpinner}>
+            { wikiStore.output.showSpinner || this.state.queryDataCount  ? 
+            <div className="mySpinner">
               <Spinner animation="border" />
-            </div>
+            </div> : null}
 
             {/* output */}
             { this.state.queryDataCount === 0 ? 
