@@ -39,7 +39,17 @@ You can write your own code using the T2WML programming API
 <span id="development"></span>
 
 1. Clone the repository
+```
+git clone https://github.com/usc-isi-i2/t2wml
+cd t2wml
+git checkout development
+```
 2. Create a virtual environment
+```
+python3.6 -m venv t2wml_env
+source t2wml_evn/bin/activate
+pip install --upgrade pip
+```
 3. Install the t2wml API (optional: in editable mode with the -e flag)
 	`pip install t2wml-api` or `pip install -e t2wml-api`
 	
@@ -51,11 +61,21 @@ You can write your own code using the T2WML programming API
    `pip install -r server\requirements.txt`
 
 5. In the folder server/backend, run the backend server: 
-    `python application.py`
-6. Install the frontend requirements:
-   In the folder "frontend", run `npm install`
-7. Run the frontend server: 
-   In the folder "frontend", run `npm run start`
+```
+cd server/backend
+python application.py
+```
+   
+6. In a new terminal, navigate to the folder where the github repositry was cloned
+7. Install the frontend requirements:
+```
+cd server/frontend
+npm install
+```
+8. Run the frontend server: 
+```
+npm run start
+```
 
 The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
 
