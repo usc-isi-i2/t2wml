@@ -116,7 +116,7 @@ def highlight_region(data_sheet, yaml_file, project):
         if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):
             highlight_data['errorCells']['list'].append(cell)
         else:
-            highlight_data['dangerCell']['list'].append(cell)
+            highlight_data['dangerCells']['list'].append(cell)
 
     cache_holder.result_cacher.save(highlight_data, statement_data, errors)
 
