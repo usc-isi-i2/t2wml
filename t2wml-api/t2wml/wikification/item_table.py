@@ -38,7 +38,7 @@ class ItemTable:
                 "No values defined for context: {}".format(context))
         if not sheet:
             sheet = bindings.excel_sheet
-        value = sheet[row, column]
+        value = str(sheet[row, column])
         try:
             item = self.lookup_func(lookup, column, row, value)
             return item
@@ -73,14 +73,14 @@ class ItemTable:
         for entry in df.itertuples():
             column = entry.column
             row = entry.row
-            value = entry.value
+            value = str(entry.value)
             context = entry.context
             item = entry.item
 
             if not item:
                 raise ValueError("Item definition missing")
 
-            if not column and not row and not value:
+            if column=="" and row=="" and value=="":
                 raise ValueError(
                     "at least one of column, row, or value must be defined")
 
