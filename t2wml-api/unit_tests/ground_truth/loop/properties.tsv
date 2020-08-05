@@ -1,0 +1,87 @@
+node1	label	node2	id
+P2006020001	label	"column index"	P2006020001-label-1
+P2006020001	data_type	Quantity	P2006020001-data_type-1
+P2006020001	description	"Column number that corresponds to a variable"	P2006020001-description-1
+P2006020002	label	"qualifier"	P2006020002-label-1
+P2006020002	description	"Qualifiers used to describe a variable. E.g., FertilizerType, Source, etc."	P2006020002-description-1
+P2006020002	data_type	WikibaseProperty	P2006020002-data_type-1
+P2006020003	label	"variable measured"	P2006020003-label-1
+P2006020003	data_type	WikibaseItem	P2006020003-data_type-1
+P2006020003	description	"Variables that are measured in a Dataset"	P2006020003-description-1
+P2006020004	label	"dataset"	P2006020004-label-1
+P2006020004	data_type	WikibaseItem	P2006020004-data_type-1
+P2006020004	description	"Id of the dataset this variable is included in"	P2006020004-description-1
+P2006020005	label	"mapping file"	P2006020005-label-1
+P2006020005	data_type	String	P2006020005-data_type-1
+P2006020006	label	"keywords"	P2006020006-label-1
+P2006020006	description	"Keywords describing the dataset. Multiple entries are delimited by commas"	P2006020006-description-1
+P2006020006	data_type	String	P2006020006-data-type-1
+P2006020007	label	"version"	P2006020007-label-1
+P2006020007	description	"Version number of the Dataset. Semantic versioning in the form of X.Y.Z is preferred (where X indicates a major version, Y a minor version and Z indicates a patch or bug fixes)"	P2006020007-description-1
+P2006020007	data_type	String	P2006020007-data-type-1
+P2006020008	label	"date created"	P2006020008-label-1
+P2006020008	description	"Creation date of the Dataset in ISO 8601 format (YYYY-MM-DD)"	P2006020008-description-1
+P2006020008	data_type	String	P2006020008-data-type-1
+P2006020009	label	"included in data catalog"	P2006020009-label-1
+P2006020009	description	"Catalog where the Dataset is included"	P2006020009-description-1
+P2006020009	data_type	String	P2006020009-data-type-1
+P2006180001	label	"geospatial granularity"	P2006180001-label-1
+P2006180001	description	"Administrative area (admin 1, admin 2 or admin 3) the variable or dataset corresponds to"	P2006180001-description-1
+P2006180001	data_type	String	P2006180001-data-type-1
+P2006190001	label	"located in the first-level administrative country subdivision"	P2006190001-label-1
+P2006190001	description	"The item is located in the first-level administrative country subdivision. A first-level adminstrative country subdivision is located within itself"	P2006190001-description-1
+P2006190001	data_type	WikibaseItem	P2006190001-data-type-1
+P2006190002	label	"located in the second-level administrative country subdivision"	P2006190002-label-1
+P2006190002	description	"The item is located in the second-level administrative country subdivision. A second-level adminstrative country subdivision is located within itself"	P2006190002-description-1
+P2006190002	data_type	WikibaseItem	P2006190002-data-type-1
+P2006190003	label	"located in the third-level administrative country subdivision"	P2006190003-label-1
+P2006190003	description	"The item is located in the third-level administrative country subdivision. A third-level adminstrative country subdivision is located within itself"	P2006190003-description-1
+P2006190003	data_type	WikibaseItem	P2006190003-data-type-1
+P248	label	"stated in"	P248-label-1
+P1687	label	"corresponds to property"	P1687-label-1
+P1687	data_type	WikibaseProperty	P1687-data_type-1
+P1476	label	"title"	P1476-label-1
+P1476	data_type	String	P1476-data_type-1
+P2699	label	"String"	P2699-label-1
+P2699	data_type	String	P2699-data_type-1
+P1813	data_type	String	P1813-data-type-1
+P170	label	"creator"	P170-label-1
+P170	data_type	WikibaseItem	P170-data-type-1
+P767	label	"contributor"	P767-label-1
+P767	data_type	WikibaseItem	P767-data-type-1
+P2860	label	"cites work"	P2860-label-1
+P2860	data_type	String	P2860-data-type-1
+P275	label	"copyright license"	P275-label-1
+P275	data_type	String	P275-data-type-1
+P356	label	"doi"	P356-label-1
+P356	data_type	String	P356-data-type-1
+P921	label	"main subject"	P921-label-1
+P921	data_type	WikibaseItem	P921-data-type-1
+P625	label	"coordinate location"	P625-label-1
+P625	data_type	GlobeCoordinate	P625-data-type-1
+P3896	label	"geoshape"	P3896-label-1
+P3896	data_type	String	P3896-data-type-1
+P17	label	"country"	P17-label-1
+P17	data_type	String	P17-data-type-1
+P276	label	"location"	P276-label-1
+P276	data_type	String	P276-data-type-1
+P580	label	"start time"	P580-label-1
+P580	data_type	Time	P580-data-type-1
+P582	label	"end time"	P582-label-1
+P582	data_type	Time	P582-data-type-1
+P6339	label	"data interval"	P6339-label-1
+P6339	data_type	WikibaseItem	P6339-data-type-1
+P856	label	"official website"	P856-label-1
+P856	data_type	String	P856-data-type-1
+P6269	label	"api endpoint"	P6269-label-1
+P6269	data_type	String	P6269-data-type-1
+P527	label	"has part"	P527-label-1
+P527	data_type	String	P527-data-type-1
+P1813	label	"short name"	P1813-label-1
+P1813	data_type	String	P1813-data-type-1
+P921	label	"main subject"	P921-label-1
+P921	data_type	WikibaseItem	P921-data-type-1
+P1880	label	"unit of measure"	P1880-label-1
+P1880	data_type	String	P1880-data-type-1
+P1114	label	"count"	P1114-label-1
+P1114	data_type	Quantity	P1114-data-type-1

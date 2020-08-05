@@ -1,0 +1,334 @@
+id	node1	label	node2
+POECD-002-data_type	POECD-002	data_type	Quantity
+POECD-002-P31	POECD-002	P31	Q18616576
+POECD-002-label	POECD-002	label	"Agriculture, forestry, fishing"
+POECD-003-data_type	POECD-003	data_type	Quantity
+POECD-003-P31	POECD-003	P31	Q18616576
+POECD-003-label	POECD-003	label	"Aquaculture"
+POECD-004-data_type	POECD-004	data_type	Quantity
+POECD-004-P31	POECD-004	P31	Q18616576
+POECD-004-label	POECD-004	label	"Average time worked per person in employment"
+POECD-005-data_type	POECD-005	data_type	Quantity
+POECD-005-P31	POECD-005	P31	Q18616576
+POECD-005-label	POECD-005	label	"CO2 emissions from fuel combustion"
+POECD-006-data_type	POECD-006	data_type	Quantity
+POECD-006-P31	POECD-006	P31	Q18616576
+POECD-006-label	POECD-006	label	"Construction"
+POECD-007-data_type	POECD-007	data_type	Quantity
+POECD-007-P31	POECD-007	P31	Q18616576
+POECD-007-label	POECD-007	label	"Crude oil import prices"
+POECD-008-data_type	POECD-008	data_type	Quantity
+POECD-008-P31	POECD-008	P31	Q18616576
+POECD-008-label	POECD-008	label	"Current account balance of payments"
+POECD-009-data_type	POECD-009	data_type	Quantity
+POECD-009-P31	POECD-009	P31	Q18616576
+POECD-009-label	POECD-009	label	"Elderly population aged 65 and over"
+POECD-010-data_type	POECD-010	data_type	Quantity
+POECD-010-P31	POECD-010	P31	Q18616576
+POECD-010-label	POECD-010	label	"Employment rate in population aged 15-24"
+POECD-011-data_type	POECD-011	data_type	Quantity
+POECD-011-P31	POECD-011	P31	Q18616576
+POECD-011-label	POECD-011	label	"Employment rate in population aged 25-54"
+POECD-012-data_type	POECD-012	data_type	Quantity
+POECD-012-P31	POECD-012	P31	Q18616576
+POECD-012-label	POECD-012	label	"Employment rate in population aged 55-64"
+POECD-013-data_type	POECD-013	data_type	Quantity
+POECD-013-P31	POECD-013	P31	Q18616576
+POECD-013-label	POECD-013	label	"Exchange rates"
+POECD-014-data_type	POECD-014	data_type	Quantity
+POECD-014-P31	POECD-014	P31	Q18616576
+POECD-014-label	POECD-014	label	"Expenditure per student: primary, 2010 prices"
+POECD-015-data_type	POECD-015	data_type	Quantity
+POECD-015-P31	POECD-015	P31	Q18616576
+POECD-015-label	POECD-015	label	"Expenditure per student: secondary, 2010 prices"
+POECD-016-data_type	POECD-016	data_type	Quantity
+POECD-016-P31	POECD-016	P31	Q18616576
+POECD-016-label	POECD-016	label	"Expenditure per student: tertiary, 2010 prices"
+POECD-017-data_type	POECD-017	data_type	Quantity
+POECD-017-P31	POECD-017	P31	Q18616576
+POECD-017-label	POECD-017	label	"Exports of goods"
+POECD-018-data_type	POECD-018	data_type	Quantity
+POECD-018-P31	POECD-018	P31	Q18616576
+POECD-018-label	POECD-018	label	"Exports of goods and services"
+POECD-019-data_type	POECD-019	data_type	Quantity
+POECD-019-P31	POECD-019	P31	Q18616576
+POECD-019-label	POECD-019	label	"Exports of services"
+POECD-020-data_type	POECD-020	data_type	Quantity
+POECD-020-P31	POECD-020	P31	Q18616576
+POECD-020-label	POECD-020	label	"Finance and insurance"
+POECD-021-data_type	POECD-021	data_type	Quantity
+POECD-021-P31	POECD-021	P31	Q18616576
+POECD-021-label	POECD-021	label	"Foreign population"
+POECD-022-data_type	POECD-022	data_type	Quantity
+POECD-022-P31	POECD-022	P31	Q18616576
+POECD-022-label	POECD-022	label	"Foreign-born population"
+POECD-023-data_type	POECD-023	data_type	Quantity
+POECD-023-P31	POECD-023	P31	Q18616576
+POECD-023-label	POECD-023	label	"GDP per capita"
+POECD-024-data_type	POECD-024	data_type	Quantity
+POECD-024-P31	POECD-024	P31	Q18616576
+POECD-024-label	POECD-024	label	"General government debt"
+POECD-025-data_type	POECD-025	data_type	Quantity
+POECD-025-P31	POECD-025	P31	Q18616576
+POECD-025-label	POECD-025	label	"General government expenditures"
+POECD-026-data_type	POECD-026	data_type	Quantity
+POECD-026-P31	POECD-026	P31	Q18616576
+POECD-026-label	POECD-026	label	"General government revenues"
+POECD-027-data_type	POECD-027	data_type	Quantity
+POECD-027-P31	POECD-027	P31	Q18616576
+POECD-027-label	POECD-027	label	"Goods trade balance: exports minus imports of goods"
+POECD-028-data_type	POECD-028	data_type	Quantity
+POECD-028-P31	POECD-028	P31	Q18616576
+POECD-028-label	POECD-028	label	"Goods transport"
+POECD-029-data_type	POECD-029	data_type	Quantity
+POECD-029-P31	POECD-029	P31	Q18616576
+POECD-029-label	POECD-029	label	"Government deficit"
+POECD-030-data_type	POECD-030	data_type	Quantity
+POECD-030-P31	POECD-030	P31	Q18616576
+POECD-030-label	POECD-030	label	"Government/compulsory expenditure on health"
+POECD-031-data_type	POECD-031	data_type	Quantity
+POECD-031-P31	POECD-031	P31	Q18616576
+POECD-031-label	POECD-031	label	"Gross domestic expenditure on R&D"
+POECD-032-data_type	POECD-032	data_type	Quantity
+POECD-032-P31	POECD-032	P31	Q18616576
+POECD-032-label	POECD-032	label	"Gross fixed capital formation"
+POECD-033-data_type	POECD-033	data_type	Quantity
+POECD-033-P31	POECD-033	P31	Q18616576
+POECD-033-label	POECD-033	label	"Gross national income (GNI) per capita"
+POECD-034-data_type	POECD-034	data_type	Quantity
+POECD-034-P31	POECD-034	P31	Q18616576
+POECD-034-label	POECD-034	label	"Household disposable income"
+POECD-035-data_type	POECD-035	data_type	Quantity
+POECD-035-P31	POECD-035	P31	Q18616576
+POECD-035-label	POECD-035	label	"Households with access to computers"
+POECD-036-data_type	POECD-036	data_type	Quantity
+POECD-036-P31	POECD-036	P31	Q18616576
+POECD-036-label	POECD-036	label	"Households with access to internet"
+POECD-037-data_type	POECD-037	data_type	Quantity
+POECD-037-P31	POECD-037	P31	Q18616576
+POECD-037-label	POECD-037	label	"Imports of goods"
+POECD-038-data_type	POECD-038	data_type	Quantity
+POECD-038-P31	POECD-038	P31	Q18616576
+POECD-038-label	POECD-038	label	"Imports of goods and services"
+POECD-039-data_type	POECD-039	data_type	Quantity
+POECD-039-P31	POECD-039	P31	Q18616576
+POECD-039-label	POECD-039	label	"Imports of services"
+POECD-040-data_type	POECD-040	data_type	Quantity
+POECD-040-P31	POECD-040	P31	Q18616576
+POECD-040-label	POECD-040	label	"Incidence of part-time employment"
+POECD-041-data_type	POECD-041	data_type	Quantity
+POECD-041-P31	POECD-041	P31	Q18616576
+POECD-041-label	POECD-041	label	"Indices of price levels"
+POECD-042-data_type	POECD-042	data_type	Quantity
+POECD-042-P31	POECD-042	P31	Q18616576
+POECD-042-label	POECD-042	label	"Industry including energy"
+POECD-043-data_type	POECD-043	data_type	Quantity
+POECD-043-P31	POECD-043	P31	Q18616576
+POECD-043-label	POECD-043	label	"Infant mortality"
+POECD-044-data_type	POECD-044	data_type	Quantity
+POECD-044-P31	POECD-044	P31	Q18616576
+POECD-044-label	POECD-044	label	"Inflation rate: all items"
+POECD-045-data_type	POECD-045	data_type	Quantity
+POECD-045-P31	POECD-045	P31	Q18616576
+POECD-045-label	POECD-045	label	"Inflation rate: all items non food non energy"
+POECD-046-data_type	POECD-046	data_type	Quantity
+POECD-046-P31	POECD-046	P31	Q18616576
+POECD-046-label	POECD-046	label	"Inflation rate: energy"
+POECD-047-data_type	POECD-047	data_type	Quantity
+POECD-047-P31	POECD-047	P31	Q18616576
+POECD-047-label	POECD-047	label	"Inflation rate: food"
+POECD-048-data_type	POECD-048	data_type	Quantity
+POECD-048-P31	POECD-048	P31	Q18616576
+POECD-048-label	POECD-048	label	"Inflows of foreign direct investment"
+POECD-049-data_type	POECD-049	data_type	Quantity
+POECD-049-P31	POECD-049	P31	Q18616576
+POECD-049-label	POECD-049	label	"Information and Communications Technology (ICT)"
+POECD-050-data_type	POECD-050	data_type	Quantity
+POECD-050-P31	POECD-050	P31	Q18616576
+POECD-050-label	POECD-050	label	"Information, communication"
+POECD-051-data_type	POECD-051	data_type	Quantity
+POECD-051-P31	POECD-051	P31	Q18616576
+POECD-051-label	POECD-051	label	"Inward FDI stocks"
+POECD-052-data_type	POECD-052	data_type	Quantity
+POECD-052-P31	POECD-052	P31	Q18616576
+POECD-052-label	POECD-052	label	"Labour compensation and hours worked"
+POECD-053-data_type	POECD-053	data_type	Quantity
+POECD-053-P31	POECD-053	P31	Q18616576
+POECD-053-label	POECD-053	label	"Labour compensation per unit labour input, total economy"
+POECD-054-data_type	POECD-054	data_type	Quantity
+POECD-054-P31	POECD-054	P31	Q18616576
+POECD-054-label	POECD-054	label	"Life expectancy at birth"
+POECD-055-data_type	POECD-055	data_type	Quantity
+POECD-055-P31	POECD-055	P31	Q18616576
+POECD-055-label	POECD-055	label	"Life expectancy at birth: men"
+POECD-056-data_type	POECD-056	data_type	Quantity
+POECD-056-P31	POECD-056	P31	Q18616576
+POECD-056-label	POECD-056	label	"Life expectancy at birth: women"
+POECD-057-data_type	POECD-057	data_type	Quantity
+POECD-057-P31	POECD-057	P31	Q18616576
+POECD-057-label	POECD-057	label	"Long-term interest rates"
+POECD-058-data_type	POECD-058	data_type	Quantity
+POECD-058-P31	POECD-058	P31	Q18616576
+POECD-058-label	POECD-058	label	"Long-term unemployment: total unemployed"
+POECD-059-data_type	POECD-059	data_type	Quantity
+POECD-059-P31	POECD-059	P31	Q18616576
+POECD-059-label	POECD-059	label	"Municipal waste total"
+POECD-060-data_type	POECD-060	data_type	Quantity
+POECD-060-P31	POECD-060	P31	Q18616576
+POECD-060-label	POECD-060	label	"Municipal waste total per capita"
+POECD-061-data_type	POECD-061	data_type	Quantity
+POECD-061-P31	POECD-061	P31	Q18616576
+POECD-061-label	POECD-061	label	"National fish landings in domestic ports"
+POECD-062-data_type	POECD-062	data_type	Quantity
+POECD-062-P31	POECD-062	P31	Q18616576
+POECD-062-label	POECD-062	label	"National fish landings in foreign ports"
+POECD-063-data_type	POECD-063	data_type	Quantity
+POECD-063-P31	POECD-063	P31	Q18616576
+POECD-063-label	POECD-063	label	"Net official development assistance (Aid)"
+POECD-064-data_type	POECD-064	data_type	Quantity
+POECD-064-P31	POECD-064	P31	Q18616576
+POECD-064-label	POECD-064	label	"Net saving rate in household disposable income"
+POECD-065-data_type	POECD-065	data_type	Quantity
+POECD-065-P31	POECD-065	P31	Q18616576
+POECD-065-label	POECD-065	label	"Other services (ISIC Rev.4 R - U)"
+POECD-066-data_type	POECD-066	data_type	Quantity
+POECD-066-P31	POECD-066	P31	Q18616576
+POECD-066-label	POECD-066	label	"Outflows of foreign direct investment"
+POECD-067-data_type	POECD-067	data_type	Quantity
+POECD-067-P31	POECD-067	P31	Q18616576
+POECD-067-label	POECD-067	label	"Outward FDI stocks"
+POECD-068-data_type	POECD-068	data_type	Quantity
+POECD-068-P31	POECD-068	P31	Q18616576
+POECD-068-label	POECD-068	label	"Overweight or obese, % of population aged 15 and over"
+POECD-069-data_type	POECD-069	data_type	Quantity
+POECD-069-P31	POECD-069	P31	Q18616576
+POECD-069-label	POECD-069	label	"Passenger transport"
+POECD-070-data_type	POECD-070	data_type	Quantity
+POECD-070-P31	POECD-070	P31	Q18616576
+POECD-070-label	POECD-070	label	"Population growth rates"
+POECD-071-data_type	POECD-071	data_type	Quantity
+POECD-071-P31	POECD-071	P31	Q18616576
+POECD-071-label	POECD-071	label	"Private pension expenditure"
+POECD-072-data_type	POECD-072	data_type	Quantity
+POECD-072-P31	POECD-072	P31	Q18616576
+POECD-072-label	POECD-072	label	"Private social expenditure"
+POECD-073-data_type	POECD-073	data_type	Quantity
+POECD-073-P31	POECD-073	P31	Q18616576
+POECD-073-label	POECD-073	label	"Producer Price Indices (PPI): manufacturing"
+POECD-074-data_type	POECD-074	data_type	Quantity
+POECD-074-P31	POECD-074	P31	Q18616576
+POECD-074-label	POECD-074	label	"Professional, scientific, support services"
+POECD-075-data_type	POECD-075	data_type	Quantity
+POECD-075-P31	POECD-075	P31	Q18616576
+POECD-075-label	POECD-075	label	"Public admin., defence, education, health, social work"
+POECD-076-data_type	POECD-076	data_type	Quantity
+POECD-076-P31	POECD-076	P31	Q18616576
+POECD-076-label	POECD-076	label	"Public pension expenditure"
+POECD-077-data_type	POECD-077	data_type	Quantity
+POECD-077-P31	POECD-077	P31	Q18616576
+POECD-077-label	POECD-077	label	"Public social expenditure"
+POECD-078-data_type	POECD-078	data_type	Quantity
+POECD-078-P31	POECD-078	P31	Q18616576
+POECD-078-label	POECD-078	label	"Purchasing power parities"
+POECD-079-data_type	POECD-079	data_type	Quantity
+POECD-079-P31	POECD-079	P31	Q18616576
+POECD-079-label	POECD-079	label	"Real estate"
+POECD-080-data_type	POECD-080	data_type	Quantity
+POECD-080-P31	POECD-080	P31	Q18616576
+POECD-080-label	POECD-080	label	"Real GDP growth"
+POECD-081-data_type	POECD-081	data_type	Quantity
+POECD-081-P31	POECD-081	P31	Q18616576
+POECD-081-label	POECD-081	label	"Renewable energy"
+POECD-082-data_type	POECD-082	data_type	Quantity
+POECD-082-P31	POECD-082	P31	Q18616576
+POECD-082-label	POECD-082	label	"Research and Development (R&D)"
+POECD-083-data_type	POECD-083	data_type	Quantity
+POECD-083-P31	POECD-083	P31	Q18616576
+POECD-083-label	POECD-083	label	"Researchers: full-time equivalent"
+POECD-084-data_type	POECD-084	data_type	Quantity
+POECD-084-P31	POECD-084	P31	Q18616576
+POECD-084-label	POECD-084	label	"Road Fatalities"
+POECD-085-data_type	POECD-085	data_type	Quantity
+POECD-085-P31	POECD-085	P31	Q18616576
+POECD-085-label	POECD-085	label	"Self-employment rate: female employment"
+POECD-086-data_type	POECD-086	data_type	Quantity
+POECD-086-P31	POECD-086	P31	Q18616576
+POECD-086-label	POECD-086	label	"Self-employment rate: male employment"
+POECD-087-data_type	POECD-087	data_type	Quantity
+POECD-087-P31	POECD-087	P31	Q18616576
+POECD-087-label	POECD-087	label	"Self-employment rate: total employment"
+POECD-088-data_type	POECD-088	data_type	Quantity
+POECD-088-P31	POECD-088	P31	Q18616576
+POECD-088-label	POECD-088	label	"Service trade balance: exports minus imports of services"
+POECD-089-data_type	POECD-089	data_type	Quantity
+POECD-089-P31	POECD-089	P31	Q18616576
+POECD-089-label	POECD-089	label	"Suicide Rates"
+POECD-090-data_type	POECD-090	data_type	Quantity
+POECD-090-P31	POECD-090	P31	Q18616576
+POECD-090-label	POECD-090	label	"Tax on corporate profits"
+POECD-091-data_type	POECD-091	data_type	Quantity
+POECD-091-P31	POECD-091	P31	Q18616576
+POECD-091-label	POECD-091	label	"Tax on personal income"
+POECD-092-data_type	POECD-092	data_type	Quantity
+POECD-092-P31	POECD-092	P31	Q18616576
+POECD-092-label	POECD-092	label	"Taxes on goods and services"
+POECD-093-data_type	POECD-093	data_type	Quantity
+POECD-093-P31	POECD-093	P31	Q18616576
+POECD-093-label	POECD-093	label	"Taxes on the average worker"
+POECD-094-data_type	POECD-094	data_type	Quantity
+POECD-094-P31	POECD-094	P31	Q18616576
+POECD-094-label	POECD-094	label	"Tertiary attainment in population aged 25-64"
+POECD-095-data_type	POECD-095	data_type	Quantity
+POECD-095-P31	POECD-095	P31	Q18616576
+POECD-095-label	POECD-095	label	"Total fertitity rates"
+POECD-097-data_type	POECD-097	data_type	Quantity
+POECD-097-P31	POECD-097	P31	Q18616576
+POECD-097-label	POECD-097	label	"Total primary energy supply (TPES)"
+POECD-098-data_type	POECD-098	data_type	Quantity
+POECD-098-P31	POECD-098	P31	Q18616576
+POECD-098-label	POECD-098	label	"Total tax revenue"
+POECD-099-data_type	POECD-099	data_type	Quantity
+POECD-099-P31	POECD-099	P31	Q18616576
+POECD-099-label	POECD-099	label	"TPES per unit of GDP at 2000 prices and PPPs"
+POECD-100-data_type	POECD-100	data_type	Quantity
+POECD-100-P31	POECD-100	P31	Q18616576
+POECD-100-label	POECD-100	label	"Trade, repairs, transport, accomm., food services"
+POECD-101-data_type	POECD-101	data_type	Quantity
+POECD-101-P31	POECD-101	P31	Q18616576
+POECD-101-label	POECD-101	label	"Unemployment"
+POECD-102-data_type	POECD-102	data_type	Quantity
+POECD-102-P31	POECD-102	P31	Q18616576
+POECD-102-label	POECD-102	label	"Unemployment rate in population of foreign-born men"
+POECD-103-data_type	POECD-103	data_type	Quantity
+POECD-103-P31	POECD-103	P31	Q18616576
+POECD-103-label	POECD-103	label	"Unemployment rate in population of foreign-born women"
+POECD-104-data_type	POECD-104	data_type	Quantity
+POECD-104-P31	POECD-104	P31	Q18616576
+POECD-104-label	POECD-104	label	"Unemployment rate in population of native-born men"
+POECD-105-data_type	POECD-105	data_type	Quantity
+POECD-105-P31	POECD-105	P31	Q18616576
+POECD-105-label	POECD-105	label	"Unemployment rate in population of native-born women"
+POECD-106-data_type	POECD-106	data_type	Quantity
+POECD-106-P31	POECD-106	P31	Q18616576
+POECD-106-label	POECD-106	label	"Unemployment rate: female labour force"
+POECD-107-data_type	POECD-107	data_type	Quantity
+POECD-107-P31	POECD-107	P31	Q18616576
+POECD-107-label	POECD-107	label	"Unemployment rate: male labour force"
+POECD-108-data_type	POECD-108	data_type	Quantity
+POECD-108-P31	POECD-108	P31	Q18616576
+POECD-108-label	POECD-108	label	"Unemployment rate: total labour force"
+POECD-109-data_type	POECD-109	data_type	Quantity
+POECD-109-P31	POECD-109	P31	Q18616576
+POECD-109-label	POECD-109	label	"Voluntary expenditure on health"
+POECD-110-data_type	POECD-110	data_type	Quantity
+POECD-110-P31	POECD-110	P31	Q18616576
+POECD-110-label	POECD-110	label	"Water abstactions"
+POECD-111-data_type	POECD-111	data_type	Quantity
+POECD-111-P31	POECD-111	P31	Q18616576
+POECD-111-label	POECD-111	label	"Youth population aged less than 15"
+POECD-112-data_type	POECD-112	data_type	Quantity
+POECD-112-P31	POECD-112	P31	Q18616576
+POECD-112-label	POECD-112	label	"Youths 15-19 not in education nor employment"
+POECD-113-data_type	POECD-113	data_type	Quantity
+POECD-113-P31	POECD-113	P31	Q18616576
+POECD-113-label	POECD-113	label	"Youths 20-24 not in education nor employment"

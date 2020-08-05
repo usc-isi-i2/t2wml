@@ -1,0 +1,527 @@
+column,row,value,context,item
+,,Aruba,,Q21203
+,,Afghanistan,,Q889
+,,Angola,,Q916
+,,Anguilla,,Q25228
+,,Albania,,Q222
+,,Andorra,,Q228
+,,Arab World,,Q143487
+,,United Arab Emirates,,Q878
+,,Argentina,,Q414
+,,Armenia,,Q399
+,,American Samoa,,Q16641
+,,Antigua and Barbuda,,Q781
+,,Australia,,Q408
+,,Austria,,Q40
+,,Azerbaijan,,Q227
+,,Burundi,,Q967
+,,Belgium,,Q31
+,,Benin,,Q962
+,,Burkina Faso,,Q965
+,,Bangladesh,,Q902
+,,Bulgaria,,Q219
+,,Bahrain,,Q398
+,,"Bahamas, The",,Q778
+,,Bosnia and Herzegovina,,Q225
+,,Belarus,,Q184
+,,Belize,,Q242
+,,Bermuda,,Q23635
+,,Bolivia,,Q750
+,,Brazil,,Q155
+,,Barbados,,Q244
+,,Brunei Darussalam,,Q921
+,,Bhutan,,Q917
+,,Botswana,,Q963
+,,Central African Republic,,Q929
+,,Canada,,Q16
+,,Cape Verde,,Q1011
+,,Cabo Verde,,Q1011
+,,Cook Islands,,Q26988
+,,French Guiana,,Q3769
+,,"Jersey, Channel Islands",,Q785
+,,Switzerland,,Q39
+,,Channel Islands,,Q42314
+,,Chile,,Q298
+,,China,,Q148
+,,"Taiwan, China",,Q865
+,,Taiwan,,Q865
+,,Cote d'Ivoire,,Q851830
+,,Cameroon,,Q1009
+,,"Congo, Dem. Rep.",,Q974
+,,Congo Democratic Republic,,Q974
+,,"Congo, Rep.",,Q971
+,,Colombia,,Q739
+,,Comoros,,Q970
+,,Costa Rica,,Q800
+,,Cuba,,Q241
+,,Curacao,,Q25279
+,,Cayman Islands,,Q5785
+,,Cyprus,,Q229
+,,Czech Republic,,Q213
+,,Germany,,Q183
+,,Djibouti,,Q977
+,,Dominica,,Q784
+,,Denmark,,Q35
+,,Dominican Republic,,Q786
+,,Algeria,,Q262
+,,Europe & Central Asia,,Q232
+,,Ecuador,,Q736
+,,"Egypt, Arab Rep.",,Q79
+,,Egypt,,Q79
+,,Euro area,,Q8268
+,,Eritrea,,Q986
+,,Spain,,Q29
+,,Estonia,,Q191
+,,Ethiopia,,Q115
+,,European Union,,Q458
+,,Finland,,Q33
+,,Fiji,,Q712
+,,France,,Q142
+,,Faroe Islands,,Q4628
+,,"Micronesia, Fed. Sts.",,Q702
+,,Gabon,,Q1000
+,,United Kingdom,,Q145
+,,Georgia,,Q230
+,,Ghana,,Q117
+,,Gibraltar,,Q1410
+,,Guinea,,Q1006
+,,"Gambia, The",,Q1005
+,,Gambia,,Q1005
+,,Guinea-Bissau,,Q1007
+,,Guinea Bissau,,Q1007
+,,Equatorial Guinea,,Q983
+,,Greece,,Q41
+,,Grenada,,Q769
+,,Greenland,,Q223
+,,Guatemala,,Q774
+,,Guam,,Q16635
+,,Guyana,,Q734
+,,"Hong Kong SAR, China",,Q8646
+,,Honduras,,Q783
+,,Heavily indebted poor countries (HIPC),,Q1433120
+,,Croatia,,Q224
+,,Haiti,,Q790
+,,Hungary,,Q28
+,,Indonesia,,Q252
+,,Isle of Man,,Q9676
+,,India,,Q668
+,,Ireland,,Q27
+,,"Iran, Islamic Rep.",,Q794
+,,Iran,,Q794
+,,Iraq,,Q796
+,,Iceland,,Q189
+,,Israel,,Q801
+,,Israel and West Bank,,Q801
+,,Italy,,Q38
+,,Jamaica,,Q766
+,,Jordan,,Q810
+,,Japan,,Q17
+,,Kazakhstan,,Q232
+,,Kenya,,Q114
+,,Kyrgyz Republic,,Q813
+,,Cambodia,,Q424
+,,Kiribati,,Q710
+,,St. Kitts and Nevis,,Q763
+,,"Korea, Rep.",,Q884
+,,South Korea,,Q884
+,,Kuwait,,Q817
+,,Latin America & Caribbean (excluding high income),,Q12585
+,,Lao PDR,,Q819
+,,Lebanon,,Q822
+,,Liberia,,Q1014
+,,Libya,,Q1016
+,,St. Lucia,,Q760
+,,Latin America & Caribbean,,Q12585
+,,Least developed countries: UN classification,,Q752401
+,,Liechtenstein,,Q347
+,,Sri Lanka,,Q854
+,,Lesotho,,Q1013
+,,Lithuania,,Q37
+,,Luxembourg,,Q32
+,,Latvia,,Q211
+,,"Macao SAR, China",,Q14773
+,,St. Martin (French part),,Q126125
+,,Morocco,,Q1028
+,,Monaco,,Q235
+,,Moldova,,Q217
+,,Madagascar,,Q1019
+,,Maldives,,Q826
+,,Martinique,,Q17054
+,,Mexico,,Q96
+,,Marshall Islands,,Q709
+,,North Macedonia,,Q221
+,,Macedonia,,Q221
+,,Mali,,Q912
+,,Malta,,Q233
+,,Myanmar,,Q836
+,,Montenegro,,Q236
+,,Mongolia,,Q711
+,,Northern Mariana Islands,,Q16644
+,,Mozambique,,Q1029
+,,Mauritania,,Q1025
+,,Mauritius,,Q1027
+,,Malawi,,Q1020
+,,Malaysia,,Q833
+,,North America,,Q49
+,,Namibia,,Q1030
+,,New Caledonia,,Q33788
+,,Niger,,Q1032
+,,Niue,,Q34020
+,,Nigeria,,Q1033
+,,Nicaragua,,Q811
+,,Netherlands,,Q29999
+,,Netherlands Antilles,,Q25227
+,,Norway,,Q20
+,,Nepal,,Q837
+,,Nauru,,Q697
+,,New Zealand,,Q664
+,,Oman,,Q842
+,,Pakistan,,Q843
+,,Panama,,Q804
+,,Peru,,Q419
+,,Philippines,,Q928
+,,Palau,,Q695
+,,Papua New Guinea,,Q691
+,,Poland,,Q36
+,,Puerto Rico,,Q1183
+,,"Korea, Dem. PeopleÂ’s Rep.",,Q423
+,,"Korea, Dem. People's Rep.",,Q423
+,,"Korea, Dem. People’s Rep.",,Q423
+,,North Korea,,Q423
+,,Portugal,,Q45
+,,Paraguay,,Q733
+,,West Bank and Gaza,,Q407199
+,,French Polynesia,,Q30971
+,,Qatar,,Q846
+,,Romania,,Q218
+,,Reunion,,Q17070
+,,Russian Federation,,Q159
+,,Russia,,Q159
+,,Rwanda,,Q1037
+,,South Asia,,Q771405
+,,Saudi Arabia,,Q851
+,,Sudan,,Q1049
+,,Senegal,,Q1041
+,,Singapore,,Q334
+,,Solomon Islands,,Q685
+,,Sierra Leone,,Q1044
+,,El Salvador,,Q792
+,,San Marino,,Q238
+,,Somalia,,Q1045
+,,Serbia,,Q403
+,,South Sudan,,Q958
+,,Sub-Saharan Africa,,Q132959
+,,Sao Tome and Principe,,Q1039
+,,Suriname,,Q730
+,,Slovak Republic,,Q214
+,,Slovenia,,Q215
+,,Sweden,,Q34
+,,Eswatini,,Q1050
+,,Sint Maarten (Dutch part),,Q26273
+,,Seychelles,,Q1042
+,,Syrian Arab Republic,,Q858
+,,Syria,,Q858
+,,Turks and Caicos Islands,,Q18221
+,,Chad,,Q657
+,,Laos,,Q819
+,,Togo,,Q945
+,,Thailand,,Q869
+,,Tajikistan,,Q863
+,,Turkmenistan,,Q874
+,,Latin America & the Caribbean (IDA & IBRD countries),,Q12585
+,,Timor-Leste,,Q574
+,,Tonga,,Q678
+,,South Asia (IDA & IBRD),,Q771405
+,,Sub-Saharan Africa (IDA & IBRD countries),,Q132959
+,,Trinidad and Tobago,,Q754
+,,Tunisia,,Q948
+,,Turkey,,Q43
+,,Tuvalu,,Q672
+,,Tanzania,,Q924
+,,Uganda,,Q1036
+,,Ukraine,,Q212
+,,Uruguay,,Q77
+,,United States,,Q30
+,,Uzbekistan,,Q265
+,,St. Vincent and the Grenadines,,Q757
+,,"Venezuela, RB",,Q717
+,,Venezuela,,Q717
+,,British Virgin Islands,,Q25305
+,,Virgin Islands (U.S.),,Q11703
+,,Vietnam,,Q881
+,,Vanuatu,,Q686
+,,World,,Q16502
+,,Samoa,,Q683
+,,Kosovo,,Q1246
+,,"Yemen, Rep.",,Q805
+,,Yemen,,Q805
+,,South Africa,,Q258
+,,Zambia,,Q953
+,,Zimbabwe,,Q954
+,,"Agriculture, forestry, fishing",property,POECD-002
+,,Aquaculture,property,POECD-003
+,,Average time worked per person in employment,property,POECD-004
+,,CO2 emissions from fuel combustion,property,POECD-005
+,,Construction,property,POECD-006
+,,Crude oil import prices,property,POECD-007
+,,Current account balance of payments,property,POECD-008
+,,Elderly population aged 65 and over,property,POECD-009
+,,Employment rate in population aged 15-24,property,POECD-010
+,,Employment rate in population aged 25-54,property,POECD-011
+,,Employment rate in population aged 55-64,property,POECD-012
+,,Exchange rates,property,POECD-013
+,,"Expenditure per student: primary, 2010 prices",property,POECD-014
+,,"Expenditure per student: secondary, 2010 prices",property,POECD-015
+,,"Expenditure per student: tertiary, 2010 prices",property,POECD-016
+,,Exports of goods,property,POECD-017
+,,Exports of goods and services,property,POECD-018
+,,Exports of services,property,POECD-019
+,,Finance and insurance,property,POECD-020
+,,Foreign population,property,POECD-021
+,,Foreign-born population,property,POECD-022
+,,GDP per capita,property,POECD-023
+,,General government debt,property,POECD-024
+,,General government expenditures,property,POECD-025
+,,General government revenues,property,POECD-026
+,,Goods trade balance: exports minus imports of goods,property,POECD-027
+,,Goods transport,property,POECD-028
+,,Government deficit,property,POECD-029
+,,Government/compulsory expenditure on health,property,POECD-030
+,,Gross domestic expenditure on R&D,property,POECD-031
+,,Gross fixed capital formation,property,POECD-032
+,,Gross national income (GNI) per capita,property,POECD-033
+,,Household disposable income,property,POECD-034
+,,Households with access to computers,property,POECD-035
+,,Households with access to internet,property,POECD-036
+,,Imports of goods,property,POECD-037
+,,Imports of goods and services,property,POECD-038
+,,Imports of services,property,POECD-039
+,,Incidence of part-time employment,property,POECD-040
+,,Indices of price levels,property,POECD-041
+,,Industry including energy,property,POECD-042
+,,Infant mortality,property,POECD-043
+,,Inflation rate: all items,property,POECD-044
+,,Inflation rate: all items non food non energy,property,POECD-045
+,,Inflation rate: energy,property,POECD-046
+,,Inflation rate: food,property,POECD-047
+,,Inflows of foreign direct investment,property,POECD-048
+,,Information and Communications Technology (ICT),property,POECD-049
+,,"Information, communication",property,POECD-050
+,,Inward FDI stocks,property,POECD-051
+,,Labour compensation and hours worked,property,POECD-052
+,,"Labour compensation per unit labour input, total economy",property,POECD-053
+,,Life expectancy at birth,property,POECD-054
+,,Life expectancy at birth: men,property,POECD-055
+,,Life expectancy at birth: women,property,POECD-056
+,,Long-term interest rates,property,POECD-057
+,,Long-term unemployment: total unemployed,property,POECD-058
+,,Municipal waste total,property,POECD-059
+,,Municipal waste total per capita,property,POECD-060
+,,National fish landings in domestic ports,property,POECD-061
+,,National fish landings in foreign ports,property,POECD-062
+,,Net official development assistance (Aid),property,POECD-063
+,,Net saving rate in household disposable income,property,POECD-064
+,,Other services (ISIC Rev.4 R - U),property,POECD-065
+,,Outflows of foreign direct investment,property,POECD-066
+,,Outward FDI stocks,property,POECD-067
+,,"Overweight or obese, % of population aged 15 and over",property,POECD-068
+,,Passenger transport,property,POECD-069
+,,Population growth rates,property,POECD-070
+,,Private pension expenditure,property,POECD-071
+,,Private social expenditure,property,POECD-072
+,,Producer Price Indices (PPI): manufacturing,property,POECD-073
+,,"Professional, scientific, support services",property,POECD-074
+,,"Public admin., defence, education, health, social work",property,POECD-075
+,,Public pension expenditure,property,POECD-076
+,,Public social expenditure,property,POECD-077
+,,Purchasing power parities,property,POECD-078
+,,Real estate,property,POECD-079
+,,Real GDP growth,property,POECD-080
+,,Renewable energy,property,POECD-081
+,,Research and Development (R&D),property,POECD-082
+,,Researchers: full-time equivalent,property,POECD-083
+,,Road Fatalities,property,POECD-084
+,,Self-employment rate: female employment,property,POECD-085
+,,Self-employment rate: male employment,property,POECD-086
+,,Self-employment rate: total employment,property,POECD-087
+,,Service trade balance: exports minus imports of services,property,POECD-088
+,,Suicide Rates,property,POECD-089
+,,Tax on corporate profits,property,POECD-090
+,,Tax on personal income,property,POECD-091
+,,Taxes on goods and services,property,POECD-092
+,,Taxes on the average worker,property,POECD-093
+,,Tertiary attainment in population aged 25-64,property,POECD-094
+,,Total fertitity rates,property,POECD-095
+,,Total population,property,P1082
+,,Total primary energy supply (TPES),property,POECD-097
+,,Total tax revenue,property,POECD-098
+,,TPES per unit of GDP at 2000 prices and PPPs,property,POECD-099
+,,"Trade, repairs, transport, accomm., food services",property,POECD-100
+,,Unemployment,property,POECD-101
+,,Unemployment rate in population of foreign-born men,property,POECD-102
+,,Unemployment rate in population of foreign-born women,property,POECD-103
+,,Unemployment rate in population of native-born men,property,POECD-104
+,,Unemployment rate in population of native-born women,property,POECD-105
+,,Unemployment rate: female labour force,property,POECD-106
+,,Unemployment rate: male labour force,property,POECD-107
+,,Unemployment rate: total labour force,property,POECD-108
+,,Voluntary expenditure on health,property,POECD-109
+,,Water abstactions,property,POECD-110
+,,Youth population aged less than 15,property,POECD-111
+,,Youths 15-19 not in education nor employment,property,POECD-112
+,,Youths 20-24 not in education nor employment,property,POECD-113
+,,"Agriculture, forestry, fishing",variable,QOECD-002
+,,Aquaculture,variable,QOECD-003
+,,Average time worked per person in employment,variable,QOECD-004
+,,CO2 emissions from fuel combustion,variable,QOECD-005
+,,Construction,variable,QOECD-006
+,,Crude oil import prices,variable,QOECD-007
+,,Current account balance of payments,variable,QOECD-008
+,,Elderly population aged 65 and over,variable,QOECD-009
+,,Employment rate in population aged 15-24,variable,QOECD-010
+,,Employment rate in population aged 25-54,variable,QOECD-011
+,,Employment rate in population aged 55-64,variable,QOECD-012
+,,Exchange rates,variable,QOECD-013
+,,"Expenditure per student: primary, 2010 prices",variable,QOECD-014
+,,"Expenditure per student: secondary, 2010 prices",variable,QOECD-015
+,,"Expenditure per student: tertiary, 2010 prices",variable,QOECD-016
+,,Exports of goods,variable,QOECD-017
+,,Exports of goods and services,variable,QOECD-018
+,,Exports of services,variable,QOECD-019
+,,Finance and insurance,variable,QOECD-020
+,,Foreign population,variable,QOECD-021
+,,Foreign-born population,variable,QOECD-022
+,,GDP per capita,variable,QOECD-023
+,,General government debt,variable,QOECD-024
+,,General government expenditures,variable,QOECD-025
+,,General government revenues,variable,QOECD-026
+,,Goods trade balance: exports minus imports of goods,variable,QOECD-027
+,,Goods transport,variable,QOECD-028
+,,Government deficit,variable,QOECD-029
+,,Government/compulsory expenditure on health,variable,QOECD-030
+,,Gross domestic expenditure on R&D,variable,QOECD-031
+,,Gross fixed capital formation,variable,QOECD-032
+,,Gross national income (GNI) per capita,variable,QOECD-033
+,,Household disposable income,variable,QOECD-034
+,,Households with access to computers,variable,QOECD-035
+,,Households with access to internet,variable,QOECD-036
+,,Imports of goods,variable,QOECD-037
+,,Imports of goods and services,variable,QOECD-038
+,,Imports of services,variable,QOECD-039
+,,Incidence of part-time employment,variable,QOECD-040
+,,Indices of price levels,variable,QOECD-041
+,,Industry including energy,variable,QOECD-042
+,,Infant mortality,variable,QOECD-043
+,,Inflation rate: all items,variable,QOECD-044
+,,Inflation rate: all items non food non energy,variable,QOECD-045
+,,Inflation rate: energy,variable,QOECD-046
+,,Inflation rate: food,variable,QOECD-047
+,,Inflows of foreign direct investment,variable,QOECD-048
+,,Information and Communications Technology (ICT),variable,QOECD-049
+,,"Information, communication",variable,QOECD-050
+,,Inward FDI stocks,variable,QOECD-051
+,,Labour compensation and hours worked,variable,QOECD-052
+,,"Labour compensation per unit labour input, total economy",variable,QOECD-053
+,,Life expectancy at birth,variable,QOECD-054
+,,Life expectancy at birth: men,variable,QOECD-055
+,,Life expectancy at birth: women,variable,QOECD-056
+,,Long-term interest rates,variable,QOECD-057
+,,Long-term unemployment: total unemployed,variable,QOECD-058
+,,Municipal waste total,variable,QOECD-059
+,,Municipal waste total per capita,variable,QOECD-060
+,,National fish landings in domestic ports,variable,QOECD-061
+,,National fish landings in foreign ports,variable,QOECD-062
+,,Net official development assistance (Aid),variable,QOECD-063
+,,Net saving rate in household disposable income,variable,QOECD-064
+,,Other services (ISIC Rev.4 R - U),variable,QOECD-065
+,,Outflows of foreign direct investment,variable,QOECD-066
+,,Outward FDI stocks,variable,QOECD-067
+,,"Overweight or obese, % of population aged 15 and over",variable,QOECD-068
+,,Passenger transport,variable,QOECD-069
+,,Population growth rates,variable,QOECD-070
+,,Private pension expenditure,variable,QOECD-071
+,,Private social expenditure,variable,QOECD-072
+,,Producer Price Indices (PPI): manufacturing,variable,QOECD-073
+,,"Professional, scientific, support services",variable,QOECD-074
+,,"Public admin., defence, education, health, social work",variable,QOECD-075
+,,Public pension expenditure,variable,QOECD-076
+,,Public social expenditure,variable,QOECD-077
+,,Purchasing power parities,variable,QOECD-078
+,,Real estate,variable,QOECD-079
+,,Real GDP growth,variable,QOECD-080
+,,Renewable energy,variable,QOECD-081
+,,Research and Development (R&D),variable,QOECD-082
+,,Researchers: full-time equivalent,variable,QOECD-083
+,,Road Fatalities,variable,QOECD-084
+,,Self-employment rate: female employment,variable,QOECD-085
+,,Self-employment rate: male employment,variable,QOECD-086
+,,Self-employment rate: total employment,variable,QOECD-087
+,,Service trade balance: exports minus imports of services,variable,QOECD-088
+,,Suicide Rates,variable,QOECD-089
+,,Tax on corporate profits,variable,QOECD-090
+,,Tax on personal income,variable,QOECD-091
+,,Taxes on goods and services,variable,QOECD-092
+,,Taxes on the average worker,variable,QOECD-093
+,,Tertiary attainment in population aged 25-64,variable,QOECD-094
+,,Total fertitity rates,variable,QOECD-095
+,,Total population,variable,QOECD-096
+,,Total primary energy supply (TPES),variable,QOECD-097
+,,Total tax revenue,variable,QOECD-098
+,,TPES per unit of GDP at 2000 prices and PPPs,variable,QOECD-099
+,,"Trade, repairs, transport, accomm., food services",variable,QOECD-100
+,,Unemployment,variable,QOECD-101
+,,Unemployment rate in population of foreign-born men,variable,QOECD-102
+,,Unemployment rate in population of foreign-born women,variable,QOECD-103
+,,Unemployment rate in population of native-born men,variable,QOECD-104
+,,Unemployment rate in population of native-born women,variable,QOECD-105
+,,Unemployment rate: female labour force,variable,QOECD-106
+,,Unemployment rate: male labour force,variable,QOECD-107
+,,Unemployment rate: total labour force,variable,QOECD-108
+,,Voluntary expenditure on health,variable,QOECD-109
+,,Water abstactions,variable,QOECD-110
+,,Youth population aged less than 15,variable,QOECD-111
+,,Youths 15-19 not in education nor employment,variable,QOECD-112
+,,Youths 20-24 not in education nor employment,variable,QOECD-113
+,,USD current PPPs,unit,QOECD-U002
+,,Annual growth %,unit,QOECD-U003
+,,%,unit,Q11229
+,,% of GDP,unit,QOECD-U005
+,,% of GNI,unit,QOECD-U006
+,,% of labour cost,unit,QOECD-U007
+,,Bln USD,unit,QOECD-U008
+,,Mln USD,unit,QOECD-U009
+,,EUR per USD,unit,QOECD-U010
+,,OECD=100,unit,QOECD-U011
+,,Mtoe,unit,QOECD-U012
+,,Toe per '000 USD,unit,QOECD-U013
+,,Ktoe,unit,QOECD-U014
+,,USD per barrel,unit,QOECD-U015
+,,Mln m3,unit,QOECD-U016
+,,'000 tonnes,unit,QOECD-U017
+,,Kg,unit,Q11570
+,,Mln tonnes,unit,QOECD-U019
+,,USD constant PPPs,unit,QOECD-U020
+,,Hours per year,unit,QOECD-U021
+,,Per '000 employed,unit,QOECD-U022
+,,'000 persons,unit,QOECD-U023
+,,Children,unit,QOECD-U024
+,,% of population,unit,QOECD-U025
+,,% of labour force,unit,QOECD-U026
+,,Years,unit,Q577
+,,Per '000,unit,QOECD-U028
+,,Measured,unit,QOECD-U029
+,,Per 100 000 persons,unit,QOECD-U030
+,,Mln tonne-km,unit,QOECD-U031
+,,Mln passenger-km,unit,QOECD-U032
+,,Per mln inhabitants,unit,QOECD-U033
+,,CAD per USD,unit,QOECD-U034
+,,RUB per USD,unit,QOECD-U035
+,,TRY per USD,unit,QOECD-U036
+,,CZK per USD,unit,QOECD-U037
+,,NOK per USD,unit,QOECD-U038
+,,DKK per USD,unit,QOECD-U039
+,,ISK per USD,unit,QOECD-U040
+,,PLN per USD,unit,QOECD-U041
+,,USD per USD,unit,QOECD-U042
+,,GBP per USD,unit,QOECD-U043
+,,HUF per USD,unit,QOECD-U044
