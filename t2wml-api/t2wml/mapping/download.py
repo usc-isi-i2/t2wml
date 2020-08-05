@@ -133,7 +133,7 @@ def create_kgtk(data, file_path, sheet_name):
                   "node2;kgtk:date_and_time", "node2;kgtk:precision", "node2;kgtk:calendar",
                   "node2;kgtk:truth",
                   "node2;kgtk:symbol",
-                  "node2;kgtk:latitude", "node2;kgtk:longitude",
+                  "node2;kgtk:latitude", "node2;kgtk:longitude", "node2;kgtk:globe",
                   "node2;kgtk:text", "node2;kgtk:language", ]
 
     writer = csv.DictWriter(string_stream, fieldnames,
