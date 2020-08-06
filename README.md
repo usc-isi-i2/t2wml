@@ -60,7 +60,9 @@ pip install --upgrade pip
     `pip install -e ../t2wml-api`
 
 4. Install the remaining requirements from server/requirements.txt
-   `pip install -r server/requirements.txt`
+   ```
+   pip install -r server/requirements.txt
+   ```
    
    Optional: You can install the optional package `etk`.
 
