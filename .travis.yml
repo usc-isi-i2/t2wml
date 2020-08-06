@@ -20,11 +20,11 @@ install:
 - sudo apt-get update
 - pip install --upgrade pip
 - pip install ./t2wml-api
-- pip install -r server/requirements.txt
+- pip install -r backend/requirements.txt
 
 
 script:
-- cd server/backend
+- cd backend
 - pytest tests
 
 notifications:
