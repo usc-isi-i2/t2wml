@@ -52,10 +52,10 @@ You can write your own code using the T2WML programming API
 
 5. In the folder server/backend, run the backend server: 
     `python application.py`
-6. Install the frontend requirements:
-   In the folder "frontend", run `npm install`
+6. Install the frontend requirements. You will need to have the package manager `yarn` installed.
+   In the folder "frontend", run `yarn install`
 7. Run the frontend server: 
-   In the folder "frontend", run `npm run start`
+   In the folder "frontend", run `yarn start`
 
 The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
 
