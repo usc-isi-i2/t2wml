@@ -16,7 +16,7 @@ install:
 - cd t2wml-api
 - git checkout development
 - cd ..
-
+- ls
 - sudo apt-get update
 - pip install --upgrade pip
 - pip install t2wml-api
