@@ -54,26 +54,26 @@ pip install --upgrade pip
 3. Install the t2wml API
 	`pip install -e t2wml-api`
 	
-	On Windows you may encounter an error saying that `etk.wikidata` cannot be imported when you run the backend.
-    If you encounter it, run:
-
-    `pip install --force-reinstall etk`
 4. Install the remaining requirements from server/requirements.txt
-   `pip install -r server\requirements.txt`
+   `pip install -r server/requirements.txt`
 
 5. In the folder server/backend, run the backend server: 
+
 ```
 cd server/backend
 python application.py
 ```
-   
-6. In a new terminal, navigate to the folder where the github repositry was cloned
-7. Install the frontend requirements:
+
+6. In a new terminal, navigate to the folder where the github repository was cloned.
+   Install the frontend requirements. You will need to have the package manager `yarn` installed:
+
 ```
 cd server/frontend
-npm install
+yarn install
 ```
+
 8. Run the frontend server: 
+
 ```
 npm run start
 ```
