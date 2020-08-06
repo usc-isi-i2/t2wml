@@ -7,49 +7,48 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate, upgrade, current, init
+import pathlib
+
+home_dir = str(pathlib.Path.home())
+DATADIR = os.path.join(home_dir, ".t2wml")
+if not os.path.exists(DATADIR):
+    os.makedirs(DATADIR)
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
-if BASEDIR not in sys.path:
-    # when running migrate, needed to not get import errors
-    sys.path.append(BASEDIR)
+#if BASEDIR not in sys.path:
+#    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
-UPLOAD_FOLDER = os.path.join(BASEDIR, "storage")
+UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
 
 app = Flask(__name__, static_folder=None)
 CORS(app, supports_credentials=True)
-# This will no longer be used once we stop using session cookies
-app.secret_key = "secret key"
-
+app.secret_key = "secret key" # This will no longer be used once we stop using session cookies
 
 class AppConfig:
     UPLOAD_FOLDER = UPLOAD_FOLDER
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max file size
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
     downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(BASEDIR, 'app.db')
+        'sqlite:///' + os.path.join(DATADIR, 't2wml.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
-
 
 app.config.from_object(AppConfig)
 
 DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
 GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
 
-# SQL STUFF
+#############SQL STUFF
 
-# only set to true if database is sqlite
-AUTO_MIGRATE = "sqlite" in AppConfig.SQLALCHEMY_DATABASE_URI
+AUTO_MIGRATE= "sqlite" in AppConfig.SQLALCHEMY_DATABASE_URI #only set to true if database is sqlite
 #MIGRATE_DIR=os.path.join(BASEDIR, "migrations")
-
 
 def auto_constraint_name(constraint, table):
     if constraint.name is None or constraint.name == "_unnamed_":
         return "sa_autoname_%s" % str(uuid.uuid4())[0:5]
     else:
         return constraint.name
-
 
 convention = {
     "auto_constraint_name": auto_constraint_name,
@@ -65,18 +64,19 @@ metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(app, metadata=metadata)
 
-from wikidata_models import *
 from models import *
+from wikidata_models import *
 
-migrate = Migrate(app, db, render_as_batch=True)  # , directory=MIGRATE_DIR
+migrate = Migrate(app, db, render_as_batch=True) #, directory=MIGRATE_DIR
 
 
 if AUTO_MIGRATE:
     with app.app_context():
         upgrade(directory=os.path.join(BASEDIR, 'migrations'))
 
-try:
-    from backend.application import *
-    success=1
-except Exception as e:
-    pass
+#try:
+#    from application import *
+    # Devora: Why is this here?
+#    success=1
+#except Exception as e:
+#    pass
