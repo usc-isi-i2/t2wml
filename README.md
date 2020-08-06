@@ -45,13 +45,14 @@ cd t2wml
 git checkout development
 ```
 2. Create a virtual environment
+
 ```
 python3.6 -m venv t2wml_env
 source t2wml_evn/bin/activate
 pip install --upgrade pip
 ```
-3. Install the t2wml API (optional: in editable mode with the -e flag)
-	`pip install t2wml-api` or `pip install -e t2wml-api`
+3. Install the t2wml API
+	`pip install -e t2wml-api`
 	
 	On Windows you may encounter an error saying that `etk.wikidata` cannot be imported when you run the backend.
     If you encounter it, run:
