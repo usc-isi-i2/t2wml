@@ -41,7 +41,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-               "tests\\test_backend"
+               "backend\\tests"
             ],
             "cwd": "${workspaceFolder}",
         },
