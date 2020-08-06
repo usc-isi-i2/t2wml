@@ -1,7 +1,6 @@
 # T2WML: A Cell-Based Language To Map Tables Into Wikidata Records
 
-* [The T2WML standalone local server](#server)
-* [The T2WML programming API](#api)
+* [Running the T2WML standalone local server](#server)
 * [Running T2WML for development](#development)
 * [Usage with GUI](#usage_with_gui)
 * [Writing T2WML](#writing_t2wml)
@@ -13,8 +12,10 @@
   <tr><td><b>Python version:</b></td><td>Python 3.6+</td></tr>
 </table>
 
+This is the repository for the T2WMl server-based GUI. You may be looking for the [T2WML API](https://github.com/usc-isi-i2/t2wml-api)
 
-## The T2WML standalone local server
+
+## Running the T2WML standalone local server
 <span id="server"></span>
 
 A locally hosted web GUI version of t2wml can be installed quickly using pip
@@ -25,35 +26,39 @@ A locally hosted web GUI version of t2wml can be installed quickly using pip
 4. navigate to [`http://localhost:13000/`](http://localhost:13000/) in a Chrome browser
 
 
-## The T2WML programming API
-<span id="api"></span>
-
-You can write your own code using the T2WML programming API
-
-1. make a fresh virtual environment
-2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-api`
-3. You can now use `from t2wml import...` to write code (see the [API guide](t2wml-api/API.md))
-
 
 ## Running T2WML for development
 <span id="development"></span>
 
-1. Clone the repository
+1. Clone the t2wml-api repository
 ```
+git clone https://github.com/usc-isi-i2/t2wml-api
+cd t2wml-api
+git checkout development
+```
+
+2. Clone the GUI repository
+```
+cd ..
 git clone https://github.com/usc-isi-i2/t2wml
 cd t2wml
 git checkout development
 ```
-2. Create a virtual environment
+
+3. Create a virtual environment for the GUI repository (python 3.6 and 3.7 are supported)
+
+example: 
 
 ```
 python3.6 -m venv t2wml_env
 source t2wml_evn/bin/activate
 pip install --upgrade pip
 ```
-3. Install the t2wml API
-	`pip install -e t2wml-api`
-	
+
+3. Install the t2wml API in editable mode from the clone repo using the path to the folder:
+
+    `pip install -e ../t2wml-api`
+
 4. Install the remaining requirements from server/requirements.txt
    `pip install -r server/requirements.txt`
 
@@ -64,7 +69,7 @@ cd server/backend
 python application.py
 ```
 
-6. In a new terminal, navigate to the folder where the github repository was cloned.
+6. In a new terminal, navigate to GUI repository clone.
    Install the frontend requirements. You will need to have the package manager `yarn` installed:
 
 ```
@@ -75,7 +80,7 @@ yarn install
 8. Run the frontend server: 
 
 ```
-npm run start
+yarn start
 ```
 
 The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
