@@ -40,8 +40,8 @@ You can write your own code using the T2WML programming API
 
 1. Clone the repository
 2. Create a virtual environment
-3. Install the t2wml API (optional: in editable mode with the -e flag)
-	`pip install t2wml-api -e`
+3. Install the t2wml API
+	`pip install -e t2wml-api`
 	
 	On Windows you may encounter an error saying that `etk.wikidata` cannot be imported when you run the backend.
     If you encounter it, run:
