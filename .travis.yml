@@ -24,8 +24,8 @@ install:
 
 
 script:
--cd server/backend
--pytest tests
+- cd server/backend
+- pytest tests
 
 notifications:
   slack:
