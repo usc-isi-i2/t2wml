@@ -62,14 +62,11 @@ pip install --upgrade pip
 4. Install the remaining requirements from server/requirements.txt
    ```
    pip install -r server/requirements.txt
+   pip install etk
+   pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
+
    ```
    
-   Optional: You can install the optional package `etk`.
-
-	```
-	pip install etk
-	pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
-	```
 5. In the folder server/backend, run the backend server: 
 
 ```
