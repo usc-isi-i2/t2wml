@@ -19,7 +19,7 @@ install:
 - ls
 - sudo apt-get update
 - pip install --upgrade pip
-- pip install t2wml-api
+- pip install .\t2wml-api
 - pip install -r requirements.txt
 
 
