@@ -24,7 +24,8 @@ install:
 
 
 script:
--ls #placeholder
+-cd server/backend
+-pytest tests
 
 notifications:
   slack:

@@ -74,3 +74,9 @@ migrate = Migrate(app, db, render_as_batch=True)  # , directory=MIGRATE_DIR
 if AUTO_MIGRATE:
     with app.app_context():
         upgrade(directory=os.path.join(BASEDIR, 'migrations'))
+
+try:
+    from backend.application import *
+    success=1
+except Exception as e:
+    pass
