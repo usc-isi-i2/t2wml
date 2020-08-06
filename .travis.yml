@@ -24,6 +24,7 @@ install:
 
 
 script:
+-ls #placeholder
 
 notifications:
   slack:
