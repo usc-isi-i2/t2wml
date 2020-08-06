@@ -1,6 +1,5 @@
 # T2WML: A Cell-Based Language To Map Tables Into Wikidata Records
 
-* [Running the T2WML standalone local server](#server)
 * [Running T2WML for development](#development)
 * [Usage with GUI](#usage_with_gui)
 * [Writing T2WML](#writing_t2wml)
@@ -15,85 +14,78 @@
 This is the repository for the T2WMl server-based GUI. You may be looking for the [T2WML API](https://github.com/usc-isi-i2/t2wml-api)
 
 
-## Running the T2WML standalone local server
-<span id="server"></span>
-
-A locally hosted web GUI version of t2wml can be installed quickly using pip
-
-1. make a fresh virtual environment
-2. `pip install --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany/ t2wml-standalone==2.0a17`
-3. run `t2wml-server`
-4. navigate to [`http://localhost:13000/`](http://localhost:13000/) in a Chrome browser
-
-
 
 ## Running T2WML for development
 <span id="development"></span>
 
-1. Clone the t2wml-api repository
+### Setup
+1. Setting up the sources
+
+For developing t2wml you need both the t2wml-api repository and the t2wml (this) repository.
+Create a directory called `t2wml-root` and clone both repositories under it:
+
 ```
+cd t2wml-root
 git clone https://github.com/usc-isi-i2/t2wml-api
 cd t2wml-api
 git checkout development
 ```
 
-2. Clone the GUI repository
 ```
-cd ..
+cd t2wml-root
 git clone https://github.com/usc-isi-i2/t2wml
 cd t2wml
 git checkout development
 ```
 
-3. Create a virtual environment for the GUI repository (python 3.6 and 3.7 are supported)
+2. Set up the React frontend
 
-example: 
-
-```
-python3.6 -m venv t2wml_env
-source t2wml_evn/bin/activate
-pip install --upgrade pip
-```
-
-3. Install the t2wml API in editable mode from the clone repo using the path to the folder:
-
-    `pip install -e ../t2wml-api`
-
-4. Install the remaining requirements from server/requirements.txt
-   `pip install -r server/requirements.txt`
-   
-   Optional: You can install the optional package `etk`.
-
-	```
-	pip install etk
-	pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
-	```
-5. In the folder server/backend, run the backend server: 
+First you have to make sure you have Node version 12 or higher installed.
 
 ```
-cd server/backend
-python application.py
-```
-
-6. In a new terminal, navigate to GUI repository clone.
-   Install the frontend requirements. You will need to have the package manager `yarn` installed:
-
-```
-cd server/frontend
+cd t2wml-root/t2wml/frontend
 yarn install
 ```
 
-8. Run the frontend server: 
+(Note - there is a current issue with using npm. Use yarn for now)
+
+3. Create a virtual environment (python 3.6 and higher are supported)
 
 ```
+cd t2wml-root/t2wml/backend
+python3.6 -m venv env
+source env/bin/activate     # on Windows just run env/bin/activate.ps1
+pip install --upgrade pip
+pip install -e ../../t2wml-api   # Install t2wml-api from the cloned repository at t2wml-root/t2wml-api
+pip install -r requirements.txt
+```
+
+
+### Running the server from the shell
+
+1. Running the backend server:
+
+```
+cd t2wml-root/t2wml/backend
+python t2wml-server.py
+```
+
+2. Running the frontend GUI
+
+```
+cd t2wml-root/t2wml/frontend
 yarn start
 ```
 
 The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
 
-The repo also contains vscode configurations for the convenience of those working in VS Code.
+### Running from Visual Studio Code
+The project has preconfigured settings file for Visual Studio Code. Before starting you need to copy the settings template appropriate for your OS.
 
+On Macs and Linux machines, copy `.vscode/settings.linux.json` to `.vscode/settings.json` . On Windows, copy `.vscode/settings.windows.json` to `.vscode/settings.json`
+Start Visual Studio Code and open it in the t2wml-root/t2wml directory.
 
+You can run the backend with F5 (choose the Backend launch configuration - the only one there). To run the Frontend, choose Terminal | Run Task | npm: start - frontend .
 
 
 ## Usage with GUI

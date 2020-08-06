@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "backend/env/bin/python",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.envFile": "${workspaceFolder}/backend/.python.env"
+}
+    
