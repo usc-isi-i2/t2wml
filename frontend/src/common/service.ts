@@ -19,6 +19,11 @@ class RequestService {
     return response;
   }
 
+  public async loadProject(formData: any) {
+    const response = await backendPost('/project/load', formData);
+    return response;
+  }
+
   public async uploadProperties(pid: string, formData: any) {
     const response = await backendPost(`/project/${pid}/properties`, formData);
     return response;

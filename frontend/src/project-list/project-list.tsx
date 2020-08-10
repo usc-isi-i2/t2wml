@@ -23,6 +23,7 @@ import RequestService from '../common/service';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
+import LoadProject from './load-project';
 
 interface ProjectListProperties {
 
@@ -31,6 +32,7 @@ interface ProjectListProperties {
 interface ProjectListState {
   showSpinner: boolean;
   showCreateProject: boolean;
+  showLoadProject: boolean;
   showDeleteProject: boolean;
   showDownloadProject: boolean;
   showRenameProject: boolean;
@@ -75,6 +77,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // appearance
       showSpinner: true,
       showCreateProject: false,
+      showLoadProject: false,
       showDeleteProject: false,
       showDownloadProject: false,
       showRenameProject: false,
@@ -174,6 +177,46 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
   cancelCreateProject() {
     this.setState({ showCreateProject: false });
+  }
+
+  handleLoadProject(file: File, path: string) {
+    this.setState({ errorMessage: {} as ErrorMessage });
+
+    // before sending request
+    this.setState({ showSpinner: true });
+
+    // send request
+    let formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", path);
+    this.requestService.loadProject(formData).then(json => {
+      console.log("<App> <- %c/load_project%c with:", LOG.link, LOG.default);
+      console.log(json);
+
+      // do something here
+      if (json["pid"]) {
+        // success
+        window.location.href = "/project/" + json["pid"];
+      } else {
+        // failure
+        throw Error("Session doesn't exist or invalid request");
+      }
+
+      // follow-ups (success)
+      this.setState({ showLoadProject: false, showSpinner: false });
+
+    }).catch((error: ErrorMessage) => {
+      error.errorDescription += "\n\nCannot load project!";
+      this.setState({ errorMessage: error });
+
+      // follow-ups (failure)
+      this.setState({ showLoadProject: false, showSpinner: false });
+    });
+
+  }
+
+  cancelLoadProject() {
+      this.setState({ showLoadProject: false });
   }
 
   handleDeleteProject(pid = "") {
@@ -599,6 +642,12 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
           handleCreateProject={(name) => this.handleCreateProject(name)}
           cancelCreateProject={() =>this.cancelCreateProject()}
         />
+        <LoadProject
+            showLoadProject={this.state.showLoadProject}
+            showSpinner={this.state.showSpinner}
+            handleLoadProject={(file, path) => this.handleLoadProject(file, path)}
+            cancelLoadProject={() => this.cancelLoadProject()}
+        />
       </Fragment>
     );
   }
@@ -632,10 +681,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
               <div style={{ marginBottom: "20px" }}>
                 <div style={{ display: "inline-block", width: "40%" }}>
-                  <Button
+                <Button
                     variant="primary"
                     size="sm"
-                    style={{ fontWeight: 600 }}
+                    style={{ fontWeight: 600, marginRight: '1rem' }}
                     onClick={() => {
                       this.setState({
                         // tempCreateProject: "Untitled project",
@@ -645,6 +694,18 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
                     }}
                   >
                     New project
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    style={{ fontWeight: 600 }}
+                    onClick={() => {
+                      this.setState({
+                        showLoadProject: true
+                      });
+                    }}
+                  >
+                    Load project
                   </Button>
                 </div>
                 <div style={{ display: "inline-block", width: "60%" }}>
