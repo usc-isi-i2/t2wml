@@ -1,0 +1,77 @@
+column,row,value,context,item
+,,Aruba,,Q21203
+,,Afghanistan,,Q889
+,,Angola,,Q916
+,,Europe & Central Asia,,Q232
+,,Ecuador,,Q736
+,,Organisation of Eastern Caribbean States,,Q392770
+,,Ivory Coast,,Q1008
+,,Palestinian National Authority,,Q219060
+,,UN,property,Paid-security-002
+,,INGO,property,Paid-security-003
+,,LNGO/NRCS,property,Paid-security-004
+,,ICRC,property,Paid-security-005
+,,IFRC,property,Paid-security-006
+,,Other,property,Paid-security-007
+,,Nationals killed,property,Paid-security-008
+,,Nationals wounded,property,Paid-security-009
+,,Nationals kidnapped,property,Paid-security-010
+,,Total nationals,property,Paid-security-011
+,,Internationals killed,property,Paid-security-012
+,,Internationals wounded,property,Paid-security-013
+,,Internationals kidnapped,property,Paid-security-014
+,,Total internationals,property,Paid-security-015
+,,Total killed,property,Paid-security-016
+,,Total wounded,property,Paid-security-017
+,,Total kidnapped,property,Paid-security-018
+,,Total affected,property,Paid-security-019
+,,Gender Male,property,Paid-security-020
+,,Gender Female,property,Paid-security-021
+,,Gender Unknown,property,Paid-security-022
+,,Means of attack,property,Paid-security-023
+,,Attack context,property,Paid-security-024
+,,Location,property,Paid-security-025
+,,Actor type,property,Paid-security-026
+,,Actor name,property,Paid-security-027
+,,Details,property,Paid-security-028
+,,Verified,property,Paid-security-029
+,,Source,property,Paid-security-030
+,,UN,variable,Qaid-security-002
+,,INGO,variable,Qaid-security-003
+,,LNGO/NRCS,variable,Qaid-security-004
+,,ICRC,variable,Qaid-security-005
+,,IFRC,variable,Qaid-security-006
+,,Other,variable,Qaid-security-007
+,,Nationals killed,variable,Qaid-security-008
+,,Nationals wounded,variable,Qaid-security-009
+,,Nationals kidnapped,variable,Qaid-security-010
+,,Total nationals,variable,Qaid-security-011
+,,Internationals killed,variable,Qaid-security-012
+,,Internationals wounded,variable,Qaid-security-013
+,,Internationals kidnapped,variable,Qaid-security-014
+,,Total internationals,variable,Qaid-security-015
+,,Total killed,variable,Qaid-security-016
+,,Total wounded,variable,Qaid-security-017
+,,Total kidnapped,variable,Qaid-security-018
+,,Total affected,variable,Qaid-security-019
+,,Gender Male,variable,Qaid-security-020
+,,Gender Female,variable,Qaid-security-021
+,,Gender Unknown,variable,Qaid-security-022
+,,Means of attack,variable,Qaid-security-023
+,,Attack context,variable,Qaid-security-024
+,,Location,variable,Qaid-security-025
+,,Actor type,variable,Qaid-security-026
+,,Actor name,variable,Qaid-security-027
+,,Details,variable,Qaid-security-028
+,,Verified,variable,Qaid-security-029
+,,Source,variable,Qaid-security-030
+,,person,unit,Qaid-security-U002
+1.0,,22,main subject,aid-security-22
+1.0,,47,main subject,aid-security-47
+1.0,,73,main subject,aid-security-73
+1.0,,103,main subject,aid-security-103
+1.0,,475,main subject,aid-security-475
+1.0,,782,main subject,aid-security-782
+1.0,,793,main subject,aid-security-793
+1.0,,942,main subject,aid-security-942
+1.0,,964,main subject,aid-security-964
