@@ -110,6 +110,8 @@ def test_03_add_data_file(client):
     data = response.data.decode("utf-8")
     data = json.loads(data)
     results_dict['add_data_file']=data
+    data['tableData'].pop('filename')
+    expected_results_dict['add_data_file']['tableData'].pop('filename')
     compare_jsons(data, 'add_data_file')
 
 def test_04_add_properties_file(client):
@@ -226,6 +228,8 @@ def test_12_change_sheet(client):
     data = response.data.decode("utf-8")
     data = json.loads(data)
     results_dict['change_sheet']=data
+    data['tableData'].pop('filename')
+    expected_results_dict['change_sheet']['tableData'].pop('filename')
     compare_jsons(data, 'change_sheet')
 
 def test_12_wikify_region(client):
