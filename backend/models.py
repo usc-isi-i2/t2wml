@@ -1,15 +1,22 @@
+from backend.t2wml_web import wikify
+import os
 from datetime import datetime
 from pathlib import Path
 from werkzeug.utils import secure_filename
-
 from t2wml.api import add_properties_from_file, SpreadsheetFile
 
+from utils import upload_item_defs
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
 
 def get_project_folder(project):
     return Path(UPLOAD_FOLDER)/(project.name+"_"+str(project.id))
 
+def default_project_folder(context):
+    params=context.get_current_parameters()
+    id=params['id']
+    name=params['name']
+    return str(Path(UPLOAD_FOLDER)/(name+"_"+str(id)))
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,10 +27,17 @@ class Project(db.Model):
         db.DateTime, nullable=False, default=datetime.utcnow)
     sparql_endpoint = db.Column(
         db.String(64), nullable=True, default=DEFAULT_SPARQL_ENDPOINT)
+    file_directory=db.Column(db.String(300), default=default_project_folder)
     files = db.relationship("SavedFile", back_populates="project")
 
     def __repr__(self):
         return '<Project {}: {}>'.format(self.name, self.id)
+
+    @property
+    def directory(self):
+        if self.file_directory is None:
+            return get_project_folder(self)
+        return self.file_directory
 
     @staticmethod
     def delete(pid):
@@ -62,6 +76,42 @@ class Project(db.Model):
             project_id=self.id).order_by(WikifierFile.id.desc()).first()
         if current:
             return current
+    
+    @staticmethod
+    def load(api_proj):
+        name=api_proj.title
+        file_directory=api_proj.directory
+        project=Project(name=name, file_directory=file_directory)
+        if len(api_proj.data_files)>1:
+            raise ValueError("projects with more than one data file not yet supported")
+        if len(api_proj.wikifier_files)>1:
+            raise ValueError("projects with more than one wikifier file not yet supported")
+        if len(api_proj.specific_wikifiers):
+            raise ValueError("specific wikifiers not yet supported")
+        
+        for f in api_proj.data_files:
+            df=DataFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+            if f in api_proj.yaml_sheet_associations:
+                assocs=api_proj.yaml_sheet_associations[f]
+                for sheet in df.sheets:
+                    yamls=assocs.get(sheet.name, [])
+                    if len(yamls)>1:
+                        raise ValueError("projects with more than one yaml file per sheet not yet supported")
+                    for y in yamls:
+                        yf=YamlFile.create_from_filepath(project, os.path.join(api_proj.directory, y))
+                        sheet.yamlfiles.append(yf)
+        
+        for f in api_proj.wikifier_files:
+            wf=WikifierFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+
+        for f in api_proj.property_files:
+            pf=PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+        
+        for f in api_proj.item_files:
+            pf=ItemsFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+            upload_item_defs(os.path.join(api_proj.directory, f))
+        
+        return project
 
 
 class SavedFile(db.Model):
@@ -82,7 +132,7 @@ class SavedFile(db.Model):
     @classmethod
     def get_folder(cls, project):
         sub_folder = cls.sub_folder
-        folder = get_project_folder(project)/sub_folder
+        folder =Path(project.directory)/sub_folder
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
@@ -109,7 +159,6 @@ class SavedFile(db.Model):
 
     @classmethod
     def create_from_filepath(cls, project, file_path):
-        # this function is primarily for convenience when testing the database schema
         name = Path(file_path).stem
         extension = Path(file_path).suffix
         saved_file = cls(file_path=file_path, name=name,
@@ -206,8 +255,8 @@ class DataFile(SavedFile):
     }
 
     @classmethod
-    def create_from_filepath(cls, project, in_file):
-        df = super().create_from_filepath(project, in_file)  # cls.create(project, in_file)
+    def create_from_filepath(cls, project, file_path):
+        df = super().create_from_filepath(project, file_path)  # cls.create(project, in_file)
         df.init_sheets()
         return df
 

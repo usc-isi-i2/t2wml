@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-
+import yaml
 from flask import request
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
@@ -17,7 +17,7 @@ from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, upload_item_defs)
 from web_exceptions import WebException
-
+from t2wml.api import Project as FileProj
 debug_mode = False
 
 
@@ -74,11 +74,32 @@ def create_project():
     :return:
     """
     response = dict()
-    if 'ptitle' in request.form:
-        project_title = request.form['ptitle']
-        project = Project.create(project_title)
-        response['pid'] = project.id
-        return response, 201
+    project_title = request.form['ptitle']
+    project = Project.create(project_title)
+    response['pid'] = project.id
+    return response, 201
+
+
+@app.route('/api/project/load', methods=['POST'])
+@json_response
+def load_project():
+    """
+    This route loads a project file to create a project
+    :return:
+    """
+
+    path=request.form['path']
+    if not path:
+        try:
+            in_file=file_upload_validator({"yaml"})
+            input_yaml=yaml.safe_load(in_file)
+            path=input_yaml["directory"]
+        except:
+            raise ValueError("Was not able to load from project yaml file")
+    proj=FileProj.load(path)
+    project=Project.load(proj)
+    return {"pid":project.id}, 201
+
 
 
 @app.route('/api/project/<pid>', methods=['GET'])
@@ -259,7 +280,6 @@ def wikify_region(pid):
 
         return data, 200
     return {}, 404
-
 
 @app.route('/api/yaml/<pid>', methods=['POST'])
 @json_response

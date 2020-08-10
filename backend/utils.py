@@ -2,7 +2,6 @@ import csv
 from string import punctuation
 from flask import request
 import web_exceptions
-from models import Project
 from wikidata_models import WikidataItem, WikidataProperty
 from SPARQLWrapper import SPARQLWrapper, JSON
 from app_config import DEFAULT_SPARQL_ENDPOINT
@@ -182,6 +181,7 @@ def file_upload_validator(file_extensions):
 
 
 def get_project_details():
+    from models import Project
     projects = list()
     for project in Project.query.all():
         project_detail = dict()

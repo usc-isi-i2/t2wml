@@ -41,7 +41,7 @@ class MappingResultsCacher(Cacher):
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
 
-    def save(self, highlight_data, statement_data, errors=[], metadata={}):
+    def save(self, highlight_data, statement_data, errors, metadata):
         d = {
             "highlight region": highlight_data,
             "statements": statement_data,
