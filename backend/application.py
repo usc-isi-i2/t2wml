@@ -238,7 +238,7 @@ def wikify_region(pid):
     flag = int(request.form["flag"])
     if action == "wikify_region":
         if not project.current_file:
-            raise web_exception.WikifyWithoutDataFileException(
+            raise web_exceptions.WikifyWithoutDataFileException(
                 "Upload data file before wikifying a region")
         sheet = project.current_file.current_sheet
 
@@ -257,7 +257,8 @@ def wikify_region(pid):
         else:
             data['problemCells'] = False
 
-    return data, 200
+        return data, 200
+    return {}, 404
 
 
 @app.route('/api/yaml/<pid>', methods=['POST'])
@@ -284,7 +285,7 @@ def upload_yaml(pid):
             response['yamlRegions'] = highlight_region(sheet, yf, project)
         else:
             response['yamlRegions'] = None
-            raise web_exception.YAMLEvaluatedWithoutDataFileException(
+            raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
                 "Upload data file before applying YAML.")
 
     return response, 200
@@ -303,7 +304,7 @@ def get_cell_statement(pid, col, row):
     sheet = project.current_file.current_sheet
     yaml_file = sheet.yaml_file
     if not yaml_file:
-        raise web_exception.CellResolutionWithoutYAMLFileException(
+        raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Upload YAML file before resolving cell.")
     data = get_cell(sheet, yaml_file, project, col, row)
     return data, 200
@@ -320,7 +321,7 @@ def downloader(pid, filetype):
     sheet = project.current_file.current_sheet
     yaml_file = sheet.yaml_file
     if not yaml_file:  # the frontend disables this, this is just another layer of checking
-        raise web_exception.CellResolutionWithoutYAMLFileException(
+        raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Cannot download report without uploading YAML file first")
     response = download(sheet, yaml_file, project, filetype, project.name)
     return response, 200
@@ -357,7 +358,7 @@ def rename_project(pid):
     }
     ptitle = request.form["ptitle"]
     project = get_project(pid)
-    project.title = ptitle
+    project.name = ptitle
     project.modify()
     data['projects'] = get_project_details()
     return data, 200
