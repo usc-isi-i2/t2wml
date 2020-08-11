@@ -41,7 +41,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: electron/out/t2wml-setup.exe
-          asset_name: t2wml-server.windows.exe
+          asset_name: t2wml-setup.exe
           tag: ${{ github.ref }}
           overwrite: true
           body: "Windows Executable"
@@ -94,7 +94,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml.pkg
+          file: electron/out/t2wml.pkg
           asset_name: t2wml.pkg
           tag: ${{ github.ref }}
           overwrite: true
