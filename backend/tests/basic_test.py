@@ -276,7 +276,7 @@ class TestBasicWorkflow(BaseClass):
                 data=dict(
                 endpoint=endpoint
             )) 
-        assert t2wml_settings['wikidata_provider'].sparql_endpoint==endpoint
+        assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
 
     def test_99_delete_project(self, client):
         #this test must be sequentially last (do not run pytest in parallel)
