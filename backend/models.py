@@ -82,12 +82,16 @@ class Project(db.Model):
         name=api_proj.title
         file_directory=api_proj.directory
         project=Project(name=name, file_directory=file_directory)
+
         if len(api_proj.data_files)>1:
             raise ValueError("projects with more than one data file not yet supported")
         if len(api_proj.wikifier_files)>1:
             raise ValueError("projects with more than one wikifier file not yet supported")
         if len(api_proj.specific_wikifiers):
             raise ValueError("specific wikifiers not yet supported")
+            
+        db.session.add(project)
+        db.session.commit()
         
         for f in api_proj.data_files:
             df=DataFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
@@ -110,8 +114,6 @@ class Project(db.Model):
         for f in api_proj.item_files:
             pf=ItemsFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
             upload_item_defs(os.path.join(api_proj.directory, f))
-        db.session.add(project)
-        db.session.commit()
         return project
 
 
