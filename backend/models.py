@@ -110,7 +110,8 @@ class Project(db.Model):
         for f in api_proj.item_files:
             pf=ItemsFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
             upload_item_defs(os.path.join(api_proj.directory, f))
-        
+        db.session.add(project)
+        db.session.commit()
         return project
 
 
