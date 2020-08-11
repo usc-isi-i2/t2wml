@@ -1,3 +1,0 @@
-include README.md
-recursive-include backend/static *
-recursive-include backend/migrations *
