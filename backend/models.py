@@ -27,7 +27,7 @@ class Project(db.Model):
         db.DateTime, nullable=False, default=datetime.utcnow)
     sparql_endpoint = db.Column(
         db.String(64), nullable=True, default=DEFAULT_SPARQL_ENDPOINT)
-    file_directory=db.Column(db.String(300), default=default_project_folder)
+    file_directory=db.Column(db.String(300), nullable=True)
     files = db.relationship("SavedFile", back_populates="project")
 
     def __repr__(self):
