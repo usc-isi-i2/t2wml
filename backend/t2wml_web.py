@@ -22,12 +22,7 @@ def wikify(region, data_sheet, context):
 def update_t2wml_settings(project):
     set_sparql_endpoint(project.sparql_endpoint)
     set_wikidata_provider(DatabaseProvider(project.sparql_endpoint))
-    t2wml_settings.update({
-        "cache_data_files": True,
-        # "wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
-        # "sparql_endpoint":project.sparql_endpoint,
-        # "storage_folder":UPLOAD_FOLDER
-    })
+    t2wml_settings.cache_data_files = True
 
 
 def get_wikifier(project):
