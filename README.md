@@ -85,7 +85,7 @@ The project has preconfigured settings file for Visual Studio Code. Before start
 On Macs and Linux machines, copy `.vscode/settings.linux.json` to `.vscode/settings.json` . On Windows, copy `.vscode/settings.windows.json` to `.vscode/settings.json`
 Start Visual Studio Code and open it in the t2wml-root/t2wml directory.
 
-You can run the backend with F5 (choose the Backend launch configuration - the only one there). To run the Frontend, choose Terminal | Run Task | npm: start - frontend .
+You can run the backend with F5 (choose the "Backend" launch configuration). To run the Frontend, choose Terminal | Run Task | npm: start - frontend .
 
 
 ## Usage with GUI
