@@ -17,9 +17,13 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
+      - name: Checkout t2wml-api
+        run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
       - name: Set backend environment
         run: |
           cd $env:GITHUB_WORKSPACE/backend
+          pip install --upgrade pip
+          pip install ../t2wml-api
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
           pip install pyinstaller pywin32 semver
@@ -72,10 +76,13 @@ jobs:
           security set-keychain-settings -lut 3600
           security import certificate.p12 -k build.keychain -P 12345 -T /usr/bin/codesign -A
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
+      - name: Checkout t2wml-api
+        run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
-          pip install --upgrade setuptools
+          pip install --upgrade setuptools pip
+          pip install ../t2wml-api
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
           pip install pyinstaller semver
@@ -111,10 +118,13 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
+      - name: Checkout t2wml-api
+        run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
-          pip install --upgrade setuptools
+          pip install --upgrade setuptools pip
+          pip install ../t2wml-api
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
           pip install pyinstaller semver
