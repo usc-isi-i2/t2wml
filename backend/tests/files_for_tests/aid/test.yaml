@@ -1,0 +1,20 @@
+statementMapping:
+  region:
+    - left: F
+      right: H
+      top: 3
+      bottom: 8
+  template:
+    item: =value[B, $row, "main subject"]
+    property: =item[$col, 2, "property"]
+    value: =value[$col, $row]
+    unit: =item[$col,1,"unit"]
+    qualifier:
+      - property: P585  # point in time
+        value: '=concat(value[C:E,$row],"-")'
+        calendar: Q1985727
+        precision: day
+        time_zone: 0
+        format: "%Y-%m-%d"
+      - property: P17  # country
+        value: =item[I,$row]

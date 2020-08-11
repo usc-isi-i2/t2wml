@@ -37,5 +37,26 @@
             ],
             "cwd": "${workspaceFolder}/backend",
         },
+        {
+            "name": "Tests",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+               "backend\\tests", 
+               "-s", 
+               "-v"
+            ],
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "name": "Python: Current File (Integrated Terminal)",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${fileDirname}",
+            "env": {"PYTHONPATH": "${workspaceRoot}"}
+        }, 
     ]
 }

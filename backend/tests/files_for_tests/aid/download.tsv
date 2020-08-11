@@ -1,0 +1,40 @@
+id	node1	label	node2	node2;kgtk:data_type	node2;kgtk:number	node2;kgtk:low_tolerance	node2;kgtk:high_tolerance	node2;kgtk:units_node	node2;kgtk:date_and_time	node2;kgtk:precision	node2;kgtk:calendar	node2;kgtk:truth	node2;kgtk:symbol	node2;kgtk:latitude	node2;kgtk:longitude	node2;kgtk:globe	node2;kgtk:text	node2;kgtk:language
+.;F3	22	Paid-security-002		quantity	2			Qaid-security-U002										
+	.;F3	P585		date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
+.;F4	47	Paid-security-002		quantity	0			Qaid-security-U002										
+	.;F4	P585		date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
+	.;F4	P17		string													"Q21203"	
+.;F5	73	Paid-security-002		quantity	0			Qaid-security-U002										
+	.;F5	P585		date_and_times					"1999-04-01T00:00:00"	11	Q1985727							
+.;F6	103	Paid-security-002		quantity	0			Qaid-security-U002										
+	.;F6	P585		date_and_times					"2000-02-01T00:00:00"	11	Q1985727							
+.;F7	475	Paid-security-002		quantity	0			Qaid-security-U002										
+	.;F7	P585		date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
+.;F8	782	Paid-security-002		quantity	0			Qaid-security-U002										
+	.;F8	P585		date_and_times					"2008-01-01T00:00:00"	11	Q1985727							
+.;G3	22	Paid-security-003		quantity	0			Qaid-security-U002										
+	.;G3	P585		date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
+.;G4	47	Paid-security-003		quantity	0			Qaid-security-U002										
+	.;G4	P585		date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
+	.;G4	P17		string													"Q21203"	
+.;G5	73	Paid-security-003		quantity	1			Qaid-security-U002										
+	.;G5	P585		date_and_times					"1999-04-01T00:00:00"	11	Q1985727							
+.;G6	103	Paid-security-003		quantity	2			Qaid-security-U002										
+	.;G6	P585		date_and_times					"2000-02-01T00:00:00"	11	Q1985727							
+.;G7	475	Paid-security-003		quantity	0			Qaid-security-U002										
+	.;G7	P585		date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
+.;G8	782	Paid-security-003		quantity	0			Qaid-security-U002										
+	.;G8	P585		date_and_times					"2008-01-01T00:00:00"	11	Q1985727							
+.;H3	22	Paid-security-004		quantity	0			Qaid-security-U002										
+	.;H3	P585		date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
+.;H4	47	Paid-security-004		quantity	0			Qaid-security-U002										
+	.;H4	P585		date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
+	.;H4	P17		string													"Q21203"	
+.;H5	73	Paid-security-004		quantity	0			Qaid-security-U002										
+	.;H5	P585		date_and_times					"1999-04-01T00:00:00"	11	Q1985727							
+.;H6	103	Paid-security-004		quantity	0			Qaid-security-U002										
+	.;H6	P585		date_and_times					"2000-02-01T00:00:00"	11	Q1985727							
+.;H7	475	Paid-security-004		quantity	0			Qaid-security-U002										
+	.;H7	P585		date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
+.;H8	782	Paid-security-004		quantity	3			Qaid-security-U002										
+	.;H8	P585		date_and_times					"2008-01-01T00:00:00"	11	Q1985727							
