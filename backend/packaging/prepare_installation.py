@@ -29,6 +29,8 @@ def get_paths():
 def prepare_version(version):
     global frontend_path, electron_path
 
+    if version.startswith('refs/tags/v'):  # Github Actions may pass the full ref, not just the tag name
+        version = version[11:]
     vi = semver.VersionInfo.parse(version)
 
     # The version should look like "x.y.z" and possibly with "a#" or "b#" for alpha and beta versions

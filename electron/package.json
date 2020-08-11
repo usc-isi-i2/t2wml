@@ -1,6 +1,6 @@
 {
   "name": "t2wml",
-  "version": "2.1.0-pre.1+build.1",
+  "version": "1.0.0",
   "description": "A Cell-Based Language To Map Tables Into Wikidata Records",
   "main": "./dist/main.bundle.js",
   "scripts": {
