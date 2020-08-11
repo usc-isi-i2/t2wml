@@ -1,4 +1,4 @@
-name: Create Standalone Executables
+name: Create Electron Installations
 on:
   push:
     tags:
@@ -46,7 +46,7 @@ jobs:
           overwrite: true
           body: "Windows Executable"
   mac:
-    name: Create the Mac OS Executable
+    name: Create the Mac OS Installation
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -100,7 +100,7 @@ jobs:
           overwrite: true
           body: "MacOS Executable"
   linux:
-    name: Create the Linux Executable
+    name: Create the Linux Installation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
