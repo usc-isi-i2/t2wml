@@ -1,7 +1,7 @@
 {
-  "name": "electron-react-typescript-webpack-boilerplate",
-  "version": "2.0.2",
-  "description": "Pre-configured boilerplate for Electron + React + TypeScript",
+  "name": "t2wml",
+  "version": "2.1.0-pre.1+build.1",
+  "description": "A Cell-Based Language To Map Tables Into Wikidata Records",
   "main": "./dist/main.bundle.js",
   "scripts": {
     "start": "electron ./dist/main.bundle.js",
@@ -14,7 +14,7 @@
     "build:linux": "electron-builder build --linux --x64"
   },
   "build": {
-    "appId": "t2wml",
+    "appId": "edu.isi.t2wml",
     "productName": "t2wml",
     "directories": {
       "app": "./dist/",
@@ -41,8 +41,7 @@
         "from": "../backend/dist/t2wml-server.exe",
         "to": "."
       }]
-    },
-    "buildVersion": "1.0.0"
+    }
   },
   "dependencies": {
     "@types/react": "^16.9.13",
