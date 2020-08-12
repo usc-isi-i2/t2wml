@@ -58,8 +58,8 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_data_file']=data
-        data['tableData'].pop('filename')
-        self.expected_results_dict['add_data_file']['tableData'].pop('filename')
+        data['tableData'].pop('filename', None)
+        self.expected_results_dict['add_data_file']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'add_data_file')
 
     def test_04_add_properties_file(self, client):
@@ -132,8 +132,8 @@ class TestBasicWorkflow(BaseClass):
                 test2=set(self.expected_results_dict["add_yaml"]["yamlRegions"][key]["list"])
                 assert test1==test2
         for key in set_keys:
-            data["yamlRegions"].pop(key)
-            self.expected_results_dict["add_yaml"]["yamlRegions"].pop(key)
+            data["yamlRegions"].pop(key, None)
+            self.expected_results_dict["add_yaml"]["yamlRegions"].pop(key, None)
 
         self.compare_jsons(data, 'add_yaml')
 
@@ -176,8 +176,8 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['change_sheet']=data
-        data['tableData'].pop('filename')
-        self.expected_results_dict['change_sheet']['tableData'].pop('filename')
+        data['tableData'].pop('filename', None)
+        self.expected_results_dict['change_sheet']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'change_sheet')
 
     def test_12_wikify_region(self, client):
@@ -226,6 +226,9 @@ class TestBasicWorkflow(BaseClass):
         response=client.delete(url_str)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        #used when overwriting all old results with new ones 
+        #with open(self.expected_results_path, 'w') as f:
+        #    json.dump(self.results_dict, f, sort_keys=False, indent=4)
         assert data["projects"]==[]
 
 
