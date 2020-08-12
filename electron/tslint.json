@@ -9,7 +9,7 @@
         "ignore-case": true
       }
     ],
-    "max-line-length": [true, 80],
+    "max-line-length": [true, 120],
     "no-any": false,
     "no-submodule-imports": false,
     "no-implicit-dependencies": [
