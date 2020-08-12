@@ -73,6 +73,11 @@ rendererConfig.plugins = [
   new HtmlWebpackPlugin({
     template: path.resolve(__dirname, './public/index.html'),
   }),
+  new HtmlWebpackPlugin({
+    template: path.resolve(__dirname, './public/splash.html'),
+    filename: 'splash.html',
+  }),
+
 ];
 
 module.exports = [mainConfig, rendererConfig];

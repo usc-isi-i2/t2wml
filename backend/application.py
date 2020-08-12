@@ -378,6 +378,9 @@ def update_settings(pid):
     update_t2wml_settings(project)
     return None, 200  # can become 204 eventually, need to check frontend compatibility
 
+@app.route('/api/is-alive')
+def is_alive():
+    return 'Backend is here', 200
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
 # In that case, we only have one webserver - Flask. The following two routes are for this.

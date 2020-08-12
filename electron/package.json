@@ -1,6 +1,6 @@
 {
   "name": "t2wml",
-  "version": "1.0.0",
+  "version": "2.1.0-pre.2",
   "description": "A Cell-Based Language To Map Tables Into Wikidata Records",
   "main": "./dist/main.bundle.js",
   "scripts": {
@@ -22,36 +22,44 @@
     },
     "mac": {
       "target": "pkg",
-      "extraResources": [{
-        "from": "../backend/dist/t2wml-server",
-        "to": "."
-      }]
+      "extraResources": [
+        {
+          "from": "../backend/dist/t2wml-server",
+          "to": "."
+        }
+      ]
     },
     "linux": {
       "target": "AppImage",
-      "extraResources": [{
-        "from": "../backend/dist/t2wml-server",
-        "to": "."
-      }]
+      "extraResources": [
+        {
+          "from": "../backend/dist/t2wml-server",
+          "to": "."
+        }
+      ]
     },
     "win": {
       "target": "nsis",
       "asar": false,
-      "extraResources": [{
-        "from": "../backend/dist/t2wml-server.exe",
-        "to": "."
-      }]
+      "extraResources": [
+        {
+          "from": "../backend/dist/t2wml-server.exe",
+          "to": "."
+        }
+      ]
     }
   },
   "dependencies": {
     "@types/react": "^16.9.13",
     "@types/react-dom": "^16.9.4",
+    "axios": "^0.19.2",
     "copy-pkg-json-webpack-plugin": "0.0.38",
     "html-webpack-plugin": "^3.2.0",
     "lodash": "^4.17.15",
     "path": "^0.12.7",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "tree-kill": "^1.2.2"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",

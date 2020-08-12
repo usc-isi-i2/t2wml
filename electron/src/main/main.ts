@@ -4,10 +4,16 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as treeKill from 'tree-kill';
+
 import { spawn, ChildProcess } from 'child_process';
+import axios from 'axios';
 
 let mainWindow: Electron.BrowserWindow | null;
+let splashWindow: Electron.BrowserWindow | null;
 let backendProcess: ChildProcess | null;
+
+let backendUrl = '';
 
 function isProd() {
     return process.env.NODE_ENV === 'production';
@@ -26,16 +32,36 @@ if (!isProd()) {
     app.commandLine.appendSwitch('enable-logging');
 }
 
+function openSplashScreen(): void {
+    splashWindow = new BrowserWindow({
+        height: 600,
+        width: 800,
+        show: false,
+        webPreferences: {
+            webSecurity: false,
+        },
+        frame: false,
+    });
+
+    splashWindow.loadURL(
+        url.format({
+            pathname: path.join(__dirname, './splash.html'),
+            protocol: 'file:',
+            slashes: true,
+        })
+    );
+
+    splashWindow.once('ready-to-show', () => {
+        splashWindow!.show();
+    });
+}
+
 function createWindow(): void {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         height: 600,
         width: 800,
         show: false,
-        webPreferences: {
-            webSecurity: false,
-            devTools: !isProd(),
-        }
     });
 
     // and load the index.html of the app.
@@ -53,13 +79,12 @@ function createWindow(): void {
 
     mainWindow.once('ready-to-show', () => {
         mainWindow!.show();
+        splashWindow!.close();
+        splashWindow = null;
     });
     
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
         mainWindow = null;
     });
 }
@@ -75,20 +100,45 @@ function getBackendPath() {
     return path.join(__dirname, '..', '..', 'backend', 'dist', filename);
 }
 
-function initApp(): void {
+async function sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+}
+
+async function initBackend(): Promise<void> {
     const backendPath = getBackendPath();
-    console.log('Spawning backend in ', backendPath);
+    console.log('Spawning backend from ', backendPath);
     try {
         backendProcess = spawn(backendPath);
+        console.log('Backend spawned: ', backendProcess.pid);
     } catch(err) {
         console.error("Can't run backend: ", err);
         app.quit();
         return;
     }
 
-    // TODO: Wait for backend to respond
+    backendUrl = 'http://localhost:13000'; // TODO: Choose a random port
+    for(let retryCount=0; retryCount < 30; retryCount++) {
+        // Try accessing the backend, see if we get a response
+        try {
+            await axios.get(`${backendUrl}/api/is-alive`);
+            console.log('Backend is ready');
+            return;
+        } catch(error) {
+            await sleep(500); // Wait a bit before trying again
+        }
+    }
+
+    console.error("Can't open backend");
+    app.quit();
+}
+
+async function initApp(): Promise<void> {
+    openSplashScreen();
+    await initBackend();
     
-    createWindow();
+    createWindow();  // WIll close the splash window
 }
 
 // This method will be called when Electron has finished
@@ -97,7 +147,7 @@ function initApp(): void {
 app.once('ready', initApp);
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (!isMac()) {
@@ -113,13 +163,22 @@ app.on('activate', () => {
     }
 });
 
-app.on('quit', () => {
-    console.log('Application quitting');
+app.on('will-quit', (event) => {
     if (backendProcess) {
         console.log('Killing child process');
-        backendProcess.kill('SIGTERM');
-    }
-})
 
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+        // Killing the backend process takes a little while, we have to
+        // wait until it's done before actually quitting, or else on Windows
+        // we'll be left with stray server instances.
+        treeKill(backendProcess.pid, () => {
+            backendProcess = null;
+            app.quit();  // Quit for real
+        });
+        // Prevent quitting until callback is called
+        event.preventDefault(); 
+    }
+});
+
+app.on('quit', () => {
+    console.log('t2wml is done');
+})
