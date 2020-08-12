@@ -17,7 +17,7 @@ from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, upload_item_defs)
 from web_exceptions import WebException
-from t2wml.api import Project as FileProj
+from t2wml.api import Project as apiProject
 debug_mode = False
 
 
@@ -25,6 +25,7 @@ def get_project(project_id):
     try:
         project = Project.query.get(project_id)
         update_t2wml_settings(project)
+        api_proj=project.api_project
         return project
     except:
         raise web_exceptions.ProjectNotFoundException
@@ -96,7 +97,7 @@ def load_project():
             path=input_yaml["directory"]
         except:
             raise ValueError("Was not able to load from project yaml file")
-    proj=FileProj.load(path)
+    proj=apiProject.load(path)
     project=Project.load(proj)
     return {"pid":project.id}, 201
 
@@ -297,11 +298,8 @@ def upload_yaml(pid):
             "YAML file is either empty or not valid")
     else:
         if project.current_file:
-            yf = YamlFile.create_from_formdata(project, yaml_data)
             sheet = project.current_file.current_sheet
-            sheet.yamlfiles.append(yf)
-            project.modify()
-
+            yf = YamlFile.create_from_formdata(project, yaml_data, sheet)
             response['yamlRegions'] = highlight_region(sheet, yf, project)
         else:
             response['yamlRegions'] = None
@@ -378,8 +376,7 @@ def rename_project(pid):
     }
     ptitle = request.form["ptitle"]
     project = get_project(pid)
-    project.name = ptitle
-    project.modify()
+    project.rename(ptitle)
     data['projects'] = get_project_details()
     return data, 200
 

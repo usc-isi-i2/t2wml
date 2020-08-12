@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from werkzeug.utils import secure_filename
 from t2wml.api import add_properties_from_file, SpreadsheetFile
+from t2wml.api import Project as apiProject
 
 from utils import upload_item_defs
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
@@ -33,10 +34,16 @@ class Project(db.Model):
     def __repr__(self):
         return '<Project {}: {}>'.format(self.name, self.id)
 
+    def rename(self, new_name):
+        self.name=new_name
+        self.modify()
+        self.api_project.title=new_name
+        self.api_project.save()
+
     @property
     def directory(self):
         if self.file_directory is None:
-            return get_project_folder(self)
+            return str(get_project_folder(self))
         return self.file_directory
 
     @staticmethod
@@ -84,17 +91,17 @@ class Project(db.Model):
         project=Project(name=name, file_directory=file_directory)
 
         if len(api_proj.data_files)>1:
-            raise ValueError("projects with more than one data file not yet supported")
+            print("WARNING: projects with more than one data file not yet supported. will use last-added data file")
         if len(api_proj.wikifier_files)>1:
-            raise ValueError("projects with more than one wikifier file not yet supported")
+            print("WARNING: projects with more than one wikifier file not yet supported. will use last-added data file")
         if len(api_proj.specific_wikifiers):
-            raise ValueError("specific wikifiers not yet supported")
+            print("WARNING: specific wikifiers not yet supported, will be ignored")
             
         db.session.add(project)
         db.session.commit()
         
         for f in api_proj.data_files:
-            df=DataFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+            df=DataFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
             if f in api_proj.yaml_sheet_associations:
                 assocs=api_proj.yaml_sheet_associations[f]
                 for sheet in df.sheets:
@@ -102,20 +109,52 @@ class Project(db.Model):
                     if len(yamls)>1:
                         raise ValueError("projects with more than one yaml file per sheet not yet supported")
                     for y in yamls:
-                        yf=YamlFile.create_from_filepath(project, os.path.join(api_proj.directory, y))
+                        yf=YamlFile.create_from_filepath(project, os.path.join(api_proj.directory, y), sheet, from_api_proj=True)
                         sheet.yamlfiles.append(yf)
         
         for f in api_proj.wikifier_files:
-            wf=WikifierFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+            wf=WikifierFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
 
         for f in api_proj.property_files:
-            pf=PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+            pf=PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
         
         for f in api_proj.item_files:
-            pf=ItemsFile.create_from_filepath(project, os.path.join(api_proj.directory, f))
+            pf=ItemsFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
             upload_item_defs(os.path.join(api_proj.directory, f))
         return project
 
+    def create_project_file(self):
+        proj=apiProject(self.directory, self.name)
+        proj.add_data_file(self.current_file.relative_path)
+        proj.add_wikifier_file(self.wikifier_file.relative_path)
+        for sheet in self.current_file.sheets:
+            if sheet.yaml_file:
+                proj.add_yaml_file(sheet.yaml_file.relative_path, self.current_file.relative_path, sheet.name)
+        
+        property_files=PropertiesFile.query.filter_by(project_id=self.id)
+        for p_f in property_files:
+            proj.add_property_file(p_f.relative_path)
+
+        item_files=ItemsFile.query.filter_by(project_id=self.id)
+        for i_f in item_files:
+            proj.add_item_file(i_f.relative_path)
+        
+        proj.save()
+        return proj
+    
+    def get_api_project(self):
+        proj_path=os.path.join(self.directory, "t2wmlproj.yaml")
+        if os.path.isfile(proj_path):
+            return apiProject.load(proj_path)
+        return self.create_project_file()
+    
+    @property
+    def api_project(self):
+        try:
+            return self._api_proj
+        except AttributeError:
+            self._api_proj=self.get_api_project()
+            return self._api_proj
 
 class SavedFile(db.Model):
     sub_folder = ""
@@ -158,21 +197,33 @@ class SavedFile(db.Model):
                          project_id=project.id, extension=extension)
         db.session.add(saved_file)
         db.session.commit()
+        saved_file.add_to_api_proj()
         return saved_file
 
     @classmethod
-    def create_from_filepath(cls, project, file_path):
+    def create_from_filepath(cls, project, file_path, from_api_proj=False):
         name = Path(file_path).stem
         extension = Path(file_path).suffix
         saved_file = cls(file_path=file_path, name=name,
                          project_id=project.id, extension=extension)
         db.session.add(saved_file)
         db.session.commit()
+        if not from_api_proj:
+            saved_file.add_to_api_proj()
         return saved_file
+
+    def add_to_api_proj(self):
+        raise NotImplementedError
 
     def __repr__(self):
         return '<File {} : {}>'.format(self.name+self.extension, self.id)
 
+    @property
+    def relative_path(self):
+        parent=Path(self.project.directory)
+        child=Path(self.file_path)
+        relative_path=str(child.relative_to(parent))
+        return relative_path
 
 class YamlFile(SavedFile):
     __tablename__ = 'yamlfile'
@@ -184,15 +235,37 @@ class YamlFile(SavedFile):
     }
 
     @classmethod
-    def create_from_formdata(cls, project, form_data):
+    def create_from_formdata(cls, project, form_data, sheet):
         # placeholder function until we start uploading yaml files properly, as files
         folder = cls.get_folder(project)
         filepath = str(folder/"1.yaml")
         with open(filepath, 'w', newline='') as f:
             f.write(form_data)
-        yf = cls.create_from_filepath(project, filepath)
-        return yf
+        yf = cls.create_from_filepath(project, filepath, sheet)
 
+        return yf
+    
+    @classmethod
+    def create_from_filepath(cls, project, file_path, sheet, from_api_proj=False):
+        name = Path(file_path).stem
+        extension = Path(file_path).suffix
+        saved_file = cls(file_path=file_path, name=name,
+                         project_id=project.id, extension=extension)
+        db.session.add(saved_file)
+        db.session.commit()
+        sheet.yamlfiles.append(saved_file)
+        project.modify()
+        if not from_api_proj:
+            saved_file.add_to_api_proj(sheet)
+        return saved_file
+
+    def add_to_api_proj(self, sheet):
+        self.project.api_project.add_yaml_file(self.relative_path, sheet.data_file.relative_path, sheet.name)
+        self.project.api_project.save()
+    
+
+
+    
 
 class WikifierFile(SavedFile):
     __tablename__ = 'wikifierfile'
@@ -211,6 +284,9 @@ class WikifierFile(SavedFile):
         wf = cls.create_from_filepath(project, filepath)
         return wf
 
+    def add_to_api_proj(self):
+        self.project.api_project.add_wikifier_file(self.relative_path)
+        self.project.api_project.save()
 
 class PropertiesFile(SavedFile):
     __tablename__ = 'propertyfile'
@@ -228,11 +304,14 @@ class PropertiesFile(SavedFile):
         return return_dict
 
     @classmethod
-    def create_from_filepath(cls, project, in_file):
-        pf = super().create_from_filepath(project, in_file)
+    def create_from_filepath(cls, project, in_file, from_api_proj=False):
+        pf = super().create_from_filepath(project, in_file, from_api_proj)
         return_dict = add_properties_from_file(pf.file_path)
         return return_dict
-
+    
+    def add_to_api_proj(self):
+        self.project.api_project.add_properties_file(self.relative_path)
+        self.project.api_project.save()
 
 class ItemsFile(SavedFile):
     __tablename__ = 'itemfile'
@@ -243,6 +322,9 @@ class ItemsFile(SavedFile):
         'polymorphic_identity': 'itemfile',
     }
 
+    def add_to_api_proj(self):
+        self.project.api_project.add_item_file(self.relative_path)
+        self.project.api_project.save()
 
 class DataFile(SavedFile):
     __tablename__ = 'datafile'
@@ -258,8 +340,8 @@ class DataFile(SavedFile):
     }
 
     @classmethod
-    def create_from_filepath(cls, project, file_path):
-        df = super().create_from_filepath(project, file_path)  # cls.create(project, in_file)
+    def create_from_filepath(cls, project, file_path, from_api_proj=False):
+        df = super().create_from_filepath(project, file_path, from_api_proj)
         df.init_sheets()
         return df
 
@@ -289,7 +371,10 @@ class DataFile(SavedFile):
             db.session.commit()
         else:
             raise ValueError("No such sheet")
-
+    
+    def add_to_api_proj(self):
+        self.project.api_project.add_data_file(self.relative_path)
+        self.project.api_project.save()
 
 class DataSheet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
