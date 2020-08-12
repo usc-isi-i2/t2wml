@@ -237,12 +237,22 @@ class YamlFile(SavedFile):
     @classmethod
     def create_from_formdata(cls, project, form_data, sheet):
         # placeholder function until we start uploading yaml files properly, as files
-        folder = cls.get_folder(project)
-        filepath = str(folder/"1.yaml")
-        with open(filepath, 'w', newline='') as f:
-            f.write(form_data)
-        yf = cls.create_from_filepath(project, filepath, sheet)
+        yf=YamlFile(project_id=project.id)
+        db.session.add(yf)
+        db.session.commit()
 
+        folder = cls.get_folder(project)
+        file_path = str(folder/ (sheet.name+"_id"+str(yf.id)+".yaml"))
+        with open(file_path, 'w', newline='') as f:
+            f.write(form_data)
+        name = Path(file_path).stem
+        extension = Path(file_path).suffix
+        yf.file_path=file_path
+        yf.extension=extension
+        yf.name=name
+        yf.add_to_api_proj(sheet)
+        sheet.yamlfiles.append(yf)
+        project.modify()
         return yf
     
     @classmethod
@@ -369,6 +379,7 @@ class DataFile(SavedFile):
         if newcurrsheet:
             self.current_sheet_id = newcurrsheet.id
             db.session.commit()
+            return newcurrsheet
         else:
             raise ValueError("No such sheet")
     

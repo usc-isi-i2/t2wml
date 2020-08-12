@@ -1,0 +1,25 @@
+statementMapping:
+  region:
+    - left: D
+      right: F
+      top: 5
+      bottom: 13 # =value[B:, $] == ""
+      skip_rows:
+        - =value[C, $row] == "Total"
+      skip_cells:
+        - =value[$col, $row] == "n/a"
+  template:
+    item: =item[A, $row]
+    property: P100024 # murder
+    value: =value[$col, $row]
+    qualifier:
+      - property: P585 # point in time
+        value: =value[$col, 4]
+        calendar: Q1985727 # Gregorian calendar
+        precision: year
+        time_zone: 0
+        format: "%Y"
+      - property: P6001 # applies to people
+        value: =item[C, $row]
+      - property: P248 # stated in
+        value: =item[B, $row]

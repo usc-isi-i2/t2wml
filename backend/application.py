@@ -237,7 +237,7 @@ def upload_wikifier_output(pid):
     in_file = file_upload_validator({"csv"})
 
     wikifier_file = WikifierFile.create(project, in_file)
-    if project.current_file:
+    if project.current_file and project.current_file.current_sheet:
         sheet = project.current_file.current_sheet
         serialized_item_table = serialize_item_table(project, sheet)
         # does not go into field wikifierData but is dumped directly
