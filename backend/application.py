@@ -277,11 +277,8 @@ def upload_yaml(pid):
             "YAML file is either empty or not valid")
     else:
         if project.current_file:
-            yf = YamlFile.create_from_formdata(project, yaml_data)
             sheet = project.current_file.current_sheet
-            sheet.yamlfiles.append(yf)
-            project.modify()
-
+            yf = YamlFile.create_from_formdata(project, yaml_data, sheet)
             response['yamlRegions'] = highlight_region(sheet, yf, project)
         else:
             response['yamlRegions'] = None
