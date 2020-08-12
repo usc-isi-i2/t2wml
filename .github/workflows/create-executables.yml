@@ -1,0 +1,132 @@
+name: Create Standalone Executables
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  windows:
+    name: Create the Windows Executable
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+      - name: Set backend environment
+        run: |
+          cd $env:GITHUB_WORKSPACE/backend
+          pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
+          pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
+          pip install pyinstaller pywin32
+      - name: Create executable
+        env:  # Replace unicode characters with ?
+           PYTHONIOENCODING: :replace
+           PYTHONLEGACYWINDOWSIOENCODING: true
+           CI: false   # Otherwise React stops on warnings
+        run: |
+          cd $env:GITHUB_WORKSPACE/backend
+          python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Upload to Release
+        id: upload-release-asset 
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: backend/dist/t2wml-server.exe
+          asset_name: t2wml-server.windows.exe
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Windows Executable"
+  mac:
+    name: Create the Mac OS Executable
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+      - name: Install Code signing certificate
+        env:
+          # Note - this is a dummy certificate for development purposes.
+          # It will be replace by a proper $ {{ secrets.MACOS_CERTIFICATE }}
+          # when we're finished with this workflow.
+          CERTIFICATE: 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
+        run: |
+          echo $CERTIFICATE | base64 --decode > certificate.p12
+
+          security create-keychain -p 12345 build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p 12345 build.keychain
+          security set-keychain-settings -lut 3600
+          security import certificate.p12 -k build.keychain -P 12345 -T /usr/bin/codesign -A
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
+      - name: Set backend environment
+        run: |
+          cd $GITHUB_WORKSPACE/backend
+          pip install --upgrade setuptools
+          pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
+          pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
+          pip install pyinstaller
+      - name: Create executable
+        env:
+          CI: false   # Otherwise React stops on warnings
+        run: |
+          cd $GITHUB_WORKSPACE/backend
+          python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Sign Executable
+        run: |
+          codesign --deep --verbose --force --sign "Test t2wml" $GITHUB_WORKSPACE/backend/dist/t2wml-server
+      - name: Upload to Release
+        id: upload-release-asset 
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: backend/dist/t2wml-server
+          asset_name: t2wml-server.macos
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "MacOS Executable"
+  linux:
+    name: Create the Linux Executable
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+      - name: Set backend environment
+        run: |
+          cd $GITHUB_WORKSPACE/backend
+          pip install --upgrade setuptools
+          pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
+          pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
+          pip install pyinstaller
+      - name: Create executable
+        env:
+          CI: false   # Otherwise React stops on warnings
+        run: |
+          cd $GITHUB_WORKSPACE/backend
+          python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Upload to Release
+        id: upload-release-asset 
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: backend/dist/t2wml-server
+          asset_name: t2wml-server.linux
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Linux Executable"
+

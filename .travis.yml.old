@@ -1,3 +1,4 @@
+# Tests moved to github actions. Check .github/workflows/tests.yml
 sudo: false
 dist: bionic
 language: python
