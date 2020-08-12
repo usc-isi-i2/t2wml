@@ -118,7 +118,7 @@ def highlight_region(data_sheet, yaml_file, project):
         else:
             highlight_data['dangerCells']['list'].append(cell)
 
-    cache_holder.result_cacher.save(highlight_data, statement_data, errors)
+    cache_holder.result_cacher.save(highlight_data, statement_data, errors, kg.metadata)
 
     highlight_data['cellStatements'] = statement_data
     return highlight_data
