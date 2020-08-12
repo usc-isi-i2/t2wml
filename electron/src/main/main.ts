@@ -142,7 +142,7 @@ async function initBackend(): Promise<void> {
     }
 
     backendUrl = `http://localhost:${port}`;
-    for(let retryCount=0; retryCount < 30; retryCount++) {
+    for(let retryCount=0; retryCount < 120; retryCount++) {
         // Try accessing the backend, see if we get a response
         try {
             await axios.get(`${backendUrl}/api/is-alive`);
