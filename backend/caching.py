@@ -36,7 +36,7 @@ class Cacher:
 
 class MappingResultsCacher(Cacher):
     # j is a modifier for backwards incompatible changes in cache format as of version 2.0a18
-    title = "result_ל"
+    title = "result_j"
 
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)

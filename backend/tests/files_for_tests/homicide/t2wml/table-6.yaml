@@ -1,0 +1,23 @@
+statementMapping:
+  region:
+    - left: C
+      right: J
+      top: 6
+      bottom: 8
+      skip_columns:
+        - =value[$col, 5] == "Source"
+  template:
+    item: =item[$col-$n, 4]
+    property: P100024 # murder
+    value: =value[$col, $row]
+    qualifier:
+      - property: P585 #point in time
+        value: =value[A, $row]
+        calendar: Q1985727
+        precision: year
+        time_zone: 0
+        format: "%Y"
+      - property: P6001 # applies to people
+        value: =item[$col, 5]
+      - property: P123 #source
+        value: =value[$col-$n, 5] == "Source" -> item[$col-$n, $row]

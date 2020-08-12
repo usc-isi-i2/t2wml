@@ -23,6 +23,7 @@ interface yamlProperties {
 
 interface yamlState {
   yamlText: string;
+  yamlTitle: string;
   yamlJson: JSON | null;
   isValidYaml: boolean;
   errMsg: string | null;
@@ -42,6 +43,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.state = {
       // yaml
       yamlText: defaultYamlText,
+      yamlTitle: "Untitled.yaml",
       yamlJson: null,
       isValidYaml: true,
       errMsg: "",
@@ -151,7 +153,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     reader.readAsText(file);
     reader.onloadend = (() => {
       const yamlText = reader.result;
-      this.setState({ yamlText: yamlText as string });
+      this.setState({ yamlText: yamlText as string, yamlTitle:file.name });
       try {
         const yamlJson = (yaml.safeLoad((yamlText as string))) as JSON;
         this.setState({

@@ -199,7 +199,7 @@ def change_sheet(pid, sheet_name):
 
         return response, 200
     except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
-        data_file.change_sheet(old_sheet)
+        data_file.change_sheet(old_sheet.name)
         raise e
 
 
@@ -215,7 +215,7 @@ def upload_wikifier_output(pid):
     in_file = file_upload_validator({"csv"})
 
     wikifier_file = WikifierFile.create(project, in_file)
-    if project.current_file:
+    if project.current_file and project.current_file.current_sheet:
         sheet = project.current_file.current_sheet
         serialized_item_table = serialize_item_table(project, sheet)
         # does not go into field wikifierData but is dumped directly
@@ -277,11 +277,8 @@ def upload_yaml(pid):
             "YAML file is either empty or not valid")
     else:
         if project.current_file:
-            yf = YamlFile.create_from_formdata(project, yaml_data)
             sheet = project.current_file.current_sheet
-            sheet.yamlfiles.append(yf)
-            project.modify()
-
+            yf = YamlFile.create_from_formdata(project, yaml_data, sheet)
             response['yamlRegions'] = highlight_region(sheet, yf, project)
         else:
             response['yamlRegions'] = None

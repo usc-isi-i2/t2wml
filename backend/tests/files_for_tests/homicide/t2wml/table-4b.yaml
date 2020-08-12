@@ -1,0 +1,21 @@
+statementMapping:
+  region:
+    - left: C
+      right: H
+      top: 5
+      bottom: 7
+  template:
+    item: =item[A, $row]
+    property: P100024 # murder
+    value: =value[$col, $row]
+    qualifier:
+      - property: P585 #point in time
+        value: =value[$col-$n, 3]
+        calendar: Q1985727
+        precision: year
+        time_zone: 0
+        format: "%Y"
+      - property: P6001 # applies to people
+        value: =item[$col, 4]
+      - property: P123 #source
+        value: =item[B, $row]

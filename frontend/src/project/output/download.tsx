@@ -61,7 +61,6 @@ class Download extends Component<DownloadProperties, DownloadState> {
               <Col xs="3" md="3" className="pl-0">
                 <Form.Control as="select" onChange={(event) => this.setState({ downloadFileType: event.target.value })}>
                   <option value="json">.json</option>
-                  <option value="ttl">.ttl</option>
                   <option value="tsv">kgtk (.tsv)</option>
                 </Form.Control>
               </Col>
