@@ -199,7 +199,7 @@ def change_sheet(pid, sheet_name):
 
         return response, 200
     except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
-        data_file.change_sheet(old_sheet)
+        data_file.change_sheet(old_sheet.name)
         raise e
 
 
