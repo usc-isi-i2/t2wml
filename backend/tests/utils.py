@@ -8,7 +8,7 @@ from application import app
 
 BACKEND_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="module")
 def client(request):
     def fin():
         os.close(db_fd)
@@ -24,7 +24,6 @@ def client(request):
         yield client
 
 class BaseClass:
-    files_dir=""
     results_dict={} #used if we need to overwrite the existing results when something changes
     expected_results_path=""
 
