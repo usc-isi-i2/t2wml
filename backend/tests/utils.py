@@ -8,7 +8,7 @@ from application import app
 
 BACKEND_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def client(request):
     def fin():
         os.close(db_fd)
