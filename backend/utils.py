@@ -119,7 +119,7 @@ def get_qnode_label(node, project):
 def upload_item_defs(file_path):
     property_dict = {}
     items = []
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter="\t")
         for row_dict in reader:
             node1 = row_dict["node1"]

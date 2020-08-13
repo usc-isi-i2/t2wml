@@ -50,13 +50,13 @@ class MappingResultsCacher(Cacher):
             "metadata": metadata
         }
         s = json.dumps(d)
-        with open(self.cache_path, 'w') as f:
+        with open(self.cache_path, 'w', encoding="utf-8") as f:
             f.write(s)
 
     def get_highlight_region(self):
         if self.is_fresh():
             try:
-                with open(self.cache_path, 'r') as f:
+                with open(self.cache_path, 'r', encoding="utf-8") as f:
                     data = json.load(f)
                 return data["highlight region"], data["statements"], data["errors"]
             except:

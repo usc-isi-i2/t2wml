@@ -159,7 +159,7 @@ def handle_yaml(sheet, project):
     if sheet.yaml_file:
         yaml_file = sheet.yaml_file
         response = dict()
-        with open(yaml_file.file_path, "r") as f:
+        with open(yaml_file.file_path, "r", encoding="utf-8") as f:
             response["yamlFileContent"] = f.read()
         response['yamlRegions'] = highlight_region(sheet, yaml_file, project)
         return response
