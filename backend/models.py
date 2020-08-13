@@ -140,7 +140,7 @@ class YamlFile(SavedFile):
 
         folder = cls.get_folder(project)
         file_path = str(folder/ (sheet.name+"_id"+str(yf.id)+".yaml"))
-        with open(file_path, 'w', newline='') as f:
+        with open(file_path, 'w', newline='', encoding="utf-8") as f:
             f.write(form_data)
         name = Path(file_path).stem
         extension = Path(file_path).suffix
