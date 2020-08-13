@@ -85,8 +85,8 @@ class RequestService {
     return response;
   }
 
-  public async getQnode(node: string) {
-    const response = await backendGet(`/qnode/${node}`);
+  public async getQnode(pid:string, node: string) {
+    const response = await backendGet(`/qnode/${pid}/${node}`);
     return response;
   }
 

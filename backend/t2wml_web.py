@@ -224,7 +224,7 @@ def serialize_item_table(project, sheet):
                 cell = to_excel(col, row)
                 qnodes[cell][context] = {"item": item}
 
-    labels_and_descriptions = get_labels_and_descriptions(list(items_to_get))
+    labels_and_descriptions = get_labels_and_descriptions(list(items_to_get), project)
 
     # update rowData
     for i in range(len(rowData)):

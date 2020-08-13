@@ -133,10 +133,11 @@ def upload_properties(pid):
     return return_dict, 200
 
 
-@app.route('/api/qnode/<qid>', methods=['GET'])
+@app.route('/api/qnode/<pid>/<qid>', methods=['GET'])
 @json_response
-def get_qnode_info(qid):
-    label = get_qnode_label(qid)
+def get_qnode_info(pid, qid):
+    project = get_project(pid)
+    label = get_qnode_label(qid, project)
     if label is None:
         return {}, 404
     return {"label": label}, 200
