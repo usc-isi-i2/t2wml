@@ -24,11 +24,12 @@ debug_mode = False
 def get_project(project_id):
     try:
         project = Project.query.get(project_id)
-        update_t2wml_settings(project)
-        api_proj=project.api_project
-        return project
-    except:
+    except Exception as e:
         raise web_exceptions.ProjectNotFoundException
+    update_t2wml_settings(project)
+    api_proj=project.api_project
+    return project
+        
 
 
 def json_response(func):
