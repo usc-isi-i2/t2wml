@@ -156,10 +156,11 @@ def upload_properties(pid):
     return return_dict, 200
 
 
-@app.route('/api/qnode/<qid>', methods=['GET'])
+@app.route('/api/qnode/<pid>/<qid>', methods=['GET'])
 @json_response
-def get_qnode_info(qid):
-    label = get_qnode_label(qid)
+def get_qnode_info(pid, qid):
+    project = get_project(pid)
+    label = get_qnode_label(qid, project)
     if label is None:
         return {}, 404
     return {"label": label}, 200
@@ -396,6 +397,9 @@ def update_settings(pid):
     update_t2wml_settings(project)
     return None, 200  # can become 204 eventually, need to check frontend compatibility
 
+@app.route('/api/is-alive')
+def is_alive():
+    return 'Backend is here', 200
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
 # In that case, we only have one webserver - Flask. The following two routes are for this.

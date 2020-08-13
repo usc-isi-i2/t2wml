@@ -1,4 +1,4 @@
-name: Create Standalone Executables
+name: Create Electron Installations
 on:
   push:
     tags:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   windows:
-    name: Create the Windows Executable
+    name: Create the Windows Installation
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -17,13 +17,17 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
+      - name: Checkout t2wml-api
+        run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
       - name: Set backend environment
         run: |
           cd $env:GITHUB_WORKSPACE/backend
+          pip install --upgrade pip
+          pip install ../t2wml-api
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
-          pip install pyinstaller pywin32
-      - name: Create executable
+          pip install pyinstaller pywin32 semver
+      - name: Create installer
         env:  # Replace unicode characters with ?
            PYTHONIOENCODING: :replace
            PYTHONLEGACYWINDOWSIOENCODING: true
@@ -31,18 +35,22 @@ jobs:
         run: |
           cd $env:GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Rename installer to canonical name
+        run: |
+          cd $env:GITHUB_WORKSPACE/electron/out
+          copy "t2wml Setup*.exe" t2wml-setup.exe
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server.exe
-          asset_name: t2wml-server.windows.exe
+          file: electron/out/t2wml-setup.exe
+          asset_name: t2wml-setup.exe
           tag: ${{ github.ref }}
           overwrite: true
           body: "Windows Executable"
   mac:
-    name: Create the Mac OS Executable
+    name: Create the Mac OS Installation
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -68,34 +76,39 @@ jobs:
           security set-keychain-settings -lut 3600
           security import certificate.p12 -k build.keychain -P 12345 -T /usr/bin/codesign -A
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k 12345 build.keychain
+      - name: Checkout t2wml-api
+        run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
-          pip install --upgrade setuptools
+          pip install --upgrade setuptools pip
+          pip install ../t2wml-api
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
-          pip install pyinstaller
+          pip install pyinstaller semver
       - name: Create executable
         env:
           CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
-      - name: Sign Executable
+      - name: Rename installer to canonical name
         run: |
-          codesign --deep --verbose --force --sign "Test t2wml" $GITHUB_WORKSPACE/backend/dist/t2wml-server
+          cd $GITHUB_WORKSPACE/electron/out
+          ls -l
+          cp t2wml*.pkg t2wml.pkg
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server
-          asset_name: t2wml-server.macos
+          file: electron/out/t2wml.pkg
+          asset_name: t2wml.pkg
           tag: ${{ github.ref }}
           overwrite: true
           body: "MacOS Executable"
   linux:
-    name: Create the Linux Executable
+    name: Create the Linux Installation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -106,26 +119,33 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
+      - name: Checkout t2wml-api
+        run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
-          pip install --upgrade setuptools
+          pip install --upgrade setuptools pip
+          pip install ../t2wml-api
           pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
           pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
-          pip install pyinstaller
+          pip install pyinstaller semver
       - name: Create executable
         env:
           CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Rename installer to canonical name
+        run: |
+          cd $GITHUB_WORKSPACE/electron/out
+          cp t2wml*.AppImage t2wml.AppImage
       - name: Upload to Release
         id: upload-release-asset 
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-server
-          asset_name: t2wml-server.linux
+          file: electron/out/t2wml.AppImage
+          asset_name: t2wml.AppImage
           tag: ${{ github.ref }}
           overwrite: true
           body: "Linux Executable"

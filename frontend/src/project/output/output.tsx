@@ -288,7 +288,7 @@ class Output extends Component<OutputProperties, OutputState> {
     // before send request
     wikiStore.output.showSpinner = true;
     
-    this.requestService.getQnode(node).then((res) => {
+    this.requestService.getQnode(this.pid, node).then((res) => {
         const name = res.label;
         if (field === "itemName") {
         this.setState({ itemName: name });
