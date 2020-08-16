@@ -3,6 +3,16 @@ T2WML Standalone Server App History
 
 Changes in version 2.1.1:
 ------------------------
+* t2wml-api version 0.0.7
+* support utf-8 encoding for yaml files
+* bug fixes:
+    - critical bug: yaml files on multi-sheet spreadsheets were being overwritten
+    - use project-specific sparql endpoint when requesting node IDs
+    - race condition when uploading data file and wikifier file at same time
+    - "DataSheet not legal as SQL literal value" when switching sheets
+    - renaming project was broken
+    - when selecting a cell, the first cell selected didn't show labels properly
+* removed ttl download option
 
 
 Changes in version 2.1.0:
