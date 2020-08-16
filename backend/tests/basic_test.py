@@ -148,7 +148,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_10_get_node(self, client):
         #GET /api/qnode/<qid>
-        url='/api/qnode/{qid}'.format(qid="Q21203")
+        url='/api/qnode/{pid}/{qid}'.format(pid=pid, qid="Q21203")
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
