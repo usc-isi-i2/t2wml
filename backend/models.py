@@ -41,6 +41,8 @@ class Project(db.Model):
     def rename(self, new_name):
         old_folder=get_project_folder(self)
         new_folder=get_project_folder(self, new_name)
+        if new_folder.exists():
+            raise ValueError("project with that name and ID already exists")
         old_folder.rename(new_folder)
         
         self.name=new_name

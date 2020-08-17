@@ -1,6 +1,6 @@
 import os
 import json
-from tests.utils import client
+from tests.utils import client, sanitize_highlight_region
 
 
 def test_switching_back_to_sheets(client):
@@ -65,17 +65,10 @@ def test_switching_back_to_sheets(client):
     switch_back_data = json.loads(data)["yamlData"]["yamlRegions"]
 
     #some of the results are sent back as unordered lists and need to be compared separately
-    set_keys=[]
-    for key in yaml_1_data:
-        if "list" in yaml_1_data[key]:
-            set_keys.append(key)
-            test1=set(yaml_1_data[key]["list"])
-            test2=set(switch_back_data[key]["list"])
-            assert test1==test2
+    
+    set_keys=sanitize_highlight_region(yaml_1_data, switch_back_data)
     for key in set_keys:
-        yaml_1_data.pop(key)
-        switch_back_data.pop(key)
-        yaml_2_data.pop(key)
+        yaml_2_data.pop(key, None)
     
     assert yaml_1_data!=yaml_2_data
     assert yaml_1_data==switch_back_data

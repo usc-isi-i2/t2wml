@@ -1,7 +1,7 @@
 import json
 import os
-
-from tests.utils import client, BaseClass
+from uuid import uuid4
+from tests.utils import client, BaseClass, sanitize_highlight_region
     
 
 pid=None #we need to use a global pid for some reason... self.pid does not work.
@@ -124,16 +124,9 @@ class TestBasicWorkflow(BaseClass):
         self.results_dict['add_yaml']=data
 
         #some of the results are sent back as unordered lists and need to be compared separately
-        set_keys=[]
-        for key in data["yamlRegions"]:
-            if "list" in data["yamlRegions"][key]:
-                set_keys.append(key)
-                test1=set(data["yamlRegions"][key]["list"])
-                test2=set(self.expected_results_dict["add_yaml"]["yamlRegions"][key]["list"])
-                assert test1==test2
-        for key in set_keys:
-            data["yamlRegions"].pop(key, None)
-            self.expected_results_dict["add_yaml"]["yamlRegions"].pop(key, None)
+        dict_1=data["yamlRegions"]
+        dict_2=self.expected_results_dict["add_yaml"]["yamlRegions"]
+        sanitize_highlight_region(dict_1, dict_2)
 
         self.compare_jsons(data, 'add_yaml')
 
@@ -198,8 +191,9 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'wikify_region')
 
     def test_13_change_project_name(self, client):
+        
         url='/api/project/{pid}'.format(pid=pid)
-        ptitle="Unit test renamed"
+        ptitle="Unit test renamed"+str(uuid4())
         response=client.put(url,
                 data=dict(
                 ptitle=ptitle
@@ -233,3 +227,38 @@ class TestBasicWorkflow(BaseClass):
 
 
 
+class TestLoadingProject(BaseClass):
+    files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
+    expected_results_path=os.path.join(files_dir, "project_results.json")
+
+    def test_10_load_from_path(self, client):
+        response=client.post('/api/project/load',
+        data=dict(
+                path=self.files_dir
+            )
+        )
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        global pid
+        pid=str(data['pid'])
+        assert response.status_code==201
+    
+    def test_11_get_loaded_yaml_files(self, client):
+        url= '/api/project/{pid}'.format(pid=pid)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        self.results_dict['load_from_path']=data
+
+        #some of the results are sent back as unordered lists and need to be compared separately
+        set_keys=[]
+        dict_1=data["yamlData"]["yamlRegions"]
+        dict_2=self.expected_results_dict["load_from_path"]["yamlData"]["yamlRegions"]
+        sanitize_highlight_region(dict_1, dict_2)
+
+        data['tableData'].pop('filename', None)
+        self.expected_results_dict['load_from_path']['tableData'].pop('filename', None)
+
+        self.compare_jsons(data, 'load_from_path')
+
+    
