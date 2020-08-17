@@ -125,12 +125,15 @@ class Project(db.Model):
 
     def create_project_file(self):
         proj=apiProject(self.directory, self.name)
-        proj.add_data_file(self.current_file.relative_path)
-        proj.add_wikifier_file(self.wikifier_file.relative_path)
-        for sheet in self.current_file.sheets:
-            if sheet.yaml_file:
-                proj.add_yaml_file(sheet.yaml_file.relative_path, self.current_file.relative_path, sheet.name)
+        if self.current_file:
+            proj.add_data_file(self.current_file.relative_path)
+            for sheet in self.current_file.sheets:
+                if sheet.yaml_file:
+                    proj.add_yaml_file(sheet.yaml_file.relative_path, self.current_file.relative_path, sheet.name)
         
+        if self.wikifier_file:
+            proj.add_wikifier_file(self.wikifier_file.relative_path)
+
         property_files=PropertiesFile.query.filter_by(project_id=self.id)
         for p_f in property_files:
             proj.add_property_file(p_f.relative_path)

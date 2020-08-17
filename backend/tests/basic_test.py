@@ -13,7 +13,7 @@ class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
 
-    def test_0_get_projects_list(self, client):
+    def test_00_get_projects_list(self, client):
         #GET /api/projects
         response=client.get('/api/projects') 
         data = response.data.decode("utf-8")
