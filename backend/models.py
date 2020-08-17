@@ -8,7 +8,7 @@ from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
 
 def get_project_folder(project):
-    return Path(UPLOAD_FOLDER)/(project.name+"_"+str(project.id))
+    return Path(UPLOAD_FOLDER) / (project.name + "_" + str(project.id))
 
 
 class Project(db.Model):
@@ -82,7 +82,7 @@ class SavedFile(db.Model):
     @classmethod
     def get_folder(cls, project):
         sub_folder = cls.sub_folder
-        folder = get_project_folder(project)/sub_folder
+        folder = get_project_folder(project) / sub_folder
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
@@ -90,7 +90,7 @@ class SavedFile(db.Model):
     def save_file(cls, project, in_file):
         folder = cls.get_folder(project)
         filename = secure_filename(in_file.filename)
-        file_path = folder/filename
+        file_path = folder / filename
         in_file.save(str(file_path))
         return file_path
 
@@ -119,7 +119,7 @@ class SavedFile(db.Model):
         return saved_file
 
     def __repr__(self):
-        return '<File {} : {}>'.format(self.name+self.extension, self.id)
+        return '<File {} : {}>'.format(self.name + self.extension, self.id)
 
 
 class YamlFile(SavedFile):
@@ -134,19 +134,19 @@ class YamlFile(SavedFile):
     @classmethod
     def create_from_formdata(cls, project, form_data, sheet):
         # placeholder function until we start uploading yaml files properly, as files
-        yf=YamlFile(project_id=project.id)
+        yf = YamlFile(project_id=project.id)
         db.session.add(yf)
         db.session.commit()
 
         folder = cls.get_folder(project)
-        file_path = str(folder/ (sheet.name+"_id"+str(yf.id)+".yaml"))
+        file_path = str(folder / (sheet.name + "_id" + str(yf.id) + ".yaml"))
         with open(file_path, 'w', newline='', encoding="utf-8") as f:
             f.write(form_data)
         name = Path(file_path).stem
         extension = Path(file_path).suffix
-        yf.file_path=file_path
-        yf.extension=extension
-        yf.name=name
+        yf.file_path = file_path
+        yf.extension = extension
+        yf.name = name
 
         sheet.yamlfiles.append(yf)
         project.modify()
@@ -165,7 +165,7 @@ class WikifierFile(SavedFile):
     @classmethod
     def create_from_dataframe(cls, project, df):
         folder = cls.get_folder(project)
-        filepath = str(folder/"wikify_region_output.csv")
+        filepath = str(folder / "wikify_region_output.csv")
         df.to_csv(filepath)
         wf = cls.create_from_filepath(project, filepath)
         return wf
@@ -187,6 +187,14 @@ class PropertiesFile(SavedFile):
         return return_dict
 
     @classmethod
+    def create_from_dataframe(cls, project, df):
+        folder = cls.get_folder(project)
+        filepath = str(folder / "datamart_new_properties.tsv")
+        df.to_csv(filepath, sep='\t', index=False)
+        wf = cls.create_from_filepath(project, filepath)
+        return wf
+
+    @classmethod
     def create_from_filepath(cls, project, in_file):
         pf = super().create_from_filepath(project, in_file)
         return_dict = add_properties_from_file(pf.file_path)
@@ -201,6 +209,14 @@ class ItemsFile(SavedFile):
     __mapper_args__ = {
         'polymorphic_identity': 'itemfile',
     }
+
+    @classmethod
+    def create_from_dataframe(cls, project, df):
+        folder = cls.get_folder(project)
+        filepath = str(folder / "datamart_item_definitions.tsv")
+        df.to_csv(filepath, sep='\t', index=False)
+        wf = cls.create_from_filepath(project, filepath)
+        return wf
 
 
 class DataFile(SavedFile):
@@ -273,7 +289,6 @@ yaml_sheet = db.Table('yaml_sheet',
                       db.Column('yaml_id', db.Integer,
                                 db.ForeignKey('yamlfile.id'))
                       )
-
 
 datafile_wiki = db.Table('datafile_wiki',
                          db.Column('wikifier_id', db.Integer,

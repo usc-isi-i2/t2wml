@@ -1,8 +1,9 @@
-import pandas as pd
-from app_config import DATAMART_API_ENDPOINT
-from requests import post
+import csv
 import tarfile
 import tempfile
+import pandas as pd
+from requests import post
+from app_config import DATAMART_API_ENDPOINT
 
 
 class AnnotationIntegration(object):
@@ -42,13 +43,18 @@ class AnnotationIntegration(object):
         d = open('{}/t2wml_annotation_files.tar.gz'.format(temp_dir), 'wb')
         d.write(response.content)
 
+        t2wml_yaml = None
+        combined_item_df = None
+        consolidated_wikifier_df = None
         tar = tarfile.open(f'{temp_dir}/t2wml_annotation_files.tar.gz')
         for member in tar.getmembers():
             f = tar.extractfile(member)
             if f is not None:
                 f_name = member.name
-                print(f_name)
-                content = f.read()
-                t2wml_yaml =
-                combined_item_def_df\
-                consolidated_wikifier_df
+                if f_name == './t2wml.yaml':
+                    t2wml_yaml = f.read().decode('utf-8')
+                if f_name == './consolidated_wikifier.csv':
+                    consolidated_wikifier_df = pd.read_csv(f, dtype=object)
+                if f_name == './item_definitions_all.tsv':
+                    combined_item_df = pd.read_csv(f, dtype=object, sep='\t')
+        return t2wml_yaml, consolidated_wikifier_df, combined_item_df
