@@ -147,13 +147,12 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'get_cell')
 
     def test_10_get_node(self, client):
-        #GET /api/qnode/<qid>
         url='/api/qnode/{pid}/{qid}'.format(pid=pid, qid="Q21203")
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
         assert data['label']=='Aruba'
-        url='/api/qnode/{qid}'.format(qid="P17")
+        url='/api/qnode/{pid}/{qid}'.format(pid=pid, qid="P17")
         response=client.get(url) 
         data2 = response.data.decode("utf-8")
         data2 = json.loads(data2)
