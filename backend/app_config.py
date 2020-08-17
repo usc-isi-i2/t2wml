@@ -19,6 +19,7 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 #    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
 UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
+CACHE_FOLDER=os.path.join(DATADIR, "cache")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
 
 app = Flask(__name__, static_folder=None)

@@ -6,7 +6,7 @@ from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToIn
 from t2wml.api import Sheet, KnowledgeGraph, Wikifier, WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
 from caching import CacheHolder
-from app_config import db, UPLOAD_FOLDER
+from app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
 from wikidata_models import DatabaseProvider
 from utils import get_labels_and_descriptions
 
@@ -22,7 +22,7 @@ def update_t2wml_settings(project):
     t2wml_settings.sparql_endpoint=project.sparql_endpoint
     t2wml_settings.wikidata_provider = DatabaseProvider(project.sparql_endpoint)
     t2wml_settings.cache_data_files = True
-    t2wml_settings.cache_data_files_folder = os.path.join(UPLOAD_FOLDER, "data_cache")
+    t2wml_settings.cache_data_files_folder = CACHE_FOLDER
 
 
 def get_wikifier(project):
