@@ -17,6 +17,7 @@ from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, upload_item_defs)
 from web_exceptions import WebException
+from t2wml_annotation_integration import AnnotationIntegration
 
 debug_mode = False
 
@@ -161,6 +162,15 @@ def upload_data_file(pid):
     data_file = DataFile.create(project, new_file)
     response["tableData"] = table_data(data_file)
 
+    # lets see if this is an annotated spreadsheet, if it is then lets go on an adventure
+    ai = AnnotationIntegration(request, response['tableData']['isCSV'], response['tableData']['currSheetName'])
+
+    if ai.is_annotated_spreadsheet():
+        ai.get_files()
+    else:
+        # boring, keep going
+        pass
+
     sheet = data_file.current_sheet
     response["wikifierData"] = serialize_item_table(project, sheet)
 
@@ -252,7 +262,7 @@ def wikify_region(pid):
             error_dict = {
                 "errorCode": 400,
                 "errorTitle": "Failed to wikify some cellsr",
-                "errorDescription": "Failed to wikify: "+",".join(problem_cells)
+                "errorDescription": "Failed to wikify: " + ",".join(problem_cells)
             }
             data['problemCells'] = error_dict
         else:
@@ -376,9 +386,11 @@ def update_settings(pid):
     update_t2wml_settings(project)
     return None, 200  # can become 204 eventually, need to check frontend compatibility
 
+
 @app.route('/api/is-alive')
 def is_alive():
     return 'Backend is here', 200
+
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
 # In that case, we only have one webserver - Flask. The following two routes are for this.
@@ -405,12 +417,13 @@ if __name__ == "__main__":
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
             from app_config import UPLOAD_FOLDER
+
             app.config['PROFILE'] = True
             profiles_dir = os.path.join(UPLOAD_FOLDER, "profiles")
             if not os.path.isdir(profiles_dir):
                 os.mkdir(profiles_dir)
             app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[
-                                              100], profile_dir=profiles_dir)
+                100], profile_dir=profiles_dir)
         app.run(debug=True, port=13000)
     else:
         app.run(threaded=True, port=13000)
