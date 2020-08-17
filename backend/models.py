@@ -10,8 +10,12 @@ from utils import upload_item_defs
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
 
-def get_project_folder(project):
-    return Path(UPLOAD_FOLDER)/(project.name+"_"+str(project.id))
+def get_project_folder(project, new_name=None):
+    name=new_name
+    if not name:
+        name=project.name
+    p= Path(UPLOAD_FOLDER)/(name+"_"+str(project.id))
+    return p
 
 def default_project_folder(context):
     params=context.get_current_parameters()
@@ -35,15 +39,27 @@ class Project(db.Model):
         return '<Project {}: {}>'.format(self.name, self.id)
 
     def rename(self, new_name):
+        old_folder=get_project_folder(self)
+        new_folder=get_project_folder(self, new_name)
+        old_folder.rename(new_folder)
+        
         self.name=new_name
+        self.file_directory=str(new_folder)
         self.modify()
         self.api_project.title=new_name
+        self.api_project.directory=self.directory
         self.api_project.save()
 
     @property
     def directory(self):
         if self.file_directory is None:
-            return str(get_project_folder(self))
+            p = get_project_folder(self)
+            if not p.is_dir():
+                raise ValueError("Project directory was never created")
+
+            #save for the future
+            self.file_directory=str(p)
+            db.session.commit()
         return self.file_directory
 
     @staticmethod
@@ -323,7 +339,7 @@ class PropertiesFile(SavedFile):
         return return_dict
     
     def add_to_api_proj(self):
-        self.project.api_project.add_properties_file(self.relative_path)
+        self.project.api_project.add_property_file(self.relative_path)
         self.project.api_project.save()
 
 class ItemsFile(SavedFile):
