@@ -165,8 +165,9 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data=data["data"]
-        with open(os.path.join(self.files_dir, "download.tsv"), 'w') as f:
-            f.write(data)
+        with open(os.path.join(self.files_dir, "download.tsv"), 'r') as f:
+            expected=f.read()
+        assert expected==data
 
     def test_12_change_sheet(self, client):
         #GET /api/data/{pid}/<sheet_name>
