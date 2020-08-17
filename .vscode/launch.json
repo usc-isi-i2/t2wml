@@ -40,7 +40,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-               "backend\\tests", 
+               "backend/tests", 
                "-s", 
                "-v"
             ],

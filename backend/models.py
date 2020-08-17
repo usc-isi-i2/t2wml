@@ -89,8 +89,9 @@ class SavedFile(db.Model):
     @classmethod
     def save_file(cls, project, in_file):
         folder = cls.get_folder(project)
-        filename = secure_filename(in_file.filename)
-        file_path = folder / filename
+        shorter_name=Path(in_file.filename).name #otherwise secure_filename does weird things on linux
+        filename = secure_filename(shorter_name)
+        file_path = folder/filename
         in_file.save(str(file_path))
         return file_path
 
