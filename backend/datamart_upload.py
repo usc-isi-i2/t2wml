@@ -44,7 +44,7 @@ def get_concatenated_file(project, kgtk, tempfile):
         data=f.read()
         
     tempfile.write(data)
-
+    tempfile.flush()
     
     
 
@@ -61,7 +61,8 @@ def upload_to_datamart(project, data_sheet):
 
     with tempfile.TemporaryFile(mode="r+b", suffix=".tsv") as tmpfile:
         #step four: concatenate download with item defs file
-        concatenated=get_concatenated_file(project, kgtk, tmpfile)
+        get_concatenated_file(project, kgtk, tmpfile)
+        tmpfile.seek(0)
 
         #step five: upload to datamart
         files = {
