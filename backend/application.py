@@ -16,6 +16,7 @@ from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        wikify)
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, upload_item_defs)
+from datamart_upload import upload_to_datamart
 from web_exceptions import WebException
 from t2wml_annotation_integration import AnnotationIntegration
 
@@ -352,8 +353,21 @@ def downloader(pid, filetype):
     if not yaml_file:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Cannot download report without uploading YAML file first")
-    response = download(sheet, yaml_file, project, filetype, project.name)
+    response = download(sheet, yaml_file, project, filetype)
     return response, 200
+
+@app.route('/api/project/<pid>/datamart', methods=['GET'])
+@json_response
+def upload_to_datamart(pid):
+    project = get_project(pid)
+    try:
+        sheet = project.current_file.current_sheet
+    except:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+                "Can't upload to datamart without datafile and sheet")
+    data = upload_to_datamart(project, sheet)
+    return data, 201
+
 
 
 @app.route('/api/project/<pid>', methods=['DELETE'])

@@ -55,8 +55,11 @@ class WikifyWithoutDataFileException(WebException):
 class FileTypeNotSupportedException(WebException):
     message = "This file type is currently not supported"
 
-# possibly to be deleted
-
 
 class InvalidYAMLFileException(WebException):
     message = "YAML file is either empty or not valid"
+
+class NoSuchDatasetIDException(WebException):
+    code=404
+    message="The dataset ID specified in cell B1 does not exist"
+

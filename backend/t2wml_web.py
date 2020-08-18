@@ -41,7 +41,7 @@ def get_kg(data_sheet, cell_mapper, project):
     return kg
 
 
-def download(data_sheet, yaml_file, project, filetype, project_name=""):
+def download(data_sheet, yaml_file, project, filetype):
     cache_holder = CacheHolder(data_sheet, yaml_file)
     response = dict()
     kg = cache_holder.result_cacher.get_kg()
