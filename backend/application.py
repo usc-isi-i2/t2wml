@@ -358,7 +358,7 @@ def downloader(pid, filetype):
 
 @app.route('/api/project/<pid>/datamart', methods=['GET'])
 @json_response
-def upload_to_datamart(pid):
+def load_to_datamart(pid):
     project = get_project(pid)
     try:
         sheet = project.current_file.current_sheet

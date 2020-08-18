@@ -1,9 +1,13 @@
+import os
 import requests
+import pandas as pd
+import tempfile
 
 from t2wml.api import Sheet
 from web_exceptions import NoSuchDatasetIDException, CellResolutionWithoutYAMLFileException
 from app_config import DATAMART_API_ENDPOINT
 from t2wml_web import download
+from models import ItemsFile
 
 def get_dataset_id(data_sheet):
     #step one: extract dataset id from cell B1
@@ -28,6 +32,23 @@ def get_download(project, sheet):
     kgtk=response["data"]
     return kgtk
 
+def get_concatenated_file(project, kgtk, tempfile):
+    tempfile.write(kgtk.encode('utf-8'))
+
+    #open the item file, slice off the header row
+    item_file = ItemsFile.query.filter_by(
+            project_id=project.id).order_by(ItemsFile.id.desc()).first()
+    
+    with open(item_file.file_path, 'rb') as f:
+        f.readline()
+        data=f.read()
+        
+    tempfile.write(data)
+
+    
+    
+
+
 
 def upload_to_datamart(project, data_sheet):
     try:
@@ -38,11 +59,13 @@ def upload_to_datamart(project, data_sheet):
     #step three: get the download kgtk
     kgtk=get_download(project, data_sheet)
 
-    #step four: concatenate download with item defs file
+    with tempfile.TemporaryFile(mode="r+b") as tmpfile:
+        #step four: concatenate download with item defs file
+        concatenated=get_concatenated_file(project, kgtk, tmpfile)
 
-    #step five: upload to datamart
-    response=requests.post(DATAMART_API_ENDPOINT + "/datasets/{dataset_id}/t2wml".format(dataset_id=dataset_id),
-                            )
+        #step five: upload to datamart
+        response=requests.post(DATAMART_API_ENDPOINT + "/datasets/{dataset_id}/t2wml".format(dataset_id=dataset_id),
+                            data={'file':tmpfile})
 
     data={}
     return data
