@@ -42,6 +42,7 @@ interface OutputState {
   showDownload: boolean,
   isDownloadDisabled: boolean,
   isDownloading: boolean;
+  isLoadDatamart: boolean;
 
   propertyName: string;
   errorMessage: ErrorMessage;
@@ -82,6 +83,7 @@ class Output extends Component<OutputProperties, OutputState> {
       showDownload: false,
       isDownloadDisabled: wikiStore.output.isDownloadDisabled,
       isDownloading: false,
+      isLoadDatamart: false,
 
       errorMessage: {} as ErrorMessage,
       queryDataCount: 0,
@@ -320,6 +322,13 @@ class Output extends Component<OutputProperties, OutputState> {
     });
   }
 
+  loadToDatamart() {
+    // TODO !
+    this.setState({ isLoadDatamart: true });
+    this.requestService.loadToDatamart(this.pid);
+    this.setState({ isLoadDatamart: false });
+  }
+
   render() {
     return (
       <div className="w-100 h-100 p-1">
@@ -336,15 +345,25 @@ class Output extends Component<OutputProperties, OutputState> {
             {/* title */}
             <div
               className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 90px)", cursor: "default" }}
+              style={{ width: "calc(100% - 290px)", cursor: "default" }}
             >Output</div>
 
+            <Button
+              className="d-inline-block float-right"
+              variant="outline-light"
+              size="sm"
+              style={{ padding: "0rem 0.5rem" }}
+              onClick={() => this.loadToDatamart()}
+            >
+              {this.state.isLoadDatamart ? <Spinner as="span" animation="border" size="sm" /> : "Load to Datamart"}
+            </Button>
+            
             {/* button to download */}
             <Button
               className="d-inline-block float-right"
               variant="outline-light"
               size="sm"
-              style={{ padding: "0rem 0.5rem", width: "83px" }}
+              style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
               onClick={() => this.setState({ showDownload: true })}
               disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >

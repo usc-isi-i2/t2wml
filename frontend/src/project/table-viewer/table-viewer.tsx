@@ -658,7 +658,7 @@ class TableViewer extends Component<TableProperties, TableState> {
                 className="d-inline-block float-right"
                 variant="outline-light"
                 size="sm"
-                style={{ padding: "0rem 0.5rem" }}
+                style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
                 onClick={() => { document!.getElementById("properties_button")!.click(); }}
               >
                 Upload properties
