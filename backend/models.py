@@ -238,7 +238,7 @@ class SavedFile(db.Model):
         raise NotImplementedError
 
     def __repr__(self):
-        return '<File {} : {}>'.format(self.name+self.extension, self.id)
+        return '<File {} : {}>'.format(self.name + self.extension, self.id)
 
     @property
     def relative_path(self):
@@ -259,19 +259,19 @@ class YamlFile(SavedFile):
     @classmethod
     def create_from_formdata(cls, project, form_data, sheet):
         # placeholder function until we start uploading yaml files properly, as files
-        yf=YamlFile(project_id=project.id)
+        yf = YamlFile(project_id=project.id)
         db.session.add(yf)
         db.session.commit()
 
         folder = cls.get_folder(project)
-        file_path = str(folder/ (sheet.name+"_id"+str(yf.id)+".yaml"))
+        file_path = str(folder / (sheet.name + "_id" + str(yf.id) + ".yaml"))
         with open(file_path, 'w', newline='', encoding="utf-8") as f:
             f.write(form_data)
         name = Path(file_path).stem
         extension = Path(file_path).suffix
-        yf.file_path=file_path
-        yf.extension=extension
-        yf.name=name
+        yf.file_path = file_path
+        yf.extension = extension
+        yf.name = name
         yf.add_to_api_proj(sheet)
         sheet.yamlfiles.append(yf)
         project.modify()
@@ -311,7 +311,7 @@ class WikifierFile(SavedFile):
     @classmethod
     def create_from_dataframe(cls, project, df):
         folder = cls.get_folder(project)
-        filepath = str(folder/"wikify_region_output.csv")
+        filepath = str(folder / "wikify_region_output.csv")
         df.to_csv(filepath)
         wf = cls.create_from_filepath(project, filepath)
         return wf
@@ -345,6 +345,13 @@ class PropertiesFile(SavedFile):
         self.project.api_project.add_property_file(self.relative_path)
         self.project.api_project.save()
 
+    def create_from_dataframe(cls, project, df):
+        folder = cls.get_folder(project)
+        filepath = str(folder / "datamart_new_properties.tsv")
+        df.to_csv(filepath, sep='\t', index=False)
+        wf = cls.create_from_filepath(project, filepath)
+        return wf
+
 class ItemsFile(SavedFile):
     __tablename__ = 'itemfile'
     id = db.Column(db.Integer, db.ForeignKey(
@@ -354,9 +361,18 @@ class ItemsFile(SavedFile):
         'polymorphic_identity': 'itemfile',
     }
 
+    @classmethod
+    def create_from_dataframe(cls, project, df):
+        folder = cls.get_folder(project)
+        filepath = str(folder / "datamart_item_definitions.tsv")
+        df.to_csv(filepath, sep='\t', index=False)
+        wf = cls.create_from_filepath(project, filepath)
+        return wf    
+    
     def add_to_api_proj(self):
         self.project.api_project.add_item_file(self.relative_path)
         self.project.api_project.save()
+
 
 class DataFile(SavedFile):
     __tablename__ = 'datafile'
@@ -431,7 +447,6 @@ yaml_sheet = db.Table('yaml_sheet',
                       db.Column('yaml_id', db.Integer,
                                 db.ForeignKey('yamlfile.id'))
                       )
-
 
 datafile_wiki = db.Table('datafile_wiki',
                          db.Column('wikifier_id', db.Integer,
