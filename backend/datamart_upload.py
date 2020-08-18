@@ -1,6 +1,6 @@
 import os
 import requests
-import pandas as pd
+from pathlib import Path
 import tempfile
 
 from t2wml.api import Sheet
@@ -59,13 +59,16 @@ def upload_to_datamart(project, data_sheet):
     #step three: get the download kgtk
     kgtk=get_download(project, data_sheet)
 
-    with tempfile.TemporaryFile(mode="r+b") as tmpfile:
+    with tempfile.TemporaryFile(mode="r+b", suffix=".tsv") as tmpfile:
         #step four: concatenate download with item defs file
         concatenated=get_concatenated_file(project, kgtk, tmpfile)
 
         #step five: upload to datamart
-        response=requests.post(DATAMART_API_ENDPOINT + "/datasets/{dataset_id}/t2wml".format(dataset_id=dataset_id),
-                            data={'file':tmpfile})
+        files = {
+            'file': (Path(tmpfile.name).name, tmpfile, 'application/octet-stream')
+        }
+        response=requests.put(DATAMART_API_ENDPOINT + "/datasets/{dataset_id}/t2wml".format(dataset_id=dataset_id),
+                            files=files)
 
     data={}
     return data
