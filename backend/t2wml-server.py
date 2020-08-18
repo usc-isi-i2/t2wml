@@ -13,4 +13,4 @@ except:
 
 from application import app
 if __name__ == '__main__':
-    app.run(port=port)
+    app.run(port=port, debug=False, use_reloader=False)

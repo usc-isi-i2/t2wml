@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-
+import yaml
 from flask import request
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
@@ -17,6 +17,8 @@ from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, upload_item_defs)
 from web_exceptions import WebException
+from t2wml.api import Project as apiProject
+from t2wml_annotation_integration import AnnotationIntegration
 
 debug_mode = False
 
@@ -24,10 +26,12 @@ debug_mode = False
 def get_project(project_id):
     try:
         project = Project.query.get(project_id)
-        update_t2wml_settings(project)
-        return project
-    except:
+    except Exception as e:
         raise web_exceptions.ProjectNotFoundException
+    update_t2wml_settings(project)
+    api_proj=project.api_project
+    return project
+        
 
 
 def json_response(func):
@@ -74,11 +78,32 @@ def create_project():
     :return:
     """
     response = dict()
-    if 'ptitle' in request.form:
-        project_title = request.form['ptitle']
-        project = Project.create(project_title)
-        response['pid'] = project.id
-        return response, 201
+    project_title = request.form['ptitle']
+    project = Project.create(project_title)
+    response['pid'] = project.id
+    return response, 201
+
+
+@app.route('/api/project/load', methods=['POST'])
+@json_response
+def load_project():
+    """
+    This route loads a project file to create a project
+    :return:
+    """
+
+    path=request.form['path']
+    if not path:
+        try:
+            in_file=file_upload_validator({"yaml"})
+            input_yaml=yaml.safe_load(in_file)
+            path=input_yaml["directory"]
+        except:
+            raise ValueError("Was not able to load from project yaml file")
+    proj=apiProject.load(path)
+    project=Project.load(proj)
+    return {"pid":project.id}, 201
+
 
 
 @app.route('/api/project/<pid>', methods=['GET'])
@@ -133,10 +158,11 @@ def upload_properties(pid):
     return return_dict, 200
 
 
-@app.route('/api/qnode/<qid>', methods=['GET'])
+@app.route('/api/qnode/<pid>/<qid>', methods=['GET'])
 @json_response
-def get_qnode_info(qid):
-    label = get_qnode_label(qid)
+def get_qnode_info(pid, qid):
+    project = get_project(pid)
+    label = get_qnode_label(qid, project)
     if label is None:
         return {}, 404
     return {"label": label}, 200
@@ -159,6 +185,36 @@ def upload_data_file(pid):
     new_file = file_upload_validator({'xlsx', 'xls', 'csv'})
     data_file = DataFile.create(project, new_file)
     response["tableData"] = table_data(data_file)
+
+    # lets see if this is an annotated spreadsheet, if it is then lets go on an adventure
+    ai = AnnotationIntegration(request, response['tableData']['isCSV'], response['tableData']['currSheetName'])
+
+    if ai.is_annotated_spreadsheet():
+        t2wml_yaml, consolidated_wikifier_df, combined_item_df = ai.get_files()
+
+        i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
+        upload_item_defs(i_f.file_path)
+
+        wikifier_file = WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
+        if project.current_file and project.current_file.current_sheet:
+            sheet = project.current_file.current_sheet
+            serialized_item_table = serialize_item_table(project, sheet)
+            # does not go into field wikifierData but is dumped directly
+            response.update(serialized_item_table)
+
+        PropertiesFile.create_from_dataframe(project, combined_item_df)
+
+        if project.current_file:
+            sheet = project.current_file.current_sheet
+            yf = YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
+            response['yamlRegions'] = highlight_region(sheet, yf, project)
+        else:
+            response['yamlRegions'] = None
+            raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+                "Upload data file before applying YAML.")
+    else:
+        # boring, keep going
+        pass
 
     sheet = data_file.current_sheet
     response["wikifierData"] = serialize_item_table(project, sheet)
@@ -199,7 +255,7 @@ def change_sheet(pid, sheet_name):
 
         return response, 200
     except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
-        data_file.change_sheet(old_sheet)
+        data_file.change_sheet(old_sheet.name)
         raise e
 
 
@@ -215,7 +271,7 @@ def upload_wikifier_output(pid):
     in_file = file_upload_validator({"csv"})
 
     wikifier_file = WikifierFile.create(project, in_file)
-    if project.current_file:
+    if project.current_file and project.current_file.current_sheet:
         sheet = project.current_file.current_sheet
         serialized_item_table = serialize_item_table(project, sheet)
         # does not go into field wikifierData but is dumped directly
@@ -251,7 +307,7 @@ def wikify_region(pid):
             error_dict = {
                 "errorCode": 400,
                 "errorTitle": "Failed to wikify some cellsr",
-                "errorDescription": "Failed to wikify: "+",".join(problem_cells)
+                "errorDescription": "Failed to wikify: " + ",".join(problem_cells)
             }
             data['problemCells'] = error_dict
         else:
@@ -259,7 +315,6 @@ def wikify_region(pid):
 
         return data, 200
     return {}, 404
-
 
 @app.route('/api/yaml/<pid>', methods=['POST'])
 @json_response
@@ -277,11 +332,8 @@ def upload_yaml(pid):
             "YAML file is either empty or not valid")
     else:
         if project.current_file:
-            yf = YamlFile.create_from_formdata(project, yaml_data)
             sheet = project.current_file.current_sheet
-            sheet.yamlfiles.append(yf)
-            project.modify()
-
+            yf = YamlFile.create_from_formdata(project, yaml_data, sheet)
             response['yamlRegions'] = highlight_region(sheet, yf, project)
         else:
             response['yamlRegions'] = None
@@ -358,8 +410,7 @@ def rename_project(pid):
     }
     ptitle = request.form["ptitle"]
     project = get_project(pid)
-    project.name = ptitle
-    project.modify()
+    project.rename(ptitle)
     data['projects'] = get_project_details()
     return data, 200
 
@@ -377,6 +428,11 @@ def update_settings(pid):
     project.modify()
     update_t2wml_settings(project)
     return None, 200  # can become 204 eventually, need to check frontend compatibility
+
+
+@app.route('/api/is-alive')
+def is_alive():
+    return 'Backend is here', 200
 
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
@@ -404,12 +460,13 @@ if __name__ == "__main__":
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
             from app_config import UPLOAD_FOLDER
+
             app.config['PROFILE'] = True
             profiles_dir = os.path.join(UPLOAD_FOLDER, "profiles")
             if not os.path.isdir(profiles_dir):
                 os.mkdir(profiles_dir)
             app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[
-                                              100], profile_dir=profiles_dir)
+                100], profile_dir=profiles_dir)
         app.run(debug=True, port=13000)
     else:
         app.run(threaded=True, port=13000)

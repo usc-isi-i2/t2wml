@@ -1,78 +1,19 @@
 import json
 import os
-import tempfile
-import pytest
-
-# To import application we need to add the backend directory into sys.path
-import sys
-BACKEND_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-if BACKEND_DIR not in sys.path:
-    sys.path.append(BACKEND_DIR)
-
-from flask_migrate import upgrade
-from application import app
-
-@pytest.fixture(scope="class")
-def client(request):
-    def fin():
-        os.close(db_fd)
-        os.unlink(name)
-    app.config['TESTING']=True
-    db_fd, name = tempfile.mkstemp()
-    app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///' +name
-    request.addfinalizer(fin)
-    with app.app_context():
-        upgrade(directory=os.path.join(BACKEND_DIR, 'migrations'))
-
-    with app.test_client() as client:
-        yield client
+from uuid import uuid4
+from tests.utils import client, BaseClass, sanitize_highlight_region
     
 
 pid=None #we need to use a global pid for some reason... self.pid does not work.
 
-class BaseClass:
-    files_dir=""
-    results_dict={} #used if we need to overwrite the existing results when something changes
-    expected_results_path=""
 
-    @property
-    def expected_results_dict(self):
-        try:
-            return self.e_results_dict
-        except AttributeError:
-            with open(self.expected_results_path, 'r', encoding="utf-8") as f:
-                expected_results_dict=json.load(f)
-            self.e_results_dict=expected_results_dict
-            return self.e_results_dict
-    
-    def recurse_lists_and_dicts(self, input1, input2):
-        if isinstance(input1, dict):
-            assert input1.keys()==input2.keys()
-            for key in input1:
-                self.recurse_lists_and_dicts(input1[key], input2[key])
-                
-        elif isinstance(input1, list):
-            assert len(input1)==len(input2)
-            for index, item in enumerate(input1):
-                self.recurse_lists_and_dicts(input1[index], input2[index])
-
-        assert input1==input2
-
-    def compare_jsons(self, data, expected_key):
-        expected_data=self.expected_results_dict[expected_key]
-        assert data.keys()==expected_data.keys()
-        for key in data:
-            try:
-                assert data[key]==expected_data[key]
-            except AssertionError as e:
-                self.recurse_lists_and_dicts(data[key], expected_data[key])
 
 
 class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
 
-    def test_0_get_projects_list(self, client):
+    def test_00_get_projects_list(self, client):
         #GET /api/projects
         response=client.get('/api/projects') 
         data = response.data.decode("utf-8")
@@ -117,8 +58,8 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_data_file']=data
-        data['tableData'].pop('filename')
-        self.expected_results_dict['add_data_file']['tableData'].pop('filename')
+        data['tableData'].pop('filename', None)
+        self.expected_results_dict['add_data_file']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'add_data_file')
 
     def test_04_add_properties_file(self, client):
@@ -183,16 +124,9 @@ class TestBasicWorkflow(BaseClass):
         self.results_dict['add_yaml']=data
 
         #some of the results are sent back as unordered lists and need to be compared separately
-        set_keys=[]
-        for key in data["yamlRegions"]:
-            if "list" in data["yamlRegions"][key]:
-                set_keys.append(key)
-                test1=set(data["yamlRegions"][key]["list"])
-                test2=set(self.expected_results_dict["add_yaml"]["yamlRegions"][key]["list"])
-                assert test1==test2
-        for key in set_keys:
-            data["yamlRegions"].pop(key)
-            self.expected_results_dict["add_yaml"]["yamlRegions"].pop(key)
+        dict_1=data["yamlRegions"]
+        dict_2=self.expected_results_dict["add_yaml"]["yamlRegions"]
+        sanitize_highlight_region(dict_1, dict_2)
 
         self.compare_jsons(data, 'add_yaml')
 
@@ -206,13 +140,12 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'get_cell')
 
     def test_10_get_node(self, client):
-        #GET /api/qnode/<qid>
-        url='/api/qnode/{qid}'.format(qid="Q21203")
+        url='/api/qnode/{pid}/{qid}'.format(pid=pid, qid="Q21203")
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
         assert data['label']=='Aruba'
-        url='/api/qnode/{qid}'.format(qid="P17")
+        url='/api/qnode/{pid}/{qid}'.format(pid=pid, qid="P17")
         response=client.get(url) 
         data2 = response.data.decode("utf-8")
         data2 = json.loads(data2)
@@ -225,8 +158,9 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data=data["data"]
-        with open(os.path.join(self.files_dir, "download.tsv"), 'w') as f:
-            f.write(data)
+        with open(os.path.join(self.files_dir, "download.tsv"), 'r') as f:
+            expected=f.read()
+        assert expected==data
 
     def test_12_change_sheet(self, client):
         #GET /api/data/{pid}/<sheet_name>
@@ -235,8 +169,8 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['change_sheet']=data
-        data['tableData'].pop('filename')
-        self.expected_results_dict['change_sheet']['tableData'].pop('filename')
+        data['tableData'].pop('filename', None)
+        self.expected_results_dict['change_sheet']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'change_sheet')
 
     def test_12_wikify_region(self, client):
@@ -257,8 +191,9 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'wikify_region')
 
     def test_13_change_project_name(self, client):
+        
         url='/api/project/{pid}'.format(pid=pid)
-        ptitle="Unit test renamed"
+        ptitle="Unit test renamed"+str(uuid4())
         response=client.put(url,
                 data=dict(
                 ptitle=ptitle
@@ -276,7 +211,7 @@ class TestBasicWorkflow(BaseClass):
                 data=dict(
                 endpoint=endpoint
             )) 
-        assert t2wml_settings['wikidata_provider'].sparql_endpoint==endpoint
+        assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
 
     def test_99_delete_project(self, client):
         #this test must be sequentially last (do not run pytest in parallel)
@@ -285,7 +220,45 @@ class TestBasicWorkflow(BaseClass):
         response=client.delete(url_str)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        #used when overwriting all old results with new ones 
+        #with open(self.expected_results_path, 'w') as f:
+        #    json.dump(self.results_dict, f, sort_keys=False, indent=4)
         assert data["projects"]==[]
 
 
 
+class TestLoadingProject(BaseClass):
+    files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
+    expected_results_path=os.path.join(files_dir, "project_results.json")
+
+    def test_10_load_from_path(self, client):
+        response=client.post('/api/project/load',
+        data=dict(
+                path=self.files_dir
+            )
+        )
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        global pid
+        pid=str(data['pid'])
+        assert response.status_code==201
+    
+    def test_11_get_loaded_yaml_files(self, client):
+        url= '/api/project/{pid}'.format(pid=pid)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        self.results_dict['load_from_path']=data
+
+        #some of the results are sent back as unordered lists and need to be compared separately
+        set_keys=[]
+        dict_1=data["yamlData"]["yamlRegions"]
+        dict_2=self.expected_results_dict["load_from_path"]["yamlData"]["yamlRegions"]
+        sanitize_highlight_region(dict_1, dict_2)
+
+        data['tableData'].pop('filename', None)
+        self.expected_results_dict['load_from_path']['tableData'].pop('filename', None)
+
+        self.compare_jsons(data, 'load_from_path')
+
+    

@@ -2,7 +2,6 @@ import csv
 from string import punctuation
 from flask import request
 import web_exceptions
-from models import Project
 from wikidata_models import WikidataItem, WikidataProperty
 from SPARQLWrapper import SPARQLWrapper, JSON
 from app_config import DEFAULT_SPARQL_ENDPOINT
@@ -10,7 +9,7 @@ from app_config import DEFAULT_SPARQL_ENDPOINT
 wikidata_label_query_cache = {}
 
 
-def query_wikidata_for_label_and_description(items):
+def query_wikidata_for_label_and_description(items, sparql_endpoint=DEFAULT_SPARQL_ENDPOINT):
     items = ' wd:'.join(items)
     items = "wd:"+items
 
@@ -24,7 +23,7 @@ def query_wikidata_for_label_and_description(items):
                 FILTER (langMatches(lang(?desc),"EN"))
                 }
                 GROUP BY ?qnode"""
-    sparql = SPARQLWrapper(DEFAULT_SPARQL_ENDPOINT)
+    sparql = SPARQLWrapper(sparql_endpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     try:
@@ -44,7 +43,7 @@ def query_wikidata_for_label_and_description(items):
     return response
 
 
-def get_labels_and_descriptions(items):
+def get_labels_and_descriptions(items, project):
     response = dict()
     missing_items = []
     for item in items:
@@ -60,21 +59,20 @@ def get_labels_and_descriptions(items):
             missing_items.append(item)
     try:
         additional_items = query_wikidata_for_label_and_description(
-            missing_items)
+            missing_items, project.sparql_endpoint)
         response.update(additional_items)
     except:  # eg 502 bad gateway error
         pass
     return response
 
 
-def query_wikidata_for_label(node):
+def query_wikidata_for_label(node, sparql_endpoint=DEFAULT_SPARQL_ENDPOINT):
     try:
         query = """SELECT DISTINCT * WHERE {
                 wd:""" + node + """ rdfs:label ?label . 
                 FILTER (langMatches( lang(?label), "EN" ) )  
                 }
                 LIMIT 1"""
-        sparql_endpoint = DEFAULT_SPARQL_ENDPOINT
         sparql = SPARQLWrapper(sparql_endpoint)
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
@@ -91,7 +89,7 @@ def query_wikidata_for_label(node):
         return None
 
 
-def get_qnode_label(node):
+def get_qnode_label(node, project):
     try:
         wp = WikidataProperty.query.filter_by(wd_id=node).first()
         if wp:
@@ -111,7 +109,7 @@ def get_qnode_label(node):
     if cached_label:
         return cached_label
     try:
-        label = query_wikidata_for_label(node)
+        label = query_wikidata_for_label(node, project.sparql_endpoint)
         wikidata_label_query_cache[node] = label
     except:  # eg 502 bad gateway
         return None
@@ -121,7 +119,7 @@ def get_qnode_label(node):
 def upload_item_defs(file_path):
     property_dict = {}
     items = []
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter="\t")
         for row_dict in reader:
             node1 = row_dict["node1"]
@@ -182,6 +180,7 @@ def file_upload_validator(file_extensions):
 
 
 def get_project_details():
+    from models import Project
     projects = list()
     for project in Project.query.all():
         project_detail = dict()

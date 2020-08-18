@@ -1,0 +1,24 @@
+statementMapping:
+  region:
+    - left: C
+      right: D
+      top: 4
+      bottom: =$end-2
+      skip_rows:
+        - =value[A:B, $row] == "" and value[C:D, $row] != ""
+        - =contains(value[B, $row], "year")
+  template:
+    item: =item[A, $row]
+    property: P100024 # murder
+    value: =value[$col, $row]
+    qualifier:
+      - property: P585 #point in time
+        value: =value[A:B, $row-$n] == "" and value[C:D, $row-$n] != "" -> value[$col, $row-$n]
+        calendar: Q1985727
+        precision: year
+        time_zone: 0
+        format: "%Y"
+      - property: P6001 # applies to people
+        value: =item[$col, 2]
+      - property: P123 #source
+        value: =item[B, $row]

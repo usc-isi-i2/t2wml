@@ -288,7 +288,7 @@ class Output extends Component<OutputProperties, OutputState> {
     // before send request
     wikiStore.output.showSpinner = true;
     
-    this.requestService.getQnode(node).then((res) => {
+    this.requestService.getQnode(this.pid, node).then((res) => {
         const name = res.label;
         if (field === "itemName") {
         this.setState({ itemName: name });
@@ -314,9 +314,6 @@ class Output extends Component<OutputProperties, OutputState> {
     }).catch((error: any) => {
         //   console.log(error);
         wikiStore.output.showSpinner = false;
-        this.setState({ 
-            queryDataCount: this.state.queryDataCount - 1 
-        });
     });
   }
 
@@ -356,10 +353,9 @@ class Output extends Component<OutputProperties, OutputState> {
           <Card.Body className="w-100 h-100 p-0" style={{ overflow: "auto" }}>
 
             {/* loading spinner */}
-            { wikiStore.output.showSpinner || this.state.queryDataCount  ? 
-            <div className="mySpinner">
+            <div className="mySpinner" hidden={!wikiStore.output.showSpinner}>
               <Spinner animation="border" />
-            </div> : null}
+            </div>
 
             {/* output */}
             { this.state.queryDataCount === 0 ? 

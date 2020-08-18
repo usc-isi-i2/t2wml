@@ -30,10 +30,7 @@
             "program": "packaging/prepare_installation.py",
             "args": [
                 "--version",
-                "2.1a4",
-                "--skip-frontend",
-                "--zip",
-                "dist/t2wml-server.zip"
+                "2.1.0-pre.1+build.1",
             ],
             "cwd": "${workspaceFolder}/backend",
         },
@@ -43,20 +40,11 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-               "backend\\tests", 
+               "backend/tests", 
                "-s", 
                "-v"
             ],
             "cwd": "${workspaceFolder}",
         },
-        {
-            "name": "Python: Current File (Integrated Terminal)",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "cwd": "${fileDirname}",
-            "env": {"PYTHONPATH": "${workspaceRoot}"}
-        }, 
     ]
 }

@@ -19,6 +19,7 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 #    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
 UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
+CACHE_FOLDER=os.path.join(DATADIR, "cache")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
 
 app = Flask(__name__, static_folder=None)
@@ -38,6 +39,7 @@ app.config.from_object(AppConfig)
 
 DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
 GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
+DATAMART_API_ENDPOINT = 'http://localhost:12543'
 
 #############SQL STUFF
 

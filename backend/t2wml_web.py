@@ -1,13 +1,12 @@
+import os
 import json
 from pathlib import Path
 from collections import defaultdict
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
-from t2wml.settings import t2wml_settings
-from t2wml.api import set_sparql_endpoint, set_wikidata_provider, Sheet, KnowledgeGraph, Wikifier, WikifierService
+from t2wml.api import Sheet, KnowledgeGraph, Wikifier, WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
-
 from caching import CacheHolder
-from app_config import db
+from app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
 from wikidata_models import DatabaseProvider
 from utils import get_labels_and_descriptions
 
@@ -20,14 +19,10 @@ def wikify(region, data_sheet, context):
 
 
 def update_t2wml_settings(project):
-    set_sparql_endpoint(project.sparql_endpoint)
-    set_wikidata_provider(DatabaseProvider(project.sparql_endpoint))
-    t2wml_settings.update({
-        "cache_data_files": True,
-        # "wikidata_provider":DatabaseProvider(DEFAULT_SPARQL_ENDPOINT),
-        # "sparql_endpoint":project.sparql_endpoint,
-        # "storage_folder":UPLOAD_FOLDER
-    })
+    t2wml_settings.sparql_endpoint=project.sparql_endpoint
+    t2wml_settings.wikidata_provider = DatabaseProvider(project.sparql_endpoint)
+    t2wml_settings.cache_data_files = True
+    t2wml_settings.cache_data_files_folder = CACHE_FOLDER
 
 
 def get_wikifier(project):
@@ -118,7 +113,7 @@ def highlight_region(data_sheet, yaml_file, project):
         else:
             highlight_data['dangerCells']['list'].append(cell)
 
-    cache_holder.result_cacher.save(highlight_data, statement_data, errors)
+    cache_holder.result_cacher.save(highlight_data, statement_data, errors, kg.metadata)
 
     highlight_data['cellStatements'] = statement_data
     return highlight_data
@@ -164,7 +159,7 @@ def handle_yaml(sheet, project):
     if sheet.yaml_file:
         yaml_file = sheet.yaml_file
         response = dict()
-        with open(yaml_file.file_path, "r") as f:
+        with open(yaml_file.file_path, "r", encoding="utf-8") as f:
             response["yamlFileContent"] = f.read()
         response['yamlRegions'] = highlight_region(sheet, yaml_file, project)
         return response
@@ -224,7 +219,7 @@ def serialize_item_table(project, sheet):
                 cell = to_excel(col, row)
                 qnodes[cell][context] = {"item": item}
 
-    labels_and_descriptions = get_labels_and_descriptions(list(items_to_get))
+    labels_and_descriptions = get_labels_and_descriptions(list(items_to_get), project)
 
     # update rowData
     for i in range(len(rowData)):

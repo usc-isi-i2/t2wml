@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from t2wml.mapping.statement_mapper import YamlMapper
 from t2wml.api import KnowledgeGraph
-
+from app_config import UPLOAD_FOLDER
 
 class Cacher:
     title = ""
@@ -18,10 +18,12 @@ class Cacher:
         return self.get_cache_path(self.title)
 
     def get_cache_path(self, title_str):
+        storage_path=Path(UPLOAD_FOLDER)
         path = Path(self.yaml_file_path)
         filename = path.stem+"_"+self.sheet_name+"_"+title_str+"_cached.json"
-        parent = path.parent
-        file_path = parent/"cache"
+        without_drive=path.parts[1:-1]
+        without_drive_str="_".join(without_drive)
+        file_path = storage_path/"calc_cache"/without_drive_str
         if not file_path.is_dir():
             os.makedirs(file_path)
         return str(file_path/filename)
@@ -35,13 +37,12 @@ class Cacher:
 
 
 class MappingResultsCacher(Cacher):
-    # j is a modifier for backwards incompatible changes in cache format as of version 2.0a18
-    title = "result_ל"
+    title = "result"
 
     def __init__(self, yaml_file_path, data_file_path, sheet_name):
         super().__init__(yaml_file_path, data_file_path, sheet_name)
 
-    def save(self, highlight_data, statement_data, errors=[], metadata={}):
+    def save(self, highlight_data, statement_data, errors, metadata):
         d = {
             "highlight region": highlight_data,
             "statements": statement_data,
@@ -49,13 +50,13 @@ class MappingResultsCacher(Cacher):
             "metadata": metadata
         }
         s = json.dumps(d)
-        with open(self.cache_path, 'w') as f:
+        with open(self.cache_path, 'w', encoding="utf-8") as f:
             f.write(s)
 
     def get_highlight_region(self):
         if self.is_fresh():
             try:
-                with open(self.cache_path, 'r') as f:
+                with open(self.cache_path, 'r', encoding="utf-8") as f:
                     data = json.load(f)
                 return data["highlight region"], data["statements"], data["errors"]
             except:
