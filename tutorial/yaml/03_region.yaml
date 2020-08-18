@@ -1,0 +1,10 @@
+statementMapping:
+  region:
+    - range: C4:D11
+  template:
+    item: =item[A, $row]
+    property: =item[$col, 3, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: PCropType
+        value: =item[B, $row]

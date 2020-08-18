@@ -1,0 +1,7 @@
+statementMapping:
+  region:
+    - range: C2:C4
+  template:
+    item: =item[A, $row]
+    property: =item[C, 1, "property"]
+    value: =value[$col, $row]

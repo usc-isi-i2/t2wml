@@ -1,0 +1,12 @@
+statementMapping:
+  region:
+    - range: D8:E15
+      skip_cells:
+        - =value[$col, $row]=="-" 
+  template:
+    item: =item[B, $row]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: PCropType
+        value: =item[C, $row]
