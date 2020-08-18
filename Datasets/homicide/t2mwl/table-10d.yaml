@@ -11,6 +11,7 @@ statementMapping:
     item: =item[A, $row]
     property: P100024 # murder
     value: =value[$col, $row]
+    unit: Qnumber_incidents
     qualifier:
       - property: P585 #point in time
         value: =value[A:B, $row-$n] == "" and value[C:D, $row-$n] != "" -> value[$col, $row-$n]
