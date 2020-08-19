@@ -29,6 +29,7 @@ interface OutputState {
   valueCol: string | null;
   valueRow: string | null;
   value: string | null;
+  unit: string | null;
   itemID: string | null;
   itemName: string | null;
   itemCol: string | undefined;
@@ -69,6 +70,7 @@ class Output extends Component<OutputProperties, OutputState> {
       valueCol: null,
       valueRow: null,
       value: null,
+      unit: null,
       itemID: null,
       itemName: null,
       itemCol: undefined,
@@ -219,6 +221,12 @@ class Output extends Component<OutputProperties, OutputState> {
     this.setState({ value: value });
     wikiStore.table.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
     this.setState({ currCol: colName, currRow: rowName });
+
+    // unit
+    if (json["statement"]["unit"]) {
+      const unit = json["statement"]["unit"];
+      this.setState({ unit: unit });
+    }
 
     // qualifiers
     let temp = json["statement"]["qualifier"];
@@ -371,6 +379,7 @@ class Output extends Component<OutputProperties, OutputState> {
                 propertyID={this.state.propertyID}
                 propertyName={this.state.propertyName}
                 value={this.state.value}
+                unit={this.state.unit}
                 qualifiers={this.state.qualifiers}
             />
             </div> : null }

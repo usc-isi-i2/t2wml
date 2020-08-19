@@ -13,6 +13,7 @@ interface ShowOutputProperties {
     propertyID: string | null;
     propertyName: string | null;
     value: string | null;
+    unit: string | null;
     qualifiers: any; 
 }
 
@@ -75,6 +76,9 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
       // value
       let valueDiv = this.props.value;
+      if (this.props.unit) {
+        valueDiv += ` ${this.props.unit}`;
+      }
 
       // qualifiers
       let qualifiersDiv = [];
