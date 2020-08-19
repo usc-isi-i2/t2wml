@@ -1,0 +1,12 @@
+statementMapping:
+  region:
+    - range: C4:D13
+      skip_rows:
+        - =value[A,$row]=="Total"
+  template:
+    item: =item[A, $row]
+    property: =item[$col, 3, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: PCropType
+        value: =item[B, $row]

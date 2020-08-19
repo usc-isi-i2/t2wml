@@ -1,0 +1,14 @@
+statementMapping:
+  region:
+    - range: D8:D14
+  template:
+    item: =item[B, $row]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+    - calendar: Q1985727
+      format: '%Y'
+      precision: year
+      property: P585
+      time_zone: 0
+      value: =value[C, $row]
