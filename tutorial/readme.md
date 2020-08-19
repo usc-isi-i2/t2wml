@@ -10,7 +10,7 @@ The `yaml` folder contains the T2WML files corresponding to each spreadsheet (th
 
 The `annotated_spreadsheets` folder contain all the examples annotated with headers to automate the creation of the yaml files.
 
-The `yaml_annotated` folder contains the solutions for the examples in the `annotated_spreadsheets` folder
+The `annotated_yaml` folder contains the solutions for the examples in the `annotated_spreadsheets` folder
 
 ## Examples overview
 
