@@ -86,10 +86,6 @@ P1880	label	unit of measure	P1880-label-1
 P1880	data_type	String	P1880-data-type-1
 P1114	label	count	P1114-label-1
 P1114	data_type	Quantity	P1114-data-type-1
-PMaize	label	Maize	PMaize-label-1
-PMaize	data_type	Quantity	PMaize-data-type-1
-PTeff	label	Teff	PTeff-label-1
-PTeff	data_type	Quantity	PTeff-data-type-1
 PEstimated	label	"Estimated	value"	PEstimated-label-1
 PEstimated	data_type	String	PEstimated-data-type-1
 PProduction	label	Production 	PProduction-label-1

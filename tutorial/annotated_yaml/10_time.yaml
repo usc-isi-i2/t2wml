@@ -1,8 +1,9 @@
+# 10_time
 statementMapping:
   region:
     - range: D8:D14
   template:
-    item: =item[B, $row]
+    item: =item[B, $row, "main subject"]
     property: =item[$col, 7, "property"]
     value: =value[$col, $row]
     qualifier:

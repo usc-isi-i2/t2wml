@@ -1,12 +1,13 @@
+# 04_region
 statementMapping:
   region:
     - range: D10:E19
       skip_rows:
         - =value[B,$row]=="Total"
   template:
-    item: =item[B, $row]
+    item: =item[B, $row, "main subject"]
     property: =item[$col, 9, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: PCropType
-        value: =item[C, $row]
+      - property: =item[C, 9, "property"]
+        value: =value[C, $row]

@@ -6,13 +6,6 @@ column,row,value,context,item
 ,,Mozambique,main subject,Q1029
 ,,Maize,main subject,Q25618328
 ,,Teff,main subject,Q843942
-,,Kenya,,Q114
-,,Tanzania,,Q924
-,,Zambia,,Q953
-,,Zimbabwe,,Q954
-,,Mozambique,,Q1029
-,,Maize,,Q25618328
-,,Teff,,Q843942
 ,,Ethiopian calendar,,Q215271
 ,,Gregorian calendar,,Q12138
 ,,kilogram,unit,Q11570
@@ -21,7 +14,6 @@ column,row,value,context,item
 ,,FAO,,Q82151
 ,,OECD,,Q41550
 ,,stated in,property,P248
-,,Maize,property,PMaize
-,,Teff,property,PTeff
 ,,Production,property,PProduction
 ,,Total area,property,PTotalArea
+,,Crop,property,PCropType

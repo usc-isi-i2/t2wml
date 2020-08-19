@@ -1,10 +1,11 @@
+# 08_region
 statementMapping:
   region:
     - range: D9:D16
       skip_cells:
         - =value[$col, $row]=="--"
   template:
-    item: =item[B, $row]
+    item: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]
     value: =value[$col, $row]
-    unit: =item[C, 7, "unit"]
+    unit: =item[C, 6, "unit"]
