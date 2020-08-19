@@ -14,4 +14,4 @@ with pd.ExcelWriter(result) as writer:
         print(filename)
         df = pd.read_excel(filename, header=None)
         sheet_name = filename.split('.')[0]
-        df.to_excel(writer, sheet_name=sheet_name)
+        df.to_excel(writer, sheet_name=sheet_name, index=False, header=False)
