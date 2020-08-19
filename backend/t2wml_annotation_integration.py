@@ -40,7 +40,10 @@ class AnnotationIntegration(object):
         response = post(f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true',
                         files=files)
         if response.status_code!=200:
-            raise ValueError("Failed to get OK response from datamart API")
+            try:
+                raise ValueError(response.json()["Error"])
+            except: #can't parse error field
+                raise ValueError("Some problem communicating with datamart")
 
         with open('{}/t2wml_annotation_files.tar.gz'.format(temp_dir), 'wb') as d:
             d.write(response.content)
