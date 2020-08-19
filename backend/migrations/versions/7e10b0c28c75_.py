@@ -1,4 +1,4 @@
-"""empty message
+"""add directory property to project
 
 Revision ID: 7e10b0c28c75
 Revises: 30abf9658b69
