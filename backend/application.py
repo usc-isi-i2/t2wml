@@ -186,36 +186,6 @@ def upload_data_file(pid):
     data_file = DataFile.create(project, new_file)
     response["tableData"] = table_data(data_file)
 
-    # lets see if this is an annotated spreadsheet, if it is then lets go on an adventure
-    ai = AnnotationIntegration(request, response['tableData']['isCSV'], response['tableData']['currSheetName'])
-
-    if ai.is_annotated_spreadsheet():
-        t2wml_yaml, consolidated_wikifier_df, combined_item_df = ai.get_files()
-
-        i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
-        upload_item_defs(i_f.file_path)
-
-        wikifier_file = WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
-        if project.current_file and project.current_file.current_sheet:
-            sheet = project.current_file.current_sheet
-            serialized_item_table = serialize_item_table(project, sheet)
-            # does not go into field wikifierData but is dumped directly
-            response.update(serialized_item_table)
-
-        PropertiesFile.create_from_dataframe(project, combined_item_df)
-
-        if project.current_file:
-            sheet = project.current_file.current_sheet
-            yf = YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
-            response['yamlRegions'] = highlight_region(sheet, yf, project)
-        else:
-            response['yamlRegions'] = None
-            raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-                "Upload data file before applying YAML.")
-    else:
-        # boring, keep going
-        pass
-
     sheet = data_file.current_sheet
     response["wikifierData"] = serialize_item_table(project, sheet)
 
