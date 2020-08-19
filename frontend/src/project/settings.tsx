@@ -20,6 +20,7 @@ interface SettingsProperties {
 }
 
 interface SettingsState {
+  warnEmpty: boolean;
 }
 
 @observer
@@ -29,10 +30,15 @@ class Settings extends Component<SettingsProperties, SettingsState> {
   constructor(props: SettingsProperties) {
     super(props);
     this.tempSparqlEndpointRef = React.createRef();
+
+    this.state = {
+      warnEmpty: false,
+    }
   }
 
   handleSaveSettings() {
     wikiStore.settings.sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
+    wikiStore.settings.warnEmpty = this.state.warnEmpty;
     this.props.handleSaveSettings();
   }
 
@@ -74,8 +80,19 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
+            
+              <Form.Label column sm="12" md="3" className="text-right">
+                Warn for empty cells
+              </Form.Label>
+              <Col sm="12" md="9">
+              
+                <input type="checkbox" 
+                  style={{ width: '25px', height: '25px', marginTop: '5px' }}
+                  defaultChecked={(this.state.warnEmpty)}
+                  onChange={(event) => this.setState({ warnEmpty: event?.target.checked })}/>
+              </Col>
             </Form.Group>
-
+            
           </Form>
         </Modal.Body>
 
