@@ -39,9 +39,11 @@ class AnnotationIntegration(object):
         }
         response = post(f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true',
                         files=files)
+        if response.status_code!=200:
+            raise ValueError("Failed to get OK response from datamart API")
 
-        d = open('{}/t2wml_annotation_files.tar.gz'.format(temp_dir), 'wb')
-        d.write(response.content)
+        with open('{}/t2wml_annotation_files.tar.gz'.format(temp_dir), 'wb') as d:
+            d.write(response.content)
 
         t2wml_yaml = None
         combined_item_df = None
