@@ -445,7 +445,7 @@ def get_settings(pid):
     """
     project = get_project(pid)
     response = {
-        "endpoint":project.endpoint,
+        "endpoint":project.sparql_endpoint,
         "warnEmpty":project.warn_for_empty_cells
     }
     return response, 200 

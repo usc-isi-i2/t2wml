@@ -204,14 +204,25 @@ class TestBasicWorkflow(BaseClass):
 
     def test_14_change_sparql_endpoint(self, client):
         from t2wml.settings import t2wml_settings
-        #PUT '/api/project/{pid}/sparql'
-        url='/api/project/{pid}/sparql'.format(pid=pid)
+        #PUT '/api/project/{pid}/settings'
+        url='/api/project/{pid}/settings'.format(pid=pid)
         endpoint='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         response=client.put(url,
                 data=dict(
-                endpoint=endpoint
+                endpoint=endpoint, 
+                warnEmpty=False
             )) 
         assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
+    
+    def test_15_get_settings(self, client):
+        from t2wml.settings import t2wml_settings
+        #PUT '/api/project/{pid}/settings'
+        url='/api/project/{pid}/settings'.format(pid=pid)
+        response=client.get(url) 
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        assert data["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
+        assert data["warnEmpty"]==False
 
     def test_99_delete_project(self, client):
         #this test must be sequentially last (do not run pytest in parallel)
