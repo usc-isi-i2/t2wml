@@ -33,37 +33,28 @@ def get_download(project, sheet):
     return kgtk
 
 
-def get_concatenated_file(project, kgtk, tempfile):
-    tempfile.write(kgtk.encode('utf-8'))
-
-    # open the item file, slice off the header row
-    item_file = ItemsFile.query.filter_by(
-        project_id=project.id).order_by(ItemsFile.id.desc()).first()
-
-    with open(item_file.file_path, 'rb') as f:
-        f.readline()
-        data = f.read()
-
-    tempfile.write(data)
-    tempfile.flush()
-
-
 def upload_to_datamart(project, data_sheet):
+    #get the dataset id
     try:
         dataset_id = get_dataset_id(data_sheet)
     except Exception as e:
         raise NoSuchDatasetIDException(str(e))
 
-    # step three: get the download kgtk
+    #get the download kgtk
     kgtk = get_download(project, data_sheet)
-    with tempfile.TemporaryFile(mode="r+b", suffix=".tsv") as tmpfile:
-        # step four: concatenate download with item defs file
-        get_concatenated_file(project, kgtk, tmpfile)
+
+    #get the item file
+    item_file = ItemsFile.query.filter_by(
+        project_id=project.id).order_by(ItemsFile.id.desc()).first()
+
+    with tempfile.TemporaryFile(suffix=".tsv") as tmpfile:
+        tmpfile.write(kgtk.encode("utf-8"))
         tmpfile.seek(0)
 
-        # step five: upload to datamart
+        # upload to datamart
         files = {
-            'file': (Path(str(tmpfile.name)).name + '.tsv', tmpfile, 'application/octet-stream')
+            'item_definitions': ('item_definitions.tsv', open(item_file.file_path), 'application/octet-stream'),
+            'kgtk_output': ('kgt_output.tsv', tmpfile, 'application/octet-stream')
         }
 
         response = requests.put(DATAMART_API_ENDPOINT + "/datasets/{dataset_id}/t2wml".format(dataset_id=dataset_id),
