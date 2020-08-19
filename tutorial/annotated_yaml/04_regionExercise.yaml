@@ -1,0 +1,13 @@
+# 04_region_example
+statementMapping:
+  region:
+    - range: D10:E19
+      skip_rows:
+        - =value[B,$row]=="Total"
+  template:
+    item: =item[COMPLETE, $row, "main subject"]
+    property: =item[$col, 9, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 9, "property"]
+        value: =value[C, $row]

@@ -1,0 +1,14 @@
+# 05_region_example
+statementMapping:
+  region:
+    - range: D8:F15
+      skip_columns:
+        - =value[$col,7]=="Comment"
+  template:
+    item: =item[C, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+    # You can switch qualifier/variable values
+      - property: =item[COMPLETE, 7, "property"]
+        value: =value[B, $row]

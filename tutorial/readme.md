@@ -16,6 +16,7 @@ The `annotated_yaml` folder contains the solutions for the examples in the `anno
 
 | No. | File name       | Description |
 |-----|-----------------|-------------|
+| N/A | all_combined.xlsx  | Combination of all files below, one per spreadsheet |
 | 00  | 00_region.xlsx  | Basic variable information and 1 qualifier |
 | 01  | 01_region.xlsx  | Basic variable information and multiple qualifier values |
 | 02  | 02_region.xlsx  | Describing more than one variable |

@@ -1,0 +1,11 @@
+# 02_region_exercise
+statementMapping:
+  region:
+    - range: D8:E15
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, COMPLETE, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, COMPLETE, "property"]
+        value: =value[C, $row]
