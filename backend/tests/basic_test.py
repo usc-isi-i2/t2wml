@@ -221,7 +221,7 @@ class TestBasicWorkflow(BaseClass):
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
-        assert data["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
+        assert data["endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert data["warnEmpty"]==False
 
     def test_99_delete_project(self, client):

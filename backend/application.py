@@ -425,12 +425,11 @@ def update_settings(pid):
     project = get_project(pid)
     endpoint = request.form["endpoint"]
     project.sparql_endpoint = endpoint
-    warn_for_empty=request.form["warnEmpty"]
-    project.warn_for_empty_cells=warn_for_empty
+    project.warn_for_empty_cells=request.form["warnEmpty"].lower()=='true'
     project.modify()
     update_t2wml_settings(project)
     response = {
-        "endpoint":project.endpoint,
+        "endpoint":project.sparql_endpoint,
         "warnEmpty":project.warn_for_empty_cells
     }
     return response, 200 
