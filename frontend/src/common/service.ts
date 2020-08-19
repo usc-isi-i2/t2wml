@@ -80,7 +80,12 @@ class RequestService {
   }
 
   public async updateSettings(pid: string, formData: any) {
-    const response = await backendPut(`/project/${pid}/sparql`, formData);
+    const response = await backendPut(`/project/${pid}/settings`, formData);
+    return response;
+  }
+
+  public async getSettings(pid: string) {
+    const response = await backendGet(`/project/${pid}/settings`);
     return response;
   }
 

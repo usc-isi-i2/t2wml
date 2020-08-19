@@ -1,7 +1,9 @@
 import json
 import os
 from uuid import uuid4
-from tests.utils import client, BaseClass, sanitize_highlight_region
+from tests.utils import (client, BaseClass, sanitize_highlight_region,
+                load_data_file, load_yaml_file, get_project_files,
+                load_wikifier_file, load_properties_file, load_item_file)
     
 
 pid=None #we need to use a global pid for some reason... self.pid does not work.
@@ -34,10 +36,7 @@ class TestBasicWorkflow(BaseClass):
         assert response.status_code==201
 
     def test_02_get_project_files(self, client):
-        url= '/api/project/{pid}'.format(pid=pid)
-        response=client.get(url)
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data=get_project_files(client, pid)
         assert data == {
             'name': 'Unit test',
             'tableData': None,
@@ -46,15 +45,8 @@ class TestBasicWorkflow(BaseClass):
         }
 
     def test_03_add_data_file(self, client):   
-        url = '/api/data/{pid}'.format(pid=pid)
         filename=os.path.join(self.files_dir, "dataset.xlsx")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
+        response=load_data_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_data_file']=data
@@ -63,30 +55,16 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'add_data_file')
 
     def test_04_add_properties_file(self, client):
-        url = '/api/project/{pid}/properties'.format(pid=pid)
         filename=os.path.join(self.files_dir, "kgtk_properties.tsv")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
+        response=load_properties_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_properties_file']=data
         self.compare_jsons(data, 'add_properties_file')
 
     def test_05_add_wikifier_file(self, client):
-        url='/api/wikifier/{pid}'.format(pid=pid)
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
+        response=load_wikifier_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_wikifier_file']=data
@@ -94,31 +72,16 @@ class TestBasicWorkflow(BaseClass):
 
 
     def test_06_add_items_file(self, client):
-        #POST /api/project/{pid}/items
-        url='/api/project/{pid}/items'.format(pid=pid)
         filename=os.path.join(self.files_dir, "kgtk_item_defs.tsv")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
+        response=load_item_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_items']=data
         self.compare_jsons(data, 'add_items')
 
     def test_08_add_yaml_file(self, client):
-        url='/api/yaml/{pid}'.format(pid=pid)
         filename=os.path.join(self.files_dir, "test.yaml")
-        with open(filename, 'r') as f:
-            response=client.post(url,
-                data=dict(
-                yaml=f.read()
-                )
-            )
-
+        response=load_yaml_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_yaml']=data
@@ -204,14 +167,25 @@ class TestBasicWorkflow(BaseClass):
 
     def test_14_change_sparql_endpoint(self, client):
         from t2wml.settings import t2wml_settings
-        #PUT '/api/project/{pid}/sparql'
-        url='/api/project/{pid}/sparql'.format(pid=pid)
+        #PUT '/api/project/{pid}/settings'
+        url='/api/project/{pid}/settings'.format(pid=pid)
         endpoint='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         response=client.put(url,
                 data=dict(
-                endpoint=endpoint
+                endpoint=endpoint, 
+                warnEmpty=False
             )) 
         assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
+    
+    def test_15_get_settings(self, client):
+        from t2wml.settings import t2wml_settings
+        #PUT '/api/project/{pid}/settings'
+        url='/api/project/{pid}/settings'.format(pid=pid)
+        response=client.get(url) 
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        assert data["endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
+        assert data["warnEmpty"]==False
 
     def test_99_delete_project(self, client):
         #this test must be sequentially last (do not run pytest in parallel)
