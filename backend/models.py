@@ -1,4 +1,3 @@
-from backend.t2wml_web import wikify
 import os
 from datetime import datetime
 from pathlib import Path
