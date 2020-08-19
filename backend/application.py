@@ -175,8 +175,8 @@ def upload_data_file(pid):
             WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
             PropertiesFile.create_from_dataframe(project, combined_item_df)
             YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
-        except:
-            pass #continue to normal spreadsheet handling
+        except Exception as e:
+            print(e) #continue to normal spreadsheet handling
 
 
     response["wikifierData"] = serialize_item_table(project, sheet)
