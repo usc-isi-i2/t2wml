@@ -39,9 +39,11 @@ class TabletState {
 
 class SettingsState {
     @observable public sparqlEndpoint: string;
+    @observable public warnEmpty: boolean;
 
     constructor() {
         this.sparqlEndpoint = '';
+        this.warnEmpty = false;
     }
 }
 

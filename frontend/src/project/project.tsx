@@ -165,6 +165,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     let formData = new FormData();
     formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
+    formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
     this.requestService.updateSettings(this.pid, formData).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot update settings!";
