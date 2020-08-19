@@ -1,0 +1,183 @@
+id	node1	label	node2
+PVARIABLE-QEth-fertilizer-002-data_type	PVARIABLE-QEth-fertilizer-002	data_type	Quantity
+PVARIABLE-QEth-fertilizer-002-P31	PVARIABLE-QEth-fertilizer-002	P31	Q18616576
+PVARIABLE-QEth-fertilizer-002-label	PVARIABLE-QEth-fertilizer-002	label	" Area(HA) "
+PVARIABLE-QEth-fertilizer-003-data_type	PVARIABLE-QEth-fertilizer-003	data_type	Quantity
+PVARIABLE-QEth-fertilizer-003-P31	PVARIABLE-QEth-fertilizer-003	P31	Q18616576
+PVARIABLE-QEth-fertilizer-003-label	PVARIABLE-QEth-fertilizer-003	label	"Hectare_0"
+PVARIABLE-QEth-fertilizer-004-data_type	PVARIABLE-QEth-fertilizer-004	data_type	Quantity
+PVARIABLE-QEth-fertilizer-004-P31	PVARIABLE-QEth-fertilizer-004	P31	Q18616576
+PVARIABLE-QEth-fertilizer-004-label	PVARIABLE-QEth-fertilizer-004	label	"Quintal_0"
+PVARIABLE-QEth-fertilizer-005-data_type	PVARIABLE-QEth-fertilizer-005	data_type	Quantity
+PVARIABLE-QEth-fertilizer-005-P31	PVARIABLE-QEth-fertilizer-005	P31	Q18616576
+PVARIABLE-QEth-fertilizer-005-label	PVARIABLE-QEth-fertilizer-005	label	"Holder_1"
+PVARIABLE-QEth-fertilizer-006-data_type	PVARIABLE-QEth-fertilizer-006	data_type	Quantity
+PVARIABLE-QEth-fertilizer-006-P31	PVARIABLE-QEth-fertilizer-006	P31	Q18616576
+PVARIABLE-QEth-fertilizer-006-label	PVARIABLE-QEth-fertilizer-006	label	"Hectare_1"
+PVARIABLE-QEth-fertilizer-007-data_type	PVARIABLE-QEth-fertilizer-007	data_type	Quantity
+PVARIABLE-QEth-fertilizer-007-P31	PVARIABLE-QEth-fertilizer-007	P31	Q18616576
+PVARIABLE-QEth-fertilizer-007-label	PVARIABLE-QEth-fertilizer-007	label	"Holder_2"
+PVARIABLE-QEth-fertilizer-008-data_type	PVARIABLE-QEth-fertilizer-008	data_type	Quantity
+PVARIABLE-QEth-fertilizer-008-P31	PVARIABLE-QEth-fertilizer-008	P31	Q18616576
+PVARIABLE-QEth-fertilizer-008-label	PVARIABLE-QEth-fertilizer-008	label	"Hectare_2"
+PVARIABLE-QEth-fertilizer-009-data_type	PVARIABLE-QEth-fertilizer-009	data_type	Quantity
+PVARIABLE-QEth-fertilizer-009-P31	PVARIABLE-QEth-fertilizer-009	P31	Q18616576
+PVARIABLE-QEth-fertilizer-009-label	PVARIABLE-QEth-fertilizer-009	label	"Quintal_2"
+PVARIABLE-QEth-fertilizer-010-data_type	PVARIABLE-QEth-fertilizer-010	data_type	Quantity
+PVARIABLE-QEth-fertilizer-010-P31	PVARIABLE-QEth-fertilizer-010	P31	Q18616576
+PVARIABLE-QEth-fertilizer-010-label	PVARIABLE-QEth-fertilizer-010	label	"Holder_3"
+PVARIABLE-QEth-fertilizer-011-data_type	PVARIABLE-QEth-fertilizer-011	data_type	Quantity
+PVARIABLE-QEth-fertilizer-011-P31	PVARIABLE-QEth-fertilizer-011	P31	Q18616576
+PVARIABLE-QEth-fertilizer-011-label	PVARIABLE-QEth-fertilizer-011	label	"Hectare_3"
+PVARIABLE-QEth-fertilizer-012-data_type	PVARIABLE-QEth-fertilizer-012	data_type	Quantity
+PVARIABLE-QEth-fertilizer-012-P31	PVARIABLE-QEth-fertilizer-012	P31	Q18616576
+PVARIABLE-QEth-fertilizer-012-label	PVARIABLE-QEth-fertilizer-012	label	" Quintal_3"
+PVARIABLE-QEth-fertilizer-013-data_type	PVARIABLE-QEth-fertilizer-013	data_type	Quantity
+PVARIABLE-QEth-fertilizer-013-P31	PVARIABLE-QEth-fertilizer-013	P31	Q18616576
+PVARIABLE-QEth-fertilizer-013-label	PVARIABLE-QEth-fertilizer-013	label	"Holder_4"
+PVARIABLE-QEth-fertilizer-014-data_type	PVARIABLE-QEth-fertilizer-014	data_type	Quantity
+PVARIABLE-QEth-fertilizer-014-P31	PVARIABLE-QEth-fertilizer-014	P31	Q18616576
+PVARIABLE-QEth-fertilizer-014-label	PVARIABLE-QEth-fertilizer-014	label	"Hectare_4"
+PVARIABLE-QEth-fertilizer-015-data_type	PVARIABLE-QEth-fertilizer-015	data_type	Quantity
+PVARIABLE-QEth-fertilizer-015-P31	PVARIABLE-QEth-fertilizer-015	P31	Q18616576
+PVARIABLE-QEth-fertilizer-015-label	PVARIABLE-QEth-fertilizer-015	label	"Quintal_4"
+QVARIABLE-QEth-fertilizer-002-label	QVARIABLE-QEth-fertilizer-002	label	" Area(HA) "
+QVARIABLE-QEth-fertilizer-002-P1476	QVARIABLE-QEth-fertilizer-002	P1476	" Area(HA) "
+QVARIABLE-QEth-fertilizer-002-description	QVARIABLE-QEth-fertilizer-002	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-002-P31-1	QVARIABLE-QEth-fertilizer-002	P31	Q50701
+QVARIABLE-QEth-fertilizer-002-P2006020002-P585	QVARIABLE-QEth-fertilizer-002	P2006020002	P585
+QVARIABLE-QEth-fertilizer-002-P2006020002-P248	QVARIABLE-QEth-fertilizer-002	P2006020002	P248
+QVARIABLE-QEth-fertilizer-002-P1687-1	QVARIABLE-QEth-fertilizer-002	P1687	PVARIABLE-QEth-fertilizer-002
+QVARIABLE-QEth-fertilizer-002-P2006020004-1	QVARIABLE-QEth-fertilizer-002	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-002-P1813	QVARIABLE-QEth-fertilizer-002	P1813	area_ha
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-002	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-002
+QVARIABLE-QEth-fertilizer-003-label	QVARIABLE-QEth-fertilizer-003	label	"Hectare all fertilizer"
+QVARIABLE-QEth-fertilizer-003-P1476	QVARIABLE-QEth-fertilizer-003	P1476	"Hectare all fertilizer"
+QVARIABLE-QEth-fertilizer-003-description	QVARIABLE-QEth-fertilizer-003	description	"Area using any fertilizer"
+QVARIABLE-QEth-fertilizer-003-P31-1	QVARIABLE-QEth-fertilizer-003	P31	Q50701
+QVARIABLE-QEth-fertilizer-003-P2006020002-P585	QVARIABLE-QEth-fertilizer-003	P2006020002	P585
+QVARIABLE-QEth-fertilizer-003-P2006020002-P248	QVARIABLE-QEth-fertilizer-003	P2006020002	P248
+QVARIABLE-QEth-fertilizer-003-P1687-1	QVARIABLE-QEth-fertilizer-003	P1687	PVARIABLE-QEth-fertilizer-003
+QVARIABLE-QEth-fertilizer-003-P2006020004-1	QVARIABLE-QEth-fertilizer-003	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-003-P1813	QVARIABLE-QEth-fertilizer-003	P1813	hectare_0
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-003	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-003
+QVARIABLE-QEth-fertilizer-004-label	QVARIABLE-QEth-fertilizer-004	label	"Quintal all fertilizer"
+QVARIABLE-QEth-fertilizer-004-P1476	QVARIABLE-QEth-fertilizer-004	P1476	"Quintal all fertilizer"
+QVARIABLE-QEth-fertilizer-004-description	QVARIABLE-QEth-fertilizer-004	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-004-P31-1	QVARIABLE-QEth-fertilizer-004	P31	Q50701
+QVARIABLE-QEth-fertilizer-004-P2006020002-P585	QVARIABLE-QEth-fertilizer-004	P2006020002	P585
+QVARIABLE-QEth-fertilizer-004-P2006020002-P248	QVARIABLE-QEth-fertilizer-004	P2006020002	P248
+QVARIABLE-QEth-fertilizer-004-P1687-1	QVARIABLE-QEth-fertilizer-004	P1687	PVARIABLE-QEth-fertilizer-004
+QVARIABLE-QEth-fertilizer-004-P2006020004-1	QVARIABLE-QEth-fertilizer-004	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-004-P1813	QVARIABLE-QEth-fertilizer-004	P1813	quintal_0
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-004	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-004
+QVARIABLE-QEth-fertilizer-005-label	QVARIABLE-QEth-fertilizer-005	label	"Holder Natural"
+QVARIABLE-QEth-fertilizer-005-P1476	QVARIABLE-QEth-fertilizer-005	P1476	"Holder Natural"
+QVARIABLE-QEth-fertilizer-005-description	QVARIABLE-QEth-fertilizer-005	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-005-P31-1	QVARIABLE-QEth-fertilizer-005	P31	Q50701
+QVARIABLE-QEth-fertilizer-005-P2006020002-P585	QVARIABLE-QEth-fertilizer-005	P2006020002	P585
+QVARIABLE-QEth-fertilizer-005-P2006020002-P248	QVARIABLE-QEth-fertilizer-005	P2006020002	P248
+QVARIABLE-QEth-fertilizer-005-P1687-1	QVARIABLE-QEth-fertilizer-005	P1687	PVARIABLE-QEth-fertilizer-005
+QVARIABLE-QEth-fertilizer-005-P2006020004-1	QVARIABLE-QEth-fertilizer-005	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-005-P1813	QVARIABLE-QEth-fertilizer-005	P1813	holder_1
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-005	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-005
+QVARIABLE-QEth-fertilizer-006-label	QVARIABLE-QEth-fertilizer-006	label	"Hectare Natural"
+QVARIABLE-QEth-fertilizer-006-P1476	QVARIABLE-QEth-fertilizer-006	P1476	"Hectare Natural"
+QVARIABLE-QEth-fertilizer-006-description	QVARIABLE-QEth-fertilizer-006	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-006-P31-1	QVARIABLE-QEth-fertilizer-006	P31	Q50701
+QVARIABLE-QEth-fertilizer-006-P2006020002-P585	QVARIABLE-QEth-fertilizer-006	P2006020002	P585
+QVARIABLE-QEth-fertilizer-006-P2006020002-P248	QVARIABLE-QEth-fertilizer-006	P2006020002	P248
+QVARIABLE-QEth-fertilizer-006-P1687-1	QVARIABLE-QEth-fertilizer-006	P1687	PVARIABLE-QEth-fertilizer-006
+QVARIABLE-QEth-fertilizer-006-P2006020004-1	QVARIABLE-QEth-fertilizer-006	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-006-P1813	QVARIABLE-QEth-fertilizer-006	P1813	hectare_1
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-006	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-006
+QVARIABLE-QEth-fertilizer-007-label	QVARIABLE-QEth-fertilizer-007	label	"Holder DAP"
+QVARIABLE-QEth-fertilizer-007-P1476	QVARIABLE-QEth-fertilizer-007	P1476	"Holder DAP"
+QVARIABLE-QEth-fertilizer-007-description	QVARIABLE-QEth-fertilizer-007	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-007-P31-1	QVARIABLE-QEth-fertilizer-007	P31	Q50701
+QVARIABLE-QEth-fertilizer-007-P2006020002-P585	QVARIABLE-QEth-fertilizer-007	P2006020002	P585
+QVARIABLE-QEth-fertilizer-007-P2006020002-P248	QVARIABLE-QEth-fertilizer-007	P2006020002	P248
+QVARIABLE-QEth-fertilizer-007-P1687-1	QVARIABLE-QEth-fertilizer-007	P1687	PVARIABLE-QEth-fertilizer-007
+QVARIABLE-QEth-fertilizer-007-P2006020004-1	QVARIABLE-QEth-fertilizer-007	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-007-P1813	QVARIABLE-QEth-fertilizer-007	P1813	holder_2
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-007	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-007
+QVARIABLE-QEth-fertilizer-008-label	QVARIABLE-QEth-fertilizer-008	label	"Hectare DAP"
+QVARIABLE-QEth-fertilizer-008-P1476	QVARIABLE-QEth-fertilizer-008	P1476	"Hectare DAP"
+QVARIABLE-QEth-fertilizer-008-description	QVARIABLE-QEth-fertilizer-008	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-008-P31-1	QVARIABLE-QEth-fertilizer-008	P31	Q50701
+QVARIABLE-QEth-fertilizer-008-P2006020002-P585	QVARIABLE-QEth-fertilizer-008	P2006020002	P585
+QVARIABLE-QEth-fertilizer-008-P2006020002-P248	QVARIABLE-QEth-fertilizer-008	P2006020002	P248
+QVARIABLE-QEth-fertilizer-008-P1687-1	QVARIABLE-QEth-fertilizer-008	P1687	PVARIABLE-QEth-fertilizer-008
+QVARIABLE-QEth-fertilizer-008-P2006020004-1	QVARIABLE-QEth-fertilizer-008	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-008-P1813	QVARIABLE-QEth-fertilizer-008	P1813	hectare_2
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-008	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-008
+QVARIABLE-QEth-fertilizer-009-label	QVARIABLE-QEth-fertilizer-009	label	"Quintal DAP"
+QVARIABLE-QEth-fertilizer-009-P1476	QVARIABLE-QEth-fertilizer-009	P1476	"Quintal DAP"
+QVARIABLE-QEth-fertilizer-009-description	QVARIABLE-QEth-fertilizer-009	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-009-P31-1	QVARIABLE-QEth-fertilizer-009	P31	Q50701
+QVARIABLE-QEth-fertilizer-009-P2006020002-P585	QVARIABLE-QEth-fertilizer-009	P2006020002	P585
+QVARIABLE-QEth-fertilizer-009-P2006020002-P248	QVARIABLE-QEth-fertilizer-009	P2006020002	P248
+QVARIABLE-QEth-fertilizer-009-P1687-1	QVARIABLE-QEth-fertilizer-009	P1687	PVARIABLE-QEth-fertilizer-009
+QVARIABLE-QEth-fertilizer-009-P2006020004-1	QVARIABLE-QEth-fertilizer-009	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-009-P1813	QVARIABLE-QEth-fertilizer-009	P1813	quintal_2
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-009	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-009
+QVARIABLE-QEth-fertilizer-010-label	QVARIABLE-QEth-fertilizer-010	label	"Holder Urea"
+QVARIABLE-QEth-fertilizer-010-P1476	QVARIABLE-QEth-fertilizer-010	P1476	"Holder Urea"
+QVARIABLE-QEth-fertilizer-010-description	QVARIABLE-QEth-fertilizer-010	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-010-P31-1	QVARIABLE-QEth-fertilizer-010	P31	Q50701
+QVARIABLE-QEth-fertilizer-010-P2006020002-P585	QVARIABLE-QEth-fertilizer-010	P2006020002	P585
+QVARIABLE-QEth-fertilizer-010-P2006020002-P248	QVARIABLE-QEth-fertilizer-010	P2006020002	P248
+QVARIABLE-QEth-fertilizer-010-P1687-1	QVARIABLE-QEth-fertilizer-010	P1687	PVARIABLE-QEth-fertilizer-010
+QVARIABLE-QEth-fertilizer-010-P2006020004-1	QVARIABLE-QEth-fertilizer-010	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-010-P1813	QVARIABLE-QEth-fertilizer-010	P1813	holder_3
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-010	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-010
+QVARIABLE-QEth-fertilizer-011-label	QVARIABLE-QEth-fertilizer-011	label	"Hecatre Urea"
+QVARIABLE-QEth-fertilizer-011-P1476	QVARIABLE-QEth-fertilizer-011	P1476	"Hecatre Urea"
+QVARIABLE-QEth-fertilizer-011-description	QVARIABLE-QEth-fertilizer-011	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-011-P31-1	QVARIABLE-QEth-fertilizer-011	P31	Q50701
+QVARIABLE-QEth-fertilizer-011-P2006020002-P585	QVARIABLE-QEth-fertilizer-011	P2006020002	P585
+QVARIABLE-QEth-fertilizer-011-P2006020002-P248	QVARIABLE-QEth-fertilizer-011	P2006020002	P248
+QVARIABLE-QEth-fertilizer-011-P1687-1	QVARIABLE-QEth-fertilizer-011	P1687	PVARIABLE-QEth-fertilizer-011
+QVARIABLE-QEth-fertilizer-011-P2006020004-1	QVARIABLE-QEth-fertilizer-011	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-011-P1813	QVARIABLE-QEth-fertilizer-011	P1813	hectare_3
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-011	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-011
+QVARIABLE-QEth-fertilizer-012-label	QVARIABLE-QEth-fertilizer-012	label	"Quintal Urea"
+QVARIABLE-QEth-fertilizer-012-P1476	QVARIABLE-QEth-fertilizer-012	P1476	"Quintal Urea"
+QVARIABLE-QEth-fertilizer-012-description	QVARIABLE-QEth-fertilizer-012	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-012-P31-1	QVARIABLE-QEth-fertilizer-012	P31	Q50701
+QVARIABLE-QEth-fertilizer-012-P2006020002-P585	QVARIABLE-QEth-fertilizer-012	P2006020002	P585
+QVARIABLE-QEth-fertilizer-012-P2006020002-P248	QVARIABLE-QEth-fertilizer-012	P2006020002	P248
+QVARIABLE-QEth-fertilizer-012-P1687-1	QVARIABLE-QEth-fertilizer-012	P1687	PVARIABLE-QEth-fertilizer-012
+QVARIABLE-QEth-fertilizer-012-P2006020004-1	QVARIABLE-QEth-fertilizer-012	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-012-P1813	QVARIABLE-QEth-fertilizer-012	P1813	quintal_3
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-012	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-012
+QVARIABLE-QEth-fertilizer-013-label	QVARIABLE-QEth-fertilizer-013	label	"Holder Urea DAP"
+QVARIABLE-QEth-fertilizer-013-P1476	QVARIABLE-QEth-fertilizer-013	P1476	"Holder Urea DAP"
+QVARIABLE-QEth-fertilizer-013-description	QVARIABLE-QEth-fertilizer-013	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-013-P31-1	QVARIABLE-QEth-fertilizer-013	P31	Q50701
+QVARIABLE-QEth-fertilizer-013-P2006020002-P585	QVARIABLE-QEth-fertilizer-013	P2006020002	P585
+QVARIABLE-QEth-fertilizer-013-P2006020002-P248	QVARIABLE-QEth-fertilizer-013	P2006020002	P248
+QVARIABLE-QEth-fertilizer-013-P1687-1	QVARIABLE-QEth-fertilizer-013	P1687	PVARIABLE-QEth-fertilizer-013
+QVARIABLE-QEth-fertilizer-013-P2006020004-1	QVARIABLE-QEth-fertilizer-013	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-013-P1813	QVARIABLE-QEth-fertilizer-013	P1813	holder_4
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-013	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-013
+QVARIABLE-QEth-fertilizer-014-label	QVARIABLE-QEth-fertilizer-014	label	"Hectare Urea DAP"
+QVARIABLE-QEth-fertilizer-014-P1476	QVARIABLE-QEth-fertilizer-014	P1476	"Hectare Urea DAP"
+QVARIABLE-QEth-fertilizer-014-description	QVARIABLE-QEth-fertilizer-014	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-014-P31-1	QVARIABLE-QEth-fertilizer-014	P31	Q50701
+QVARIABLE-QEth-fertilizer-014-P2006020002-P585	QVARIABLE-QEth-fertilizer-014	P2006020002	P585
+QVARIABLE-QEth-fertilizer-014-P2006020002-P248	QVARIABLE-QEth-fertilizer-014	P2006020002	P248
+QVARIABLE-QEth-fertilizer-014-P1687-1	QVARIABLE-QEth-fertilizer-014	P1687	PVARIABLE-QEth-fertilizer-014
+QVARIABLE-QEth-fertilizer-014-P2006020004-1	QVARIABLE-QEth-fertilizer-014	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-014-P1813	QVARIABLE-QEth-fertilizer-014	P1813	hectare_4
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-014	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-014
+QVARIABLE-QEth-fertilizer-015-label	QVARIABLE-QEth-fertilizer-015	label	"Quintal Urea DAP"
+QVARIABLE-QEth-fertilizer-015-P1476	QVARIABLE-QEth-fertilizer-015	P1476	"Quintal Urea DAP"
+QVARIABLE-QEth-fertilizer-015-description	QVARIABLE-QEth-fertilizer-015	description	"variable column in QEth-fertilizer"
+QVARIABLE-QEth-fertilizer-015-P31-1	QVARIABLE-QEth-fertilizer-015	P31	Q50701
+QVARIABLE-QEth-fertilizer-015-P2006020002-P585	QVARIABLE-QEth-fertilizer-015	P2006020002	P585
+QVARIABLE-QEth-fertilizer-015-P2006020002-P248	QVARIABLE-QEth-fertilizer-015	P2006020002	P248
+QVARIABLE-QEth-fertilizer-015-P1687-1	QVARIABLE-QEth-fertilizer-015	P1687	PVARIABLE-QEth-fertilizer-015
+QVARIABLE-QEth-fertilizer-015-P2006020004-1	QVARIABLE-QEth-fertilizer-015	P2006020004	QEth-fertilizer
+QVARIABLE-QEth-fertilizer-015-P1813	QVARIABLE-QEth-fertilizer-015	P1813	quintal_4
+QEth-fertilizer-P2006020003-QVARIABLE-QEth-fertilizer-015	QEth-fertilizer	P2006020003	QVARIABLE-QEth-fertilizer-015
