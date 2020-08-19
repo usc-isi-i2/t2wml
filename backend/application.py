@@ -165,7 +165,8 @@ def upload_data_file(pid):
     response["tableData"] = table_data(data_file)
     sheet = data_file.current_sheet
 
-    # lets see if this is an annotated spreadsheet, if it is then lets go on an adventure -amandeep
+    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
+    # and item definitions automatically
     ai = AnnotationIntegration(request, response['tableData']['isCSV'], response['tableData']['currSheetName'])
     if ai.is_annotated_spreadsheet():
         try:
@@ -176,8 +177,7 @@ def upload_data_file(pid):
             PropertiesFile.create_from_dataframe(project, combined_item_df)
             YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
         except Exception as e:
-            print(e) #continue to normal spreadsheet handling
-
+            print(e)  # continue to normal spreadsheet handling
 
     response["wikifierData"] = serialize_item_table(project, sheet)
     response["yamlData"] = handle_yaml(sheet, project)
@@ -339,6 +339,7 @@ def downloader(pid, filetype):
     response = download(sheet, yaml_file, project, filetype)
     return response, 200
 
+
 @app.route('/api/project/<pid>/datamart', methods=['GET'])
 @json_response
 def load_to_datamart(pid):
@@ -347,10 +348,9 @@ def load_to_datamart(pid):
         sheet = project.current_file.current_sheet
     except:
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-                "Can't upload to datamart without datafile and sheet")
+            "Can't upload to datamart without datafile and sheet")
     data = upload_to_datamart(project, sheet)
     return data, 201
-
 
 
 @app.route('/api/project/<pid>', methods=['DELETE'])
