@@ -26,6 +26,8 @@ debug_mode = False
 def get_project(project_id):
     try:
         project = Project.query.get(project_id)
+        if not project:
+            raise ValueError("Not found")
     except Exception as e:
         raise web_exceptions.ProjectNotFoundException
     update_t2wml_settings(project)
