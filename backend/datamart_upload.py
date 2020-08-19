@@ -34,16 +34,16 @@ def get_download(project, sheet):
 
 
 def upload_to_datamart(project, data_sheet):
-    #get the dataset id
+    # get the dataset id
     try:
         dataset_id = get_dataset_id(data_sheet)
     except Exception as e:
         raise NoSuchDatasetIDException(str(e))
 
-    #get the download kgtk
+    # get the download kgtk
     kgtk = get_download(project, data_sheet)
 
-    #get the item file
+    # get the item file
     item_file = ItemsFile.query.filter_by(
         project_id=project.id).order_by(ItemsFile.id.desc()).first()
 
@@ -57,8 +57,7 @@ def upload_to_datamart(project, data_sheet):
             'kgtk_output': ('kgt_output.tsv', tmpfile, 'application/octet-stream')
         }
 
-        response = requests.put(DATAMART_API_ENDPOINT + "/datasets/{dataset_id}/t2wml".format(dataset_id=dataset_id),
-                                files=files)
+        response = requests.put(f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/t2wml', files=files)
         print(response.text)
 
     data = {}
