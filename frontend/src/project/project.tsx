@@ -32,6 +32,9 @@ interface ProjectProperties {
 
 interface ProjectState {
   showSettings: boolean;
+  endpoint: string;
+  warnEmpty: boolean;
+
   showSpinner: boolean;
   projectData:  any; //todo: add project class[]
   errorMessage: ErrorMessage;
@@ -75,6 +78,9 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
       // appearance
       showSettings: false,
+      endpoint: '',
+      warnEmpty: false,
+
       showSpinner: false,
 
       // project list
@@ -152,7 +158,15 @@ class Project extends Component<ProjectProperties, ProjectState> {
   }
 
   onShowSettingsClicked() {
-    this.setState({ showSettings: true });
+    this.requestService.getSettings(this.pid)
+    .then((data) => {
+      this.setState({ 
+        endpoint: data.endpoint,
+        warnEmpty: data.warnEmpty,
+        showSettings: true
+      });
+    });
+    
   }
 
   handleSaveSettings() {
@@ -194,6 +208,8 @@ class Project extends Component<ProjectProperties, ProjectState> {
         </div>
 
         <Settings showSettings={this.state.showSettings}
+            endpoint={this.state.endpoint}
+            warnEmpty={this.state.warnEmpty}
             handleSaveSettings={() => this.handleSaveSettings()}
             cancelSaveSettings={() =>this.cancelSaveSettings()} />
 
