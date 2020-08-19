@@ -84,6 +84,11 @@ class RequestService {
     return response;
   }
 
+  public async getSettings(pid: string) {
+    const response = await backendGet(`/project/${pid}/settings`);
+    return response;
+  }
+
   // It doesn't exist in the backend 
   public async downloadProject(pid: string) {
     const response = await backendGet(`/project/${pid}/download`);
