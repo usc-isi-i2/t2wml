@@ -180,8 +180,7 @@ def upload_data_file(pid):
 
 
     response["wikifierData"] = serialize_item_table(project, sheet)
-    y = handle_yaml(sheet, project)
-    response["yamlData"] = y
+    response["yamlData"] = handle_yaml(sheet, project)
 
     return response, 200
 
