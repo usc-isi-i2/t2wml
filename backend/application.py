@@ -423,9 +423,12 @@ def update_settings(pid):
     :return:
     """
     project = get_project(pid)
-    endpoint = request.form["endpoint"]
-    project.sparql_endpoint = endpoint
-    project.warn_for_empty_cells=request.form["warnEmpty"].lower()=='true'
+    endpoint = request.form.get("endpoint", None)
+    if endpoint:
+        project.sparql_endpoint = endpoint
+    warn = request.form.get("warnEmpty", None)
+    if warn is not None:
+        project.warn_for_empty_cells=request.form["warnEmpty"].lower()=='true'
     project.modify()
     update_t2wml_settings(project)
     response = {
