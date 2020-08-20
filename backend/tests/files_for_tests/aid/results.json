@@ -599,35 +599,35 @@
             "dataRegion": {
                 "color": "hsl(150, 50%, 90%)",
                 "list": [
+                    "G5",
+                    "G7",
+                    "H5",
+                    "H7",
+                    "H3",
+                    "F4",
+                    "G6",
+                    "F7",
                     "F8",
                     "F6",
-                    "G8",
-                    "F5",
-                    "H4",
                     "H8",
-                    "H6",
-                    "G7",
-                    "G4",
-                    "H5",
-                    "H3",
-                    "G3",
-                    "G5",
                     "F3",
-                    "F7",
-                    "G6",
-                    "F4",
-                    "H7"
+                    "G3",
+                    "H4",
+                    "G4",
+                    "F5",
+                    "G8",
+                    "H6"
                 ]
             },
             "item": {
                 "color": "hsl(200, 50%, 90%)",
                 "list": [
-                    "B7",
                     "B5",
+                    "B4",
                     "B3",
-                    "B6",
                     "B8",
-                    "B4"
+                    "B6",
+                    "B7"
                 ]
             },
             "qualifierRegion": {
@@ -821,9 +821,9 @@
                             "property": "P585",
                             "value": "1999-04-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B5"
@@ -838,9 +838,9 @@
                             "property": "P585",
                             "value": "2000-02-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B6"
@@ -872,9 +872,9 @@
                             "property": "P585",
                             "value": "2008-01-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 9,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y"
                         }
                     ],
                     "cell": "B8"
@@ -928,9 +928,9 @@
                             "property": "P585",
                             "value": "1999-04-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B5"
@@ -945,9 +945,9 @@
                             "property": "P585",
                             "value": "2000-02-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B6"
@@ -979,9 +979,9 @@
                             "property": "P585",
                             "value": "2008-01-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 9,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y"
                         }
                     ],
                     "cell": "B8"
@@ -1035,9 +1035,9 @@
                             "property": "P585",
                             "value": "1999-04-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B5"
@@ -1052,9 +1052,9 @@
                             "property": "P585",
                             "value": "2000-02-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B6"
@@ -1086,9 +1086,9 @@
                             "property": "P585",
                             "value": "2008-01-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 9,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y"
                         }
                     ],
                     "cell": "B8"
