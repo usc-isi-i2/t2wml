@@ -71,6 +71,9 @@ rendererConfig.entry = './src/renderer/index.tsx';
 rendererConfig.target = 'electron-renderer';
 rendererConfig.output.filename = 'renderer.bundle.js';
 rendererConfig.plugins = [
+  new MonacoWebpackPlugin({
+    languages: ['yaml']
+  }),
   new HtmlWebpackPlugin({
     template: path.resolve(__dirname, './public/index.html'),
   }),
@@ -78,9 +81,6 @@ rendererConfig.plugins = [
     template: path.resolve(__dirname, './public/splash.html'),
     filename: 'splash.html',
   }),
-  /*new MonacoWebpackPlugin({
-    languages: ['yaml']
-  }), */
 ];
 
 module.exports = [mainConfig, rendererConfig];
