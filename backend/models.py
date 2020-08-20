@@ -126,7 +126,7 @@ class Project(db.Model):
                 for sheet in df.sheets:
                     yamls=assocs.get(sheet.name, [])
                     if len(yamls)>1:
-                        raise ValueError("projects with more than one yaml file per sheet not yet supported")
+                        print("Detected multiple yaml files in project. Only the lasy yaml file will be used")
                     for y in yamls:
                         yf=YamlFile.create_from_filepath(project, os.path.join(api_proj.directory, y), sheet, from_api_proj=True)
                         sheet.yamlfiles.append(yf)
