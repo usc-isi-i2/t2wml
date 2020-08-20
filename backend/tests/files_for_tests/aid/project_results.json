@@ -1544,6 +1544,7 @@
     },
     "load_from_path": {
         "tableData": {
+            "filename": "dataset",
             "isCSV": false,
             "sheetNames": [
                 "Sheet3",
@@ -1705,6 +1706,50 @@
         "yamlData": {
             "yamlFileContent": "statementMapping:\n  region:\n    - left: F\n      right: H\n      top: 3\n      bottom: 8\n  template:\n    item: =value[B, $row, \"main subject\"]\n    property: =item[$col, 2, \"property\"]\n    value: =value[$col, $row]\n    unit: =item[$col,1,\"unit\"]\n    qualifier:\n      - property: P585  # point in time\n        value: '=concat(value[C:E,$row],\"-\")'\n        calendar: Q1985727\n        precision: [day, month, year]\n        time_zone: 0\n        format: [\"%Y-%m-%d\", \"%Y-%m\", \"%Y\"]\n      - property: P17  # country\n        value: =item[I,$row]\n",
             "yamlRegions": {
+                "dataRegion": {
+                    "color": "hsl(150, 50%, 90%)",
+                    "list": [
+                        "F6",
+                        "F4",
+                        "G4",
+                        "G6",
+                        "H8",
+                        "H3",
+                        "G7",
+                        "G5",
+                        "H4",
+                        "H7",
+                        "G3",
+                        "F3",
+                        "H5",
+                        "G8",
+                        "F5",
+                        "H6",
+                        "F7",
+                        "F8"
+                    ]
+                },
+                "item": {
+                    "color": "hsl(200, 50%, 90%)",
+                    "list": [
+                        "B3",
+                        "B6",
+                        "B8",
+                        "B5",
+                        "B4",
+                        "B7"
+                    ]
+                },
+                "qualifierRegion": {
+                    "color": "hsl(250, 50%, 90%)",
+                    "list": [
+                        "I4"
+                    ]
+                },
+                "referenceRegion": {
+                    "color": "yellow",
+                    "list": []
+                },
                 "error": {
                     "F3": {
                         "qualifier": {
@@ -1811,6 +1856,30 @@
                             }
                         }
                     }
+                },
+                "dangerCells": {
+                    "color": "#FF8000",
+                    "list": [
+                        "F3",
+                        "F5",
+                        "F6",
+                        "F7",
+                        "F8",
+                        "G3",
+                        "G5",
+                        "G6",
+                        "G7",
+                        "G8",
+                        "H3",
+                        "H5",
+                        "H6",
+                        "H7",
+                        "H8"
+                    ]
+                },
+                "errorCells": {
+                    "color": "#FF3333",
+                    "list": []
                 },
                 "cellStatements": {
                     "F3": {
