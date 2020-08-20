@@ -163,7 +163,20 @@ def handle_yaml(sheet, project):
         response = dict()
         with open(yaml_file.file_path, "r", encoding="utf-8") as f:
             response["yamlFileContent"] = f.read()
-        response['yamlRegions'] = highlight_region(sheet, yaml_file, project)
+        try:
+            response['yamlRegions'] = highlight_region(sheet, yaml_file, project)
+        except Exception as e: #this is something of a stopgap measure for now. need to do it properly later.
+            orange = '#FF8000'
+            red = '#FF3333'
+            response['yamlRegions']  = {
+                "dataRegion": {"color": "hsl(150, 50%, 90%)", "list":[]},
+                "item": {"color": "hsl(200, 50%, 90%)", "list": []},
+                "qualifierRegion": {"color": "hsl(250, 50%, 90%)", "list": []},
+                'referenceRegion': {"color": "yellow", "list": []},
+                'dangerCells' : {'color': orange, 'list': []},
+                'errorCells' : {'color': red, 'list': []},
+                'error': dict()}
+            #response['error']="Invalid YAML" #for now the UI is not good for this. once we separate the calls...
         return response
     return None
 
