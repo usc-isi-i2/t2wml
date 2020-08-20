@@ -1,4 +1,5 @@
 # 02_time
+# Extension of the previous time example (01_time), qualifying the variable Production at a lower granularity (day). Note that the format has been changed to include the day as well, which is specified in column E.
 statementMapping:
   region:
     - range: F8:F13
@@ -8,6 +9,7 @@ statementMapping:
     value: =value[$col, $row]
     qualifier:
     - calendar: Q1985727
+      # The format tells T2WML how to recognized the concatenated date %Year-%month-%day
       format: '%Y-%m-%d'
       precision: year
       property: P585

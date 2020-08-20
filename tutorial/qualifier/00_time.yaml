@@ -1,4 +1,5 @@
 # 00_time
+# Example showing how to add a time qualifier (years) on the data variable Production. 
 statementMapping:
   region:
     - range: D8:D13

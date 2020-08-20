@@ -1,4 +1,5 @@
 # 03_time_exercise
+# In this exercise you will learn to set up the time format in the correct manner.
 statementMapping:
   region:
     - range: D8:D13
@@ -8,8 +9,8 @@ statementMapping:
     value: =value[$col, $row]
     qualifier:
     - calendar: Q1985727
-      format: ### Fill in the format ###
+      format: ### Fill in the format. For example "%Y-%m-%d"  ###
       precision: year
       property: P585
       time_zone: 0
-      value: ### Fill in the value ###
+      value: ### Fill in the value. For example =value[$col, $row] ###

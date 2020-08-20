@@ -1,4 +1,5 @@
 # 05_time
+# Example showing a time qualifier for the data variable Production. In this case, the month is abbreviated (Jan, Feb, Mar), and the code used is %b. This corresponds to the date definitions in Python, see https://www.w3schools.com/python/python_datetime.asp for a full list of all supported codes.
 statementMapping:
   region:
     - range: F8:F13
@@ -8,6 +9,7 @@ statementMapping:
     value: =value[$col, $row]
     qualifier:
     - calendar: Q1985727
+      # Similar to previous examples, but in this case %b is used to recognize the month. 
       format: '%Y-%b-%d'
       precision: year
       property: P585

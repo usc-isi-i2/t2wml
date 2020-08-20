@@ -1,4 +1,5 @@
 # 04_time_solution
+# Solution to the exercise 04_time_exercise, where we attempted at describing time values.
 statementMapping:
   region:
     - range: D8:D13
@@ -8,6 +9,7 @@ statementMapping:
     value: =value[$col, $row]
     qualifier:
     - calendar: Q1985727
+      #In this case the date is formatted differently than before, using "/" instead of "-"
       format: '%m/%d/%Y'
       precision: year
       property: P585
