@@ -1,4 +1,5 @@
 # 03_region_exercise
+# Exercise: Fill in the missing range value to reflect the change in the spreadsheet
 statementMapping:
   region:
     - range: ### Fill in the range ###

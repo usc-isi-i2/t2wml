@@ -1,4 +1,5 @@
 # 02_region
+# Updated T2WML YAML to capture the additional column. Only the range attribute is different.
 statementMapping:
   region:
     - range: D8:E15
