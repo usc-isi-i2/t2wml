@@ -8,8 +8,6 @@ import * as utils from '../common/utils';
 interface CreateProperteis {
   showCreateProject: boolean;
   showSpinner: boolean;
-  // tempCreateProject: string;
-  // isTempCreateProjectVaild: boolean;
 
   handleCreateProject: (name: string) => void;
   cancelCreateProject: () => void;
@@ -22,6 +20,8 @@ interface CreateState {
 
 
 class CreateProject extends Component<CreateProperteis, CreateState> {
+  private _input: HTMLInputElement | null;
+
   constructor(props: CreateProperteis) {
     super(props);
 
@@ -29,6 +29,13 @@ class CreateProject extends Component<CreateProperteis, CreateState> {
       tempCreateProject: 'Untitled Project',
       isTempCreateProjectVaild: true
     } as CreateState;
+    this._input = null;
+  }
+
+  componentDidUpdate() {
+    if (this._input) {
+      this._input.focus();
+    }
   }
 
   render() {
@@ -65,6 +72,7 @@ class CreateProject extends Component<CreateProperteis, CreateState> {
                   defaultValue=""
                   placeholder={this.state.tempCreateProject}
                   autoFocus={true}
+                  ref={(input: HTMLInputElement) => this._input = input}
                   style={this.state.isTempCreateProjectVaild ? {} : { border: "1px solid red" }}
                   onKeyPress={(event: any) => {
                     // todo: add type event

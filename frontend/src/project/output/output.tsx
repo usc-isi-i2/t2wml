@@ -231,6 +231,8 @@ class Output extends Component<OutputProperties, OutputState> {
         this.queryWikidata(unit, "unit");  
         isAllCached = false;
       }
+    } else {
+      this.setState({ unit: null });
     }
 
     // qualifiers
