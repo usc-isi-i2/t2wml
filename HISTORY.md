@@ -1,6 +1,17 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.2.0:
+-------------------------
+* t2wml-api version 0.0.8
+* added support for uploading projects
+* added setting for warning for empty cells
+* when loading an invalid yaml, at least return the yaml content
+* bug fixes:
+  - added some missing utf-8 support
+  - sparql endpoint changes were not being propagated
+  
+
 Changes in version 2.1.1:
 ------------------------
 * t2wml-api version 0.0.7
