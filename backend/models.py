@@ -3,7 +3,7 @@ from pathlib import Path
 from werkzeug.utils import secure_filename
 
 from t2wml.api import add_properties_from_file, SpreadsheetFile
-
+import csv
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
 
@@ -215,7 +215,7 @@ class ItemsFile(SavedFile):
     def create_from_dataframe(cls, project, df):
         folder = cls.get_folder(project)
         filepath = str(folder / "datamart_item_definitions.tsv")
-        df.to_csv(filepath, sep='\t', index=False)
+        df.to_csv(filepath, sep='\t', index=False, quoting=csv.QUOTE_NONE)
         wf = cls.create_from_filepath(project, filepath)
         return wf
 

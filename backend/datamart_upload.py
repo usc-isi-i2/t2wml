@@ -51,6 +51,7 @@ def upload_to_datamart(project, data_sheet):
         tmpfile.write(kgtk.encode("utf-8"))
         tmpfile.seek(0)
 
+        print(type(item_file))
         # upload to datamart
         files = {
             'item_definitions': ('item_definitions.tsv', open(item_file.file_path), 'application/octet-stream'),
@@ -58,7 +59,13 @@ def upload_to_datamart(project, data_sheet):
         }
 
         response = requests.put(f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/t2wml', files=files)
-        print(response.text)
+        variable_ids = [x['variable_id'] for x in response.json()]
+        url_param = '?'
+        for variable_id in variable_ids:
+            url_param += f'variable={variable_id}&'
+        get_url = f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/variables{url_param[:-1]}'
+        print(get_url)
+
 
     data = {}
     return data
