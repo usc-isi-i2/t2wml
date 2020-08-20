@@ -18,3 +18,4 @@ column,row,value,context,item
 ,,Total area,property,PTotalArea
 ,,Crop,property,PCropType
 ,,Country,property,P17
+,,Estimated,property,PEstimated

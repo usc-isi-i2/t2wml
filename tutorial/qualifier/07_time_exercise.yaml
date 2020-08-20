@@ -1,0 +1,15 @@
+# 07_time_exercise
+statementMapping:
+  region:
+    - range: D8:D13
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+    - calendar: Q1985727
+      format: ### Fill in date format ###
+      precision: year
+      property: P585
+      time_zone: 0
+      value: =value[C, $row]

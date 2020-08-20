@@ -1,0 +1,13 @@
+# 11_qualifier
+statementMapping:
+  region:
+    - range: D8:D10
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[D, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 7, "property"]
+        value: =value[C, $row]
+      - property: =item[E, 7, "property"]
+        value: =value[E, $row]

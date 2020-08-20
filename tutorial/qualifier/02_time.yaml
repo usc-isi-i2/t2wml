@@ -1,0 +1,17 @@
+# 02_time
+statementMapping:
+  region:
+    - range: F8:F13
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+    - calendar: Q1985727
+      format: '%Y-%m-%d'
+      precision: year
+      property: P585
+      time_zone: 0
+      value: =concat(value[C, $row], value[D, $row], value[E, $row], "-")
+      # This works as well:
+      # value: =concat(value[C:E, $row], "-")

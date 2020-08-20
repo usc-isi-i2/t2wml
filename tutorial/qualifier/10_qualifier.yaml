@@ -1,4 +1,4 @@
-# 00_region
+# 10_qualifier
 # Structure of T2WML YAML with one variable and one qualifier
 statementMapping:
   # The region attribute defines the cells containing the variable values

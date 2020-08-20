@@ -1,0 +1,16 @@
+# 03_qualifier_solution
+statementMapping:
+  region:
+    - range: D8:D13
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 7, "property"]
+        value: =value[C, $row]
+      - property: =item[F, 7, "property"]
+        value: =value[F, $row]
+      # You can switch qualifier/variable values. Convert "Total area" to be a qualifier
+      - property: =item[E, 7, "property"]
+        value: =value[E, $row]
