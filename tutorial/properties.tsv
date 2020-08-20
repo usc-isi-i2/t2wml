@@ -94,3 +94,5 @@ PCropType	label	Crop 	PCrop-label-1
 PCropType	data_type	String	PCrop-data-type-1
 PTotalArea	label	Total area	PTotalArea-label-1
 PTotalArea	data_type	String	PTotalArea-data-type-1
+PFertilizer	label	Fertilizer	PFertilizer-label-1
+PFertilizer	data_type	String	PFertilizer-data-type-1

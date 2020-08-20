@@ -19,3 +19,4 @@ column,row,value,context,item
 ,,Crop,property,PCropType
 ,,Country,property,P17
 ,,Estimated,property,PEstimated
+,,Fertilizer,property,PFertilizer
