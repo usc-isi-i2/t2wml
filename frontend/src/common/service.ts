@@ -19,6 +19,11 @@ class RequestService {
     return response;
   }
 
+  public async loadProject(formData: any) {
+    const response = await backendPost('/project/load', formData);
+    return response;
+  }
+
   public async uploadProperties(pid: string, formData: any) {
     const response = await backendPost(`/project/${pid}/properties`, formData);
     return response;
@@ -75,7 +80,12 @@ class RequestService {
   }
 
   public async updateSettings(pid: string, formData: any) {
-    const response = await backendPut(`/project/${pid}/sparql`, formData);
+    const response = await backendPut(`/project/${pid}/settings`, formData);
+    return response;
+  }
+
+  public async getSettings(pid: string) {
+    const response = await backendGet(`/project/${pid}/settings`);
     return response;
   }
 

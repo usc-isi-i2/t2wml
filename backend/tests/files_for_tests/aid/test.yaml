@@ -13,8 +13,8 @@ statementMapping:
       - property: P585  # point in time
         value: '=concat(value[C:E,$row],"-")'
         calendar: Q1985727
-        precision: day
+        precision: [day, month, year]
         time_zone: 0
-        format: "%Y-%m-%d"
+        format: ["%Y-%m-%d", "%Y-%m", "%Y"]
       - property: P17  # country
         value: =item[I,$row]

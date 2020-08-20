@@ -1,0 +1,27 @@
+column,row,value,context,item
+,,Kenya,main subject,Q114
+,,Tanzania,main subject,Q924
+,,Zambia,main subject,Q953
+,,Zimbabwe,main subject,Q954
+,,Mozambique,main subject,Q1029
+,,Maize,main subject,Q25618328
+,,Teff,main subject,Q843942
+,,Kenya,,Q114
+,,Tanzania,,Q924
+,,Zambia,,Q953
+,,Zimbabwe,,Q954
+,,Mozambique,,Q1029
+,,Maize,,Q25618328
+,,Teff,,Q843942
+,,Ethiopian calendar,,Q215271
+,,Gregorian calendar,,Q12138
+,,kilogram,unit,Q11570
+,,kg,unit,Q11570
+,,quintal,unit,Q940052
+,,FAO,,Q82151
+,,OECD,,Q41550
+,,stated in,property,P248
+,,Maize,property,PMaize
+,,Teff,property,PTeff
+,,Production,property,PProduction
+,,Total area,property,PTotalArea

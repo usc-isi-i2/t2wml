@@ -21,8 +21,10 @@ def wikify(region, data_sheet, context):
 def update_t2wml_settings(project):
     t2wml_settings.sparql_endpoint=project.sparql_endpoint
     t2wml_settings.wikidata_provider = DatabaseProvider(project.sparql_endpoint)
+    t2wml_settings.warn_for_empty_cells=project.warn_for_empty_cells
     t2wml_settings.cache_data_files = True
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
+    
 
 
 def get_wikifier(project):
@@ -159,7 +161,7 @@ def handle_yaml(sheet, project):
     if sheet.yaml_file:
         yaml_file = sheet.yaml_file
         response = dict()
-        with open(yaml_file.file_path, "r") as f:
+        with open(yaml_file.file_path, "r", encoding="utf-8") as f:
             response["yamlFileContent"] = f.read()
         response['yamlRegions'] = highlight_region(sheet, yaml_file, project)
         return response
