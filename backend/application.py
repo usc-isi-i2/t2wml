@@ -442,17 +442,17 @@ def is_alive():
 # In that case, we only have one webserver - Flask. The following two routes are for this.
 # They are not used in dev (React's dev server is used to serve frontend assets), or in server deployment
 # (nginx is used to serve static assets)
-@app.route('/')
-def serve_home_page():
-    return send_file(os.path.join(app.config['STATIC_FOLDER'], 'index.html'))
+# @app.route('/')
+# def serve_home_page():
+#     return send_file(os.path.join(app.config['STATIC_FOLDER'], 'index.html'))
 
 
-@app.route('/<path:path>')
-def serve_static(path):
-    try:
-        return send_from_directory(app.config['STATIC_FOLDER'], path)
-    except NotFound:
-        return serve_home_page()
+# @app.route('/<path:path>')
+# def serve_static(path):
+#     try:
+#         return send_from_directory(app.config['STATIC_FOLDER'], path)
+#     except NotFound:
+#         return serve_home_page()
 
 
 if __name__ == "__main__":

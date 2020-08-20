@@ -1,4 +1,5 @@
 import React from 'react';
+import Config from '../config';
 
 // T2WMLLogo
 import { Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -20,7 +21,7 @@ class T2WMLLogo extends React.Component<T2WMLLogoProperteis, T2WMLLogoState> {
     // init state
     this.state = {
       logo: "T2WML GUI",
-      version: `version ${process.env.REACT_APP_VERSION}`,
+      version: `version ${Config.version}`,
       homeUrl: "/",
     }
   }

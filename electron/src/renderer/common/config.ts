@@ -1,13 +1,26 @@
-export default class Config {
-    public static get backend(): string {
-        return process.env.REACT_APP_BACKEND_SERVER!;
-    }
+import { AppConfig, Mode, Platform } from '@/shared/config';
+import { ipcRenderer } from 'electron';
 
-    public static get sparql(): string {
-        return process.env.REACT_APP_DEFAULT_SPARQL_ENDPOINT!;
-    }
+class Config implements AppConfig {
+    public readonly mode: Mode;
+    public readonly platform: Platform;
+    public readonly version: string;
+    public readonly backend: string;
+    public readonly defaultSparqlEndpoint: string;
 
-    public static get googleClientId(): string {
-        return process.env.REACT_APP_GOOGLE_CLIENT_ID!;
+    constructor() {
+        const config = ipcRenderer.sendSync('get-config') as AppConfig;
+        console.debug('Config constructor got config: ', config);
+        
+        this.mode = config.mode;
+        this.platform = config.platform;
+        this.version = config.version;
+        this.backend = config.backend;
+        this.defaultSparqlEndpoint = config.defaultSparqlEndpoint;
     }
 }
+
+const config = new Config();
+
+export default config;
+

@@ -47,7 +47,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
 
   render() {
     const sparqlEndpoints = [
-      Config.sparql,
+      Config.defaultSparqlEndpoint,
       "https://query.wikidata.org/sparql"
     ];
     return (

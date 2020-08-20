@@ -10,6 +10,16 @@
             "problemMatcher": [],
             "label": "npm: start - frontend",
             "detail": "react-app-rewired start"
+        },
+        {
+            "type": "npm",
+            "script": "start",
+            "path": "electron/",
+            "problemMatcher": [
+                "$lessc"
+            ],
+            "label": "npm: start - electron",
+            "detail": "electron --disable-gpu ./dist/main.bundle.js"
         }
     ]
 }

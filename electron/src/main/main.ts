@@ -1,13 +1,16 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions, MenuItem } from 'electron';
+import { app, BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import treeKill from 'tree-kill';
 
 import { spawn, ChildProcess } from 'child_process';
 import axios from 'axios';
+import { ConfigManager } from './config';
+
+const config = new ConfigManager();
 
 /* Splash Screen */
 let splashWindow: Electron.BrowserWindow | null;
@@ -54,7 +57,7 @@ function buildMainMenu() {
         {
             label: 'File',
             submenu: [
-                isMac() ? { role: 'close' } : { role: 'quit' }
+                config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
             ]
         },
         {
@@ -77,7 +80,7 @@ function buildMainMenu() {
         },
     ]
 
-    if (isMac()) {
+    if (config.platform === 'mac') {
         mainMenuTemplate.unshift(macAppleMenu);
     }
 
@@ -124,10 +127,10 @@ let backendUrl = '';
 
 function getBackendPath() {
     let filename = 't2wml-server';
-    if (isWindows()) {
+    if (config.platform === 'windows') {
         filename = 't2wml-server.exe';
     }
-    if (isProd()) {
+    if (config.mode === 'prod') {
         return path.join(process.resourcesPath || __dirname, filename);
     }
     return path.join(__dirname, '..', '..', 'backend', 'dist', filename);
@@ -170,18 +173,6 @@ async function sleep(ms: number) {
     });
 }
 
-function isProd() {
-    return process.env.NODE_ENV === 'production';
-}
-
-function isMac() {
-    return process.platform === 'darwin';
-}
-
-function isWindows() {
-    return process.platform === 'win32';
-}
-
 /* App Initilization */
 async function initApp(): Promise<void> {
     openSplashScreen();
@@ -190,7 +181,7 @@ async function initApp(): Promise<void> {
     createMainWindow();  // WIll close the splash window
 }
 
-if (!isProd()) {
+if (config.mode !== 'prod') {
     app.commandLine.appendSwitch('remote-debugging-port', '9223');
     app.commandLine.appendSwitch('enable-logging');
 }
@@ -200,7 +191,7 @@ app.once('ready', initApp);
 app.on('window-all-closed', async () => {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (!isMac()) {
+    if (config.platform !== 'mac') {
         app.quit();
     }
 });
