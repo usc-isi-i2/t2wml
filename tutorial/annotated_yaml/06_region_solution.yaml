@@ -1,9 +1,9 @@
-# 08_region
+# 06_region
 statementMapping:
   region:
-    - range: D8:F15
-      skip_columns:
-        - =value[$col,7]=="Comment"
+    - range: D8:E15
+      skip_cells:
+        - D12
   template:
     item: =item[B, $row, "main subject"]
     property: =item[$col, 7, "property"]

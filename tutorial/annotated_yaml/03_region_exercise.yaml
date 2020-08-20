@@ -1,10 +1,7 @@
-# 04_region
+# 03_region_exercise
 statementMapping:
   region:
-    - range: D10:E19
-      skip_rows:
-        - 18
-        - 19
+    - range: ### Fill in the range ###
   template:
     item: =item[B, $row, "main subject"]
     property: =item[$col, 9, "property"]

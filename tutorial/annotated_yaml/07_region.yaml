@@ -1,14 +1,13 @@
 # 07_region
 statementMapping:
   region:
-    - range: D8:D15
-      skip_cells:
-        - =value[$col, $row]=="-"
+    - range: D10:E19
+      skip_rows:
+        - =value[B,$row]=="Total"
   template:
     item: =item[B, $row, "main subject"]
-    property: =item[$col, 7, "property"]
+    property: =item[$col, 9, "property"]
     value: =value[$col, $row]
-    unit: =item[E, $row, "unit"]
     qualifier:
-      - property: =item[C, 7, "property"]
+      - property: =item[C, 9, "property"]
         value: =value[C, $row]
