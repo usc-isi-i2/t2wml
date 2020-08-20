@@ -137,25 +137,25 @@ function getBackendPath() {
 }
 
 async function initBackend(): Promise<void> {
-    // const port = Math.floor(Math.random() * 20000) + 40000  // Choose a random port between 40000 and 60000
-    const port = 13000; // For now the frontend expects the backend to be on port 13000
+    const port = Math.floor(Math.random() * 20000) + 40000  // Choose a random port between 40000 and 60000
+    // const port = 13000; // For now the frontend expects the backend to be on port 13000
     const backendPath = getBackendPath();
+    config.backend = `http://localhost:${port}/`;
+
     console.log(`Spawning backend from ${backendPath}, on port ${port}`);
     try {
         backendProcess = spawn(backendPath, [port.toString()]);
-        console.log(`Backend running form ${backendPath} on port ${port}`);
     } catch(err) {
         console.error("Can't run backend: ", err);
         app.quit();
         return;
     }
 
-    backendUrl = `http://localhost:${port}`;
     for(let retryCount=0; retryCount < 120; retryCount++) {
         // Try accessing the backend, see if we get a response
         try {
-            await axios.get(`${backendUrl}/api/is-alive`);
-            console.log('Backend is ready');
+            await axios.get(`${config.backend}api/is-alive`);
+            console.log(`Backend is ready at ${config.backend}`);
             return;
         } catch(error) {
             await sleep(500); // Wait a bit before trying again
