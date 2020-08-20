@@ -1709,34 +1709,34 @@
                 "dataRegion": {
                     "color": "hsl(150, 50%, 90%)",
                     "list": [
-                        "F6",
-                        "F4",
-                        "G4",
-                        "G6",
-                        "H8",
                         "H3",
-                        "G7",
-                        "G5",
-                        "H4",
-                        "H7",
-                        "G3",
-                        "F3",
-                        "H5",
                         "G8",
+                        "G3",
+                        "G4",
                         "F5",
-                        "H6",
+                        "F8",
+                        "F4",
+                        "G5",
+                        "G6",
+                        "G7",
+                        "H5",
+                        "F6",
+                        "F3",
+                        "H7",
                         "F7",
-                        "F8"
+                        "H4",
+                        "H6",
+                        "H8"
                     ]
                 },
                 "item": {
                     "color": "hsl(200, 50%, 90%)",
                     "list": [
-                        "B3",
-                        "B6",
-                        "B8",
-                        "B5",
                         "B4",
+                        "B6",
+                        "B3",
+                        "B5",
+                        "B8",
                         "B7"
                     ]
                 },
@@ -1894,11 +1894,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             }
                         ],
                         "cell": "B3"
@@ -1915,11 +1911,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             },
                             {
                                 "property": "P17",
@@ -1941,11 +1933,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 10,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m"
                             }
                         ],
                         "cell": "B5"
@@ -1962,11 +1950,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 10,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m"
                             }
                         ],
                         "cell": "B6"
@@ -1983,11 +1967,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             }
                         ],
                         "cell": "B7"
@@ -2004,11 +1984,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 9,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y"
                             }
                         ],
                         "cell": "B8"
@@ -2025,11 +2001,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             }
                         ],
                         "cell": "B3"
@@ -2046,11 +2018,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             },
                             {
                                 "property": "P17",
@@ -2072,11 +2040,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 10,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m"
                             }
                         ],
                         "cell": "B5"
@@ -2093,11 +2057,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 10,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m"
                             }
                         ],
                         "cell": "B6"
@@ -2114,11 +2074,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             }
                         ],
                         "cell": "B7"
@@ -2135,11 +2091,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 9,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y"
                             }
                         ],
                         "cell": "B8"
@@ -2156,11 +2108,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             }
                         ],
                         "cell": "B3"
@@ -2177,11 +2125,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             },
                             {
                                 "property": "P17",
@@ -2203,11 +2147,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 10,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m"
                             }
                         ],
                         "cell": "B5"
@@ -2224,11 +2164,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 10,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m"
                             }
                         ],
                         "cell": "B6"
@@ -2245,11 +2181,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 11,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y-%m-%d"
                             }
                         ],
                         "cell": "B7"
@@ -2266,11 +2198,7 @@
                                 "calendar": "Q1985727",
                                 "precision": 9,
                                 "time_zone": 0,
-                                "format": [
-                                    "%Y-%m-%d",
-                                    "%Y-%m",
-                                    "%Y"
-                                ]
+                                "format": "%Y"
                             }
                         ],
                         "cell": "B8"
