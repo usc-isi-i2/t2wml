@@ -225,7 +225,12 @@ class Output extends Component<OutputProperties, OutputState> {
     // unit
     if (json["statement"]["unit"]) {
       const unit = json["statement"]["unit"];
-      this.setState({ unit: unit });
+      if (cache[unit] !== undefined) {
+        this.setState({ unit: cache[unit] });
+      } else {
+        this.queryWikidata(unit, "unit");  
+        isAllCached = false;
+      }
     }
 
     // qualifiers
@@ -297,11 +302,16 @@ class Output extends Component<OutputProperties, OutputState> {
     wikiStore.output.showSpinner = true;
     
     this.requestService.getQnode(this.pid, node).then((res) => {
-        const name = res.label;
+        let name = res.label;
+        if (!name) {
+          name = node;
+        }
         if (field === "itemName") {
         this.setState({ itemName: name });
         } else if (field === "propertyName") {
         this.setState({ propertyName: name });
+        } else if (field === "unit") {
+          this.setState({ unit: name });
         } else if (field === "qualifiers") {
         let qualifiers = this.state.qualifiers;
             if (subfield === "propertyName") {

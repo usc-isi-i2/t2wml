@@ -165,8 +165,6 @@ def upload_properties(pid):
 def get_qnode_info(pid, qid):
     project = get_project(pid)
     label = get_qnode_label(qid, project)
-    if label is None:
-        return {}, 404
     return {"label": label}, 200
 
 
