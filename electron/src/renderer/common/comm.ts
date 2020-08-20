@@ -1,6 +1,6 @@
 /* Communications with the backend server */
 
-import Config from "./config";
+import Config from "@/shared/config";
 import { ErrorMessage } from "./general";
 
 function getUrl(url: string) {

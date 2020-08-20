@@ -7,7 +7,7 @@ import './ag-theme-balham.css'
 // App
 import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-bootstrap';
 
-import Config from '../common/config';
+import Config from '@/shared/config';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';

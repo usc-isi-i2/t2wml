@@ -10,7 +10,7 @@ import SplitPane from 'react-split-pane';
 import { Spinner } from 'react-bootstrap';
 
 
-import Config from '../common/config';
+import Config from '@/shared/config';
 
 // console.log
 import { LOG, ErrorMessage } from '../common/general';

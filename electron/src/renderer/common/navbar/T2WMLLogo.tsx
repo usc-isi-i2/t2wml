@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Config from '../config';
+import Config from '@/shared/config';
 
 // T2WMLLogo
 import { Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
