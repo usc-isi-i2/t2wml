@@ -84,7 +84,7 @@ def build_installer():
     cwd = os.getcwd()
     try:
         os.chdir(backend_path)
-        cmd = f'pyinstaller --onefile --noconfirm --console --add-data "./migrations{sep}migrations" --add-data "./static{sep}static" --runtime-hook packaging/pyinstaller_hooks.py t2wml-server.py'
+        cmd = f'pyinstaller --onefile --noconfirm --console --add-data "./migrations{sep}migrations" --runtime-hook packaging/pyinstaller_hooks.py t2wml-server.py'
         print('Running ', cmd)
         os.system(cmd)
     finally:
