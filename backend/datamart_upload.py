@@ -65,5 +65,5 @@ def upload_to_datamart(project, data_sheet):
         get_url = f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/variables{url_param[:-1]}'
         print(get_url)
 
-    data = {}
+    data = {'datamart_get_url': get_url}
     return data
