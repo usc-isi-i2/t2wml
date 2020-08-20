@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Config from '../config';
 
 // T2WMLLogo
@@ -39,9 +40,11 @@ class T2WMLLogo extends React.Component<T2WMLLogoProperteis, T2WMLLogoState> {
     return (
       <span>
         <OverlayTrigger overlay={logoTooltipHtml} placement="bottom" trigger={["hover", "focus"]}>
-          <Navbar.Brand className="pl-2" style={{ cursor: "pointer", fontWeight: "bold" }} onClick={() => { window.location.href = homeUrl; }}>
-            {logo}
-          </Navbar.Brand>
+          <Link to="/">
+            <Navbar.Brand className="pl-2" style={{ cursor: "pointer", fontWeight: "bold" }}>
+              {logo}
+            </Navbar.Brand>
+          </Link>
         </OverlayTrigger>
         <Navbar.Text className="pr-2" style={{ cursor: "default" }}>
           {version}

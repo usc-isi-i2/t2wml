@@ -24,6 +24,7 @@ import RequestService from '../common/service';
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import LoadProject from './load-project';
+import { useHistory } from 'react-router-dom';
 
 interface ProjectListProperties {
 
@@ -157,7 +158,8 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // do something here
       if (json["pid"]) {
         // success
-        window.location.href = "/project/" + json["pid"];
+        const history = useHistory();
+        history.push("/project/" + json["pid"]);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -196,7 +198,8 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
       // do something here
       if (json["pid"]) {
         // success
-        window.location.href = "/project/" + json["pid"];
+        const history = useHistory();
+        history.push("/project/" + json["pid"]);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
