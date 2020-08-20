@@ -1,4 +1,5 @@
 # 01_time
+# This example shows how to add a time qualifier for a data variable (Production) when the year and month are in two different cells. In this case, we concatenate the year and month to form a date. The format (%y-%m) tells T2WML how the date is formatted.
 statementMapping:
   region:
     - range: E8:E13
