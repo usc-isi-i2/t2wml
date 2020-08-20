@@ -4,7 +4,7 @@
 import { app, BrowserWindow, Menu, MenuItemConstructorOptions, MenuItem } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import * as treeKill from 'tree-kill';
+import treeKill from 'tree-kill';
 
 import { spawn, ChildProcess } from 'child_process';
 import axios from 'axios';
@@ -95,7 +95,13 @@ function createMainWindow(): void {
     });
 
     // and load the index.html of the app.
-    mainWindow.loadURL('http://localhost:13000');  // TODO: Add random port
+    mainWindow.loadURL(
+        url.format({
+            pathname: path.join(__dirname, './index.html'),
+            protocol: 'file:',
+            slashes: true,
+        })
+    );
 
     mainWindow.once('ready-to-show', () => {
         const menu = buildMainMenu();

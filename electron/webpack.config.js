@@ -30,16 +30,16 @@ const commonConfig = {
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
+        loader: 'babel-loader',
       },
       {
         test: /\.(scss|css)$/,
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(jpg|png|svg|ico|icns)$/,
+        test: /\.(jpg|png|svg|ico|icns|ttf)$/,
         loader: 'file-loader',
         options: {
           name: '[path][name].[ext]',
@@ -66,7 +66,8 @@ mainConfig.plugins = [
 ];
 
 const rendererConfig = lodash.cloneDeep(commonConfig);
-rendererConfig.entry = './src/renderer/renderer.tsx';
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+rendererConfig.entry = './src/renderer/index.tsx';
 rendererConfig.target = 'electron-renderer';
 rendererConfig.output.filename = 'renderer.bundle.js';
 rendererConfig.plugins = [
@@ -77,7 +78,9 @@ rendererConfig.plugins = [
     template: path.resolve(__dirname, './public/splash.html'),
     filename: 'splash.html',
   }),
-
+  /*new MonacoWebpackPlugin({
+    languages: ['yaml']
+  }), */
 ];
 
 module.exports = [mainConfig, rendererConfig];
