@@ -24,13 +24,11 @@ export class ConfigManager implements AppConfig {
             this.platform = 'linux';
         }
 
-        console.log(packageJson.version);
         this.version = packageJson.version;
 
         if (this.mode === 'dev') {
             this.version += ' (dev)';
         }
-        console.log(this.version);
         
         this.backend = 'http://localhost:13000/';
         this.defaultSparqlEndpoint ="https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"

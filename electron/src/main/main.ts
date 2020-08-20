@@ -136,7 +136,12 @@ function getBackendPath() {
     return path.join(__dirname, '..', '..', 'backend', 'dist', filename);
 }
 
-async function initBackend(): Promise<void> {
+function initBackend() {
+    if (config.mode === 'dev') {
+        console.log(`DEV MODE - start the backend yourself on ${config.backend}`);
+        return;
+    }
+
     const port = Math.floor(Math.random() * 20000) + 40000  // Choose a random port between 40000 and 60000
     // const port = 13000; // For now the frontend expects the backend to be on port 13000
     const backendPath = getBackendPath();
@@ -148,21 +153,25 @@ async function initBackend(): Promise<void> {
     } catch(err) {
         console.error("Can't run backend: ", err);
         app.quit();
-        return;
     }
+}
 
+async function waitForBackend() {
+    const url = `${config.backend}api/is-alive`;
+
+    console.log(`Waiting for backend at ${url}...`);
     for(let retryCount=0; retryCount < 120; retryCount++) {
         // Try accessing the backend, see if we get a response
         try {
-            await axios.get(`${config.backend}api/is-alive`);
-            console.log(`Backend is ready at ${config.backend}`);
+            await axios.get(url);
+            console.log(`Backend is ready`);
             return;
         } catch(error) {
             await sleep(500); // Wait a bit before trying again
         }
     }
 
-    console.error("Can't open backend");
+    console.error('Backend is not responding, quitting');
     app.quit();
 }
 
@@ -176,7 +185,8 @@ async function sleep(ms: number) {
 /* App Initilization */
 async function initApp(): Promise<void> {
     openSplashScreen();
-    await initBackend();
+    initBackend();
+    await waitForBackend();
     
     createMainWindow();  // WIll close the splash window
 }
@@ -207,7 +217,7 @@ app.on('activate', () => {
 /* Shutting down */
 app.on('will-quit', (event) => {
     if (backendProcess) {
-        console.log('Killing child process');
+        console.log('Killing backend process');
 
         // Killing the backend process takes a little while, we have to
         // wait until it's done before actually quitting, or else on Windows

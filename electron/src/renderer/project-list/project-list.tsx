@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 
 import './project-list.css';
 import * as utils from '../common/utils'
@@ -427,14 +428,10 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
             {/* title */}
             <td>
-              <span onClick={() => this.projectClicked(pid)}>
-                <a
-                  href={"/project/" + pid}
-                  target="_self" // open project on this page
-                  // target="_blank" // open project on new page
-                  // rel="noopener noreferrer" // open project on new page
-                  style={{ "color": "hsl(200, 100%, 30%)" }}
-                >{ptitle}</a>
+              <span style={{ "color": "hsl(200, 100%, 30%)" }} onClick={() => this.projectClicked(pid)}>
+                <Link to={"/project/" + pid}>
+                  {ptitle}
+                </Link>
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
             </td>

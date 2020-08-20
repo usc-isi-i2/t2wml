@@ -38,12 +38,12 @@ cd t2wml
 git checkout development
 ```
 
-2. Set up the React frontend
+2. Set up the Electron frontend
 
 First you have to make sure you have Node version 12 or higher installed.
 
 ```
-cd t2wml-root/t2wml/frontend
+cd t2wml-root/t2wml/electron
 yarn install
 ```
 
@@ -61,21 +61,33 @@ pip install -r requirements.txt
 ```
 
 
-### Running the server from the shell
-
-1. Running the backend server:
+### Running the t2wml server
 
 ```
 cd t2wml-root/t2wml/backend
 python t2wml-server.py
 ```
 
-2. Running the frontend GUI
+### Running the frontend GUI
+Since we're using Electron, you need to run two scripts to run the GUI on development:
 
+```sh
+cd t2wml-root/t2wml/electron
+yarn dev
 ```
-cd t2wml-root/t2wml/frontend
+
+This script compiles all the frontend files, making them ready for electron.
+
+and 
+
+```sh
+cd t2wml-root/t2wml/electron
 yarn start
 ```
+
+This script starts Electron, and you should see the GUI.
+
+Note that in development, the GUI will wait for the backend to start on port 13000, so you will need to run it.
 
 The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
 
@@ -85,8 +97,9 @@ The project has preconfigured settings file for Visual Studio Code. Before start
 On Macs and Linux machines, copy `.vscode/settings.linux.json` to `.vscode/settings.json` . On Windows, copy `.vscode/settings.windows.json` to `.vscode/settings.json`
 Start Visual Studio Code and open it in the t2wml-root/t2wml directory.
 
-You can run the backend with F5 (choose the "Backend" launch configuration). To run the Frontend, choose Terminal | Run Task | npm: start - frontend .
+You can run the backend with F5 (choose the "Backend" launch configuration). To run the Frontend you need to start two tasks: `npm: dev` and `npm: start` .
 
+If you're making changes to the UI, you can reload the page without starting Electron again, by choose Refresh from the Debug menu.
 
 ## Usage with GUI
 <span id="usage_with_gui"></span>

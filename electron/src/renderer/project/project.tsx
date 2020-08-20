@@ -49,26 +49,14 @@ class Project extends Component<ProjectProperties, ProjectState> {
     super(props);
     this.requestService = new RequestService();
 
-    // Get the pid from the URL - the URL is ..../project/<pid>
-    // This will be put in an app wide store at some point
-    
-    // this.pid = wikiStore.project.pid; //?
-    // if (this.pid === "") {
-    //     const parts = window.location.href.split('/');
-    //     this.pid = parts[parts.length - 1];
-    //     wikiStore.project.pid = this.pid
-    // }
-
-    const parts = window.location.href.split('/');
-    this.pid = parts[parts.length - 1];
-    wikiStore.project.pid = this.pid;
+    this.pid = wikiStore.project.pid;
 
     // fetch data from flask
-     console.log("<App> opened project: %c" + this.pid, LOG.highlight);
+    console.log("<App> opened project: %c" + this.pid, LOG.highlight);
 
     // init global variables
     wikiStore.table.isCellSelectable = false;
-    wikiStore.settings.sparqlEndpoint = Config.sparql;
+    wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
     (window as any).onbeforeunload = () => {
       return null; // only "null" cannot prevent leave/reload page
     };
