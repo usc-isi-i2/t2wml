@@ -1,4 +1,5 @@
 # 06_region
+# This exercise aims to test your ability to filter undesired cells in the input data.
 statementMapping:
   region:
     - range: D8:E15

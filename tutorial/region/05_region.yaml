@@ -1,4 +1,5 @@
 # 05_region
+# This example shows how to skip an undesired column. In this case, column E had comments, which we don't want to import.
 statementMapping:
   region:
     - range: D8:F15

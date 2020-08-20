@@ -1,9 +1,11 @@
-# 06_region_exercise
+# 09_region_exercise
+# Exercise to filter out cells with one or multiple values.
 statementMapping:
   region:
     - range: D8:E15
       skip_cells:
         - ### fill in value to skip all cells with value "--" ###
+        - ### fill in value to skip all cells with value "*" ###
   template:
     item: =item[B, $row, "main subject"]
     property: =item[$col, 7, "property"]

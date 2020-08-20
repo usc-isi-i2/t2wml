@@ -1,5 +1,6 @@
 # 01_region
-# Updated T2WML YAML to capture the additional rows. Only the range attribute is different.
+# Updated T2WML YAML to capture additional rows. Only the range attribute is different from 00_region.
+# This example shows how to vary the range key to adapt to new data values
 statementMapping:
   region:
     - range: D8:D15

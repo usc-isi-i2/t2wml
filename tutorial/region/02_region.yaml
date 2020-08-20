@@ -1,5 +1,6 @@
 # 02_region
-# Updated T2WML YAML to capture the additional column. Only the range attribute is different.
+# Updated T2WML YAML to capture an additional column with a variable. Only the range attribute is different.
+# This file shows how to adapt additional variables (columns) in your data
 statementMapping:
   region:
     - range: D8:E15

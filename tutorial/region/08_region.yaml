@@ -1,4 +1,5 @@
 # 08_region
+# This example shows how to skip columns. In particular, those columns which have "Comment" as its header
 statementMapping:
   region:
     - range: D8:F15

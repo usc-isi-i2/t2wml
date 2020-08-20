@@ -1,4 +1,5 @@
 # 07_region
+# This example shows how to filter out all that comply with an expression. In this case, all the cells that say "Total"
 statementMapping:
   region:
     - range: D10:E19

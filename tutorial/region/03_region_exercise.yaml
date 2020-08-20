@@ -1,5 +1,6 @@
 # 03_region_exercise
-# Exercise: Fill in the missing range value to reflect the change in the spreadsheet
+# Exercise: Fill in the missing range value to reflect the change in the spreadsheet with the same name
+# This exercise will allow you practicing on setting up the right region for data values
 statementMapping:
   region:
     - range: ### Fill in the range ###
