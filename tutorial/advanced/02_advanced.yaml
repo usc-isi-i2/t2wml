@@ -1,6 +1,6 @@
 # 02_advanced
-# In this sheet the Country and Crop values are omitted
-# T2WML has to lookup those values using the iterator variable $n for column B and C
+# In this sheet the Country and Crop values are omitted.
+# T2WML has to lookup those values using iterator variables for column B and C
 statementMapping:
   region:
     - range: E8:E15
