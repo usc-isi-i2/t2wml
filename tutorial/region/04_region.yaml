@@ -1,5 +1,6 @@
 # 04_region
-# This example shows how to skip undesired rows. In this case, rows 18 and 19 represent an aggregation of the rows before them, and we do not wish to include them in our imported data.
+# This example shows how to skip undesired rows.
+# In this case, we do not wish to include rows 18 and 19, which represent aggregations
 statementMapping:
   region:
     - range: D10:E19

@@ -6,8 +6,8 @@ statementMapping:
     - range: D8:D15
   template:
     item: =item[B, $row, "main subject"]
-    property: =item[D, 7, "property"]
+    property: PProduction
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 7, "property"]
+      - property: PCropType
         value: =value[C, $row]
