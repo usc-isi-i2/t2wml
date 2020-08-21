@@ -1,4 +1,5 @@
 # 07_time_exercise
+# Exercise to practice how to recognize formatted dates. For more information on all date codes supported, please see https://www.w3schools.com/python/python_datetime.asp
 statementMapping:
   region:
     - range: D8:D13
@@ -8,7 +9,7 @@ statementMapping:
     value: =value[$col, $row]
     qualifier:
     - calendar: Q1985727
-      format: ### Fill in date format ###
+      format: ### Fill in date format, e.g. %d %m %Y. The spaces and symbols must match the cells accurately.###
       precision: year
       property: P585
       time_zone: 0

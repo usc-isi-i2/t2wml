@@ -1,4 +1,5 @@
 # 13_qualifier_exercise
+# This exercises illustrates the difference between variables and qualifiers. Variables describe individual observations, while qualifiers provide additional context about an observation. In the exercise, we want to make total area a qualifier of production, instead of an individual variable.
 statementMapping:
   region:
     - range: D8:D13
