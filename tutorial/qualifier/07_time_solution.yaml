@@ -1,4 +1,5 @@
 # 07_time_solution
+# Solution of the exercise 07_time_exercise. Since months are written using the full name ("Month day, Year"), we use %B %d, %Y
 statementMapping:
   region:
     - range: D8:D13

@@ -1,4 +1,5 @@
-# 03_qualifier_solution
+# 13_qualifier_solution
+# Solution for the exercise 13_qualifier_exercise. We simply reduce data are in the region and we move the total area under the "qualifier" attribute.
 statementMapping:
   region:
     - range: D8:D13
