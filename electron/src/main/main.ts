@@ -5,6 +5,7 @@ import { app, BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import treeKill from 'tree-kill';
+import * as fs from 'fs';
 
 import { spawn, ChildProcess } from 'child_process';
 import axios from 'axios';
@@ -130,10 +131,20 @@ function getBackendPath() {
     if (config.platform === 'windows') {
         filename = 't2wml-server.exe';
     }
-    if (config.mode === 'prod') {
-        return path.join(process.resourcesPath || __dirname, filename);
+
+    let pathname = path.join(process.resourcesPath || __dirname, filename);
+    if (fs.existsSync(pathname)) {
+        return pathname;
     }
-    return path.join(__dirname, '..', '..', 'backend', 'dist', filename);
+    console.warn(`Can't find embedded server at ${pathname}, looking for external one`);
+    pathname = path.join(__dirname, '..', '..', 'backend', 'dist', filename);
+
+    if (!fs.existsSync(pathname)) {
+        console.error(`Can't find any server, even not at ${pathname}`);
+        return null;
+    }
+
+    return pathname;
 }
 
 function initBackend() {
@@ -145,6 +156,13 @@ function initBackend() {
     const port = Math.floor(Math.random() * 20000) + 40000  // Choose a random port between 40000 and 60000
     // const port = 13000; // For now the frontend expects the backend to be on port 13000
     const backendPath = getBackendPath();
+
+    if (!backendPath) {
+        console.error('No t2wml without a backend');
+        app.quit();
+        return;
+    }
+
     config.backend = `http://localhost:${port}/`;
 
     console.log(`Spawning backend from ${backendPath}, on port ${port}`);
