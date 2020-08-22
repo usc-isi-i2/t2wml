@@ -36,7 +36,7 @@ class TableToast extends Component<TableToastProperties, {}> {
     if (qnodeData[selectedCellIndex] === undefined) return;
     const contexts = Object.keys(qnodeData[selectedCellIndex]);
     if (contexts.length === 0) return;
-    let items = [], labels = [], descs = [];
+    const items = [], labels = [], descs = [];
     for (let i = 0; i < contexts.length; i++) {
       items.push(qnodeData[selectedCellIndex][contexts[i]]["item"]);
       labels.push(qnodeData[selectedCellIndex][contexts[i]]["label"]);

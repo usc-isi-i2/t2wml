@@ -39,9 +39,6 @@ interface TableData {
   sheetData: any;
 }
 
-interface TableProperties  {
-}
-
 interface TableState  {
   showSpinner: boolean;
   showToast0: boolean;  // showing details of current cell
@@ -62,14 +59,14 @@ interface TableState  {
 }
 
 @observer
-class TableViewer extends Component<TableProperties, TableState> {
+class TableViewer extends Component<{}, TableState> {
   public gridApi: any;
   public gridColumnApi: any;
   private pid: string;
 
   private requestService: RequestService;
 
-  constructor(props: TableProperties) {
+  constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
     this.pid = wikiStore.project.pid;
@@ -137,7 +134,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
     this.requestService.uploadDataFile(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
@@ -152,7 +149,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       }
 
       // else, success
-      let { tableData, wikifierData, yamlData } = json;
+      const { tableData, wikifierData, yamlData } = json;
 
       // load table data
       tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
@@ -206,7 +203,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/properties%c", LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
 
     this.requestService.uploadProperties(this.pid, formData).then((json) => {
@@ -244,7 +241,7 @@ class TableViewer extends Component<TableProperties, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
     this.requestService.uploadWikifierOutput(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
@@ -363,7 +360,7 @@ class TableViewer extends Component<TableProperties, TableState> {
       console.log(json);
 
     
-      let { tableData, wikifierData, yamlData } = json;
+      const { tableData, wikifierData, yamlData } = json;
 
       // load table data
       tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
@@ -465,11 +462,11 @@ class TableViewer extends Component<TableProperties, TableState> {
 
   }
 
-  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: any, override: boolean = false) {
+  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: any, override = false) {
     if (rowName && colName) {
       const col = colName;
       const row = Number(rowName) - 1;
-      let rowData2 = this.state.rowData;
+      const rowData2 = this.state.rowData;
       if (rowData2 !== undefined && rowData2[row] !== undefined) {
         if (rowData2[row]["styles"] === undefined) {
           rowData2[row]["styles"] = {};
@@ -491,8 +488,8 @@ class TableViewer extends Component<TableProperties, TableState> {
   }
 
   getColAndRow(cellName: string) {
-    var chars = cellName.slice(0, cellName.search(/\d/));
-    var nums = cellName.replace(chars, '');
+    const chars = cellName.slice(0, cellName.search(/\d/));
+    const nums = cellName.replace(chars, '');
     return {col: chars, row: nums};
   }
 
@@ -500,7 +497,7 @@ class TableViewer extends Component<TableProperties, TableState> {
   updateStyleByDict(dict: any, presets: any, override = false) {
     // dict = { "styleName": ["A1", "A2", ...] }
     // window.TableViewer.updateStyleByDict({ "data_region": ["A14", "A15"], "qualifier_region": ["B14", "B15"], "item": ["C14", "C15"] });
-    let rowData2 = this.state.rowData;
+    const rowData2 = this.state.rowData;
     if (!rowData2) return;
     const styleNames = Object.keys(presets);
     for (let i = 0; i < styleNames.length; i++) {
@@ -512,8 +509,8 @@ class TableViewer extends Component<TableProperties, TableState> {
       }
       if (cells === undefined) continue;
       for (let j = 0; j < cells.length; j++) {
-        let [col, row] = cells[j].match(/[a-z]+|[^a-z]+/gi);
-        row--;
+        const [col, row1Based] = cells[j].match(/[a-z]+|[^a-z]+/gi);
+        const row = row1Based - 1;
         if (rowData2[row] === undefined) continue;
         if (rowData2[row][col] === undefined) continue;
         if (rowData2[row]["styles"] === undefined) { rowData2[row]["styles"] = {}; }
@@ -545,8 +542,8 @@ class TableViewer extends Component<TableProperties, TableState> {
     // this.gridColumnApi.autoSizeAllColumns();
   }
 
-  updateYamlRegions(newYamlRegions = null) {
-    if (newYamlRegions === null) {
+  updateYamlRegions(newYamlRegions: any = undefined) {
+    if (!newYamlRegions) {
       // reset
       const { yamlRegions } = this.state;
       if (yamlRegions === null) return;
@@ -563,12 +560,12 @@ class TableViewer extends Component<TableProperties, TableState> {
     } else {
       // update
       const presets = {
-        item: { backgroundColor: newYamlRegions!['item']['color'] }, // blue
-        qualifierRegion: { backgroundColor: newYamlRegions!['qualifierRegion']['color'] }, // violet
-        dataRegion: { backgroundColor: newYamlRegions!['dataRegion']['color'] }, // green
+        item: { backgroundColor: newYamlRegions['item']['color'] }, // blue
+        qualifierRegion: { backgroundColor: newYamlRegions['qualifierRegion']['color'] }, // violet
+        dataRegion: { backgroundColor: newYamlRegions['dataRegion']['color'] }, // green
         // skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
-        errorCells: { backgroundColor: newYamlRegions!['errorCells']['color'] },
-        dangerCells: { backgroundColor: newYamlRegions!['dangerCells']['color'] },
+        errorCells: { backgroundColor: newYamlRegions['errorCells']['color'] },
+        dangerCells: { backgroundColor: newYamlRegions['dangerCells']['color'] },
       }
       this.updateStyleByDict(newYamlRegions, presets);
       this.setState({ yamlRegions: newYamlRegions });
@@ -646,7 +643,7 @@ class TableViewer extends Component<TableProperties, TableState> {
                 variant="outline-light"
                 size="sm"
                 style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document!.getElementById("file_table")!.click(); }}
+                onClick={() => { document.getElementById("file_table")?.click(); }}
               >
                 Upload data file
               </Button>
@@ -659,7 +656,7 @@ class TableViewer extends Component<TableProperties, TableState> {
                 variant="outline-light"
                 size="sm"
                 style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document!.getElementById("properties_button")!.click(); }}
+                onClick={() => { document.getElementById("properties_button")?.click(); }}
               >
                 Upload properties
               </Button>
@@ -740,7 +737,7 @@ class TableViewer extends Component<TableProperties, TableState> {
                   }
                 },
                 cellStyle: function (params) {
-                  let col = params.colDef.field;
+                  const col = params.colDef.field;
                   // let row = params.node.rowIndex;
                   if (params.data.styles && params.data.styles[col]) {
                     return params.data.styles[col];
@@ -751,7 +748,7 @@ class TableViewer extends Component<TableProperties, TableState> {
                 onCellClicked: this.handleSelectCell,
 
                 // stop keyboard event
-                suppressKeyboardEvent: function (params) { return true; },
+                suppressKeyboardEvent: () => true,
 
                 // custom cell renderer (to support hyperlink, ...), significantly degrade performance!
                 // FUTURE: only use custom cell renderer when backend requires

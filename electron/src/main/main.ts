@@ -124,7 +124,6 @@ function createMainWindow(): void {
 
 /* Backend Initialization */
 let backendProcess: ChildProcess | null;
-let backendUrl = '';
 
 function getBackendPath() {
     let filename = 't2wml-server';

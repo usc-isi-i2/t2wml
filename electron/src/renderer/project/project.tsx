@@ -26,10 +26,6 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './settings';
 
-interface ProjectProperties {
-
-}
-
 interface ProjectState {
   showSettings: boolean;
   endpoint: string;
@@ -41,11 +37,11 @@ interface ProjectState {
 }
 
 @observer
-class Project extends Component<ProjectProperties, ProjectState> {
+class Project extends Component<{}, ProjectState> {
   private requestService: RequestService;
   private pid: string;
 
-  constructor(props: ProjectProperties) {
+  constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
 
@@ -165,7 +161,7 @@ class Project extends Component<ProjectProperties, ProjectState> {
 
     // notify backend
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
     formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
     this.requestService.updateSettings(this.pid, formData).catch((error: ErrorMessage) => {

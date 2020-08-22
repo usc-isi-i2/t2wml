@@ -41,6 +41,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
   }
 
   componentDidMount() {
+    // Talya - find out how to write this the correct way
     (this.refs.tempQnodeEditor as HTMLInputElement).addEventListener('keydown', this.handleKeyDown);
   }
 
@@ -153,7 +154,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
       // others, do cancel
       return true;
     }
-  };
+  }
 
   isCancelBeforeStart() {
     // return this.props.charPress && ('0123456789'.indexOf(this.props.charPress) < 0);

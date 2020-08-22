@@ -13,7 +13,7 @@ interface ShowOutputProperties {
     propertyID: string | null;
     propertyName: string | null;
     value: string | null;
-    qualifiers: any; 
+    qualifiers: any[]; 
 }
 
 
@@ -22,7 +22,7 @@ interface ShowOutputProperties {
 class ShowOutput extends Component<ShowOutputProperties, {}> {
 
   render() {
-    let outputDiv = [];
+    const outputDiv = [];
 
     let errorsDiv;
     if (this.props.errors) {
@@ -31,12 +31,12 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
         </div>
     }
 
-    let itemName = this.props.itemName;
+    const itemName = this.props.itemName;
     if (itemName) {
 
       // item
-      let itemID = this.props.itemID;
-      let itemIDDiv = (
+      const itemID = this.props.itemID;
+      const itemIDDiv = (
         <a
           href={"https://www.wikidata.org/wiki/" + itemID}
           target="_blank"
@@ -47,8 +47,8 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
       // property
       let propertyDiv;
-      let propertyID = this.props.propertyID;
-      let propertyName = this.props.propertyName;
+      const propertyID = this.props.propertyID;
+      const propertyName = this.props.propertyName;
       if (propertyName) {
         propertyDiv =
           <span key="property">
@@ -74,19 +74,19 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       }
 
       // value
-      let valueDiv = this.props.value;
+      const valueDiv = this.props.value;
 
       // qualifiers
-      let qualifiersDiv = [];
-      let qualifiers = this.props.qualifiers;
+      const qualifiersDiv = [];
+      const qualifiers = this.props.qualifiers;
       if (qualifiers) {
         for (let i = 0, len = qualifiers.length; i < len; i++) {
-          let qualifier = qualifiers[i];
+          const qualifier = qualifiers[i];
 
           // qualifier property
           let qualifierPropertyDiv;
-          let qualifierPropertyID = qualifier["propertyID"];
-          let qualifierPropertyName = qualifier["propertyName"];
+          const qualifierPropertyID = qualifier["propertyID"];
+          const qualifierPropertyName = qualifier["propertyName"];
           if (qualifierPropertyName) {
             qualifierPropertyDiv =
               <a
@@ -111,8 +111,8 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
           // qualifier value
           let qualifierValueDiv;
-          let qualifierValueID = qualifier["valueID"];
-          let qualifierValueName = qualifier["valueName"];
+          const qualifierValueID = qualifier["valueID"];
+          const qualifierValueName = qualifier["valueName"];
           if (qualifierValueID) {
             qualifierValueDiv =
               <a

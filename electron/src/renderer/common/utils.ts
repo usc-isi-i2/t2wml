@@ -65,7 +65,7 @@ export function isValidRegion(region: string) {
    * 
    * @return {boolean}  true if the region is valid
    */
-  const [leftS, topS, rightS, bottomS] = region.match(/[a-z]+|\d+/gi)!;
+  const [leftS, topS, rightS, bottomS] = region.match(/[a-z]+|\d+/gi)!; //eslint-disable-line
   const left = colName2colIdx(leftS);
   const right = colName2colIdx(rightS);
   const top = parseInt(topS);
@@ -82,9 +82,9 @@ export function sortCells(cells: string[]) {
    * @return {Array}  orderedCells e.g. [A1, A2, B1, B2]
    */
   const len = cells.length;
-  let cellArray = new Array(len);
+  const cellArray = new Array(len);
   for (let i = 0; i < len; i++) {
-    const [colS, rowS] = cells[i].match(/[a-z]+|[^a-z]+/gi)!;
+    const [colS, rowS] = cells[i].match(/[a-z]+|[^a-z]+/gi)!; // eslint-disable-line
     const col = colName2colIdx(colS);
     const row = parseInt(rowS);
     cellArray[i] = [col, row];
@@ -93,9 +93,9 @@ export function sortCells(cells: string[]) {
     if (cell1[0] !== cell2[0]) return cell1[0] - cell2[0];
     else return cell1[1] - cell2[1];
   });
-  let orderedCells = new Array(len);
+  const orderedCells = new Array(len);
   for (let i = 0; i < len; i++) {
-    let [col, row] = cellArray[i];
+    const [col, row] = cellArray[i];
     orderedCells[i] = colIdx2colName(col) + row;
   }
   return orderedCells;
@@ -127,7 +127,7 @@ export function timestamp2abstime(ts: number) {
    * 
    * @return {String} absolute time, e.g. Today, Yesterday, Previous 7 Days, Previous 30 Days, July, June, ...
    */
-  let datetime = new Date();
+  const datetime = new Date();
   datetime.setTime(ts);
   const year = datetime.getFullYear();
   const month = datetime.getMonth() + 1;

@@ -4,7 +4,9 @@
 
 import { AppConfig, Mode, Platform } from '@/shared/config';
 import { ipcMain } from 'electron';
-const packageJson = require('../../package.json');
+
+// eslint-disable-next-line
+const packageJson = require('../../package.json');  // Couldn't figure out how to import package.json, so resorting to require
 
 export class ConfigManager implements AppConfig {
     public mode: Mode;

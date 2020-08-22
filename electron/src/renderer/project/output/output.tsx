@@ -17,10 +17,6 @@ import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
 
-interface OutputProperties {
-
-}
-
 interface OutputState {
   showSpinner: boolean,
   currCol: string;
@@ -50,11 +46,11 @@ interface OutputState {
 }
 
 @observer
-class Output extends Component<OutputProperties, OutputState> {
+class Output extends Component<{}, OutputState> {
   private requestService: RequestService;
   private pid: string;
   
-  constructor(props: OutputProperties) {
+  constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
     this.pid = wikiStore.project.pid;
@@ -158,7 +154,7 @@ class Output extends Component<OutputProperties, OutputState> {
     }
 
     // remove qualifier borders
-    let qualifiers = this.state.qualifiers;
+    const qualifiers = this.state.qualifiers;
     if (qualifiers !== undefined && qualifiers != null) {
       for (let i = 0, len = qualifiers.length; i < len; i++) {
         col = qualifiers[i]["col"];
@@ -183,7 +179,7 @@ class Output extends Component<OutputProperties, OutputState> {
     });
 
     // retrieve cache
-    let { cache } = this.state;
+    const { cache } = this.state;
     let isAllCached = true;
 
     if (json["statement"] === undefined) return;
@@ -200,7 +196,7 @@ class Output extends Component<OutputProperties, OutputState> {
     }
     
     if (json["statement"]["cell"]) {
-    let [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
+    const [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
     wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
     this.setState({ itemCol: col, itemRow: row });
     }
@@ -221,11 +217,11 @@ class Output extends Component<OutputProperties, OutputState> {
     this.setState({ currCol: colName, currRow: rowName });
 
     // qualifiers
-    let temp = json["statement"]["qualifier"];
-    let qualifiers = [];
+    const temp = json["statement"]["qualifier"];
+    const qualifiers = [];
     if (temp !== undefined) {
       for (let i = 0, len = temp.length; i < len; i++) {
-        let qualifier: any = {};
+        const qualifier: any = {};
 
         qualifier["propertyID"] = temp[i]["property"];
         if (cache[qualifier["propertyID"]] !== undefined) {
@@ -247,11 +243,11 @@ class Output extends Component<OutputProperties, OutputState> {
         }
 
         if (temp[i]["cell"] !== undefined && temp[i]["cell"] !==null) {
-          let [q_col, q_row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
+          const [q_col, q_row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
           qualifier["col"] = q_col;
           qualifier["row"] = q_row;
           // let hue = utils.getHueByRandom(10); // first param is the total number of colors
-          let hue = utils.getHueByQnode(10, qualifier["propertyID"]);
+          const hue = utils.getHueByQnode(10, qualifier["propertyID"]);
           wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
 
@@ -288,6 +284,7 @@ class Output extends Component<OutputProperties, OutputState> {
     // before send request
     wikiStore.output.showSpinner = true;
     
+    // Talya: Use async/await here
     this.requestService.getQnode(this.pid, node).then((res) => {
         const name = res.label;
         if (field === "itemName") {
@@ -295,7 +292,7 @@ class Output extends Component<OutputProperties, OutputState> {
         } else if (field === "propertyName") {
         this.setState({ propertyName: name });
         } else if (field === "qualifiers") {
-        let qualifiers = this.state.qualifiers;
+        const qualifiers = this.state.qualifiers;
             if (subfield === "propertyName") {
                 qualifiers[index]["propertyName"] = name;
             } else if (subfield === "valueName") {
@@ -304,15 +301,14 @@ class Output extends Component<OutputProperties, OutputState> {
             }
             this.setState({ qualifiers: qualifiers });
         }
-        let cache = this.state.cache;
+        const cache = this.state.cache;
         cache[node] = name;
         this.setState({ 
             cache: cache, 
             queryDataCount: this.state.queryDataCount - 1 
         });
         wikiStore.output.showSpinner = false;
-    }).catch((error: any) => {
-        //   console.log(error);
+    }).catch(() => {
         wikiStore.output.showSpinner = false;
     });
   }

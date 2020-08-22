@@ -43,7 +43,7 @@ class ToastMessage extends Component<ToastProperties, ToastState> {
             <Toast.Body>{this.props.message.errorDescription}</Toast.Body>
         </Toast>
         </div>
-    )};
+    )}
 }
 
 export default ToastMessage;

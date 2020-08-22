@@ -7,9 +7,7 @@
             "type": "npm",
             "script": "start",
             "path": "electron/",
-            "problemMatcher": [
-                "$lessc"
-            ],
+            "problemMatcher": [],
             "label": "t2wml GUI",
             "detail": "Opens the t2wml GUI (run it after the frontend is built)"
         },
@@ -17,9 +15,11 @@
             "type": "npm",
             "script": "dev",
             "path": "electron/",
-            "problemMatcher": [
-                "$lessc"
-            ],
+            "problemMatcher": [{
+                "base": "$ts-checker5-eslint-webpack-watch",
+                "fileLocation": ["relative", "${workspaceFolder}/electron"]
+            }],
+            "isBackground": true,
             "label": "Build and Watch GUI",
             "detail": "Continuously builds the frontend"
         },
@@ -29,12 +29,12 @@
             "detail": "Runs the backend",
             "command": "${config:python.pythonPath}",
             "args": [
-                "backend/t2wml-server.py",
+                "backend/t2wml-server.py"
             ],
             "options": {
-                "cwd": "${workspaceFolder}",
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": []
-        }
+        },
     ]
 }

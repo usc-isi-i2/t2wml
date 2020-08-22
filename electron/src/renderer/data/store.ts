@@ -29,11 +29,11 @@ class TabletState {
 
         this.showSpinner = false;
         this.errorCells = undefined;
-        this.updateYamlRegions = () => {};
-        this.updateQnodeCells = () => {};
-        this.updateTableData = () => {};
-        this.updateStyleByCell = () => {};
-        this.handleOpenWikifierFile = () => {};
+        this.updateYamlRegions = () => undefined;
+        this.updateQnodeCells = () => undefined;
+        this.updateTableData = () => undefined;
+        this.updateStyleByCell = () => undefined;
+        this.handleOpenWikifierFile = () => undefined;
     }
 }
 
@@ -49,7 +49,7 @@ class SettingsState {
 
 class WikifierInnerState {
     @observable public qnodeData: any = {};
-    @observable public currRegion: string = ''; // Is it needed?
+    @observable public currRegion = ''; // Is it needed?
 }
 class WikifierState {
     @observable public showSpinner: boolean;
@@ -59,7 +59,7 @@ class WikifierState {
 
     constructor() {
         this.showSpinner = false;
-        this.updateWikifier = () => {};
+        this.updateWikifier = () => undefined;
         this.state = new WikifierInnerState();
         this.scope = 0;
     }
@@ -75,8 +75,8 @@ class OutputState {
     constructor() {
         this.showSpinner = false;
         this.isDownloadDisabled = true;
-        this.removeOutput = () => {};
-        this.updateOutput = () => {};
+        this.removeOutput = () => undefined;
+        this.updateOutput = () => undefined;
     }
 }
 
@@ -84,7 +84,7 @@ class YamlEditorState {
     @observable public updateYamlText: (yamlText?: string | null) => void;
 
     constructor() {
-        this.updateYamlText = () => {};
+        this.updateYamlText = () => undefined;
     }
 }
 

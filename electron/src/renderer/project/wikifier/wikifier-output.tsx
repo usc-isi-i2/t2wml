@@ -16,11 +16,8 @@ interface WikifierOutputProperties {
     rowData: Array<any>;
 }
 
-interface WikifierOutputState {
-}
-
 @observer
-class WikifierOutput extends Component<WikifierOutputProperties, WikifierOutputState> {
+class WikifierOutput extends Component<WikifierOutputProperties, {}> {
   public gridApi: any;
   public gridColumnApi: any;
 

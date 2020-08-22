@@ -27,10 +27,6 @@ import wikiStore from '../data/store';
 import LoadProject from './load-project';
 import { useHistory } from 'react-router-dom';
 
-interface ProjectListProperties {
-
-}
-
 interface ProjectListState {
   showSpinner: boolean;
   showCreateProject: boolean;
@@ -59,9 +55,9 @@ interface ProjectListState {
 }
 
 @observer
-class ProjectList extends Component<ProjectListProperties, ProjectListState> {
+class ProjectList extends Component<{}, ProjectListState> {
   private requestService: RequestService;
-  constructor(props: ProjectListProperties) {
+  constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
 
@@ -150,7 +146,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/create_project%c to create project: %c" + ptitle, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("ptitle", ptitle);
     this.requestService.createProject(formData).then(json => {
       console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
@@ -189,7 +185,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     this.setState({ showSpinner: true });
 
     // send request
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
     formData.append("path", path);
     this.requestService.loadProject(formData).then(json => {
@@ -318,7 +314,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
   handleRenameProject(name: string) {
     this.setState({ errorMessage: {} as ErrorMessage });
-    let pid = this.state.tempRenamePid;
+    const pid = this.state.tempRenamePid;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
 
@@ -327,7 +323,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/rename_project%c to rename project %c" + pid + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("ptitle", ptitle);
     this.requestService.renameProject(pid as string, formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
@@ -419,7 +415,7 @@ class ProjectList extends Component<ProjectListProperties, ProjectListState> {
     const { projectData, tempSearch } = this.state;
     const keywords = tempSearch.toLowerCase().split(/ +/);
 
-    let projectListDiv = [];
+    const projectListDiv = [];
     for (let i = 0, len = projectData.length; i < len; i++) {
       const { pid, ptitle, cdate, mdate } = projectData[i];
       if (utils.searchProject(ptitle, keywords)) {

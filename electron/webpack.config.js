@@ -1,3 +1,4 @@
+/* eslint-disable */
 const lodash = require('lodash');
 const CopyPkgJsonPlugin = require('copy-pkg-json-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -50,6 +51,8 @@ const commonConfig = {
 };
 // #endregion
 
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
 const mainConfig = lodash.cloneDeep(commonConfig);
 mainConfig.entry = './src/main/main.ts';
 mainConfig.target = 'electron-main';
@@ -63,7 +66,11 @@ mainConfig.plugins = [
       postinstall: 'electron-builder install-app-deps',
     },
   }),
-];
+  new ForkTsCheckerWebpackPlugin({
+    eslint: {
+      files: './src/**/*.{ts,tsx,js,jsx}' // required - same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
+    }
+  })];
 
 const rendererConfig = lodash.cloneDeep(commonConfig);
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
@@ -81,6 +88,12 @@ rendererConfig.plugins = [
     template: path.resolve(__dirname, './public/splash.html'),
     filename: 'splash.html',
   }),
+  new ForkTsCheckerWebpackPlugin({
+    eslint: {
+      files: './src/**/*.{ts,tsx,js,jsx}', // required - same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
+      formatter: 'basic',
+    }
+  })
 ];
 
 module.exports = [mainConfig, rendererConfig];

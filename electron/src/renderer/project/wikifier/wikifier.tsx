@@ -187,7 +187,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // send request
     console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("action", "wikify_region");
     formData.append("region", region);
     formData.append("context", context);
@@ -518,7 +518,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     wikiStore.wikifier.showSpinner = true;
 
     // send request
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("file", file);
     this.requestService.addItemDefinitions(wikiStore.project.pid, formData).then((json) => {
       console.log("<Wikifier> <- %c/upload_definitions_file%c with:", LOG.link, LOG.default);
@@ -534,7 +534,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
       // else, success
       // load wikifier data
-      let { qnodes, rowData } = json;
+      const { qnodes, rowData } = json;
       this.updateWikifier(qnodes, rowData);
 
       // follow-ups (success)
@@ -609,7 +609,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                 variant="outline-light"
                 size="sm"
                 style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document!.getElementById("file_wikifier")!.click(); }}
+                onClick={() => { document.getElementById("file_wikifier")?.click(); }}
                 >
                 Upload
                 </Button>
@@ -633,7 +633,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                     variant="outline-light"
                     size="sm"
                     style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
-                    onClick={() => { document!.getElementById("file_definitions")!.click(); }}
+                    onClick={() => { document.getElementById("file_definitions")?.click(); }}
                 >
                     Add item definitions 
                 </Button>

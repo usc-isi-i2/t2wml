@@ -93,6 +93,8 @@ Note that in development, the GUI will wait for the backend to start on port 130
 ## Using Visual Studio Code
 The project has preconfigured settings file for Visual Studio Code. Before starting you need to copy the settings template appropriate for your OS.
 
+Note: you will need to install the 'TypeScript + Webpack Problem Matchers' Visual Studio Code extension, otherwise compilation errors are not going to appear in the Problems pane properly.
+
 On Macs and Linux machines, copy `.vscode/settings.linux.json` to `.vscode/settings.json` . On Windows, copy `.vscode/settings.windows.json` to `.vscode/settings.json`
 Start Visual Studio Code and open it in the t2wml-root/t2wml directory.
 

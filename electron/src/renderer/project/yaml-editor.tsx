@@ -70,7 +70,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("yaml", this.state.yamlText);
     // const sheetName = window.TableViewer.state.currSheetName;
     // if (sheetName !== null) {
@@ -120,10 +120,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   handleChangeYaml() {
     wikiStore.table.isCellSelectable = false;
 
+    // Talya: find out what's the right way to do this
     const yamlText = (this.refs.monaco as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
-      let yamlJson = (yaml.safeLoad(yamlText) as JSON);
+      const yamlJson = (yaml.safeLoad(yamlText) as JSON);
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
@@ -149,7 +150,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.table.isCellSelectable = false;
 
     // upload local yaml
-    let reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsText(file);
     reader.onloadend = (() => {
       const yamlText = reader.result;
@@ -205,7 +206,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       <Tooltip style={{ width: "fit-content" }} id="upload">
         <div className="text-left small">
           <b>Accepted file types:</b><br />
-          • YAML Ain't Markup Language (.yaml)
+          • YAML Ain&apos;t Markup Language (.yaml)
         </div>
       </Tooltip>
     );
@@ -239,7 +240,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 variant="outline-light"
                 size="sm"
                 style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document!.getElementById("file_yaml")!.click(); }}
+                onClick={() => { document.getElementById("file_yaml")?.click(); }}
                 >
                 Upload
                 </Button>
@@ -288,11 +289,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 showFoldingControls: 'always',
                 }}
                 onChange={() => this.handleChangeYaml()}
-                editorDidMount={(editor, monaco) => {
-                editor.getModel()!.updateOptions({ tabSize: 2 });
-                setInterval(() => { editor.layout(); }, 200);  // automaticLayout above misses trigger opening, so we've replaced it
-                // This is better done by catching the trigger event and calling editor.layout there,
-                // once we figure out how to catch the trigger event.
+                editorDidMount={(editor) => {
+                  editor.getModel()?.updateOptions({ tabSize: 2 });
+                  setInterval(() => { editor.layout(); }, 200);  // automaticLayout above misses trigger opening, so we've replaced it
+                  // This is better done by catching the trigger event and calling editor.layout there,
+                  // once we figure out how to catch the trigger event.
                 }}
             />
             </Card.Body>

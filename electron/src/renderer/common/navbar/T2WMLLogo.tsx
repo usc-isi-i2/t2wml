@@ -5,9 +5,6 @@ import Config from '@/shared/config';
 // T2WMLLogo
 import { Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-interface T2WMLLogoProperteis {
-}
-
 interface T2WMLLogoState {
   logo: string;
   version: string;
@@ -15,8 +12,8 @@ interface T2WMLLogoState {
 }
 
 
-class T2WMLLogo extends React.Component<T2WMLLogoProperteis, T2WMLLogoState> {
-  constructor(props: T2WMLLogoProperteis) {
+class T2WMLLogo extends React.Component<{}, T2WMLLogoState> {
+  constructor(props: {}) {
     super(props);
 
     // init state
@@ -28,7 +25,7 @@ class T2WMLLogo extends React.Component<T2WMLLogoProperteis, T2WMLLogoState> {
   }
 
   render() {
-    const { logo, version, homeUrl } = this.state;
+    const { logo, version } = this.state;
     const logoTooltipHtml = (
       <Tooltip style={{ width: "fit-content" }} id="navbar-tooltip">
         <span className="text-left">
