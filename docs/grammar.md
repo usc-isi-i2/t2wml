@@ -252,13 +252,13 @@ For simplicity, the examples all use a string for the input, but they would appl
 `extract_date(input, format_string)`: Attempts to extract a date from the input using etk, based on the format string.
 For example, `extract_date(“2000”, “%Y”)` returns  2000-01-01T00:00:00
 
-`regex(input, pattern (,i))`: Returns the value of the ith group in the regex pattern provided if a match is found. Returns None if no regex match is found. i is optional, if i is not provided the entire match will be returned. 
+`regex(input, pattern (,i))`: Returns the value of the ith group in the regex pattern provided if a match is found. Returns None if no regex match is found. i is optional, if i is not provided the first group is returned (if no groups are specified, the entire match is returned). If you instead want to return all the groups, set i=0.
 
 Example: 
 * `regex("Isaac Newton, physicist",  "(\w+) (\w+)")` returns “Isaac Newton”
 * `regex("Isaac Newton, physicist",  "(\w+) (\w+)", 1)` returns “Isaac”
 
-The regex uses Python regex syntax. You can [test your regex](https://regex101.com/) to check that is returning the results you expect.
+The regex function uses Python's [re.search() function](https://docs.python.org/3/library/re.html) and hence Python's regex syntax. You can [test your regex](https://regex101.com/) to check that it is returning the results you expect.
 
 **WARNING**: Because of the need to [conform to Yaml standards](#yamlstandards), a regex containing a colon *followed by whitespace* `: `, or whitespace followed by an octothorpe ` #`, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character `\s`, eg: `:\s`, `\s#`. You can also single-quote the entire line while double-quoting the regex string, eg: `item '=regex(value[B, 2], "profile: (.*) \d{4}", 1)'`.
 

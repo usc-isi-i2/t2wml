@@ -14,12 +14,15 @@ import wikiStore from '../data/store';
 
 interface SettingsProperties {
     showSettings: boolean;
+    endpoint: string;
+    warnEmpty: boolean;
 
     handleSaveSettings: () => void;
     cancelSaveSettings: () => void;
 }
 
 interface SettingsState {
+  tmpWarnEmpty: boolean;
 }
 
 @observer
@@ -29,10 +32,15 @@ class Settings extends Component<SettingsProperties, SettingsState> {
   constructor(props: SettingsProperties) {
     super(props);
     this.tempSparqlEndpointRef = React.createRef();
+
+    this.state = {
+      tmpWarnEmpty: this.props.warnEmpty,
+    }
   }
 
   handleSaveSettings() {
     wikiStore.settings.sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
+    wikiStore.settings.warnEmpty = this.state.tmpWarnEmpty;
     this.props.handleSaveSettings();
   }
 
@@ -63,7 +71,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={wikiStore.settings.sparqlEndpoint}
+                    defaultValue={this.props.endpoint}
                     ref={this.tempSparqlEndpointRef}
                     onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
@@ -73,6 +81,17 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                     <Dropdown.Item onClick={() => (this.tempSparqlEndpointRef as any).current.value = sparqlEndpoints[1]}>{sparqlEndpoints[1]}</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
+              </Col>
+
+              <Form.Label column sm="12" md="3" className="text-right">
+                Warn for empty cells
+              </Form.Label>
+              <Col sm="12" md="9">
+
+                <input type="checkbox" 
+                  style={{ width: '25px', height: '25px', marginTop: '5px' }}
+                  defaultChecked={(this.props.warnEmpty)}
+                  onChange={(event) => this.setState({ tmpWarnEmpty: event?.target.checked })}/>
               </Col>
             </Form.Group>
 

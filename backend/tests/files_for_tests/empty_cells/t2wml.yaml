@@ -1,0 +1,29 @@
+statementMapping:
+  region:
+  - bottom: 20
+    left: E
+    right: R
+    top: 14
+    # Have to add the following skip_cells
+    skip_cells: 
+      - =contains(value[$col, $row], '*')
+      - =contains(value[$col, $row], '‐')
+      - =contains(value[$col, $row], '-')
+  template:
+    item: =item[B, $row, "admin1"]
+    property: =item[$col, 13, "property"]
+    qualifier:
+    - calendar: Q1985727
+      format: '%Y'
+      property: P585
+      time_zone: 0
+      #value: =value[D, $row]
+      value: =regex(value[D, $row], "(....)/")
+    - property: P2006020004
+      value: QEth-fertilizer
+    - property: P2006190001
+      value: =item[B, $row, "admin1"]
+    - property: P131
+      value: =item[B, $row, "admin1"]
+    unit: =value[$col,6]
+    value: =value[$col, $row]

@@ -58,3 +58,86 @@ class BaseClass:
                 assert data[key]==expected_data[key]
             except AssertionError as e:
                 self.recurse_lists_and_dicts(data[key], expected_data[key])
+
+
+def sanitize_highlight_region(dict_1, dict_2):
+    set_keys=[]
+    for key in dict_1:
+        if "list" in dict_1[key]:
+            set_keys.append(key)
+            test1=set(dict_1[key]["list"])
+            test2=set(dict_2[key]["list"])
+            assert test1==test2
+    for key in set_keys:
+        dict_1.pop(key, None)
+        dict_2.pop(key, None)
+    return set_keys
+
+
+def create_project(client, title):
+    response=client.post('/api/project',
+        data=dict(
+            ptitle=title
+        )
+    )
+    data = response.data.decode("utf-8")
+    data = json.loads(data)
+    pid=str(data['pid'])
+    return pid
+
+def load_data_file(client, pid, filename):
+    url = '/api/data/{pid}'.format(pid=pid)
+    with open(filename, 'rb') as f:
+        response=client.post(url,
+            data=dict(
+            file=f
+            )
+        )
+    return response
+
+def load_yaml_file(client, pid, filename):
+    url='/api/yaml/{pid}'.format(pid=pid)
+    with open(filename, 'r', encoding="utf-8") as f:
+        response=client.post(url,
+            data=dict(
+            yaml=f.read()
+            )
+        )
+    return response
+
+def load_wikifier_file(client, pid, filename):
+    url='/api/wikifier/{pid}'.format(pid=pid)
+    with open(filename, 'rb') as f:
+        response=client.post(url,
+            data=dict(
+            file=f
+            )
+        )
+    return response
+
+def load_properties_file(client, pid, filename):
+    url = '/api/project/{pid}/properties'.format(pid=pid)
+    with open(filename, 'rb') as f:
+        response=client.post(url,
+            data=dict(
+            file=f
+            )
+        )
+    return response
+
+def load_item_file(client, pid, filename):
+    url='/api/project/{pid}/items'.format(pid=pid)
+    with open(filename, 'rb') as f:
+        response=client.post(url,
+            data=dict(
+            file=f
+            )
+        )
+    return response
+
+def get_project_files(client, pid):
+    url= '/api/project/{pid}'.format(pid=pid)
+    response=client.get(url)
+    data = response.data.decode("utf-8")
+    data = json.loads(data)
+    return data

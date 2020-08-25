@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-
+import yaml
 from flask import request
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
@@ -18,6 +18,7 @@ from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, upload_item_defs)
 from datamart_upload import upload_to_datamart
 from web_exceptions import WebException
+from t2wml.api import Project as apiProject
 from t2wml_annotation_integration import AnnotationIntegration
 
 debug_mode = False
@@ -26,9 +27,12 @@ debug_mode = False
 def get_project(project_id):
     try:
         project = Project.query.get(project_id)
-    except:
+        if not project:
+            raise ValueError("Not found")
+    except Exception as e:
         raise web_exceptions.ProjectNotFoundException
     update_t2wml_settings(project)
+    api_proj = project.api_project
     return project
 
 
@@ -76,11 +80,31 @@ def create_project():
     :return:
     """
     response = dict()
-    if 'ptitle' in request.form:
-        project_title = request.form['ptitle']
-        project = Project.create(project_title)
-        response['pid'] = project.id
-        return response, 201
+    project_title = request.form['ptitle']
+    project = Project.create(project_title)
+    response['pid'] = project.id
+    return response, 201
+
+
+@app.route('/api/project/load', methods=['POST'])
+@json_response
+def load_project():
+    """
+    This route loads a project file to create a project
+    :return:
+    """
+
+    path = request.form['path']
+    if not path:
+        try:
+            in_file = file_upload_validator({"yaml"})
+            input_yaml = yaml.safe_load(in_file)
+            path = input_yaml["directory"]
+        except:
+            raise ValueError("Was not able to load from project yaml file")
+    proj = apiProject.load(path)
+    project = Project.load(proj)
+    return {"pid": project.id}, 201
 
 
 @app.route('/api/project/<pid>', methods=['GET'])
@@ -207,16 +231,22 @@ def change_sheet(pid, sheet_name):
         sheet = data_file.current_sheet
 
         response["tableData"] = table_data(data_file, sheet.name)
-
-        response["wikifierData"] = serialize_item_table(project, sheet)
-
-        y = handle_yaml(sheet, project)
-        response["yamlData"] = y
-
-        return response, 200
     except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
         data_file.change_sheet(old_sheet.name)
         raise e
+
+    # stopgap measure. we seriously need to separate these calls
+    try:
+        response["wikifierData"] = serialize_item_table(project, sheet)
+    except:
+        pass  # return blank
+
+    try:
+        response["yamlData"] = handle_yaml(sheet, project)
+    except:
+        pass  # return blank
+
+    return response, 200
 
 
 @app.route('/api/wikifier/<pid>', methods=['POST'])
@@ -384,13 +414,12 @@ def rename_project(pid):
     }
     ptitle = request.form["ptitle"]
     project = get_project(pid)
-    project.name = ptitle
-    project.modify()
+    project.rename(ptitle)
     data['projects'] = get_project_details()
     return data, 200
 
 
-@app.route('/api/project/<pid>/sparql', methods=['PUT'])
+@app.route('/api/project/<pid>/settings', methods=['PUT'])
 @json_response
 def update_settings(pid):
     """
@@ -398,11 +427,34 @@ def update_settings(pid):
     :return:
     """
     project = get_project(pid)
-    endpoint = request.form["endpoint"]
-    project.sparql_endpoint = endpoint
+    endpoint = request.form.get("endpoint", None)
+    if endpoint:
+        project.sparql_endpoint = endpoint
+    warn = request.form.get("warnEmpty", None)
+    if warn is not None:
+        project.warn_for_empty_cells = request.form["warnEmpty"].lower() == 'true'
     project.modify()
     update_t2wml_settings(project)
-    return None, 200  # can become 204 eventually, need to check frontend compatibility
+    response = {
+        "endpoint": project.sparql_endpoint,
+        "warnEmpty": project.warn_for_empty_cells
+    }
+    return response, 200
+
+
+@app.route('/api/project/<pid>/settings', methods=['GET'])
+@json_response
+def get_settings(pid):
+    """
+    This function updates the settings from GUI
+    :return:
+    """
+    project = get_project(pid)
+    response = {
+        "endpoint": project.sparql_endpoint,
+        "warnEmpty": project.warn_for_empty_cells
+    }
+    return response, 200
 
 
 @app.route('/api/is-alive')
