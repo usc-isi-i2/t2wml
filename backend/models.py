@@ -348,6 +348,7 @@ class PropertiesFile(SavedFile):
         self.project.api_project.add_property_file(self.relative_path)
         self.project.api_project.save()
 
+    @classmethod
     def create_from_dataframe(cls, project, df):
         folder = cls.get_folder(project)
         filepath = str(folder / "datamart_new_properties.tsv")

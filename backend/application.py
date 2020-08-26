@@ -20,6 +20,7 @@ from datamart_upload import upload_to_datamart
 from web_exceptions import WebException
 from t2wml.api import Project as apiProject
 from t2wml_annotation_integration import AnnotationIntegration
+import traceback
 
 debug_mode = False
 
@@ -201,6 +202,7 @@ def upload_data_file(pid):
             PropertiesFile.create_from_dataframe(project, combined_item_df)
             YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
         except Exception as e:
+            traceback.print_exc()
             print(e)  # continue to normal spreadsheet handling
 
     response["wikifierData"] = serialize_item_table(project, sheet)
