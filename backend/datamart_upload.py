@@ -58,12 +58,24 @@ def upload_to_datamart(project, data_sheet):
         }
 
         response = requests.put(f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/t2wml', files=files)
-        variable_ids = [x['variable_id'] for x in response.json()]
-        url_param = '?'
-        for variable_id in variable_ids:
-            url_param += f'variable={variable_id}&'
-        get_url = f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/variables{url_param[:-1]}'
-        print(get_url)
 
-    data = {'datamart_get_url': get_url}
+        if response.status_code == 201:
+            variable_ids = []
+            for x in response.json():
+                if 'variable_id' in x:
+                    variable_ids.append(x['variable_id'])
+                else:
+                    print('Problem variable:', x)
+            if variable_ids:
+                url_param = '?'
+                for variable_id in variable_ids:
+                    url_param += f'variable={variable_id}&'
+                get_url = f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/variables{url_param[:-1]}'
+                print(get_url)
+                data = {'datamart_get_url': get_url}
+            else:
+                data = {'description': 'No variables defined'}
+        else:
+            data = {'description': response.text}
+
     return data
