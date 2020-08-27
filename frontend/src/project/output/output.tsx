@@ -54,7 +54,7 @@ interface OutputState {
 class Output extends Component<OutputProperties, OutputState> {
   private requestService: RequestService;
   private pid: string;
-  
+
   constructor(props: OutputProperties) {
     super(props);
     this.requestService = new RequestService();
@@ -95,11 +95,12 @@ class Output extends Component<OutputProperties, OutputState> {
   }
 
   handleDoDownload(fileName: string, fileType: string) {
-    this.setState({ errorMessage: {} as ErrorMessage });  
+    this.setState({ errorMessage: {} as ErrorMessage });
     const filename = fileName + "." + fileType;
 
     // before sending request
     this.setState({ isDownloading: true, showDownload: false });
+
     // send request
     console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
     this.requestService.downloadResults(this.pid, fileType).then((json) => {
@@ -119,7 +120,7 @@ class Output extends Component<OutputProperties, OutputState> {
       if (internalErrors !== undefined){
           console.log("ERRORS in input to download:")
           console.log(internalErrors);
-          this.setState({errorMessage:     
+          this.setState({errorMessage:
             {errorCode: 400,
             errorTitle: "Problems within statements",
             errorDescription: "Although the file downloaded, there were errors in the input, check console for details"} as ErrorMessage
@@ -178,7 +179,7 @@ class Output extends Component<OutputProperties, OutputState> {
     if(json["error"]) {
         this.setState({errors: JSON.stringify(json["error"])});
     }
-    
+
     this.setState({
       valueCol: colName,
       valueRow: rowName
@@ -200,7 +201,7 @@ class Output extends Component<OutputProperties, OutputState> {
       this.queryWikidata(itemID, "itemName");
       isAllCached = false;
     }
-    
+
     if (json["statement"]["cell"]) {
     let [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
     wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
@@ -289,7 +290,7 @@ class Output extends Component<OutputProperties, OutputState> {
     this.setState({ queryDataCount: this.state.queryDataCount + 1 });
     // before send request
     wikiStore.output.showSpinner = true;
-    
+
     this.requestService.getQnode(this.pid, node).then((res) => {
         const name = res.label;
         if (field === "itemName") {
@@ -308,9 +309,9 @@ class Output extends Component<OutputProperties, OutputState> {
         }
         let cache = this.state.cache;
         cache[node] = name;
-        this.setState({ 
-            cache: cache, 
-            queryDataCount: this.state.queryDataCount - 1 
+        this.setState({
+            cache: cache,
+            queryDataCount: this.state.queryDataCount - 1
         });
         wikiStore.output.showSpinner = false;
     }).catch((error: any) => {
@@ -321,9 +322,26 @@ class Output extends Component<OutputProperties, OutputState> {
 
   loadToDatamart() {
     // TODO !
+    wikiStore.output.showSpinner = true;
     this.setState({ isLoadDatamart: true });
-    this.requestService.loadToDatamart(this.pid);
+    console.log("Load to Datamart");
+    this.requestService.loadToDatamart(this.pid).then((json) => {
+        console.log(json);
+        const { datamart_get_url, description } = json;
+        if (datamart_get_url !== undefined) {
+            alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
+        } else {
+            alert("Failed to load to Datamart\nError: " + description)
+        }
+    }).catch((error: any) => {
+        console.log(error);
+        const { errorTitle, errorDescription } = error;
+        if (errorTitle !== undefined) {
+            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription)
+        }
+    });
     this.setState({ isLoadDatamart: false });
+    wikiStore.output.showSpinner = false;
   }
 
   render() {
@@ -354,7 +372,7 @@ class Output extends Component<OutputProperties, OutputState> {
             >
               {this.state.isLoadDatamart ? <Spinner as="span" animation="border" size="sm" /> : "Load to Datamart"}
             </Button>
-            
+
             {/* button to download */}
             <Button
               className="d-inline-block float-right"
@@ -377,7 +395,7 @@ class Output extends Component<OutputProperties, OutputState> {
             </div>
 
             {/* output */}
-            { this.state.queryDataCount === 0 ? 
+            { this.state.queryDataCount === 0 ?
             <div className="w-100 p-3" style={{ height: "1px" }}>
             <ShowOutput
                 errors={this.state.errors}
