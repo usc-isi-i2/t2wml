@@ -330,8 +330,8 @@ class Output extends Component<OutputProperties, OutputState> {
         console.log(json);
         const { datamart_get_url, description } = json;
         if (datamart_get_url !== undefined) {
-            // alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
-            prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
+            alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
+            // prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
         } else {
             alert("Failed to load to Datamart\nError: " + description)
         }
