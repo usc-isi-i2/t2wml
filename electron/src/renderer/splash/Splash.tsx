@@ -8,8 +8,8 @@ interface State {
     devMode: boolean;
 }
 
-class Splash extends React.Component<never, State> {
-    constructor(props: never) {
+class Splash extends React.Component<{}, State> {
+    constructor(props: {}) {
         super(props);
 
         this.state = {
