@@ -217,16 +217,22 @@ def change_sheet(pid, sheet_name):
         sheet = data_file.current_sheet
 
         response["tableData"] = table_data(data_file, sheet.name)
-
-        response["wikifierData"] = serialize_item_table(project, sheet)
-
-        y = handle_yaml(sheet, project)
-        response["yamlData"] = y
-
-        return response, 200
     except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
         data_file.change_sheet(old_sheet.name)
         raise e
+
+    #stopgap measure. we seriously need to separate these calls
+    try:
+        response["wikifierData"] = serialize_item_table(project, sheet)
+    except:
+        pass #return blank
+
+    try:
+        response["yamlData"] = handle_yaml(sheet, project)
+    except:
+        pass #return blank
+
+    return response, 200
 
 
 @app.route('/api/wikifier/<pid>', methods=['POST'])
