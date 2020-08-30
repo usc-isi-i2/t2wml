@@ -58,6 +58,7 @@ function buildMainMenu() {
         {
             label: 'File',
             submenu: [
+                { label: 'New Project...', accelerator: 'CmdOrCtrl+N', click: onNewProjectClick },
                 { label: 'Open Project...', accelerator: 'CmdOrCtrl+O', click: onOpenProjectClick },
                 { type: 'separator'},
                 config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
@@ -234,13 +235,23 @@ app.on('activate', () => {
 });
 
 /* Menu event handlers */
+function onNewProjectClick() {
+    const folders = dialog.showOpenDialog( mainWindow!, {
+            title: "Open Project Folder",
+            properties: ['openDirectory', 'createDirectory']
+        });
+
+    if (folders) {
+        mainWindow!.webContents.send('new-project', folders[0]);
+    }
+}
 
 function onOpenProjectClick() {
     const folders = dialog.showOpenDialog( mainWindow!, {
             title: "Open Project Folder",
             properties: ['openDirectory']
         });
-        
+
     if (folders) {
         mainWindow!.webContents.send('open-project', folders[0]);
     }

@@ -14,11 +14,18 @@ class App extends Component<{}, {}> {
   componentDidMount() {
     ipcRenderer.on('open-project', (sender: EventEmitter, folder: string) => {
       this.onOpenProject(folder);
-    })
+    });
+    ipcRenderer.on('new-project', (sender: EventEmitter, folder: string) => {
+      this.onNewProject(folder);
+    });
   }
 
+  onNewProject(folder: string) {
+    console.log('Creating project in folder ', folder);
+  }
+  
   onOpenProject(folder: string) {
-    console.log('Opening folder ', folder);
+    console.log('Opening project from folder ', folder);
   }
 
   render() {
@@ -32,7 +39,7 @@ class App extends Component<{}, {}> {
             <ProjectList />
           </Route>
         </Switch>
-    </Router>
+      </Router>
     );
   }
 }
