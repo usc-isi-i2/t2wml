@@ -75,9 +75,9 @@ cd t2wml-root/t2wml/electron
 yarn dev
 ```
 
-This script compiles all the frontend files, making them ready for electron.
+This script compiles all the frontend files, making them ready for electron. Wait until the compilation reaches 100% (you may see some warnings, that's fine). The script will keep running, recompiling as the frontend files are updated.
 
-and 
+Open another shell window and run 
 
 ```sh
 cd t2wml-root/t2wml/electron
@@ -101,7 +101,7 @@ To develop the GUI you need to run three tasks:
 
 1. `Backend` - runs the Python backend.
 2. `Build and Watch GUI` - this task runs the npm `dev` script which builds the GUI and contiously watches for changes.
-3. `t2wml GUI` - opens the Electron based GUI.
+3. `Start GUI` - opens the Electron based GUI.
 
 The GUI will not work unless the backend is up and running.
 

@@ -7,10 +7,13 @@ Changes in version 2.2.0:
 * added support for uploading projects
 * added setting for warning for empty cells
 * when loading an invalid yaml, at least return the yaml content
+* installer now has access to developer console
 * bug fixes:
   - added some missing utf-8 support
   - sparql endpoint changes were not being propagated
-  
+  - changing sheets error
+
+
 
 Changes in version 2.1.1:
 ------------------------

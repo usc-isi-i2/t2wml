@@ -633,8 +633,6 @@ class ProjectList extends Component<{}, ProjectListState> {
         <CreateProject
           showCreateProject={this.state.showCreateProject}
           showSpinner={this.state.showSpinner}
-          // tempCreateProject={this.state.tempCreateProject}
-          // isTempCreateProjectVaild={this.state.isTempCreateProjectVaild}
           handleCreateProject={(name) => this.handleCreateProject(name)}
           cancelCreateProject={() =>this.cancelCreateProject()}
         />

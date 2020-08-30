@@ -25,6 +25,7 @@ interface OutputState {
   valueCol: string | null;
   valueRow: string | null;
   value: string | null;
+  unit: string | null;
   itemID: string | null;
   itemName: string | null;
   itemCol: string | undefined;
@@ -65,6 +66,7 @@ class Output extends Component<{}, OutputState> {
       valueCol: null,
       valueRow: null,
       value: null,
+      unit: null,
       itemID: null,
       itemName: null,
       itemCol: undefined,
@@ -216,6 +218,19 @@ class Output extends Component<{}, OutputState> {
     wikiStore.table.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
     this.setState({ currCol: colName, currRow: rowName });
 
+    // unit
+    if (json["statement"]["unit"]) {
+      const unit = json["statement"]["unit"];
+      if (cache[unit] !== undefined) {
+        this.setState({ unit: cache[unit] });
+      } else {
+        this.queryWikidata(unit, "unit");  
+        isAllCached = false;
+      }
+    } else {
+      this.setState({ unit: null });
+    }
+
     // qualifiers
     const temp = json["statement"]["qualifier"];
     const qualifiers = [];
@@ -286,11 +301,16 @@ class Output extends Component<{}, OutputState> {
     
     // Talya: Use async/await here
     this.requestService.getQnode(this.pid, node).then((res) => {
-        const name = res.label;
+        let name = res.label;
+        if (!name) {
+          name = node;
+        }
         if (field === "itemName") {
         this.setState({ itemName: name });
         } else if (field === "propertyName") {
         this.setState({ propertyName: name });
+        } else if (field === "unit") {
+          this.setState({ unit: name });
         } else if (field === "qualifiers") {
         const qualifiers = this.state.qualifiers;
             if (subfield === "propertyName") {
@@ -363,6 +383,7 @@ class Output extends Component<{}, OutputState> {
                 propertyID={this.state.propertyID}
                 propertyName={this.state.propertyName}
                 value={this.state.value}
+                unit={this.state.unit}
                 qualifiers={this.state.qualifiers}
             />
             </div> : null }

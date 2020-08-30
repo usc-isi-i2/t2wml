@@ -8,7 +8,7 @@
             "script": "start",
             "path": "electron/",
             "problemMatcher": [],
-            "label": "t2wml GUI",
+            "label": "Start GUI",
             "detail": "Opens the t2wml GUI (run it after the frontend is built)"
         },
         {
