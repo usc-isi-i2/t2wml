@@ -3,6 +3,7 @@ import { Navbar } from 'react-bootstrap';
 
 
 import T2WMLLogo from './T2WMLLogo';
+import { ipcRenderer } from "electron";
 
 interface NavbarProperteis {
   showSettings?: boolean;
@@ -11,7 +12,6 @@ interface NavbarProperteis {
 }
 
 class T2wmlNavbar extends Component<NavbarProperteis> {
-
   render() {
     return (
       <div>

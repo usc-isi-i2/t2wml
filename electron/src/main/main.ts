@@ -1,7 +1,7 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
+import { app, BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import treeKill from 'tree-kill';
@@ -58,6 +58,8 @@ function buildMainMenu() {
         {
             label: 'File',
             submenu: [
+                { label: 'Open Project...', accelerator: 'CmdOrCtrl+O', click: onOpenProjectClick },
+                { type: 'separator'},
                 config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
             ]
         },
@@ -230,6 +232,19 @@ app.on('activate', () => {
         createMainWindow();
     }
 });
+
+/* Menu event handlers */
+
+function onOpenProjectClick() {
+    const folders = dialog.showOpenDialog( mainWindow!, {
+            title: "Open Project Folder",
+            properties: ['openDirectory']
+        });
+        
+    if (folders) {
+        mainWindow!.webContents.send('open-project', folders[0]);
+    }
+}
 
 /* Shutting down */
 app.on('will-quit', (event) => {
