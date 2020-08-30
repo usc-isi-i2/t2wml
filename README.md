@@ -46,8 +46,6 @@ cd t2wml-root/t2wml/electron
 yarn install
 ```
 
-(Note - there is a current issue with using npm. Use yarn for now)
-
 ### Creating the Python virtual environment
 
 ```
