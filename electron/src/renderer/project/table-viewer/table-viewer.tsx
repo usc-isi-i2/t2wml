@@ -105,7 +105,7 @@ class TableViewer extends Component<{}, TableState> {
 
     wikiStore.table.updateYamlRegions = (newYamlRegions = null) => this.updateYamlRegions(newYamlRegions);
     wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
-    wikiStore.table.updateTableData = (tableData: TableData) => this.updateTableData(tableData);
+    wikiStore.table.updateTableData = (tableData?: TableData) => this.updateTableData(tableData);
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
     wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
@@ -528,16 +528,18 @@ class TableViewer extends Component<{}, TableState> {
     this.gridApi.setRowData(rowData2);
   }
 
-  updateTableData(tableData: TableData) {
-    tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
-    tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
+  updateTableData(tableData?: TableData) {
+    if (tableData?.sheetData) {
+      tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
+      tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
+    }
     this.setState({
-      filename: tableData.filename,
-      isCSV: tableData.isCSV,
-      sheetNames: tableData.sheetNames,
-      currSheetName: tableData.currSheetName,
-      columnDefs: tableData.sheetData.columnDefs,
-      rowData: tableData.sheetData.rowData
+      filename: tableData?.filename || null,
+      isCSV: tableData?.isCSV || false,
+      sheetNames: tableData?.sheetNames || null,
+      currSheetName: tableData?.currSheetName || null,
+      columnDefs: tableData?.sheetData?.columnDefs || columns,
+      rowData: tableData?.sheetData?.rowData || rows
     });
     // this.gridColumnApi.autoSizeAllColumns();
   }
@@ -581,6 +583,8 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   render() {
+    console.log(this.state);
+
     // const { showToast0, showToast1, msgInToast1 } = this.state;
     const { filename, isCSV, columnDefs, rowData } = this.state;
     // const { selectedCell } = this.state;

@@ -61,6 +61,8 @@ function buildMainMenu() {
                 { label: 'New Project...', accelerator: 'CmdOrCtrl+N', click: onNewProjectClick },
                 { label: 'Open Project...', accelerator: 'CmdOrCtrl+O', click: onOpenProjectClick },
                 { type: 'separator'},
+                { label: 'Open Recent', submenu: [] },
+                { type: 'separator'},
                 config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
             ]
         },

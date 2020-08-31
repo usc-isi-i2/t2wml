@@ -96,9 +96,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       const { tableData, yamlData, wikifierData, settings } = json;
 
       // load table data
-      if (tableData !== null) {
-        wikiStore.table.updateTableData(tableData);
-      }
+      wikiStore.table.updateTableData(tableData);
 
       // load wikifier data
       if (wikifierData !== null) {
@@ -108,9 +106,9 @@ class Project extends Component<ProjectProps, ProjectState> {
       }
 
       // load yaml data
+      wikiStore.yaml.updateYamlText(yamlData?.yamlFileContent);
+      wikiStore.table.updateYamlRegions(yamlData?.yamlRegions);
       if (yamlData !== null) {
-        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
-        wikiStore.table.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
@@ -120,6 +118,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       // load settings
       if (settings) {
         wikiStore.settings.sparqlEndpoint = settings.endpoint;
+      } else {
+        wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
       }
 
 
