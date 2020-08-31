@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-import yaml
+from pathlib import Path
 from flask import request
 from flask.helpers import send_file, send_from_directory
 from werkzeug.exceptions import NotFound
@@ -76,12 +76,21 @@ def get_project_meta():
 @json_response
 def create_project():
     """
-    This route creates a project and an upload directory for that project
+    This route creates a project
     :return:
     """
     response = dict()
-    project_title = request.form['ptitle']
-    project = Project.create(project_title)
+    directory = request.form['path']
+    #check we're not overwriting existing project
+    project_file = Path(directory) / "t2wmlproj.yaml"
+    if project_file.is_file():
+        raise web_exceptions.ProjectAlreadyExistsException(directory)
+    #create project
+    api_proj=apiProject(directory)
+    api_proj.title=Path(directory).stem
+    api_proj.save()
+    #...and the database id for it
+    project = Project.load(api_proj)
     response['pid'] = project.id
     return response, 201
 
@@ -90,20 +99,14 @@ def create_project():
 @json_response
 def load_project():
     """
-    This route loads a project file to create a project
+    This route loads an existing project
     :return:
     """
-
     path=request.form['path']
-    if not path:
-        try:
-            in_file=file_upload_validator({"yaml"})
-            input_yaml=yaml.safe_load(in_file)
-            path=input_yaml["directory"]
-        except:
-            raise ValueError("Was not able to load from project yaml file")
-    proj=apiProject.load(path)
-    project=Project.load(proj)
+    project=Project.query.filter_by(file_directory=path).first()
+    if not project:
+        proj=apiProject.load(path)
+        project=Project.load(proj)
     return {"pid":project.id}, 201
 
 
