@@ -4,6 +4,7 @@ import {
   MemoryRouter as Router,
   Switch,
   Route,
+  useHistory
 } from "react-router-dom";
 import ProjectList from './project-list/project-list';
 import Project from './project/project';
@@ -13,7 +14,6 @@ import { ipcRenderer, EventEmitter } from 'electron';
 // to open-project
 import { LOG, ErrorMessage } from './common/general';
 import RequestService from './common/service';
-import { useHistory } from 'react-router-dom';
 
 
 class App extends Component<{}, {}> {
