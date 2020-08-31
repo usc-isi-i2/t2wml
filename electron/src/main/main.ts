@@ -65,6 +65,14 @@ function buildMainMenu() {
             ]
         },
         {
+            label: 'Edit',
+            submenu: [
+                { role: 'cut' },
+                { role: 'copy' },
+                { role: 'paste' },
+            ]
+        },
+        {
             label: 'View',
             submenu: [
                 { role: 'zoomin' },
