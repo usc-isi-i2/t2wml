@@ -19,6 +19,8 @@ class ProjectNotFoundException(WebException):
     code = 404
     message = "Project not found"
 
+class ProjectAlreadyExistsException(WebException):
+    message = "Cannot create new project in folder with existing project"
 
 class NoFilePartException(WebException):
     message = "Missing file parameter in the upload request"
