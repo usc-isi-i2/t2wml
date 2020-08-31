@@ -32,7 +32,6 @@ interface ProjectState {
   warnEmpty: boolean;
 
   showSpinner: boolean;
-  projectData: any; //todo: add project class[]
   errorMessage: ErrorMessage;
 }
 
@@ -62,21 +61,16 @@ class Project extends Component<ProjectProps, ProjectState> {
 
       showSpinner: false,
 
-      // project list
-      projectData: [],
-      // projectData: [
-      //   { pid: "4444", ptitle: "Project 4", cdate: 1566282771986, mdate: 1566282771986 },
-      //   { pid: "1111", ptitle: "Project 1", cdate: 1565807259582, mdate: 1565807259582 },
-      //   { pid: "2222", ptitle: "Project 2", cdate: 1565720859582, mdate: 1565720859582 },
-      //   { pid: "3333", ptitle: "Project 3", cdate: 1563906459582, mdate: 1563906459582 },
-      // ],
-
       errorMessage: {} as ErrorMessage,
     };
   }
 
   componentDidMount() {
-    this.loadProject();
+    if (this.props.id) {
+      this.loadProject();
+    } else {
+      console.error("There is no project id.")
+    }
   }
 
   componentDidUpdate(prevProps: ProjectProps) {

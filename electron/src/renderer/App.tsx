@@ -54,8 +54,8 @@ class App extends Component<{}, {}> {
       // do something here
       if (response["pid"]) {
         // success
-        const history = useHistory();
-        history.push("/project/" + response["pid"]);
+        wikiStore.displayMode = 'project';
+        wikiStore.project.pid = response.pid;
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
