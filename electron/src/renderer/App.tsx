@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
 import './App.css';
-import {
-  MemoryRouter as Router,
-  Switch,
-  Route,
-  useHistory
-} from "react-router-dom";
 import ProjectList from './project-list/project-list';
 import Project from './project/project';
-import { ipcRenderer, EventEmitter } from 'electron';
-
-
-// to open-project
-import { LOG, ErrorMessage } from './common/general';
+import { observer } from 'mobx-react';
+import wikiStore from './data/store';
 import RequestService from './common/service';
+import { ipcRenderer, EventEmitter } from 'electron';
+import { ErrorMessage, LOG } from './common/general';
 
 
+@observer
 class App extends Component<{}, {}> {
   private requestService: RequestService;
   constructor(props: {}) {
@@ -57,10 +51,9 @@ class App extends Component<{}, {}> {
       console.log(response);
 
       // do something here
-      if (response["pid"]) {
-        // success
-        const history = useHistory();
-        history.push("/project/" + response["pid"]);
+      if (response.pid) {
+        wikiStore.displayMode = 'project';
+        wikiStore.project.pid = response.pid;
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -76,20 +69,11 @@ class App extends Component<{}, {}> {
       // follow-ups (failure)
       this.setState({ showLoadProject: false, showSpinner: false });
     }
-  }
-
-  render() {
+  }  render() {
     return (
-      <Router>
-        <Switch>
-          <Route exact path="/project/:id">
-            <Project />
-          </Route>
-          <Route path="*">
-            <ProjectList />
-          </Route>
-        </Switch>
-      </Router>
+      <div>
+        { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project id={wikiStore.project.pid }/> }
+      </div>
     );
   }
 }

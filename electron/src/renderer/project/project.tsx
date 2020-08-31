@@ -32,30 +32,25 @@ interface ProjectState {
   warnEmpty: boolean;
 
   showSpinner: boolean;
-  projectData:  any; //todo: add project class[]
+  projectData: any; //todo: add project class[]
   errorMessage: ErrorMessage;
 }
 
-@observer
-class Project extends Component<{}, ProjectState> {
-  private requestService: RequestService;
-  private pid: string;
+interface ProjectProps {
+  id: string;
+}
 
-  constructor(props: {}) {
+@observer
+class Project extends Component<ProjectProps, ProjectState> {
+  private requestService: RequestService;
+
+  constructor(props: ProjectProps) {
     super(props);
     this.requestService = new RequestService();
-
-    this.pid = wikiStore.project.pid;
-
-    // fetch data from flask
-    console.log("<App> opened project: %c" + this.pid, LOG.highlight);
 
     // init global variables
     wikiStore.table.isCellSelectable = false;
     wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
-    (window as any).onbeforeunload = () => {
-      return null; // only "null" cannot prevent leave/reload page
-    };
 
     // init state
     this.state = {
@@ -80,33 +75,42 @@ class Project extends Component<{}, ProjectState> {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.loadProject();
+  }
 
+  componentDidUpdate(prevProps: ProjectProps) {
+    if (this.props.id !== prevProps.id) {
+      this.loadProject();
+    }
+  }
+
+  loadProject() {
     // before fetching project files
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
 
     // fetch project files
     console.log("<App> -> %c/get_project_files%c for previous files", LOG.link, LOG.default);
-    this.requestService.getProjectFiles(this.pid).then(json => {
+    this.requestService.getProjectFiles(this.props.id).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
       document.title = json.name;
 
-      
+
       // do something here
-      const { tableData, yamlData, wikifierData, settings} = json;
-  
+      const { tableData, yamlData, wikifierData, settings } = json;
+
       // load table data
       if (tableData !== null) {
-          wikiStore.table.updateTableData(tableData);
+        wikiStore.table.updateTableData(tableData);
       }
 
       // load wikifier data
       if (wikifierData !== null) {
-          wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-          wikiStore.table.updateQnodeCells(); // reset
+        wikiStore.table.updateQnodeCells(); // reset
       }
 
       // load yaml data
@@ -133,7 +137,7 @@ class Project extends Component<{}, ProjectState> {
       console.log(error);
       error.errorDescription += "\n\nCannot fetch project!";
       this.setState({ errorMessage: error });
-//    alert("Cannot fetch project files!\n\n" + error);
+      //    alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
       wikiStore.table.showSpinner = false;
@@ -142,29 +146,29 @@ class Project extends Component<{}, ProjectState> {
   }
 
   onShowSettingsClicked() {
-    this.requestService.getSettings(this.pid)
-    .then((data) => {
-      this.setState({ 
-        endpoint: data.endpoint,
-        warnEmpty: data.warnEmpty,
-        showSettings: true
+    this.requestService.getSettings(this.props.id)
+      .then((data) => {
+        this.setState({
+          endpoint: data.endpoint,
+          warnEmpty: data.warnEmpty,
+          showSettings: true
+        });
       });
-    });
-    
+
   }
 
   handleSaveSettings() {
     console.log("<App> updated settings");
 
     // update settings
-    this.setState({ showSettings: false});
+    this.setState({ showSettings: false });
 
     // notify backend
     console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     const formData = new FormData();
     formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
     formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
-    this.requestService.updateSettings(this.pid, formData).catch((error: ErrorMessage) => {
+    this.requestService.updateSettings(this.props.id, formData).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
@@ -172,7 +176,7 @@ class Project extends Component<{}, ProjectState> {
   }
 
   cancelSaveSettings() {
-      this.setState({ showSettings: false });
+    this.setState({ showSettings: false });
   }
 
 
@@ -180,11 +184,11 @@ class Project extends Component<{}, ProjectState> {
     const { showSpinner } = this.state;
     return (
       <div>
-        <Navbar 
-        showSettings={true}
-        onShowSettingsClicked={() => this.onShowSettingsClicked()}/>
+        <Navbar
+          showSettings={true}
+          onShowSettingsClicked={() => this.onShowSettingsClicked()} />
 
-        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!showSpinner} style={{ height: "100%" }}>
@@ -192,17 +196,17 @@ class Project extends Component<{}, ProjectState> {
         </div>
 
         <Settings showSettings={this.state.showSettings}
-            endpoint={this.state.endpoint}
-            warnEmpty={this.state.warnEmpty}
-            handleSaveSettings={() => this.handleSaveSettings()}
-            cancelSaveSettings={() =>this.cancelSaveSettings()} />
+          endpoint={this.state.endpoint}
+          warnEmpty={this.state.warnEmpty}
+          handleSaveSettings={() => this.handleSaveSettings()}
+          cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
         <div>
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-            <TableViewer/>
+            <TableViewer />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-              <Editors/>
+              <Editors />
               <Output />
             </SplitPane>
           </SplitPane>

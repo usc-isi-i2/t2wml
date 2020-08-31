@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import { Link } from 'react-router-dom';
 
 import './project-list.css';
 import * as utils from '../common/utils'
@@ -25,7 +24,6 @@ import RequestService from '../common/service';
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import LoadProject from './load-project';
-import { useHistory } from 'react-router-dom';
 
 interface ProjectListState {
   showSpinner: boolean;
@@ -153,10 +151,10 @@ class ProjectList extends Component<{}, ProjectListState> {
       console.log(json);
 
       // do something here
-      if (json["pid"]) {
+      if (json.pid) {
         // success
-        const history = useHistory();
-        history.push("/project/" + json["pid"]);
+        wikiStore.displayMode = 'project';
+        wikiStore.project.pid = json.pid;
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -193,10 +191,10 @@ class ProjectList extends Component<{}, ProjectListState> {
       console.log(json);
 
       // do something here
-      if (json["pid"]) {
+      if (json.pid) {
         // success
-        const history = useHistory();
-        history.push("/project/" + json["pid"]);
+        wikiStore.displayMode = 'project';
+        wikiStore.project.pid = json.pid;
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -409,6 +407,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   projectClicked(pid: string) {
     wikiStore.project.pid = pid; // Is it needed?
+    wikiStore.displayMode = 'project';
   }
 
   renderProjects() {
@@ -425,9 +424,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             {/* title */}
             <td>
               <span style={{ "color": "hsl(200, 100%, 30%)" }} onClick={() => this.projectClicked(pid)}>
-                <Link to={"/project/" + pid}>
                   {ptitle}
-                </Link>
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
             </td>

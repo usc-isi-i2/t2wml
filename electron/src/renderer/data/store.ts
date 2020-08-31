@@ -89,6 +89,8 @@ class YamlEditorState {
 }
 
 
+type DisplayMode = 'project' | 'project-list';
+
 class WikiStore {
     @observable public project = new ProjectState();
     @observable public editors = new EditorsState();
@@ -97,6 +99,7 @@ class WikiStore {
     @observable public wikifier = new WikifierState();
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
+    @observable public displayMode: DisplayMode = 'project-list';
 }
 
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Config from '@/shared/config';
+import wikiStore from '../../data/store';
 
 // T2WMLLogo
 import { Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -37,11 +37,9 @@ class T2WMLLogo extends React.Component<{}, T2WMLLogoState> {
     return (
       <span>
         <OverlayTrigger overlay={logoTooltipHtml} placement="bottom" trigger={["hover", "focus"]}>
-          <Link to="/">
-            <Navbar.Brand className="pl-2" style={{ cursor: "pointer", fontWeight: "bold" }}>
-              {logo}
-            </Navbar.Brand>
-          </Link>
+          <Navbar.Brand className="pl-2" style={{ cursor: "pointer", fontWeight: "bold" }} onClick={() => { wikiStore.displayMode = 'project-list' }}>
+            {logo}
+          </Navbar.Brand>
         </OverlayTrigger>
         <Navbar.Text className="pr-2" style={{ cursor: "default" }}>
           {version}
