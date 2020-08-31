@@ -34,11 +34,49 @@ class App extends Component<{}, {}> {
 
   onNewProject(folder: string) {
     console.log('Creating project in folder ', folder);
+    this.handleNewProject(folder);
   }
   
   onOpenProject(folder: string) {
     console.log('Opening project from folder ', folder);
     this.handleOpenProject(folder);
+  }
+
+  async handleNewProject(folder: string) {
+    // this.setState({ errorMessage: {} as ErrorMessage });
+
+    // before sending request
+    // this.setState({ showSpinner: true });
+
+    // send request
+    const formData = new FormData();
+    formData.append("path", folder);
+    try {
+      const response = await this.requestService.createProject(formData);
+    
+      console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
+      console.log(response);
+
+      // do something here
+      if (response["pid"]) {
+        // success
+        const history = useHistory();
+        history.push("/project/" + response["pid"]);
+      } else {
+        // failure
+        throw Error("Session doesn't exist or invalid request");
+      }
+
+      // follow-ups (success)
+      // this.setState({ showCreateProject: false, showSpinner: false });
+
+    } catch (error) { // :ErrorDEscription
+      error.errorDescription += "\n\nCannot create project!";
+      // this.setState({ errorMessage: error });
+
+      // follow-ups (failure)
+      // this.setState({ showCreateProject: false, showSpinner: false });
+    }
   }
 
   async handleOpenProject(folder: string) {
