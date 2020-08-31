@@ -1,5 +1,6 @@
 import React from 'react';
 import Config from '@/shared/config';
+import logoImage from '@/images/t2wml logo2_200x200.png';
 import './Splash.css';
 
 interface State {
@@ -26,6 +27,9 @@ class Splash extends React.Component<{}, State> {
         return (
             <div id='splash'>
                 <h4>T2WML { this.state.version }</h4>
+                <div id="image">
+                    <img src={logoImage} />
+                </div>
                 <div id="mode">
                     { modeMessage }
                 </div>
