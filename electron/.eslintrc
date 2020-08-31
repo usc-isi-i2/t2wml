@@ -23,6 +23,7 @@
     "@typescript-eslint/no-extra-semi": "warn",
     "@typescript-eslint/no-non-null-assertion": "off",
     "prefer-const": "warn",
-    "react/no-string-refs": "warn"
+    "react/no-string-refs": "warn",
+    "no-debugger": "off"
   }
 }
