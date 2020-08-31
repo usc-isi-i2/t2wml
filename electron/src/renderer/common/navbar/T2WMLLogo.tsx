@@ -1,6 +1,8 @@
 import React from 'react';
 import Config from '@/shared/config';
 import wikiStore from '../../data/store';
+import logoImage from '@/images/t2wml logo2_80x80.png';
+import './T2WMLLogo.css';
 
 // T2WMLLogo
 import { Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -18,7 +20,7 @@ class T2WMLLogo extends React.Component<{}, T2WMLLogoState> {
 
     // init state
     this.state = {
-      logo: "T2WML GUI",
+      logo: "T2WML",
       version: `version ${Config.version}`,
       homeUrl: "/",
     }
@@ -38,6 +40,7 @@ class T2WMLLogo extends React.Component<{}, T2WMLLogoState> {
       <span>
         <OverlayTrigger overlay={logoTooltipHtml} placement="bottom" trigger={["hover", "focus"]}>
           <Navbar.Brand className="pl-2" style={{ cursor: "pointer", fontWeight: "bold" }} onClick={() => { wikiStore.displayMode = 'project-list' }}>
+            <img src={logoImage} />
             {logo}
           </Navbar.Brand>
         </OverlayTrigger>

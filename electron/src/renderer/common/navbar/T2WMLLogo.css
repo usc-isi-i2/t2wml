@@ -1,0 +1,6 @@
+img {
+    max-height: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 45px; /* TODO: This needs to be removed, size should be decided by css */
+}

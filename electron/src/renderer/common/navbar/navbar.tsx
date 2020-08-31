@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import { Navbar } from 'react-bootstrap';
-
-
 import T2WMLLogo from './T2WMLLogo';
-import { ipcRenderer } from "electron";
+
 
 interface NavbarProperteis {
   showSettings?: boolean;
