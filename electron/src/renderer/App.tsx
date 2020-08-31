@@ -107,7 +107,9 @@ class App extends Component<{}, {}> {
       // follow-ups (failure)
       this.setState({ showLoadProject: false, showSpinner: false });
     }
-  }  render() {
+  }  
+  
+  render() {
     return (
       <div>
         { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project id={wikiStore.project.pid }/> }
