@@ -6,19 +6,24 @@ import { ConfigManager } from './config';
 const config = new ConfigManager();
 
 export default class MainMenuManager {
+    private recentlyUsed: MenuItemConstructorOptions[] = [];
+
     constructor(private mainWindow: BrowserWindow) { }
 
-    // Main menu adapted from https://www.electronjs.org/docs/api/menu
+    public setMainMenu() {
+        const menu = this.buildMainMenu();
+        Menu.setApplicationMenu(menu);
+    }
 
-    buildMainMenu() {
+    private buildMainMenu() { // TODO: Add a Settings parameter (to get the recently opened entries)
         const macAppleMenu: MenuItemConstructorOptions = {
             label: 't2wml',
             submenu: [
-            { role: 'hide' },
-            { role: 'hideothers' },
-            { role: 'unhide' },
-            { type: 'separator' },
-            { role: 'quit' }
+                { role: 'hide' },
+                { role: 'hideothers' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                { role: 'quit' }
             ]
         };
         
@@ -29,7 +34,7 @@ export default class MainMenuManager {
                     { label: 'New Project...', accelerator: 'CmdOrCtrl+N', click: this.onNewProjectClick.bind(this) },
                     { label: 'Open Project...', accelerator: 'CmdOrCtrl+O', click: this.onOpenProjectClick.bind(this) },
                     { type: 'separator'},
-                    { label: 'Open Recent', submenu: [] },
+                    { label: 'Open Recent', submenu: this.recentlyUsed },  // Move the 
                     { type: 'separator'},
                     config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
                 ]
@@ -73,8 +78,7 @@ export default class MainMenuManager {
         return menu;
     }
 
-    /* Menu event handlers */
-    onNewProjectClick() {
+    private onNewProjectClick() {
         const folders = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
                 properties: ['openDirectory', 'createDirectory']
@@ -85,7 +89,7 @@ export default class MainMenuManager {
         }
     }
 
-    onOpenProjectClick() {
+    private onOpenProjectClick() {
         const folders = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
                 properties: ['openDirectory']
@@ -97,7 +101,5 @@ export default class MainMenuManager {
     }
 
     // For later:
-    // Keep the recently open submenu in a property that can be updated
     // Fill the recently open submenu from the settings
-    // In main.ts, listen to the 'show-project' event, update the settings and the menu
 }

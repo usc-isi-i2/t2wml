@@ -40,7 +40,7 @@ function openSplashScreen(): void {
 
 /* Main Window */
 let mainWindow: Electron.BrowserWindow | null;
-
+let mainMenuManager: MainMenuManager | null;
 
 
 function createMainWindow(): void {
@@ -60,11 +60,10 @@ function createMainWindow(): void {
         })
     );
 
-    const mainMenuManager = new MainMenuManager(mainWindow);
 
     mainWindow.once('ready-to-show', () => {
-        const menu = mainMenuManager.buildMainMenu();
-        Menu.setApplicationMenu(menu);
+        mainMenuManager = new MainMenuManager(mainWindow!);
+        mainMenuManager.setMainMenu();
         mainWindow!.show();
         splashWindow!.close();
         splashWindow = null;
@@ -76,6 +75,11 @@ function createMainWindow(): void {
     });
 }
 
+/* Settings */
+// TODO: Create an instance of the Settings class (make it public)
+// Hook into the 'show-project' event:
+// 1. Update the settings class when receiving the event.
+// 2. Call the menu manager's set main menu method
 
 /* Backend Initialization */
 let backendProcess: ChildProcess | null;
@@ -160,7 +164,7 @@ async function initApp(): Promise<void> {
     initBackend();
     await waitForBackend();
     
-    createMainWindow();  // WIll close the splash window
+    createMainWindow();  // Will close the splash window
 }
 
 if (config.mode !== 'prod') {
