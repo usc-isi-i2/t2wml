@@ -1,6 +1,13 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.3.3:
+-------------------------
+* Full Electron executable, serving pages without an intermediate frontend
+* File | Open and File | New operations
+* Better support for project files, and mapping projects to directories
+* Icons!
+
 Changes in version 2.2.0:
 -------------------------
 * t2wml-api version 0.0.8

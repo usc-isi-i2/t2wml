@@ -44,7 +44,7 @@ const commonConfig = {
         loader: 'file-loader',
         options: {
           name: '[path][name].[ext]',
-          outputPath: 'images',
+          outputPath: 'resources',
         },
       },
     ],

@@ -14,7 +14,7 @@ class T2wmlNavbar extends Component<NavbarProperteis> {
     return (
       <div>
         {/* navbar */}
-        <Navbar className="shadow" bg="dark" variant="dark" style={{ height: "50px" }}>
+        <Navbar className="shadow" bg="dark" variant="dark" style={{ height: "50px" }}> { /* Move to Navbar.css */ }
 
             {/* logo */}
             <T2WMLLogo />
