@@ -1,7 +1,7 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import treeKill from 'tree-kill';
@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import { spawn, ChildProcess } from 'child_process';
 import axios from 'axios';
 import { ConfigManager } from './config';
+import MainMenuManager from './menu';
 
 const config = new ConfigManager();
 
@@ -40,70 +41,6 @@ function openSplashScreen(): void {
 /* Main Window */
 let mainWindow: Electron.BrowserWindow | null;
 
-// Main menu adapted from https://www.electronjs.org/docs/api/menu
-
-function buildMainMenu() {
-    const macAppleMenu: MenuItemConstructorOptions = {
-        label: 't2wml',
-        submenu: [
-          { role: 'hide' },
-          { role: 'hideothers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' }
-        ]
-    };
-    
-    const mainMenuTemplate: MenuItemConstructorOptions[] = [
-        {
-            label: 'File',
-            submenu: [
-                { label: 'New Project...', accelerator: 'CmdOrCtrl+N', click: onNewProjectClick },
-                { label: 'Open Project...', accelerator: 'CmdOrCtrl+O', click: onOpenProjectClick },
-                { type: 'separator'},
-                { label: 'Open Recent', submenu: [] },
-                { type: 'separator'},
-                config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
-            ]
-        },
-        {
-            label: 'Edit',
-            submenu: [
-                { role: 'undo' },
-                { role: 'redo' },
-                { type: 'separator' },
-                { role: 'cut' },
-                { role: 'copy' },
-                { role: 'paste' },
-            ]
-        },
-        {
-            label: 'View',
-            submenu: [
-                { role: 'zoomin' },
-                { role: 'zoomout' },
-                { role: 'resetzoom' },
-                { type: 'separator' },
-                { role: 'togglefullscreen' }
-              ]
-        },
-        {
-            label: 'Debug',
-            submenu: [
-                { role: 'reload' },
-                { role: 'forcereload' },
-                { role: 'toggledevtools' },
-              ]
-        },
-    ]
-
-    if (config.platform === 'mac') {
-        mainMenuTemplate.unshift(macAppleMenu);
-    }
-
-    const menu = Menu.buildFromTemplate(mainMenuTemplate);
-    return menu;
-}
 
 
 function createMainWindow(): void {
@@ -123,8 +60,10 @@ function createMainWindow(): void {
         })
     );
 
+    const mainMenuManager = new MainMenuManager(mainWindow);
+
     mainWindow.once('ready-to-show', () => {
-        const menu = buildMainMenu();
+        const menu = mainMenuManager.buildMainMenu();
         Menu.setApplicationMenu(menu);
         mainWindow!.show();
         splashWindow!.close();
@@ -247,28 +186,6 @@ app.on('activate', () => {
     }
 });
 
-/* Menu event handlers */
-function onNewProjectClick() {
-    const folders = dialog.showOpenDialog( mainWindow!, {
-            title: "Open Project Folder",
-            properties: ['openDirectory', 'createDirectory']
-        });
-
-    if (folders) {
-        mainWindow!.webContents.send('new-project', folders[0]);
-    }
-}
-
-function onOpenProjectClick() {
-    const folders = dialog.showOpenDialog( mainWindow!, {
-            title: "Open Project Folder",
-            properties: ['openDirectory']
-        });
-
-    if (folders) {
-        mainWindow!.webContents.send('open-project', folders[0]);
-    }
-}
 
 /* Shutting down */
 app.on('will-quit', (event) => {
