@@ -82,7 +82,7 @@ def create_project():
     response = dict()
     directory = request.form['path']
     #check we're not overwriting existing project
-    project_file = Path(directory) / "t2wmlproj.yaml"
+    project_file = Path(directory) / ".t2wmlproj"
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(directory)
     #create project

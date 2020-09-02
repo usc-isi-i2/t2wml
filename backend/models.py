@@ -165,7 +165,7 @@ class Project(db.Model):
         return proj
     
     def get_api_project(self):
-        proj_path=os.path.join(self.directory, "t2wmlproj.yaml")
+        proj_path=os.path.join(self.directory, ".t2wmlproj")
         if os.path.isfile(proj_path):
             return apiProject.load(proj_path)
         return self.create_project_file()
