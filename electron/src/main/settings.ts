@@ -2,13 +2,43 @@
 import * as os from 'os';
 import * as fs from 'fs';
 
-// Settings will be stored in 
-// os.homedir()/.t2wml/gui-settings.json
-// use path.join to join the files
-
 interface AppSettings {
     recentlyUsed: string[];
 }
+
+// Settings stored here 
+const file = `${os.homedir()}/.t2wml/gui-settings.json`;
+
+class Settings implements AppSettings {
+    recentlyUsed: string[];
+
+    constructor() {
+        const content = fs.readFileSync(file, {encoding: 'utf8'});
+        console.log(content)
+        this.recentlyUsed = [];
+        if (content) {
+            this.recentlyUsed = JSON.parse(content);
+        }
+    }
+
+    saveSettings() {
+        // use path.join to join the files -
+        // todo- what is the file?
+        fs.writeFileSync(file, JSON.stringify(this.recentlyUsed))
+    }
+
+    addRecentlyUsed(folder: string) {
+        const index = this.recentlyUsed.indexOf(folder);
+        if (index > -1) {
+            this.recentlyUsed.splice(index, 1);
+        }
+        this.recentlyUsed.unshift(folder);
+
+        this.saveSettings();
+    }
+}
+
+export default Settings;
 
 // TODO:
 // 1. Create a Settings class, implementing AppSettings.

@@ -32,8 +32,10 @@ class App extends Component<{}, {}> {
   }
   
   onOpenProject(folder: string) {
-    console.log('Opening project from folder ', folder);
-    this.handleOpenProject(folder);
+    ipcRenderer.send('show-project', folder);
+
+    // console.log('Opening project from folder ', folder);
+    // this.handleOpenProject(folder);
   }
 
   async handleNewProject(folder: string) {

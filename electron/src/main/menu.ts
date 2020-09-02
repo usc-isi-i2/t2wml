@@ -6,7 +6,7 @@ import { ConfigManager } from './config';
 const config = new ConfigManager();
 
 export default class MainMenuManager {
-    private recentlyUsed: MenuItemConstructorOptions[] = [];
+    private recentlyUsed: MenuItemConstructorOptions[] = []; // todo- get values
 
     constructor(private mainWindow: BrowserWindow) { }
 
