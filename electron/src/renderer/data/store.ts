@@ -1,4 +1,5 @@
 import { observable } from 'mobx';
+import { ipcRenderer } from 'electron';
 
 class ProjectState {
     @observable public pid: string;
@@ -103,15 +104,17 @@ class WikiStore {
     @observable public yaml = new YamlEditorState();
     @observable public displayMode: DisplayMode = 'project-list';
 
-    // TODO: Add a function that changes the current project:
-    // public changeProject(pid?: string, path?: string)
-    // If pid is not null, set displayMode to 'project' and set this.project.pid to pid.
-    // If pid is null, set displayMode to 'project-list'
-    // Notify the main process that a new project is shown:
-    // ipcRenderer.send('show-project', path)  <--- do this only if pid *And* path are not undefined
-    //
-    // Change all the code in the renderer, that will call this function instead of setting project.pid and project.displayMode
-    //
+    public changeProject(pid?: string, path?: string) {
+        if (pid) {
+            this.displayMode = 'project';
+            this.project.pid = pid;
+            if (path) {
+                ipcRenderer.send('show-project', path)
+            }
+        } else {
+            this.displayMode = 'project-list';
+        }
+    }
 }
 
 

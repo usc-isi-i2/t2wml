@@ -32,7 +32,6 @@ class App extends Component<{}, {}> {
   }
   
   onOpenProject(folder: string) {
-    // ipcRenderer.send('show-project', folder);
     console.log('Opening project from folder ', folder);
     this.handleOpenProject(folder);
   }
@@ -55,8 +54,7 @@ class App extends Component<{}, {}> {
       // do something here
       if (response["pid"]) {
         // success
-        wikiStore.displayMode = 'project';
-        wikiStore.project.pid = response.pid;
+        wikiStore.changeProject(response.pid, folder);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -91,8 +89,7 @@ class App extends Component<{}, {}> {
 
       // do something here
       if (response.pid) {
-        wikiStore.displayMode = 'project';
-        wikiStore.project.pid = response.pid;
+        wikiStore.changeProject(response.pid, folder);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");

@@ -9,11 +9,10 @@ const config = new ConfigManager();
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
 
-    constructor(private mainWindow: BrowserWindow, private settings: Settings) { 
-        this.fillRecentlyUsed();
-    }
+    constructor(private mainWindow: BrowserWindow, private settings: Settings) { }
 
     public setMainMenu() {
+        this.fillRecentlyUsed();
         const menu = this.buildMainMenu();
         Menu.setApplicationMenu(menu);
     }
@@ -125,7 +124,6 @@ export default class MainMenuManager {
     private onClearRecentlyOpenedClick() {
         this.settings.recentlyUsed = [];
         this.settings.saveSettings();
-        this.fillRecentlyUsed();
         this.setMainMenu();
     }
 }
