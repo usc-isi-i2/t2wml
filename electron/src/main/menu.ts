@@ -2,14 +2,16 @@
 import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electron';
 
 import { ConfigManager } from './config';
+import Settings from './settings';
 
 const config = new ConfigManager();
 
 export default class MainMenuManager {
-    private recentlyUsed: MenuItemConstructorOptions[] = []; // todo- get values
+    private recentlyUsed: MenuItemConstructorOptions[] = [];
 
-    // TODO: pass the settings
-    constructor(private mainWindow: BrowserWindow) { }
+    constructor(private mainWindow: BrowserWindow, private settings: Settings) { 
+        this.fillRecentlyUsed();
+    }
 
     public setMainMenu() {
         const menu = this.buildMainMenu();
@@ -28,7 +30,6 @@ export default class MainMenuManager {
             ]
         };
         
-        this.fillRecentlyUsed();
         const mainMenuTemplate: MenuItemConstructorOptions[] = [
             {
                 label: 'File',
@@ -36,7 +37,7 @@ export default class MainMenuManager {
                     { label: 'New Project...', accelerator: 'CmdOrCtrl+N', click: this.onNewProjectClick.bind(this) },
                     { label: 'Open Project...', accelerator: 'CmdOrCtrl+O', click: this.onOpenProjectClick.bind(this) },
                     { type: 'separator'},
-                    { label: 'Open Recent', submenu: this.recentlyUsed },  // Move the 
+                    { label: 'Open Recent', submenu: this.recentlyUsed },
                     { type: 'separator'},
                     config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
                 ]
@@ -81,11 +82,18 @@ export default class MainMenuManager {
     }
 
     private fillRecentlyUsed() {
-        // Create the following item for each renctlyused entry:
-        // label is the path, click event calls onOpenRecentProjectClick with one argument - the path
-        //
-        // After all the entries, add a separator ({ type: 'separator' }) and one last entry: 
-        // Clear Recently Opened which will call onClearRecentlyOpened()
+        let subMenu = [];
+        for (const path of this.settings.recentlyUsed) {
+            subMenu.push({ label: path, click: this.onOpenRecentProjectClick.bind(this, path) });
+        }
+        subMenu = [
+            ...subMenu,
+            { type: 'separator' },
+            { label: 'Clear Recently Opened', click: this.onClearRecentlyOpenedClick.bind(this) }
+        ];
+
+        this.recentlyUsed = subMenu as MenuItemConstructorOptions[];
+        console.log("recently used=", this.recentlyUsed);
     }
 
     private onNewProjectClick() {
@@ -115,9 +123,9 @@ export default class MainMenuManager {
     }
 
     private onClearRecentlyOpenedClick() {
-        // Clear the settings recently used, save and rebuild the menu.
+        this.settings.recentlyUsed = [];
+        this.settings.saveSettings();
+        this.fillRecentlyUsed();
+        this.setMainMenu();
     }
-
-    // For later:
-    // Fill the recently open submenu from the settings
 }

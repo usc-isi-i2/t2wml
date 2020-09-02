@@ -13,18 +13,19 @@ class Settings implements AppSettings {
     recentlyUsed: string[] = [];
 
     constructor() {
-        // TODO: Wrap with try/catch, if the file doen't exist, don't change the defaults
-        const content = fs.readFileSync(file, {encoding: 'utf8'});
-        if (content) {
-            const contentObj: any = JSON.parse(content);
-            this.recentlyUsed = contentObj.recentlyUsed || [];
+        try {
+            const content = fs.readFileSync(file, {encoding: 'utf8'});
+            if (content) {
+                const contentObj: any = JSON.parse(content);
+                this.recentlyUsed = contentObj.recentlyUsed || [];
+            }
+        } catch {
+            // If the file doen't exist, don't change the defaults
         }
     }
 
     saveSettings() {
-        // use path.join to join the files -
-        // todo- what is the file?
-        fs.writeFileSync(file, JSON.stringify(this.recentlyUsed))
+        fs.writeFileSync(file, JSON.stringify({recentlyUsed: this.recentlyUsed}));
     }
 
     addRecentlyUsed(folder: string) {
@@ -39,14 +40,3 @@ class Settings implements AppSettings {
 }
 
 export default Settings;
-
-// TODO:
-// 1. Create a Settings class, implementing AppSettings.
-//    in the constructor read the settings from the gui-settings.json file (if it doesn't exist, use reasonable defaults)
-//    fs.readFileSync(file, [encoding]); // 'utf-8' is the encoding
-// 2. Add a save method that saves the settings to the file
-//    fs.writeFileSync(file, text);
-// 3. Add a function called addRecentlyUsed(folder: string)
-//    This function will add the folder to the beginning of recentlyUsed. If the folder is already in
-//    recentlyUsed ('b' is called, and 'a' 'b' 'c' is in the list), move it to the top (result will be 'b' 'a' 'c')
-//    and also calls save()

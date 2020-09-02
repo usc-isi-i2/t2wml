@@ -1,6 +1,6 @@
 data_files:
 - fertilizer.xlsx
-directory: C:\Users\devora\C_sources\pedro\t2wml\backend\tests\files_for_tests\empty_cells
+directory: C:\Users\Talya\Sources\t2wml-root\t2wml\backend\tests\files_for_tests\empty_cells
 item_files:
 - item_definitions.tsv
 property_files:

@@ -39,6 +39,18 @@ function openSplashScreen(): void {
     });
 }
 
+/* Settings */
+const settings = new Settings();
+    
+// Hook into the 'show-project' event:
+// 1. Update the settings class when receiving the event.
+// 2. Call the menu manager's set main menu method
+
+ipcMain.on('show-project', (sender: EventEmitter, folder: string) => {
+    settings.addRecentlyUsed(folder);
+    mainMenuManager!.setMainMenu();
+});
+
 /* Main Window */
 let mainWindow: Electron.BrowserWindow | null;
 let mainMenuManager: MainMenuManager | null;
@@ -63,7 +75,7 @@ function createMainWindow(): void {
 
 
     mainWindow.once('ready-to-show', () => {
-        mainMenuManager = new MainMenuManager(mainWindow!);
+        mainMenuManager = new MainMenuManager(mainWindow!, settings);
         mainMenuManager.setMainMenu();
         mainWindow!.show();
         splashWindow!.close();
@@ -76,18 +88,6 @@ function createMainWindow(): void {
     });
 }
 
-/* Settings */
-const settings = new Settings();
-    
-// TODO: Create an instance of the Settings class (make it public)
-// Hook into the 'show-project' event:
-// 1. Update the settings class when receiving the event.
-// 2. Call the menu manager's set main menu method
-
-ipcMain.on('show-project', (sender: EventEmitter, folder: string) => {
-    settings.addRecentlyUsed(folder);
-    mainMenuManager!.setMainMenu();
-});
 
 /* Backend Initialization */
 let backendProcess: ChildProcess | null;
