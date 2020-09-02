@@ -8,6 +8,7 @@ const config = new ConfigManager();
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = []; // todo- get values
 
+    // TODO: pass the settings
     constructor(private mainWindow: BrowserWindow) { }
 
     public setMainMenu() {
@@ -15,7 +16,7 @@ export default class MainMenuManager {
         Menu.setApplicationMenu(menu);
     }
 
-    private buildMainMenu() { // TODO: Add a Settings parameter (to get the recently opened entries)
+    private buildMainMenu() {
         const macAppleMenu: MenuItemConstructorOptions = {
             label: 't2wml',
             submenu: [
@@ -27,6 +28,7 @@ export default class MainMenuManager {
             ]
         };
         
+        this.fillRecentlyUsed();
         const mainMenuTemplate: MenuItemConstructorOptions[] = [
             {
                 label: 'File',
@@ -78,6 +80,14 @@ export default class MainMenuManager {
         return menu;
     }
 
+    private fillRecentlyUsed() {
+        // Create the following item for each renctlyused entry:
+        // label is the path, click event calls onOpenRecentProjectClick with one argument - the path
+        //
+        // After all the entries, add a separator ({ type: 'separator' }) and one last entry: 
+        // Clear Recently Opened which will call onClearRecentlyOpened()
+    }
+
     private onNewProjectClick() {
         const folders = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
@@ -98,6 +108,14 @@ export default class MainMenuManager {
         if (folders) {
             this.mainWindow!.webContents.send('open-project', folders[0]);
         }
+    }
+
+    private onOpenRecentProjectClick(folder: string) {
+        this.mainWindow!.webContents.send('open-project', folder);
+    }
+
+    private onClearRecentlyOpenedClick() {
+        // Clear the settings recently used, save and rebuild the menu.
     }
 
     // For later:

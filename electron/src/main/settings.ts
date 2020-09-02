@@ -10,14 +10,14 @@ interface AppSettings {
 const file = `${os.homedir()}/.t2wml/gui-settings.json`;
 
 class Settings implements AppSettings {
-    recentlyUsed: string[];
+    recentlyUsed: string[] = [];
 
     constructor() {
+        // TODO: Wrap with try/catch, if the file doen't exist, don't change the defaults
         const content = fs.readFileSync(file, {encoding: 'utf8'});
-        console.log(content)
-        this.recentlyUsed = [];
         if (content) {
-            this.recentlyUsed = JSON.parse(content);
+            const contentObj: any = JSON.parse(content);
+            this.recentlyUsed = contentObj.recentlyUsed || [];
         }
     }
 
