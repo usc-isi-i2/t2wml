@@ -4,7 +4,7 @@ import pytest
 import json
 
 from flask_migrate import upgrade
-from application import app
+from backend.application import app
 
 BACKEND_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 

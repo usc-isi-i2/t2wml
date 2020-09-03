@@ -5,10 +5,10 @@ from collections import defaultdict
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.api import Sheet, KnowledgeGraph, Wikifier, WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
-from caching import CacheHolder
-from app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
-from wikidata_models import DatabaseProvider
-from utils import get_labels_and_descriptions
+from backend.caching import CacheHolder
+from backend.app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
+from backend.wikidata_models import DatabaseProvider
+from backend.utils import get_labels_and_descriptions
 
 
 def wikify(region, data_sheet, context):

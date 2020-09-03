@@ -1,5 +1,5 @@
 from sqlalchemy.exc import IntegrityError
-from app_config import db
+from backend.app_config import db
 
 
 class ValueAlreadyPresentError(ValueError):
