@@ -40,29 +40,13 @@ class Project(db.Model):
         return '<Project {}: {}>'.format(self.name, self.id)
 
     def rename(self, new_name):
-        old_folder=get_project_folder(self)
-        new_folder=get_project_folder(self, new_name)
-        if new_folder.exists():
-            raise ValueError("project with that name and ID already exists")
-        old_folder.rename(new_folder)
-        
         self.name=new_name
-        self.file_directory=str(new_folder)
         self.modify()
         self.api_project.title=new_name
-        self.api_project.directory=self.directory
         self.api_project.save()
 
     @property
     def directory(self):
-        if self.file_directory is None:
-            p = get_project_folder(self)
-            if not p.is_dir():
-                raise ValueError("Project directory was never created")
-
-            #save for the future
-            self.file_directory=str(p)
-            db.session.commit()
         return self.file_directory
 
     @staticmethod
@@ -107,7 +91,9 @@ class Project(db.Model):
     def load(api_proj):
         name=api_proj.title
         file_directory=api_proj.directory
-        project=Project(name=name, file_directory=file_directory)
+        sparql_endpoint=api_proj.sparql_endpoint
+        warn_for_empty_cells=api_proj.warn_for_empty_cells
+        project=Project(name=name, file_directory=file_directory, sparql_endpoint=sparql_endpoint,  warn_for_empty_cells=warn_for_empty_cells)
 
         if len(api_proj.data_files)>1:
             print("WARNING: projects with more than one data file not yet supported. will use last-added data file")
@@ -143,7 +129,7 @@ class Project(db.Model):
         return project
 
     def create_project_file(self):
-        proj=apiProject(self.directory, self.name)
+        proj=apiProject(self.directory, self.name, sparql_endpoint=self.sparql_endpoint, warn_for_empty_cells=self.warn_for_empty_cells)
         if self.current_file:
             proj.add_data_file(self.current_file.relative_path)
             for sheet in self.current_file.sheets:
@@ -177,6 +163,31 @@ class Project(db.Model):
         except AttributeError:
             self._api_proj=self.get_api_project()
             return self._api_proj
+    
+    @staticmethod
+    def get(pid):
+        project = Project.query.get(pid)
+        if not project:
+            raise ValueError("Not found")
+        if project.file_directory is None:
+            p = get_project_folder(project)
+            if not p.is_dir():
+                raise ValueError("Project directory was never created")
+            #save for the future
+            project.file_directory=str(p)
+            db.session.commit()
+        return project
+    
+    def update_settings(self, settings):
+        endpoint = settings.get("endpoint", None)
+        if endpoint:
+            self.sparql_endpoint = endpoint
+        warn = settings.get("warnEmpty", None)
+        if warn is not None:
+            self.warn_for_empty_cells=warn.lower()=='true'
+        self.api_project=self.get_api_project()
+        self.api_project.save()
+        self.modify()
 
 class SavedFile(db.Model):
     sub_folder = ""

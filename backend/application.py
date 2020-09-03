@@ -25,13 +25,10 @@ debug_mode = False
 
 def get_project(project_id):
     try:
-        project = Project.query.get(project_id)
-        if not project:
-            raise ValueError("Not found")
+        project=Project.get(project_id)
     except Exception as e:
         raise web_exceptions.ProjectNotFoundException
     update_t2wml_settings(project)
-    api_proj=project.api_project
     return project
         
 
@@ -394,7 +391,7 @@ def rename_project(pid):
     return data, 200
 
 
-@app.route('/api/project/<pid>/settings', methods=['PUT'])
+@app.route('/api/project/<pid>/settings', methods=['PUT', 'GET'])
 @json_response
 def update_settings(pid):
     """
@@ -402,35 +399,13 @@ def update_settings(pid):
     :return:
     """
     project = get_project(pid)
-    endpoint = request.form.get("endpoint", None)
-    if endpoint:
-        project.sparql_endpoint = endpoint
-    warn = request.form.get("warnEmpty", None)
-    if warn is not None:
-        project.warn_for_empty_cells=request.form["warnEmpty"].lower()=='true'
-    project.modify()
+    project.update_settings(request.form)
     update_t2wml_settings(project)
     response = {
         "endpoint":project.sparql_endpoint,
         "warnEmpty":project.warn_for_empty_cells
     }
     return response, 200 
-
-
-@app.route('/api/project/<pid>/settings', methods=['GET'])
-@json_response
-def get_settings(pid):
-    """
-    This function updates the settings from GUI
-    :return:
-    """
-    project = get_project(pid)
-    response = {
-        "endpoint":project.sparql_endpoint,
-        "warnEmpty":project.warn_for_empty_cells
-    }
-    return response, 200 
-
 
 
 
