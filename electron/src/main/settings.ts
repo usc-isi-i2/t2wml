@@ -2,21 +2,41 @@
 import * as os from 'os';
 import * as fs from 'fs';
 
-// Settings will be stored in 
-// os.homedir()/.t2wml/gui-settings.json
-// use path.join to join the files
-
 interface AppSettings {
     recentlyUsed: string[];
 }
 
-// TODO:
-// 1. Create a Settings class, implementing AppSettings.
-//    in the constructor read the settings from the gui-settings.json file (if it doesn't exist, use reasonable defaults)
-//    fs.readFileSync(file, [encoding]); // 'utf-8' is the encoding
-// 2. Add a save method that saves the settings to the file
-//    fs.writeFileSync(file, text);
-// 3. Add a function called addRecentlyUsed(folder: string)
-//    This function will add the folder to the beginning of recentlyUsed. If the folder is already in
-//    recentlyUsed ('b' is called, and 'a' 'b' 'c' is in the list), move it to the top (result will be 'b' 'a' 'c')
-//    and also calls save()
+// Settings stored here 
+const file = `${os.homedir()}/.t2wml/gui-settings.json`;
+
+class Settings implements AppSettings {
+    recentlyUsed: string[] = [];
+
+    constructor() {
+        try {
+            const content = fs.readFileSync(file, {encoding: 'utf8'});
+            if (content) {
+                const contentObj: any = JSON.parse(content);
+                this.recentlyUsed = contentObj.recentlyUsed || [];
+            }
+        } catch {
+            // If the file doen't exist, don't change the defaults
+        }
+    }
+
+    saveSettings() {
+        fs.writeFileSync(file, JSON.stringify({recentlyUsed: this.recentlyUsed}));
+    }
+
+    addRecentlyUsed(folder: string) {
+        const index = this.recentlyUsed.indexOf(folder);
+        if (index > -1) {
+            this.recentlyUsed.splice(index, 1);
+        }
+        this.recentlyUsed.unshift(folder);
+
+        this.saveSettings();
+    }
+}
+
+export default Settings;

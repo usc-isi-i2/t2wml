@@ -54,8 +54,7 @@ class App extends Component<{}, {}> {
       // do something here
       if (response["pid"]) {
         // success
-        wikiStore.displayMode = 'project';
-        wikiStore.project.pid = response.pid;
+        wikiStore.changeProject(response.pid, folder);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -90,8 +89,7 @@ class App extends Component<{}, {}> {
 
       // do something here
       if (response.pid) {
-        wikiStore.displayMode = 'project';
-        wikiStore.project.pid = response.pid;
+        wikiStore.changeProject(response.pid, folder);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");

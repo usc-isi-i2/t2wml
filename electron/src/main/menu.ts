@@ -2,20 +2,22 @@
 import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electron';
 
 import { ConfigManager } from './config';
+import Settings from './settings';
 
 const config = new ConfigManager();
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
 
-    constructor(private mainWindow: BrowserWindow) { }
+    constructor(private mainWindow: BrowserWindow, private settings: Settings) { }
 
     public setMainMenu() {
+        this.fillRecentlyUsed();
         const menu = this.buildMainMenu();
         Menu.setApplicationMenu(menu);
     }
 
-    private buildMainMenu() { // TODO: Add a Settings parameter (to get the recently opened entries)
+    private buildMainMenu() {
         const macAppleMenu: MenuItemConstructorOptions = {
             label: 't2wml',
             submenu: [
@@ -34,7 +36,7 @@ export default class MainMenuManager {
                     { label: 'New Project...', accelerator: 'CmdOrCtrl+N', click: this.onNewProjectClick.bind(this) },
                     { label: 'Open Project...', accelerator: 'CmdOrCtrl+O', click: this.onOpenProjectClick.bind(this) },
                     { type: 'separator'},
-                    { label: 'Open Recent', submenu: this.recentlyUsed },  // Move the 
+                    { label: 'Open Recent', submenu: this.recentlyUsed },
                     { type: 'separator'},
                     config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
                 ]
@@ -78,6 +80,21 @@ export default class MainMenuManager {
         return menu;
     }
 
+    private fillRecentlyUsed() {
+        let subMenu = [];
+        for (const path of this.settings.recentlyUsed) {
+            subMenu.push({ label: path, click: this.onOpenRecentProjectClick.bind(this, path) });
+        }
+        subMenu = [
+            ...subMenu,
+            { type: 'separator' },
+            { label: 'Clear Recently Opened', click: this.onClearRecentlyOpenedClick.bind(this) }
+        ];
+
+        this.recentlyUsed = subMenu as MenuItemConstructorOptions[];
+        console.log("recently used=", this.recentlyUsed);
+    }
+
     private onNewProjectClick() {
         const folders = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
@@ -100,6 +117,13 @@ export default class MainMenuManager {
         }
     }
 
-    // For later:
-    // Fill the recently open submenu from the settings
+    private onOpenRecentProjectClick(folder: string) {
+        this.mainWindow!.webContents.send('open-project', folder);
+    }
+
+    private onClearRecentlyOpenedClick() {
+        this.settings.recentlyUsed = [];
+        this.settings.saveSettings();
+        this.setMainMenu();
+    }
 }

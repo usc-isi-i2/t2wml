@@ -153,8 +153,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       // do something here
       if (json.pid) {
         // success
-        wikiStore.displayMode = 'project';
-        wikiStore.project.pid = json.pid;
+        wikiStore.changeProject(json.pid);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -193,8 +192,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       // do something here
       if (json.pid) {
         // success
-        wikiStore.displayMode = 'project';
-        wikiStore.project.pid = json.pid;
+        wikiStore.changeProject(json.pid, path);
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request");
@@ -406,8 +404,7 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
   projectClicked(pid: string) {
-    wikiStore.project.pid = pid; // Is it needed?
-    wikiStore.displayMode = 'project';
+    wikiStore.changeProject(pid);
   }
 
   renderProjects() {
