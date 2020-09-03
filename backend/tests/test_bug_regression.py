@@ -9,7 +9,7 @@ def test_switching_back_to_sheets(client):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
 
 
-    pid=create_project(client, "Regression test- switching sheets")
+    pid=create_project(client)
     load_data_file(client, pid, os.path.join(files_dir, "homicide_report_total_and_sex.xlsx"))
 
 

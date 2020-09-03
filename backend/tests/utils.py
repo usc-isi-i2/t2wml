@@ -2,7 +2,7 @@ import tempfile
 import os
 import pytest
 import json
-
+from uuid import uuid4
 from flask_migrate import upgrade
 from backend.application import app
 
@@ -74,12 +74,15 @@ def sanitize_highlight_region(dict_1, dict_2):
     return set_keys
 
 
-def create_project(client, title):
+def create_project(client):
+    path=os.path.join(os.path.dirname(__file__), "project_dirs", str(uuid4()))
+    os.makedirs(path)
     response=client.post('/api/project',
         data=dict(
-            ptitle=title
+            path=path
         )
     )
+    assert response.status_code==201
     data = response.data.decode("utf-8")
     data = json.loads(data)
     pid=str(data['pid'])

@@ -1,0 +1,11 @@
+data_files: []
+directory: C:\Users\devora\C_sources\pedro\t2wml\backend\tests\files_for_tests\empty_cells
+item_files: []
+property_files: []
+sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
+specific_wikifiers: {}
+title: empty_cells
+warn_for_empty_cells: true
+wikifier_files: []
+yaml_files: []
+yaml_sheet_associations: {}

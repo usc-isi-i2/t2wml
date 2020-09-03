@@ -185,7 +185,7 @@ class Project(db.Model):
         warn = settings.get("warnEmpty", None)
         if warn is not None:
             self.warn_for_empty_cells=warn.lower()=='true'
-        self.api_project=self.get_api_project()
+        self.create_project_file()
         self.api_project.save()
         self.modify()
 

@@ -15,8 +15,6 @@ if not os.path.exists(DATADIR):
     os.makedirs(DATADIR)
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
-#if BASEDIR not in sys.path:
-#    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
 UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
 CACHE_FOLDER=os.path.join(DATADIR, "cache")
