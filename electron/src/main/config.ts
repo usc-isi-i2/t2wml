@@ -44,12 +44,6 @@ export class ConfigManager implements AppConfig {
         
         this.backend = 'http://localhost:13000/';
         this.defaultSparqlEndpoint ="https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql"
-
-        ipcMain.on('get-config', (event: any) => this.getConfig(event));
-    }
-
-    private getConfig(event: any) {
-        event.returnValue = this;
     }
 }
 
