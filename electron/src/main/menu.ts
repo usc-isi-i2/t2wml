@@ -1,15 +1,13 @@
 // Manage the main menu
 import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electron';
 
-import { ConfigManager } from './config';
-import Settings from './settings';
-
-const config = new ConfigManager();
+import { config } from './config';
+import { settings } from './settings';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
 
-    constructor(private mainWindow: BrowserWindow, private settings: Settings) { }
+    constructor(private mainWindow: BrowserWindow) { }
 
     public setMainMenu() {
         this.fillRecentlyUsed();
@@ -82,7 +80,7 @@ export default class MainMenuManager {
 
     private fillRecentlyUsed() {
         let subMenu = [];
-        for (const path of this.settings.recentlyUsed) {
+        for (const path of settings.recentlyUsed) {
             subMenu.push({ label: path, click: this.onOpenRecentProjectClick.bind(this, path) });
         }
         subMenu = [
@@ -92,7 +90,6 @@ export default class MainMenuManager {
         ];
 
         this.recentlyUsed = subMenu as MenuItemConstructorOptions[];
-        console.log("recently used=", this.recentlyUsed);
     }
 
     private onNewProjectClick() {
@@ -122,8 +119,8 @@ export default class MainMenuManager {
     }
 
     private onClearRecentlyOpenedClick() {
-        this.settings.recentlyUsed = [];
-        this.settings.saveSettings();
+        settings.recentlyUsed = [];
+        settings.saveSettings();
         this.setMainMenu();
     }
 }

@@ -9,10 +9,19 @@ interface AppSettings {
 // Settings stored here 
 const file = `${os.homedir()}/.t2wml/gui-settings.json`;
 
-class Settings implements AppSettings {
+export class Settings implements AppSettings {
+    private static _instance?: Settings
+    public static get instance() {
+        if (!Settings._instance) {
+            Settings._instance = new Settings();
+        }
+
+        return Settings._instance;
+    }
+
     recentlyUsed: string[] = [];
 
-    constructor() {
+    private constructor() {
         try {
             const content = fs.readFileSync(file, {encoding: 'utf8'});
             if (content) {
@@ -39,4 +48,4 @@ class Settings implements AppSettings {
     }
 }
 
-export default Settings;
+export const settings = Settings.instance;
