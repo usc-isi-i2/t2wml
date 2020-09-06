@@ -1,3 +1,4 @@
+import os
 import csv
 import json
 import pandas as pd
@@ -187,13 +188,14 @@ def get_project_details():
     from models import Project
     projects = list()
     for project in Project.query.order_by(Project.modification_date.desc()).all():
-        project_detail = dict()
-        project_detail["pid"] = project.id
-        project_detail["directory"] = project.directory
-        project_detail["ptitle"] = project.name
-        project_detail["cdate"] = str(project.creation_date)
-        project_detail["mdate"] = str(project.modification_date)
-        projects.append(project_detail)
+        if os.path.isdir(project.directory):
+            project_detail = dict()
+            project_detail["pid"] = project.id
+            project_detail["directory"] = project.directory
+            project_detail["ptitle"] = project.name
+            project_detail["cdate"] = str(project.creation_date)
+            project_detail["mdate"] = str(project.modification_date)
+            projects.append(project_detail)
     return projects
 
 
