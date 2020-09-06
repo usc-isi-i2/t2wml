@@ -13,9 +13,7 @@ wikifier_files:
 - consolidated-wikifier.csv
 yaml_files:
 - t2wml.yaml
-- yf/Sheet1_id9.yaml
 yaml_sheet_associations:
   fertilizer.xlsx:
     Sheet1:
     - t2wml.yaml
-    - yf/Sheet1_id9.yaml
