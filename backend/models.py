@@ -5,8 +5,8 @@ from werkzeug.utils import secure_filename
 from t2wml.api import add_properties_from_file, SpreadsheetFile
 from t2wml.api import Project as apiProject
 
-from backend.utils import upload_item_defs
-from backend.app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
+from utils import upload_item_defs
+from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
 
 def get_project_folder(project, new_name=None):

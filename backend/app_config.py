@@ -64,8 +64,8 @@ metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(app, metadata=metadata)
 
-from backend.models import *
-from backend.wikidata_models import *
+from models import *
+from wikidata_models import *
 
 migrate = Migrate(app, db, render_as_batch=True) #, directory=MIGRATE_DIR
 

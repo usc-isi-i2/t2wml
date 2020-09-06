@@ -3,7 +3,7 @@ import tarfile
 import tempfile
 import pandas as pd
 from requests import post
-from backend.app_config import DATAMART_API_ENDPOINT
+from app_config import DATAMART_API_ENDPOINT
 
 
 class AnnotationIntegration(object):

@@ -11,6 +11,6 @@ try:
 except:
     port = 13000
 
-from backend.application import app
+from application import app
 if __name__ == '__main__':
     app.run(port=port, debug=False, use_reloader=False)

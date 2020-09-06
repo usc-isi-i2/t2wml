@@ -1,5 +1,5 @@
 from t2wml.api import Sheet, SpreadsheetFile, Wikifier, KnowledgeGraph, Project
-from backend.caching import CacheHolder
+from caching import CacheHolder
 
 class CalcParams:
     def __init__(self, project_path, data_path, sheet_name, yaml_path=None, wiki_paths=None):

@@ -7,18 +7,18 @@ from flask import request
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.api import Project as apiProject
 
-from backend import web_exceptions
-from backend.app_config import app
-from backend.models import (DataFile, ItemsFile, Project,
+import web_exceptions
+from app_config import app
+from models import (DataFile, ItemsFile, Project,
                     PropertiesFile, WikifierFile, YamlFile)
 
-from backend.t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
+from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        highlight_region, update_t2wml_settings, wikify)
-from backend.utils import (file_upload_validator, get_project_details, get_qnode_label,
+from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, upload_item_defs, table_data)
-from backend.web_exceptions import WebException
-from backend.t2wml_annotation_integration import AnnotationIntegration
-from backend.calc_params import CalcParams
+from web_exceptions import WebException
+from t2wml_annotation_integration import AnnotationIntegration
+from calc_params import CalcParams
 
 debug_mode = False
 
@@ -446,7 +446,7 @@ if __name__ == "__main__":
             print('Debug mode is on!')
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
-            from backend.app_config import UPLOAD_FOLDER
+            from app_config import UPLOAD_FOLDER
 
             app.config['PROFILE'] = True
             profiles_dir = os.path.join(UPLOAD_FOLDER, "profiles")

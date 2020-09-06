@@ -6,9 +6,9 @@ from pathlib import Path
 from string import punctuation
 from flask import request
 from SPARQLWrapper import SPARQLWrapper, JSON
-from backend import web_exceptions
-from backend.wikidata_models import WikidataItem, WikidataProperty
-from backend.app_config import DEFAULT_SPARQL_ENDPOINT
+import web_exceptions
+from wikidata_models import WikidataItem, WikidataProperty
+from app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache = {}
 
@@ -184,7 +184,7 @@ def file_upload_validator(file_extensions):
 
 
 def get_project_details():
-    from backend.models import Project
+    from models import Project
     projects = list()
     for project in Project.query.order_by(Project.modification_date.desc()).all():
         project_detail = dict()

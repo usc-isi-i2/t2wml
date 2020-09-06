@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from t2wml.mapping.statement_mapper import YamlMapper
 from t2wml.api import KnowledgeGraph
-from backend.app_config import UPLOAD_FOLDER
+from app_config import UPLOAD_FOLDER
 
 class Cacher:
     title = ""
