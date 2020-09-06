@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { ipcRenderer } from 'electron';
 
 import './project-list.css';
 import * as utils from '../common/utils'
@@ -6,15 +7,13 @@ import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 
-import DeleteProject from './delete-project';
 import RenameProject from './rename-project';
 import DownloadProject from './dowmload-project';
-import CreateProject from './create-project';
 import ToastMessage from '../common/toast';
 
 // console.log
@@ -23,13 +22,9 @@ import RequestService from '../common/service';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
-import LoadProject from './load-project';
 
 interface ProjectListState {
   showSpinner: boolean;
-  showCreateProject: boolean;
-  showLoadProject: boolean;
-  showDeleteProject: boolean;
   showDownloadProject: boolean;
   showRenameProject: boolean;
   deletingPid: string;
@@ -72,9 +67,6 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // appearance
       showSpinner: true,
-      showCreateProject: false,
-      showLoadProject: false,
-      showDeleteProject: false,
       showDownloadProject: false,
       showRenameProject: false,
       deletingPid: "",
@@ -134,135 +126,6 @@ class ProjectList extends Component<{}, ProjectListState> {
     });
   }
 
-  handleCreateProject(name: string) {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    let ptitle = name.trim();
-    if (ptitle === "") ptitle = "Untitled project";
-
-    // before sending request
-    this.setState({ showSpinner: true });
-
-    // send request
-    console.log("<App> -> %c/create_project%c to create project: %c" + ptitle, LOG.link, LOG.default, LOG.highlight);
-    const formData = new FormData();
-    formData.append("ptitle", ptitle);
-    this.requestService.createProject(formData).then(json => {
-      console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json.pid) {
-        // success
-        wikiStore.changeProject(json.pid);
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request");
-      }
-
-      // follow-ups (success)
-      this.setState({ showCreateProject: false, showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      error.errorDescription += "\n\nCannot create new project!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
-      this.setState({ showCreateProject: false, showSpinner: false });
-    });
-  }
-
-  cancelCreateProject() {
-    this.setState({ showCreateProject: false });
-  }
-
-  handleLoadProject(file: File, path: string) {
-    this.setState({ errorMessage: {} as ErrorMessage });
-
-    // before sending request
-    this.setState({ showSpinner: true });
-
-    // send request
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("path", path);
-    this.requestService.loadProject(formData).then(json => {
-      console.log("<App> <- %c/load_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json.pid) {
-        // success
-        wikiStore.changeProject(json.pid, path);
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request");
-      }
-
-      // follow-ups (success)
-      this.setState({ showLoadProject: false, showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      error.errorDescription += "\n\nCannot load project!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
-      this.setState({ showLoadProject: false, showSpinner: false });
-    });
-
-  }
-
-  cancelLoadProject() {
-      this.setState({ showLoadProject: false });
-  }
-
-  handleDeleteProject(pid = "") {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    if (pid === "") {
-      pid = this.state.deletingPid;
-      if (pid === "") return;
-    }
-
-    // before sending request
-    this.setState({ showSpinner: true, showDeleteProject: false });
-
-    // send request
-    console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.deleteProject(pid as string).then(json => {
-      console.log("<App> <- %c/delete_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-        // success
-        if (json['error'] !== null){
-          console.log(json['error'])
-        }
-        else {
-          const {sortBy, isAscending} = this.state;
-          this.handleSortProjects(sortBy, isAscending, json['projects']);
-        }
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      // console.log(error);
-      error.errorDescription += "\n\nCannot delete project!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot delete project!\n\n" + error.errorTitle);
-
-      // follow-ups (failure)
-      this.setState({ showSpinner: false });
-    });
-  }
-
-  cancelDeleteProject() {
-    this.setState({ showDeleteProject: false, deletingPid: "" });
-  }
 
   handleDownloadProject(pid = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
@@ -413,7 +276,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
     const projectListDiv = [];
     for (let i = 0, len = projectData.length; i < len; i++) {
-      const { pid, ptitle, cdate, mdate } = projectData[i];
+      const { pid, ptitle, directory, cdate, mdate } = projectData[i];
       if (utils.searchProject(ptitle, keywords)) {
         projectListDiv.push(
           <tr key={i}>
@@ -426,6 +289,13 @@ class ProjectList extends Component<{}, ProjectListState> {
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
             </td>
 
+            {/* path */}
+            <td>
+              <span>
+                  {directory}
+              </span>
+            </td>
+
             {/* last modified */}
             <td>
               <OverlayTrigger placement="top" trigger={["hover", "focus"]} // defaultShow="true"
@@ -433,7 +303,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="last-modified">
                     <span className="text-left small">
-                      {utils.timestamp2abstime(mdate)}
+                      {mdate}
                     </span>
                   </Tooltip>
                 }
@@ -449,7 +319,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="date-created">
                     <span className="text-left small">
-                      {utils.timestamp2abstime(cdate)}
+                      {cdate}
                     </span>
                   </Tooltip>
                 }
@@ -500,26 +370,6 @@ class ProjectList extends Component<{}, ProjectListState> {
                   <FontAwesomeIcon icon={faCloudDownloadAlt} />
                 </span>
               </OverlayTrigger>
-
-              {/* delete */}
-              <OverlayTrigger
-                placement="top"
-                trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
-                overlay={
-                  <Tooltip style={{ width: "fit-content" }} id="delete">
-                    <span className="text-left small">Delete</span>
-                  </Tooltip>
-                }
-              >
-                <span
-                  className="action-delete"
-                  style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDeleteProject: true, deletingPid: pid })}
-                >
-                  <FontAwesomeIcon icon={faTrashAlt} />
-                </span>     
-              </OverlayTrigger>
             </td>
           </tr>
         );
@@ -539,7 +389,7 @@ class ProjectList extends Component<{}, ProjectListState> {
           <tr>
 
             {/* title */}
-            <th style={{ width: "50%" }}>
+            <th style={{ width: "30%" }}>
               <span
                 style={{ cursor: "pointer" }}
                 onClick={() => this.handleSortProjects("ptitle")}
@@ -554,8 +404,24 @@ class ProjectList extends Component<{}, ProjectListState> {
               }
             </th>
 
+            {/* path */}
+            <th style={{ width: "40%" }}>
+              <span
+                style={{ cursor: "pointer" }}
+                onClick={() => this.handleSortProjects("directory")}
+              >
+                Path
+              </span>
+              {
+                (sortBy === "directory") ?
+                  <span>
+                    &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
+                  </span> : ""
+              }
+            </th>
+
             {/* last modified */}
-            <th style={{ width: "20%" }}>
+            <th style={{ width: "10%" }}>
               <span
                 style={{ cursor: "pointer" }}
                 onClick={() => this.handleSortProjects("mdate")}
@@ -571,7 +437,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             </th>
 
             {/* date created */}
-            <th style={{ width: "20%" }}>
+            <th style={{ width: "10%" }}>
               <span
                 style={{ cursor: "pointer" }}
                 onClick={() => this.handleSortProjects("cdate")}
@@ -606,11 +472,6 @@ class ProjectList extends Component<{}, ProjectListState> {
   renderModals() {
     return (
       <Fragment>
-        <DeleteProject 
-          showDeleteProject={this.state.showDeleteProject} 
-          handleDeleteProject={() => this.handleDeleteProject()}
-          cancelDeleteProject={() => this.cancelDeleteProject()}
-        />
         <DownloadProject 
           showDownloadProject={this.state.showDownloadProject} 
           handleDownloadProject={() => this.handleDownloadProject()}
@@ -623,18 +484,6 @@ class ProjectList extends Component<{}, ProjectListState> {
           isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
           handleRenameProject={(name) => this.handleRenameProject(name)}
           cancelRenameProject={() => this.cancelRenameProject()}
-        />
-        <CreateProject
-          showCreateProject={this.state.showCreateProject}
-          showSpinner={this.state.showSpinner}
-          handleCreateProject={(name) => this.handleCreateProject(name)}
-          cancelCreateProject={() =>this.cancelCreateProject()}
-        />
-        <LoadProject
-            showLoadProject={this.state.showLoadProject}
-            showSpinner={this.state.showSpinner}
-            handleLoadProject={(file, path) => this.handleLoadProject(file, path)}
-            cancelLoadProject={() => this.cancelLoadProject()}
         />
       </Fragment>
     );
@@ -656,7 +505,7 @@ class ProjectList extends Component<{}, ProjectListState> {
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
           {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
-          <Card className="shadow-sm" style={{ width: "90%", maxWidth: "800px", height: "calc(100vh - 90px)", margin: "0 auto" }}>
+          <Card className="shadow-sm" style={{ width: "80%", height: "calc(100vh - 90px)", margin: "0 auto" }}>
             <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#343a40" }}>
               <div
                 className="text-white font-weight-bold d-inline-block text-truncate"
@@ -674,11 +523,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                     size="sm"
                     style={{ fontWeight: 600, marginRight: '1rem' }}
                     onClick={() => {
-                      this.setState({
-                        // tempCreateProject: "Untitled project",
-                        // isTempCreateProjectVaild: true,
-                        showCreateProject: true
-                      });
+                      ipcRenderer.send('new-project');
                     }}
                   >
                     New project
@@ -688,12 +533,10 @@ class ProjectList extends Component<{}, ProjectListState> {
                     size="sm"
                     style={{ fontWeight: 600 }}
                     onClick={() => {
-                      this.setState({
-                        showLoadProject: true
-                      });
+                      ipcRenderer.send('open-project');
                     }}
                   >
-                    Load project
+                    Open project
                   </Button>
                 </div>
                 <div style={{ display: "inline-block", width: "60%" }}>

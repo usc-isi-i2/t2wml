@@ -11,6 +11,8 @@ export class RendererEventListener {
     public constructor(public mainMenuManager?: MainMenuManager) {
         ipcMain.on('get-config', (event: any) => this.handleGetConfig(event));
         ipcMain.on('show-project', (sender: EventEmitter, folder: string) => this.handleShowProject(folder));
+        ipcMain.on('new-project', () => this.handleNewProject());
+        ipcMain.on('open-project', () => this.handleOpenProject());
     }
 
     private handleGetConfig(event: any) {
@@ -24,5 +26,13 @@ export class RendererEventListener {
         } else {
             this.mainMenuManager.setMainMenu();
         }
+    }
+
+    private handleNewProject() {
+        this.mainMenuManager?.onNewProjectClick();
+    }
+
+    private handleOpenProject() {
+        this.mainMenuManager?.onOpenProjectClick();
     }
 }

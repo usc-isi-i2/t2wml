@@ -92,7 +92,7 @@ export default class MainMenuManager {
         this.recentlyUsed = subMenu as MenuItemConstructorOptions[];
     }
 
-    private onNewProjectClick() {
+    public onNewProjectClick() {
         const folders = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
                 properties: ['openDirectory', 'createDirectory']
@@ -103,7 +103,7 @@ export default class MainMenuManager {
         }
     }
 
-    private onOpenProjectClick() {
+    public onOpenProjectClick() {
         const folders = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
                 properties: ['openDirectory']
