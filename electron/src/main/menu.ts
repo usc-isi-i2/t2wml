@@ -104,13 +104,18 @@ export default class MainMenuManager {
     }
 
     public onOpenProjectClick() {
-        const folders = dialog.showOpenDialog( this.mainWindow!, {
-                title: "Open Project Folder",
-                properties: ['openDirectory']
+        const files = dialog.showOpenDialog( this.mainWindow!, {
+                title: "Open Project File",
+                filters: [
+                    { name: "t2wmlproj", extensions: ["t2wmlproj"] }
+                ],
+                properties: ['openFile']
             });
 
-        if (folders) {
-            this.mainWindow!.webContents.send('open-project', folders[0]);
+        if (files) {
+            const index = files[0].lastIndexOf('\\');
+            const path =  files[0].substring(0, index);
+            this.mainWindow!.webContents.send('open-project', path);
         }
     }
 
