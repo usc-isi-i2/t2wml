@@ -73,7 +73,7 @@ class MappingResultsCacher(Cacher):
 
 
 class CacheHolder():
-    def __init__(self, sheet, yaml):
+    def __init__(self, data_path, sheet_name, yaml_path):
         self.result_cacher = MappingResultsCacher(
-            yaml.file_path, sheet.data_file.file_path, sheet.name)
-        self.cell_mapper = YamlMapper(yaml.file_path)
+            yaml_path, data_path, sheet_name)
+        self.cell_mapper = YamlMapper(yaml_path)

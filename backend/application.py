@@ -3,22 +3,22 @@ import os
 import sys
 from pathlib import Path
 from flask import request
-from flask.helpers import send_file, send_from_directory
-from werkzeug.exceptions import NotFound
+
+from t2wml.utils.t2wml_exceptions import T2WMLException
+from t2wml.api import Project as apiProject
 
 from backend import web_exceptions
 from backend.app_config import app
 from backend.models import (DataFile, ItemsFile, Project,
                     PropertiesFile, WikifierFile, YamlFile)
-from t2wml.utils.t2wml_exceptions import T2WMLException
+
 from backend.t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
-                       highlight_region, table_data, update_t2wml_settings,
-                       wikify)
+                       highlight_region, update_t2wml_settings, wikify)
 from backend.utils import (file_upload_validator, get_project_details, get_qnode_label,
-                   make_frontend_err_dict, string_is_valid, upload_item_defs)
+                   make_frontend_err_dict, string_is_valid, upload_item_defs, table_data)
 from backend.web_exceptions import WebException
-from t2wml.api import Project as apiProject
 from backend.t2wml_annotation_integration import AnnotationIntegration
+from backend.calc_params import CalcParams
 
 debug_mode = False
 
@@ -30,7 +30,23 @@ def get_project(project_id):
         raise web_exceptions.ProjectNotFoundException
     update_t2wml_settings(project)
     return project
-        
+
+def get_calc_params(project):    
+    data_file = project.current_file
+    if data_file:
+        sheet = data_file.current_sheet
+        if sheet.yaml_file:
+            yaml_file=sheet.yaml_file.file_path
+        else:
+            yaml_file=None
+        if project.wikifier_file:
+            wikifier_files=[project.wikifier_file.file_path]
+        else:
+            wikifier_files=None
+        calc_params=CalcParams(project.directory, data_file.file_path, sheet.name, yaml_file, wikifier_files)
+        return calc_params
+    return None
+
 
 
 def json_response(func):
@@ -124,15 +140,11 @@ def get_project_files(pid):
 
     response["name"] = project.name
 
-    data_file = project.current_file
-    if data_file:
-        sheet = data_file.current_sheet
-        response["tableData"] = table_data(data_file, sheet_name=sheet.name)
-        response["wikifierData"] = serialize_item_table(project, sheet)
-
-        y = handle_yaml(sheet, project)
-        response["yamlData"] = y
-
+    calc_params=get_calc_params(project)
+    if calc_params:
+        response["tableData"] = table_data(calc_params)
+        response["wikifierData"] = serialize_item_table(calc_params)
+        response["yamlData"] = handle_yaml(calc_params)
     return response, 200
 
 
@@ -144,9 +156,9 @@ def add_item_definitions(pid):
     i_f = ItemsFile.create(project, in_file)
     upload_item_defs(i_f.file_path)
     response = {}
-    if project.current_file:
-        sheet = project.current_file.current_sheet
-        serialized_item_table = serialize_item_table(project, sheet)
+    calc_params=get_calc_params(project)
+    if calc_params:
+        serialized_item_table = serialize_item_table(calc_params)
         response.update(serialized_item_table)
     return response, 200
 
@@ -164,7 +176,7 @@ def upload_properties(pid):
 @json_response
 def get_qnode_info(pid, qid):
     project = get_project(pid)
-    label = get_qnode_label(qid, project)
+    label = get_qnode_label(qid, project.sparql_endpoint)
     return {"label": label}, 200
 
 
@@ -184,13 +196,10 @@ def upload_data_file(pid):
     }
     new_file = file_upload_validator({'xlsx', 'xls', 'csv'})
     data_file = DataFile.create(project, new_file)
-    response["tableData"] = table_data(data_file)
-
-    sheet = data_file.current_sheet
-    response["wikifierData"] = serialize_item_table(project, sheet)
-
-    y = handle_yaml(sheet, project)
-    response["yamlData"] = y
+    calc_params=get_calc_params(project)
+    response["tableData"] = table_data(calc_params)
+    response["wikifierData"] = serialize_item_table(calc_params)
+    response["yamlData"] = handle_yaml(calc_params)
 
     return response, 200
 
@@ -214,21 +223,20 @@ def change_sheet(pid, sheet_name):
     old_sheet = data_file.current_sheet
     data_file.change_sheet(sheet_name)
     try:
-        sheet = data_file.current_sheet
-
-        response["tableData"] = table_data(data_file, sheet.name)
+        calc_params=get_calc_params(project)
+        response["tableData"] = table_data(calc_params)
     except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
         data_file.change_sheet(old_sheet.name)
         raise e
 
     #stopgap measure. we seriously need to separate these calls
     try:
-        response["wikifierData"] = serialize_item_table(project, sheet)
+        response["wikifierData"] = serialize_item_table(calc_params)
     except:
         pass #return blank
 
     try:
-        response["yamlData"] = handle_yaml(sheet, project)
+        response["yamlData"] = handle_yaml(calc_params)
     except:
         pass #return blank
 
@@ -247,9 +255,9 @@ def upload_wikifier_output(pid):
     in_file = file_upload_validator({"csv"})
 
     wikifier_file = WikifierFile.create(project, in_file)
-    if project.current_file and project.current_file.current_sheet:
-        sheet = project.current_file.current_sheet
-        serialized_item_table = serialize_item_table(project, sheet)
+    calc_params=get_calc_params(project)
+    if calc_params:
+        serialized_item_table = serialize_item_table(calc_params)
         # does not go into field wikifierData but is dumped directly
         response.update(serialized_item_table)
 
@@ -272,12 +280,13 @@ def wikify_region(pid):
         if not project.current_file:
             raise web_exceptions.WikifyWithoutDataFileException(
                 "Upload data file before wikifying a region")
-        sheet = project.current_file.current_sheet
+        calc_params=get_calc_params(project)
 
-        cell_qnode_map, problem_cells = wikify(region, sheet, context)
+        cell_qnode_map, problem_cells = wikify(calc_params, region, context)
         wf = WikifierFile.create_from_dataframe(project, cell_qnode_map)
-
-        data = serialize_item_table(project, sheet)
+        
+        calc_params=get_calc_params(project)
+        data = serialize_item_table(calc_params)
 
         if problem_cells:
             error_dict = {
@@ -310,7 +319,8 @@ def upload_yaml(pid):
         if project.current_file:
             sheet = project.current_file.current_sheet
             yf = YamlFile.create_from_formdata(project, yaml_data, sheet)
-            response['yamlRegions'] = highlight_region(sheet, yf, project)
+            calc_params=get_calc_params(project)
+            response['yamlRegions'] = highlight_region(calc_params)
         else:
             response['yamlRegions'] = None
             raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
@@ -329,12 +339,11 @@ def get_cell_statement(pid, col, row):
     project = get_project(pid)
     data = {}
 
-    sheet = project.current_file.current_sheet
-    yaml_file = sheet.yaml_file
-    if not yaml_file:
+    calc_params=get_calc_params(project)
+    if not calc_params.yaml_path:
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Upload YAML file before resolving cell.")
-    data = get_cell(sheet, yaml_file, project, col, row)
+    data = get_cell(calc_params, col, row)
     return data, 200
 
 
@@ -346,12 +355,11 @@ def downloader(pid, filetype):
     :return:
     """
     project = get_project(pid)
-    sheet = project.current_file.current_sheet
-    yaml_file = sheet.yaml_file
-    if not yaml_file:  # the frontend disables this, this is just another layer of checking
+    calc_params=get_calc_params(project)
+    if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Cannot download report without uploading YAML file first")
-    response = download(sheet, yaml_file, project, filetype, project.name)
+    response = download(calc_params, filetype)
     return response, 200
 
 

@@ -1,9 +1,13 @@
 import csv
+import json
+import pandas as pd
+from t2wml.spreadsheets.conversions import column_index_to_letter
+from pathlib import Path
 from string import punctuation
 from flask import request
+from SPARQLWrapper import SPARQLWrapper, JSON
 from backend import web_exceptions
 from backend.wikidata_models import WikidataItem, WikidataProperty
-from SPARQLWrapper import SPARQLWrapper, JSON
 from backend.app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache = {}
@@ -43,7 +47,7 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint=DEFAULT_SPAR
     return response
 
 
-def get_labels_and_descriptions(items, project):
+def get_labels_and_descriptions(items, sparql_endpoint):
     response = dict()
     missing_items = []
     for item in items:
@@ -59,7 +63,7 @@ def get_labels_and_descriptions(items, project):
             missing_items.append(item)
     try:
         additional_items = query_wikidata_for_label_and_description(
-            missing_items, project.sparql_endpoint)
+            missing_items, sparql_endpoint)
         response.update(additional_items)
     except:  # eg 502 bad gateway error
         pass
@@ -89,7 +93,7 @@ def query_wikidata_for_label(node, sparql_endpoint=DEFAULT_SPARQL_ENDPOINT):
         return None
 
 
-def get_qnode_label(node, project):
+def get_qnode_label(node, sparql_endpoint):
     try:
         wp = WikidataProperty.query.filter_by(wd_id=node).first()
         if wp:
@@ -109,7 +113,7 @@ def get_qnode_label(node, project):
     if cached_label:
         return cached_label
     try:
-        label = query_wikidata_for_label(node, project.sparql_endpoint)
+        label = query_wikidata_for_label(node, sparql_endpoint)
         wikidata_label_query_cache[node] = label
     except:  # eg 502 bad gateway
         return None
@@ -191,3 +195,44 @@ def get_project_details():
         project_detail["mdate"] = str(project.modification_date)
         projects.append(project_detail)
     return projects
+
+
+def table_data(calc_params):
+    sheet_names = calc_params.sheet_names
+    sheet_name = calc_params.sheet_name
+    data_path=Path(calc_params.data_path)
+    is_csv = True if data_path.suffix.lower() == ".csv" else False
+    sheetData = sheet_to_json(calc_params)
+    return {
+        "filename": data_path.name,
+        "isCSV": is_csv,
+        "sheetNames": sheet_names,
+        "currSheetName": sheet_name,
+        "sheetData": sheetData
+    }
+
+def sheet_to_json(calc_params):
+    sheet = calc_params.sheet
+    data = sheet.data.copy()
+    json_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}],
+                 'rowData': []}
+    # get col names
+    col_names = []
+    for i in range(len(sheet.data.iloc[0])):
+        column = column_index_to_letter(i)
+        col_names.append(column)
+        json_data['columnDefs'].append({'headerName': column, 'field': column})
+    # rename cols
+    data.columns = col_names
+    # rename rows
+    data.index += 1
+    # get json
+    json_string = data.to_json(orient='table')
+    json_dict = json.loads(json_string)
+    initial_json = json_dict['data']
+    # add the ^ column
+    for i, row in enumerate(initial_json):
+        row["^"] = str(i+1)
+    # add to the response
+    json_data['rowData'] = initial_json
+    return json_data

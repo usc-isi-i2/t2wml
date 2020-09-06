@@ -3,18 +3,16 @@ import json
 from pathlib import Path
 from collections import defaultdict
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
-from t2wml.api import Sheet, KnowledgeGraph, Wikifier, WikifierService, t2wml_settings
+from t2wml.api import Sheet, WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
-from backend.caching import CacheHolder
 from backend.app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
 from backend.wikidata_models import DatabaseProvider
 from backend.utils import get_labels_and_descriptions
 
 
-def wikify(region, data_sheet, context):
+def wikify(calc_params, region, context):
     ws = WikifierService()
-    sheet = Sheet(data_sheet.data_file.file_path, data_sheet.name)
-    df, problem_cells = ws.wikify_region(region, sheet, context)
+    df, problem_cells = ws.wikify_region(region, calc_params.sheet, context)
     return df, problem_cells
 
 
@@ -24,31 +22,19 @@ def update_t2wml_settings(project):
     t2wml_settings.warn_for_empty_cells=project.warn_for_empty_cells
     t2wml_settings.cache_data_files = True
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
-    
 
-
-def get_wikifier(project):
-    # one day this will handle multiple wikifier files
-    wikifier = Wikifier()
-    if project.wikifier_file:
-        wikifier.add_file(project.wikifier_file.file_path)
-    return wikifier
-
-
-def get_kg(data_sheet, cell_mapper, project):
-    wikifier = get_wikifier(project)
-    sheet = Sheet(data_sheet.data_file.file_path, data_sheet.name)
-    kg = KnowledgeGraph.generate(cell_mapper, sheet, wikifier)
+def get_kg(calc_params):
+    kg=calc_params.get_kg()
     db.session.commit()  # save any queried properties
     return kg
+    
 
-
-def download(data_sheet, yaml_file, project, filetype, project_name=""):
-    cache_holder = CacheHolder(data_sheet, yaml_file)
+def download(calc_params, filetype):
+    cache_holder=calc_params.cache
     response = dict()
     kg = cache_holder.result_cacher.get_kg()
     if not kg:
-        kg = get_kg(data_sheet, cache_holder.cell_mapper, project)
+        kg = get_kg(calc_params)
 
     response["data"] = kg.get_output(filetype)
     response["error"] = None
@@ -56,8 +42,8 @@ def download(data_sheet, yaml_file, project, filetype, project_name=""):
     return response
 
 
-def highlight_region(data_sheet, yaml_file, project):
-    cache_holder = CacheHolder(data_sheet, yaml_file)
+def highlight_region(calc_params):
+    cache_holder = calc_params.cache
     highlight_data, statement_data, errors = cache_holder.result_cacher.get_highlight_region()
     if highlight_data:
         highlight_data['error'] = errors if errors else None
@@ -70,7 +56,7 @@ def highlight_region(data_sheet, yaml_file, project):
         "qualifierRegion": {"color": "hsl(250, 50%, 90%)", "list": set()},
         'referenceRegion': {"color": "yellow", "list": set()},
         'error': dict()}
-    kg = get_kg(data_sheet, cache_holder.cell_mapper, project)
+    kg = get_kg(calc_params)
     statement_data = kg.statements
     errors = kg.errors
     for cell in statement_data:
@@ -121,10 +107,10 @@ def highlight_region(data_sheet, yaml_file, project):
     return highlight_data
 
 
-def get_cell(data_sheet, yaml_file, project, col, row):
-    wikifier = get_wikifier(project)
-    cache_holder = CacheHolder(data_sheet, yaml_file)
-    sheet = Sheet(data_sheet.data_file.file_path, data_sheet.name)
+def get_cell(calc_params, col, row):
+    wikifier = calc_params.wikifier
+    cache_holder = calc_params.cache
+    sheet = calc_params.sheet
     try:
         row = int(row)
         col = column_letter_to_index(col)+1
@@ -139,32 +125,17 @@ def get_cell(data_sheet, yaml_file, project, col, row):
     return data
 
 
-def table_data(data_file, sheet_name=None):
-    sheet_names = [sheet.name for sheet in data_file.sheets]
-    if sheet_name is None:
-        sheet_name = sheet_names[0]
-
-    data = sheet_to_json(data_file.file_path, sheet_name)
-
-    is_csv = True if data_file.extension.lower() == ".csv" else False
-
-    return {
-        "filename": data_file.name,
-        "isCSV": is_csv,
-        "sheetNames": sheet_names,
-        "currSheetName": sheet_name,
-        "sheetData": data
-    }
 
 
-def handle_yaml(sheet, project):
-    if sheet.yaml_file:
-        yaml_file = sheet.yaml_file
+
+def handle_yaml(calc_params):
+    if calc_params.yaml_path:
+        yaml_path = calc_params.yaml_path
         response = dict()
-        with open(yaml_file.file_path, "r", encoding="utf-8") as f:
+        with open(yaml_path, "r", encoding="utf-8") as f:
             response["yamlFileContent"] = f.read()
         try:
-            response['yamlRegions'] = highlight_region(sheet, yaml_file, project)
+            response['yamlRegions'] = highlight_region(calc_params)
         except Exception as e: #this is something of a stopgap measure for now. need to do it properly later.
             orange = '#FF8000'
             red = '#FF3333'
@@ -181,36 +152,10 @@ def handle_yaml(sheet, project):
     return None
 
 
-def sheet_to_json(data_file_path, sheet_name):
-    sheet = Sheet(data_file_path, sheet_name)
-    data = sheet.data.copy()
-    json_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}],
-                 'rowData': []}
-    # get col names
-    col_names = []
-    for i in range(len(sheet.data.iloc[0])):
-        column = column_index_to_letter(i)
-        col_names.append(column)
-        json_data['columnDefs'].append({'headerName': column, 'field': column})
-    # rename cols
-    data.columns = col_names
-    # rename rows
-    data.index += 1
-    # get json
-    json_string = data.to_json(orient='table')
-    json_dict = json.loads(json_string)
-    initial_json = json_dict['data']
-    # add the ^ column
-    for i, row in enumerate(initial_json):
-        row["^"] = str(i+1)
-    # add to the response
-    json_data['rowData'] = initial_json
-    return json_data
 
-
-def serialize_item_table(project, sheet):
-    sheet = Sheet(sheet.data_file.file_path, sheet.name)
-    wikifier = get_wikifier(project)
+def serialize_item_table(calc_params):
+    sheet = calc_params.sheet
+    wikifier = calc_params.wikifier
     item_table = wikifier.item_table
     qnodes = defaultdict(defaultdict)
     rowData = list()
@@ -234,7 +179,7 @@ def serialize_item_table(project, sheet):
                 cell = to_excel(col, row)
                 qnodes[cell][context] = {"item": item}
 
-    labels_and_descriptions = get_labels_and_descriptions(list(items_to_get), project)
+    labels_and_descriptions = get_labels_and_descriptions(list(items_to_get), calc_params.sparql_endpoint)
 
     # update rowData
     for i in range(len(rowData)):
