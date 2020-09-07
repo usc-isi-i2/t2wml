@@ -27,6 +27,7 @@ interface WikifierState {
   flag: number;
   scope: number;
   errorMessage: ErrorMessage;
+  propertiesMessage: string;
 }
 
 @observer
@@ -58,6 +59,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       scope: wikiStore.wikifier.scope,
 
       errorMessage: {} as ErrorMessage,
+      propertiesMessage: ''
     };
 
     wikiStore.wikifier.updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
@@ -509,19 +511,20 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
   }
 
-  uploadDefinitionsFile(event: any) {
-    // get definitions file
+  uploadWikidataFile(event: any) {
+    // get wikidata file
     const file = event.target.files[0];
     if (!file) return;
 
     // before sending request
     wikiStore.wikifier.showSpinner = true;
+    this.setState({ propertiesMessage: '' });
 
     // send request
     const formData = new FormData();
     formData.append("file", file);
-    this.requestService.addItemDefinitions(wikiStore.project.pid, formData).then((json) => {
-      console.log("<Wikifier> <- %c/upload_definitions_file%c with:", LOG.link, LOG.default);
+    this.requestService.uploadWikidata(wikiStore.project.pid, formData).then((json) => {
+      console.log("<Wikifier> <- %c/upload_wikidata_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
       // do something here
@@ -537,12 +540,21 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       const { qnodes, rowData } = json;
       this.updateWikifier(qnodes, rowData);
 
+      const { added, failed, updated } = json.widget;
+          let message = `✅ Properties file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
+          if (failed.length) {
+              message += '\n\nCheck the console for the failures reasons.'
+          }
+          this.setState({
+            propertiesMessage: message
+          });
+
       // follow-ups (success)
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
-      error.errorDescription += "\n\nCannot upload definitions file!";
+      error.errorDescription += "\n\nCannot upload wikidata file!";
       this.setState({ errorMessage: error });
     
       // follow-ups (failure)
@@ -575,7 +587,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     return (
     <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
-    
+        {this.state.propertiesMessage != '' ? <ToastMessage message={this.state.propertiesMessage}/> : null }
+
         <Card
             className="w-100 shadow-sm"
             style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
@@ -626,26 +639,26 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                 Wikify
             </Button>
         
-            {/* button to upload definitions file */}
+            {/* button to upload wikidata file */}
             <OverlayTrigger overlay={uploadDefToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
                 <Button
                     className="d-inline-block float-right"
                     variant="outline-light"
                     size="sm"
                     style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
-                    onClick={() => { document.getElementById("file_definitions")?.click(); }}
+                    onClick={() => { document.getElementById("file_wikidata")?.click(); }}
                 >
-                    Add item definitions 
+                    import wikidata 
                 </Button>
             </OverlayTrigger>
 
-             {/* hidden input of item definitions file */}
+             {/* hidden input of wikidata file */}
              <input
               type="file"
-              id="file_definitions"
+              id="file_wikidata"
               accept=".tsv"
               style={{ display: "none" }}
-              onChange={this.uploadDefinitionsFile.bind(this)}
+              onChange={this.uploadWikidataFile.bind(this)}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 

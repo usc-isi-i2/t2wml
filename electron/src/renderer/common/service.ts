@@ -100,8 +100,8 @@ class RequestService {
     return response;
   }
 
-  public async addItemDefinitions(pid: string, formData: any) {
-    const response = await backendPost(`/project/${pid}/items`, formData);
+  public async uploadWikidata(pid: string, formData: any) {
+    const response = await backendPost(`/project/${pid}/wikidata`, formData);
     return response;
   }
 

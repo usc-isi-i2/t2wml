@@ -98,7 +98,6 @@ class TableViewer extends Component<{}, TableState> {
 
     // init functions
     this.handleOpenTableFile = this.handleOpenTableFile.bind(this);
-    this.handleOpenPropertiesFile = this.handleOpenPropertiesFile.bind(this);
     this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
@@ -194,36 +193,6 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     });
-  }
-
-  handleOpenPropertiesFile(event:any) {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // send request
-    console.log("<TableViewer> -> %c/properties%c", LOG.link, LOG.default, LOG.highlight);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    this.requestService.uploadProperties(this.pid, formData).then((json) => {
-          console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
-          console.log(json);
-          const { added, failed, updated } = json;
-          let message = `✅ Properties file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
-          if (failed.length) {
-              message += '\n\nCheck the console for the failures reasons.'
-          }
-          this.setState({
-            msgInToast1: message,
-            showToast1: true,
-          });
-
-        }).catch((error: ErrorMessage) => {
-          console.log(error);
-          error.errorDescription += "\n\nCannot upload properties file!";
-          this.setState({ errorMessage: error });
-        });
   }
 
   handleOpenWikifierFile(event: any) {
@@ -614,15 +583,6 @@ class TableViewer extends Component<{}, TableState> {
         </div>
       </Tooltip>
     );
-
-    const uploadPropsToolTipHtml = (
-        <Tooltip style={{ width: "fit-content" }} id="upload">
-          <div className="text-left small">
-            <b>Accepted file types:</b><br />
-            • Tab-Separated Values (.tsv)<br />
-          </div>
-        </Tooltip>
-      );
 
     return (
       <div className="w-100 h-100 p-1">
