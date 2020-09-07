@@ -209,8 +209,8 @@ class TableViewer extends Component<{}, TableState> {
     this.requestService.uploadProperties(this.pid, formData).then((json) => {
           console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
           console.log(json);
-          const { added, failed, present } = json;
-          let message = `✅ Properties file loaded: ${added.length} added, ${present.length} updated, ${failed.length} failed.`;
+          const { added, failed, updated } = json;
+          let message = `✅ Properties file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
           if (failed.length) {
               message += '\n\nCheck the console for the failures reasons.'
           }
@@ -653,28 +653,6 @@ class TableViewer extends Component<{}, TableState> {
               </Button>
             </OverlayTrigger>
             
-            {/* button to upload properties file */}
-            <OverlayTrigger overlay={uploadPropsToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-              <Button
-                className="d-inline-block float-right"
-                variant="outline-light"
-                size="sm"
-                style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document.getElementById("properties_button")?.click(); }}
-              >
-                Upload properties
-              </Button>
-            </OverlayTrigger>
-
-            {/* hidden input of properties button */}
-            <input
-              type="file"
-              id="properties_button"
-              accept=".json, .tsv"
-              style={{ display: "none" }}
-              onChange={this.handleOpenPropertiesFile}
-              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
-            />
             {/* TODO: move following inputs to another place */}
             {/* hidden input of table file */}
             <input

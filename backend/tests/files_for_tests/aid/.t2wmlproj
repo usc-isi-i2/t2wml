@@ -1,9 +1,7 @@
 data_files:
 - dataset.xlsx
-item_files:
+wikidata_files:
 - kgtk_item_defs.tsv
-property_files:
-- kgtk_properties.tsv
 specific_wikifiers: {}
 title: Unit test renamed
 wikifier_files:

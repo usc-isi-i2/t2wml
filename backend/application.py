@@ -6,7 +6,7 @@ from flask import request
 
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.api import Project as apiProject
-
+from t2wml.api import add_nodes_from_file
 import web_exceptions
 from app_config import app
 from models import (DataFile, ItemsFile, Project,
@@ -15,7 +15,7 @@ from models import (DataFile, ItemsFile, Project,
 from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        highlight_region, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
-                   make_frontend_err_dict, string_is_valid, upload_item_defs, table_data)
+                   make_frontend_err_dict, string_is_valid, table_data)
 from web_exceptions import WebException
 from t2wml_annotation_integration import AnnotationIntegration
 from calc_params import CalcParams
@@ -153,9 +153,9 @@ def get_project_files(pid):
 def add_item_definitions(pid):
     project = get_project(pid)
     in_file = file_upload_validator({"tsv"})
-    i_f = ItemsFile.create(project, in_file)
-    upload_item_defs(i_f.file_path)
-    response = {}
+    pf = PropertiesFile.create(project, in_file)
+    return_dict = add_nodes_from_file(pf.file_path)
+    response = {"widget":return_dict}
     calc_params=get_calc_params(project)
     if calc_params:
         serialized_item_table = serialize_item_table(calc_params)
@@ -163,13 +163,7 @@ def add_item_definitions(pid):
     return response, 200
 
 
-@app.route('/api/project/<pid>/properties', methods=['POST'])
-@json_response
-def upload_properties(pid):
-    project = get_project(pid)
-    in_file = file_upload_validator({"json", "tsv"})
-    return_dict = PropertiesFile.create(project, in_file)
-    return return_dict, 200
+
 
 
 @app.route('/api/qnode/<pid>/<qid>', methods=['GET'])

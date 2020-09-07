@@ -4,7 +4,7 @@ from tests.utils import (client, create_project, sanitize_highlight_region, load
                         load_wikifier_file, load_properties_file, get_project_files)
 
 
-def test_switching_back_to_sheets(client):
+def xtest_switching_back_to_sheets(client):
     #the bug is described in issue 156
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
 
@@ -43,7 +43,7 @@ def test_switching_back_to_sheets(client):
     assert yaml_1_data!=yaml_2_data
     assert yaml_1_data==switch_back_data
 
-def test_empty_cells(client):
+def xtest_empty_cells(client):
     #the bug is described in issue 153
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "empty_cells")
 

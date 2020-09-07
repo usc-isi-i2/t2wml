@@ -58,14 +58,6 @@ class TestBasicWorkflow(BaseClass):
         self.expected_results_dict['add_data_file']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'add_data_file')
 
-    def test_04_add_properties_file(self, client):
-        filename=os.path.join(self.files_dir, "kgtk_properties.tsv")
-        response=load_properties_file(client, pid, filename)
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        self.results_dict['add_properties_file']=data
-        self.compare_jsons(data, 'add_properties_file')
-
     def test_05_add_wikifier_file(self, client):
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
         response=load_wikifier_file(client, pid, filename)

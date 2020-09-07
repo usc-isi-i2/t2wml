@@ -2,10 +2,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 from werkzeug.utils import secure_filename
-from t2wml.api import add_properties_from_file, SpreadsheetFile
+from t2wml.api import SpreadsheetFile
 from t2wml.api import Project as apiProject
-
-from utils import upload_item_defs
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
 
@@ -120,12 +118,9 @@ class Project(db.Model):
         for f in api_proj.wikifier_files:
             wf=WikifierFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
 
-        for f in api_proj.property_files:
+        for f in api_proj.wikidata_files:
             pf=PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
-        
-        for f in api_proj.item_files:
-            pf=ItemsFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
-            upload_item_defs(os.path.join(api_proj.directory, f))
+
         return project
 
     def create_project_file(self):
@@ -141,11 +136,11 @@ class Project(db.Model):
 
         property_files=PropertiesFile.query.filter_by(project_id=self.id)
         for p_f in property_files:
-            proj.add_property_file(p_f.relative_path)
+            proj.add_wikidata_file(p_f.relative_path)
 
         item_files=ItemsFile.query.filter_by(project_id=self.id)
         for i_f in item_files:
-            proj.add_item_file(i_f.relative_path)
+            proj.add_wikidata_file(i_f.relative_path)
         
         proj.save()
         return proj
@@ -344,17 +339,15 @@ class PropertiesFile(SavedFile):
     @classmethod
     def create(cls, project, in_file):
         pf = super().create(project, in_file)
-        return_dict = add_properties_from_file(pf.file_path)
-        return return_dict
+        return pf
 
     @classmethod
     def create_from_filepath(cls, project, in_file, from_api_proj=False):
         pf = super().create_from_filepath(project, in_file, from_api_proj)
-        return_dict = add_properties_from_file(pf.file_path)
-        return return_dict
+        return pf
     
     def add_to_api_proj(self):
-        self.project.api_project.add_property_file(self.relative_path)
+        self.project.api_project.add_wikidata_file(self.relative_path)
         self.project.api_project.save()
 
     def create_from_dataframe(cls, project, df):
@@ -382,7 +375,7 @@ class ItemsFile(SavedFile):
         return wf    
     
     def add_to_api_proj(self):
-        self.project.api_project.add_item_file(self.relative_path)
+        self.project.api_project.add_wikidata_file(self.relative_path)
         self.project.api_project.save()
 
 

@@ -8,7 +8,7 @@ from string import punctuation
 from flask import request
 from SPARQLWrapper import SPARQLWrapper, JSON
 import web_exceptions
-from wikidata_models import WikidataItem, WikidataProperty
+from wikidata_models import WikidataEntry
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache = {}
@@ -52,7 +52,7 @@ def get_labels_and_descriptions(items, sparql_endpoint):
     response = dict()
     missing_items = []
     for item in items:
-        wp = WikidataItem.query.filter_by(wd_id=item).first()
+        wp = WikidataEntry.query.filter_by(wd_id=item).first()
         if wp:
             label = desc = ""
             if wp.label:
@@ -96,12 +96,7 @@ def query_wikidata_for_label(node, sparql_endpoint=DEFAULT_SPARQL_ENDPOINT):
 
 def get_qnode_label(node, sparql_endpoint):
     try:
-        wp = WikidataProperty.query.filter_by(wd_id=node).first()
-        if wp:
-            if wp.label:
-                wikidata_label_query_cache[node] = wp.label
-                return wp.label
-        wp = WikidataItem.query.filter_by(wd_id=node).first()
+        wp = WikidataEntry.query.filter_by(wd_id=node).first()
         if wp:
             if wp.label:
                 wikidata_label_query_cache[node] = wp.label
@@ -120,27 +115,6 @@ def get_qnode_label(node, sparql_endpoint):
         return None
     return label
 
-
-def upload_item_defs(file_path):
-    property_dict = {}
-    items = []
-    with open(file_path, 'r', encoding="utf-8") as f:
-        reader = csv.DictReader(f, delimiter="\t")
-        for row_dict in reader:
-            node1 = row_dict["node1"]
-            label = row_dict["label"]
-            value = row_dict["node2"]
-            if label in ["label", "description"]:
-                property_dict[(node1, label)] = value
-                items.append(node1)
-
-    for node1 in items:
-        label = property_dict.get((node1, "label"))
-        description = property_dict.get((node1, "description"))
-        added = WikidataItem.add_or_update(
-            node1, label, description, do_session_commit=False)
-
-    WikidataItem.do_commit()
 
 
 def make_frontend_err_dict(error):
