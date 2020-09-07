@@ -2,7 +2,7 @@ import json
 import os
 from tests.utils import (client, BaseClass, create_project, sanitize_highlight_region,
                 load_data_file, load_yaml_file, get_project_files,
-                load_wikifier_file, load_properties_file, load_item_file)
+                load_wikifier_file, load_item_file)
     
 
 pid=None #we need to use a global pid for some reason... self.pid does not work.

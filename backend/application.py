@@ -148,7 +148,7 @@ def get_project_files(pid):
     return response, 200
 
 
-@app.route('/api/project/<pid>/items', methods=['POST'])
+@app.route('/api/project/<pid>/wikidata', methods=['POST'])
 @json_response
 def add_item_definitions(pid):
     project = get_project(pid)
