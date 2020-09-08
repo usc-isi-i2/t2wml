@@ -5,7 +5,6 @@ import { config } from './config';
 import { settings } from './settings';
 import { uiState } from './ui-state';
 import { rendererNotifier } from './renderer-notifier';
-import { render } from '@testing-library/react';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
