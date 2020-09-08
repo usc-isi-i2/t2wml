@@ -4,6 +4,7 @@ import { ipcMain } from 'electron';
 import { EventEmitter } from 'events';
 import { settings } from './settings';
 import { config } from './config';
+import { uiState } from './ui-state';
 import MainMenuManager from './menu';
 
 export class RendererEventListener {
@@ -20,7 +21,11 @@ export class RendererEventListener {
     }
 
     private handleShowProject(folder: string) {
-        settings.addRecentlyUsed(folder);
+        if (folder) {
+            settings.addRecentlyUsed(folder);
+        }
+        uiState.displayMode = folder ? 'project' : 'project-list';
+        console.log(`displayMode set to ${ uiState.displayMode }, folder is ${folder}`);
         if (!this.mainMenuManager) {
             console.warn('show-project event received before mainMainManager set in listener');
         } else {

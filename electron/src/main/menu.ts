@@ -3,6 +3,7 @@ import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electro
 
 import { config } from './config';
 import { settings } from './settings';
+import { uiState } from './ui-state';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -13,6 +14,7 @@ export default class MainMenuManager {
         this.fillRecentlyUsed();
         const menu = this.buildMainMenu();
         Menu.setApplicationMenu(menu);
+        this.updateProjectMenu();
     }
 
     private buildMainMenu() {
@@ -51,6 +53,15 @@ export default class MainMenuManager {
                 ]
             },
             {
+                label: 'Project',
+                submenu: [{ 
+                    label: 'Refresh', 
+                    accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',
+                    click: () => this.onRefreshProjectClick(),
+                    id: 'PROJECT_REFRESH',
+                }]
+            },
+            {
                 label: 'View',
                 submenu: [
                     { role: 'zoomin' },
@@ -63,8 +74,7 @@ export default class MainMenuManager {
             {
                 label: 'Debug',
                 submenu: [
-                    { role: 'reload' },
-                    { role: 'forcereload' },
+                    { label: 'Reload App', click: () => this.onReloadAppClick() },
                     { role: 'toggledevtools' },
                 ]
             },
@@ -90,6 +100,16 @@ export default class MainMenuManager {
         ];
 
         this.recentlyUsed = subMenu as MenuItemConstructorOptions[];
+    }
+
+    private updateProjectMenu() {
+        const refreshItem = Menu.getApplicationMenu()?.getMenuItemById('PROJECT_REFRESH');
+        if (!refreshItem) {
+            console.warn("Can't find the Project|Refresh menu item");
+        } else {
+            refreshItem.enabled = uiState.displayMode === 'project';
+            console.log('Updating refresh project to ', refreshItem.enabled);
+        }
     }
 
     public onNewProjectClick() {
@@ -121,6 +141,14 @@ export default class MainMenuManager {
 
     private onOpenRecentProjectClick(folder: string) {
         this.mainWindow!.webContents.send('open-project', folder);
+    }
+
+    private onReloadAppClick() {
+        this.mainWindow!.webContents.reloadIgnoringCache();
+    }
+
+    private onRefreshProjectClick() {
+        // For now do nothing
     }
 
     private onClearRecentlyOpenedClick() {
