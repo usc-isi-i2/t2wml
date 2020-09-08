@@ -25,7 +25,6 @@ export class RendererEventListener {
             settings.addRecentlyUsed(folder);
         }
         uiState.displayMode = folder ? 'project' : 'project-list';
-        console.log(`displayMode set to ${ uiState.displayMode }, folder is ${folder}`);
         if (!this.mainMenuManager) {
             console.warn('show-project event received before mainMainManager set in listener');
         } else {

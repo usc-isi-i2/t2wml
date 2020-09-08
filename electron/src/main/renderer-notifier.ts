@@ -38,6 +38,15 @@ class RendererNotifier {
         }
         this.mainWindow.webContents.send('refresh-project');
     }
+
+    public projectSettings() {
+        if(!this.mainWindow) {
+            console.warn("mainWindow not set on RendererNotifier");
+            return;
+        }
+        this.mainWindow.webContents.send('project-settings');
+
+    }
 }
 
 export const rendererNotifier = RendererNotifier.instance;

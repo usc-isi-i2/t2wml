@@ -73,6 +73,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       console.error("There is no project id.")
     }
     ipcRenderer.on('refresh-project', () => this.onRefreshProject());
+    ipcRenderer.on('project-settings', () => this.onShowSettingsClicked());
   }
 
   componentDidUpdate(prevProps: ProjectProps) {

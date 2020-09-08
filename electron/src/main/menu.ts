@@ -8,14 +8,15 @@ import { rendererNotifier } from './renderer-notifier';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
+    private projectSubMenu: MenuItemConstructorOptions[] = [];
 
     constructor(private mainWindow: BrowserWindow) { }
 
     public setMainMenu() {
         this.fillRecentlyUsed();
+        this.fillProjectSubMenu();
         const menu = this.buildMainMenu();
         Menu.setApplicationMenu(menu);
-        this.updateProjectMenu();
     }
 
     private buildMainMenu() {
@@ -55,12 +56,7 @@ export default class MainMenuManager {
             },
             {
                 label: 'Project',
-                submenu: [{ 
-                    label: 'Refresh', 
-                    accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',
-                    click: () => this.onRefreshProjectClick(),
-                    id: 'PROJECT_REFRESH',
-                }]
+                submenu: this.projectSubMenu,
             },
             {
                 label: 'View',
@@ -103,14 +99,18 @@ export default class MainMenuManager {
         this.recentlyUsed = subMenu as MenuItemConstructorOptions[];
     }
 
-    private updateProjectMenu() {
-        const refreshItem = Menu.getApplicationMenu()?.getMenuItemById('PROJECT_REFRESH');
-        if (!refreshItem) {
-            console.warn("Can't find the Project|Refresh menu item");
-        } else {
-            refreshItem.enabled = uiState.displayMode === 'project';
-            console.log('Updating refresh project to ', refreshItem.enabled);
-        }
+    private fillProjectSubMenu() {
+        const enabled = uiState.displayMode === 'project';
+        this.projectSubMenu = [{ 
+            label: 'Refresh', 
+            accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',
+            click: () => this.onRefreshProjectClick(),
+            enabled,
+        }, {
+            label: 'Settings...',
+            click: () => this.onProjectSettingsClick(),
+            enabled,
+        }];
     }
 
     public onNewProjectClick() {
@@ -150,6 +150,10 @@ export default class MainMenuManager {
 
     private onRefreshProjectClick() {
         rendererNotifier.refreshProject();
+    }
+
+    private onProjectSettingsClick() {
+        rendererNotifier.projectSettings();
     }
 
     private onClearRecentlyOpenedClick() {

@@ -24,6 +24,7 @@ class App extends Component<{}, {}> {
     ipcRenderer.on('new-project', (sender: EventEmitter, folder: string) => {
       this.onNewProject(folder);
     });
+    wikiStore.changeProject();
   }
 
   onNewProject(folder: string) {
