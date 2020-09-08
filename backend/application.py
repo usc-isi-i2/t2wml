@@ -118,9 +118,13 @@ def load_project():
     :return:
     """
     path=request.form['path']
-    api_proj=apiProject.load(path)
-    project=Project.load(api_proj)
-    response=dict(pid = project.id)
+    project=Project.query.filter_by(file_directory=path).first()
+    if not project:
+        proj=apiProject.load(path)
+        project=Project.load(proj)
+    else:
+        project.create_project_file()
+    response ={"pid":project.id}
     response['project']=project.api_project.__dict__
     return response, 201
 

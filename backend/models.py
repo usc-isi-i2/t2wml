@@ -145,18 +145,13 @@ class Project(db.Model):
         proj.save()
         return proj
     
-    def get_api_project(self):
-        proj_path=os.path.join(self.directory, ".t2wmlproj")
-        if os.path.isfile(proj_path):
-            return apiProject.load(proj_path)
-        return self.create_project_file()
     
     @property
     def api_project(self):
         try:
             return self._api_proj
         except AttributeError:
-            self._api_proj=self.get_api_project()
+            self._api_proj=self.create_project_file()
             return self._api_proj
     
     @staticmethod
@@ -171,6 +166,7 @@ class Project(db.Model):
             #save for the future
             project.file_directory=str(p)
             db.session.commit()
+        project.create_project_file()
         return project
     
     def update_settings(self, settings):
