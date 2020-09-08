@@ -92,7 +92,7 @@ def create_project():
     This route creates a project
     :return:
     """
-    response = dict()
+
     directory = request.form['path']
     #check we're not overwriting existing project
     project_file = Path(directory) / ".t2wmlproj"
@@ -104,7 +104,9 @@ def create_project():
     api_proj.save()
     #...and the database id for it
     project = Project.load(api_proj)
-    response['pid'] = project.id
+    response=dict(pid = project.id)
+    response['project']=api_proj.__dict__
+
     return response, 201
 
 
@@ -116,11 +118,11 @@ def load_project():
     :return:
     """
     path=request.form['path']
-    project=Project.query.filter_by(file_directory=path).first()
-    if not project:
-        proj=apiProject.load(path)
-        project=Project.load(proj)
-    return {"pid":project.id}, 201
+    api_proj=apiProject.load(path)
+    project=Project.load(api_proj)
+    response=dict(pid = project.id)
+    response['project']=project.api_project.__dict__
+    return response, 201
 
 
 
@@ -160,6 +162,7 @@ def add_item_definitions(pid):
     if calc_params:
         serialized_item_table = serialize_item_table(calc_params)
         response.update(serialized_item_table)
+    response['project']=project.api_project.__dict__
     return response, 200
 
 
@@ -194,7 +197,7 @@ def upload_data_file(pid):
     response["tableData"] = table_data(calc_params)
     response["wikifierData"] = serialize_item_table(calc_params)
     response["yamlData"] = handle_yaml(calc_params)
-
+    response['project']=project.api_project.__dict__
     return response, 200
 
 
@@ -254,7 +257,7 @@ def upload_wikifier_output(pid):
         serialized_item_table = serialize_item_table(calc_params)
         # does not go into field wikifierData but is dumped directly
         response.update(serialized_item_table)
-
+    response['project']=project.api_project.__dict__
     return response, 200
 
 
@@ -291,7 +294,7 @@ def wikify_region(pid):
             data['problemCells'] = error_dict
         else:
             data['problemCells'] = False
-
+        data['project']=project.api_project.__dict__
         return data, 200
     return {}, 404
 
@@ -319,7 +322,7 @@ def upload_yaml(pid):
             response['yamlRegions'] = None
             raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
                 "Upload data file before applying YAML.")
-
+    response['project']=project.api_project.__dict__
     return response, 200
 
 
