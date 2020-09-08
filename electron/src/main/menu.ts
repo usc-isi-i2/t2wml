@@ -3,6 +3,9 @@ import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electro
 
 import { config } from './config';
 import { settings } from './settings';
+import { uiState } from './ui-state';
+import { rendererNotifier } from './renderer-notifier';
+import { render } from '@testing-library/react';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -13,6 +16,7 @@ export default class MainMenuManager {
         this.fillRecentlyUsed();
         const menu = this.buildMainMenu();
         Menu.setApplicationMenu(menu);
+        this.updateProjectMenu();
     }
 
     private buildMainMenu() {
@@ -51,6 +55,15 @@ export default class MainMenuManager {
                 ]
             },
             {
+                label: 'Project',
+                submenu: [{ 
+                    label: 'Refresh', 
+                    accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',
+                    click: () => this.onRefreshProjectClick(),
+                    id: 'PROJECT_REFRESH',
+                }]
+            },
+            {
                 label: 'View',
                 submenu: [
                     { role: 'zoomin' },
@@ -63,8 +76,7 @@ export default class MainMenuManager {
             {
                 label: 'Debug',
                 submenu: [
-                    { role: 'reload' },
-                    { role: 'forcereload' },
+                    { label: 'Reload App', click: () => this.onReloadAppClick() },
                     { role: 'toggledevtools' },
                 ]
             },
@@ -92,6 +104,16 @@ export default class MainMenuManager {
         this.recentlyUsed = subMenu as MenuItemConstructorOptions[];
     }
 
+    private updateProjectMenu() {
+        const refreshItem = Menu.getApplicationMenu()?.getMenuItemById('PROJECT_REFRESH');
+        if (!refreshItem) {
+            console.warn("Can't find the Project|Refresh menu item");
+        } else {
+            refreshItem.enabled = uiState.displayMode === 'project';
+            console.log('Updating refresh project to ', refreshItem.enabled);
+        }
+    }
+
     public onNewProjectClick() {
         const folders = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
@@ -99,7 +121,7 @@ export default class MainMenuManager {
             });
 
         if (folders) {
-            this.mainWindow!.webContents.send('new-project', folders[0]);
+            rendererNotifier.newProject(folders[0]);
         }
     }
 
@@ -115,12 +137,20 @@ export default class MainMenuManager {
         if (files) {
             const index = files[0].lastIndexOf('\\');
             const path =  files[0].substring(0, index);
-            this.mainWindow!.webContents.send('open-project', path);
+            rendererNotifier.openProject(path);
         }
     }
 
     private onOpenRecentProjectClick(folder: string) {
-        this.mainWindow!.webContents.send('open-project', folder);
+        rendererNotifier.openProject(folder);
+    }
+
+    private onReloadAppClick() {
+        this.mainWindow!.webContents.reloadIgnoringCache();
+    }
+
+    private onRefreshProjectClick() {
+        rendererNotifier.refreshProject();
     }
 
     private onClearRecentlyOpenedClick() {

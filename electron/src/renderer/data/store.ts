@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
 import { ipcRenderer } from 'electron';
+import { DisplayMode } from '@/shared/types';
 
 class ProjectState {
     @observable public pid: string;
@@ -92,8 +93,6 @@ class YamlEditorState {
 }
 
 
-type DisplayMode = 'project' | 'project-list';
-
 class WikiStore {
     @observable public project = new ProjectState();
     @observable public editors = new EditorsState();
@@ -106,6 +105,7 @@ class WikiStore {
 
     public changeProject(pid?: string, path?: string) {
         if (pid) {
+            debugger;
             this.displayMode = 'project';
             this.project.pid = pid;
             if (path) {
@@ -113,6 +113,7 @@ class WikiStore {
             }
         } else {
             this.displayMode = 'project-list';
+            ipcRenderer.send('show-project', null);
         }
     }
 }

@@ -12,6 +12,7 @@ import axios from 'axios';
 import { config } from './config';
 import MainMenuManager from './menu';
 import { RendererEventListener } from './renderer-event-listener';
+import { rendererNotifier } from './renderer-notifier';
 
 /* Splash Screen */
 let splashWindow: Electron.BrowserWindow | null;
@@ -62,6 +63,7 @@ function createMainWindow(): void {
     mainMenuManager = new MainMenuManager(mainWindow!);
     mainMenuManager!.setMainMenu();
     rendererEventListener.mainMenuManager = mainMenuManager;
+    rendererNotifier.mainWindow = mainWindow;
 
     mainWindow.once('ready-to-show', () => {
         mainWindow!.show();
