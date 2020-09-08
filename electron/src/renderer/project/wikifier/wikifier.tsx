@@ -541,7 +541,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       this.updateWikifier(qnodes, rowData);
 
       const { added, failed, updated } = json.widget;
-          let message = `✅ Properties file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
+          let message = `✅ Definitions file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
           if (failed.length) {
               message += '\n\nCheck the console for the failures reasons.'
           }
@@ -648,7 +648,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                     style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
                     onClick={() => { document.getElementById("file_wikidata")?.click(); }}
                 >
-                    import wikidata 
+                    Import Wikidata 
                 </Button>
             </OverlayTrigger>
 
