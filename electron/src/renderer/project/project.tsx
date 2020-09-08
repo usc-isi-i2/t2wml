@@ -31,6 +31,7 @@ interface ProjectState {
   showSettings: boolean;
   endpoint: string;
   warnEmpty: boolean;
+  name: string;
 
   showSpinner: boolean;
   errorMessage: ErrorMessage;
@@ -59,6 +60,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       showSettings: false,
       endpoint: '',
       warnEmpty: false,
+      name: '',
 
       showSpinner: false,
 
@@ -92,8 +94,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.requestService.getProjectFiles(this.props.id).then(json => {
       console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
       console.log(json);
-      document.title = json.name;
-
+      document.title = 't2wml: ' + json.name;
+      this.setState({name: json.name});
 
       // do something here
       const { tableData, yamlData, wikifierData, settings } = json;
@@ -186,6 +188,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     return (
       <div>
         <Navbar
+          name={this.state.name}
           showSettings={true}
           onShowSettingsClicked={() => this.onShowSettingsClicked()} />
 
