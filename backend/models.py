@@ -198,7 +198,7 @@ class SavedFile(db.Model):
     @classmethod
     def get_folder(cls, project):
         sub_folder = cls.sub_folder
-        folder =Path(project.directory)/sub_folder
+        folder =Path(project.directory)
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
@@ -260,14 +260,16 @@ class YamlFile(SavedFile):
     }
 
     @classmethod
-    def create_from_formdata(cls, project, form_data, sheet):
+    def create_from_formdata(cls, project, form_data, title, sheet):
         # placeholder function until we start uploading yaml files properly, as files
         yf = YamlFile(project_id=project.id)
         db.session.add(yf)
         db.session.commit()
 
         folder = cls.get_folder(project)
-        file_path = str(folder / (sheet.name + "_id" + str(yf.id) + ".yaml"))
+        if not title:
+            title=sheet.name+".yaml"
+        file_path = str(folder /  title)
         with open(file_path, 'w', newline='', encoding="utf-8") as f:
             f.write(form_data)
         name = Path(file_path).stem
@@ -295,7 +297,7 @@ class YamlFile(SavedFile):
         return saved_file
 
     def add_to_api_proj(self, sheet):
-        self.project.api_project.add_yaml_file(self.relative_path, sheet.data_file.relative_path, sheet.name)
+        self.project.api_project.add_yaml_file(self.relative_path, sheet.data_file.relative_path, sheet.name, overwrite=True)
         self.project.api_project.save()
     
 
@@ -320,7 +322,7 @@ class WikifierFile(SavedFile):
         return wf
 
     def add_to_api_proj(self):
-        self.project.api_project.add_wikifier_file(self.relative_path)
+        self.project.api_project.add_wikifier_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
 
 class PropertiesFile(SavedFile):
@@ -343,7 +345,7 @@ class PropertiesFile(SavedFile):
         return pf
     
     def add_to_api_proj(self):
-        self.project.api_project.add_wikidata_file(self.relative_path)
+        self.project.api_project.add_wikidata_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
 
     def create_from_dataframe(cls, project, df):
@@ -371,7 +373,7 @@ class ItemsFile(SavedFile):
         return wf    
     
     def add_to_api_proj(self):
-        self.project.api_project.add_wikidata_file(self.relative_path)
+        self.project.api_project.add_wikidata_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
 
 
@@ -424,7 +426,7 @@ class DataFile(SavedFile):
             raise ValueError("No such sheet")
     
     def add_to_api_proj(self):
-        self.project.api_project.add_data_file(self.relative_path)
+        self.project.api_project.add_data_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
 
 class DataSheet(db.Model):
