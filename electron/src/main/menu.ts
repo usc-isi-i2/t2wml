@@ -4,6 +4,8 @@ import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electro
 import { config } from './config';
 import { settings } from './settings';
 import { uiState } from './ui-state';
+import { rendererNotifier } from './renderer-notifier';
+import { render } from '@testing-library/react';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -119,7 +121,7 @@ export default class MainMenuManager {
             });
 
         if (folders) {
-            this.mainWindow!.webContents.send('new-project', folders[0]);
+            rendererNotifier.newProject(folders[0]);
         }
     }
 
@@ -135,12 +137,12 @@ export default class MainMenuManager {
         if (files) {
             const index = files[0].lastIndexOf('\\');
             const path =  files[0].substring(0, index);
-            this.mainWindow!.webContents.send('open-project', path);
+            rendererNotifier.openProject(path);
         }
     }
 
     private onOpenRecentProjectClick(folder: string) {
-        this.mainWindow!.webContents.send('open-project', folder);
+        rendererNotifier.openProject(folder);
     }
 
     private onReloadAppClick() {
@@ -148,7 +150,7 @@ export default class MainMenuManager {
     }
 
     private onRefreshProjectClick() {
-        // For now do nothing
+        rendererNotifier.refreshProject();
     }
 
     private onClearRecentlyOpenedClick() {
