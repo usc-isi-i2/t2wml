@@ -210,6 +210,7 @@ class TestLoadingProject(BaseClass):
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['load_from_path']=data
 
         #some of the results are sent back as unordered lists and need to be compared separately

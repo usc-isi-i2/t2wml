@@ -405,6 +405,7 @@ class DataFile(SavedFile):
         for sheet_name in spreadsheet:
             ps = DataSheet(name=sheet_name, data_file_id=self.id)
             db.session.add(ps)
+        db.session.commit()
         self.current_sheet_id = self.sheets[0].id
         db.session.commit()
 
