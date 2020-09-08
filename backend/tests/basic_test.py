@@ -54,6 +54,7 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_data_file']=data
+        data.pop('project')
         data['tableData'].pop('filename', None)
         self.expected_results_dict['add_data_file']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'add_data_file')
@@ -63,6 +64,7 @@ class TestBasicWorkflow(BaseClass):
         response=load_wikifier_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['add_wikifier_file']=data
         self.compare_jsons(data, 'add_wikifier_file')
 
@@ -72,6 +74,7 @@ class TestBasicWorkflow(BaseClass):
         response=load_item_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['add_items']=data
         self.compare_jsons(data, 'add_items')
 
@@ -80,6 +83,7 @@ class TestBasicWorkflow(BaseClass):
         response=load_yaml_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['add_yaml']=data
 
         #some of the results are sent back as unordered lists and need to be compared separately
@@ -146,6 +150,7 @@ class TestBasicWorkflow(BaseClass):
 
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['wikify_region']=data
         self.compare_jsons(data, 'wikify_region')
 
