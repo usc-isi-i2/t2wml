@@ -7,6 +7,7 @@ title: empty cells
 warn_for_empty_cells: false
 wikidata_files:
 - item_definitions.tsv
+- properties_all.tsv
 wikifier_files:
 - consolidated-wikifier.csv
 yaml_files:
