@@ -41,6 +41,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_02_get_project_files(self, client):
         data=get_project_files(client, pid)
+        data.pop('project')
         assert data == {
             'name': 'Unit test',
             'tableData': None,
