@@ -1,9 +1,12 @@
 data_files:
 - dataset.xlsx
-wikidata_files:
-- kgtk_item_defs.tsv
+directory: C:\Users\devora\C_sources\pedro\t2wml\backend\tests\files_for_tests\aid
+sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 specific_wikifiers: {}
 title: Unit test renamed
+warn_for_empty_cells: false
+wikidata_files:
+- kgtk_item_defs.tsv
 wikifier_files:
 - consolidated-wikifier.csv
 yaml_files:

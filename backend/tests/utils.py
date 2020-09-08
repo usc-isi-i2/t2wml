@@ -104,6 +104,7 @@ def load_yaml_file(client, pid, filename):
         response=client.post(url,
             data=dict(
             yaml=f.read()
+            title=""
             )
         )
     return response
