@@ -147,6 +147,7 @@ def get_project_files(pid):
         response["tableData"] = table_data(calc_params)
         response["wikifierData"] = serialize_item_table(calc_params)
         response["yamlData"] = handle_yaml(calc_params)
+    response['project']=project.api_project.__dict__
     return response, 200
 
 
