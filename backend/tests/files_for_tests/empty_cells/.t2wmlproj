@@ -4,7 +4,7 @@ directory: C:\Users\devora\C_sources\pedro\t2wml\backend\tests\files_for_tests\e
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 specific_wikifiers: {}
 title: empty cells
-warn_for_empty_cells: false
+warn_for_empty_cells: true
 wikidata_files:
 - item_definitions.tsv
 - properties_all.tsv
