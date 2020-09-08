@@ -8,14 +8,18 @@ class CalcParams:
         self.sheet_name=sheet_name
         self.yaml_path=yaml_path
         self.wiki_paths=wiki_paths or []
-    
+
+    @property
+    def project(self):
+        return Project.load(self.project_path)
+
     @property
     def sheet(self):
         return Sheet(self.data_path, self.sheet_name)
     
     @property
     def cache(self):
-        return CacheHolder(self.data_path, self.sheet_name, self.yaml_path)
+        return CacheHolder(self.project, self.data_path, self.sheet_name, self.yaml_path)
 
     @property
     def wikifier(self):
