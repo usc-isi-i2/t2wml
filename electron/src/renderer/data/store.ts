@@ -104,6 +104,7 @@ class WikiStore {
     @observable public displayMode: DisplayMode = 'project-list';
 
     public changeProject(pid?: string, path?: string) {
+        console.log("channge project to ", pid);
         if (pid) {
             debugger;
             this.displayMode = 'project';
