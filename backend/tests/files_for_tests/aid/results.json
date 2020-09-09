@@ -166,76 +166,6 @@
         "yamlData": null,
         "error": null
     },
-    "add_properties_file": {
-        "added": [
-            "P2006020001",
-            "P2006020002",
-            "P2006020003",
-            "P2006020004",
-            "P2006020005",
-            "P2006020006",
-            "P2006020007",
-            "P2006020008",
-            "P2006020009",
-            "P2006180001",
-            "P2006190001",
-            "P2006190002",
-            "P2006190003",
-            "P1687",
-            "P1476",
-            "P2699",
-            "P1813",
-            "P170",
-            "P767",
-            "P2860",
-            "P275",
-            "P356",
-            "P921",
-            "P625",
-            "P3896",
-            "P17",
-            "P276",
-            "P580",
-            "P582",
-            "P6339",
-            "P856",
-            "P6269",
-            "P527",
-            "P1880",
-            "P1114",
-            "Paid-security-002",
-            "Paid-security-003",
-            "Paid-security-004",
-            "Paid-security-005",
-            "Paid-security-006",
-            "Paid-security-007",
-            "Paid-security-008",
-            "Paid-security-009",
-            "Paid-security-010",
-            "Paid-security-011",
-            "Paid-security-012",
-            "Paid-security-013",
-            "Paid-security-014",
-            "Paid-security-015",
-            "Paid-security-016",
-            "Paid-security-017",
-            "Paid-security-018",
-            "Paid-security-019",
-            "Paid-security-020",
-            "Paid-security-021",
-            "Paid-security-022",
-            "Paid-security-023",
-            "Paid-security-024",
-            "Paid-security-025",
-            "Paid-security-026",
-            "Paid-security-027",
-            "Paid-security-028",
-            "Paid-security-029",
-            "Paid-security-030"
-        ],
-        "present": [],
-        "failed": []
-    },
     "add_wikifier_file": {
         "error": null,
         "qnodes": {
@@ -404,6 +334,111 @@
         ]
     },
     "add_items": {
+        "widget": {
+            "added": [
+                "aid-security-22",
+                "aid-security-47",
+                "aid-security-73",
+                "aid-security-103",
+                "aid-security-475",
+                "aid-security-782",
+                "aid-security-793",
+                "aid-security-942",
+                "aid-security-964",
+                "aid-security-1069",
+                "aid-security-1060",
+                "aid-security-1102",
+                "aid-security-1281",
+                "aid-security-1479",
+                "aid-security-1713",
+                "aid-security-1689",
+                "aid-security-1931",
+                "aid-security-1924",
+                "aid-security-1923",
+                "aid-security-1934",
+                "aid-security-2143",
+                "aid-security-2135",
+                "aid-security-2692",
+                "aid-security-2623",
+                "aid-security-2641",
+                "aid-security-2952",
+                "aid-security-2916",
+                "aid-security-3006",
+                "aid-security-2895",
+                "aid-security-2896",
+                "aid-security-2768",
+                "aid-security-2897",
+                "aid-security-2911",
+                "aid-security-2997",
+                "P2006020001",
+                "P2006020002",
+                "P2006020003",
+                "P2006020004",
+                "P2006020005",
+                "P2006020006",
+                "P2006020007",
+                "P2006020008",
+                "P2006020009",
+                "P2006180001",
+                "P2006190001",
+                "P2006190002",
+                "P2006190003",
+                "P248",
+                "P1687",
+                "P1476",
+                "P2699",
+                "P1813",
+                "P170",
+                "P767",
+                "P2860",
+                "P275",
+                "P356",
+                "P921",
+                "P625",
+                "P3896",
+                "P17",
+                "P276",
+                "P580",
+                "P582",
+                "P6339",
+                "P856",
+                "P6269",
+                "P527",
+                "P1880",
+                "P1114",
+                "Paid-security-002",
+                "Paid-security-003",
+                "Paid-security-004",
+                "Paid-security-005",
+                "Paid-security-006",
+                "Paid-security-007",
+                "Paid-security-008",
+                "Paid-security-009",
+                "Paid-security-010",
+                "Paid-security-011",
+                "Paid-security-012",
+                "Paid-security-013",
+                "Paid-security-014",
+                "Paid-security-015",
+                "Paid-security-016",
+                "Paid-security-017",
+                "Paid-security-018",
+                "Paid-security-019",
+                "Paid-security-020",
+                "Paid-security-021",
+                "Paid-security-022",
+                "Paid-security-023",
+                "Paid-security-024",
+                "Paid-security-025",
+                "Paid-security-026",
+                "Paid-security-027",
+                "Paid-security-028",
+                "Paid-security-029",
+                "Paid-security-030"
+            ],
+            "updated": [],
+            "failed": []
+        },
         "qnodes": {
             "B3": {
                 "main subject": {
@@ -454,7 +489,9 @@
             },
             "F2": {
                 "property": {
-                    "item": "Paid-security-002"
+                    "item": "Paid-security-002",
+                    "label": "UN",
+                    "desc": ""
                 }
             },
             "G1": {
@@ -464,7 +501,9 @@
             },
             "G2": {
                 "property": {
-                    "item": "Paid-security-003"
+                    "item": "Paid-security-003",
+                    "label": "INGO",
+                    "desc": ""
                 }
             },
             "H1": {
@@ -474,7 +513,9 @@
             },
             "H2": {
                 "property": {
-                    "item": "Paid-security-004"
+                    "item": "Paid-security-004",
+                    "label": "LNGO/NRCS",
+                    "desc": ""
                 }
             },
             "I4": {
@@ -552,7 +593,9 @@
                 "col": "F",
                 "row": "2",
                 "value": "UN",
-                "item": "Paid-security-002"
+                "item": "Paid-security-002",
+                "label": "UN",
+                "desc": ""
             },
             {
                 "context": "unit",
@@ -566,7 +609,9 @@
                 "col": "G",
                 "row": "2",
                 "value": "INGO",
-                "item": "Paid-security-003"
+                "item": "Paid-security-003",
+                "label": "INGO",
+                "desc": ""
             },
             {
                 "context": "unit",
@@ -580,7 +625,9 @@
                 "col": "H",
                 "row": "2",
                 "value": "LNGO/NRCS",
-                "item": "Paid-security-004"
+                "item": "Paid-security-004",
+                "label": "LNGO/NRCS",
+                "desc": ""
             },
             {
                 "context": "",
@@ -599,35 +646,35 @@
             "dataRegion": {
                 "color": "hsl(150, 50%, 90%)",
                 "list": [
+                    "G5",
+                    "G7",
+                    "H5",
+                    "H7",
+                    "H3",
+                    "F4",
+                    "G6",
+                    "F7",
                     "F8",
                     "F6",
-                    "G8",
-                    "F5",
-                    "H4",
                     "H8",
-                    "H6",
-                    "G7",
-                    "G4",
-                    "H5",
-                    "H3",
-                    "G3",
-                    "G5",
                     "F3",
-                    "F7",
-                    "G6",
-                    "F4",
-                    "H7"
+                    "G3",
+                    "H4",
+                    "G4",
+                    "F5",
+                    "G8",
+                    "H6"
                 ]
             },
             "item": {
                 "color": "hsl(200, 50%, 90%)",
                 "list": [
-                    "B7",
                     "B5",
+                    "B4",
                     "B3",
-                    "B6",
                     "B8",
-                    "B4"
+                    "B6",
+                    "B7"
                 ]
             },
             "qualifierRegion": {
@@ -639,7 +686,7 @@
             "referenceRegion": {
                 "color": "yellow",
                 "list": []
-            },
+            },            
             "error": {
                 "F3": {
                     "qualifier": {
@@ -770,8 +817,8 @@
             "errorCells": {
                 "color": "#FF3333",
                 "list": []
-            },
-            "cellStatements": {
+            },            
+             "cellStatements": {
                 "F3": {
                     "property": "Paid-security-002",
                     "value": "2",
@@ -821,9 +868,9 @@
                             "property": "P585",
                             "value": "1999-04-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B5"
@@ -838,9 +885,9 @@
                             "property": "P585",
                             "value": "2000-02-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B6"
@@ -872,9 +919,9 @@
                             "property": "P585",
                             "value": "2008-01-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 9,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y"
                         }
                     ],
                     "cell": "B8"
@@ -928,9 +975,9 @@
                             "property": "P585",
                             "value": "1999-04-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B5"
@@ -945,9 +992,9 @@
                             "property": "P585",
                             "value": "2000-02-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B6"
@@ -979,9 +1026,9 @@
                             "property": "P585",
                             "value": "2008-01-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 9,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y"
                         }
                     ],
                     "cell": "B8"
@@ -1035,9 +1082,9 @@
                             "property": "P585",
                             "value": "1999-04-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B5"
@@ -1052,9 +1099,9 @@
                             "property": "P585",
                             "value": "2000-02-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 10,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y-%m"
                         }
                     ],
                     "cell": "B6"
@@ -1086,9 +1133,9 @@
                             "property": "P585",
                             "value": "2008-01-01T00:00:00",
                             "calendar": "Q1985727",
-                            "precision": 11,
+                            "precision": 9,
                             "time_zone": 0,
-                            "format": "%Y-%m-%d"
+                            "format": "%Y"
                         }
                     ],
                     "cell": "B8"
@@ -1386,7 +1433,9 @@
                 },
                 "F2": {
                     "property": {
-                        "item": "Paid-security-002"
+                        "item": "Paid-security-002",
+                        "label": "UN",
+                        "desc": ""
                     }
                 },
                 "G1": {
@@ -1396,7 +1445,9 @@
                 },
                 "G2": {
                     "property": {
-                        "item": "Paid-security-003"
+                        "item": "Paid-security-003",
+                        "label": "INGO",
+                        "desc": ""
                     }
                 },
                 "H1": {
@@ -1406,7 +1457,9 @@
                 },
                 "H2": {
                     "property": {
-                        "item": "Paid-security-004"
+                        "item": "Paid-security-004",
+                        "label": "LNGO/NRCS",
+                        "desc": ""
                     }
                 },
                 "I4": {
@@ -1475,7 +1528,9 @@
                     "col": "F",
                     "row": "2",
                     "value": "UN",
-                    "item": "Paid-security-002"
+                    "item": "Paid-security-002",
+                    "label": "UN",
+                    "desc": ""
                 },
                 {
                     "context": "unit",
@@ -1489,7 +1544,9 @@
                     "col": "G",
                     "row": "2",
                     "value": "INGO",
-                    "item": "Paid-security-003"
+                    "item": "Paid-security-003",
+                    "label": "INGO",
+                    "desc": ""
                 },
                 {
                     "context": "unit",
@@ -1503,7 +1560,9 @@
                     "col": "H",
                     "row": "2",
                     "value": "LNGO/NRCS",
-                    "item": "Paid-security-004"
+                    "item": "Paid-security-004",
+                    "label": "LNGO/NRCS",
+                    "desc": ""
                 },
                 {
                     "context": "",

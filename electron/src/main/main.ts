@@ -1,13 +1,18 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions, MenuItem } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import * as treeKill from 'tree-kill';
+import treeKill from 'tree-kill';
+import * as fs from 'fs';
 
 import { spawn, ChildProcess } from 'child_process';
 import axios from 'axios';
+import { config } from './config';
+import MainMenuManager from './menu';
+import { RendererEventListener } from './renderer-event-listener';
+import { rendererNotifier } from './renderer-notifier';
 
 /* Splash Screen */
 let splashWindow: Electron.BrowserWindow | null;
@@ -35,56 +40,8 @@ function openSplashScreen(): void {
 
 /* Main Window */
 let mainWindow: Electron.BrowserWindow | null;
-
-// Main menu adapted from https://www.electronjs.org/docs/api/menu
-
-function buildMainMenu() {
-    const macAppleMenu: MenuItemConstructorOptions = {
-        label: 't2wml',
-        submenu: [
-          { role: 'hide' },
-          { role: 'hideothers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' }
-        ]
-    };
-    
-    const mainMenuTemplate: MenuItemConstructorOptions[] = [
-        {
-            label: 'File',
-            submenu: [
-                isMac() ? { role: 'close' } : { role: 'quit' }
-            ]
-        },
-        {
-            label: 'View',
-            submenu: [
-                { role: 'zoomin' },
-                { role: 'zoomout' },
-                { role: 'resetzoom' },
-                { type: 'separator' },
-                { role: 'togglefullscreen' }
-              ]
-        },
-        {
-            label: 'Debug',
-            submenu: [
-                { role: 'reload' },
-                { role: 'forcereload' },
-                { role: 'toggledevtools' },
-              ]
-        },
-    ]
-
-    if (isMac()) {
-        mainMenuTemplate.unshift(macAppleMenu);
-    }
-
-    const menu = Menu.buildFromTemplate(mainMenuTemplate);
-    return menu;
-}
-
+let mainMenuManager: MainMenuManager | null;
+const rendererEventListener = new RendererEventListener(); // Used by splash-screen and main window
 
 function createMainWindow(): void {
     // Create the browser window.
@@ -93,16 +50,30 @@ function createMainWindow(): void {
         width: 1600,
         show: false,
     });
-
+    
     // and load the index.html of the app.
-    mainWindow.loadURL('http://localhost:13000');  // TODO: Add random port
+    mainWindow.loadURL(
+        url.format({
+            pathname: path.join(__dirname, './index.html'),
+            protocol: 'file:',
+            slashes: true,
+        })
+    );
+
+    mainMenuManager = new MainMenuManager(mainWindow!);
+    mainMenuManager!.setMainMenu();
+    rendererEventListener.mainMenuManager = mainMenuManager;
+    rendererNotifier.mainWindow = mainWindow;
 
     mainWindow.once('ready-to-show', () => {
-        const menu = buildMainMenu();
-        Menu.setApplicationMenu(menu);
         mainWindow!.show();
-        splashWindow!.close();
-        splashWindow = null;
+
+        if (splashWindow) {
+            // On a Mac, the main window can be opened several times. There is
+            // no splash window in subsequent openings of the main window.
+            splashWindow.close();
+            splashWindow = null;
+        }
     });
     
     // Emitted when the window is closed.
@@ -114,46 +85,71 @@ function createMainWindow(): void {
 
 /* Backend Initialization */
 let backendProcess: ChildProcess | null;
-let backendUrl = '';
 
 function getBackendPath() {
     let filename = 't2wml-server';
-    if (isWindows()) {
+    if (config.platform === 'windows') {
         filename = 't2wml-server.exe';
     }
-    if (isProd()) {
-        return path.join(process.resourcesPath || __dirname, filename);
+
+    let pathname = path.join(process.resourcesPath || __dirname, filename);
+    if (fs.existsSync(pathname)) {
+        return pathname;
     }
-    return path.join(__dirname, '..', '..', 'backend', 'dist', filename);
+    console.warn(`Can't find embedded server at ${pathname}, looking for external one`);
+    pathname = path.join(__dirname, '..', '..', 'backend', 'dist', filename);
+
+    if (!fs.existsSync(pathname)) {
+        console.error(`Can't find any server, even not at ${pathname}`);
+        return null;
+    }
+
+    return pathname;
 }
 
-async function initBackend(): Promise<void> {
-    // const port = Math.floor(Math.random() * 20000) + 40000  // Choose a random port between 40000 and 60000
-    const port = 13000; // For now the frontend expects the backend to be on port 13000
+function initBackend() {
+    if (config.mode === 'dev') {
+        console.log(`DEV MODE - start the backend yourself on ${config.backend}`);
+        return;
+    }
+
+    const port = Math.floor(Math.random() * 20000) + 40000  // Choose a random port between 40000 and 60000
+    // const port = 13000; // For now the frontend expects the backend to be on port 13000
     const backendPath = getBackendPath();
-    console.log(`Spawning backend from ${backendPath}, on port ${port}`);
-    try {
-        backendProcess = spawn(backendPath, [port.toString()]);
-        console.log(`Backend running form ${backendPath} on port ${port}`);
-    } catch(err) {
-        console.error("Can't run backend: ", err);
+
+    if (!backendPath) {
+        console.error('No t2wml without a backend');
         app.quit();
         return;
     }
 
-    backendUrl = `http://localhost:${port}`;
+    config.backend = `http://localhost:${port}/`;
+
+    console.log(`Spawning backend from ${backendPath}, on port ${port}`);
+    try {
+        backendProcess = spawn(backendPath, [port.toString()]);
+    } catch(err) {
+        console.error("Can't run backend: ", err);
+        app.quit();
+    }
+}
+
+async function waitForBackend() {
+    const url = `${config.backend}api/is-alive`;
+
+    console.log(`Waiting for backend at ${url}...`);
     for(let retryCount=0; retryCount < 120; retryCount++) {
         // Try accessing the backend, see if we get a response
         try {
-            await axios.get(`${backendUrl}/api/is-alive`);
-            console.log('Backend is ready');
+            await axios.get(url);
+            console.log(`Backend is ready`);
             return;
         } catch(error) {
             await sleep(500); // Wait a bit before trying again
         }
     }
 
-    console.error("Can't open backend");
+    console.error('Backend is not responding, quitting');
     app.quit();
 }
 
@@ -164,27 +160,16 @@ async function sleep(ms: number) {
     });
 }
 
-function isProd() {
-    return process.env.NODE_ENV === 'production';
-}
-
-function isMac() {
-    return process.platform === 'darwin';
-}
-
-function isWindows() {
-    return process.platform === 'win32';
-}
-
 /* App Initilization */
 async function initApp(): Promise<void> {
     openSplashScreen();
-    await initBackend();
+    initBackend();
+    await waitForBackend();
     
-    createMainWindow();  // WIll close the splash window
+    createMainWindow();  // Will close the splash window
 }
 
-if (!isProd()) {
+if (config.mode !== 'prod') {
     app.commandLine.appendSwitch('remote-debugging-port', '9223');
     app.commandLine.appendSwitch('enable-logging');
 }
@@ -194,7 +179,7 @@ app.once('ready', initApp);
 app.on('window-all-closed', async () => {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (!isMac()) {
+    if (config.platform !== 'mac') {
         app.quit();
     }
 });
@@ -207,10 +192,11 @@ app.on('activate', () => {
     }
 });
 
+
 /* Shutting down */
 app.on('will-quit', (event) => {
     if (backendProcess) {
-        console.log('Killing child process');
+        console.log('Killing backend process');
 
         // Killing the backend process takes a little while, we have to
         // wait until it's done before actually quitting, or else on Windows

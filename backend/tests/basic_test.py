@@ -1,7 +1,8 @@
 import json
 import os
-
-from tests.utils import client, BaseClass
+from tests.utils import (client, BaseClass, create_project, sanitize_highlight_region,
+                load_data_file, load_yaml_file, get_project_files,
+                load_wikifier_file, load_item_file)
     
 
 pid=None #we need to use a global pid for some reason... self.pid does not work.
@@ -13,7 +14,7 @@ class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
 
-    def test_0_get_projects_list(self, client):
+    def test_00_get_projects_list(self, client):
         #GET /api/projects
         response=client.get('/api/projects') 
         data = response.data.decode("utf-8")
@@ -22,22 +23,25 @@ class TestBasicWorkflow(BaseClass):
 
     def test_01_add_project(self, client):
         #POST /api/project
-        response=client.post('/api/project',
-            data=dict(
-                ptitle="Unit test"
-            )
-        )
+        global pid
+        pid=create_project(client)
+        
+    
+    def test_01b_change_project_name(self, client):
+        
+        url='/api/project/{pid}'.format(pid=pid)
+        ptitle="Unit test"
+        response=client.put(url,
+                data=dict(
+                ptitle=ptitle
+            )) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
-        global pid
-        pid=str(data['pid'])
-        assert response.status_code==201
+        assert data['projects'][0]['ptitle']==ptitle
 
     def test_02_get_project_files(self, client):
-        url= '/api/project/{pid}'.format(pid=pid)
-        response=client.get(url)
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data=get_project_files(client, pid)
+        data.pop('project')
         assert data == {
             'name': 'Unit test',
             'tableData': None,
@@ -46,94 +50,47 @@ class TestBasicWorkflow(BaseClass):
         }
 
     def test_03_add_data_file(self, client):   
-        url = '/api/data/{pid}'.format(pid=pid)
         filename=os.path.join(self.files_dir, "dataset.xlsx")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
+        response=load_data_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_data_file']=data
+        data.pop('project')
         data['tableData'].pop('filename', None)
         self.expected_results_dict['add_data_file']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'add_data_file')
 
-    def test_04_add_properties_file(self, client):
-        url = '/api/project/{pid}/properties'.format(pid=pid)
-        filename=os.path.join(self.files_dir, "kgtk_properties.tsv")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        self.results_dict['add_properties_file']=data
-        self.compare_jsons(data, 'add_properties_file')
-
     def test_05_add_wikifier_file(self, client):
-        url='/api/wikifier/{pid}'.format(pid=pid)
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
+        response=load_wikifier_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['add_wikifier_file']=data
         self.compare_jsons(data, 'add_wikifier_file')
 
 
     def test_06_add_items_file(self, client):
-        #POST /api/project/{pid}/items
-        url='/api/project/{pid}/items'.format(pid=pid)
         filename=os.path.join(self.files_dir, "kgtk_item_defs.tsv")
-        with open(filename, 'rb') as f:
-            response=client.post(url,
-                data=dict(
-                file=f
-                )
-            )
-
+        response=load_item_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['add_items']=data
         self.compare_jsons(data, 'add_items')
 
     def test_08_add_yaml_file(self, client):
-        url='/api/yaml/{pid}'.format(pid=pid)
         filename=os.path.join(self.files_dir, "test.yaml")
-        with open(filename, 'r') as f:
-            response=client.post(url,
-                data=dict(
-                yaml=f.read()
-                )
-            )
-
+        response=load_yaml_file(client, pid, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['add_yaml']=data
 
         #some of the results are sent back as unordered lists and need to be compared separately
-        set_keys=[]
-        for key in data["yamlRegions"]:
-            if "list" in data["yamlRegions"][key]:
-                set_keys.append(key)
-                test1=set(data["yamlRegions"][key]["list"])
-                test2=set(self.expected_results_dict["add_yaml"]["yamlRegions"][key]["list"])
-                assert test1==test2
-        for key in set_keys:
-            data["yamlRegions"].pop(key, None)
-            self.expected_results_dict["add_yaml"]["yamlRegions"].pop(key, None)
+        dict_1=data["yamlRegions"]
+        dict_2=self.expected_results_dict["add_yaml"]["yamlRegions"]
+        sanitize_highlight_region(dict_1, dict_2)
 
         self.compare_jsons(data, 'add_yaml')
 
@@ -194,30 +151,29 @@ class TestBasicWorkflow(BaseClass):
 
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        data.pop('project')
         self.results_dict['wikify_region']=data
         self.compare_jsons(data, 'wikify_region')
 
-    def test_13_change_project_name(self, client):
-        url='/api/project/{pid}'.format(pid=pid)
-        ptitle="Unit test renamed"
-        response=client.put(url,
-                data=dict(
-                ptitle=ptitle
-            )) 
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        assert data['projects'][0]['ptitle']==ptitle
-
-    def test_14_change_sparql_endpoint(self, client):
+    def test_14_settings(self, client):
         from t2wml.settings import t2wml_settings
-        #PUT '/api/project/{pid}/sparql'
-        url='/api/project/{pid}/sparql'.format(pid=pid)
+        #PUT '/api/project/{pid}/settings'
+        url='/api/project/{pid}/settings'.format(pid=pid)
         endpoint='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         response=client.put(url,
                 data=dict(
-                endpoint=endpoint
+                endpoint=endpoint, 
+                warnEmpty=False
             )) 
         assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
+
+        #GET '/api/project/{pid}/settings'
+        url='/api/project/{pid}/settings'.format(pid=pid)
+        response=client.get(url) 
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        assert data["endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
+        assert data["warnEmpty"]==False
 
     def test_99_delete_project(self, client):
         #this test must be sequentially last (do not run pytest in parallel)
@@ -233,3 +189,39 @@ class TestBasicWorkflow(BaseClass):
 
 
 
+class TestLoadingProject(BaseClass):
+    files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
+    expected_results_path=os.path.join(files_dir, "project_results.json")
+
+    def test_10_load_from_path(self, client):
+        response=client.post('/api/project/load',
+        data=dict(
+                path=self.files_dir
+            )
+        )
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        global pid
+        pid=str(data['pid'])
+        assert response.status_code==201
+    
+    def test_11_get_loaded_yaml_files(self, client):
+        url= '/api/project/{pid}'.format(pid=pid)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        data.pop('project')
+        self.results_dict['load_from_path']=data
+
+        #some of the results are sent back as unordered lists and need to be compared separately
+        set_keys=[]
+        dict_1=data["yamlData"]["yamlRegions"]
+        dict_2=self.expected_results_dict["load_from_path"]["yamlData"]["yamlRegions"]
+        sanitize_highlight_region(dict_1, dict_2)
+
+        data['tableData'].pop('filename', None)
+        self.expected_results_dict['load_from_path']['tableData'].pop('filename', None)
+
+        self.compare_jsons(data, 'load_from_path')
+
+    

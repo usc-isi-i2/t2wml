@@ -1,15 +1,13 @@
 statementMapping:
   region:
-    - left: C
-      right: D
-      top: 5
-      bottom: 15
+    - range: C5:D15
       skip_rows:
         - =value[B:D, $row] == "" and value[A, $row] != ""
   template:
     item: =item[A, $row]
     property: P100024 # murder
     value: =value[$col, $row]
+    unit: Qnumber_incidents
     qualifier:
       - property: P585 #point in time
         value: =value[A, $row-$n] != "" and value[B:D, $row-$n] == "" -> value[A, $row-$n]

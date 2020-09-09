@@ -1,6 +1,47 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.3.4:
+-------------------------
+* t2wml-api version 0.0.10
+* uploading a file with the same name as a file present in the folder will overwrite the file in the folder (we will eventually add a warning to user and option to cancel)
+* improvements to how calculation cache checks if fresh or not
+* consolidated upload properties/upload items buttons into Import Entities button
+* Recent projects menu item
+* added back support for new/load project buttons
+* added ability to reload page with F5/⌘R
+* added settings menu item
+* small design tweaks, like displaying project name, cursor changing on links, how date is displayed
+* bug fixes in installer:
+   - issue 190
+   - issue 192
+   - issue 200
+   - weirdly large installer
+* bug fixes:
+   - loading a project from .t2wmlproj does not import entities properly
+   - do not allow multiple projects with same directory
+
+Changes in version 2.3.3:
+-------------------------
+* Full Electron executable, serving pages without an intermediate frontend
+* File | Open and File | New operations
+* Better support for project files, and mapping projects to directories
+* Icons!
+
+Changes in version 2.2.0:
+-------------------------
+* t2wml-api version 0.0.8
+* added support for uploading projects
+* added setting for warning for empty cells
+* when loading an invalid yaml, at least return the yaml content
+* installer now has access to developer console
+* bug fixes:
+  - added some missing utf-8 support
+  - sparql endpoint changes were not being propagated
+  - changing sheets error
+
+
+
 Changes in version 2.1.1:
 ------------------------
 * t2wml-api version 0.0.7

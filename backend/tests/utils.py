@@ -2,7 +2,8 @@ import tempfile
 import os
 import pytest
 import json
-
+from pathlib import Path
+from uuid import uuid4
 from flask_migrate import upgrade
 from application import app
 
@@ -58,3 +59,81 @@ class BaseClass:
                 assert data[key]==expected_data[key]
             except AssertionError as e:
                 self.recurse_lists_and_dicts(data[key], expected_data[key])
+
+
+def sanitize_highlight_region(dict_1, dict_2):
+    set_keys=[]
+    for key in dict_1:
+        if "list" in dict_1[key]:
+            set_keys.append(key)
+            test1=set(dict_1[key]["list"])
+            test2=set(dict_2[key]["list"])
+            assert test1==test2
+    for key in set_keys:
+        dict_1.pop(key, None)
+        dict_2.pop(key, None)
+    return set_keys
+
+
+def create_project(client):
+    path=os.path.join(os.path.dirname(__file__), "project_dirs", str(uuid4()))
+    os.makedirs(path)
+    response=client.post('/api/project',
+        data=dict(
+            path=path
+        )
+    )
+    assert response.status_code==201
+    data = response.data.decode("utf-8")
+    data = json.loads(data)
+    pid=str(data['pid'])
+    return pid
+
+def load_data_file(client, pid, filename):
+    url = '/api/data/{pid}'.format(pid=pid)
+    with open(filename, 'rb') as f:
+        response=client.post(url,
+            data=dict(
+            file=f
+            )
+        )
+    return response
+
+def load_yaml_file(client, pid, filename):
+    url='/api/yaml/{pid}'.format(pid=pid)
+    title=Path(filename).name
+    with open(filename, 'r', encoding="utf-8") as f:
+        response=client.post(url,
+            data=dict(
+            yaml=f.read(),
+            title=title
+            )
+        )
+    return response
+
+def load_wikifier_file(client, pid, filename):
+    url='/api/wikifier/{pid}'.format(pid=pid)
+    with open(filename, 'rb') as f:
+        response=client.post(url,
+            data=dict(
+            file=f
+            )
+        )
+    return response
+
+def load_item_file(client, pid, filename):
+    url='/api/project/{pid}/entity'.format(pid=pid)
+    with open(filename, 'rb') as f:
+        response=client.post(url,
+            data=dict(
+            file=f
+            )
+        )
+    return response
+
+def get_project_files(client, pid):
+    url= '/api/project/{pid}'.format(pid=pid)
+    response=client.get(url)
+    data = response.data.decode("utf-8")
+    data = json.loads(data)
+    return data

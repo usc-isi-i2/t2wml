@@ -1,17 +1,13 @@
 statementMapping:
   region:
-    - left: D
-      right: F
-      top: 5
-      bottom: 13 # =value[B:, $] == ""
+    - range: D5:F13
       skip_rows:
         - =value[C, $row] == "Total"
-      skip_cells:
-        - =value[$col, $row] == "n/a"
   template:
     item: =item[A, $row]
     property: P100024 # murder
     value: =value[$col, $row]
+    unit: Qnumber_incidents
     qualifier:
       - property: P585 # point in time
         value: =value[$col, 4]

@@ -1,22 +1,28 @@
 statementMapping:
   region:
-    - left: D
-      right: F
-      top: 4
-      bottom: 9
+    - range: D4:F9
   template:
+    # item is the main subject, in this case the country;
+    # when is the cell in $col,$row, the corresponding 
+    # country is in column A, and in the same $row
     item: =item[A, $row]
     property: P100024 # murder
     value: =value[$col, $row]
-    #unit: D1002
+    unit: Qnumber_incidents
     qualifier:
-      - property: P585
+      - property: P585 # point in time
+        # when value is in $col, $row, the corresponding
+        # time is in the same $col column and in row 3
         value: =value[$col, 3]
         calendar: Q1985727
         precision: year
         time_zone: 0
-        format: "%Y"
+        format: "%Y" # the format of 4-digit years
       - property: P6001 # applies to people
+        # when the value is in $col, $row, the corresponding
+        # gender is in column C and the same $row
         value: =item[C, $row]
       - property: P123 #source
+        # when the value is in $col, $row, the corresponding
+        # source is in column B and the same $row
         value: =item[B, $row]
