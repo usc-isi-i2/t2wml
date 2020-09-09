@@ -1,4 +1,4 @@
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 
@@ -103,11 +103,12 @@ class WikiStore {
     @observable public yaml = new YamlEditorState();
     @observable public displayMode: DisplayMode = 'project-list';
 
+    @action
     public changeProject(pid?: string, path?: string) {
         if (pid) {
-            debugger;
             this.displayMode = 'project';
             this.project.pid = pid;
+            this.project.path = path;
             if (path) {
                 ipcRenderer.send('show-project', path)
             }

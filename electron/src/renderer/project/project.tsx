@@ -90,10 +90,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     wikiStore.wikifier.showSpinner = true;
 
     // fetch project files
-    console.log("<App> -> %c/get_project_files%c for previous files", LOG.link, LOG.default);
     this.requestService.getProjectFiles(this.props.id).then(json => {
-      console.log("<App> <- %c/get_project_files%c with:", LOG.link, LOG.default);
-      console.log(json);
       document.title = 't2wml: ' + json.name;
       this.setState({name: json.name});
 
@@ -133,7 +130,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
-      console.log(error);
+      console.error("Can't fetch project: ", error);
       error.errorDescription += "\n\nCannot fetch project!";
       this.setState({ errorMessage: error });
       //    alert("Cannot fetch project files!\n\n" + error);
@@ -161,18 +158,15 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   handleSaveSettings() {
-    console.log("<App> updated settings");
-
     // update settings
     this.setState({ showSettings: false });
 
     // notify backend
-    console.log("<App> -> %c/update_settings%c", LOG.link, LOG.default);
     const formData = new FormData();
     formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
     formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
     this.requestService.updateSettings(this.props.id, formData).catch((error: ErrorMessage) => {
-      console.log(error);
+      console.error('Error updating settings: ', error);
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
     });
