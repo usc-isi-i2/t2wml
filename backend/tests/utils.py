@@ -2,6 +2,7 @@ import tempfile
 import os
 import pytest
 import json
+from pathlib import Path
 from uuid import uuid4
 from flask_migrate import upgrade
 from application import app
@@ -100,10 +101,12 @@ def load_data_file(client, pid, filename):
 
 def load_yaml_file(client, pid, filename):
     url='/api/yaml/{pid}'.format(pid=pid)
+    title=Path(filename).name
     with open(filename, 'r', encoding="utf-8") as f:
         response=client.post(url,
             data=dict(
-            yaml=f.read()
+            yaml=f.read(),
+            title=title
             )
         )
     return response

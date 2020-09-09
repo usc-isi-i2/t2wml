@@ -43,7 +43,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.state = {
       // yaml
       yamlText: defaultYamlText,
-      yamlTitle: "Untitled.yaml",
+      yamlTitle: "",
       yamlJson: null,
       isValidYaml: true,
       errMsg: "",
@@ -72,6 +72,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
     const formData = new FormData();
     formData.append("yaml", this.state.yamlText);
+    formData.append("title", this.state.yamlTitle);
     // const sheetName = window.TableViewer.state.currSheetName;
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)

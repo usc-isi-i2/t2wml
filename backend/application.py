@@ -312,6 +312,7 @@ def upload_yaml(pid):
     """
     project = get_project(pid)
     yaml_data = request.form["yaml"]
+    yaml_title = request.form["title"]
     response = {"error": None,
                 "yamlRegions": None}
     if not string_is_valid(yaml_data):
@@ -320,7 +321,7 @@ def upload_yaml(pid):
     else:
         if project.current_file:
             sheet = project.current_file.current_sheet
-            yf = YamlFile.create_from_formdata(project, yaml_data, sheet)
+            yf = YamlFile.create_from_formdata(project, yaml_data, yaml_title, sheet)
             calc_params=get_calc_params(project)
             response['yamlRegions'] = highlight_region(calc_params)
         else:
