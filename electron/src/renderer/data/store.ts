@@ -105,7 +105,6 @@ class WikiStore {
 
     @action
     public changeProject(pid?: string, path?: string) {
-        console.log("channge project to ", pid);
         if (pid) {
             this.displayMode = 'project';
             this.project.pid = pid;
