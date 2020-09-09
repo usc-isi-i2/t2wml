@@ -7,14 +7,26 @@ import wikiStore from './data/store';
 import RequestService from './common/service';
 import { ipcRenderer, EventEmitter } from 'electron';
 import { ErrorMessage, LOG } from './common/general';
+import ToastMessage from './common/toast';
+import { Spinner } from 'react-bootstrap';
 
+
+interface AppState {
+  errorMessage: ErrorMessage;
+  showSpinner: boolean;
+}
 
 @observer
-class App extends Component<{}, {}> {
+class App extends Component<{}, AppState> {
   private requestService: RequestService;
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
+
+    this.state = {
+      errorMessage: {} as ErrorMessage,
+      showSpinner: false,
+    }
   }
 
   componentDidMount() {
@@ -38,10 +50,10 @@ class App extends Component<{}, {}> {
   }
 
   async handleNewProject(folder: string) {
-    // this.setState({ errorMessage: {} as ErrorMessage });
+    this.setState({ errorMessage: {} as ErrorMessage });
 
     // before sending request
-    // this.setState({ showSpinner: true });
+    this.setState({ showSpinner: true });
 
     // send request
     const formData = new FormData();
@@ -62,14 +74,14 @@ class App extends Component<{}, {}> {
       }
 
       // follow-ups (success)
-      // this.setState({ showCreateProject: false, showSpinner: false });
+      this.setState({ showSpinner: false });
 
-    } catch (error) { // :ErrorDEscription
+    } catch (error) {
       error.errorDescription += "\n\nCannot create project!";
-      // this.setState({ errorMessage: error });
+      this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      // this.setState({ showCreateProject: false, showSpinner: false });
+      this.setState({ showSpinner: false });
     }
   }
 
@@ -97,20 +109,27 @@ class App extends Component<{}, {}> {
       }
 
       // follow-ups (success)
-      this.setState({ showLoadProject: false, showSpinner: false });
+      this.setState({ showSpinner: false });
 
-    } catch (error) { // :ErrorDEscription
+    } catch (error) {
       error.errorDescription += "\n\nCannot load project!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      this.setState({ showLoadProject: false, showSpinner: false });
+      this.setState({ showSpinner: false });
     }
   }  
   
   render() {
     return (
       <div>
+        { this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
+        
+        {/* loading spinner */}
+        <div className="mySpinner" hidden={!this.state.showSpinner} style={{ height: "100%" }}>
+          <Spinner animation="border" />
+        </div>
+        
         { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project id={wikiStore.project.pid }/> }
       </div>
     );
