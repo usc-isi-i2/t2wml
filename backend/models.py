@@ -118,7 +118,7 @@ class Project(db.Model):
         for f in api_proj.wikifier_files:
             wf=WikifierFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
 
-        for f in api_proj.wikidata_files:
+        for f in api_proj.entity_files:
             pf=PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
             add_nodes_from_file(pf.file_path)
         return project
@@ -136,11 +136,11 @@ class Project(db.Model):
 
         property_files=PropertiesFile.query.filter_by(project_id=self.id)
         for p_f in property_files:
-            proj.add_wikidata_file(p_f.relative_path)
+            proj.add_entity_file(p_f.relative_path)
 
         item_files=ItemsFile.query.filter_by(project_id=self.id)
         for i_f in item_files:
-            proj.add_wikidata_file(i_f.relative_path)
+            proj.add_entity_file(i_f.relative_path)
         
         proj.save()
         return proj
@@ -345,7 +345,7 @@ class PropertiesFile(SavedFile):
         return pf
     
     def add_to_api_proj(self):
-        self.project.api_project.add_wikidata_file(self.relative_path, overwrite=True)
+        self.project.api_project.add_entity_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
 
     def create_from_dataframe(cls, project, df):
@@ -373,7 +373,7 @@ class ItemsFile(SavedFile):
         return wf    
     
     def add_to_api_proj(self):
-        self.project.api_project.add_wikidata_file(self.relative_path, overwrite=True)
+        self.project.api_project.add_entity_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
 
 

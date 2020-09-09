@@ -122,7 +122,7 @@ def load_wikifier_file(client, pid, filename):
     return response
 
 def load_item_file(client, pid, filename):
-    url='/api/project/{pid}/wikidata'.format(pid=pid)
+    url='/api/project/{pid}/entity'.format(pid=pid)
     with open(filename, 'rb') as f:
         response=client.post(url,
             data=dict(
