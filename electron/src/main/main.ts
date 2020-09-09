@@ -67,8 +67,13 @@ function createMainWindow(): void {
 
     mainWindow.once('ready-to-show', () => {
         mainWindow!.show();
-        splashWindow!.close();
-        splashWindow = null;
+
+        if (splashWindow) {
+            // On a Mac, the main window can be opened several times. There is
+            // no splash window in subsequent openings of the main window.
+            splashWindow.close();
+            splashWindow = null;
+        }
     });
     
     // Emitted when the window is closed.
