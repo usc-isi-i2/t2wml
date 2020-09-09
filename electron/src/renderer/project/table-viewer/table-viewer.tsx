@@ -94,8 +94,6 @@ class TableViewer extends Component<{}, TableState> {
       errorMessage: {} as ErrorMessage,
     };
 
-    console.log(this.state.columnDefs)
-
     // init functions
     this.handleOpenTableFile = this.handleOpenTableFile.bind(this);
     this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
@@ -502,6 +500,7 @@ class TableViewer extends Component<{}, TableState> {
       tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
       tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
     }
+    console.log("*********update table data")
     this.setState({
       filename: tableData?.filename || null,
       isCSV: tableData?.isCSV || false,
@@ -552,7 +551,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
 
     // const { showToast0, showToast1, msgInToast1 } = this.state;
     const { filename, isCSV, columnDefs, rowData } = this.state;

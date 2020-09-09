@@ -69,6 +69,8 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   componentDidMount() {
+    console.log("componentDidMount, props.id,",  this.props.id)
+
     if (this.props.id) {
       this.loadProject();
     } else {
@@ -79,6 +81,7 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
+    console.log("componentDidUpdate, props.id, prev id==", this.props.id, prevProps.id)
     if (this.props.id !== prevProps.id) {
       this.loadProject();
     }

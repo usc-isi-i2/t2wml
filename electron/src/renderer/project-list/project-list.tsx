@@ -283,7 +283,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
             {/* title */}
             <td>
-              <span style={{ "color": "hsl(200, 100%, 30%)" }} onClick={() => this.projectClicked(pid, directory)}>
+              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(pid, directory)}>
                   {ptitle}
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
