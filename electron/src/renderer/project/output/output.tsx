@@ -42,8 +42,6 @@ interface OutputState {
 
   propertyName: string;
   errorMessage: ErrorMessage;
-
-  queryDataCount: number;
 }
 
 @observer
@@ -82,7 +80,6 @@ class Output extends Component<{}, OutputState> {
       isDownloading: false,
 
       errorMessage: {} as ErrorMessage,
-      queryDataCount: 0,
     } as OutputState;
 
 
@@ -168,7 +165,7 @@ class Output extends Component<{}, OutputState> {
     }
   }
 
-  updateOutput(colName: string, rowName: string, json: any) {
+  async updateOutput(colName: string, rowName: string, json: any) {
     // remove current status
     this.removeOutput();
     if(json["error"]) {
@@ -193,7 +190,7 @@ class Output extends Component<{}, OutputState> {
       this.setState({ itemID: itemID, itemName: cache[itemID] });
     } else {
       this.setState({ itemID: itemID, itemName: "N/A" });
-      this.queryWikidata(itemID, "itemName");
+      await this.queryWikidata(itemID, "itemName");
       isAllCached = false;
     }
     
@@ -208,7 +205,7 @@ class Output extends Component<{}, OutputState> {
       this.setState({ propertyID: propertyID, propertyName: cache[propertyID] });
     } else {
       this.setState({ propertyID: propertyID });
-      this.queryWikidata(propertyID, "propertyName");
+      await this.queryWikidata(propertyID, "propertyName");
       isAllCached = false;
     }
 
@@ -224,7 +221,7 @@ class Output extends Component<{}, OutputState> {
       if (cache[unit] !== undefined) {
         this.setState({ unit: cache[unit] });
       } else {
-        this.queryWikidata(unit, "unit");  
+        await this.queryWikidata(unit, "unit");  
         isAllCached = false;
       }
     } else {
@@ -242,7 +239,7 @@ class Output extends Component<{}, OutputState> {
         if (cache[qualifier["propertyID"]] !== undefined) {
           qualifier["propertyName"] = cache[qualifier["propertyID"]];
         } else {
-          this.queryWikidata(qualifier["propertyID"], "qualifiers", i, "propertyName");
+          await this.queryWikidata(qualifier["propertyID"], "qualifiers", i, "propertyName");
           isAllCached = false;
         }
 
@@ -252,7 +249,7 @@ class Output extends Component<{}, OutputState> {
             qualifier["valueID"] = qualifier["valueName"];
             qualifier["valueName"] = cache[qualifier["valueName"]];
           } else {
-            this.queryWikidata(qualifier["valueName"], "qualifiers", i, "valueName");
+            await this.queryWikidata(qualifier["valueName"], "qualifiers", i, "valueName");
             isAllCached = false;
           }
         }
@@ -271,11 +268,11 @@ class Output extends Component<{}, OutputState> {
     }
     this.setState({ qualifiers: qualifiers });
     
-    wikiStore.table.showSpinner = false;
-    wikiStore.output.showSpinner = false;
+    // wikiStore.table.showSpinner = false;
+    // wikiStore.output.showSpinner = false;
 
     if (isAllCached) {
-        wikiStore.output.showSpinner = false;
+        // wikiStore.output.showSpinner = false;
     }
   }
 
@@ -295,44 +292,43 @@ class Output extends Component<{}, OutputState> {
     });
   }
 
-  queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
+  async queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
     // FUTURE: use <local stroage> to store previous query result even longer
     // Show output after all the qualifiers label returned.
-    this.setState({ queryDataCount: this.state.queryDataCount + 1 });
     // before send request
-    wikiStore.output.showSpinner = true;
+    // wikiStore.output.showSpinner = true;
     
-    // Talya: Use async/await here
-    this.requestService.getQnode(this.pid, node).then((res) => {
-        let name = res.label;
-        if (!name) {
-          name = node;
-        }
-        if (field === "itemName") {
-        this.setState({ itemName: name });
-        } else if (field === "propertyName") {
-        this.setState({ propertyName: name });
-        } else if (field === "unit") {
-          this.setState({ unit: name });
-        } else if (field === "qualifiers") {
-        const qualifiers = this.state.qualifiers;
-            if (subfield === "propertyName") {
-                qualifiers[index]["propertyName"] = name;
-            } else if (subfield === "valueName") {
-                qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
-                qualifiers[index]["valueName"] = name;
-            }
-            this.setState({ qualifiers: qualifiers });
-        }
-        const cache = this.state.cache;
-        cache[node] = name;
-        this.setState({ 
-            cache: cache, 
-            queryDataCount: this.state.queryDataCount - 1 
-        });
-    }).catch(() => {
-        // wikiStore.output.showSpinner = false;
-    });
+    try {
+      const response = await this.requestService.getQnode(this.pid, node);
+
+      let name = response.label;
+      if (!name) {
+        name = node;
+      }
+      if (field === "itemName") {
+      this.setState({ itemName: name });
+      } else if (field === "propertyName") {
+      this.setState({ propertyName: name });
+      } else if (field === "unit") {
+        this.setState({ unit: name });
+      } else if (field === "qualifiers") {
+      const qualifiers = this.state.qualifiers;
+          if (subfield === "propertyName") {
+              qualifiers[index]["propertyName"] = name;
+          } else if (subfield === "valueName") {
+              qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
+              qualifiers[index]["valueName"] = name;
+          }
+          this.setState({ qualifiers: qualifiers });
+      }
+      const cache = this.state.cache;
+      cache[node] = name;
+      this.setState({ 
+          cache: cache, 
+      });
+    } catch (error) {
+      // wikiStore.output.showSpinner = false;
+    }
   }
 
   render() {
@@ -376,7 +372,6 @@ class Output extends Component<{}, OutputState> {
             </div>
 
             {/* output */}
-            { this.state.queryDataCount === 0 ? 
             <div className="w-100 p-3" style={{ height: "1px" }}>
             <ShowOutput
                 errors={this.state.errors}
@@ -388,7 +383,7 @@ class Output extends Component<{}, OutputState> {
                 unit={this.state.unit}
                 qualifiers={this.state.qualifiers}
             />
-            </div> : null }
+            </div>
           </Card.Body>
         </Card>
       </div>
