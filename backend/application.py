@@ -121,6 +121,7 @@ def load_project():
     project=Project.query.filter_by(file_directory=path).first()
     if not project:
         proj=apiProject.load(path)
+        update_t2wml_settings(proj)
         project=Project.load(proj)
     else:
         project.create_project_file()
