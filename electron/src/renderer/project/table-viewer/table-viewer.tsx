@@ -247,7 +247,7 @@ class TableViewer extends Component<{}, TableState> {
     });
   }
 
-  async handleSelectCell(params: any) {
+  handleSelectCell(params: any) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
@@ -274,19 +274,26 @@ class TableViewer extends Component<{}, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    try {
-      const response = await this.requestService.resolveCell(this.pid, colName, rowName);
+    this.requestService.resolveCell(this.pid, colName, rowName).then((json) => {
+      console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
+      console.log(json);
 
-      const {internalErrors} = response;
+    //   const { error } = json;
+    //   // if failure      
+    //   if (error) {
+    //     throw {errorDescription: error.value} as ErrorMessage;
+    //   }
+
+      // else, success
+      const {internalErrors} = json;
       if (internalErrors){
             console.log(internalErrors);
       }
-      await wikiStore.output.updateOutput(colName, rowName, response);
+      wikiStore.output.updateOutput(colName, rowName, json)
 
       // follow-ups (success)
-      wikiStore.output.showSpinner = false;
-      wikiStore.table.showSpinner = false;
-    } catch (error) {
+      // updateOutput function will update table and output spinners.
+    }).catch((error: ErrorMessage) => {
       console.log(error);
     //   error.errorDescription += "\n\nCannot resolve cell!";
       this.setState({ errorMessage: error });
@@ -294,7 +301,7 @@ class TableViewer extends Component<{}, TableState> {
       // follow-ups (failure)
       wikiStore.output.showSpinner = false;
       wikiStore.table.showSpinner = false;
-    }
+    });
   }
 
   handleSelectSheet(event: any) {
