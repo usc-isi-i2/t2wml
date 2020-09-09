@@ -541,7 +541,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       this.updateWikifier(qnodes, rowData);
 
       const { added, failed, updated } = json.widget;
-          let message = `✅ Definitions file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
+          let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
           if (failed.length) {
               message += '\n\nCheck the console for the failures reasons.'
           }
@@ -554,7 +554,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     }).catch((error: ErrorMessage) => {
       console.log(error);
-      error.errorDescription += "\n\nCannot upload wikidata file!";
+      error.errorDescription += "\n\nCannot upload entities file!";
       this.setState({ errorMessage: error });
     
       // follow-ups (failure)
@@ -648,7 +648,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                     style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
                     onClick={() => { document.getElementById("file_wikidata")?.click(); }}
                 >
-                    Import Wikidata 
+                    Import Entities
                 </Button>
             </OverlayTrigger>
 
