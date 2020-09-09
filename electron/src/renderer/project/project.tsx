@@ -7,8 +7,6 @@ import Navbar from '../common/navbar/navbar';
 
 // App
 import SplitPane from 'react-split-pane';
-import { Spinner } from 'react-bootstrap';
-
 
 import Config from '@/shared/config';
 
@@ -31,8 +29,6 @@ interface ProjectState {
   endpoint: string;
   warnEmpty: boolean;
   name: string;
-
-  showSpinner: boolean;
   errorMessage: ErrorMessage;
 }
 
@@ -60,8 +56,6 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: '',
       warnEmpty: false,
       name: '',
-
-      showSpinner: false,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -123,7 +117,6 @@ class Project extends Component<ProjectProps, ProjectState> {
         wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
       }
 
-
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -132,7 +125,6 @@ class Project extends Component<ProjectProps, ProjectState> {
       console.error("Can't fetch project: ", error);
       error.errorDescription += "\n\nCannot fetch project!";
       this.setState({ errorMessage: error });
-      //    alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
       wikiStore.table.showSpinner = false;
@@ -177,7 +169,6 @@ class Project extends Component<ProjectProps, ProjectState> {
 
 
   render() {
-    const { showSpinner } = this.state;
     return (
       <div>
         <Navbar
@@ -186,11 +177,6 @@ class Project extends Component<ProjectProps, ProjectState> {
           onShowSettingsClicked={() => this.onShowSettingsClicked()} />
 
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
-
-        {/* loading spinner */}
-        <div className="mySpinner" hidden={!showSpinner} style={{ height: "100%" }}>
-          <Spinner animation="border" />
-        </div>
 
         <Settings showSettings={this.state.showSettings}
           endpoint={this.state.endpoint}
