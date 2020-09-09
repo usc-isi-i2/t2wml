@@ -155,9 +155,9 @@ def get_project_files(pid):
     return response, 200
 
 
-@app.route('/api/project/<pid>/wikidata', methods=['POST'])
+@app.route('/api/project/<pid>/entity', methods=['POST'])
 @json_response
-def add_item_definitions(pid):
+def add_entity_definitions(pid):
     project = get_project(pid)
     in_file = file_upload_validator({"tsv"})
     pf = PropertiesFile.create(project, in_file)

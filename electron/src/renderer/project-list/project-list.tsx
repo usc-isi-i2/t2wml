@@ -298,34 +298,16 @@ class ProjectList extends Component<{}, ProjectListState> {
 
             {/* last modified */}
             <td>
-              <OverlayTrigger placement="top" trigger={["hover", "focus"]} // defaultShow="true"
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
-                overlay={
-                  <Tooltip style={{ width: "fit-content" }} id="last-modified">
-                    <span className="text-left small">
-                      {mdate}
-                    </span>
-                  </Tooltip>
-                }
-              >
-                <span style={{ display: "inline-block", cursor: "default", color: "gray" }}>{utils.timestamp2reltime(mdate)}</span>
-              </OverlayTrigger>
+              <span className="text-left small">
+                {utils.showTime(mdate)}
+              </span> 
             </td>
 
             {/* date created */}
             <td>
-              <OverlayTrigger placement="top" trigger={["hover", "focus"]} // defaultShow="true"
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
-                overlay={
-                  <Tooltip style={{ width: "fit-content" }} id="date-created">
-                    <span className="text-left small">
-                      {cdate}
-                    </span>
-                  </Tooltip>
-                }
-              >
-                <span style={{ display: "inline-block", cursor: "default", color: "gray" }}>{utils.timestamp2reltime(cdate)}</span>
-              </OverlayTrigger>
+              <span className="text-left small">
+                {utils.showTime(cdate)}
+              </span>
             </td>
 
             {/* actions */}
@@ -389,7 +371,7 @@ class ProjectList extends Component<{}, ProjectListState> {
           <tr>
 
             {/* title */}
-            <th style={{ width: "30%" }}>
+            <th style={{ width: "26%" }}>
               <span
                 style={{ cursor: "pointer" }}
                 onClick={() => this.handleSortProjects("ptitle")}
@@ -421,7 +403,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             </th>
 
             {/* last modified */}
-            <th style={{ width: "10%" }}>
+            <th style={{ width: "13%" }}>
               <span
                 style={{ cursor: "pointer" }}
                 onClick={() => this.handleSortProjects("mdate")}
@@ -437,7 +419,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             </th>
 
             {/* date created */}
-            <th style={{ width: "10%" }}>
+            <th style={{ width: "13%" }}>
               <span
                 style={{ cursor: "pointer" }}
                 onClick={() => this.handleSortProjects("cdate")}
@@ -453,7 +435,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             </th>
 
             {/* actions */}
-            <th style={{ width: "10%" }}>
+            <th style={{ width: "8%" }}>
               <span
                 style={{ cursor: "default" }}
               >

@@ -511,8 +511,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
   }
 
-  uploadWikidataFile(event: any) {
-    // get wikidata file
+  uploadEntitiesFile(event: any) {
+    // get entities file
     const file = event.target.files[0];
     if (!file) return;
 
@@ -523,8 +523,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     // send request
     const formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadWikidata(wikiStore.project.pid, formData).then((json) => {
-      console.log("<Wikifier> <- %c/upload_wikidata_file%c with:", LOG.link, LOG.default);
+    this.requestService.uploadEntities(wikiStore.project.pid, formData).then((json) => {
+      console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
       // do something here
@@ -658,7 +658,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               id="file_wikidata"
               accept=".tsv"
               style={{ display: "none" }}
-              onChange={this.uploadWikidataFile.bind(this)}
+              onChange={this.uploadEntitiesFile.bind(this)}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
