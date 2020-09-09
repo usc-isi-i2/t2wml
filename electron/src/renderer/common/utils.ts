@@ -166,6 +166,11 @@ export function timestamp2reltime(ts: number) {
   else return proj.getFullYear().toString();
 }
 
+export function showTime(ts: string) {
+  const index = ts.lastIndexOf(':');
+  return ts.slice(0, index);
+}
+
 export function isValidTitle(title: string) {
   /**
    * Check if title is valid:
