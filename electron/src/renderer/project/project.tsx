@@ -118,22 +118,17 @@ class Project extends Component<ProjectProps, ProjectState> {
       }
 
       // follow-ups (success)
-      setTimeout( () => { 
-        wikiStore.table.showSpinner = false;
-        wikiStore.wikifier.showSpinner = false;
-      }, 700);
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
 
     }).catch((error: ErrorMessage) => {
       console.error("Can't fetch project: ", error);
       error.errorDescription += "\n\nCannot fetch project!";
       this.setState({ errorMessage: error });
-      //    alert("Cannot fetch project files!\n\n" + error);
 
       // follow-ups (failure)
-      setTimeout( () => { 
-        wikiStore.table.showSpinner = false;
-        wikiStore.wikifier.showSpinner = false;
-      }, 700);
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
     });
   }
 
