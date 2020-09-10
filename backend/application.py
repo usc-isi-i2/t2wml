@@ -390,12 +390,13 @@ def downloader(pid, filetype):
 @json_response
 def load_to_datamart(pid):
     project = get_project(pid)
+    calc_params=get_calc_params(project)
     try:
         sheet = project.current_file.current_sheet
     except:
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
                 "Can't upload to datamart without datafile and sheet")
-    data = upload_to_datamart(project, sheet)
+    data = upload_to_datamart(project, sheet, calc_params)
     return data, 201
 
 
