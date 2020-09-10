@@ -36,7 +36,7 @@ class AnnotationIntegration(object):
         files = {
             'file': (t_file.split('/')[-1], open(t_file, mode='rb'), 'application/octet-stream')
         }
-        response = post(f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true',
+        response = post(f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true&create_if_not_exist=true',
                         files=files)
         if response.status_code != 200:
             if "Error" in response.json():

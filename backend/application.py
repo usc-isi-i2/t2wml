@@ -400,17 +400,17 @@ def load_to_datamart(pid):
     return data, 201
 
 
-@app.route('/api/project/<pid>/datamart', methods=['GET'])
-@json_response
-def load_to_datamart(pid):
-    project = get_project(pid)
-    try:
-        sheet = project.current_file.current_sheet
-    except:
-        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-            "Can't upload to datamart without datafile and sheet")
-    data = upload_to_datamart(project, sheet)
-    return data, 201
+# @app.route('/api/project/<pid>/datamart', methods=['GET'])
+# @json_response
+# def load_to_datamart(pid):
+#     project = get_project(pid)
+#     try:
+#         sheet = project.current_file.current_sheet
+#     except:
+#         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+#             "Can't upload to datamart without datafile and sheet")
+#     data = upload_to_datamart(project, sheet)
+#     return data, 201
 
 
 @app.route('/api/project/<pid>', methods=['DELETE'])

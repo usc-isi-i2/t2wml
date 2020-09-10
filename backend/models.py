@@ -3,15 +3,8 @@ import csv
 from datetime import datetime
 from pathlib import Path
 from werkzeug.utils import secure_filename
-<<<<<<< HEAD
-from t2wml.api import add_properties_from_file, SpreadsheetFile
-import csv
-from t2wml.api import Project as apiProject
-from utils import upload_item_defs
-=======
 from t2wml.api import SpreadsheetFile, add_entities_from_file
 from t2wml.api import Project as apiProject
->>>>>>> origin/annotation2
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
 
@@ -47,38 +40,14 @@ class Project(db.Model):
         return '<Project {}: {}>'.format(self.name, self.id)
 
     def rename(self, new_name):
-<<<<<<< HEAD
-        old_folder = get_project_folder(self)
-        new_folder = get_project_folder(self, new_name)
-        if new_folder.exists():
-            raise ValueError("project with that name and ID already exists")
-        old_folder.rename(new_folder)
 
         self.name = new_name
-        self.file_directory = str(new_folder)
         self.modify()
         self.api_project.title = new_name
-        self.api_project.directory = self.directory
-=======
-        self.name=new_name
-        self.modify()
-        self.api_project.title=new_name
->>>>>>> origin/annotation2
         self.api_project.save()
 
     @property
     def directory(self):
-<<<<<<< HEAD
-        if self.file_directory is None:
-            p = get_project_folder(self)
-            if not p.is_dir():
-                raise ValueError("Project directory was never created")
-
-            # save for the future
-            self.file_directory = str(p)
-            db.session.commit()
-=======
->>>>>>> origin/annotation2
         return self.file_directory
 
     @staticmethod
@@ -121,17 +90,12 @@ class Project(db.Model):
 
     @staticmethod
     def load(api_proj):
-<<<<<<< HEAD
         name = api_proj.title
         file_directory = api_proj.directory
-        project = Project(name=name, file_directory=file_directory)
-=======
-        name=api_proj.title
-        file_directory=api_proj.directory
-        sparql_endpoint=api_proj.sparql_endpoint
-        warn_for_empty_cells=api_proj.warn_for_empty_cells
-        project=Project(name=name, file_directory=file_directory, sparql_endpoint=sparql_endpoint,  warn_for_empty_cells=warn_for_empty_cells)
->>>>>>> origin/annotation2
+        sparql_endpoint = api_proj.sparql_endpoint
+        warn_for_empty_cells = api_proj.warn_for_empty_cells
+        project = Project(name=name, file_directory=file_directory, sparql_endpoint=sparql_endpoint,
+                          warn_for_empty_cells=warn_for_empty_cells)
 
         if len(api_proj.data_files) > 1:
             print("WARNING: projects with more than one data file not yet supported. will use last-added data file")
@@ -159,26 +123,14 @@ class Project(db.Model):
         for f in api_proj.wikifier_files:
             wf = WikifierFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
 
-<<<<<<< HEAD
-        for f in api_proj.property_files:
-            pf = PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
-
-        for f in api_proj.item_files:
-            pf = ItemsFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
-            upload_item_defs(os.path.join(api_proj.directory, f))
-        return project
-
-    def create_project_file(self):
-        proj = apiProject(self.directory, self.name)
-=======
         for f in api_proj.entity_files:
-            pf=PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
+            pf = PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
             add_entities_from_file(pf.file_path)
         return project
 
     def create_project_file(self):
-        proj=apiProject(self.directory, self.name, sparql_endpoint=self.sparql_endpoint, warn_for_empty_cells=self.warn_for_empty_cells)
->>>>>>> origin/annotation2
+        proj = apiProject(self.directory, self.name, sparql_endpoint=self.sparql_endpoint,
+                          warn_for_empty_cells=self.warn_for_empty_cells)
         if self.current_file:
             proj.add_data_file(self.current_file.relative_path)
             for sheet in self.current_file.sheets:
@@ -194,38 +146,19 @@ class Project(db.Model):
 
         item_files = ItemsFile.query.filter_by(project_id=self.id)
         for i_f in item_files:
-<<<<<<< HEAD
-            proj.add_item_file(i_f.relative_path)
-
-        proj.save()
-        return proj
-
-    def get_api_project(self):
-        proj_path = os.path.join(self.directory, "t2wmlproj.yaml")
-        if os.path.isfile(proj_path):
-            return apiProject.load(proj_path)
-        return self.create_project_file()
-
-=======
             proj.add_entity_file(i_f.relative_path)
-        
+
         proj.save()
         return proj
-    
-    
->>>>>>> origin/annotation2
+
     @property
     def api_project(self):
         try:
             return self._api_proj
         except AttributeError:
-<<<<<<< HEAD
-            self._api_proj = self.get_api_project()
-=======
-            self._api_proj=self.create_project_file()
->>>>>>> origin/annotation2
+            self._api_proj = self.create_project_file()
             return self._api_proj
-    
+
     @staticmethod
     def get(pid):
         project = Project.query.get(pid)
@@ -235,19 +168,19 @@ class Project(db.Model):
             p = get_project_folder(project)
             if not p.is_dir():
                 raise ValueError("Project directory was never created")
-            #save for the future
-            project.file_directory=str(p)
+            # save for the future
+            project.file_directory = str(p)
             db.session.commit()
         project.create_project_file()
         return project
-    
+
     def update_settings(self, settings):
         endpoint = settings.get("endpoint", None)
         if endpoint:
             self.sparql_endpoint = endpoint
         warn = settings.get("warnEmpty", None)
         if warn is not None:
-            self.warn_for_empty_cells=warn.lower()=='true'
+            self.warn_for_empty_cells = warn.lower() == 'true'
         self.create_project_file()
         self.api_project.save()
         self.modify()
@@ -271,11 +204,7 @@ class SavedFile(db.Model):
     @classmethod
     def get_folder(cls, project):
         sub_folder = cls.sub_folder
-<<<<<<< HEAD
-        folder = Path(project.directory) / sub_folder
-=======
-        folder =Path(project.directory)
->>>>>>> origin/annotation2
+        folder = Path(project.directory)
         folder.mkdir(parents=True, exist_ok=True)
         return folder
 
@@ -346,8 +275,8 @@ class YamlFile(SavedFile):
 
         folder = cls.get_folder(project)
         if not title:
-            title=sheet.name+".yaml"
-        file_path = str(folder /  title)
+            title = sheet.name + ".yaml"
+        file_path = str(folder / title)
         with open(file_path, 'w', newline='', encoding="utf-8") as f:
             f.write(form_data)
         name = Path(file_path).stem
@@ -375,7 +304,8 @@ class YamlFile(SavedFile):
         return saved_file
 
     def add_to_api_proj(self, sheet):
-        self.project.api_project.add_yaml_file(self.relative_path, sheet.data_file.relative_path, sheet.name, overwrite=True)
+        self.project.api_project.add_yaml_file(self.relative_path, sheet.data_file.relative_path, sheet.name,
+                                               overwrite=True)
         self.project.api_project.save()
 
 
@@ -418,14 +348,9 @@ class PropertiesFile(SavedFile):
     @classmethod
     def create_from_filepath(cls, project, in_file, from_api_proj=False):
         pf = super().create_from_filepath(project, in_file, from_api_proj)
-<<<<<<< HEAD
-        return_dict = add_properties_from_file(pf.file_path)
-        return return_dict
 
-=======
         return pf
-    
->>>>>>> origin/annotation2
+
     def add_to_api_proj(self):
         self.project.api_project.add_entity_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
@@ -455,11 +380,7 @@ class ItemsFile(SavedFile):
         df.to_csv(filepath, sep='\t', index=False, quoting=csv.QUOTE_NONE)
         wf = cls.create_from_filepath(project, filepath)
         return wf
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/annotation2
     def add_to_api_proj(self):
         self.project.api_project.add_entity_file(self.relative_path, overwrite=True)
         self.project.api_project.save()
