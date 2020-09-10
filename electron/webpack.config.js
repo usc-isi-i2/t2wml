@@ -1,3 +1,4 @@
+/* eslint-disable */
 const lodash = require('lodash');
 const CopyPkgJsonPlugin = require('copy-pkg-json-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -30,25 +31,28 @@ const commonConfig = {
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
+        loader: 'babel-loader',
       },
       {
         test: /\.(scss|css)$/,
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(jpg|png|svg|ico|icns)$/,
+        test: /\.(jpg|png|svg|ico|icns|ttf)$/,
         loader: 'file-loader',
         options: {
           name: '[path][name].[ext]',
+          outputPath: 'resources',
         },
       },
     ],
   },
 };
 // #endregion
+
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const mainConfig = lodash.cloneDeep(commonConfig);
 mainConfig.entry = './src/main/main.ts';
@@ -63,13 +67,21 @@ mainConfig.plugins = [
       postinstall: 'electron-builder install-app-deps',
     },
   }),
-];
+  new ForkTsCheckerWebpackPlugin({
+    eslint: {
+      files: './src/**/*.{ts,tsx,js,jsx}' // required - same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
+    }
+  })];
 
 const rendererConfig = lodash.cloneDeep(commonConfig);
-rendererConfig.entry = './src/renderer/renderer.tsx';
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+rendererConfig.entry = './src/renderer/index.tsx';
 rendererConfig.target = 'electron-renderer';
 rendererConfig.output.filename = 'renderer.bundle.js';
 rendererConfig.plugins = [
+  new MonacoWebpackPlugin({
+    languages: ['yaml']
+  }),
   new HtmlWebpackPlugin({
     template: path.resolve(__dirname, './public/index.html'),
   }),
@@ -77,7 +89,12 @@ rendererConfig.plugins = [
     template: path.resolve(__dirname, './public/splash.html'),
     filename: 'splash.html',
   }),
-
+  new ForkTsCheckerWebpackPlugin({
+    eslint: {
+      files: './src/**/*.{ts,tsx,js,jsx}', // required - same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
+      formatter: 'basic',
+    }
+  })
 ];
 
 module.exports = [mainConfig, rendererConfig];

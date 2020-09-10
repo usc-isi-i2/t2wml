@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
             "name": "Backend",
             "type": "python",
@@ -46,15 +47,16 @@
             ],
             "cwd": "${workspaceFolder}",
         },
-
         {
-            "name": "Python: Current File (Integrated Terminal)",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "cwd": "${fileDirname}",
-            "env": {"PYTHONPATH": "${workspaceRoot}"}
-        }, 
+                "name": "Backend: profile",
+                "type": "python",
+                "request": "launch",
+                "program": "application.py",
+                "args": [
+                    "--profile",
+                ],
+                "cwd": "${workspaceFolder}/backend",
+                "jinja": true
+            },
     ]
 }

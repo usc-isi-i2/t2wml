@@ -1,7 +1,7 @@
 import os
 import json
 from tests.utils import (client, create_project, sanitize_highlight_region, load_data_file, load_yaml_file, 
-                        load_wikifier_file, load_properties_file, get_project_files)
+                        load_wikifier_file, get_project_files)
 
 
 def test_switching_back_to_sheets(client):
@@ -9,7 +9,7 @@ def test_switching_back_to_sheets(client):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
 
 
-    pid=create_project(client, "Regression test- switching sheets")
+    pid=create_project(client)
     load_data_file(client, pid, os.path.join(files_dir, "homicide_report_total_and_sex.xlsx"))
 
 

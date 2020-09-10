@@ -1,4 +1,3 @@
-import csv
 import tarfile
 import tempfile
 import pandas as pd
@@ -39,8 +38,11 @@ class AnnotationIntegration(object):
         }
         response = post(f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true',
                         files=files)
-        if response.status_code!=200:
-            raise ValueError(response.json()["Error"])
+        if response.status_code != 200:
+            if "Error" in response.json():
+                raise ValueError(response.json()["Error"])
+            else:
+                raise ValueError("Some problem when communicating with datamart")
 
         with open('{}/t2wml_annotation_files.tar.gz'.format(temp_dir), 'wb') as d:
             d.write(response.content)

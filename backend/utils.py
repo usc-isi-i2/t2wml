@@ -1,9 +1,14 @@
+import os
 import csv
+import json
+import pandas as pd
+from t2wml.spreadsheets.conversions import column_index_to_letter
+from pathlib import Path
 from string import punctuation
 from flask import request
-import web_exceptions
-from wikidata_models import WikidataItem, WikidataProperty
 from SPARQLWrapper import SPARQLWrapper, JSON
+import web_exceptions
+from wikidata_models import WikidataEntry
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache = {}
@@ -43,11 +48,11 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint=DEFAULT_SPAR
     return response
 
 
-def get_labels_and_descriptions(items, project):
+def get_labels_and_descriptions(items, sparql_endpoint):
     response = dict()
     missing_items = []
     for item in items:
-        wp = WikidataItem.query.filter_by(wd_id=item).first()
+        wp = WikidataEntry.query.filter_by(wd_id=item).first()
         if wp:
             label = desc = ""
             if wp.label:
@@ -59,7 +64,7 @@ def get_labels_and_descriptions(items, project):
             missing_items.append(item)
     try:
         additional_items = query_wikidata_for_label_and_description(
-            missing_items, project.sparql_endpoint)
+            missing_items, sparql_endpoint)
         response.update(additional_items)
     except:  # eg 502 bad gateway error
         pass
@@ -89,14 +94,9 @@ def query_wikidata_for_label(node, sparql_endpoint=DEFAULT_SPARQL_ENDPOINT):
         return None
 
 
-def get_qnode_label(node, project):
+def get_qnode_label(node, sparql_endpoint):
     try:
-        wp = WikidataProperty.query.filter_by(wd_id=node).first()
-        if wp:
-            if wp.label:
-                wikidata_label_query_cache[node] = wp.label
-                return wp.label
-        wp = WikidataItem.query.filter_by(wd_id=node).first()
+        wp = WikidataEntry.query.filter_by(wd_id=node).first()
         if wp:
             if wp.label:
                 wikidata_label_query_cache[node] = wp.label
@@ -109,33 +109,12 @@ def get_qnode_label(node, project):
     if cached_label:
         return cached_label
     try:
-        label = query_wikidata_for_label(node, project.sparql_endpoint)
+        label = query_wikidata_for_label(node, sparql_endpoint)
         wikidata_label_query_cache[node] = label
     except:  # eg 502 bad gateway
         return None
     return label
 
-
-def upload_item_defs(file_path):
-    property_dict = {}
-    items = []
-    with open(file_path, 'r', encoding="utf-8") as f:
-        reader = csv.DictReader(f, delimiter="\t")
-        for row_dict in reader:
-            node1 = row_dict["node1"]
-            label = row_dict["label"]
-            value = row_dict["node2"]
-            if label in ["label", "description"]:
-                property_dict[(node1, label)] = value
-                items.append(node1)
-
-    for node1 in items:
-        label = property_dict.get((node1, "label"))
-        description = property_dict.get((node1, "description"))
-        added = WikidataItem.add_or_update(
-            node1, label, description, do_session_commit=False)
-
-    WikidataItem.do_commit()
 
 
 def make_frontend_err_dict(error):
@@ -182,11 +161,54 @@ def file_upload_validator(file_extensions):
 def get_project_details():
     from models import Project
     projects = list()
-    for project in Project.query.all():
-        project_detail = dict()
-        project_detail["pid"] = project.id
-        project_detail["ptitle"] = project.name
-        project_detail["cdate"] = str(project.creation_date)
-        project_detail["mdate"] = str(project.modification_date)
-        projects.append(project_detail)
+    for project in Project.query.order_by(Project.modification_date.desc()).all():
+        if os.path.isdir(project.directory):
+            project_detail = dict()
+            project_detail["pid"] = project.id
+            project_detail["directory"] = project.directory
+            project_detail["ptitle"] = project.name
+            project_detail["cdate"] = str(project.creation_date)
+            project_detail["mdate"] = str(project.modification_date)
+            projects.append(project_detail)
     return projects
+
+
+def table_data(calc_params):
+    sheet_names = calc_params.sheet_names
+    sheet_name = calc_params.sheet_name
+    data_path=Path(calc_params.data_path)
+    is_csv = True if data_path.suffix.lower() == ".csv" else False
+    sheetData = sheet_to_json(calc_params)
+    return {
+        "filename": data_path.name,
+        "isCSV": is_csv,
+        "sheetNames": sheet_names,
+        "currSheetName": sheet_name,
+        "sheetData": sheetData
+    }
+
+def sheet_to_json(calc_params):
+    sheet = calc_params.sheet
+    data = sheet.data.copy()
+    json_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}],
+                 'rowData': []}
+    # get col names
+    col_names = []
+    for i in range(len(sheet.data.iloc[0])):
+        column = column_index_to_letter(i)
+        col_names.append(column)
+        json_data['columnDefs'].append({'headerName': column, 'field': column})
+    # rename cols
+    data.columns = col_names
+    # rename rows
+    data.index += 1
+    # get json
+    json_string = data.to_json(orient='table')
+    json_dict = json.loads(json_string)
+    initial_json = json_dict['data']
+    # add the ^ column
+    for i, row in enumerate(initial_json):
+        row["^"] = str(i+1)
+    # add to the response
+    json_data['rowData'] = initial_json
+    return json_data

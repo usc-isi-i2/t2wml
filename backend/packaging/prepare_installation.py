@@ -6,13 +6,13 @@ import platform
 import semver
 
 backend_path = None
-frontend_path = None
+# frontend_path = None
 electron_path = None
 
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--version', type=str, default=None, help='Version number for deployment')
-    parser.add_argument('--skip-frontend', action="store_true", default=False, help='Skip building the frontend')
+    # parser.add_argument('--skip-frontend', action="store_true", default=False, help='Skip building the frontend')
     parser.add_argument('--skip-electron', action="store_true", default=False, help='Skip packaging electron')
     # parser.add_argument('--zip', type=str, default=None, help='Zip file name for output')
     return parser.parse_args()
@@ -20,15 +20,15 @@ def parse_args():
 def get_paths():
     # Returns the paths for the frontend and backend, all relative to this module.
     # The backend is one directory up, the frontend is a sibling directory of the backend.
-    global backend_path, frontend_path, electron_path
+    global backend_path,electron_path
     
     backend_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    frontend_path = os.path.join(os.path.dirname(backend_path), 'frontend')
+    # frontend_path = os.path.join(os.path.dirname(backend_path), 'frontend')
     electron_path = os.path.join(os.path.dirname(backend_path), 'electron')
 
 
 def prepare_version(version):
-    global frontend_path, electron_path
+    global electron_path
 
     if version.startswith('refs/tags/v'):  # Github Actions may pass the full ref, not just the tag name
         version = version[11:]
@@ -39,8 +39,8 @@ def prepare_version(version):
     #with open('version.py', 'w') as bf:
     #    print(f"__version__ = '{backend_version}'", file=bf)
 
-    with open(os.path.join(frontend_path, '.env.production.local'), 'w', encoding='utf-8') as ff:
-        print(f'REACT_APP_VERSION = "{version}"', file=ff)
+    #with open(os.path.join(frontend_path, '.env.production.local'), 'w', encoding='utf-8') as ff:
+    #    print(f'REACT_APP_VERSION = "{version}"', file=ff)
 
     # Update the electron version
     with open(os.path.join(electron_path, 'package.json'), 'r', encoding='utf-8') as ff:
@@ -58,24 +58,24 @@ def prepare_version(version):
     print(f"Updated version to {version}")
 
 
-def build_frontend():
-    global frontend_path
-    print('Building frontend...')
-    cwd = os.getcwd()
-    try:
-        os.chdir(frontend_path)
-        shutil.rmtree('build', ignore_errors=True)
-        os.system('yarn install')
-        os.system('yarn build')
-    finally:
-        os.chdir(cwd)
+# def build_frontend():
+#     global frontend_path
+#     print('Building frontend...')
+#     cwd = os.getcwd()
+#     try:
+#         os.chdir(frontend_path)
+#         shutil.rmtree('build', ignore_errors=True)
+#         os.system('yarn install')
+#         os.system('yarn build')
+#     finally:
+#         os.chdir(cwd)
 
-def copy_frontend_to_static():
-    global backend_path, frontend_path
+# def copy_frontend_to_static():
+#     global backend_path, frontend_path
 
-    print("Copying frontend files to backend's static folder...")
-    shutil.rmtree(os.path.join(backend_path,'static'), ignore_errors=True)
-    shutil.copytree(os.path.join(frontend_path, 'build'), os.path.join(backend_path, 'static'))
+#     print("Copying frontend files to backend's static folder...")
+#     shutil.rmtree(os.path.join(backend_path,'static'), ignore_errors=True)
+#     shutil.copytree(os.path.join(frontend_path, 'build'), os.path.join(backend_path, 'static'))
 
 def build_installer():
     print("Building installation...")
@@ -84,7 +84,7 @@ def build_installer():
     cwd = os.getcwd()
     try:
         os.chdir(backend_path)
-        cmd = f'pyinstaller --onefile --noconfirm --console --add-data "./migrations{sep}migrations" --add-data "./static{sep}static" --runtime-hook packaging/pyinstaller_hooks.py t2wml-server.py'
+        cmd = f'pyinstaller --onefile --noconfirm --windowed --add-data "./migrations{sep}migrations" --runtime-hook packaging/pyinstaller_hooks.py t2wml-server.py'
         print('Running ', cmd)
         os.system(cmd)
     finally:
@@ -109,32 +109,20 @@ def build_electron():
         os.chdir(cwd)
 
 
-def zip_output(zip_name):
-    global backend_path
-    base, ext = os.path.splitext(zip_name)
-    if ext and ext.lower() != '.zip':
-        raise ValueError(f"Can't save to {zip_name}, as it does not have a .zip extension")
-
-    shutil.make_archive(base, 'zip', os.path.join(backend_path, 'dist', 't2wml-server'))
-
 def run():
     args = parse_args()
     get_paths()
     if args.version:
         prepare_version(args.version)
     
-    if not args.skip_frontend:
-        build_frontend()
-    copy_frontend_to_static()
+    #if not args.skip_frontend:
+    #    build_frontend()
+    #copy_frontend_to_static()
     build_installer()
 
     if not args.skip_electron:
         build_electron()
 
-    #if args.zip:
-    #    zip_output(args.zip)
-    #    print(f"{args.zip} is ready")
-    #else:
     print("Done, look in the ", os.path.join(electron_path, 'out'), ' directory')
 
 if __name__ == '__main__':

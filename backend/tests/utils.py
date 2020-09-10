@@ -2,7 +2,8 @@ import tempfile
 import os
 import pytest
 import json
-
+from pathlib import Path
+from uuid import uuid4
 from flask_migrate import upgrade
 from application import app
 
@@ -74,12 +75,15 @@ def sanitize_highlight_region(dict_1, dict_2):
     return set_keys
 
 
-def create_project(client, title):
+def create_project(client):
+    path=os.path.join(os.path.dirname(__file__), "project_dirs", str(uuid4()))
+    os.makedirs(path)
     response=client.post('/api/project',
         data=dict(
-            ptitle=title
+            path=path
         )
     )
+    assert response.status_code==201
     data = response.data.decode("utf-8")
     data = json.loads(data)
     pid=str(data['pid'])
@@ -97,10 +101,12 @@ def load_data_file(client, pid, filename):
 
 def load_yaml_file(client, pid, filename):
     url='/api/yaml/{pid}'.format(pid=pid)
+    title=Path(filename).name
     with open(filename, 'r', encoding="utf-8") as f:
         response=client.post(url,
             data=dict(
-            yaml=f.read()
+            yaml=f.read(),
+            title=title
             )
         )
     return response
@@ -115,18 +121,8 @@ def load_wikifier_file(client, pid, filename):
         )
     return response
 
-def load_properties_file(client, pid, filename):
-    url = '/api/project/{pid}/properties'.format(pid=pid)
-    with open(filename, 'rb') as f:
-        response=client.post(url,
-            data=dict(
-            file=f
-            )
-        )
-    return response
-
 def load_item_file(client, pid, filename):
-    url='/api/project/{pid}/items'.format(pid=pid)
+    url='/api/project/{pid}/entity'.format(pid=pid)
     with open(filename, 'rb') as f:
         response=client.post(url,
             data=dict(

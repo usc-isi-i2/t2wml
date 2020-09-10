@@ -23,17 +23,13 @@ def get_dataset_id(data_sheet):
     return data_cell
 
 
-def get_download(project, sheet):
-    yaml_file = sheet.yaml_file
-    if not yaml_file:
-        raise CellResolutionWithoutYAMLFileException(
-            "Cannot download report without uploading YAML file first")
-    response = download(sheet, yaml_file, project, "tsv")
+def get_download(calc_params):
+    response = download(calc_params, "tsv")
     kgtk = response["data"]
     return kgtk
 
 
-def upload_to_datamart(project, data_sheet):
+def upload_to_datamart(project, data_sheet, calc_params):
     # get the dataset id
     try:
         dataset_id = get_dataset_id(data_sheet)
@@ -41,7 +37,7 @@ def upload_to_datamart(project, data_sheet):
         raise NoSuchDatasetIDException(str(e))
 
     # get the download kgtk
-    kgtk = get_download(project, data_sheet)
+    kgtk = get_download(calc_params)
 
     # get the item file
     item_file = ItemsFile.query.filter_by(

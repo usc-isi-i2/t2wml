@@ -6,10 +6,35 @@
         {
             "type": "npm",
             "script": "start",
-            "path": "frontend/",
+            "path": "electron/",
             "problemMatcher": [],
-            "label": "npm: start - frontend",
-            "detail": "react-app-rewired start"
-        }
+            "label": "Start GUI",
+            "detail": "Opens the t2wml GUI (run it after the frontend is built)"
+        },
+        {
+            "type": "npm",
+            "script": "dev",
+            "path": "electron/",
+            "problemMatcher": [{
+                "base": "$ts-checker5-eslint-webpack-watch",
+                "fileLocation": ["relative", "${workspaceFolder}/electron"]
+            }],
+            "isBackground": true,
+            "label": "Build and Watch GUI",
+            "detail": "Continuously builds the frontend"
+        },
+        {
+            "type": "shell",
+            "label": "Backend",
+            "detail": "Runs the backend",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "backend/t2wml-server.py"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
     ]
 }

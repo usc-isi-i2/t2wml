@@ -15,11 +15,10 @@ This is the repository for the T2WMl server-based GUI. You may be looking for th
 
 
 
-## Running T2WML for development
+## Setting up for Development
 <span id="development"></span>  
 
-### Setup
-1. Setting up the sources
+### Setting up the sources
 
 For developing t2wml you need both the t2wml-api repository and the t2wml (this) repository.
 Create a directory called `t2wml-root` and clone both repositories under it:
@@ -38,18 +37,16 @@ cd t2wml
 git checkout development
 ```
 
-2. Set up the React frontend
+### Setting up the Electron Frontend
 
-First you have to make sure you have Node version 12 or higher installed.
+First you have to make sure you have Node version 12 or higher installed. Then you can run:
 
 ```
-cd t2wml-root/t2wml/frontend
+cd t2wml-root/t2wml/electron
 yarn install
 ```
 
-(Note - there is a current issue with using npm. Use yarn for now)
-
-3. Create a virtual environment (python 3.6 and higher are supported)
+### Creating the Python virtual environment
 
 ```
 cd t2wml-root/t2wml/backend
@@ -60,33 +57,60 @@ pip install -e ../../t2wml-api   # Install t2wml-api from the cloned repository 
 pip install -r requirements.txt
 ```
 
+Note: Python 3.6 and higher are supported.
 
-### Running the server from the shell
-
-1. Running the backend server:
+## Running outside of an IDE
+### Running the backend
 
 ```
 cd t2wml-root/t2wml/backend
 python t2wml-server.py
 ```
 
-2. Running the frontend GUI
+### Running the frontend GUI
+Since we're using Electron, you need to run two scripts to run the GUI on development:
 
+```sh
+cd t2wml-root/t2wml/electron
+yarn dev
 ```
-cd t2wml-root/t2wml/frontend
+
+This script compiles all the frontend files, making them ready for electron. Wait until the compilation reaches 100% (you may see some warnings, that's fine). The script will keep running, recompiling as the frontend files are updated.
+
+Open another shell window and run 
+
+```sh
+cd t2wml-root/t2wml/electron
 yarn start
 ```
 
-The backend will be running on port 13000, and the frontend on port 3000. Navigate to [`http://localhost:3000/`](http://localhost:3000/) on a Chrome browser to begin using.
+This script starts Electron, and you should see the GUI.
 
-### Running from Visual Studio Code
+Note that in development, the GUI will wait for the backend to start on port 13000, so you will need to run it.
+
+## Using Visual Studio Code
 The project has preconfigured settings file for Visual Studio Code. Before starting you need to copy the settings template appropriate for your OS.
+
+Note: you will need to install the 'TypeScript + Webpack Problem Matchers' Visual Studio Code extension, otherwise compilation errors are not going to appear in the Problems pane properly.
 
 On Macs and Linux machines, copy `.vscode/settings.linux.json` to `.vscode/settings.json` . On Windows, copy `.vscode/settings.windows.json` to `.vscode/settings.json`
 Start Visual Studio Code and open it in the t2wml-root/t2wml directory.
 
-You can run the backend with F5 (choose the "Backend" launch configuration). To run the Frontend, choose Terminal | Run Task | npm: start - frontend .
+### GUI Development
+To develop the GUI you need to run three tasks:
 
+1. `Backend` - runs the Python backend.
+2. `Build and Watch GUI` - this task runs the npm `dev` script which builds the GUI and contiously watches for changes.
+3. `Start GUI` - opens the Electron based GUI.
+
+The GUI will not work unless the backend is up and running.
+
+When updating the GUI code, it will be automatically rebuilt by the `Build and Watch GUI task`. You will need to reload the GUI - you can use `Reload` from the `Debug` menu.
+
+You can also open the Chrome Developers Tools from the GUI's `Debug` menu.
+
+### Backend Development
+To develop the backend, you need to launch the `Backend` from the debug menu. You will be able to set breakpoints and debug properly. If you want to run the GUI, start the `Build and Watch GUI` and `t2wml GUI` tasks, as well.
 
 ## Usage with GUI
 <span id="usage_with_gui"></span>

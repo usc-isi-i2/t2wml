@@ -1,24 +1,25 @@
 import json
 import os
 import sys
-import yaml
+from pathlib import Path
+import traceback
 from flask import request
-from flask.helpers import send_file, send_from_directory
-from werkzeug.exceptions import NotFound
 
+from t2wml.utils.t2wml_exceptions import T2WMLException
+from t2wml.api import Project as apiProject
+from t2wml.api import add_entities_from_file
 import web_exceptions
 from app_config import app
 from models import (DataFile, ItemsFile, Project,
                     PropertiesFile, WikifierFile, YamlFile)
-from t2wml.utils.t2wml_exceptions import T2WMLException
+
 from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
-                       highlight_region, table_data, update_t2wml_settings,
-                       wikify)
+                       highlight_region, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
-                   make_frontend_err_dict, string_is_valid, upload_item_defs)
-from datamart_upload import upload_to_datamart
+                   make_frontend_err_dict, string_is_valid, table_data)
 from web_exceptions import WebException
-from t2wml.api import Project as apiProject
+from calc_params import CalcParams
+from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration
 import traceback
 
@@ -27,14 +28,28 @@ debug_mode = False
 
 def get_project(project_id):
     try:
-        project = Project.query.get(project_id)
-        if not project:
-            raise ValueError("Not found")
+        project = Project.get(project_id)
     except Exception as e:
         raise web_exceptions.ProjectNotFoundException
     update_t2wml_settings(project)
-    api_proj = project.api_project
     return project
+
+
+def get_calc_params(project):
+    data_file = project.current_file
+    if data_file:
+        sheet = data_file.current_sheet
+        if sheet.yaml_file:
+            yaml_file = sheet.yaml_file.file_path
+        else:
+            yaml_file = None
+        if project.wikifier_file:
+            wikifier_files = [project.wikifier_file.file_path]
+        else:
+            wikifier_files = None
+        calc_params = CalcParams(project.directory, data_file.file_path, sheet.name, yaml_file, wikifier_files)
+        return calc_params
+    return None
 
 
 def json_response(func):
@@ -77,13 +92,24 @@ def get_project_meta():
 @json_response
 def create_project():
     """
-    This route creates a project and an upload directory for that project
+    This route creates a project
     :return:
     """
-    response = dict()
-    project_title = request.form['ptitle']
-    project = Project.create(project_title)
-    response['pid'] = project.id
+
+    directory = request.form['path']
+    # check we're not overwriting existing project
+    project_file = Path(directory) / "project.t2wml"
+    if project_file.is_file():
+        raise web_exceptions.ProjectAlreadyExistsException(directory)
+    # create project
+    api_proj = apiProject(directory)
+    api_proj.title = Path(directory).stem
+    api_proj.save()
+    # ...and the database id for it
+    project = Project.load(api_proj)
+    response = dict(pid=project.id)
+    response['project'] = api_proj.__dict__
+
     return response, 201
 
 
@@ -91,21 +117,20 @@ def create_project():
 @json_response
 def load_project():
     """
-    This route loads a project file to create a project
+    This route loads an existing project
     :return:
     """
-
     path = request.form['path']
-    if not path:
-        try:
-            in_file = file_upload_validator({"yaml"})
-            input_yaml = yaml.safe_load(in_file)
-            path = input_yaml["directory"]
-        except:
-            raise ValueError("Was not able to load from project yaml file")
-    proj = apiProject.load(path)
-    project = Project.load(proj)
-    return {"pid": project.id}, 201
+    project = Project.query.filter_by(file_directory=path).first()
+    if not project:
+        proj = apiProject.load(path)
+        update_t2wml_settings(proj)
+        project = Project.load(proj)
+    else:
+        project.create_project_file()
+    response = {"pid": project.id}
+    response['project'] = project.api_project.__dict__
+    return response, 201
 
 
 @app.route('/api/project/<pid>', methods=['GET'])
@@ -124,49 +149,36 @@ def get_project_files(pid):
 
     response["name"] = project.name
 
-    data_file = project.current_file
-    if data_file:
-        sheet = data_file.current_sheet
-        response["tableData"] = table_data(data_file, sheet_name=sheet.name)
-        response["wikifierData"] = serialize_item_table(project, sheet)
-
-        y = handle_yaml(sheet, project)
-        response["yamlData"] = y
-
+    calc_params = get_calc_params(project)
+    if calc_params:
+        response["tableData"] = table_data(calc_params)
+        response["wikifierData"] = serialize_item_table(calc_params)
+        response["yamlData"] = handle_yaml(calc_params)
+    response['project'] = project.api_project.__dict__
     return response, 200
 
 
-@app.route('/api/project/<pid>/items', methods=['POST'])
+@app.route('/api/project/<pid>/entity', methods=['POST'])
 @json_response
-def add_item_definitions(pid):
+def add_entity_definitions(pid):
     project = get_project(pid)
     in_file = file_upload_validator({"tsv"})
-    i_f = ItemsFile.create(project, in_file)
-    upload_item_defs(i_f.file_path)
-    response = {}
-    if project.current_file:
-        sheet = project.current_file.current_sheet
-        serialized_item_table = serialize_item_table(project, sheet)
+    pf = PropertiesFile.create(project, in_file)
+    return_dict = add_entities_from_file(pf.file_path)
+    response = {"widget": return_dict}
+    calc_params = get_calc_params(project)
+    if calc_params:
+        serialized_item_table = serialize_item_table(calc_params)
         response.update(serialized_item_table)
+    response['project'] = project.api_project.__dict__
     return response, 200
-
-
-@app.route('/api/project/<pid>/properties', methods=['POST'])
-@json_response
-def upload_properties(pid):
-    project = get_project(pid)
-    in_file = file_upload_validator({"json", "tsv"})
-    return_dict = PropertiesFile.create(project, in_file)
-    return return_dict, 200
 
 
 @app.route('/api/qnode/<pid>/<qid>', methods=['GET'])
 @json_response
 def get_qnode_info(pid, qid):
     project = get_project(pid)
-    label = get_qnode_label(qid, project)
-    if label is None:
-        return {}, 404
+    label = get_qnode_label(qid, project.sparql_endpoint)
     return {"label": label}, 200
 
 
@@ -187,7 +199,9 @@ def upload_data_file(pid):
     new_file = file_upload_validator({'xlsx', 'xls', 'csv'})
 
     data_file = DataFile.create(project, new_file)
-    response["tableData"] = table_data(data_file)
+
+    calc_params = get_calc_params(project)
+    response["tableData"] = table_data(calc_params)
     sheet = data_file.current_sheet
 
     # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
@@ -197,17 +211,17 @@ def upload_data_file(pid):
         try:
             t2wml_yaml, consolidated_wikifier_df, combined_item_df = ai.get_files()
             i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
-            upload_item_defs(i_f.file_path)
+            add_entities_from_file(i_f.file_path)
             WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
-            PropertiesFile.create_from_dataframe(project, combined_item_df)
             YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
         except Exception as e:
             traceback.print_exc()
             print(e)  # continue to normal spreadsheet handling
 
-    response["wikifierData"] = serialize_item_table(project, sheet)
-    response["yamlData"] = handle_yaml(sheet, project)
-
+    calc_params = get_calc_params(project)
+    response["wikifierData"] = serialize_item_table(calc_params)
+    response["yamlData"] = handle_yaml(calc_params)
+    response['project'] = project.api_project.__dict__
     return response, 200
 
 
@@ -230,21 +244,20 @@ def change_sheet(pid, sheet_name):
     old_sheet = data_file.current_sheet
     data_file.change_sheet(sheet_name)
     try:
-        sheet = data_file.current_sheet
-
-        response["tableData"] = table_data(data_file, sheet.name)
+        calc_params = get_calc_params(project)
+        response["tableData"] = table_data(calc_params)
     except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
         data_file.change_sheet(old_sheet.name)
         raise e
 
     # stopgap measure. we seriously need to separate these calls
     try:
-        response["wikifierData"] = serialize_item_table(project, sheet)
+        response["wikifierData"] = serialize_item_table(calc_params)
     except:
         pass  # return blank
 
     try:
-        response["yamlData"] = handle_yaml(sheet, project)
+        response["yamlData"] = handle_yaml(calc_params)
     except:
         pass  # return blank
 
@@ -263,12 +276,12 @@ def upload_wikifier_output(pid):
     in_file = file_upload_validator({"csv"})
 
     wikifier_file = WikifierFile.create(project, in_file)
-    if project.current_file and project.current_file.current_sheet:
-        sheet = project.current_file.current_sheet
-        serialized_item_table = serialize_item_table(project, sheet)
+    calc_params = get_calc_params(project)
+    if calc_params:
+        serialized_item_table = serialize_item_table(calc_params)
         # does not go into field wikifierData but is dumped directly
         response.update(serialized_item_table)
-
+    response['project'] = project.api_project.__dict__
     return response, 200
 
 
@@ -288,12 +301,13 @@ def wikify_region(pid):
         if not project.current_file:
             raise web_exceptions.WikifyWithoutDataFileException(
                 "Upload data file before wikifying a region")
-        sheet = project.current_file.current_sheet
+        calc_params = get_calc_params(project)
 
-        cell_qnode_map, problem_cells = wikify(region, sheet, context)
+        cell_qnode_map, problem_cells = wikify(calc_params, region, context)
         wf = WikifierFile.create_from_dataframe(project, cell_qnode_map)
 
-        data = serialize_item_table(project, sheet)
+        calc_params = get_calc_params(project)
+        data = serialize_item_table(calc_params)
 
         if problem_cells:
             error_dict = {
@@ -304,7 +318,7 @@ def wikify_region(pid):
             data['problemCells'] = error_dict
         else:
             data['problemCells'] = False
-
+        data['project'] = project.api_project.__dict__
         return data, 200
     return {}, 404
 
@@ -318,6 +332,7 @@ def upload_yaml(pid):
     """
     project = get_project(pid)
     yaml_data = request.form["yaml"]
+    yaml_title = request.form["title"]
     response = {"error": None,
                 "yamlRegions": None}
     if not string_is_valid(yaml_data):
@@ -326,13 +341,14 @@ def upload_yaml(pid):
     else:
         if project.current_file:
             sheet = project.current_file.current_sheet
-            yf = YamlFile.create_from_formdata(project, yaml_data, sheet)
-            response['yamlRegions'] = highlight_region(sheet, yf, project)
+            yf = YamlFile.create_from_formdata(project, yaml_data, sheet, yaml_title)
+            calc_params = get_calc_params(project)
+            response['yamlRegions'] = highlight_region(calc_params)
         else:
             response['yamlRegions'] = None
             raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
                 "Upload data file before applying YAML.")
-
+    response['project'] = project.api_project.__dict__
     return response, 200
 
 
@@ -346,12 +362,11 @@ def get_cell_statement(pid, col, row):
     project = get_project(pid)
     data = {}
 
-    sheet = project.current_file.current_sheet
-    yaml_file = sheet.yaml_file
-    if not yaml_file:
+    calc_params = get_calc_params(project)
+    if not calc_params.yaml_path:
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Upload YAML file before resolving cell.")
-    data = get_cell(sheet, yaml_file, project, col, row)
+    data = get_cell(calc_params, col, row)
     return data, 200
 
 
@@ -363,13 +378,26 @@ def downloader(pid, filetype):
     :return:
     """
     project = get_project(pid)
-    sheet = project.current_file.current_sheet
-    yaml_file = sheet.yaml_file
-    if not yaml_file:  # the frontend disables this, this is just another layer of checking
+    calc_params = get_calc_params(project)
+    if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Cannot download report without uploading YAML file first")
-    response = download(sheet, yaml_file, project, filetype)
+    response = download(calc_params, filetype)
     return response, 200
+
+
+@app.route('/api/project/<pid>/datamart', methods=['GET'])
+@json_response
+def load_to_datamart(pid):
+    project = get_project(pid)
+    calc_params = get_calc_params(project)
+    try:
+        sheet = project.current_file.current_sheet
+    except:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Can't upload to datamart without datafile and sheet")
+    data = upload_to_datamart(project, sheet, calc_params)
+    return data, 201
 
 
 @app.route('/api/project/<pid>/datamart', methods=['GET'])
@@ -421,7 +449,7 @@ def rename_project(pid):
     return data, 200
 
 
-@app.route('/api/project/<pid>/settings', methods=['PUT'])
+@app.route('/api/project/<pid>/settings', methods=['PUT', 'GET'])
 @json_response
 def update_settings(pid):
     """
@@ -429,29 +457,8 @@ def update_settings(pid):
     :return:
     """
     project = get_project(pid)
-    endpoint = request.form.get("endpoint", None)
-    if endpoint:
-        project.sparql_endpoint = endpoint
-    warn = request.form.get("warnEmpty", None)
-    if warn is not None:
-        project.warn_for_empty_cells = request.form["warnEmpty"].lower() == 'true'
-    project.modify()
+    project.update_settings(request.form)
     update_t2wml_settings(project)
-    response = {
-        "endpoint": project.sparql_endpoint,
-        "warnEmpty": project.warn_for_empty_cells
-    }
-    return response, 200
-
-
-@app.route('/api/project/<pid>/settings', methods=['GET'])
-@json_response
-def get_settings(pid):
-    """
-    This function updates the settings from GUI
-    :return:
-    """
-    project = get_project(pid)
     response = {
         "endpoint": project.sparql_endpoint,
         "warnEmpty": project.warn_for_empty_cells
@@ -468,17 +475,17 @@ def is_alive():
 # In that case, we only have one webserver - Flask. The following two routes are for this.
 # They are not used in dev (React's dev server is used to serve frontend assets), or in server deployment
 # (nginx is used to serve static assets)
-@app.route('/')
-def serve_home_page():
-    return send_file(os.path.join(app.config['STATIC_FOLDER'], 'index.html'))
+# @app.route('/')
+# def serve_home_page():
+#     return send_file(os.path.join(app.config['STATIC_FOLDER'], 'index.html'))
 
 
-@app.route('/<path:path>')
-def serve_static(path):
-    try:
-        return send_from_directory(app.config['STATIC_FOLDER'], path)
-    except NotFound:
-        return serve_home_page()
+# @app.route('/<path:path>')
+# def serve_static(path):
+#     try:
+#         return send_from_directory(app.config['STATIC_FOLDER'], path)
+#     except NotFound:
+#         return serve_home_page()
 
 
 if __name__ == "__main__":
