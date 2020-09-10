@@ -128,7 +128,7 @@ export default class MainMenuManager {
         const files = dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project File",
                 filters: [
-                    { name: "t2wmlproj", extensions: ["t2wmlproj"] }
+                    { name: "t2wml", extensions: ["t2wml"] }
                 ],
                 properties: ['openFile']
             });

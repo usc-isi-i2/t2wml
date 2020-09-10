@@ -6,7 +6,7 @@ from flask import request
 
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.api import Project as apiProject
-from t2wml.api import add_nodes_from_file
+from t2wml.api import add_entities_from_file
 import web_exceptions
 from app_config import app
 from models import (DataFile, ItemsFile, Project,
@@ -95,7 +95,7 @@ def create_project():
 
     directory = request.form['path']
     #check we're not overwriting existing project
-    project_file = Path(directory) / ".t2wmlproj"
+    project_file = Path(directory) / "project.t2wml"
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(directory)
     #create project
@@ -162,7 +162,7 @@ def add_entity_definitions(pid):
     project = get_project(pid)
     in_file = file_upload_validator({"tsv"})
     pf = PropertiesFile.create(project, in_file)
-    return_dict = add_nodes_from_file(pf.file_path)
+    return_dict = add_entities_from_file(pf.file_path)
     response = {"widget":return_dict}
     calc_params=get_calc_params(project)
     if calc_params:

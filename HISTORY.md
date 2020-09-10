@@ -3,7 +3,7 @@ T2WML Standalone Server App History
 
 Changes in version 2.3.4:
 -------------------------
-* t2wml-api version 0.0.10
+* t2wml-api version 0.0.11
 * uploading a file with the same name as a file present in the folder will overwrite the file in the folder (we will eventually add a warning to user and option to cancel)
 * improvements to how calculation cache checks if fresh or not
 * consolidated upload properties/upload items buttons into Import Entities button

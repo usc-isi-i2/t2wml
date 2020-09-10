@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from werkzeug.utils import secure_filename
-from t2wml.api import SpreadsheetFile, add_nodes_from_file
+from t2wml.api import SpreadsheetFile, add_entities_from_file
 from t2wml.api import Project as apiProject
 from app_config import DEFAULT_SPARQL_ENDPOINT, UPLOAD_FOLDER, db
 
@@ -120,7 +120,7 @@ class Project(db.Model):
 
         for f in api_proj.entity_files:
             pf=PropertiesFile.create_from_filepath(project, os.path.join(api_proj.directory, f), from_api_proj=True)
-            add_nodes_from_file(pf.file_path)
+            add_entities_from_file(pf.file_path)
         return project
 
     def create_project_file(self):
