@@ -611,31 +611,6 @@ class TableViewer extends Component<{}, TableState> {
               </Button>
             </OverlayTrigger>
             
-<<<<<<< HEAD:frontend/src/project/table-viewer/table-viewer.tsx
-            {/* button to upload properties file */}
-            <OverlayTrigger overlay={uploadPropsToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-              <Button
-                className="d-inline-block float-right"
-                variant="outline-light"
-                size="sm"
-                style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
-                onClick={() => { document!.getElementById("properties_button")!.click(); }}
-              >
-                Upload properties
-              </Button>
-            </OverlayTrigger>
-
-            {/* hidden input of properties button */}
-            <input
-              type="file"
-              id="properties_button"
-              accept=".json, .tsv"
-              style={{ display: "none" }}
-              onChange={this.handleOpenPropertiesFile}
-              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
-            />
-=======
->>>>>>> origin/annotation2:electron/src/renderer/project/table-viewer/table-viewer.tsx
             {/* TODO: move following inputs to another place */}
             {/* hidden input of table file */}
             <input

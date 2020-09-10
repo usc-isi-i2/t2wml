@@ -51,13 +51,8 @@ interface OutputState {
 class Output extends Component<{}, OutputState> {
   private requestService: RequestService;
   private pid: string;
-<<<<<<< HEAD:frontend/src/project/output/output.tsx
-
-  constructor(props: OutputProperties) {
-=======
   
   constructor(props: {}) {
->>>>>>> origin/annotation2:electron/src/renderer/project/output/output.tsx
     super(props);
     this.requestService = new RequestService();
     this.pid = wikiStore.project.pid;
@@ -309,12 +304,8 @@ class Output extends Component<{}, OutputState> {
     this.setState({ queryDataCount: this.state.queryDataCount + 1 });
     // before send request
     wikiStore.output.showSpinner = true;
-<<<<<<< HEAD:frontend/src/project/output/output.tsx
-
-=======
     
     // Talya: Use async/await here
->>>>>>> origin/annotation2:electron/src/renderer/project/output/output.tsx
     this.requestService.getQnode(this.pid, node).then((res) => {
         let name = res.label;
         if (!name) {
@@ -345,35 +336,6 @@ class Output extends Component<{}, OutputState> {
     }).catch(() => {
         // wikiStore.output.showSpinner = false;
     });
-  }
-
-  loadToDatamart() {
-    // TODO !
-    wikiStore.output.showSpinner = true;
-    wikiStore.table.showSpinner = true;
-    this.setState({ isLoadDatamart: true });
-    console.log("Load to Datamart");
-    this.requestService.loadToDatamart(this.pid).then((json) => {
-        console.log(json);
-        const { datamart_get_url, description } = json;
-        if (datamart_get_url !== undefined) {
-            // alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
-            prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
-            alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
-            // prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
-        } else {
-            alert("Failed to load to Datamart\nError: " + description)
-        }
-    }).catch((error: any) => {
-        console.log(error);
-        const { errorTitle, errorDescription } = error;
-        if (errorTitle !== undefined) {
-            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription)
-        }
-    });
-    this.setState({ isLoadDatamart: false });
-    wikiStore.output.showSpinner = false;
-    wikiStore.table.showSpinner = true;
   }
 
   loadToDatamart() {
@@ -437,11 +399,7 @@ class Output extends Component<{}, OutputState> {
               className="d-inline-block float-right"
               variant="outline-light"
               size="sm"
-<<<<<<< HEAD:frontend/src/project/output/output.tsx
-              style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
-=======
               style={{padding: "0rem 0.5rem", marginRight: "0.5rem" }}
->>>>>>> origin/annotation2:electron/src/renderer/project/output/output.tsx
               onClick={() => this.setState({ showDownload: true })}
               disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >

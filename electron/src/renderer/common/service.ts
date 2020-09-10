@@ -110,11 +110,6 @@ class RequestService {
     return response;
   }
 
-  public async loadToDatamart(pid: string) {
-    const response = await backendGet(`/project/${pid}/datamart`);
-    return response;
-  }
-
 }
 
 export default RequestService;
