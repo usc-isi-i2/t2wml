@@ -204,7 +204,7 @@ def upload_data_file(pid):
 
     calc_params=get_calc_params(project)
     response["tableData"] = table_data(calc_params)
-    sheet = calc_params.sheet
+    sheet = data_file.current_sheet
 
     # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
     # and item definitions automatically
@@ -342,7 +342,7 @@ def upload_yaml(pid):
     else:
         if project.current_file:
             sheet = project.current_file.current_sheet
-            yf = YamlFile.create_from_formdata(project, yaml_data, yaml_title, sheet)
+            yf = YamlFile.create_from_formdata(project, yaml_data, sheet, yaml_title)
             calc_params=get_calc_params(project)
             response['yamlRegions'] = highlight_region(calc_params)
         else:

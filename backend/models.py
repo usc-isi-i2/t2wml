@@ -261,7 +261,7 @@ class YamlFile(SavedFile):
     }
 
     @classmethod
-    def create_from_formdata(cls, project, form_data, title, sheet):
+    def create_from_formdata(cls, project, form_data, sheet, title=None):
         # placeholder function until we start uploading yaml files properly, as files
         yf = YamlFile(project_id=project.id)
         db.session.add(yf)
