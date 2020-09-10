@@ -46,6 +46,8 @@ cd t2wml-root/t2wml/electron
 yarn install
 ```
 
+Note for developers adding package dependencies: The electron builder takes all the prod dependencies from package.json and adds them to the installation, even though webpack already takes care of everything. It is very important not to add prod dependencies, use yarn add --dev to add more packages.
+
 ### Creating the Python virtual environment
 
 ```
