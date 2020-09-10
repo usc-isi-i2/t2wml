@@ -292,7 +292,8 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.output.updateOutput(colName, rowName, json)
 
       // follow-ups (success)
-      // updateOutput function will update table and output spinners.
+      wikiStore.output.showSpinner = false;
+      wikiStore.table.showSpinner = false;
     }).catch((error: ErrorMessage) => {
       console.log(error);
     //   error.errorDescription += "\n\nCannot resolve cell!";
