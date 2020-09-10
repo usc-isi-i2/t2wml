@@ -1,4 +1,5 @@
 import os
+import csv
 from datetime import datetime
 from pathlib import Path
 from werkzeug.utils import secure_filename
@@ -368,9 +369,9 @@ class ItemsFile(SavedFile):
     def create_from_dataframe(cls, project, df):
         folder = cls.get_folder(project)
         filepath = str(folder / "datamart_item_definitions.tsv")
-        df.to_csv(filepath, sep='\t', index=False)
+        df.to_csv(filepath, sep='\t', index=False, quoting=csv.QUOTE_NONE)
         wf = cls.create_from_filepath(project, filepath)
-        return wf    
+        return wf
     
     def add_to_api_proj(self):
         self.project.api_project.add_entity_file(self.relative_path, overwrite=True)

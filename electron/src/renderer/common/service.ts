@@ -104,6 +104,11 @@ class RequestService {
     const response = await backendPost(`/project/${pid}/entity`, formData);
     return response;
   }
+  
+  public async loadToDatamart(pid: string) {
+    const response = await backendGet(`/project/${pid}/datamart`);
+    return response;
+  }
 
 }
 

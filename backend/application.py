@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from pathlib import Path
+import traceback
 from flask import request
 
 from t2wml.utils.t2wml_exceptions import T2WMLException
@@ -17,8 +18,9 @@ from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
 from utils import (file_upload_validator, get_project_details, get_qnode_label,
                    make_frontend_err_dict, string_is_valid, table_data)
 from web_exceptions import WebException
-from t2wml_annotation_integration import AnnotationIntegration
 from calc_params import CalcParams
+from datamart_upload import upload_to_datamart
+from t2wml_annotation_integration import AnnotationIntegration
 
 debug_mode = False
 
@@ -199,8 +201,26 @@ def upload_data_file(pid):
     }
     new_file = file_upload_validator({'xlsx', 'xls', 'csv'})
     data_file = DataFile.create(project, new_file)
+
     calc_params=get_calc_params(project)
     response["tableData"] = table_data(calc_params)
+    sheet = calc_params.sheet
+
+    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
+    # and item definitions automatically
+    ai = AnnotationIntegration(request, response['tableData']['isCSV'], response['tableData']['currSheetName'])
+    if ai.is_annotated_spreadsheet():
+        try:
+            t2wml_yaml, consolidated_wikifier_df, combined_item_df = ai.get_files()
+            i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
+            add_entities_from_file(i_f.file_path)
+            WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
+            YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
+        except Exception as e:
+            traceback.print_exc()
+            print(e)  # continue to normal spreadsheet handling
+
+    calc_params=get_calc_params(project)
     response["wikifierData"] = serialize_item_table(calc_params)
     response["yamlData"] = handle_yaml(calc_params)
     response['project']=project.api_project.__dict__
@@ -365,6 +385,18 @@ def downloader(pid, filetype):
             "Cannot download report without uploading YAML file first")
     response = download(calc_params, filetype)
     return response, 200
+
+@app.route('/api/project/<pid>/datamart', methods=['GET'])
+@json_response
+def load_to_datamart(pid):
+    project = get_project(pid)
+    try:
+        sheet = project.current_file.current_sheet
+    except:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+                "Can't upload to datamart without datafile and sheet")
+    data = upload_to_datamart(project, sheet)
+    return data, 201
 
 
 @app.route('/api/project/<pid>', methods=['DELETE'])
