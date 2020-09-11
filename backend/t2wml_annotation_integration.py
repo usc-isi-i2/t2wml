@@ -14,6 +14,7 @@ class AnnotationIntegration(object):
             df = pd.read_csv(w_requests.files['file'], dtype=object, header=None).fillna('')
         self.df = df
         self.dataset = None
+        self.annotation = None
 
     def is_annotated_spreadsheet(self):
         # very basic check to see if the uploaded file looks like annotated file
@@ -24,6 +25,10 @@ class AnnotationIntegration(object):
                 and self.df.iloc[4, 0].strip().lower() == 'name' \
                 and self.df.iloc[5, 0].strip().lower() == 'unit':
             self.dataset = self.df.iloc[0, 1].strip()
+
+            header_row, data_row = self.find_data_start_row()
+            annotation_rows = list(range(0, 6)) + [header_row]
+            self.annotation = self.df.iloc[annotation_rows].fillna("")
             return True
 
         return False
@@ -36,8 +41,9 @@ class AnnotationIntegration(object):
         files = {
             'file': (t_file.split('/')[-1], open(t_file, mode='rb'), 'application/octet-stream')
         }
-        response = post(f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true&create_if_not_exist=true',
-                        files=files)
+        response = post(
+            f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true&create_if_not_exist=true',
+            files=files)
         if response.status_code != 200:
             if "Error" in response.json():
                 raise ValueError(response.json()["Error"])
@@ -61,4 +67,20 @@ class AnnotationIntegration(object):
                     consolidated_wikifier_df = pd.read_csv(f, dtype=object)
                 if f_name == './item_definitions_all.tsv':
                     combined_item_df = pd.read_csv(f, dtype=object, sep='\t')
-        return t2wml_yaml, consolidated_wikifier_df, combined_item_df
+        return t2wml_yaml, consolidated_wikifier_df, combined_item_df, self.annotation
+
+    def find_data_start_row(self) -> (int, int):
+        # finds and returns header and data row index
+        header_row = 6
+        data_row = 7
+        df = self.df.set_index(0)
+
+        if "header" in df.index:
+            header_row = df.index.tolist().index("header")
+            if "data" not in df.index:
+                data_row = header_row + 1
+
+        if "data" in df.index:
+            data_row = df.index.tolist().index("data")
+        df.reset_index(inplace=True)
+        return header_row, data_row
