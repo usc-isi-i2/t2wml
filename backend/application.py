@@ -209,11 +209,14 @@ def upload_data_file(pid):
     ai = AnnotationIntegration(request, response['tableData']['isCSV'], response['tableData']['currSheetName'])
     if ai.is_annotated_spreadsheet():
         try:
-            t2wml_yaml, consolidated_wikifier_df, combined_item_df = ai.get_files()
+            t2wml_yaml, consolidated_wikifier_df, combined_item_df, annotation_df = ai.get_files()
             i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
             add_entities_from_file(i_f.file_path)
             WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
             YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
+
+            # save the annotation, for future uses
+            annotation_df.to_csv(f'{project.directory}/annotation.tsv', index=False, header=None, sep='\t')
         except Exception as e:
             traceback.print_exc()
             print(e)  # continue to normal spreadsheet handling
