@@ -90,10 +90,14 @@ export default class MainMenuManager {
         for (const path of settings.recentlyUsed) {
             subMenu.push({ label: path, click: this.onOpenRecentProjectClick.bind(this, path) });
         }
+
+        const enabled = settings.recentlyUsed.length > 0;
         subMenu = [
             ...subMenu,
             { type: 'separator' },
-            { label: 'Clear Recently Opened', click: this.onClearRecentlyOpenedClick.bind(this) }
+            { label: 'Clear Recently Opened', 
+              click: this.onClearRecentlyOpenedClick.bind(this),
+              enabled }
         ];
 
         this.recentlyUsed = subMenu as MenuItemConstructorOptions[];

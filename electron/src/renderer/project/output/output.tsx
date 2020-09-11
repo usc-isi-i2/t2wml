@@ -274,9 +274,6 @@ class Output extends Component<{}, OutputState> {
     }
     this.setState({ qualifiers: qualifiers });
     
-    wikiStore.table.showSpinner = false;
-    wikiStore.output.showSpinner = false;
-
     if (isAllCached) {
         wikiStore.output.showSpinner = false;
     }
@@ -333,8 +330,9 @@ class Output extends Component<{}, OutputState> {
             cache: cache,
             queryDataCount: this.state.queryDataCount - 1
         });
+        wikiStore.output.showSpinner = false;
     }).catch(() => {
-        // wikiStore.output.showSpinner = false;
+        wikiStore.output.showSpinner = false;
     });
   }
 

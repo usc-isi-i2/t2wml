@@ -8,7 +8,7 @@ import Splash from './splash/Splash';
 //
 // Both windows share the same JS bundle. We may want to separate these into two bundles
 // in the future
-const splashId = document.getElementById('splash');
+const splashId = document.getElementById('splash-window');
 if (splashId) {
   ReactDOM.render(
     <React.StrictMode>
