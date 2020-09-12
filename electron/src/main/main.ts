@@ -23,6 +23,10 @@ function openSplashScreen(): void {
         width: 400,
         show: false,
         frame: false,
+        webPreferences: {
+            nodeIntegration: true,
+            worldSafeExecuteJavaScript: true,
+        }
     });
 
     splashWindow.loadURL(
@@ -49,6 +53,10 @@ function createMainWindow(): void {
         height: 1000,
         width: 1600,
         show: false,
+        webPreferences: {
+            nodeIntegration: true,
+            worldSafeExecuteJavaScript: true,
+        }
     });
     
     // and load the index.html of the app.
