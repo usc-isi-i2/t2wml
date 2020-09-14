@@ -1,5 +1,5 @@
 import os
-from collections import defaultdict
+import csv
 import json
 import pandas as pd
 from t2wml.spreadsheets.conversions import column_index_to_letter
@@ -160,17 +160,6 @@ def file_upload_validator(file_extensions):
 
 def get_project_details():
     from models import Project
-
-    #temporary fix for double IDs that didn't get deleted:
-    project_dirs=defaultdict(list)
-    for project in Project.query.order_by(Project.modification_date.desc()).all():
-        project_dirs[project.directory].append(project)
-    for dir, projects in project_dirs.items():
-        if len(projects)>1:
-            projects.sort(key= lambda x:x.modification_date)
-        for project in projects[1:]:
-            Project.delete(project.id)
-
     projects = list()
     for project in Project.query.order_by(Project.modification_date.desc()).all():
         if os.path.isdir(project.directory):
@@ -181,9 +170,6 @@ def get_project_details():
             project_detail["cdate"] = str(project.creation_date)
             project_detail["mdate"] = str(project.modification_date)
             projects.append(project_detail)
-        else:
-            Project.delete(project.id)
-    
     return projects
 
 
