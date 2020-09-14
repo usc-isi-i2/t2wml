@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import shutil
 from pathlib import Path
 from flask import request
 
@@ -379,8 +380,10 @@ def delete_project(pid):
         'error': None
     }
 
-    project = get_project(pid)
-    Project.delete(project.id)
+    project = Project.query.get(pid)
+    if project:
+        shutil.rmtree(project.directory)
+        Project.delete(project.id)
     data['projects'] = get_project_details()
     return data, 200
 
