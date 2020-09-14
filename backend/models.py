@@ -406,6 +406,17 @@ class DataFile(SavedFile):
         return df
 
     @classmethod
+    def create_from_dataframe(cls, project, df, file_name):
+        folder = cls.get_folder(project)
+        filepath = str(folder / file_name)
+        if file_name.endswith('.csv'):
+            df.to_csv(filepath, index=False, header=False)
+        elif file_name.endswith('.xlsx') or file_name.endswith('.xls'):
+            df.to_excel(filepath, index=False, header=False)
+        df = cls.create_from_filepath(project, filepath)
+        return df
+
+    @classmethod
     def create(cls, project, in_file):
         df = super().create(project, in_file)
         df.init_sheets()
