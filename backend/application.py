@@ -209,16 +209,7 @@ def upload_data_file(pid):
     ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
                                w_requests=request)
     if ai.is_annotated_spreadsheet(project.directory):
-        try:
-            t2wml_yaml, consolidated_wikifier_df, combined_item_df, annotation_df = ai.get_files(response['tableData']['filename'])
-            i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
-            add_entities_from_file(i_f.file_path)
-            WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
-            YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
-
-        except Exception as e:
-            traceback.print_exc()
-            print(e)  # continue to normal spreadsheet handling
+        automate_integration(ai, project, response, sheet)
     else:  # not annotation file, check if annotation is avaiable
         annotation_found, new_df = ai.is_annotation_available(project.directory)
         if annotation_found and new_df is not None:
@@ -228,23 +219,28 @@ def upload_data_file(pid):
             sheet = data_file.current_sheet
             ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
                                        df=new_df)
-            if ai.is_annotated_spreadsheet(project.directory):
-                try:
-                    t2wml_yaml, consolidated_wikifier_df, combined_item_df, annotation_df = ai.get_files(response['tableData']['filename'])
-                    i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
-                    add_entities_from_file(i_f.file_path)
-                    WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
-                    YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
 
-                except Exception as e:
-                    traceback.print_exc()
-                    print(e)  # continue to normal spreadsheet handling
+            automate_integration(ai, project, response, sheet)
 
     calc_params = get_calc_params(project)
     response["wikifierData"] = serialize_item_table(calc_params)
     response["yamlData"] = handle_yaml(calc_params)
     response['project'] = project.api_project.__dict__
     return response, 200
+
+
+def automate_integration(ai, project, response, sheet):
+    try:
+        t2wml_yaml, consolidated_wikifier_df, combined_item_df, annotation_df = ai.get_files(
+            response['tableData']['filename'])
+        i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
+        add_entities_from_file(i_f.file_path)
+        WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
+        YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
+
+    except Exception as e:
+        traceback.print_exc()
+        print(e)  # continue to normal spreadsheet handling
 
 
 @app.route('/api/data/<pid>/<sheet_name>', methods=['GET'])
