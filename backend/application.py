@@ -210,7 +210,7 @@ def upload_data_file(pid):
                                w_requests=request)
     if ai.is_annotated_spreadsheet(project.directory):
         automate_integration(ai, project, response, sheet)
-    else:  # not annotation file, check if annotation is avaiable
+    else:  # not annotation file, check if annotation is available
         annotation_found, new_df = ai.is_annotation_available(project.directory)
         if annotation_found and new_df is not None:
             data_file = DataFile.create_from_dataframe(project, new_df, response['tableData']['filename'])
