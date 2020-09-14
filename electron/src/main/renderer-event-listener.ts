@@ -1,17 +1,17 @@
 /* The RendererEvents class is the only class that listens to events coming in from the renderer */
 
 import { ipcMain } from 'electron';
-import { EventEmitter } from 'events';
 import { settings } from './settings';
 import { config } from './config';
 import { uiState } from './ui-state';
 import MainMenuManager from './menu';
+import { IpcMainEvent } from 'electron/main';
 
 export class RendererEventListener {
  
     public constructor(public mainMenuManager?: MainMenuManager) {
         ipcMain.on('get-config', (event: any) => this.handleGetConfig(event));
-        ipcMain.on('show-project', (sender: EventEmitter, folder: string) => this.handleShowProject(folder));
+        ipcMain.on('show-project', (sender: IpcMainEvent, folder: string) => this.handleShowProject(folder));
         ipcMain.on('new-project', () => this.handleNewProject());
         ipcMain.on('open-project', () => this.handleOpenProject());
     }

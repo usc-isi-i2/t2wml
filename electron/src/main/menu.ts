@@ -24,7 +24,7 @@ export default class MainMenuManager {
             label: 't2wml',
             submenu: [
                 { role: 'hide' },
-                { role: 'hideothers' },
+                { role: 'hideOthers' },
                 { role: 'unhide' },
                 { type: 'separator' },
                 { role: 'quit' }
@@ -61,9 +61,9 @@ export default class MainMenuManager {
             {
                 label: 'View',
                 submenu: [
-                    { role: 'zoomin' },
-                    { role: 'zoomout' },
-                    { role: 'resetzoom' },
+                    { role: 'zoomIn' },
+                    { role: 'zoomOut' },
+                    { role: 'resetZoom' },
                     { type: 'separator' },
                     { role: 'togglefullscreen' }
                 ]
@@ -72,7 +72,7 @@ export default class MainMenuManager {
                 label: 'Debug',
                 submenu: [
                     { label: 'Reload App', click: () => this.onReloadAppClick() },
-                    { role: 'toggledevtools' },
+                    { role: 'toggleDevTools' },
                 ]
             },
         ]
@@ -117,19 +117,19 @@ export default class MainMenuManager {
         }];
     }
 
-    public onNewProjectClick() {
-        const folders = dialog.showOpenDialog( this.mainWindow!, {
+    public async onNewProjectClick() {
+        const result = await dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project Folder",
                 properties: ['openDirectory', 'createDirectory']
             });
 
-        if (folders) {
-            rendererNotifier.newProject(folders[0]);
+        if (!result.canceled && result.filePaths) {
+            rendererNotifier.newProject(result.filePaths[0]);
         }
     }
 
-    public onOpenProjectClick() {
-        const files = dialog.showOpenDialog( this.mainWindow!, {
+    public async onOpenProjectClick() {
+        const result = await dialog.showOpenDialog( this.mainWindow!, {
                 title: "Open Project File",
                 filters: [
                     { name: "t2wml", extensions: ["t2wml"] }
@@ -137,9 +137,9 @@ export default class MainMenuManager {
                 properties: ['openFile']
             });
 
-        if (files) {
-            const index = files[0].lastIndexOf('\\');
-            const path =  files[0].substring(0, index);
+        if (!result.canceled && result.filePaths) {
+            const index = result.filePaths[0].lastIndexOf('\\');
+            const path =  result.filePaths[0].substring(0, index);
             rendererNotifier.openProject(path);
         }
     }
