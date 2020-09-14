@@ -20,7 +20,7 @@ class ProjectNotFoundException(WebException):
     message = "Project not found"
 
 class ProjectAlreadyExistsException(WebException):
-    message = "Cannot create new project in folder with existing project"
+    message = "A project already exists at this location"
 
 class NoFilePartException(WebException):
     message = "Missing file parameter in the upload request"
