@@ -7,12 +7,11 @@ import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 
-import DeleteProject from './delete-project';
 import RenameProject from './rename-project';
 import DownloadProject from './dowmload-project';
 import ToastMessage from '../common/toast';
@@ -28,7 +27,6 @@ interface ProjectListState {
   showSpinner: boolean;
   showDownloadProject: boolean;
   showRenameProject: boolean;
-  showDeleteProject: boolean;
   deletingPid: string;
   downloadingPid: string;
 
@@ -71,7 +69,6 @@ class ProjectList extends Component<{}, ProjectListState> {
       showSpinner: true,
       showDownloadProject: false,
       showRenameProject: false,
-      showDeleteProject: false,
       deletingPid: "",
       downloadingPid: "",
 
@@ -127,55 +124,6 @@ class ProjectList extends Component<{}, ProjectListState> {
       // follow-ups (failure)
       this.setState({ showSpinner: false });
     });
-  }
-
-  handleDeleteProject(pid = "") {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    if (pid === "") {
-      pid = this.state.deletingPid;
-      if (pid === "") return;
-    }
-
-    // before sending request
-    this.setState({ showSpinner: true, showDeleteProject: false });
-
-    // send request
-    console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.deleteProject(pid as string).then(json => {
-      console.log("<App> <- %c/delete_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-        // success
-        if (json['error'] !== null){
-          console.log(json['error'])
-        }
-        else {
-          const {sortBy, isAscending} = this.state;
-          this.handleSortProjects(sortBy, isAscending, json['projects']);
-        }
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      // console.log(error);
-      error.errorDescription += "\n\nCannot delete project!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot delete project!\n\n" + error.errorTitle);
-
-      // follow-ups (failure)
-      this.setState({ showSpinner: false });
-    });
-  }
-
-  cancelDeleteProject() {
-    this.setState({ showDeleteProject: false, deletingPid: "" });
   }
 
 
@@ -404,26 +352,6 @@ class ProjectList extends Component<{}, ProjectListState> {
                   <FontAwesomeIcon icon={faCloudDownloadAlt} />
                 </span>
               </OverlayTrigger>
-
-              {/* delete */}
-              <OverlayTrigger
-                placement="top"
-                trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
-                overlay={
-                  <Tooltip style={{ width: "fit-content" }} id="delete">
-                    <span className="text-left small">Delete</span>
-                  </Tooltip>
-                }
-              >
-                <span
-                  className="action-delete"
-                  style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDeleteProject: true, deletingPid: pid })}
-                >
-                  <FontAwesomeIcon icon={faTrashAlt} />
-                </span>     
-              </OverlayTrigger>
             </td>
           </tr>
         );
@@ -526,11 +454,6 @@ class ProjectList extends Component<{}, ProjectListState> {
   renderModals() {
     return (
       <Fragment>
-         <DeleteProject 
-          showDeleteProject={this.state.showDeleteProject} 
-          handleDeleteProject={() => this.handleDeleteProject()}
-          cancelDeleteProject={() => this.cancelDeleteProject()}
-        />
         <DownloadProject 
           showDownloadProject={this.state.showDownloadProject} 
           handleDownloadProject={() => this.handleDownloadProject()}

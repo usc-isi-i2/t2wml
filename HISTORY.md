@@ -1,17 +1,6 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version (wip):
--------------------------
-* upgrade to electron 10
-* t2wml-api version change (wip)
-* changes to how labels are fetched for properties and items (wip)
-* added back delete project functionality
-* various small UI tweaks 
-* bug fixes:
-   * lots of async/await errors
-   * creating a project with same name as previous, deleted project would create double entry of project
-
 Changes in version 2.3.4:
 -------------------------
 * t2wml-api version 0.0.11
