@@ -33,7 +33,6 @@ interface OutputState {
   itemRow: string | undefined;
   propertyID: string | null;
   qualifiers: any; //  null;
-  cache: any; // cache for Wikidata queries
   errors: string;
 
   // download
@@ -43,8 +42,6 @@ interface OutputState {
 
   propertyName: string;
   errorMessage: ErrorMessage;
-
-  queryDataCount: number;
 }
 
 @observer
@@ -73,7 +70,6 @@ class Output extends Component<{}, OutputState> {
       itemRow: undefined,
       propertyID: null,
       qualifiers: null,
-      cache: {}, // cache for Wikidata queries,
       errors: '',
 
       // download
@@ -82,7 +78,6 @@ class Output extends Component<{}, OutputState> {
       isDownloading: false,
 
       errorMessage: {} as ErrorMessage,
-      queryDataCount: 0,
     } as OutputState;
 
 
@@ -263,6 +258,8 @@ class Output extends Component<{}, OutputState> {
       valueCol: null,
       valueRow: null,
       value: null,
+      unitName: null,
+      unitID: null,
       itemID: null,
       itemName: null,
       itemCol: undefined,
@@ -315,20 +312,19 @@ class Output extends Component<{}, OutputState> {
             </div>
 
             {/* output */}
-            {this.state.queryDataCount === 0 ?
-              <div className="w-100 p-3" style={{ height: "1px" }}>
-                <ShowOutput
-                  errors={this.state.errors}
-                  itemName={this.state.itemName}
-                  itemID={this.state.itemID}
-                  propertyID={this.state.propertyID}
-                  propertyName={this.state.propertyName}
-                  value={this.state.value}
-                  unitID={this.state.unitID}
-                  unitName={this.state.unitName}
-                  qualifiers={this.state.qualifiers}
-                />
-              </div> : null}
+            <div className="w-100 p-3" style={{ height: "1px" }}>
+              <ShowOutput
+                errors={this.state.errors}
+                itemName={this.state.itemName}
+                itemID={this.state.itemID}
+                propertyID={this.state.propertyID}
+                propertyName={this.state.propertyName}
+                value={this.state.value}
+                unitID={this.state.unitID}
+                unitName={this.state.unitName}
+                qualifiers={this.state.qualifiers}
+              />
+            </div>
           </Card.Body>
         </Card>
       </div>
