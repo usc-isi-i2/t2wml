@@ -5,10 +5,11 @@ import Project from './project/project';
 import { observer } from 'mobx-react';
 import wikiStore from './data/store';
 import RequestService from './common/service';
-import { ipcRenderer, EventEmitter } from 'electron';
+import { ipcRenderer } from 'electron';
 import { ErrorMessage, LOG } from './common/general';
 import ToastMessage from './common/toast';
 import { Spinner } from 'react-bootstrap';
+import { IpcRendererEvent } from 'electron/renderer';
 
 
 interface AppState {
@@ -30,10 +31,10 @@ class App extends Component<{}, AppState> {
   }
 
   componentDidMount() {
-    ipcRenderer.on('open-project', (sender: EventEmitter, folder: string) => {
+    ipcRenderer.on('open-project', (sender: IpcRendererEvent, folder: string) => {
       this.onOpenProject(folder);
     });
-    ipcRenderer.on('new-project', (sender: EventEmitter, folder: string) => {
+    ipcRenderer.on('new-project', (sender: IpcRendererEvent, folder: string) => {
       this.onNewProject(folder);
     });
     wikiStore.changeProject();
