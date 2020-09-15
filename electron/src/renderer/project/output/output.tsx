@@ -90,15 +90,17 @@ class Output extends Component<{}, OutputState> {
     wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
   }
 
-  handleDoDownload(fileName: string, fileType: string) {
+  async handleDoDownload(fileName: string, fileType: string) {
     this.setState({ errorMessage: {} as ErrorMessage });  
     const filename = fileName + "." + fileType;
 
     // before sending request
     this.setState({ isDownloading: true, showDownload: false });
     // send request
-    console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadResults(this.pid, fileType).then((json) => {
+    console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
+
+    try {
+      const json = await this.requestService.downloadResults(this.pid, fileType);
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -126,14 +128,14 @@ class Output extends Component<{}, OutputState> {
       // follow-ups (success)
       this.setState({ isDownloading: false });
 
-    }).catch((error: ErrorMessage) => {
+    } catch (error) {
     //   console.log(error);
       error.errorDescription += "\n\nCannot download!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ isDownloading: false });
-    });
+    }
   }
 
   cancelDownload() {
@@ -168,7 +170,7 @@ class Output extends Component<{}, OutputState> {
     }
   }
 
-  updateOutput(colName: string, rowName: string, json: any) {
+  async updateOutput(colName: string, rowName: string, json: any) {
     // remove current status
     this.removeOutput();
     if(json["error"]) {
@@ -193,7 +195,7 @@ class Output extends Component<{}, OutputState> {
       this.setState({ itemID: itemID, itemName: cache[itemID] });
     } else {
       this.setState({ itemID: itemID, itemName: "N/A" });
-      this.queryWikidata(itemID, "itemName");
+      await this.queryWikidata(itemID, "itemName");
       isAllCached = false;
     }
     
@@ -208,7 +210,7 @@ class Output extends Component<{}, OutputState> {
       this.setState({ propertyID: propertyID, propertyName: cache[propertyID] });
     } else {
       this.setState({ propertyID: propertyID });
-      this.queryWikidata(propertyID, "propertyName");
+      await this.queryWikidata(propertyID, "propertyName");
       isAllCached = false;
     }
 
@@ -224,7 +226,7 @@ class Output extends Component<{}, OutputState> {
       if (cache[unit] !== undefined) {
         this.setState({ unit: cache[unit] });
       } else {
-        this.queryWikidata(unit, "unit");  
+        await this.queryWikidata(unit, "unit");  
         isAllCached = false;
       }
     } else {
@@ -242,7 +244,7 @@ class Output extends Component<{}, OutputState> {
         if (cache[qualifier["propertyID"]] !== undefined) {
           qualifier["propertyName"] = cache[qualifier["propertyID"]];
         } else {
-          this.queryWikidata(qualifier["propertyID"], "qualifiers", i, "propertyName");
+          await this.queryWikidata(qualifier["propertyID"], "qualifiers", i, "propertyName");
           isAllCached = false;
         }
 
@@ -252,7 +254,7 @@ class Output extends Component<{}, OutputState> {
             qualifier["valueID"] = qualifier["valueName"];
             qualifier["valueName"] = cache[qualifier["valueName"]];
           } else {
-            this.queryWikidata(qualifier["valueName"], "qualifiers", i, "valueName");
+            await this.queryWikidata(qualifier["valueName"], "qualifiers", i, "valueName");
             isAllCached = false;
           }
         }
@@ -292,7 +294,7 @@ class Output extends Component<{}, OutputState> {
     });
   }
 
-  queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
+  async queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
     // FUTURE: use <local stroage> to store previous query result even longer
     // Show output after all the qualifiers label returned.
     this.setState({ queryDataCount: this.state.queryDataCount + 1 });
@@ -300,7 +302,8 @@ class Output extends Component<{}, OutputState> {
     wikiStore.output.showSpinner = true;
     
     // Talya: Use async/await here
-    this.requestService.getQnode(this.pid, node).then((res) => {
+    try {
+        const res = await this.requestService.getQnode(this.pid, node);
         let name = res.label;
         if (!name) {
           name = node;
@@ -328,9 +331,9 @@ class Output extends Component<{}, OutputState> {
             queryDataCount: this.state.queryDataCount - 1 
         });
         wikiStore.output.showSpinner = false;
-    }).catch(() => {
+    } catch {
         wikiStore.output.showSpinner = false;
-    });
+    }
   }
 
   render() {

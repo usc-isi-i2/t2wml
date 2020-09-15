@@ -57,7 +57,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.yaml.updateYamlText = (yamlText: string | null = null) => this.updateYamlText(yamlText);
   }
 
-  handleApplyYaml() {
+  async handleApplyYaml() {
     this.setState({ errorMessage: {} as ErrorMessage });  
     console.log("<YamlEditor> clicked apply");
 
@@ -77,9 +77,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)
     // }
-    this.requestService.uploadYaml(wikiStore.project.pid, formData).then(json => {
-      console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
-      console.log(json);
+    try {
+      const json = await this.requestService.uploadYaml(wikiStore.project.pid, formData);
+      console.debug("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default, json);
 
     //   const { error } = json;
     //   // if failure
@@ -94,28 +94,28 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     //   }
 
           // else, success
-        const { yamlRegions } = json;
-        const internalError = yamlRegions.error;
-        if (internalError){
-            
-            console.log("ERRORS while applying yaml:");
-            console.log(internalError);
-        }
-        wikiStore.table.updateYamlRegions(yamlRegions);
+      const { yamlRegions } = json;
+      const internalError = yamlRegions.error;
+      if (internalError){
+          
+          console.log("ERRORS while applying yaml:");
+          console.log(internalError);
+      }
+      wikiStore.table.updateYamlRegions(yamlRegions);
 
-        // follow-ups (success)
-        wikiStore.table.showSpinner = false;
-        wikiStore.output.isDownloadDisabled = false;
-        wikiStore.table.isCellSelectable = true;
+      // follow-ups (success)
+      wikiStore.table.showSpinner = false;
+      wikiStore.output.isDownloadDisabled = false;
+      wikiStore.table.isCellSelectable = true;
 
-    }).catch((error: ErrorMessage) => {
+    } catch (error) {
     //   alert("Failed to apply. 🙁\n\n" + error);
-        error.errorDescription += "\n\nFailed to apply. 🙁";
-        this.setState({ errorMessage: error });
+      error.errorDescription += "\n\nFailed to apply. 🙁";
+      this.setState({ errorMessage: error });
 
-      // follow-ups (failure)
-        wikiStore.table.showSpinner = false;
-    });
+    // follow-ups (failure)
+      wikiStore.table.showSpinner = false;
+    }
   }
 
   handleChangeYaml() {
