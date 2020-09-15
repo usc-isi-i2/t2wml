@@ -130,7 +130,7 @@ def get_cell(calc_params, col, row):
                             qnodes[str(inner_value)]=str(inner_value)
             else:
                 if str(outer_value).upper()[0] in ["P", "Q"]:
-                    qnodes[str(outer_value)]=str(outer_value)
+                    qnodes[str(outer_value)]=None
 
         qids=qnodes.keys()
         for qid in qids:
