@@ -7,7 +7,7 @@ from t2wml.api import Sheet, WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
 from app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
 from wikidata_models import DatabaseProvider
-from utils import get_labels_and_descriptions, get_qnode_label
+from utils import get_labels_and_descriptions
 
 
 def wikify(calc_params, region, context):
@@ -127,17 +127,13 @@ def get_cell(calc_params, col, row):
                 for qual_dict in outer_value:
                     for inner_key, inner_value in qual_dict.items():
                         if str(inner_value).upper()[0] in ["P", "Q"]:
-                            qnodes[str(inner_value)]=str(inner_value)
+                            qnodes[str(inner_value)]=None
             else:
                 if str(outer_value).upper()[0] in ["P", "Q"]:
                     qnodes[str(outer_value)]=None
 
-        qids=qnodes.keys()
-        for qid in qids:
-            #TODO: send the whole mass in a single, more efficient query
-            label = get_qnode_label(qid, calc_params.project.sparql_endpoint)
-            if label is not None:
-                qnodes[qid]=label
+        labels = get_labels_and_descriptions(qnodes, calc_params.project.sparql_endpoint)
+        qnodes.update(labels)
 
         data["qnodesLabels"]=qnodes
 
@@ -209,9 +205,9 @@ def serialize_item_table(calc_params):
         item_key = rowData[i]['item']
         if item_key in labels_and_descriptions:
             label = labels_and_descriptions[item_key]['label']
-            desc = labels_and_descriptions[item_key]['desc']
+            desc = labels_and_descriptions[item_key]['description']
             rowData[i]['label'] = label
-            rowData[i]['desc'] = desc
+            rowData[i]['description'] = desc
 
     # qnodes
     for cell, con in qnodes.items():
@@ -219,9 +215,9 @@ def serialize_item_table(calc_params):
             item_key = context_desc['item']
             if item_key in labels_and_descriptions:
                 label = labels_and_descriptions[item_key]['label']
-                desc = labels_and_descriptions[item_key]['desc']
+                desc = labels_and_descriptions[item_key]['description']
                 qnodes[cell][context]['label'] = label
-                qnodes[cell][context]['desc'] = desc
+                qnodes[cell][context]['description'] = desc
 
     serialized_table = {'qnodes': qnodes, 'rowData': rowData}
     return serialized_table

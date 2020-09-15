@@ -190,7 +190,7 @@ class Output extends Component<{}, OutputState> {
     // item
     const itemID = json["statement"]["item"];
     // const itemName = window.TableViewer.state.rowData[row][col];
-    this.setState({ itemID: itemID, itemName: qnodesLabel[itemID] });
+    this.setState({ itemID: itemID, itemName: qnodesLabel[itemID]["label"] });
     
     if (json["statement"]["cell"]) {
       const [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
@@ -199,7 +199,7 @@ class Output extends Component<{}, OutputState> {
     }
     // property
     const propertyID = json["statement"]["property"];
-    this.setState({ propertyID: propertyID, propertyName: qnodesLabel[propertyID] });
+    this.setState({ propertyID: propertyID, propertyName: qnodesLabel[propertyID]["label"] });
  
     // value
     const value = json["statement"]["value"];
@@ -213,7 +213,7 @@ class Output extends Component<{}, OutputState> {
       let unitID = null;
       if (/^[PQ]\d+$/.test(unitName)) {
         unitID = unitName;
-        unitName = qnodesLabel[unitName];
+        unitName = qnodesLabel[unitName]["label"];
       }
       this.setState({ unitName: unitName, unitID: unitID });
     } else {
@@ -228,12 +228,12 @@ class Output extends Component<{}, OutputState> {
         const qualifier: any = {};
  
         qualifier["propertyID"] = temp[i]["property"];
-        qualifier["propertyName"] = qnodesLabel[qualifier["propertyID"]];
+        qualifier["propertyName"] = qnodesLabel[qualifier["propertyID"]["label"]];
  
         qualifier["valueName"] = temp[i]["value"];
         if (/^[PQ]\d+$/.test(qualifier["valueName"])) {
           qualifier["valueID"] = qualifier["valueName"];
-          qualifier["valueName"] = qnodesLabel[qualifier["valueName"]];
+          qualifier["valueName"] = qnodesLabel[qualifier["valueName"]["label"]];
         }
  
         if (temp[i]["cell"] !== undefined && temp[i]["cell"] !==null) {
