@@ -49,12 +49,10 @@ interface OutputState {
 @observer
 class Output extends Component<{}, OutputState> {
   private requestService: RequestService;
-  private pid: string;
   
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
-    this.pid = wikiStore.project.pid;
 
     // init state
     this.state = {
@@ -90,6 +88,10 @@ class Output extends Component<{}, OutputState> {
     wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
   }
 
+  private get pid() {
+    return wikiStore.project.pid;
+  }
+  
   async handleDoDownload(fileName: string, fileType: string) {
     this.setState({ errorMessage: {} as ErrorMessage });  
     const filename = fileName + "." + fileType;

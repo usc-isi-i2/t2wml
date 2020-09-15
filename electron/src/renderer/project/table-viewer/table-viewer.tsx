@@ -62,15 +62,13 @@ interface TableState  {
 class TableViewer extends Component<{}, TableState> {
   public gridApi: any;
   public gridColumnApi: any;
-  private pid: string;
 
   private requestService: RequestService;
 
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
-    this.pid = wikiStore.project.pid;
-    
+   
     // init state
     this.state = {
       // appearance
@@ -107,6 +105,10 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
 
+  private get pid() {
+    return wikiStore.project.pid;
+  }
+  
   onGridReady(params: WikifierData) {
     // store the api
     this.gridApi = params.api;
