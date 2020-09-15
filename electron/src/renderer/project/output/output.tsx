@@ -25,7 +25,8 @@ interface OutputState {
   valueCol: string | null;
   valueRow: string | null;
   value: string | null;
-  unit: string | null;
+  unitName: string | null;
+  unitID: string | null;
   itemID: string | null;
   itemName: string | null;
   itemCol: string | undefined;
@@ -64,7 +65,8 @@ class Output extends Component<{}, OutputState> {
       valueCol: null,
       valueRow: null,
       value: null,
-      unit: null,
+      unitName: null,
+      unitID: null,
       itemID: null,
       itemName: null,
       itemCol: undefined,
@@ -175,35 +177,26 @@ class Output extends Component<{}, OutputState> {
     }
   }
 
-  async updateOutput(colName: string, rowName: string, json: any) {
+  updateOutput(colName: string, rowName: string, json: any) {
     // remove current status
     this.removeOutput();
-    if (json["error"]) {
-      this.setState({ errors: JSON.stringify(json["error"]) });
+    if(json["error"]) {
+        this.setState({errors: JSON.stringify(json["error"])});
     }
-
+    
     this.setState({
       valueCol: colName,
       valueRow: rowName
     });
-
-    // retrieve cache
-    const { cache } = this.state;
-    let isAllCached = true;
-
+ 
     if (json["statement"] === undefined) return;
-
+    const qnodesLabel = json["qnodesLabels"];
+ 
     // item
     const itemID = json["statement"]["item"];
     // const itemName = window.TableViewer.state.rowData[row][col];
-    if (cache[itemID] !== undefined) {
-      this.setState({ itemID: itemID, itemName: cache[itemID] });
-    } else {
-      this.setState({ itemID: itemID, itemName: "N/A" });
-      await this.queryWikidata(itemID, "itemName");
-      isAllCached = false;
-    }
-
+    this.setState({ itemID: itemID, itemName: qnodesLabel[itemID] });
+    
     if (json["statement"]["cell"]) {
       const [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
       wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
@@ -211,54 +204,44 @@ class Output extends Component<{}, OutputState> {
     }
     // property
     const propertyID = json["statement"]["property"];
-    if (cache[propertyID] !== undefined) {
-      this.setState({ propertyID: propertyID, propertyName: cache[propertyID] });
-    } else {
-      this.setState({ propertyID: propertyID });
-      await this.queryWikidata(propertyID, "propertyName");
-      isAllCached = false;
-    }
-
+    this.setState({ propertyID: propertyID, propertyName: qnodesLabel[propertyID] });
+ 
     // value
     const value = json["statement"]["value"];
     this.setState({ value: value });
     wikiStore.table.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
     this.setState({ currCol: colName, currRow: rowName });
-
+ 
     // unit
     if (json["statement"]["unit"]) {
-      const unit = json["statement"]["unit"];
-      if (cache[unit] !== undefined) {
-        this.setState({ unit: cache[unit] });
-      } else {
-        await this.queryWikidata(unit, "unit");
-        isAllCached = false;
+      let unitName = json["statement"]["unit"];
+      let unitID = null;
+      if (/^[PQ]\d+$/.test(unitName)) {
+        unitID = unitName;
+        unitName = qnodesLabel[unitName];
       }
+      this.setState({ unitName: unitName, unitID: unitID });
     } else {
-      this.setState({ unit: null });
+      this.setState({ unitName: null });
     }
-
+ 
     // qualifiers
     const temp = json["statement"]["qualifier"];
     const qualifiers = [];
     if (temp !== undefined) {
       for (let i = 0, len = temp.length; i < len; i++) {
         const qualifier: any = {};
-
+ 
         qualifier["propertyID"] = temp[i]["property"];
-
+        qualifier["propertyName"] = qnodesLabel[qualifier["propertyID"]];
+ 
         qualifier["valueName"] = temp[i]["value"];
         if (/^[PQ]\d+$/.test(qualifier["valueName"])) {
-          if (cache[qualifier["valueName"]] !== undefined) {
-            qualifier["valueID"] = qualifier["valueName"];
-            qualifier["valueName"] = cache[qualifier["valueName"]];
-          } else {
-            await this.queryWikidata(qualifier["valueName"], "qualifiers", i, "valueName");
-            isAllCached = false;
-          }
+          qualifier["valueID"] = qualifier["valueName"];
+          qualifier["valueName"] = qnodesLabel[qualifier["valueName"]];
         }
-
-        if (temp[i]["cell"] !== undefined && temp[i]["cell"] !== null) {
+ 
+        if (temp[i]["cell"] !== undefined && temp[i]["cell"] !==null) {
           const [q_col, q_row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
           qualifier["col"] = q_col;
           qualifier["row"] = q_row;
@@ -266,22 +249,12 @@ class Output extends Component<{}, OutputState> {
           const hue = utils.getHueByQnode(10, qualifier["propertyID"]);
           wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
-
+ 
         qualifiers.push(qualifier);
-        this.setState({ qualifiers });
-
-        if (cache[qualifier["propertyID"]] !== undefined) {
-          qualifier["propertyName"] = cache[qualifier["propertyID"]];
-        } else {
-          await this.queryWikidata(qualifier["propertyID"], "qualifiers", i, "propertyName");
-          isAllCached = false;
-        }
       }
+ 
     }
-
-    if (isAllCached) {
-      wikiStore.output.showSpinner = false;
-    }
+    this.setState({ qualifiers: qualifiers });
   }
 
   removeOutput() {
@@ -300,48 +273,6 @@ class Output extends Component<{}, OutputState> {
     });
   }
 
-  async queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
-    // FUTURE: use <local stroage> to store previous query result even longer
-    // Show output after all the qualifiers label returned.
-    this.setState({ queryDataCount: this.state.queryDataCount + 1 });
-    // before send request
-    wikiStore.output.showSpinner = true;
-
-    // Talya: Use async/await here
-    try {
-      const res = await this.requestService.getQnode(this.pid, node);
-      let name = res.label;
-      if (!name) {
-        name = node;
-      }
-      if (field === "itemName") {
-        this.setState({ itemName: name });
-      } else if (field === "propertyName") {
-        this.setState({ propertyName: name });
-      } else if (field === "unit") {
-        this.setState({ unit: name });
-      } else if (field === "qualifiers") {
-        const qualifiers = this.state.qualifiers;
-        if (subfield === "propertyName") {
-          qualifiers[index]["propertyName"] = name;
-        } else if (subfield === "valueName") {
-          qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
-          qualifiers[index]["valueName"] = name;
-        }
-        this.setState({ qualifiers: qualifiers });
-      }
-      const cache = this.state.cache;
-      cache[node] = name;
-      this.setState({
-        cache: cache,
-        queryDataCount: this.state.queryDataCount - 1
-      });
-      wikiStore.output.showSpinner = false;
-    } catch (error) {
-      console.error('Ended up in catch for queryWikidata', error);
-      wikiStore.output.showSpinner = false;
-    }
-  }
 
   render() {
     return (
@@ -393,7 +324,8 @@ class Output extends Component<{}, OutputState> {
                   propertyID={this.state.propertyID}
                   propertyName={this.state.propertyName}
                   value={this.state.value}
-                  unit={this.state.unit}
+                  unitID={this.state.unitID}
+                  unitName={this.state.unitName}
                   qualifiers={this.state.qualifiers}
                 />
               </div> : null}
