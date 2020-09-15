@@ -62,13 +62,15 @@ interface TableState  {
 class TableViewer extends Component<{}, TableState> {
   public gridApi: any;
   public gridColumnApi: any;
+  private pid: string;
 
   private requestService: RequestService;
 
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
-   
+    this.pid = wikiStore.project.pid;
+    
     // init state
     this.state = {
       // appearance
@@ -105,10 +107,6 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
 
-  private get pid() {
-    return wikiStore.project.pid;
-  }
-  
   onGridReady(params: WikifierData) {
     // store the api
     this.gridApi = params.api;
@@ -116,7 +114,7 @@ class TableViewer extends Component<{}, TableState> {
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
   }
 
-  async handleOpenTableFile(event:any) {
+  handleOpenTableFile(event:any) {
     this.setState({ errorMessage: {} as ErrorMessage });  
     // remove current status
     wikiStore.table.isCellSelectable = false;
@@ -135,8 +133,7 @@ class TableViewer extends Component<{}, TableState> {
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("file", file);
-    try {
-      const json = await this.requestService.uploadDataFile(this.pid, formData);
+    this.requestService.uploadDataFile(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -185,7 +182,7 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot upload data file!";
       this.setState({ errorMessage: error });
@@ -193,10 +190,10 @@ class TableViewer extends Component<{}, TableState> {
       // follow-ups (failure)
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
-    }
+    });
   }
 
-  async handleOpenWikifierFile(event: any) {
+  handleOpenWikifierFile(event: any) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateQnodeCells();
@@ -213,8 +210,7 @@ class TableViewer extends Component<{}, TableState> {
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("file", file);
-    try {
-      const json = await this.requestService.uploadWikifierOutput(this.pid, formData);
+    this.requestService.uploadWikifierOutput(this.pid, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -239,7 +235,7 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot upload wikifier file!";
       this.setState({ errorMessage: error });
@@ -248,10 +244,10 @@ class TableViewer extends Component<{}, TableState> {
       this.updateQnodeCells();
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
-    }
+    });
   }
 
-  async handleSelectCell(params: any) {
+  handleSelectCell(params: any) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
@@ -278,8 +274,7 @@ class TableViewer extends Component<{}, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    try {
-      const json = await this.requestService.resolveCell(this.pid, colName, rowName);
+    this.requestService.resolveCell(this.pid, colName, rowName).then((json) => {
       console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -299,7 +294,7 @@ class TableViewer extends Component<{}, TableState> {
       // follow-ups (success)
       wikiStore.output.showSpinner = false;
       wikiStore.table.showSpinner = false;
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
     //   error.errorDescription += "\n\nCannot resolve cell!";
       this.setState({ errorMessage: error });
@@ -307,10 +302,10 @@ class TableViewer extends Component<{}, TableState> {
       // follow-ups (failure)
       wikiStore.output.showSpinner = false;
       wikiStore.table.showSpinner = false;
-    }
+    });
   }
 
-  async handleSelectSheet(event: any) {
+  handleSelectSheet(event: any) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
@@ -327,8 +322,7 @@ class TableViewer extends Component<{}, TableState> {
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
-    try {
-      const json = await this.requestService.changeSheet(this.pid, sheetName);
+    this.requestService.changeSheet(this.pid, sheetName).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -370,7 +364,7 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       console.log(error);
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
@@ -378,7 +372,7 @@ class TableViewer extends Component<{}, TableState> {
       // follow-ups (failure)
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
-    }
+    });
   }
 
 

@@ -77,14 +77,13 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
   }
 
-  async loadProject() {
+  loadProject() {
     // before fetching project files
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
 
     // fetch project files
-    try {
-      const json = await this.requestService.getProjectFiles(this.props.id)
+    this.requestService.getProjectFiles(this.props.id).then(json => {
       document.title = 't2wml: ' + json.name;
       this.setState({name: json.name});
 
@@ -122,7 +121,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       console.error("Can't fetch project: ", error);
       error.errorDescription += "\n\nCannot fetch project!";
       this.setState({ errorMessage: error });
@@ -130,23 +129,26 @@ class Project extends Component<ProjectProps, ProjectState> {
       // follow-ups (failure)
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
-    }
+    });
   }
 
   onRefreshProject() {
     this.loadProject();
   }
 
-  async onShowSettingsClicked() {
-    const data = await this.requestService.getSettings(this.props.id);
-    this.setState({
-      endpoint: data.endpoint,
-      warnEmpty: data.warnEmpty,
-      showSettings: true
-    });
+  onShowSettingsClicked() {
+    this.requestService.getSettings(this.props.id)
+      .then((data) => {
+        this.setState({
+          endpoint: data.endpoint,
+          warnEmpty: data.warnEmpty,
+          showSettings: true
+        });
+      });
+
   }
 
-  async handleSaveSettings() {
+  handleSaveSettings() {
     // update settings
     this.setState({ showSettings: false });
 
@@ -154,13 +156,11 @@ class Project extends Component<ProjectProps, ProjectState> {
     const formData = new FormData();
     formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
     formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
-    try {
-      await this.requestService.updateSettings(this.props.id, formData);
-    } catch(error) {
+    this.requestService.updateSettings(this.props.id, formData).catch((error: ErrorMessage) => {
       console.error('Error updating settings: ', error);
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
-    }
+    });
   }
 
   cancelSaveSettings() {

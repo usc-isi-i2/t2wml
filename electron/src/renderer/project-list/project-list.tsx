@@ -96,8 +96,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     document.title = "T2WML - Projects";
     // fetch project meta
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
-    try {
-      const json = await this.requestService.getProjects();
+    this.requestService.getProjects().then(json => {
       console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -119,7 +118,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
     //   console.log(error);
       error.errorDescription += "\n\nCannot fetch project details!";
       this.setState({ errorMessage: error });
@@ -127,10 +126,10 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
-    }
+    });
   }
 
-  async handleDeleteProject(pid = "") {
+  handleDeleteProject(pid = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
     if (pid === "") {
       pid = this.state.deletingPid;
@@ -142,8 +141,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    try {
-      const json = await this.requestService.deleteProject(pid as string);
+    this.requestService.deleteProject(pid as string).then(json => {
       console.log("<App> <- %c/delete_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -165,7 +163,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
       error.errorDescription += "\n\nCannot delete project!";
       this.setState({ errorMessage: error });
@@ -173,7 +171,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // follow-ups (failure)
       this.setState({ showSpinner: false });
-    }
+    });
   }
 
   cancelDeleteProject() {
@@ -181,7 +179,7 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
 
-  async handleDownloadProject(pid = "") {
+  handleDownloadProject(pid = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
     if (pid === "") {
       pid = this.state.downloadingPid;
@@ -193,8 +191,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    try {
-      const json = await this.requestService.downloadProject(pid);
+    this.requestService.downloadProject(pid).then(json => {
       console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -211,7 +208,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
       error.errorDescription += "\n\nCannot download project!";
       this.setState({ errorMessage: error });
@@ -219,14 +216,14 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // follow-ups (failure)
       // nothing
-    }
+    });
   }
 
   cancelDownloadProject() {
     this.setState({ showDownloadProject: false, downloadingPid: "" });
   }
 
-  async handleRenameProject(name: string) {
+  handleRenameProject(name: string) {
     this.setState({ errorMessage: {} as ErrorMessage });
     const pid = this.state.tempRenamePid;
     let ptitle = name.trim();
@@ -239,8 +236,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     console.log("<App> -> %c/rename_project%c to rename project %c" + pid + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("ptitle", ptitle);
-    try {
-      const json = await this.requestService.renameProject(pid as string, formData);
+    this.requestService.renameProject(pid as string, formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
       console.log(json);
       
@@ -262,7 +258,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       // follow-ups (success)
       this.setState({ showRenameProject: false, showSpinner: false });
 
-    } catch(error) {
+    }).catch((error: ErrorMessage) => {
       // console.log(error);
       error.errorDescription += "\n\nCannot rename project!";
       this.setState({ errorMessage: error });
@@ -270,7 +266,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // follow-ups (failure)
       this.setState({ showRenameProject: false, showSpinner: false });
-    }
+    });
   }
 
   cancelRenameProject() {
