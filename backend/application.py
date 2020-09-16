@@ -49,7 +49,11 @@ def get_calc_params(project):
 
 
 def get_project_folder():
-    pass
+    try:
+        project_folder = request.args['project_folder']
+        return project_folder
+    except KeyError:
+        raise web_exceptions.InvalidRequestException("project folder parameter not specified")
 
 
 def json_response(func):
@@ -96,7 +100,7 @@ def create_project():
     :return:
     """
 
-    project_folder = request.args['project_folder']
+    project_folder = get_project_folder()
     #check we're not overwriting existing project
     project_file = Path(project_folder) / "project.t2wml"
     if project_file.is_file():
@@ -118,7 +122,7 @@ def load_project():
     This route loads an existing project
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project=Project.query.filter_by(file_directory=project_folder).first()
     if not project:
         proj=apiProject.load(project_folder)
@@ -138,7 +142,7 @@ def get_project_files():
     This function fetches the last session of the last opened files in a project when that project is reopened later.
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     response = {
         "tableData": None,
@@ -160,7 +164,7 @@ def get_project_files():
 @app.route('/api/project/entity', methods=['POST'])
 @json_response
 def add_entity_definitions():
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     in_file = file_upload_validator({"tsv"})
     pf = PropertiesFile.create(project, in_file)
@@ -182,7 +186,7 @@ def upload_data_file():
     This function uploads the data file
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     response = {
         "tableData": dict(),
@@ -207,7 +211,7 @@ def change_sheet(sheet_name):
     This route is used when switching a sheet in an excel data file.
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     response = {
         "tableData": dict(),
@@ -247,7 +251,7 @@ def upload_wikifier_output():
     This function uploads the wikifier output
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     response = {"error": None}
     in_file = file_upload_validator({"csv"})
@@ -269,7 +273,7 @@ def wikify_region():
     This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     action = request.form["action"]
     region = request.form["region"]
@@ -307,7 +311,7 @@ def upload_yaml():
     This function uploads and processes the yaml file
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
@@ -337,7 +341,7 @@ def get_cell_statement(col, row):
     This function returns the statement of a particular cell
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     data = {}
 
@@ -356,7 +360,7 @@ def downloader(filetype):
     This functions initiates the download
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     calc_params=get_calc_params(project)
     if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
@@ -378,7 +382,7 @@ def delete_project():
         'error': None
     }
 
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     if project:
         shutil.rmtree(project.directory)
@@ -399,7 +403,7 @@ def rename_project():
         'error': None
     }
     ptitle = request.form["ptitle"]
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     project.rename(ptitle)
     data['projects'] = get_project_details()
@@ -413,7 +417,7 @@ def update_settings():
     This function updates the settings from GUI
     :return:
     """
-    project_folder=request.args['project_folder']
+    project_folder = get_project_folder()
     project = get_project(project_folder)
     project.update_settings(request.form)
     update_t2wml_settings(project)
