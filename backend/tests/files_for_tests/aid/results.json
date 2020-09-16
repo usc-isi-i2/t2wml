@@ -233,7 +233,7 @@
                 "": {
                     "item": "Q21203",
                     "label": "Aruba",
-                    "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                    "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
                 }
             }
         },
@@ -329,7 +329,7 @@
                 "value": "Aruba",
                 "item": "Q21203",
                 "label": "Aruba",
-                "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
             }
         ]
     },
@@ -444,42 +444,42 @@
                 "main subject": {
                     "item": "aid-security-22",
                     "label": "Incident ID 22",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 }
             },
             "B4": {
                 "main subject": {
                     "item": "aid-security-47",
                     "label": "Incident ID 47",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 }
             },
             "B5": {
                 "main subject": {
                     "item": "aid-security-73",
                     "label": "Incident ID 73",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 }
             },
             "B6": {
                 "main subject": {
                     "item": "aid-security-103",
                     "label": "Incident ID 103",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 }
             },
             "B7": {
                 "main subject": {
                     "item": "aid-security-475",
                     "label": "Incident ID 475",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 }
             },
             "B8": {
                 "main subject": {
                     "item": "aid-security-782",
                     "label": "Incident ID 782",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 }
             },
             "F1": {
@@ -491,7 +491,7 @@
                 "property": {
                     "item": "Paid-security-002",
                     "label": "UN",
-                    "desc": ""
+                    "description": ""
                 }
             },
             "G1": {
@@ -503,7 +503,7 @@
                 "property": {
                     "item": "Paid-security-003",
                     "label": "INGO",
-                    "desc": ""
+                    "description": ""
                 }
             },
             "H1": {
@@ -515,14 +515,14 @@
                 "property": {
                     "item": "Paid-security-004",
                     "label": "LNGO/NRCS",
-                    "desc": ""
+                    "description": ""
                 }
             },
             "I4": {
                 "": {
                     "item": "Q21203",
                     "label": "Aruba",
-                    "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                    "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
                 }
             }
         },
@@ -534,7 +534,7 @@
                 "value": "22",
                 "item": "aid-security-22",
                 "label": "Incident ID 22",
-                "desc": "incident related to aid worker security"
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
@@ -543,7 +543,7 @@
                 "value": "47",
                 "item": "aid-security-47",
                 "label": "Incident ID 47",
-                "desc": "incident related to aid worker security"
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
@@ -552,7 +552,7 @@
                 "value": "73",
                 "item": "aid-security-73",
                 "label": "Incident ID 73",
-                "desc": "incident related to aid worker security"
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
@@ -561,7 +561,7 @@
                 "value": "103",
                 "item": "aid-security-103",
                 "label": "Incident ID 103",
-                "desc": "incident related to aid worker security"
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
@@ -570,7 +570,7 @@
                 "value": "475",
                 "item": "aid-security-475",
                 "label": "Incident ID 475",
-                "desc": "incident related to aid worker security"
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
@@ -579,7 +579,7 @@
                 "value": "782",
                 "item": "aid-security-782",
                 "label": "Incident ID 782",
-                "desc": "incident related to aid worker security"
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "unit",
@@ -595,7 +595,7 @@
                 "value": "UN",
                 "item": "Paid-security-002",
                 "label": "UN",
-                "desc": ""
+                "description": ""
             },
             {
                 "context": "unit",
@@ -611,7 +611,7 @@
                 "value": "INGO",
                 "item": "Paid-security-003",
                 "label": "INGO",
-                "desc": ""
+                "description": ""
             },
             {
                 "context": "unit",
@@ -627,7 +627,7 @@
                 "value": "LNGO/NRCS",
                 "item": "Paid-security-004",
                 "label": "LNGO/NRCS",
-                "desc": ""
+                "description": ""
             },
             {
                 "context": "",
@@ -636,7 +636,7 @@
                 "value": "Aruba",
                 "item": "Q21203",
                 "label": "Aruba",
-                "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
             }
         ]
     },
@@ -646,35 +646,35 @@
             "dataRegion": {
                 "color": "hsl(150, 50%, 90%)",
                 "list": [
-                    "G5",
-                    "G7",
                     "H5",
-                    "H7",
-                    "H3",
-                    "F4",
-                    "G6",
-                    "F7",
-                    "F8",
+                    "G5",
                     "F6",
-                    "H8",
+                    "H7",
+                    "F4",
+                    "F8",
+                    "G7",
+                    "H3",
                     "F3",
+                    "G8",
+                    "H6",
+                    "G6",
                     "G3",
                     "H4",
+                    "F7",
+                    "H8",
                     "G4",
-                    "F5",
-                    "G8",
-                    "H6"
+                    "F5"
                 ]
             },
             "item": {
                 "color": "hsl(200, 50%, 90%)",
                 "list": [
-                    "B5",
+                    "B7",
                     "B4",
-                    "B3",
                     "B8",
+                    "B3",
                     "B6",
-                    "B7"
+                    "B5"
                 ]
             },
             "qualifierRegion": {
@@ -686,7 +686,7 @@
             "referenceRegion": {
                 "color": "yellow",
                 "list": []
-            },            
+            },
             "error": {
                 "F3": {
                     "qualifier": {
@@ -817,8 +817,8 @@
             "errorCells": {
                 "color": "#FF3333",
                 "list": []
-            },            
-             "cellStatements": {
+            },
+            "cellStatements": {
                 "F3": {
                     "property": "Paid-security-002",
                     "value": "2",
@@ -1167,7 +1167,30 @@
             "cell": "B4"
         },
         "internalErrors": null,
-        "error": null
+        "error": null,
+        "qnodesLabels": {
+            "Paid-security-003": {
+                "label": "INGO",
+                "description": ""
+            },
+            "Qaid-security-U002": null,
+            "P585": {
+                "label": "point in time",
+                "description": "time and date something took place, existed or a statement was true"
+            },
+            "Q1985727": {
+                "label": "proleptic Gregorian calendar",
+                "description": "extension of the Gregorian calendar before its introduction"
+            },
+            "P17": {
+                "label": "country",
+                "description": ""
+            },
+            "Q21203": {
+                "label": "Aruba",
+                "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+            }
+        }
     },
     "change_sheet": {
         "tableData": {
@@ -1395,35 +1418,35 @@
                     "main subject": {
                         "item": "aid-security-22",
                         "label": "Incident ID 22",
-                        "desc": "incident related to aid worker security"
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B5": {
                     "main subject": {
                         "item": "aid-security-73",
                         "label": "Incident ID 73",
-                        "desc": "incident related to aid worker security"
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B6": {
                     "main subject": {
                         "item": "aid-security-103",
                         "label": "Incident ID 103",
-                        "desc": "incident related to aid worker security"
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B7": {
                     "main subject": {
                         "item": "aid-security-475",
                         "label": "Incident ID 475",
-                        "desc": "incident related to aid worker security"
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B8": {
                     "main subject": {
                         "item": "aid-security-782",
                         "label": "Incident ID 782",
-                        "desc": "incident related to aid worker security"
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "F1": {
@@ -1435,7 +1458,7 @@
                     "property": {
                         "item": "Paid-security-002",
                         "label": "UN",
-                        "desc": ""
+                        "description": ""
                     }
                 },
                 "G1": {
@@ -1447,7 +1470,7 @@
                     "property": {
                         "item": "Paid-security-003",
                         "label": "INGO",
-                        "desc": ""
+                        "description": ""
                     }
                 },
                 "H1": {
@@ -1459,14 +1482,14 @@
                     "property": {
                         "item": "Paid-security-004",
                         "label": "LNGO/NRCS",
-                        "desc": ""
+                        "description": ""
                     }
                 },
                 "I4": {
                     "": {
                         "item": "Q21203",
                         "label": "Aruba",
-                        "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
                     }
                 }
             },
@@ -1478,7 +1501,7 @@
                     "value": "22",
                     "item": "aid-security-22",
                     "label": "Incident ID 22",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
@@ -1487,7 +1510,7 @@
                     "value": "73",
                     "item": "aid-security-73",
                     "label": "Incident ID 73",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
@@ -1496,7 +1519,7 @@
                     "value": "103",
                     "item": "aid-security-103",
                     "label": "Incident ID 103",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
@@ -1505,7 +1528,7 @@
                     "value": "475",
                     "item": "aid-security-475",
                     "label": "Incident ID 475",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
@@ -1514,7 +1537,7 @@
                     "value": "782",
                     "item": "aid-security-782",
                     "label": "Incident ID 782",
-                    "desc": "incident related to aid worker security"
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "unit",
@@ -1530,7 +1553,7 @@
                     "value": "UN",
                     "item": "Paid-security-002",
                     "label": "UN",
-                    "desc": ""
+                    "description": ""
                 },
                 {
                     "context": "unit",
@@ -1546,7 +1569,7 @@
                     "value": "INGO",
                     "item": "Paid-security-003",
                     "label": "INGO",
-                    "desc": ""
+                    "description": ""
                 },
                 {
                     "context": "unit",
@@ -1562,7 +1585,7 @@
                     "value": "LNGO/NRCS",
                     "item": "Paid-security-004",
                     "label": "LNGO/NRCS",
-                    "desc": ""
+                    "description": ""
                 },
                 {
                     "context": "",
@@ -1571,7 +1594,7 @@
                     "value": "Aruba",
                     "item": "Q21203",
                     "label": "Aruba",
-                    "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                    "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
                 }
             ]
         },
@@ -1584,35 +1607,35 @@
                 "wikifier test": {
                     "item": "Q115",
                     "label": "Ethiopia",
-                    "desc": "country in East Africa"
+                    "description": "country in East Africa"
                 }
             },
             "I4": {
                 "wikifier test": {
                     "item": "Q21203",
                     "label": "Aruba",
-                    "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                    "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
                 }
             },
             "I6": {
                 "wikifier test": {
                     "item": "Q115",
                     "label": "Ethiopia",
-                    "desc": "country in East Africa"
+                    "description": "country in East Africa"
                 }
             },
             "I7": {
                 "wikifier test": {
                     "item": "Q82770",
                     "label": "Bad D\u00fcrrheim",
-                    "desc": "municipality in Germany"
+                    "description": "municipality in Germany"
                 }
             },
             "I8": {
                 "wikifier test": {
                     "item": "Q115",
                     "label": "Ethiopia",
-                    "desc": "country in East Africa"
+                    "description": "country in East Africa"
                 }
             }
         },
@@ -1624,7 +1647,7 @@
                 "value": "Ethiopia",
                 "item": "Q115",
                 "label": "Ethiopia",
-                "desc": "country in East Africa"
+                "description": "country in East Africa"
             },
             {
                 "context": "wikifier test",
@@ -1633,7 +1656,7 @@
                 "value": "Aruba",
                 "item": "Q21203",
                 "label": "Aruba",
-                "desc": "island country in the Caribbean, part of the Kingdom of the Netherlands"
+                "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
             },
             {
                 "context": "wikifier test",
@@ -1642,7 +1665,7 @@
                 "value": "Ethiopia",
                 "item": "Q115",
                 "label": "Ethiopia",
-                "desc": "country in East Africa"
+                "description": "country in East Africa"
             },
             {
                 "context": "wikifier test",
@@ -1651,7 +1674,7 @@
                 "value": "bad qualifier",
                 "item": "Q82770",
                 "label": "Bad D\u00fcrrheim",
-                "desc": "municipality in Germany"
+                "description": "municipality in Germany"
             },
             {
                 "context": "wikifier test",
@@ -1660,7 +1683,7 @@
                 "value": "Ethiopia",
                 "item": "Q115",
                 "label": "Ethiopia",
-                "desc": "country in East Africa"
+                "description": "country in East Africa"
             }
         ],
         "problemCells": {
