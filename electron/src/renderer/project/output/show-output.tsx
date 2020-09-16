@@ -26,6 +26,8 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
   render() {
     const outputDiv = [];
 
+    console.debug('ShowOutput with properties: ', this.props);
+    
     let errorsDiv;
     if (this.props.errors) {
         errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>

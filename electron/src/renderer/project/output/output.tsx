@@ -213,7 +213,7 @@ class Output extends Component<{}, OutputState> {
       let unitID = null;
       if (/^[PQ]\d+$/.test(unitName)) {
         unitID = unitName;
-        unitName = qnodesLabel[unitName]["label"];
+        unitName = qnodesLabel[unitName].label;
       }
       this.setState({ unitName: unitName, unitID: unitID });
     } else {
@@ -221,25 +221,25 @@ class Output extends Component<{}, OutputState> {
     }
  
     // qualifiers
-    const temp = json["statement"]["qualifier"];
+    const statementQualifiers = json["statement"]["qualifier"];
     const qualifiers = [];
-    if (temp !== undefined) {
-      for (let i = 0, len = temp.length; i < len; i++) {
+    if (statementQualifiers !== undefined) {
+      for (const statementQualifier of statementQualifiers) {
         const qualifier: any = {};
  
-        qualifier["propertyID"] = temp[i]["property"];
-        qualifier["propertyName"] = qnodesLabel[qualifier["propertyID"]["label"]];
+        qualifier.propertyID = statementQualifier.property;
+        qualifier.propertyName = qnodesLabel[qualifier.propertyID].label;
  
-        qualifier["valueName"] = temp[i]["value"];
-        if (/^[PQ]\d+$/.test(qualifier["valueName"])) {
-          qualifier["valueID"] = qualifier["valueName"];
-          qualifier["valueName"] = qnodesLabel[qualifier["valueName"]["label"]];
+        qualifier.valueName = statementQualifier.value;
+        if (/^[PQ]\d+$/.test(qualifier.valueName)) {
+          qualifier.valueID = qualifier.valueName;
+          qualifier.valueName = qnodesLabel[qualifier.valueName].label;
         }
  
-        if (temp[i]["cell"] !== undefined && temp[i]["cell"] !==null) {
-          const [q_col, q_row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
-          qualifier["col"] = q_col;
-          qualifier["row"] = q_row;
+        if (statementQualifier["cell"]) {
+          const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
+          qualifier.col = q_col;
+          qualifier.row = q_row;
           // let hue = utils.getHueByRandom(10); // first param is the total number of colors
           const hue = utils.getHueByQnode(10, qualifier["propertyID"]);
           wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
