@@ -37,7 +37,6 @@ class DeleteProject extends Component<DeleteProperties, {}> {
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
         <Button variant="outline-dark" onClick={() => this.props.cancelDeleteProject()}>
-        {/* <Button variant="outline-dark" onClick={(this) => this.props.cancelDeleteProject(this.props.pid)}> */}
             Cancel
           </Button>
           <Button variant="danger" onClick={() => this.props.handleDeleteProject()} style={{ backgroundColor: "#990000", borderColor: "#990000" }}>

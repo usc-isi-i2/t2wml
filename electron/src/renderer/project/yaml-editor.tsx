@@ -77,7 +77,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)
     // }
-    this.requestService.uploadYaml(wikiStore.project.pid, formData).then(json => {
+    // TODO: Switch to async/await
+    this.requestService.uploadYaml(wikiStore.project.path, formData).then(json => {
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 

@@ -3,12 +3,10 @@ import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 
 class ProjectState {
-    @observable public pid: string;
-    @observable public path?: string;
+    @observable public path: string;
 
     constructor() {
-        this.pid = '';
-        this.path = undefined;
+        this.path = '';
     }
 }
 
@@ -104,10 +102,9 @@ class WikiStore {
     @observable public displayMode: DisplayMode = 'project-list';
 
     @action
-    public changeProject(pid?: string, path?: string) {
-        if (pid) {
+    public changeProject(path?: string) {
+        if (path) {
             this.displayMode = 'project';
-            this.project.pid = pid;
             this.project.path = path;
             if (path) {
                 ipcRenderer.send('show-project', path)

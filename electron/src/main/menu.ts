@@ -87,7 +87,7 @@ export default class MainMenuManager {
 
     private fillRecentlyUsed() {
         let subMenu = [];
-        for (const path of settings.recentlyUsed) {
+        for (const path of settings.recentlyUsed.slice(0, 8)) {  // At most 8 recently used
             subMenu.push({ label: path, click: this.onOpenRecentProjectClick.bind(this, path) });
         }
 

@@ -29,14 +29,14 @@ interface ProjectListState {
   showDownloadProject: boolean;
   showRenameProject: boolean;
   showDeleteProject: boolean;
-  deletingPid: string;
-  downloadingPid: string;
+  deletingProjectPath: string;
+  downloadingProjectPath: string;
 
   // user
   userData: any,
 
   // temp in form
-  tempRenamePid: string | null;
+  tempRenameProjectPath: string | null;
   tempRenameProject: string;
   isTempRenameProjectVaild: boolean;
   tempSearch: string;
@@ -72,14 +72,14 @@ class ProjectList extends Component<{}, ProjectListState> {
       showDownloadProject: false,
       showRenameProject: false,
       showDeleteProject: false,
-      deletingPid: "",
-      downloadingPid: "",
+      deletingProjectPath: "",
+      downloadingProjectPath: "",
 
       // user
       userData: {},
 
       // temp in form
-      tempRenamePid: null,
+      tempRenameProjectPath: null,
       tempRenameProject: "",
       isTempRenameProjectVaild: true,
       tempSearch: "",
@@ -96,6 +96,8 @@ class ProjectList extends Component<{}, ProjectListState> {
     document.title = "T2WML - Projects";
     // fetch project meta
     console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
+
+    // TODO: Switch to async/await
     this.requestService.getProjects().then(json => {
       console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
       console.log(json);
@@ -129,19 +131,19 @@ class ProjectList extends Component<{}, ProjectListState> {
     });
   }
 
-  handleDeleteProject(pid = "") {
+  handleDeleteProject(path = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
-    if (pid === "") {
-      pid = this.state.deletingPid;
-      if (pid === "") return;
+    if (path === "") {
+      path = this.state.deletingProjectPath;
+      if (path === "") return;
     }
 
     // before sending request
     this.setState({ showSpinner: true, showDeleteProject: false });
 
     // send request
-    console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.deleteProject(pid as string).then(json => {
+    console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
+    this.requestService.deleteProject(path).then(json => {
       console.log("<App> <- %c/delete_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -175,23 +177,23 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
   cancelDeleteProject() {
-    this.setState({ showDeleteProject: false, deletingPid: "" });
+    this.setState({ showDeleteProject: false, deletingProjectPath: "" });
   }
 
 
-  handleDownloadProject(pid = "") {
+  handleDownloadProject(path = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
-    if (pid === "") {
-      pid = this.state.downloadingPid;
-      if (pid === "") return;
+    if (path === "") {
+      path = this.state.downloadingProjectPath;
+      if (path === "") return;
     }
 
     // before sending request
     this.setState({ showDownloadProject: false });
 
     // send request
-    console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadProject(pid).then(json => {
+    console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
+    this.requestService.downloadProject(path).then(json => {
       console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -220,23 +222,25 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
   cancelDownloadProject() {
-    this.setState({ showDownloadProject: false, downloadingPid: "" });
+    this.setState({ showDownloadProject: false, downloadingProjectPath: "" });
   }
 
   handleRenameProject(name: string) {
     this.setState({ errorMessage: {} as ErrorMessage });
-    const pid = this.state.tempRenamePid;
+    const path = this.state.tempRenameProjectPath;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
+
+    if (!path) { return; }
 
     // before sending request
     this.setState({ showSpinner: true });
 
     // send request
-    console.log("<App> -> %c/rename_project%c to rename project %c" + pid + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
+    console.log("<App> -> %c/rename_project%c to rename project %c" + path + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("ptitle", ptitle);
-    this.requestService.renameProject(pid as string, formData).then(json => {
+    this.requestService.renameProject(path, formData).then(json => {
       console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
       console.log(json);
       
@@ -318,8 +322,8 @@ class ProjectList extends Component<{}, ProjectListState> {
     });
   }
 
-  projectClicked(pid: string, path: string) {
-    wikiStore.changeProject(pid, path);
+  projectClicked(path: string) {
+    wikiStore.changeProject(path);
   }
 
   renderProjects() {
@@ -328,14 +332,14 @@ class ProjectList extends Component<{}, ProjectListState> {
 
     const projectListDiv = [];
     for (let i = 0, len = projectData.length; i < len; i++) {
-      const { pid, ptitle, directory, cdate, mdate } = projectData[i];
+      const { ptitle, directory, cdate, mdate } = projectData[i];
       if (utils.searchProject(ptitle, keywords)) {
         projectListDiv.push(
           <tr key={i}>
 
             {/* title */}
             <td>
-              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(pid, directory)}>
+              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(directory)}>
                   {ptitle}
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
@@ -379,7 +383,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-duplicate"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showRenameProject: true, tempRenamePid: pid, tempRenameProject: ptitle })}
+                  onClick={() => this.setState({ showRenameProject: true, tempRenameProjectPath: directory, tempRenameProject: ptitle })}
                 >
                   <FontAwesomeIcon icon={faPencilAlt} />
                 </span>
@@ -399,7 +403,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-download"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDownloadProject: true, downloadingPid: pid })}
+                  onClick={() => this.setState({ showDownloadProject: true, downloadingProjectPath: directory })}
                 >
                   <FontAwesomeIcon icon={faCloudDownloadAlt} />
                 </span>
@@ -419,7 +423,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-delete"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDeleteProject: true, deletingPid: pid })}
+                  onClick={() => this.setState({ showDeleteProject: true, deletingProjectPath: directory })}
                 >
                   <FontAwesomeIcon icon={faTrashAlt} />
                 </span>     

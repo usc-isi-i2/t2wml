@@ -85,8 +85,8 @@ class Output extends Component<{}, OutputState> {
     wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
   }
 
-  private get pid() {
-    return wikiStore.project.pid;
+  private get projectPath() {
+    return wikiStore.project.path;
   }
 
   async handleDoDownload(fileName: string, fileType: string) {
@@ -99,7 +99,7 @@ class Output extends Component<{}, OutputState> {
     console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
 
     try {
-      const json = await this.requestService.downloadResults(this.pid, fileType);
+      const json = await this.requestService.downloadResults(this.projectPath, fileType);
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 
