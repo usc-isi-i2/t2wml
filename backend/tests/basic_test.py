@@ -10,7 +10,7 @@ pid=None #we need to use a global for some reason... self.project_folder does no
 
 
 
-class xTestBasicWorkflow(BaseClass):
+class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
 

@@ -48,8 +48,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
-      qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "desc": "xxx" }, ... }, ... }
-      rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in Africa" }]
+      qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
+      rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in Africa" }]
 
       // call wikifier service
       showCallWikifier: false,
