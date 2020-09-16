@@ -15,7 +15,7 @@ from models import (DataFile, ItemsFile, Project,
 
 from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        highlight_region, update_t2wml_settings, wikify)
-from utils import (file_upload_validator, get_project_details, get_qnode_label,
+from utils import (file_upload_validator, get_project_details,
                    make_frontend_err_dict, string_is_valid, table_data)
 from web_exceptions import WebException
 from t2wml_annotation_integration import AnnotationIntegration
@@ -172,16 +172,6 @@ def add_entity_definitions(pid):
     response['project']=project.api_project.__dict__
     return response, 200
 
-
-
-
-
-@app.route('/api/qnode/<pid>/<qid>', methods=['GET'])
-@json_response
-def get_qnode_info(pid, qid):
-    project = get_project(pid)
-    label = get_qnode_label(qid, project.sparql_endpoint)
-    return {"label": label}, 200
 
 
 @app.route('/api/data/<pid>', methods=['POST'])

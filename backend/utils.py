@@ -42,7 +42,7 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint=DEFAULT_SPAR
                 "/")[-1]
             label = results["results"]["bindings"][i]["label"]["value"]
             desc = results["results"]["bindings"][i]["desc"]["value"]
-            response[qnode] = {'label': label, 'desc': desc}
+            response[qnode] = {'label': label, 'description': desc}
     except IndexError:
         pass
     return response
@@ -57,63 +57,27 @@ def get_labels_and_descriptions(items, sparql_endpoint):
             label = desc = ""
             if wp.label:
                 label = wp.label
-            if wp.description:
-                desc = wp.description
-            response[item] = dict(label=label, desc=desc)
+                if wp.description:
+                    desc = wp.description
+                response[item] = dict(label=label, description=desc)
+            else:
+                missing_items.append(item)
         else:
             missing_items.append(item)
     try:
         additional_items = query_wikidata_for_label_and_description(
             missing_items, sparql_endpoint)
         response.update(additional_items)
+        try:
+            for item in additional_items:
+                WikidataEntry.add_or_update(item, do_session_commit=False, **additional_items[item])
+        except Exception as e:
+            print(e)
+        WikidataEntry.do_commit()
+
     except:  # eg 502 bad gateway error
         pass
     return response
-
-
-def query_wikidata_for_label(node, sparql_endpoint=DEFAULT_SPARQL_ENDPOINT):
-    try:
-        query = """SELECT DISTINCT * WHERE {
-                wd:""" + node + """ rdfs:label ?label . 
-                FILTER (langMatches( lang(?label), "EN" ) )  
-                }
-                LIMIT 1"""
-        sparql = SPARQLWrapper(sparql_endpoint)
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-    except Exception as e:
-        print("got an error while making sparql query", str(e))
-        return None
-
-    try:
-        label = results["results"]["bindings"][0]["label"]["value"]
-        return label
-    except Exception as e:
-        print("results did not include a label")
-        return None
-
-
-def get_qnode_label(node, sparql_endpoint):
-    try:
-        wp = WikidataEntry.query.filter_by(wd_id=node).first()
-        if wp:
-            if wp.label:
-                wikidata_label_query_cache[node] = wp.label
-                return wp.label
-    except Exception as e:
-        pass  # continue directly to sparql query
-
-    # no point making many wikidata queries, results won't change
-    cached_label = wikidata_label_query_cache.get(node)
-    if cached_label:
-        return cached_label
-    try:
-        label = query_wikidata_for_label(node, sparql_endpoint)
-        wikidata_label_query_cache[node] = label
-    except:  # eg 502 bad gateway
-        return None
-    return label
 
 
 

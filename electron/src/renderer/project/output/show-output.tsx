@@ -13,7 +13,8 @@ interface ShowOutputProperties {
     propertyID: string | null;
     propertyName: string | null;
     value: string | null;
-    unit: string | null;
+    unitID: string | null;
+    unitName: string | null;
     qualifiers: any[]; 
 }
 
@@ -25,6 +26,8 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
   render() {
     const outputDiv = [];
 
+    console.debug('ShowOutput with properties: ', this.props);
+    
     let errorsDiv;
     if (this.props.errors) {
         errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
@@ -74,10 +77,21 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
           ;
       }
 
-      // value
-      let valueDiv = this.props.value;
-      if (this.props.unit) {
-        valueDiv += ` ${this.props.unit}`;
+      // value and unit
+      let valueDiv: any = this.props.value;
+      if (this.props.unitName) {
+        if(this.props.unitID) {
+          valueDiv = <span>{this.props.value}
+            <a
+            href={"https://www.wikidata.org/wiki/" + this.props.unitID}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ "color": "hsl(200, 100%, 30%)" }}
+            key="unit"
+          > {this.props.unitName}</a></span>;
+        } else {
+          valueDiv = <span>{this.props.value} {this.props.unitName}</span>;
+        }
       }
 
       // qualifiers
