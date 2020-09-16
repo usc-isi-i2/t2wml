@@ -78,7 +78,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     //   formData.append("sheet_name", sheetName)
     // }
     // TODO: Switch to async/await
-    this.requestService.uploadYaml(wikiStore.project.path, formData).then(json => {
+    this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData).then(json => {
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 

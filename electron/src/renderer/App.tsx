@@ -115,7 +115,7 @@ class App extends Component<{}, AppState> {
           <Spinner animation="border" />
         </div>
         
-        { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project path={wikiStore.project.path}/> }
+        { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project path={wikiStore.projects.current!.folder}/> }
       </div>
     );
   }

@@ -86,7 +86,7 @@ class Output extends Component<{}, OutputState> {
   }
 
   private get projectPath() {
-    return wikiStore.project.path;
+    return wikiStore.projects.current!.folder;
   }
 
   async handleDoDownload(fileName: string, fileType: string) {

@@ -1,11 +1,13 @@
+import { ipcRenderer } from 'electron';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
+import { observable } from 'mobx';
 import * as path from 'path';
 
 export class Project {
-    private _folder;
+    private _folder: string;
     public get folder() { return this._folder; }
-    private _filepath;
+    private _filepath: string;
 
     private _yaml: any = { }
 
@@ -22,7 +24,9 @@ export class Project {
     private _valid = false;
     public get valid() { return this._valid; }  // False if the project doesn't exist
 
-    private constructor(folder: string) {
+    private _watcher?: fs.FSWatcher;
+
+    public constructor(folder: string) {
         this._folder = folder;
         this._filepath = path.join(this.folder, 'project.t2wml');
         // Make sure a Project can only be created from a factory method
@@ -30,6 +34,13 @@ export class Project {
         this.readProjectFile();
         this.fillFileDates();
         this.watchProjectFile();
+    }
+
+    public unwatch() {
+        if(this._watcher) {
+            this._watcher.close();
+            this._watcher = undefined;
+        }
     }
 
     private readProjectFile() {
@@ -51,7 +62,7 @@ export class Project {
     }
 
     private watchProjectFile() {
-        fs.watch(this._filepath, {
+        this._watcher = fs.watch(this._filepath, {
             persistent: false
         }, (event) => this.onProjectFileChanged(event))
     }
@@ -65,5 +76,47 @@ export class Project {
             console.warn(`Refreshing file data caused an error: ${error}`);
             this._valid = false;
         }
+    }
+}
+
+export class ProjectList {
+    @observable public projects: Project[] = [];
+    @observable public current?: Project;
+    
+    constructor() {
+        this.refreshList();
+    }
+
+    public refreshList() {
+        const paths = ipcRenderer.sendSync('get-project-list');
+
+        // Remove old projects from list
+        for (const project of this.projects) {
+            project.unwatch();
+        }
+
+        // Create new projects
+        for (const path of paths) {
+            try {
+                const project = new Project(path);
+                this.projects.push(project);
+            } catch(error) {
+                console.warn(`Can't find project in ${path}, removing from list`);
+                ipcRenderer.send('remove-project', path);
+            }
+        }
+    }
+
+    public setCurrent(folder: string) {
+        for (const project of this.projects) {
+            if (project.folder === folder) {
+                this.current = project;
+                return;
+            }
+        }
+
+        const project = new Project(folder);
+        this.projects.push(project);
+        this.current = project;
     }
 }

@@ -87,7 +87,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     formData.append("region", region);
     formData.append("context", context);
     formData.append("flag", flag);
-    this.requestService.callWikifierService(wikiStore.project.path, formData).then((json) => {
+    this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData).then((json) => {
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -145,7 +145,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     // send request
     const formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadEntities(wikiStore.project.path, formData).then((json) => {
+    this.requestService.uploadEntities(wikiStore.projects.current!.folder, formData).then((json) => {
       console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
       console.log(json);
 

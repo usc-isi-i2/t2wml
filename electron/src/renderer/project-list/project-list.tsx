@@ -23,6 +23,7 @@ import RequestService from '../common/service';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
+import { Project } from '../data/projects';
 
 interface ProjectListState {
   showSpinner: boolean;
@@ -42,12 +43,13 @@ interface ProjectListState {
   tempSearch: string;
 
   // projects
-  projectData: any;
-  sortBy: string;
+  sortBy: SortByField;
   isAscending: boolean;
 
   errorMessage: ErrorMessage;
 }
+
+type SortByField = 'name' | 'folder' | 'created' | 'modified';
 
 @observer
 class ProjectList extends Component<{}, ProjectListState> {
@@ -85,8 +87,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       tempSearch: "",
 
       // projects
-      projectData: [],
-      sortBy: "mdate",
+      sortBy: "modified",
       isAscending: false,
       errorMessage: {} as ErrorMessage,
     };
@@ -109,8 +110,8 @@ class ProjectList extends Component<{}, ProjectListState> {
             console.log(json['error']);
           }
           else{
-            this.setState({ projectData: json['projects'] });
-            this.handleSortProjects("mdate", false);
+            // this.setState({ projectData: json['projects'] });
+            this.handleApplySort("modified", false);
           }
       } else {
         // failure
@@ -141,6 +142,8 @@ class ProjectList extends Component<{}, ProjectListState> {
     // before sending request
     this.setState({ showSpinner: true, showDeleteProject: false });
 
+    // TODO: Move to async/await
+    // TODO: Update project list and recently viewed list
     // send request
     console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
     this.requestService.deleteProject(path).then(json => {
@@ -152,10 +155,6 @@ class ProjectList extends Component<{}, ProjectListState> {
         // success
         if (json['error'] !== null){
           console.log(json['error'])
-        }
-        else {
-          const {sortBy, isAscending} = this.state;
-          this.handleSortProjects(sortBy, isAscending, json['projects']);
         }
       } else {
         // failure
@@ -250,10 +249,6 @@ class ProjectList extends Component<{}, ProjectListState> {
         if (json['error'] !== null){
           console.log(json['error'])
         }
-        else{
-          const { sortBy, isAscending } = this.state;
-          this.handleSortProjects(sortBy, isAscending, json['projects']);
-        }
       } else {
         // failure
         throw Error("Session doesn't exist or invalid request")
@@ -277,7 +272,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     this.setState({ showRenameProject: false });
   }
 
-  handleSortProjects(willSortBy: string, willBeAscending: boolean | null = null, newProjectData = null) {
+  handleApplySort(willSortBy: SortByField, willBeAscending: boolean | null = null) {
     const { sortBy, isAscending } = this.state;
 
     // decide if it's ascending
@@ -287,7 +282,7 @@ class ProjectList extends Component<{}, ProjectListState> {
         willBeAscending = !isAscending;
       } else {
         // click another header, go default
-        if (willSortBy === "cdate" || willSortBy === "mdate") {
+        if (willSortBy === "created" || willSortBy === "modified") {
           willBeAscending = false;
         } else {
           willBeAscending = true;
@@ -295,52 +290,57 @@ class ProjectList extends Component<{}, ProjectListState> {
       }
     }
 
+    // update state
+    this.setState({
+      // projectData: projectData,
+      sortBy: willSortBy,
+      isAscending: willBeAscending,
+    });
+  }
+
+  sortProjects(projects: Project[]) {
     // sort
-    let projectData;
-    if (newProjectData !== null) {
-      projectData = newProjectData;
-    } else {
-      projectData = this.state.projectData;
-    }
-    projectData.sort(function (p1: any, p2: any) {
-      if (willBeAscending) {
-        if (p1[willSortBy] < p2[willSortBy]) return -1;
-        else if (p1[willSortBy] > p2[willSortBy]) return 1;
+    const { isAscending, sortBy } = this.state;
+
+    const sortedProjects = [...projects];
+    sortedProjects.sort(function (p1: any, p2: any) {
+      if (isAscending) {
+        if (p1[sortBy] < p2[sortBy]) return -1;
+        else if (p1[sortBy] > p2[sortBy]) return 1;
         else return 0;
       } else {
-        if (p1[willSortBy] < p2[willSortBy]) return 1;
-        else if (p1[willSortBy] > p2[willSortBy]) return -1;
+        if (p1[sortBy] < p2[sortBy]) return 1;
+        else if (p1[sortBy] > p2[sortBy]) return -1;
         else return 0;
       }
     });
 
-    // update state
-    this.setState({
-      projectData: projectData,
-      sortBy: willSortBy,
-      isAscending: willBeAscending,
-    });
+    return sortedProjects;
   }
 
   projectClicked(path: string) {
     wikiStore.changeProject(path);
   }
 
+  formatTime(time: Date): string {
+    return time.toUTCString();
+  }
+
   renderProjects() {
-    const { projectData, tempSearch } = this.state;
+    const { tempSearch } = this.state;
     const keywords = tempSearch.toLowerCase().split(/ +/);
+    const projectList = this.sortProjects(wikiStore.projects.projects);
 
     const projectListDiv = [];
-    for (let i = 0, len = projectData.length; i < len; i++) {
-      const { ptitle, directory, cdate, mdate } = projectData[i];
-      if (utils.searchProject(ptitle, keywords)) {
+    for (const project of projectList) {
+      if (utils.searchProject(project.name, keywords)) {
         projectListDiv.push(
-          <tr key={i}>
+          <tr key={project.folder}>
 
             {/* title */}
             <td>
-              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(directory)}>
-                  {ptitle}
+              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(project.folder)}>
+                  {project.name}
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
             </td>
@@ -348,21 +348,21 @@ class ProjectList extends Component<{}, ProjectListState> {
             {/* path */}
             <td>
               <span>
-                  {directory}
+                  {project.folder}
               </span>
             </td>
 
             {/* last modified */}
             <td>
               <span className="text-left small">
-                {utils.showTime(mdate)}
+                {this.formatTime(project.modified)}
               </span> 
             </td>
 
             {/* date created */}
             <td>
               <span className="text-left small">
-                {utils.showTime(cdate)}
+                {this.formatTime(project.created)}
               </span>
             </td>
 
@@ -383,7 +383,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-duplicate"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showRenameProject: true, tempRenameProjectPath: directory, tempRenameProject: ptitle })}
+                  onClick={() => this.setState({ showRenameProject: true, tempRenameProjectPath: project.folder, tempRenameProject: project.name })}
                 >
                   <FontAwesomeIcon icon={faPencilAlt} />
                 </span>
@@ -403,7 +403,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-download"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDownloadProject: true, downloadingProjectPath: directory })}
+                  onClick={() => this.setState({ showDownloadProject: true, downloadingProjectPath: project.folder })}
                 >
                   <FontAwesomeIcon icon={faCloudDownloadAlt} />
                 </span>
@@ -423,7 +423,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-delete"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDeleteProject: true, deletingProjectPath: directory })}
+                  onClick={() => this.setState({ showDeleteProject: true, deletingProjectPath: project.folder })}
                 >
                   <FontAwesomeIcon icon={faTrashAlt} />
                 </span>     
@@ -450,12 +450,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "26%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("ptitle")}
+                onClick={() => this.handleApplySort("name")}
               >
                 Title
               </span>
               {
-                (sortBy === "ptitle") ?
+                (sortBy === "name") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""
@@ -466,12 +466,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "40%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("directory")}
+                onClick={() => this.handleApplySort("folder")}
               >
                 Path
               </span>
               {
-                (sortBy === "directory") ?
+                (sortBy === "folder") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""
@@ -482,12 +482,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "13%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("mdate")}
+                onClick={() => this.handleApplySort("modified")}
               >
                 Last Modified
               </span>
               {
-                (sortBy === "mdate") ?
+                (sortBy === "modified") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""
@@ -498,12 +498,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "13%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("cdate")}
+                onClick={() => this.handleApplySort("created")}
               >
                 Date Created
               </span>
               {
-                (sortBy === "cdate") ?
+                (sortBy === "created") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""

@@ -1,14 +1,7 @@
 import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
-
-class ProjectState {
-    @observable public path: string;
-
-    constructor() {
-        this.path = '';
-    }
-}
+import { ProjectList } from './projects';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
 class EditorsState {
@@ -92,7 +85,6 @@ class YamlEditorState {
 
 
 class WikiStore {
-    @observable public project = new ProjectState();
     @observable public editors = new EditorsState();
     @observable public table = new TabletState();
     @observable public settings = new SettingsState();
@@ -100,15 +92,16 @@ class WikiStore {
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
     @observable public displayMode: DisplayMode = 'project-list';
+    @observable public projects = new ProjectList();
 
     @action
     public changeProject(path?: string) {
         if (path) {
             this.displayMode = 'project';
-            this.project.path = path;
             if (path) {
                 ipcRenderer.send('show-project', path)
             }
+            this.projects.setCurrent(path);
         } else {
             this.displayMode = 'project-list';
             ipcRenderer.send('show-project', null);
