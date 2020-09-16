@@ -40,7 +40,7 @@ class TableToast extends Component<TableToastProperties, {}> {
     for (let i = 0; i < contexts.length; i++) {
       items.push(qnodeData[selectedCellIndex][contexts[i]]["item"]);
       labels.push(qnodeData[selectedCellIndex][contexts[i]]["label"]);
-      descs.push(qnodeData[selectedCellIndex][contexts[i]]["desc"]);
+      descs.push(qnodeData[selectedCellIndex][contexts[i]]["description"]);
     }
 
     // render qnode

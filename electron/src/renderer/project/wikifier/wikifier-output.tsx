@@ -28,8 +28,8 @@ class WikifierOutput extends Component<WikifierOutputProperties, {}> {
     // console.log("<Wikifier> inited ag-grid and retrieved its API");
 
     // FOR TEST ONLY
-    // const qnodeData = { "A1": { "Context 1": { "item": "Q967", "label": "label", "desc": "dsc" }, "Context 2": { "item": "Q971", "label": "label", "desc": "dsc" } }, "B1": { "Context 1": { "item": "Q97", "label": "label", "desc": "dsc" }, "Context 2": { "item": "Q67", "label": "label", "desc": "dsc" } }, "C1": { "Context 1": { "item": "Q9", "label": "label", "desc": "dsc" } }, "D1": { "Context 3": { "item": "Q967", "label": "label", "desc": "dsc" } } };
-    // const rowData = [{ "context": "country", "col": "A", "row": "148989", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "country", "col": "B", "row": "1", "value": "Bundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "", "col": "D", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "desc": "country in ..." }, { "context": "city", "col": "C", "row": "1", "value": "Bu", "item": "Q967", "label": "Burundi", "desc": "country in ..." }];
+    // const qnodeData = { "A1": { "Context 1": { "item": "Q967", "label": "label", "description": "dsc" }, "Context 2": { "item": "Q971", "label": "label", "description": "dsc" } }, "B1": { "Context 1": { "item": "Q97", "label": "label", "description": "dsc" }, "Context 2": { "item": "Q67", "label": "label", "description": "dsc" } }, "C1": { "Context 1": { "item": "Q9", "label": "label", "description": "dsc" } }, "D1": { "Context 3": { "item": "Q967", "label": "label", "description": "dsc" } } };
+    // const rowData = [{ "context": "country", "col": "A", "row": "148989", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in ..." }, { "context": "country", "col": "B", "row": "1", "value": "Bundi", "item": "Q967", "label": "Burundi", "description": "country in ..." }, { "context": "", "col": "D", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in ..." }, { "context": "city", "col": "C", "row": "1", "value": "Bu", "item": "Q967", "label": "Burundi", "description": "country in ..." }];
     // this.updateWikifier(qnodeData, rowData);
 
     this.gridApi.sizeColumnsToFit();
@@ -99,7 +99,7 @@ class WikifierOutput extends Component<WikifierOutputProperties, {}> {
                     // ******************************************************************
                 },
                 { headerName: "label", field: "label", width: 80 },
-                { headerName: "description", field: "desc", width: 160 }
+                { headerName: "description", field: "description", width: 160 }
                 ]
             }
             ]}
