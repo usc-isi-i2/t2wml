@@ -70,7 +70,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     this.state = {
 
       // appearance
-      showSpinner: true,
+      showSpinner: false,
       showDownloadProject: false,
       showRenameProject: false,
       showDeleteProject: false,
@@ -95,41 +95,6 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   async componentDidMount() {
     document.title = "T2WML - Projects";
-    // fetch project meta
-    console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
-
-    // TODO: Switch to async/await
-    this.requestService.getProjects().then(json => {
-      console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-        // success
-          if(json['error'] !== null){
-            console.log(json['error']);
-          }
-          else{
-            // this.setState({ projectData: json['projects'] });
-            this.handleApplySort("modified", false);
-          }
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request");
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-    //   console.log(error);
-      error.errorDescription += "\n\nCannot fetch project details!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot fetch project details!\n\n" + error);
-
-      // follow-ups (failure)
-      this.setState({ showSpinner: false });
-    });
   }
 
   handleDeleteProject(path = "") {
