@@ -103,17 +103,6 @@ class TestBasicWorkflow(BaseClass):
         self.results_dict['get_cell']=data
         self.compare_jsons(data, 'get_cell')
 
-    def test_10_get_node(self, client):
-        url='/api/qnode/{pid}/{qid}'.format(pid=pid, qid="Q21203")
-        response=client.get(url) 
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        assert data['label']=='Aruba'
-        url='/api/qnode/{pid}/{qid}'.format(pid=pid, qid="P17")
-        response=client.get(url) 
-        data2 = response.data.decode("utf-8")
-        data2 = json.loads(data2)
-        assert data2['label']=='country'
 
     def test_11_get_download(self, client):
         #GET '/api/project/{pid}/download/<filetype>'
