@@ -83,7 +83,7 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
         if(this.props.unitID) {
           valueDiv = <span>{this.props.value}
             <a
-            href={"https://www.wikidata.org/wiki/Property:" + this.props.unitID}
+            href={"https://www.wikidata.org/wiki/" + this.props.unitID}
             target="_blank"
             rel="noopener noreferrer"
             style={{ "color": "hsl(200, 100%, 30%)" }}
