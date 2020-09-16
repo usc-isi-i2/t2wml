@@ -154,21 +154,6 @@ class Project(db.Model):
             self._api_proj=self.create_project_file()
             return self._api_proj
     
-    @staticmethod
-    def get(pid):
-        project = Project.query.get(pid)
-        if not project:
-            raise ValueError("Not found")
-        if project.file_directory is None:
-            p = get_project_folder(project)
-            if not p.is_dir():
-                raise ValueError("Project directory was never created")
-            #save for the future
-            project.file_directory=str(p)
-            db.session.commit()
-        project.create_project_file()
-        return project
-    
     def update_settings(self, settings):
         endpoint = settings.get("endpoint", None)
         if endpoint:

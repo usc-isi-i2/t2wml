@@ -24,10 +24,9 @@ from calc_params import CalcParams
 debug_mode = False
 
 
-def get_project(project_id):
-    try:
-        project=Project.get(project_id)
-    except Exception as e:
+def get_project(project_path):
+    project=Project.query.filter_by(file_directory=project_path).first()
+    if not project:
         raise web_exceptions.ProjectNotFoundException
     update_t2wml_settings(project)
     return project
@@ -94,7 +93,7 @@ def create_project():
     :return:
     """
 
-    directory = request.form['path']
+    directory = request.args['project_path']
     #check we're not overwriting existing project
     project_file = Path(directory) / "project.t2wml"
     if project_file.is_file():
@@ -105,9 +104,7 @@ def create_project():
     api_proj.save()
     #...and the database id for it
     project = Project.load(api_proj)
-    response=dict(pid = project.id)
-    response['project']=api_proj.__dict__
-
+    response = dict(project=project.api_project.__dict__)
     return response, 201
 
 
@@ -118,7 +115,7 @@ def load_project():
     This route loads an existing project
     :return:
     """
-    path=request.form['path']
+    path=request.args['project_path']
     project=Project.query.filter_by(file_directory=path).first()
     if not project:
         proj=apiProject.load(path)
@@ -126,20 +123,20 @@ def load_project():
         project=Project.load(proj)
     else:
         project.create_project_file()
-    response ={"pid":project.id}
-    response['project']=project.api_project.__dict__
+    response = dict(project=project.api_project.__dict__)
     return response, 201
 
 
 
-@app.route('/api/project/<pid>', methods=['GET'])
+@app.route('/api/project', methods=['GET'])
 @json_response
-def get_project_files(pid):
+def get_project_files():
     """
     This function fetches the last session of the last opened files in a project when that project is reopened later.
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     response = {
         "tableData": None,
         "yamlData": None,
@@ -157,10 +154,11 @@ def get_project_files(pid):
     return response, 200
 
 
-@app.route('/api/project/<pid>/entity', methods=['POST'])
+@app.route('/api/project/entity', methods=['POST'])
 @json_response
-def add_entity_definitions(pid):
-    project = get_project(pid)
+def add_entity_definitions():
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     in_file = file_upload_validator({"tsv"})
     pf = PropertiesFile.create(project, in_file)
     return_dict = add_entities_from_file(pf.file_path)
@@ -174,14 +172,15 @@ def add_entity_definitions(pid):
 
 
 
-@app.route('/api/data/<pid>', methods=['POST'])
+@app.route('/api/data', methods=['POST'])
 @json_response
-def upload_data_file(pid):
+def upload_data_file():
     """
     This function uploads the data file
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     response = {
         "tableData": dict(),
         "wikifierData": dict(),
@@ -198,14 +197,15 @@ def upload_data_file(pid):
     return response, 200
 
 
-@app.route('/api/data/<pid>/<sheet_name>', methods=['GET'])
+@app.route('/api/data/<sheet_name>', methods=['GET'])
 @json_response
-def change_sheet(pid, sheet_name):
+def change_sheet(sheet_name):
     """
     This route is used when switching a sheet in an excel data file.
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     response = {
         "tableData": dict(),
         "wikifierData": dict(),
@@ -237,14 +237,15 @@ def change_sheet(pid, sheet_name):
     return response, 200
 
 
-@app.route('/api/wikifier/<pid>', methods=['POST'])
+@app.route('/api/wikifier', methods=['POST'])
 @json_response
-def upload_wikifier_output(pid):
+def upload_wikifier_output():
     """
     This function uploads the wikifier output
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     response = {"error": None}
     in_file = file_upload_validator({"csv"})
 
@@ -258,14 +259,15 @@ def upload_wikifier_output(pid):
     return response, 200
 
 
-@app.route('/api/wikifier_service/<pid>', methods=['POST'])
+@app.route('/api/wikifier_service', methods=['POST'])
 @json_response
-def wikify_region(pid):
+def wikify_region():
     """
     This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     action = request.form["action"]
     region = request.form["region"]
     context = request.form["context"]
@@ -295,14 +297,15 @@ def wikify_region(pid):
         return data, 200
     return {}, 404
 
-@app.route('/api/yaml/<pid>', methods=['POST'])
+@app.route('/api/yaml', methods=['POST'])
 @json_response
-def upload_yaml(pid):
+def upload_yaml():
     """
     This function uploads and processes the yaml file
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
     response = {"error": None,
@@ -324,14 +327,15 @@ def upload_yaml(pid):
     return response, 200
 
 
-@app.route('/api/data/<pid>/cell/<col>/<row>', methods=['GET'])
+@app.route('/api/data//cell/<col>/<row>', methods=['GET'])
 @json_response
-def get_cell_statement(pid, col, row):
+def get_cell_statement(col, row):
     """
     This function returns the statement of a particular cell
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     data = {}
 
     calc_params=get_calc_params(project)
@@ -342,14 +346,15 @@ def get_cell_statement(pid, col, row):
     return data, 200
 
 
-@app.route('/api/project/<pid>/download/<filetype>', methods=['GET'])
+@app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response
-def downloader(pid, filetype):
+def downloader(filetype):
     """
     This functions initiates the download
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     calc_params=get_calc_params(project)
     if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
@@ -358,9 +363,9 @@ def downloader(pid, filetype):
     return response, 200
 
 
-@app.route('/api/project/<pid>', methods=['DELETE'])
+@app.route('/api/project', methods=['DELETE'])
 @json_response
-def delete_project(pid):
+def delete_project():
     """
     This route is used to delete a project.
     :return:
@@ -370,7 +375,8 @@ def delete_project(pid):
         'error': None
     }
 
-    project = Project.query.get(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     if project:
         shutil.rmtree(project.directory)
         Project.delete(project.id)
@@ -378,9 +384,9 @@ def delete_project(pid):
     return data, 200
 
 
-@app.route('/api/project/<pid>', methods=['PUT'])
+@app.route('/api/project', methods=['PUT'])
 @json_response
-def rename_project(pid):
+def rename_project():
     """
     This route is used to rename a project.
     :return:
@@ -390,20 +396,22 @@ def rename_project(pid):
         'error': None
     }
     ptitle = request.form["ptitle"]
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     project.rename(ptitle)
     data['projects'] = get_project_details()
     return data, 200
 
 
-@app.route('/api/project/<pid>/settings', methods=['PUT', 'GET'])
+@app.route('/api/project/settings', methods=['PUT', 'GET'])
 @json_response
-def update_settings(pid):
+def update_settings():
     """
     This function updates the settings from GUI
     :return:
     """
-    project = get_project(pid)
+    project_path=request.args['project_path']
+    project = get_project(project_path)
     project.update_settings(request.form)
     update_t2wml_settings(project)
     response = {
