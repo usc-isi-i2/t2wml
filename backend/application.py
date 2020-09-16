@@ -48,6 +48,9 @@ def get_calc_params(project):
     return None
 
 
+def get_project_folder():
+    pass
+
 
 def json_response(func):
     def wrapper(*args, **kwargs):
@@ -93,14 +96,14 @@ def create_project():
     :return:
     """
 
-    directory = request.args['project_folder']
+    project_folder = request.args['project_folder']
     #check we're not overwriting existing project
-    project_file = Path(directory) / "project.t2wml"
+    project_file = Path(project_folder) / "project.t2wml"
     if project_file.is_file():
-        raise web_exceptions.ProjectAlreadyExistsException(directory)
+        raise web_exceptions.ProjectAlreadyExistsException(project_folder)
     #create project
-    api_proj=apiProject(directory)
-    api_proj.title=Path(directory).stem
+    api_proj=apiProject(project_folder)
+    api_proj.title=Path(project_folder).stem
     api_proj.save()
     #...and the database id for it
     project = Project.load(api_proj)
@@ -115,10 +118,10 @@ def load_project():
     This route loads an existing project
     :return:
     """
-    path=request.args['project_folder']
-    project=Project.query.filter_by(file_directory=path).first()
+    project_folder=request.args['project_folder']
+    project=Project.query.filter_by(file_directory=project_folder).first()
     if not project:
-        proj=apiProject.load(path)
+        proj=apiProject.load(project_folder)
         update_t2wml_settings(proj)
         project=Project.load(proj)
     else:
