@@ -97,47 +97,32 @@ class ProjectList extends Component<{}, ProjectListState> {
     document.title = "T2WML - Projects";
   }
 
-  handleDeleteProject(path = "") {
+  async handleDeleteProject(path = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
     if (path === "") {
       path = this.state.deletingProjectPath;
       if (path === "") return;
     }
 
-    // before sending request
     this.setState({ showSpinner: true, showDeleteProject: false });
+    const project = wikiStore.projects.find(path);
+    if (!project) {
+      console.warn(`No project for ${path} in project list`);
+      return;
+    }
 
-    // TODO: Move to async/await
-    // TODO: Update project list and recently viewed list
-    // send request
-    console.log("<App> -> %c/delete_project%c to delete project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.deleteProject(path).then(json => {
-      console.log("<App> <- %c/delete_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-        // success
-        if (json['error'] !== null){
-          console.log(json['error'])
-        }
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
+    try {
+      await this.requestService.deleteProject(project.folder);  // rimraf and fs.rmDir both hang for some reason
+      wikiStore.projects.refreshList();
+    } catch(error) {
+      const err = {
+        errorCode: -1,
+        errorTitle: "Can't delete project",
+        errorDescription: error.toString(),
       }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      // console.log(error);
-      error.errorDescription += "\n\nCannot delete project!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot delete project!\n\n" + error.errorTitle);
-
-      // follow-ups (failure)
-      this.setState({ showSpinner: false });
-    });
+      this.setState({ errorMessage: err });
+    }
+    this.setState( { showSpinner: false });
   }
 
   cancelDeleteProject() {
@@ -189,7 +174,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     this.setState({ showDownloadProject: false, downloadingProjectPath: "" });
   }
 
-  handleRenameProject(name: string) {
+  async handleRenameProject(name: string) {
     this.setState({ errorMessage: {} as ErrorMessage });
     const path = this.state.tempRenameProjectPath;
     let ptitle = name.trim();
@@ -204,33 +189,18 @@ class ProjectList extends Component<{}, ProjectListState> {
     console.log("<App> -> %c/rename_project%c to rename project %c" + path + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("ptitle", ptitle);
-    this.requestService.renameProject(path, formData).then(json => {
-      console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-      
-      // do something here
-      if (json !== null) {
-        // success
-        if (json['error'] !== null){
-          console.log(json['error'])
-        }
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
+    try {
+      const json = await this.requestService.renameProject(path, formData);
+      if (json['error'] !== null){
+        console.warn('Renaming a project returned an error: ', json);
       }
-
-      // follow-ups (success)
-      this.setState({ showRenameProject: false, showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
+      wikiStore.projects.refreshList();
+    } catch(error) {
       // console.log(error);
       error.errorDescription += "\n\nCannot rename project!";
       this.setState({ errorMessage: error });
-    //   alert("Cannot rename project!\n\n" + error);
-
-      // follow-ups (failure)
       this.setState({ showRenameProject: false, showSpinner: false });
-    });
+    }
   }
 
   cancelRenameProject() {

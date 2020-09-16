@@ -95,6 +95,7 @@ export class ProjectList {
             project.unwatch();
         }
 
+        this.projects = [];
         // Create new projects
         for (const path of paths) {
             try {
@@ -105,6 +106,12 @@ export class ProjectList {
                 ipcRenderer.send('remove-project', path);
             }
         }
+    }
+
+    public find(folder: string): Project | undefined {
+        const index = this.projects.findIndex((prj) => prj.folder === folder);
+
+        return index > -1 ? this.projects[index] : undefined;
     }
 
     public setCurrent(folder: string) {
