@@ -1,0 +1,31 @@
+data_files:
+- advanced.xlsx
+directory: /home/ktyao/dev/dsbox/t2wml/tutorial/Advanced_Tutorial
+entity_files:
+- properties.tsv
+sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
+specific_wikifiers: {}
+title: Advanced_Tutorial
+warn_for_empty_cells: false
+wikifier_files:
+- wikifier.csv
+yaml_files:
+- 00_advanced_id339.yaml
+- 01_advanced_id338.yaml
+- 02_advanced_id340.yaml
+- 03_advanced_exercise_id341.yaml
+- 03_advanced_solution_id342.yaml
+- 03_advanced_solution.yaml
+yaml_sheet_associations:
+  advanced.xlsx:
+    00_advanced:
+    - 00_advanced_id339.yaml
+    01_advanced:
+    - 01_advanced_id338.yaml
+    02_advanced:
+    - 02_advanced_id340.yaml
+    03_advanced_exercise:
+    - 03_advanced_exercise_id341.yaml
+    03_advanced_solution:
+    - 03_advanced_solution_id342.yaml
+    - 03_advanced_solution.yaml

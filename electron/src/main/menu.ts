@@ -5,6 +5,7 @@ import { config } from './config';
 import { settings } from './settings';
 import { uiState } from './ui-state';
 import { rendererNotifier } from './renderer-notifier';
+import * as path from 'path';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -138,9 +139,9 @@ export default class MainMenuManager {
             });
 
         if (!result.canceled && result.filePaths) {
-            const index = result.filePaths[0].lastIndexOf('\\');
-            const path =  result.filePaths[0].substring(0, index);
-            rendererNotifier.openProject(path);
+            const index = result.filePaths[0].lastIndexOf(path.sep);
+            const folder =  result.filePaths[0].substring(0, index);
+            rendererNotifier.openProject(folder);
         }
     }
 
