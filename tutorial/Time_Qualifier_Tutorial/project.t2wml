@@ -1,6 +1,5 @@
 data_files:
 - qualifier.xlsx
-directory: /home/ktyao/dev/dsbox/t2wml/tutorial/Time_Qualifier_Tutorial
 entity_files:
 - properties.tsv
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql

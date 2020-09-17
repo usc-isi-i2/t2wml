@@ -1,6 +1,5 @@
 data_files:
 - dataset.xlsx
-directory: C:\Users\devora\C_sources\pedro\t2wml\backend\tests\files_for_tests\aid
 entity_files:
 - kgtk_item_defs.tsv
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql

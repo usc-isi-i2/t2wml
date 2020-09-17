@@ -1,6 +1,5 @@
 data_files:
 - region.xlsx
-directory: /home/ktyao/T2wml_Tutorial/t2_region
 entity_files:
 - properties.tsv
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
