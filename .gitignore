@@ -132,5 +132,9 @@ storage
 
 # sqlite dbs
 app.db
+
 # emacs
 *~
+
+# lock files
+.~lock*

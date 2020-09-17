@@ -1,0 +1,13 @@
+# 01_region
+# Updated T2WML YAML to capture additional rows. Only the range attribute is different from 00_region.
+# This example shows how to vary the range key to adapt to new data values
+statementMapping:
+  region:
+    - range: D8:D15
+  template:
+    item: =item[B, $row, "main subject"]
+    property: PProduction
+    value: =value[$col, $row]
+    qualifier:
+      - property: PCropType
+        value: =value[C, $row]

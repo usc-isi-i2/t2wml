@@ -1,0 +1,14 @@
+# 11_qualifier
+# Example using two qualifiers for the production variable in column D. The first qualifier (Crop) indicates the type of crop. The second qualifier (Estimated) indicates whether the value was estimated (i.e., the value was predicted) or not (i.e., the value was measured)
+statementMapping:
+  region:
+    - range: D8:D10
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[D, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 7, "property"]
+        value: =value[C, $row]
+      - property: =item[E, 7, "property"]
+        value: =value[E, $row]

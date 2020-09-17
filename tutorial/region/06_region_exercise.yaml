@@ -1,0 +1,14 @@
+# 06_region
+# This exercise aims to test your ability to filter undesired cells in the input data.
+statementMapping:
+  region:
+    - range: D8:E15
+      skip_cells:
+        - ### Fill in to the skip cell with value "--" ###
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 7, "property"]
+        value: =value[C, $row]
