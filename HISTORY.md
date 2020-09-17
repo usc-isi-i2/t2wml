@@ -1,9 +1,9 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version WIP:
+Changes in version 2.3.6:
 ------------------------
-* t2wml-api version change (wip)
+* t2wml-api version change 0.0.13
 * bug fixes:
    * thanks to millions of bugs caused by passing pid, get rid of pid entirely, pass project path
    * line separator issue caused projects not to open on posix systems
