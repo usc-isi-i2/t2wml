@@ -59,6 +59,10 @@ class Project extends Component<ProjectProps, ProjectState> {
 
       errorMessage: {} as ErrorMessage,
     };
+
+    // Bind the handlers that are tied to ipcRenderer and needs to be removed
+    this.onRefreshProject = this.onRefreshProject.bind(this);
+    this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
   }
 
   componentDidMount() {
@@ -67,8 +71,13 @@ class Project extends Component<ProjectProps, ProjectState> {
     } else {
       console.error("There is no project id.")
     }
-    ipcRenderer.on('refresh-project', () => this.onRefreshProject());
-    ipcRenderer.on('project-settings', () => this.onShowSettingsClicked());
+    ipcRenderer.on('refresh-project', this.onRefreshProject);
+    ipcRenderer.on('project-settings', this.onShowSettingsClicked);
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
+    ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -84,6 +93,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // fetch project files
     // TODO: Switch to async/await
+    console.debug('Refreshing project ', this.props.path);
     this.requestService.getProjectFiles(this.props.path).then(json => {
       document.title = 't2wml: ' + json.name;
       this.setState({name: json.name});

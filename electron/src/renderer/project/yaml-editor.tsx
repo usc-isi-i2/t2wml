@@ -244,7 +244,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 style={{ padding: "0rem 0.5rem" }}
                 onClick={() => { document.getElementById("file_yaml")?.click(); }}
                 >
-                Upload
+                Import
                 </Button>
             </OverlayTrigger>
 
