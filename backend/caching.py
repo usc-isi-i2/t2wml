@@ -4,7 +4,7 @@ from hashlib import sha256
 from pathlib import Path
 from t2wml.mapping.statement_mapper import YamlMapper
 from t2wml.api import KnowledgeGraph
-from app_config import UPLOAD_FOLDER
+from app_config import UPLOAD_FOLDER, app
 
 class Cacher:
     title = ""
@@ -43,19 +43,21 @@ class Cacher:
             f.write(s)
 
     def get_highlight_region(self):
-        try:
-            with open(self.cache_path, 'r', encoding="utf-8") as f:
-                data = json.load(f)
-            return data["highlight region"], data["statements"], data["errors"]
-        except:
-            pass
+        if app.config['USE_CACHE']:
+            try:
+                with open(self.cache_path, 'r', encoding="utf-8") as f:
+                    data = json.load(f)
+                return data["highlight region"], data["statements"], data["errors"]
+            except:
+                pass
         return None, None, None
 
     def get_kg(self):
-        try:
-            return KnowledgeGraph.load_json(self.cache_path)
-        except:
-            pass
+        if app.config['USE_CACHE']:
+            try:
+                return KnowledgeGraph.load_json(self.cache_path)
+            except:
+                pass
         return None
 
 

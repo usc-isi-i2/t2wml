@@ -17,6 +17,7 @@ def client(request):
     app.config['TESTING']=True
     db_fd, name = tempfile.mkstemp()
     app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///' +name
+    app.config['USE_CACHE']=False
     request.addfinalizer(fin)
     with app.app_context():
         upgrade(directory=os.path.join(BACKEND_DIR, 'migrations'))
