@@ -643,50 +643,6 @@
     "add_yaml": {
         "error": null,
         "yamlRegions": {
-            "dataRegion": {
-                "color": "hsl(150, 50%, 90%)",
-                "list": [
-                    "H5",
-                    "G5",
-                    "F6",
-                    "H7",
-                    "F4",
-                    "F8",
-                    "G7",
-                    "H3",
-                    "F3",
-                    "G8",
-                    "H6",
-                    "G6",
-                    "G3",
-                    "H4",
-                    "F7",
-                    "H8",
-                    "G4",
-                    "F5"
-                ]
-            },
-            "item": {
-                "color": "hsl(200, 50%, 90%)",
-                "list": [
-                    "B7",
-                    "B4",
-                    "B8",
-                    "B3",
-                    "B6",
-                    "B5"
-                ]
-            },
-            "qualifierRegion": {
-                "color": "hsl(250, 50%, 90%)",
-                "list": [
-                    "I4"
-                ]
-            },
-            "referenceRegion": {
-                "color": "yellow",
-                "list": []
-            },
             "error": {
                 "F3": {
                     "qualifier": {
@@ -793,30 +749,6 @@
                         }
                     }
                 }
-            },
-            "dangerCells": {
-                "color": "#FF8000",
-                "list": [
-                    "F3",
-                    "F5",
-                    "F6",
-                    "F7",
-                    "F8",
-                    "G3",
-                    "G5",
-                    "G6",
-                    "G7",
-                    "G8",
-                    "H3",
-                    "H5",
-                    "H6",
-                    "H7",
-                    "H8"
-                ]
-            },
-            "errorCells": {
-                "color": "#FF3333",
-                "list": []
             },
             "cellStatements": {
                 "F3": {
@@ -1859,35 +1791,35 @@
                 "dataRegion": {
                     "color": "hsl(150, 50%, 90%)",
                     "list": [
-                        "F8",
-                        "F3",
-                        "H6",
-                        "F6",
-                        "H3",
-                        "F7",
-                        "G3",
-                        "H8",
-                        "G7",
-                        "G6",
-                        "G8",
-                        "H5",
                         "H4",
-                        "H7",
-                        "G4",
-                        "F5",
                         "G5",
-                        "F4"
+                        "F8",
+                        "H8",
+                        "F6",
+                        "H6",
+                        "H5",
+                        "F5",
+                        "H3",
+                        "F4",
+                        "F3",
+                        "H7",
+                        "G8",
+                        "G3",
+                        "G7",
+                        "G4",
+                        "G6",
+                        "F7"
                     ]
                 },
                 "item": {
                     "color": "hsl(200, 50%, 90%)",
                     "list": [
                         "B5",
-                        "B7",
-                        "B8",
-                        "B6",
                         "B4",
-                        "B3"
+                        "B3",
+                        "B6",
+                        "B7",
+                        "B8"
                     ]
                 },
                 "qualifierRegion": {
