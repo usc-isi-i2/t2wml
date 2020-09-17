@@ -1,0 +1,16 @@
+# 07_time_solution
+# Solution of the exercise 07_time_exercise. Since months are written using the full name ("Month day, Year"), we use %B %d, %Y
+statementMapping:
+  region:
+    - range: D8:D13
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+    - calendar: Q1985727
+      format: '%B %d, %Y'
+      precision: year
+      property: P585
+      time_zone: 0
+      value: =value[C, $row]

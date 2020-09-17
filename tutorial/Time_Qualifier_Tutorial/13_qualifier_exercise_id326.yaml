@@ -1,0 +1,17 @@
+# 13_qualifier_exercise
+# This exercises illustrates the difference between variables and qualifiers. Variables describe individual observations, while qualifiers provide additional context about an observation. In the exercise, we want to make total area a qualifier of production, instead of an individual variable.
+statementMapping:
+  region:
+    - range: D8:D13
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 7, "property"]
+        value: =value[C, $row]
+      - property: =item[F, 7, "property"]
+        value: =value[F, $row]
+      # You can switch qualifier/variable values. Convert "Total area" to be a qualifier
+      - property: ### Fill in property item ###
+        value: ### Fill in value ###

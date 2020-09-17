@@ -1,0 +1,22 @@
+# 10_qualifier
+# Structure of T2WML YAML with one variable and one qualifier
+statementMapping:
+  # The region attribute defines the cells containing the variable values
+  region:
+    # The range attribute defines a rectangular block of cells
+    - range: D8:D10
+  # The template attribute defines variable statements and qualifier relationships on those variable statements
+  template:
+    # Variable statement consists of three parts: item, propety and value
+    # The item attribute defines the main subjects of the variables
+    item: =item[B, $row, "main subject"]
+    # The property attribute defines the variable name
+    property: =item[D, 7, "property"]
+    # The value attribute defines the variable values
+    value: =value[$col, $row]
+    # The qualifier attribute defines additional context for variable statements
+    qualifier:
+      # The property attribute defines the qualifier name
+      - property: =item[C, 7, "property"]
+        # The value attribute defines the qualifier values
+        value: =value[C, $row]

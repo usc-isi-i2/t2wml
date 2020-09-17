@@ -1,0 +1,53 @@
+data_files:
+- region.xlsx
+directory: /home/ktyao/T2wml_Tutorial/t2_region
+entity_files:
+- properties.tsv
+sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
+specific_wikifiers: {}
+title: Region_Tutorial
+warn_for_empty_cells: false
+wikifier_files:
+- wikifier.csv
+yaml_files:
+- 00_region_id299.yaml
+- 01_region_id300.yaml
+- 02_region_id267.yaml
+- 03_region_exercise_id301.yaml
+- 03_region_solution_id268.yaml
+- 04_region_id298.yaml
+- 05_region_id305.yaml
+- 06_region_exercise_id307.yaml
+- 06_region_solution_id271.yaml
+- 07_region_id272.yaml
+- 08_region_id273.yaml
+- 09_region_exercise_id282.yaml
+- 09_region_solution_id274.yaml
+yaml_sheet_associations:
+  region.xlsx:
+    00_region:
+    - 00_region_id299.yaml
+    01_region:
+    - 01_region_id300.yaml
+    02_region:
+    - 02_region_id267.yaml
+    03_region_exercise:
+    - 03_region_exercise_id301.yaml
+    03_region_solution:
+    - 03_region_solution_id268.yaml
+    04_region:
+    - 04_region_id298.yaml
+    05_region:
+    - 05_region_id305.yaml
+    06_region_exercise:
+    - 06_region_exercise_id307.yaml
+    06_region_solution:
+    - 06_region_solution_id271.yaml
+    07_region:
+    - 07_region_id272.yaml
+    08_region:
+    - 08_region_id273.yaml
+    09_region_exercise:
+    - 09_region_exercise_id282.yaml
+    09_region_solution:
+    - 09_region_solution_id274.yaml
