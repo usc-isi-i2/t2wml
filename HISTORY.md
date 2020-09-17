@@ -1,6 +1,13 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version WIP:
+------------------------
+* t2wml-api version change (wip)
+* bug fixes:
+   * thanks to millions of bugs caused by passing pid, get rid of pid entirely, pass project path
+   * line separator issue caused projects not to open on posix systems
+
 Changes in version 2.3.5:
 -------------------------
 * upgrade to electron 10
