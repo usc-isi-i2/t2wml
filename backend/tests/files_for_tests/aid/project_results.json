@@ -336,40 +336,6 @@
     "add_items": {
         "widget": {
             "added": [
-                "aid-security-22",
-                "aid-security-47",
-                "aid-security-73",
-                "aid-security-103",
-                "aid-security-475",
-                "aid-security-782",
-                "aid-security-793",
-                "aid-security-942",
-                "aid-security-964",
-                "aid-security-1069",
-                "aid-security-1060",
-                "aid-security-1102",
-                "aid-security-1281",
-                "aid-security-1479",
-                "aid-security-1713",
-                "aid-security-1689",
-                "aid-security-1931",
-                "aid-security-1924",
-                "aid-security-1923",
-                "aid-security-1934",
-                "aid-security-2143",
-                "aid-security-2135",
-                "aid-security-2692",
-                "aid-security-2623",
-                "aid-security-2641",
-                "aid-security-2952",
-                "aid-security-2916",
-                "aid-security-3006",
-                "aid-security-2895",
-                "aid-security-2896",
-                "aid-security-2768",
-                "aid-security-2897",
-                "aid-security-2911",
-                "aid-security-2997",
                 "P2006020001",
                 "P2006020002",
                 "P2006020003",
@@ -383,29 +349,6 @@
                 "P2006190001",
                 "P2006190002",
                 "P2006190003",
-                "P248",
-                "P1687",
-                "P1476",
-                "P2699",
-                "P1813",
-                "P170",
-                "P767",
-                "P2860",
-                "P275",
-                "P356",
-                "P921",
-                "P625",
-                "P3896",
-                "P17",
-                "P276",
-                "P580",
-                "P582",
-                "P6339",
-                "P856",
-                "P6269",
-                "P527",
-                "P1880",
-                "P1114",
                 "Paid-security-002",
                 "Paid-security-003",
                 "Paid-security-004",
@@ -437,49 +380,266 @@
                 "Paid-security-030"
             ],
             "updated": [],
-            "failed": []
+            "failed": [
+                [
+                    "aid-security-22",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-22"
+                ],
+                [
+                    "aid-security-47",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-47"
+                ],
+                [
+                    "aid-security-73",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-73"
+                ],
+                [
+                    "aid-security-103",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-103"
+                ],
+                [
+                    "aid-security-475",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-475"
+                ],
+                [
+                    "aid-security-782",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-782"
+                ],
+                [
+                    "aid-security-793",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-793"
+                ],
+                [
+                    "aid-security-942",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-942"
+                ],
+                [
+                    "aid-security-964",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-964"
+                ],
+                [
+                    "aid-security-1069",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1069"
+                ],
+                [
+                    "aid-security-1060",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1060"
+                ],
+                [
+                    "aid-security-1102",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1102"
+                ],
+                [
+                    "aid-security-1281",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1281"
+                ],
+                [
+                    "aid-security-1479",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1479"
+                ],
+                [
+                    "aid-security-1713",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1713"
+                ],
+                [
+                    "aid-security-1689",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1689"
+                ],
+                [
+                    "aid-security-1931",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1931"
+                ],
+                [
+                    "aid-security-1924",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1924"
+                ],
+                [
+                    "aid-security-1923",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1923"
+                ],
+                [
+                    "aid-security-1934",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-1934"
+                ],
+                [
+                    "aid-security-2143",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2143"
+                ],
+                [
+                    "aid-security-2135",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2135"
+                ],
+                [
+                    "aid-security-2692",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2692"
+                ],
+                [
+                    "aid-security-2623",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2623"
+                ],
+                [
+                    "aid-security-2641",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2641"
+                ],
+                [
+                    "aid-security-2952",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2952"
+                ],
+                [
+                    "aid-security-2916",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2916"
+                ],
+                [
+                    "aid-security-3006",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-3006"
+                ],
+                [
+                    "aid-security-2895",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2895"
+                ],
+                [
+                    "aid-security-2896",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2896"
+                ],
+                [
+                    "aid-security-2768",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2768"
+                ],
+                [
+                    "aid-security-2897",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2897"
+                ],
+                [
+                    "aid-security-2911",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2911"
+                ],
+                [
+                    "aid-security-2997",
+                    "Only entity IDs beginning with P or Q are supported: aid-security-2997"
+                ],
+                [
+                    "P248",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P248"
+                ],
+                [
+                    "P1687",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P1687"
+                ],
+                [
+                    "P1476",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P1476"
+                ],
+                [
+                    "P2699",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P2699"
+                ],
+                [
+                    "P1813",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P1813"
+                ],
+                [
+                    "P170",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P170"
+                ],
+                [
+                    "P767",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P767"
+                ],
+                [
+                    "P2860",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P2860"
+                ],
+                [
+                    "P275",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P275"
+                ],
+                [
+                    "P356",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P356"
+                ],
+                [
+                    "P921",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P921"
+                ],
+                [
+                    "P625",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P625"
+                ],
+                [
+                    "P3896",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P3896"
+                ],
+                [
+                    "P17",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P17"
+                ],
+                [
+                    "P276",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P276"
+                ],
+                [
+                    "P580",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P580"
+                ],
+                [
+                    "P582",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P582"
+                ],
+                [
+                    "P6339",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P6339"
+                ],
+                [
+                    "P856",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P856"
+                ],
+                [
+                    "P6269",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P6269"
+                ],
+                [
+                    "P527",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P527"
+                ],
+                [
+                    "P1880",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P1880"
+                ],
+                [
+                    "P1114",
+                    "Custom entity ID Pnum where num<10000 is not allowed: P1114"
+                ]
+            ]
         },
         "qnodes": {
             "B3": {
                 "main subject": {
-                    "item": "aid-security-22",
-                    "label": "Incident ID 22",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-22"
                 }
             },
             "B4": {
                 "main subject": {
-                    "item": "aid-security-47",
-                    "label": "Incident ID 47",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-47"
                 }
             },
             "B5": {
                 "main subject": {
-                    "item": "aid-security-73",
-                    "label": "Incident ID 73",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-73"
                 }
             },
             "B6": {
                 "main subject": {
-                    "item": "aid-security-103",
-                    "label": "Incident ID 103",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-103"
                 }
             },
             "B7": {
                 "main subject": {
-                    "item": "aid-security-475",
-                    "label": "Incident ID 475",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-475"
                 }
             },
             "B8": {
                 "main subject": {
-                    "item": "aid-security-782",
-                    "label": "Incident ID 782",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-782"
                 }
             },
             "F1": {
@@ -532,54 +692,42 @@
                 "col": "B",
                 "row": "3",
                 "value": "22",
-                "item": "aid-security-22",
-                "label": "Incident ID 22",
-                "description": "incident related to aid worker security"
+                "item": "aid-security-22"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "4",
                 "value": "47",
-                "item": "aid-security-47",
-                "label": "Incident ID 47",
-                "description": "incident related to aid worker security"
+                "item": "aid-security-47"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "5",
                 "value": "73",
-                "item": "aid-security-73",
-                "label": "Incident ID 73",
-                "description": "incident related to aid worker security"
+                "item": "aid-security-73"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "6",
                 "value": "103",
-                "item": "aid-security-103",
-                "label": "Incident ID 103",
-                "description": "incident related to aid worker security"
+                "item": "aid-security-103"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "7",
                 "value": "475",
-                "item": "aid-security-475",
-                "label": "Incident ID 475",
-                "description": "incident related to aid worker security"
+                "item": "aid-security-475"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "8",
                 "value": "782",
-                "item": "aid-security-782",
-                "label": "Incident ID 782",
-                "description": "incident related to aid worker security"
+                "item": "aid-security-782"
             },
             {
                 "context": "unit",
@@ -1116,7 +1264,7 @@
             },
             "P17": {
                 "label": "country",
-                "description": ""
+                "description": "sovereign state of this item; don't use on humans"
             },
             "Q21203": {
                 "label": "Aruba",
@@ -1348,37 +1496,27 @@
             "qnodes": {
                 "B3": {
                     "main subject": {
-                        "item": "aid-security-22",
-                        "label": "Incident ID 22",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-22"
                     }
                 },
                 "B5": {
                     "main subject": {
-                        "item": "aid-security-73",
-                        "label": "Incident ID 73",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-73"
                     }
                 },
                 "B6": {
                     "main subject": {
-                        "item": "aid-security-103",
-                        "label": "Incident ID 103",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-103"
                     }
                 },
                 "B7": {
                     "main subject": {
-                        "item": "aid-security-475",
-                        "label": "Incident ID 475",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-475"
                     }
                 },
                 "B8": {
                     "main subject": {
-                        "item": "aid-security-782",
-                        "label": "Incident ID 782",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-782"
                     }
                 },
                 "F1": {
@@ -1431,45 +1569,35 @@
                     "col": "B",
                     "row": "3",
                     "value": "22",
-                    "item": "aid-security-22",
-                    "label": "Incident ID 22",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-22"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "5",
                     "value": "73",
-                    "item": "aid-security-73",
-                    "label": "Incident ID 73",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-73"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "6",
                     "value": "103",
-                    "item": "aid-security-103",
-                    "label": "Incident ID 103",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-103"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "7",
                     "value": "475",
-                    "item": "aid-security-475",
-                    "label": "Incident ID 475",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-475"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "8",
                     "value": "782",
-                    "item": "aid-security-782",
-                    "label": "Incident ID 782",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-782"
                 },
                 {
                     "context": "unit",
@@ -1791,35 +1919,35 @@
                 "dataRegion": {
                     "color": "hsl(150, 50%, 90%)",
                     "list": [
-                        "H4",
-                        "G5",
-                        "F8",
-                        "H8",
-                        "F6",
-                        "H6",
-                        "H5",
-                        "F5",
-                        "H3",
                         "F4",
-                        "F3",
+                        "F6",
                         "H7",
-                        "G8",
-                        "G3",
-                        "G7",
+                        "F8",
+                        "H5",
+                        "G5",
                         "G4",
+                        "G7",
+                        "H8",
+                        "G3",
+                        "F5",
+                        "H4",
+                        "F7",
+                        "F3",
                         "G6",
-                        "F7"
+                        "G8",
+                        "H6",
+                        "H3"
                     ]
                 },
                 "item": {
                     "color": "hsl(200, 50%, 90%)",
                     "list": [
-                        "B5",
-                        "B4",
                         "B3",
+                        "B4",
                         "B6",
-                        "B7",
-                        "B8"
+                        "B5",
+                        "B8",
+                        "B7"
                     ]
                 },
                 "qualifierRegion": {
@@ -2292,44 +2420,32 @@
             "qnodes": {
                 "B3": {
                     "main subject": {
-                        "item": "aid-security-22",
-                        "label": "Incident ID 22",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-22"
                     }
                 },
                 "B4": {
                     "main subject": {
-                        "item": "aid-security-47",
-                        "label": "Incident ID 47",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-47"
                     }
                 },
                 "B5": {
                     "main subject": {
-                        "item": "aid-security-73",
-                        "label": "Incident ID 73",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-73"
                     }
                 },
                 "B6": {
                     "main subject": {
-                        "item": "aid-security-103",
-                        "label": "Incident ID 103",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-103"
                     }
                 },
                 "B7": {
                     "main subject": {
-                        "item": "aid-security-475",
-                        "label": "Incident ID 475",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-475"
                     }
                 },
                 "B8": {
                     "main subject": {
-                        "item": "aid-security-782",
-                        "label": "Incident ID 782",
-                        "description": "incident related to aid worker security"
+                        "item": "aid-security-782"
                     }
                 },
                 "F1": {
@@ -2382,54 +2498,42 @@
                     "col": "B",
                     "row": "3",
                     "value": "22",
-                    "item": "aid-security-22",
-                    "label": "Incident ID 22",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-22"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "4",
                     "value": "47",
-                    "item": "aid-security-47",
-                    "label": "Incident ID 47",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-47"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "5",
                     "value": "73",
-                    "item": "aid-security-73",
-                    "label": "Incident ID 73",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-73"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "6",
                     "value": "103",
-                    "item": "aid-security-103",
-                    "label": "Incident ID 103",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-103"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "7",
                     "value": "475",
-                    "item": "aid-security-475",
-                    "label": "Incident ID 475",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-475"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "8",
                     "value": "782",
-                    "item": "aid-security-782",
-                    "label": "Incident ID 782",
-                    "description": "incident related to aid worker security"
+                    "item": "aid-security-782"
                 },
                 {
                     "context": "unit",
