@@ -211,7 +211,7 @@ class Output extends Component<{}, OutputState> {
     if (json["statement"]["unit"]) {
       let unitName = json["statement"]["unit"];
       let unitID = null;
-      if (/^[PQ]\d+$/.test(unitName)) {
+      if (/^[PQ]\d+$/.test(unitName) && qnodesLabel[unitName]) {
         unitID = unitName;
         unitName = qnodesLabel[unitName].label;
       }
