@@ -98,7 +98,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         const { yamlRegions } = json;
         const internalError = yamlRegions.error;
         if (internalError){
-            
+
             console.log("ERRORS while applying yaml:");
             console.log(internalError);
         }
@@ -220,7 +220,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             className="w-100 shadow-sm"
             style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
-            
+
             {/* header */}
             <Card.Header
             style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
