@@ -1,0 +1,23 @@
+# 03_advanced_solution
+# Solution to iterator variable exercise. Need to add $n to columns B, C and D
+statementMapping:
+  region:
+    - range: F8:F23
+  template:
+    # Need to add $n here
+    item: =item[B, $row-$n, "main subject"]
+    property: =item[F, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 7, "property"]
+        # Need to add $n here
+        value: =value[C, $row-$n]
+      - property: =item[D, 7, "property"]
+        # Need to add $n here
+        value: =value[D, $row-$n]
+      - calendar: Q1985727
+        format: '%Y'
+        precision: year
+        property: P585
+        time_zone: 0
+        value: =value[E, $row]

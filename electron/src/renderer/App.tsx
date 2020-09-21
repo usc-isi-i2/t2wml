@@ -5,10 +5,11 @@ import Project from './project/project';
 import { observer } from 'mobx-react';
 import wikiStore from './data/store';
 import RequestService from './common/service';
-import { ipcRenderer, EventEmitter } from 'electron';
+import { ipcRenderer } from 'electron';
 import { ErrorMessage, LOG } from './common/general';
 import ToastMessage from './common/toast';
 import { Spinner } from 'react-bootstrap';
+import { IpcRendererEvent } from 'electron/renderer';
 
 
 interface AppState {
@@ -30,10 +31,10 @@ class App extends Component<{}, AppState> {
   }
 
   componentDidMount() {
-    ipcRenderer.on('open-project', (sender: EventEmitter, folder: string) => {
+    ipcRenderer.on('open-project', (sender: IpcRendererEvent, folder: string) => {
       this.onOpenProject(folder);
     });
-    ipcRenderer.on('new-project', (sender: EventEmitter, folder: string) => {
+    ipcRenderer.on('new-project', (sender: IpcRendererEvent, folder: string) => {
       this.onNewProject(folder);
     });
     wikiStore.changeProject();
@@ -56,23 +57,15 @@ class App extends Component<{}, AppState> {
     this.setState({ showSpinner: true });
 
     // send request
-    const formData = new FormData();
-    formData.append("path", folder);
     try {
-      const response = await this.requestService.createProject(formData);
+      const response = await this.requestService.createProject(folder);
     
       console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
       console.log(response);
 
       // do something here
-      if (response["pid"]) {
-        // success
-        wikiStore.changeProject(response.pid, folder);
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request");
-      }
-
+      wikiStore.changeProject(folder);
+      
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
@@ -92,21 +85,13 @@ class App extends Component<{}, AppState> {
     this.setState({ showSpinner: true });
 
     // send request
-    const formData = new FormData();
-    formData.append("path", folder);
     try {
-      const response = await this.requestService.loadProject(formData);
+      const response = await this.requestService.loadProject(folder);
     
       console.log("<App> <- %c/load_project%c with:", LOG.link, LOG.default);
       console.log(response);
 
-      // do something here
-      if (response.pid) {
-        wikiStore.changeProject(response.pid, folder);
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request");
-      }
+      wikiStore.changeProject(folder);
 
       // follow-ups (success)
       this.setState({ showSpinner: false });
@@ -130,7 +115,7 @@ class App extends Component<{}, AppState> {
           <Spinner animation="border" />
         </div>
         
-        { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project id={wikiStore.project.pid }/> }
+        { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project path={wikiStore.projects.current!.folder}/> }
       </div>
     );
   }

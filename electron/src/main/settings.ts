@@ -46,6 +46,14 @@ export class Settings implements AppSettings {
 
         this.saveSettings();
     }
+
+    removeProjectFromList(folder: string) {
+        const index = this.recentlyUsed.indexOf(folder);
+        if (index > -1) {
+            this.recentlyUsed.splice(index, 1);
+            this.saveSettings();
+        }
+    }
 }
 
 export const settings = Settings.instance;

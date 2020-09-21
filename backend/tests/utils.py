@@ -17,6 +17,7 @@ def client(request):
     app.config['TESTING']=True
     db_fd, name = tempfile.mkstemp()
     app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///' +name
+    app.config['USE_CACHE']=False
     request.addfinalizer(fin)
     with app.app_context():
         upgrade(directory=os.path.join(BACKEND_DIR, 'migrations'))
@@ -78,7 +79,8 @@ def sanitize_highlight_region(dict_1, dict_2):
 def create_project(client):
     path=os.path.join(os.path.dirname(__file__), "project_dirs", str(uuid4()))
     os.makedirs(path)
-    response=client.post('/api/project',
+    url = '/api/project?project_folder={pid}'.format(pid=path)
+    response=client.post(url,
         data=dict(
             path=path
         )
@@ -86,11 +88,10 @@ def create_project(client):
     assert response.status_code==201
     data = response.data.decode("utf-8")
     data = json.loads(data)
-    pid=str(data['pid'])
-    return pid
+    return path
 
 def load_data_file(client, pid, filename):
-    url = '/api/data/{pid}'.format(pid=pid)
+    url = '/api/data?project_folder={pid}'.format(pid=pid)
     with open(filename, 'rb') as f:
         response=client.post(url,
             data=dict(
@@ -100,7 +101,7 @@ def load_data_file(client, pid, filename):
     return response
 
 def load_yaml_file(client, pid, filename):
-    url='/api/yaml/{pid}'.format(pid=pid)
+    url='/api/yaml?project_folder={pid}'.format(pid=pid)
     title=Path(filename).name
     with open(filename, 'r', encoding="utf-8") as f:
         response=client.post(url,
@@ -112,7 +113,7 @@ def load_yaml_file(client, pid, filename):
     return response
 
 def load_wikifier_file(client, pid, filename):
-    url='/api/wikifier/{pid}'.format(pid=pid)
+    url='/api/wikifier?project_folder={pid}'.format(pid=pid)
     with open(filename, 'rb') as f:
         response=client.post(url,
             data=dict(
@@ -122,7 +123,7 @@ def load_wikifier_file(client, pid, filename):
     return response
 
 def load_item_file(client, pid, filename):
-    url='/api/project/{pid}/entity'.format(pid=pid)
+    url='/api/project/entity?project_folder={pid}'.format(pid=pid)
     with open(filename, 'rb') as f:
         response=client.post(url,
             data=dict(
@@ -132,7 +133,7 @@ def load_item_file(client, pid, filename):
     return response
 
 def get_project_files(client, pid):
-    url= '/api/project/{pid}'.format(pid=pid)
+    url= '/api/project?project_folder={pid}'.format(pid=pid)
     response=client.get(url)
     data = response.data.decode("utf-8")
     data = json.loads(data)

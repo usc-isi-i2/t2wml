@@ -1,6 +1,24 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.3.6:
+------------------------
+* t2wml-api version change 0.0.13
+* bug fixes:
+   * thanks to millions of bugs caused by passing pid, get rid of pid entirely, pass project path
+   * line separator issue caused projects not to open on posix systems
+
+Changes in version 2.3.5:
+-------------------------
+* upgrade to electron 10
+* t2wml-api version change 0.0.12
+* changes to how labels are fetched for properties and items
+* added back delete project functionality
+* various small UI tweaks 
+* bug fixes:
+   * lots of async/await errors
+   * creating a project with same name as previous, deleted project would create double entry of project
+
 Changes in version 2.3.4:
 -------------------------
 * t2wml-api version 0.0.11

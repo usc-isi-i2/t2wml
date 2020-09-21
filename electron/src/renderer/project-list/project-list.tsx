@@ -7,7 +7,7 @@ import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
@@ -22,30 +22,34 @@ import RequestService from '../common/service';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
+import { Project } from '../data/projects';
 
 interface ProjectListState {
   showSpinner: boolean;
   showDownloadProject: boolean;
   showRenameProject: boolean;
-  deletingPid: string;
-  downloadingPid: string;
+
+  showDeleteProject: boolean;
+  deletingProjectPath: string;
+  downloadingProjectPath: string;
 
   // user
   userData: any,
 
   // temp in form
-  tempRenamePid: string | null;
+  tempRenameProjectPath: string | null;
   tempRenameProject: string;
   isTempRenameProjectVaild: boolean;
   tempSearch: string;
 
   // projects
-  projectData: any;
-  sortBy: string;
+  sortBy: SortByField;
   isAscending: boolean;
 
   errorMessage: ErrorMessage;
 }
+
+type SortByField = 'name' | 'folder' | 'created' | 'modified';
 
 @observer
 class ProjectList extends Component<{}, ProjectListState> {
@@ -66,24 +70,24 @@ class ProjectList extends Component<{}, ProjectListState> {
     this.state = {
 
       // appearance
-      showSpinner: true,
+      showSpinner: false,
       showDownloadProject: false,
       showRenameProject: false,
-      deletingPid: "",
-      downloadingPid: "",
+      showDeleteProject: false,
+      deletingProjectPath: "",
+      downloadingProjectPath: "",
 
       // user
       userData: {},
 
       // temp in form
-      tempRenamePid: null,
+      tempRenameProjectPath: null,
       tempRenameProject: "",
       isTempRenameProjectVaild: true,
       tempSearch: "",
 
       // projects
-      projectData: [],
-      sortBy: "mdate",
+      sortBy: "modified",
       isAscending: false,
       errorMessage: {} as ErrorMessage,
     };
@@ -91,55 +95,54 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   async componentDidMount() {
     document.title = "T2WML - Projects";
-    // fetch project meta
-    console.log("<App> -> %c/get_project_meta%c for project list", LOG.link, LOG.default);
-    this.requestService.getProjects().then(json => {
-      console.log("<App> <- %c/get_project_meta%c with:", LOG.link, LOG.default);
-      console.log(json);
+  }
 
-      // do something here
-      if (json !== null) {
-        // success
-          if(json['error'] !== null){
-            console.log(json['error']);
-          }
-          else{
-            this.setState({ projectData: json['projects'] });
-            this.handleSortProjects("mdate", false);
-          }
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request");
+  async handleDeleteProject(path = "") {
+    this.setState({ errorMessage: {} as ErrorMessage });
+    if (path === "") {
+      path = this.state.deletingProjectPath;
+      if (path === "") return;
+    }
+
+    this.setState({ showSpinner: true, showDeleteProject: false });
+    const project = wikiStore.projects.find(path);
+    if (!project) {
+      console.warn(`No project for ${path} in project list`);
+      return;
+    }
+
+    try {
+      await this.requestService.deleteProject(project.folder);  // rimraf and fs.rmDir both hang for some reason
+      wikiStore.projects.refreshList();
+    } catch(error) {
+      const err = {
+        errorCode: -1,
+        errorTitle: "Can't delete project",
+        errorDescription: error.toString(),
       }
+      this.setState({ errorMessage: err });
+    }
+    this.setState( { showSpinner: false });
+  }
 
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-    //   console.log(error);
-      error.errorDescription += "\n\nCannot fetch project details!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot fetch project details!\n\n" + error);
-
-      // follow-ups (failure)
-      this.setState({ showSpinner: false });
-    });
+  cancelDeleteProject() {
+    this.setState({ showDeleteProject: false, deletingProjectPath: "" });
   }
 
 
-  handleDownloadProject(pid = "") {
+  handleDownloadProject(path = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
-    if (pid === "") {
-      pid = this.state.downloadingPid;
-      if (pid === "") return;
+    if (path === "") {
+      path = this.state.downloadingProjectPath;
+      if (path === "") return;
     }
 
     // before sending request
     this.setState({ showDownloadProject: false });
 
     // send request
-    console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + pid, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadProject(pid).then(json => {
+    console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
+    this.requestService.downloadProject(path).then(json => {
       console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -168,60 +171,43 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
   cancelDownloadProject() {
-    this.setState({ showDownloadProject: false, downloadingPid: "" });
+    this.setState({ showDownloadProject: false, downloadingProjectPath: "" });
   }
 
-  handleRenameProject(name: string) {
+  async handleRenameProject(name: string) {
     this.setState({ errorMessage: {} as ErrorMessage });
-    const pid = this.state.tempRenamePid;
+    const path = this.state.tempRenameProjectPath;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
+
+    if (!path) { return; }
 
     // before sending request
     this.setState({ showSpinner: true });
 
     // send request
-    console.log("<App> -> %c/rename_project%c to rename project %c" + pid + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
+    console.log("<App> -> %c/rename_project%c to rename project %c" + path + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("ptitle", ptitle);
-    this.requestService.renameProject(pid as string, formData).then(json => {
-      console.log("<App> <- %c/rename_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-      
-      // do something here
-      if (json !== null) {
-        // success
-        if (json['error'] !== null){
-          console.log(json['error'])
-        }
-        else{
-          const { sortBy, isAscending } = this.state;
-          this.handleSortProjects(sortBy, isAscending, json['projects']);
-        }
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
+    try {
+      const json = await this.requestService.renameProject(path, formData);
+      if (json['error'] !== null){
+        console.warn('Renaming a project returned an error: ', json);
       }
-
-      // follow-ups (success)
-      this.setState({ showRenameProject: false, showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
+      wikiStore.projects.refreshList();
+    } catch(error) {
       // console.log(error);
       error.errorDescription += "\n\nCannot rename project!";
       this.setState({ errorMessage: error });
-    //   alert("Cannot rename project!\n\n" + error);
-
-      // follow-ups (failure)
       this.setState({ showRenameProject: false, showSpinner: false });
-    });
+    }
   }
 
   cancelRenameProject() {
     this.setState({ showRenameProject: false });
   }
 
-  handleSortProjects(willSortBy: string, willBeAscending: boolean | null = null, newProjectData = null) {
+  handleApplySort(willSortBy: SortByField, willBeAscending: boolean | null = null) {
     const { sortBy, isAscending } = this.state;
 
     // decide if it's ascending
@@ -231,7 +217,7 @@ class ProjectList extends Component<{}, ProjectListState> {
         willBeAscending = !isAscending;
       } else {
         // click another header, go default
-        if (willSortBy === "cdate" || willSortBy === "mdate") {
+        if (willSortBy === "created" || willSortBy === "modified") {
           willBeAscending = false;
         } else {
           willBeAscending = true;
@@ -239,52 +225,57 @@ class ProjectList extends Component<{}, ProjectListState> {
       }
     }
 
-    // sort
-    let projectData;
-    if (newProjectData !== null) {
-      projectData = newProjectData;
-    } else {
-      projectData = this.state.projectData;
-    }
-    projectData.sort(function (p1: any, p2: any) {
-      if (willBeAscending) {
-        if (p1[willSortBy] < p2[willSortBy]) return -1;
-        else if (p1[willSortBy] > p2[willSortBy]) return 1;
-        else return 0;
-      } else {
-        if (p1[willSortBy] < p2[willSortBy]) return 1;
-        else if (p1[willSortBy] > p2[willSortBy]) return -1;
-        else return 0;
-      }
-    });
-
     // update state
     this.setState({
-      projectData: projectData,
+      // projectData: projectData,
       sortBy: willSortBy,
       isAscending: willBeAscending,
     });
   }
 
-  projectClicked(pid: string, path: string) {
-    wikiStore.changeProject(pid, path);
+  sortProjects(projects: Project[]) {
+    // sort
+    const { isAscending, sortBy } = this.state;
+
+    const sortedProjects = [...projects];
+    sortedProjects.sort(function (p1: any, p2: any) {
+      if (isAscending) {
+        if (p1[sortBy] < p2[sortBy]) return -1;
+        else if (p1[sortBy] > p2[sortBy]) return 1;
+        else return 0;
+      } else {
+        if (p1[sortBy] < p2[sortBy]) return 1;
+        else if (p1[sortBy] > p2[sortBy]) return -1;
+        else return 0;
+      }
+    });
+
+    return sortedProjects;
+  }
+
+  projectClicked(path: string) {
+    wikiStore.changeProject(path);
+  }
+
+  formatTime(time: Date): string {
+    return time.toUTCString();
   }
 
   renderProjects() {
-    const { projectData, tempSearch } = this.state;
+    const { tempSearch } = this.state;
     const keywords = tempSearch.toLowerCase().split(/ +/);
+    const projectList = this.sortProjects(wikiStore.projects.projects);
 
     const projectListDiv = [];
-    for (let i = 0, len = projectData.length; i < len; i++) {
-      const { pid, ptitle, directory, cdate, mdate } = projectData[i];
-      if (utils.searchProject(ptitle, keywords)) {
+    for (const project of projectList) {
+      if (utils.searchProject(project.name, keywords)) {
         projectListDiv.push(
-          <tr key={i}>
+          <tr key={project.folder}>
 
             {/* title */}
             <td>
-              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(pid, directory)}>
-                  {ptitle}
+              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(project.folder)}>
+                  {project.name}
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
             </td>
@@ -292,21 +283,21 @@ class ProjectList extends Component<{}, ProjectListState> {
             {/* path */}
             <td>
               <span>
-                  {directory}
+                  {project.folder}
               </span>
             </td>
 
             {/* last modified */}
             <td>
               <span className="text-left small">
-                {utils.showTime(mdate)}
+                {this.formatTime(project.modified)}
               </span> 
             </td>
 
             {/* date created */}
             <td>
               <span className="text-left small">
-                {utils.showTime(cdate)}
+                {this.formatTime(project.created)}
               </span>
             </td>
 
@@ -327,7 +318,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-duplicate"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showRenameProject: true, tempRenamePid: pid, tempRenameProject: ptitle })}
+                  onClick={() => this.setState({ showRenameProject: true, tempRenameProjectPath: project.folder, tempRenameProject: project.name })}
                 >
                   <FontAwesomeIcon icon={faPencilAlt} />
                 </span>
@@ -347,10 +338,30 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-download"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDownloadProject: true, downloadingPid: pid })}
+                  onClick={() => this.setState({ showDownloadProject: true, downloadingProjectPath: project.folder })}
                 >
                   <FontAwesomeIcon icon={faCloudDownloadAlt} />
                 </span>
+              </OverlayTrigger>
+
+              {/* delete */}
+              <OverlayTrigger
+                placement="top"
+                trigger={["hover", "focus"]}
+                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
+                overlay={
+                  <Tooltip style={{ width: "fit-content" }} id="delete">
+                    <span className="text-left small">Delete</span>
+                  </Tooltip>
+                }
+              >
+                <span
+                  className="action-delete"
+                  style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
+                  onClick={() => this.setState({ showDeleteProject: true, deletingProjectPath: project.folder })}
+                >
+                  <FontAwesomeIcon icon={faTrashAlt} />
+                </span>     
               </OverlayTrigger>
             </td>
           </tr>
@@ -374,12 +385,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "26%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("ptitle")}
+                onClick={() => this.handleApplySort("name")}
               >
                 Title
               </span>
               {
-                (sortBy === "ptitle") ?
+                (sortBy === "name") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""
@@ -390,12 +401,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "40%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("directory")}
+                onClick={() => this.handleApplySort("folder")}
               >
                 Path
               </span>
               {
-                (sortBy === "directory") ?
+                (sortBy === "folder") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""
@@ -406,12 +417,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "13%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("mdate")}
+                onClick={() => this.handleApplySort("modified")}
               >
                 Last Modified
               </span>
               {
-                (sortBy === "mdate") ?
+                (sortBy === "modified") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""
@@ -422,12 +433,12 @@ class ProjectList extends Component<{}, ProjectListState> {
             <th style={{ width: "13%" }}>
               <span
                 style={{ cursor: "pointer" }}
-                onClick={() => this.handleSortProjects("cdate")}
+                onClick={() => this.handleApplySort("created")}
               >
                 Date Created
               </span>
               {
-                (sortBy === "cdate") ?
+                (sortBy === "created") ?
                   <span>
                     &nbsp;{(isAscending) ? <FontAwesomeIcon icon={faSortUp} /> : <FontAwesomeIcon icon={faSortDown} />}
                   </span> : ""

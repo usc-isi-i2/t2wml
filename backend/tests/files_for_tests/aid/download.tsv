@@ -3,7 +3,7 @@ dataset.xlsx.Sheet3;F3	22	Paid-security-002		quantity	2			Qaid-security-U002
 	dataset.xlsx.Sheet3;F3	P585		date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
 dataset.xlsx.Sheet3;F4	47	Paid-security-002		quantity	0			Qaid-security-U002										
 	dataset.xlsx.Sheet3;F4	P585		date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
-	dataset.xlsx.Sheet3;F4	P17		string													"Q21203"	
+	dataset.xlsx.Sheet3;F4	P17		symbol									Q21203					
 dataset.xlsx.Sheet3;F5	73	Paid-security-002		quantity	0			Qaid-security-U002										
 	dataset.xlsx.Sheet3;F5	P585		date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
 dataset.xlsx.Sheet3;F6	103	Paid-security-002		quantity	0			Qaid-security-U002										
@@ -16,7 +16,7 @@ dataset.xlsx.Sheet3;G3	22	Paid-security-003		quantity	0			Qaid-security-U002
 	dataset.xlsx.Sheet3;G3	P585		date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
 dataset.xlsx.Sheet3;G4	47	Paid-security-003		quantity	0			Qaid-security-U002										
 	dataset.xlsx.Sheet3;G4	P585		date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
-	dataset.xlsx.Sheet3;G4	P17		string													"Q21203"	
+	dataset.xlsx.Sheet3;G4	P17		symbol									Q21203					
 dataset.xlsx.Sheet3;G5	73	Paid-security-003		quantity	1			Qaid-security-U002										
 	dataset.xlsx.Sheet3;G5	P585		date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
 dataset.xlsx.Sheet3;G6	103	Paid-security-003		quantity	2			Qaid-security-U002										
@@ -29,7 +29,7 @@ dataset.xlsx.Sheet3;H3	22	Paid-security-004		quantity	0			Qaid-security-U002
 	dataset.xlsx.Sheet3;H3	P585		date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
 dataset.xlsx.Sheet3;H4	47	Paid-security-004		quantity	0			Qaid-security-U002										
 	dataset.xlsx.Sheet3;H4	P585		date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
-	dataset.xlsx.Sheet3;H4	P17		string													"Q21203"	
+	dataset.xlsx.Sheet3;H4	P17		symbol									Q21203					
 dataset.xlsx.Sheet3;H5	73	Paid-security-004		quantity	0			Qaid-security-U002										
 	dataset.xlsx.Sheet3;H5	P585		date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
 dataset.xlsx.Sheet3;H6	103	Paid-security-004		quantity	0			Qaid-security-U002										

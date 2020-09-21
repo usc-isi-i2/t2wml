@@ -14,99 +14,99 @@ class RequestService {
     return response;
   }
 
-  public async createProject(formData: any) {
-    const response = await backendPost('/project', formData);
+  public async createProject(folder: string) {
+    const response = await backendPost(`/project?project_folder=${folder}`);
     return response;
   }
 
-  public async loadProject(formData: any) {
-    const response = await backendPost('/project/load', formData);
+  public async loadProject(folder: string) {
+    const response = await backendPost(`/project/load?project_folder=${folder}`);
     return response;
   }
 
-  public async uploadProperties(pid: string, formData: any) {
-    const response = await backendPost(`/project/${pid}/properties`, formData);
+  public async uploadProperties(folder: string, formData: any) {
+    const response = await backendPost(`/project/properties?project_folder=${folder}`, formData);
     return response;
   }
 
-  public async uploadDataFile(pid: string, formData: any) {
-    const response = await backendPost(`/data/${pid}`, formData);
+  public async uploadDataFile(folder: string, formData: any) {
+    const response = await backendPost(`/data?project_folder=${folder}`, formData);
     return response;
   }
 
-  public async changeSheet(pid: string, sheetName: string) {
-    const response = await backendGet(`/data/${pid}/${sheetName}`);
+  public async changeSheet(folder: string, sheetName: string) {
+    const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`);
     return response;
   }
 
-  public async uploadWikifierOutput(pid: string, formData: any) {
-    const response = await backendPost(`/wikifier/${pid}`, formData);
+  public async uploadWikifierOutput(folder: string, formData: any) {
+    const response = await backendPost(`/wikifier?project_folder=${folder}`, formData);
     return response;
   }
 
-  public async uploadYaml(pid: string, formData: any) {
-    const response = await backendPost(`/yaml/${pid}`, formData);
+  public async uploadYaml(folder: string, formData: any) {
+    const response = await backendPost(`/yaml?project_folder=${folder}`, formData);
     return response;
   }
 
-  public async resolveCell(pid: string, row: string, col: string) {
-    const response = await backendGet(`/data/${pid}/cell/${row}/${col}`);
+  public async resolveCell(folder: string, row: string, col: string) {
+    const response = await backendGet(`/data/cell/${row}/${col}?project_folder=${folder}`);
     return response;
   }
 
-  public async downloadResults(pid: string, fileType: string) {
-    const response = await backendGet(`/project/${pid}/download/${fileType}`);
+  public async downloadResults(folder: string, fileType: string) {
+    const response = await backendGet(`/project/download/${fileType}?project_folder=${folder}`);
     return response;
   }
 
-  public async callWikifierService(pid: string, formData: any) {
-    const response = await backendPost(`/wikifier_service/${pid}`, formData);
+  public async callWikifierService(folder: string, formData: any) {
+    const response = await backendPost(`/wikifier_service?project_folder=${folder}`, formData);
     return response;
   }
 
-  public async getProjectFiles(pid: string) {
-    const response = await backendGet(`/project/${pid}`);
+  public async getProjectFiles(folder: string) {
+    const response = await backendGet(`/project?project_folder=${folder}`);
     return response;
   }
 
-  public async deleteProject(pid: string) {
-    const response = await backendDelete(`/project/${pid}`);
+  public async deleteProject(folder: string) {
+    const response = await backendDelete(`/project?project_folder=${folder}`);
     return response;
   }
 
-  public async renameProject(pid: string, formData: any) {
-    const response = await backendPut(`/project/${pid}`, formData);
+  public async renameProject(folder: string, formData: any) {
+    const response = await backendPut(`/project?project_folder=${folder}`, formData);
     return response;
   }
 
-  public async updateSettings(pid: string, formData: any) {
-    const response = await backendPut(`/project/${pid}/settings`, formData);
+  public async updateSettings(folder: string, formData: any) {
+    const response = await backendPut(`/project/settings?project_folder=${folder}`, formData);
     return response;
   }
 
-  public async getSettings(pid: string) {
-    const response = await backendGet(`/project/${pid}/settings`);
+  public async getSettings(folder: string) {
+    const response = await backendGet(`/project/settings?project_folder=${folder}`);
     return response;
   }
 
   // It doesn't exist in the backend 
-  public async downloadProject(pid: string) {
-    const response = await backendGet(`/project/${pid}/download`);
+  public async downloadProject(folder: string) {
+    const response = await backendGet(`/project/download?project_folder=${folder}`);
     return response;
   }
 
-  public async getQnode(pid:string, node: string) {
-    const response = await backendGet(`/qnode/${pid}/${node}`);
+  public async getQnode(folder: string, node: string) {
+    const response = await backendGet(`/qnode/${node}?project_folder=${folder}`);
     return response;
   }
 
-  public async uploadEntities(pid: string, formData: any) {
-    const response = await backendPost(`/project/${pid}/entity`, formData);
+  public async uploadEntities(folder: string, formData: any) {
+    const response = await backendPost(`/project/entity?project_folder=${folder}`, formData);
     return response;
   }
   
-  public async loadToDatamart(pid: string) {
-    const response = await backendGet(`/project/${pid}/datamart`);
+  public async loadToDatamart(folder: string) {
+    const response = await backendGet(`/project/datamart?project_folder=${folder}`);
     return response;
   }
 

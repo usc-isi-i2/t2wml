@@ -1,0 +1,14 @@
+# 05_region
+# This example shows how to skip an undesired column. 
+statementMapping:
+  region:
+    - range: D8:F15
+      skip_columns:
+        - E
+  template:
+    item: =item[B, $row, "main subject"]
+    property: =item[$col, 7, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 7, "property"]
+        value: =value[C, $row]

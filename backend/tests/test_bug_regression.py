@@ -9,27 +9,27 @@ def test_switching_back_to_sheets(client):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
 
 
-    pid=create_project(client)
-    load_data_file(client, pid, os.path.join(files_dir, "homicide_report_total_and_sex.xlsx"))
+    path=create_project(client)
+    load_data_file(client, path, os.path.join(files_dir, "homicide_report_total_and_sex.xlsx"))
 
 
     #load yaml
-    response=load_yaml_file(client, pid, filename=os.path.join(files_dir, "t2wml", "table-1a.yaml"))
+    response=load_yaml_file(client, path, filename=os.path.join(files_dir, "t2wml", "table-1a.yaml"))
     data = response.data.decode("utf-8")
     yaml_1_data = json.loads(data)["yamlRegions"]
     
 
     #switch tab
-    url='/api/data/{pid}/{sheet_name}'.format(pid=pid,sheet_name="table-1b")
+    url='/api/data/{sheet_name}?project_folder={path}'.format(path=path,sheet_name="table-1b")
     response=client.get(url) 
 
     #load new yaml
-    response=load_yaml_file(client, pid, filename=os.path.join(files_dir, "t2wml", "table-1b.yaml"))
+    response=load_yaml_file(client, path, filename=os.path.join(files_dir, "t2wml", "table-1b.yaml"))
     data = response.data.decode("utf-8")
     yaml_2_data = json.loads(data)["yamlRegions"]
 
     #switch back to previous tab
-    url='/api/data/{pid}/{sheet_name}'.format(pid=pid,sheet_name="table-1a")
+    url='/api/data/{sheet_name}?project_folder={path}'.format(path=path,sheet_name="table-1a")
     response=client.get(url) 
     data = response.data.decode("utf-8")
     switch_back_data = json.loads(data)["yamlData"]["yamlRegions"]
@@ -48,34 +48,30 @@ def test_empty_cells(client):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "empty_cells")
 
     #load project
-    response=client.post('/api/project/load',
-    data=dict(
-            path=files_dir
-        )
-    )
+    url='/api/project/load?project_folder={path}'.format(path=files_dir)
+    response=client.post(url)
     data = response.data.decode("utf-8")
     data = json.loads(data)
-    pid=str(data['pid'])
 
     #change project settings
-    url='/api/project/{pid}/settings'.format(pid=pid)
+    url='/api/project/settings?project_folder={path}'.format(path=files_dir)
     response=client.put(url,
             data=dict(
             warnEmpty=False
         )) 
 
     #get project results
-    data= get_project_files(client, pid)
+    data= get_project_files(client, files_dir)
 
     #change project settings
-    url='/api/project/{pid}/settings'.format(pid=pid)
+    url='/api/project/settings?project_folder={path}'.format(path=files_dir)
     response=client.put(url,
             data=dict(
             warnEmpty=True
         )) 
     
     #reapply yaml:
-    response=load_yaml_file(client, pid, filename=os.path.join(files_dir, "t2wml.yaml"))
+    response=load_yaml_file(client, files_dir, filename=os.path.join(files_dir, "t2wml.yaml"))
     data2 = response.data.decode("utf-8")
     data2 = json.loads(data2)
 

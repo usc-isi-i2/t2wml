@@ -1,6 +1,5 @@
 data_files:
 - fertilizer.xlsx
-directory: C:\Users\devora\C_sources\pedro\t2wml\backend\tests\files_for_tests\empty_cells
 entity_files:
 - item_definitions.tsv
 - properties_all.tsv
@@ -11,10 +10,8 @@ warn_for_empty_cells: true
 wikifier_files:
 - consolidated-wikifier.csv
 yaml_files:
-- Sheet1.yaml
 - t2wml.yaml
 yaml_sheet_associations:
   fertilizer.xlsx:
     Sheet1:
-    - Sheet1.yaml
     - t2wml.yaml

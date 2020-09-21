@@ -25,14 +25,14 @@ interface OutputState {
   valueCol: string | null;
   valueRow: string | null;
   value: string | null;
-  unit: string | null;
+  unitName: string | null;
+  unitID: string | null;
   itemID: string | null;
   itemName: string | null;
   itemCol: string | undefined;
   itemRow: string | undefined;
   propertyID: string | null;
   qualifiers: any; //  null;
-  cache: any; // cache for Wikidata queries
   errors: string;
 
   // download
@@ -43,19 +43,15 @@ interface OutputState {
 
   propertyName: string;
   errorMessage: ErrorMessage;
-
-  queryDataCount: number;
 }
 
 @observer
 class Output extends Component<{}, OutputState> {
   private requestService: RequestService;
-  private pid: string;
-  
+
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
-    this.pid = wikiStore.project.pid;
 
     // init state
     this.state = {
@@ -67,14 +63,14 @@ class Output extends Component<{}, OutputState> {
       valueCol: null,
       valueRow: null,
       value: null,
-      unit: null,
+      unitName: null,
+      unitID: null,
       itemID: null,
       itemName: null,
       itemCol: undefined,
       itemRow: undefined,
       propertyID: null,
       qualifiers: null,
-      cache: {}, // cache for Wikidata queries,
       errors: '',
 
       // download
@@ -84,7 +80,6 @@ class Output extends Component<{}, OutputState> {
       isLoadDatamart: false,
 
       errorMessage: {} as ErrorMessage,
-      queryDataCount: 0,
     } as OutputState;
 
 
@@ -92,7 +87,11 @@ class Output extends Component<{}, OutputState> {
     wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
   }
 
-  handleDoDownload(fileName: string, fileType: string) {
+  private get projectPath() {
+    return wikiStore.projects.current!.folder;
+  }
+
+  async handleDoDownload(fileName: string, fileType: string) {
     this.setState({ errorMessage: {} as ErrorMessage });
     const filename = fileName + "." + fileType;
 
@@ -100,8 +99,10 @@ class Output extends Component<{}, OutputState> {
     this.setState({ isDownloading: true, showDownload: false });
 
     // send request
-    console.log("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadResults(this.pid, fileType).then((json) => {
+    console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
+
+    try {
+      const json = await this.requestService.downloadResults(this.projectPath, fileType);
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -114,14 +115,17 @@ class Output extends Component<{}, OutputState> {
       }
 
       // else, success
-      const { data, internalErrors} = json;
-      if (internalErrors !== undefined){
-          console.log("ERRORS in input to download:")
-          console.log(internalErrors);
-          this.setState({errorMessage:
-            {errorCode: 400,
-            errorTitle: "Problems within statements",
-            errorDescription: "Although the file downloaded, there were errors in the input, check console for details"} as ErrorMessage
+      const { data, internalErrors } = json;
+      if (internalErrors !== undefined) {
+        console.log("ERRORS in input to download:")
+        console.log(internalErrors);
+        this.setState({
+          errorMessage:
+            {
+              errorCode: 400,
+              errorTitle: "Problems within statements",
+              errorDescription: "Although the file downloaded, there were errors in the input, check console for details"
+            } as ErrorMessage
         })
       }
       Downloader(data, filename);
@@ -129,18 +133,18 @@ class Output extends Component<{}, OutputState> {
       // follow-ups (success)
       this.setState({ isDownloading: false });
 
-    }).catch((error: ErrorMessage) => {
-    //   console.log(error);
+    } catch (error) {
+      //   console.log(error);
       error.errorDescription += "\n\nCannot download!";
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       this.setState({ isDownloading: false });
-    });
+    }
   }
 
   cancelDownload() {
-      this.setState({showDownload: false});
+    this.setState({ showDownload: false });
   }
 
   removeBorders() {
@@ -148,7 +152,7 @@ class Output extends Component<{}, OutputState> {
     let col: string | undefined = this.state.currCol;
     let row: string | undefined = this.state.currRow;
     if (col !== undefined && row !== undefined) {
-        wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+      wikiStore.table.updateStyleByCell(col, row, { "border": "" });
     }
 
     // remove item border
@@ -165,7 +169,7 @@ class Output extends Component<{}, OutputState> {
         col = qualifiers[i]["col"];
         row = qualifiers[i]["row"];
         if (col && row) {
-            wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+          wikiStore.table.updateStyleByCell(col, row, { "border": "" });
         }
       }
     }
@@ -182,101 +186,73 @@ class Output extends Component<{}, OutputState> {
       valueCol: colName,
       valueRow: rowName
     });
-
-    // retrieve cache
-    const { cache } = this.state;
-    let isAllCached = true;
-
+ 
     if (json["statement"] === undefined) return;
-
+    const qnodesLabel = json["qnodesLabels"];
+ 
     // item
     const itemID = json["statement"]["item"];
     // const itemName = window.TableViewer.state.rowData[row][col];
-    if (cache[itemID] !== undefined) {
-      this.setState({ itemID: itemID, itemName: cache[itemID] });
-    } else {
-      this.setState({ itemID: itemID, itemName: "N/A" });
-      this.queryWikidata(itemID, "itemName");
-      isAllCached = false;
-    }
+    this.setState({ itemID: itemID, itemName: qnodesLabel[itemID]["label"] });
 
     if (json["statement"]["cell"]) {
-    const [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
-    wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
-    this.setState({ itemCol: col, itemRow: row });
+      const [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
+      wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
+      this.setState({ itemCol: col, itemRow: row });
     }
     // property
     const propertyID = json["statement"]["property"];
-    if (cache[propertyID] !== undefined) {
-      this.setState({ propertyID: propertyID, propertyName: cache[propertyID] });
-    } else {
-      this.setState({ propertyID: propertyID });
-      this.queryWikidata(propertyID, "propertyName");
-      isAllCached = false;
-    }
-
+    this.setState({ propertyID: propertyID, propertyName: qnodesLabel[propertyID]["label"] });
+ 
     // value
     const value = json["statement"]["value"];
     this.setState({ value: value });
     wikiStore.table.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
     this.setState({ currCol: colName, currRow: rowName });
-
+ 
     // unit
     if (json["statement"]["unit"]) {
-      const unit = json["statement"]["unit"];
-      if (cache[unit] !== undefined) {
-        this.setState({ unit: cache[unit] });
-      } else {
-        this.queryWikidata(unit, "unit");  
-        isAllCached = false;
+      let unitName = json["statement"]["unit"];
+      let unitID = null;
+      if (/^[PQ]\d+$/.test(unitName)) {
+        unitID = unitName;
+        unitName = qnodesLabel[unitName].label;
       }
+      this.setState({ unitName: unitName, unitID: unitID });
     } else {
-      this.setState({ unit: null });
+      this.setState({ unitName: null });
     }
-
+ 
     // qualifiers
-    const temp = json["statement"]["qualifier"];
+    const statementQualifiers = json["statement"]["qualifier"];
     const qualifiers = [];
-    if (temp !== undefined) {
-      for (let i = 0, len = temp.length; i < len; i++) {
+    if (statementQualifiers !== undefined) {
+      for (const statementQualifier of statementQualifiers) {
         const qualifier: any = {};
-
-        qualifier["propertyID"] = temp[i]["property"];
-        if (cache[qualifier["propertyID"]] !== undefined) {
-          qualifier["propertyName"] = cache[qualifier["propertyID"]];
-        } else {
-          this.queryWikidata(qualifier["propertyID"], "qualifiers", i, "propertyName");
-          isAllCached = false;
+ 
+        qualifier.propertyID = statementQualifier.property;
+        qualifier.propertyName = qnodesLabel[qualifier.propertyID].label;
+ 
+        qualifier.valueName = statementQualifier.value;
+        if (/^[PQ]\d+$/.test(qualifier.valueName)) {
+          qualifier.valueID = qualifier.valueName;
+          qualifier.valueName = qnodesLabel[qualifier.valueName].label;
         }
-
-        qualifier["valueName"] = temp[i]["value"];
-        if (/^[PQ]\d+$/.test(qualifier["valueName"])) {
-          if (cache[qualifier["valueName"]] !== undefined) {
-            qualifier["valueID"] = qualifier["valueName"];
-            qualifier["valueName"] = cache[qualifier["valueName"]];
-          } else {
-            this.queryWikidata(qualifier["valueName"], "qualifiers", i, "valueName");
-            isAllCached = false;
-          }
-        }
-
-        if (temp[i]["cell"] !== undefined && temp[i]["cell"] !==null) {
-          const [q_col, q_row] = temp[i]["cell"].match(/[a-z]+|[^a-z]+/gi);
-          qualifier["col"] = q_col;
-          qualifier["row"] = q_row;
+ 
+        if (statementQualifier["cell"]) {
+          const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
+          qualifier.col = q_col;
+          qualifier.row = q_row;
           // let hue = utils.getHueByRandom(10); // first param is the total number of colors
           const hue = utils.getHueByQnode(10, qualifier["propertyID"]);
           wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
-
+ 
         qualifiers.push(qualifier);
       }
+ 
     }
     this.setState({ qualifiers: qualifiers });
-    
-    if (isAllCached) {
-        wikiStore.output.showSpinner = false;
-    }
   }
 
   removeOutput() {
@@ -285,6 +261,8 @@ class Output extends Component<{}, OutputState> {
       valueCol: null,
       valueRow: null,
       value: null,
+      unitName: null,
+      unitID: null,
       itemID: null,
       itemName: null,
       itemCol: undefined,
@@ -295,46 +273,6 @@ class Output extends Component<{}, OutputState> {
     });
   }
 
-  queryWikidata(node: string, field: string, index = 0, subfield = "propertyName") {
-    // FUTURE: use <local stroage> to store previous query result even longer
-    // Show output after all the qualifiers label returned.
-    this.setState({ queryDataCount: this.state.queryDataCount + 1 });
-    // before send request
-    wikiStore.output.showSpinner = true;
-    
-    // Talya: Use async/await here
-    this.requestService.getQnode(this.pid, node).then((res) => {
-        let name = res.label;
-        if (!name) {
-          name = node;
-        }
-        if (field === "itemName") {
-        this.setState({ itemName: name });
-        } else if (field === "propertyName") {
-        this.setState({ propertyName: name });
-        } else if (field === "unit") {
-          this.setState({ unit: name });
-        } else if (field === "qualifiers") {
-        const qualifiers = this.state.qualifiers;
-            if (subfield === "propertyName") {
-                qualifiers[index]["propertyName"] = name;
-            } else if (subfield === "valueName") {
-                qualifiers[index]["valueID"] = qualifiers[index]["valueName"];
-                qualifiers[index]["valueName"] = name;
-            }
-            this.setState({ qualifiers: qualifiers });
-        }
-        const cache = this.state.cache;
-        cache[node] = name;
-        this.setState({
-            cache: cache,
-            queryDataCount: this.state.queryDataCount - 1
-        });
-        wikiStore.output.showSpinner = false;
-    }).catch(() => {
-        wikiStore.output.showSpinner = false;
-    });
-  }
 
   loadToDatamart() {
     // TODO !
@@ -342,7 +280,7 @@ class Output extends Component<{}, OutputState> {
     wikiStore.table.showSpinner = true;
     this.setState({ isLoadDatamart: true });
     console.log("Load to Datamart");
-    this.requestService.loadToDatamart(this.pid).then((json) => {
+    this.requestService.loadToDatamart(this.projectPath).then((json) => {
         console.log(json);
         const { datamart_get_url, description } = json;
         if (datamart_get_url !== undefined) {
@@ -367,9 +305,9 @@ class Output extends Component<{}, OutputState> {
     return (
       <div className="w-100 h-100 p-1">
         <Download showDownload={this.state.showDownload}
-            handleDoDownload={(fileName: string, fileType: string) => this.handleDoDownload(fileName, fileType)}
-            cancelDownload={() => this.cancelDownload()} />
-        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
+          handleDoDownload={(fileName: string, fileType: string) => this.handleDoDownload(fileName, fileType)}
+          cancelDownload={() => this.cancelDownload()} />
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
 
         <Card className="w-100 h-100 shadow-sm">
 
@@ -414,19 +352,19 @@ class Output extends Component<{}, OutputState> {
             </div>
 
             {/* output */}
-            { this.state.queryDataCount === 0 ?
             <div className="w-100 p-3" style={{ height: "1px" }}>
-            <ShowOutput
+              <ShowOutput
                 errors={this.state.errors}
                 itemName={this.state.itemName}
                 itemID={this.state.itemID}
                 propertyID={this.state.propertyID}
                 propertyName={this.state.propertyName}
                 value={this.state.value}
-                unit={this.state.unit}
+                unitID={this.state.unitID}
+                unitName={this.state.unitName}
                 qualifiers={this.state.qualifiers}
-            />
-            </div> : null }
+              />
+            </div>
           </Card.Body>
         </Card>
       </div>

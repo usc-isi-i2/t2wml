@@ -25,16 +25,40 @@ def default_project_folder(context):
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
-    creation_date = db.Column(
+    name = db.Column(db.String(64), index=True) #defunct
+    creation_date = db.Column( #defunct
         db.DateTime, nullable=False, default=datetime.utcnow)
-    modification_date = db.Column(
+    modification_date = db.Column( #defunct
         db.DateTime, nullable=False, default=datetime.utcnow)
-    sparql_endpoint = db.Column(
+    sparql_endpoint = db.Column( #defunct
         db.String(64), nullable=True, default=DEFAULT_SPARQL_ENDPOINT)
-    warn_for_empty_cells = db.Column(db.Boolean, default=False)
-    file_directory = db.Column(db.String(300), nullable=True)
-    files = db.relationship("SavedFile", back_populates="project")
+    warn_for_empty_cells=db.Column(db.Boolean, default=False) #defunct
+    file_directory=db.Column(db.String(300), nullable=True)
+    files = db.relationship("SavedFile", back_populates="project") #semi-defunct
+    
+    @property
+    def current_file(self):
+        # this is a temporary measure while we are only supporting a single file
+        data_file = DataFile.query.filter_by(
+            project_id=self.id).order_by(DataFile.id.desc()).first()
+        if data_file:
+            return data_file
+
+    @property
+    def wikifier_file(self):
+        # this is a temporary measure while we are only supporting a single file
+        current = WikifierFile.query.filter_by(
+            project_id=self.id).order_by(WikifierFile.id.desc()).first()
+        if current:
+            return current
+    
+    @property
+    def api_project(self):
+        try:
+            return self._api_proj
+        except AttributeError:
+            self._api_proj=self.create_project_file()
+            return self._api_proj
 
     def __repr__(self):
         return '<Project {}: {}>'.format(self.name, self.id)
@@ -71,22 +95,6 @@ class Project(db.Model):
     def modify(self):
         self.modificationdate = datetime.utcnow()
         db.session.commit()
-
-    @property
-    def current_file(self):
-        # this is a temporary measure while we are only supporting a single file
-        data_file = DataFile.query.filter_by(
-            project_id=self.id).order_by(DataFile.id.desc()).first()
-        if data_file:
-            return data_file
-
-    @property
-    def wikifier_file(self):
-        # this is a temporary measure while we are only supporting a single file
-        current = WikifierFile.query.filter_by(
-            project_id=self.id).order_by(WikifierFile.id.desc()).first()
-        if current:
-            return current
 
     @staticmethod
     def load(api_proj):
@@ -150,30 +158,7 @@ class Project(db.Model):
 
         proj.save()
         return proj
-
-    @property
-    def api_project(self):
-        try:
-            return self._api_proj
-        except AttributeError:
-            self._api_proj = self.create_project_file()
-            return self._api_proj
-
-    @staticmethod
-    def get(pid):
-        project = Project.query.get(pid)
-        if not project:
-            raise ValueError("Not found")
-        if project.file_directory is None:
-            p = get_project_folder(project)
-            if not p.is_dir():
-                raise ValueError("Project directory was never created")
-            # save for the future
-            project.file_directory = str(p)
-            db.session.commit()
-        project.create_project_file()
-        return project
-
+        
     def update_settings(self, settings):
         endpoint = settings.get("endpoint", None)
         if endpoint:

@@ -62,14 +62,12 @@ interface TableState  {
 class TableViewer extends Component<{}, TableState> {
   public gridApi: any;
   public gridColumnApi: any;
-  private pid: string;
 
   private requestService: RequestService;
 
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
-    this.pid = wikiStore.project.pid;
     
     // init state
     this.state = {
@@ -133,7 +131,7 @@ class TableViewer extends Component<{}, TableState> {
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadDataFile(this.pid, formData).then((json) => {
+    this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -210,7 +208,7 @@ class TableViewer extends Component<{}, TableState> {
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     const formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadWikifierOutput(this.pid, formData).then((json) => {
+    this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData).then((json) => {
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -274,7 +272,7 @@ class TableViewer extends Component<{}, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    this.requestService.resolveCell(this.pid, colName, rowName).then((json) => {
+    this.requestService.resolveCell(wikiStore.projects.current!.folder, colName, rowName).then((json) => {
       console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -322,7 +320,7 @@ class TableViewer extends Component<{}, TableState> {
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.changeSheet(this.pid, sheetName).then((json) => {
+    this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName).then((json) => {
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
       console.log(json);
 

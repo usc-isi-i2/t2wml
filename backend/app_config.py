@@ -27,6 +27,7 @@ CORS(app, supports_credentials=True)
 app.secret_key = "secret key" # This will no longer be used once we stop using session cookies
 
 class AppConfig:
+    USE_CACHE=True
     UPLOAD_FOLDER = UPLOAD_FOLDER
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
     downloads = DOWNLOAD_FOLDER

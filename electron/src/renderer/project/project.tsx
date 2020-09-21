@@ -33,7 +33,7 @@ interface ProjectState {
 }
 
 interface ProjectProps {
-  id: string;
+  path: string;
 }
 
 @observer
@@ -59,20 +59,29 @@ class Project extends Component<ProjectProps, ProjectState> {
 
       errorMessage: {} as ErrorMessage,
     };
+
+    // Bind the handlers that are tied to ipcRenderer and needs to be removed
+    this.onRefreshProject = this.onRefreshProject.bind(this);
+    this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
   }
 
   componentDidMount() {
-    if (this.props.id) {
+    if (this.props.path) {
       this.loadProject();
     } else {
       console.error("There is no project id.")
     }
-    ipcRenderer.on('refresh-project', () => this.onRefreshProject());
-    ipcRenderer.on('project-settings', () => this.onShowSettingsClicked());
+    ipcRenderer.on('refresh-project', this.onRefreshProject);
+    ipcRenderer.on('project-settings', this.onShowSettingsClicked);
+  }
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
+    ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
-    if (this.props.id !== prevProps.id) {
+    if (this.props.path !== prevProps.path) {
       this.loadProject();
     }
   }
@@ -83,7 +92,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     wikiStore.wikifier.showSpinner = true;
 
     // fetch project files
-    this.requestService.getProjectFiles(this.props.id).then(json => {
+    // TODO: Switch to async/await
+    console.debug('Refreshing project ', this.props.path);
+    this.requestService.getProjectFiles(this.props.path).then(json => {
       document.title = 't2wml: ' + json.name;
       this.setState({name: json.name});
 
@@ -137,7 +148,8 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   onShowSettingsClicked() {
-    this.requestService.getSettings(this.props.id)
+    // TODO: Switch to async/await
+    this.requestService.getSettings(this.props.path)
       .then((data) => {
         this.setState({
           endpoint: data.endpoint,
@@ -156,7 +168,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     const formData = new FormData();
     formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
     formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
-    this.requestService.updateSettings(this.props.id, formData).catch((error: ErrorMessage) => {
+
+    // TODO: Switch to async/await
+    this.requestService.updateSettings(this.props.path, formData).catch((error: ErrorMessage) => {
       console.error('Error updating settings: ', error);
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
