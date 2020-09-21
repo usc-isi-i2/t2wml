@@ -35,6 +35,8 @@ interface yamlState {
 class YamlEditor extends Component<yamlProperties, yamlState> {
   private requestService: RequestService;
 
+  monacoRef: any = React.createRef();
+
   constructor(props: yamlProperties) {
     super(props);
     this.requestService = new RequestService();
@@ -58,7 +60,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   handleApplyYaml() {
-    this.setState({ errorMessage: {} as ErrorMessage });  
+    this.setState({ errorMessage: {} as ErrorMessage });
     console.log("<YamlEditor> clicked apply");
 
     // remove current status
@@ -123,7 +125,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.table.isCellSelectable = false;
 
     // Talya: find out what's the right way to do this
-    const yamlText = (this.refs.monaco as any).editor.getModel().getValue();
+    const yamlText = (this.monacoRef as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
       const yamlJson = (yaml.safeLoad(yamlText) as JSON);
@@ -266,8 +268,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             className="w-100 h-100 p-0"
             style={(this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }}
             >
-            <MonacoEditor
-                ref="monaco"
+            <MonacoEditor ref={this.monacoRef}
                 width="100%"
                 height="100%"
                 language="yaml"
