@@ -699,7 +699,6 @@ class TableViewer extends Component<{}, TableState> {
           </Card.Body>
 
           {/* sheet selector */}
-          {/* TODO: add scrollbar width */}
           <Card.Footer
             hidden={isCSV}
             id="sheetSelector" // apply custom scroll bar
