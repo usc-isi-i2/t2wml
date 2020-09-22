@@ -10,12 +10,9 @@ from t2wml.api import Project as apiProject
 from t2wml.api import add_entities_from_file
 import web_exceptions
 from app_config import app
-from models import (DataFile, ItemsFile, Project,
-                    PropertiesFile, WikifierFile, YamlFile)
-
 from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        highlight_region, update_t2wml_settings, wikify)
-from utils import (file_upload_validator, get_project_details,
+from utils import (file_upload_validator, save_file,
                    make_frontend_err_dict, string_is_valid, table_data)
 from web_exceptions import WebException
 from t2wml_annotation_integration import AnnotationIntegration
@@ -25,27 +22,25 @@ debug_mode = False
 
 
 def get_project(project_folder):
-    project=Project.query.filter_by(file_directory=project_folder).first()
-    if not project:
-        raise web_exceptions.ProjectNotFoundException
+    project = apiProject.load(project_folder)
     update_t2wml_settings(project)
     return project
 
 def get_calc_params(project):    
-    data_file = project.current_file
-    if data_file:
-        sheet = data_file.current_sheet
-        if sheet.yaml_file:
-            yaml_file=sheet.yaml_file.file_path
-        else:
-            yaml_file=None
-        if project.wikifier_file:
-            wikifier_files=[project.wikifier_file.file_path]
-        else:
-            wikifier_files=None
-        calc_params=CalcParams(project.directory, data_file.file_path, sheet.name, yaml_file, wikifier_files)
-        return calc_params
-    return None
+    if not project.current_data_file:
+        return None
+    data_file = Path(project.directory) / project.current_data_file
+    sheet_name = project.current_sheet
+    if project.current_yaml:
+        yaml_file=Path(project.directory) /  project.current_yaml
+    else:
+        yaml_file=None
+    if project.current_wikifiers:
+        wikifier_files=[Path(project.directory) / wf for wf in project.current_wikifiers]
+    else:
+        wikifier_files=None
+    calc_params=CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
+    return calc_params
 
 
 def get_project_folder():
@@ -77,20 +72,6 @@ def json_response(func):
     return wrapper
 
 
-@app.route('/api/projects', methods=['GET'])
-@json_response
-def get_project_meta():
-    """
-    This route is used to fetch details of all the projects viz. project title, project id, modified date etc.
-    :return:
-    """
-    data = {
-        'projects': None,
-        'error': None
-    }
-    data['projects'] = get_project_details()
-    return data, 200
-
 
 @app.route('/api/project', methods=['POST'])
 @json_response
@@ -109,9 +90,8 @@ def create_project():
     api_proj=apiProject(project_folder)
     api_proj.title=Path(project_folder).stem
     api_proj.save()
-    #...and the database id for it
-    project = Project.load(api_proj)
-    response = dict(project=project.api_project.__dict__)
+
+    response = dict(project=api_proj.__dict__)
     return response, 201
 
 
@@ -123,14 +103,9 @@ def load_project():
     :return:
     """
     project_folder = get_project_folder()
-    project=Project.query.filter_by(file_directory=project_folder).first()
-    if not project:
-        proj=apiProject.load(project_folder)
-        update_t2wml_settings(proj)
-        project=Project.load(proj)
-    else:
-        project.create_project_file()
-    response = dict(project=project.api_project.__dict__)
+    project=apiProject.load(project_folder)
+    update_t2wml_settings(project)
+    response = dict(project=project.__dict__)
     return response, 201
 
 
@@ -150,14 +125,14 @@ def get_project_files():
         "wikifierData": None,
     }
 
-    response["name"] = project.name
+    response["name"] = project.title
 
     calc_params=get_calc_params(project)
     if calc_params:
         response["tableData"] = table_data(calc_params)
         response["wikifierData"] = serialize_item_table(calc_params)
         response["yamlData"] = handle_yaml(calc_params)
-    response['project']=project.api_project.__dict__
+    response['project']=project.__dict__
     return response, 200
 
 
@@ -166,15 +141,19 @@ def get_project_files():
 def add_entity_definitions():
     project_folder = get_project_folder()
     project = get_project(project_folder)
+    
     in_file = file_upload_validator({"tsv"})
-    pf = PropertiesFile.create(project, in_file)
-    return_dict = add_entities_from_file(pf.file_path)
+    file_path = save_file(project_folder, in_file)
+    project.add_entity_file(file_path, copy_from_elsewhere=True, overwrite=True)
+    project.save()
+
+    return_dict = add_entities_from_file(file_path)
     response = {"widget":return_dict}
     calc_params=get_calc_params(project)
     if calc_params:
         serialized_item_table = serialize_item_table(calc_params)
         response.update(serialized_item_table)
-    response['project']=project.api_project.__dict__
+    response['project']=project.__dict__
     return response, 200
 
 
@@ -194,13 +173,17 @@ def upload_data_file():
         "yamlData": dict(),  # this is never not empty
         "error": None
     }
-    new_file = file_upload_validator({'xlsx', 'xls', 'csv'})
-    data_file = DataFile.create(project, new_file)
+    in_file = file_upload_validator({'xlsx', 'xls', 'csv'})
+    file_path = save_file(project_folder, in_file)
+    project.add_data_file(file_path)#, copy_from_elsewhere=True, overwrite=True)
+    project.update_saved_state(current_data_file=file_path)
+    project.save()
+
     calc_params=get_calc_params(project)
     response["tableData"] = table_data(calc_params)
     response["wikifierData"] = serialize_item_table(calc_params)
     response["yamlData"] = handle_yaml(calc_params)
-    response['project']=project.api_project.__dict__
+    response['project']=project.__dict__
     return response, 200
 
 
@@ -220,26 +203,14 @@ def change_sheet(sheet_name):
         "error": None
     }
 
-    data_file = project.current_file
-    old_sheet = data_file.current_sheet
-    data_file.change_sheet(sheet_name)
-    try:
-        calc_params=get_calc_params(project)
+    project.update_saved_state(current_sheet=sheet_name)
+    project.save()
+
+    calc_params=get_calc_params(project)
+    if calc_params:
         response["tableData"] = table_data(calc_params)
-    except Exception as e:  # otherwise we can end up stuck on a corrupted sheet
-        data_file.change_sheet(old_sheet.name)
-        raise e
-
-    #stopgap measure. we seriously need to separate these calls
-    try:
         response["wikifierData"] = serialize_item_table(calc_params)
-    except:
-        pass #return blank
-
-    try:
         response["yamlData"] = handle_yaml(calc_params)
-    except:
-        pass #return blank
 
     return response, 200
 
@@ -255,14 +226,18 @@ def upload_wikifier_output():
     project = get_project(project_folder)
     response = {"error": None}
     in_file = file_upload_validator({"csv"})
+    
+    file_path = save_file(project_folder, in_file)
+    project.add_wikifier_file(file_path, copy_from_elsewhere=True, overwrite=True)
+    project.update_saved_state(current_wikifiers=[file_path])
+    project.save()
 
-    wikifier_file = WikifierFile.create(project, in_file)
     calc_params=get_calc_params(project)
     if calc_params:
         serialized_item_table = serialize_item_table(calc_params)
         # does not go into field wikifierData but is dumped directly
         response.update(serialized_item_table)
-    response['project']=project.api_project.__dict__
+    response['project']=project.__dict__
     return response, 200
 
 
@@ -280,13 +255,18 @@ def wikify_region():
     context = request.form["context"]
     flag = int(request.form["flag"])
     if action == "wikify_region":
-        if not project.current_file:
+        if not project.current_data_file:
             raise web_exceptions.WikifyWithoutDataFileException(
                 "Upload data file before wikifying a region")
         calc_params=get_calc_params(project)
 
         cell_qnode_map, problem_cells = wikify(calc_params, region, context)
-        wf = WikifierFile.create_from_dataframe(project, cell_qnode_map)
+        file_path = str(Path(project_folder) / "wikify_region_output.csv")
+        cell_qnode_map.to_csv(file_path)
+
+        project.add_wikifier_file(file_path)#, copy_from_elsewhere=True, overwrite=True)
+        project.update_saved_state(current_wikifiers=[file_path])
+        project.save()
         
         calc_params=get_calc_params(project)
         data = serialize_item_table(calc_params)
@@ -300,7 +280,7 @@ def wikify_region():
             data['problemCells'] = error_dict
         else:
             data['problemCells'] = False
-        data['project']=project.api_project.__dict__
+        data['project']=project.__dict__
         return data, 200
     return {}, 404
 
@@ -320,17 +300,25 @@ def upload_yaml():
     if not string_is_valid(yaml_data):
         raise web_exceptions.InvalidYAMLFileException(
             "YAML file is either empty or not valid")
-    else:
-        if project.current_file:
-            sheet = project.current_file.current_sheet
-            yf = YamlFile.create_from_formdata(project, yaml_data, yaml_title, sheet)
-            calc_params=get_calc_params(project)
-            response['yamlRegions'] = highlight_region(calc_params)
-        else:
-            response['yamlRegions'] = None
-            raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-                "Upload data file before applying YAML.")
-    response['project']=project.api_project.__dict__
+    if not project.current_data_file:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Upload data file before applying YAML.")
+    
+    sheet_name = project.current_sheet #TODO: FIX
+    if not yaml_title:
+        yaml_title=sheet_name+".yaml"
+    
+    file_path= Path(project_folder) / yaml_title 
+    with open(file_path, 'w', newline='', encoding="utf-8") as f:
+            f.write(yaml_data)
+
+    project.add_yaml_file(file_path, project.current_data_file, sheet_name)
+    project.update_saved_state(current_yaml=file_path)
+    project.save()
+
+    calc_params=get_calc_params(project)
+    response['yamlRegions'] = highlight_region(calc_params)
+    response['project']=project.__dict__
     return response, 200
 
 
@@ -370,27 +358,6 @@ def downloader(filetype):
     return response, 200
 
 
-@app.route('/api/project', methods=['DELETE'])
-@json_response
-def delete_project():
-    """
-    This route is used to delete a project.
-    :return:
-    """
-    data = {
-        'projects': None,
-        'error': None
-    }
-
-    project_folder = get_project_folder()
-    project = get_project(project_folder)
-    if project:
-        shutil.rmtree(project.directory)
-        Project.delete(project.id)
-    data['projects'] = get_project_details()
-    return data, 200
-
-
 @app.route('/api/project', methods=['PUT'])
 @json_response
 def rename_project():
@@ -398,16 +365,14 @@ def rename_project():
     This route is used to rename a project.
     :return:
     """
-    data = {
-        'projects': None,
-        'error': None
-    }
     ptitle = request.form["ptitle"]
     project_folder = get_project_folder()
     project = get_project(project_folder)
-    project.rename(ptitle)
-    data['projects'] = get_project_details()
-    return data, 200
+    project.title=ptitle
+    project.save()
+    response=dict()
+    response['project']=project.__dict__
+    return response, 200
 
 
 @app.route('/api/project/settings', methods=['PUT', 'GET'])
@@ -419,7 +384,14 @@ def update_settings():
     """
     project_folder = get_project_folder()
     project = get_project(project_folder)
-    project.update_settings(request.form)
+    
+    endpoint = request.form.get("endpoint", None)
+    if endpoint:
+        project.sparql_endpoint = endpoint
+    warn = request.form.get("warnEmpty", None)
+    if warn is not None:
+        project.warn_for_empty_cells=warn.lower()=='true'
+    project.save()
     update_t2wml_settings(project)
     response = {
         "endpoint":project.sparql_endpoint,

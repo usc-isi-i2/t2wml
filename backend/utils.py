@@ -122,33 +122,12 @@ def file_upload_validator(file_extensions):
     return in_file
 
 
-def get_project_details():
-    from models import Project
-
-    #temporary fix for double IDs that didn't get deleted:
-    project_dirs=defaultdict(list)
-    for project in Project.query.order_by(Project.modification_date.desc()).all():
-        project_dirs[project.directory].append(project)
-    for dir, projects in project_dirs.items():
-        if len(projects)>1:
-            projects.sort(key= lambda x:x.modification_date)
-        for project in projects[1:]:
-            Project.delete(project.id)
-
-    projects = list()
-    for project in Project.query.order_by(Project.modification_date.desc()).all():
-        if os.path.isdir(project.directory):
-            project_detail = dict()
-            project_detail["pid"] = project.id
-            project_detail["directory"] = project.directory
-            project_detail["ptitle"] = project.name
-            project_detail["cdate"] = str(project.creation_date)
-            project_detail["mdate"] = str(project.modification_date)
-            projects.append(project_detail)
-        else:
-            Project.delete(project.id)
-    
-    return projects
+def save_file(project_folder, in_file):
+        folder = project_folder
+        filename=Path(in_file.filename).name #otherwise secure_filename does weird things on linux
+        file_path = Path(folder) /filename
+        in_file.save(str(file_path))
+        return file_path
 
 
 def table_data(calc_params):

@@ -5,7 +5,7 @@ from tests.utils import (client, BaseClass, create_project, sanitize_highlight_r
                 load_wikifier_file, load_item_file)
     
 
-pid=None #we need to use a global for some reason... self.project_folder does not work.
+project_folder=None #we need to use a global for some reason... self.project_folder does not work.
 
 
 
@@ -14,21 +14,13 @@ class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
 
-    def test_00_get_projects_list_to_be_deprecated(self, client):
-        #GET /api/projects
-        response=client.get('/api/projects') 
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        assert response.status_code==200
-
     def test_01_add_project(self, client):
         #POST /api/project
-        global pid
-        pid=create_project(client)
+        global project_folder
+        project_folder=create_project(client)
         
-    
     def test_01b_change_project_name(self, client):
-        url='/api/project?project_folder={pid}'.format(pid=pid)
+        url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
         ptitle="Unit test"
         response=client.put(url,
                 data=dict(
@@ -36,10 +28,10 @@ class TestBasicWorkflow(BaseClass):
             )) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
-        assert data['projects'][0]['ptitle']==ptitle
+        assert data['project']['title']==ptitle
 
     def test_02_get_project_files(self, client):
-        data=get_project_files(client, pid)
+        data=get_project_files(client, project_folder)
         data.pop('project')
         assert data == {
             'name': 'Unit test',
@@ -50,7 +42,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_03_add_data_file(self, client):   
         filename=os.path.join(self.files_dir, "dataset.xlsx")
-        response=load_data_file(client, pid, filename)
+        response=load_data_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         self.results_dict['add_data_file']=data
@@ -61,7 +53,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_05_add_wikifier_file(self, client):
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
-        response=load_wikifier_file(client, pid, filename)
+        response=load_wikifier_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data.pop('project')
@@ -71,7 +63,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_06_add_items_file(self, client):
         filename=os.path.join(self.files_dir, "kgtk_item_defs.tsv")
-        response=load_item_file(client, pid, filename)
+        response=load_item_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data.pop('project')
@@ -80,7 +72,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_08_add_yaml_file(self, client):
         filename=os.path.join(self.files_dir, "test.yaml")
-        response=load_yaml_file(client, pid, filename)
+        response=load_yaml_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data.pop('project')
@@ -94,8 +86,8 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'add_yaml')
 
     def test_09_get_cell(self, client):
-        #GET '/api/data/{pid}/cell/<col>/<row>'
-        url='/api/data/cell/{col}/{row}?project_folder={pid}'.format(pid=pid, col="G", row=4)
+        #GET '/api/data/{project_folder}/cell/<col>/<row>'
+        url='/api/data/cell/{col}/{row}?project_folder={project_folder}'.format(project_folder=project_folder, col="G", row=4)
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
@@ -103,8 +95,8 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'get_cell')
 
     def test_11_get_download(self, client):
-        #GET '/api/project/{pid}/download/<filetype>'
-        url='/api/project/download/{filetype}?project_folder={pid}'.format(pid=pid, filetype="tsv")
+        #GET '/api/project/{project_folder}/download/<filetype>'
+        url='/api/project/download/{filetype}?project_folder={project_folder}'.format(project_folder=project_folder, filetype="tsv")
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
@@ -114,8 +106,8 @@ class TestBasicWorkflow(BaseClass):
         assert expected==data
 
     def test_12_change_sheet(self, client):
-        #GET /api/data/{pid}/<sheet_name>
-        url='/api/data/{sheet_name}?project_folder={pid}'.format(pid=pid,sheet_name="Sheet4")
+        #GET /api/data/{project_folder}/<sheet_name>
+        url='/api/data/{sheet_name}?project_folder={project_folder}'.format(project_folder=project_folder,sheet_name="Sheet4")
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
@@ -125,8 +117,8 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'change_sheet')
 
     def test_12_wikify_region(self, client):
-        #POST '/api/wikifier_service/{pid}'
-        url='/api/wikifier_service?project_folder={pid}'.format(pid=pid)
+        #POST '/api/wikifier_service/{project_folder}'
+        url='/api/wikifier_service?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.post(url,
                 data=dict(
                 action="wikify_region",
@@ -144,8 +136,8 @@ class TestBasicWorkflow(BaseClass):
 
     def test_14_settings(self, client):
         from t2wml.settings import t2wml_settings
-        #PUT '/api/project/{pid}/settings'
-        url='/api/project/settings?project_folder={pid}'.format(pid=pid)
+        #PUT '/api/project/{project_folder}/settings'
+        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         endpoint='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         response=client.put(url,
                 data=dict(
@@ -154,22 +146,13 @@ class TestBasicWorkflow(BaseClass):
             )) 
         assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
 
-        #GET '/api/project/{pid}/settings'
-        url='/api/project/settings?project_folder={pid}'.format(pid=pid)
+        #GET '/api/project/{project_folder}/settings'
+        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
         assert data["endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert data["warnEmpty"]==False
-
-    def test_99_delete_project(self, client):
-        #this test must be sequentially last (do not run pytest in parallel)
-        #DELETE '/api/project/{pid}'
-        url_str="/api/project?project_folder={pid}".format(pid=pid)
-        response=client.delete(url_str)
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        assert data["projects"]==[]
     
     def xtest_999_save(self):
         #used when overwriting all old results with new ones 

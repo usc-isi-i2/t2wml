@@ -1,10 +1,16 @@
+_saved_state:
+  current_data_file: fertilizer.xlsx
+  current_sheet: Sheet1
+  current_wikifiers:
+  - consolidated-wikifier.csv
+  current_yaml: t2wml.yaml
 data_files:
-- fertilizer.xlsx
+  fertilizer.xlsx:
+  - Sheet1
 entity_files:
 - item_definitions.tsv
 - properties_all.tsv
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
-specific_wikifiers: {}
 title: empty cells
 warn_for_empty_cells: true
 wikifier_files:
