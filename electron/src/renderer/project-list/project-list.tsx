@@ -195,6 +195,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       if (json['error'] !== null){
         console.warn('Renaming a project returned an error: ', json);
       }
+      this.setState({ showRenameProject: false, showSpinner: false });
       wikiStore.projects.refreshList();
     } catch(error) {
       // console.log(error);
