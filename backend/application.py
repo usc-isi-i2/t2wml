@@ -104,6 +104,8 @@ def load_project():
     """
     project_folder = get_project_folder()
     project=apiProject.load(project_folder)
+    for f in project.entity_files:
+        response= add_entities_from_file(Path(project.directory) / f)
     update_t2wml_settings(project)
     response = dict(project=project.__dict__)
     return response, 201
@@ -119,6 +121,9 @@ def get_project_files():
     """
     project_folder = get_project_folder()
     project = get_project(project_folder)
+
+    for f in project.entity_files:
+        add_entities_from_file(Path(project.directory) / f)
     response = {
         "tableData": None,
         "yamlData": None,
