@@ -118,7 +118,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       const err = {
         errorCode: -1,
         errorTitle: "Can't delete project",
-        errorDescription: "",
+        errorDescription: "Can't delete project",
       }
       this.setState({ errorMessage: err });
     }
