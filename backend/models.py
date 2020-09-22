@@ -104,9 +104,7 @@ class Project(db.Model):
             print("WARNING: projects with more than one data file not yet supported. will use last-added data file")
         if len(api_proj.wikifier_files)>1:
             print("WARNING: projects with more than one wikifier file not yet supported. will use last-added data file")
-        if len(api_proj.specific_wikifiers):
-            print("WARNING: specific wikifiers not yet supported, will be ignored")
-            
+
         db.session.add(project)
         db.session.commit()
         
