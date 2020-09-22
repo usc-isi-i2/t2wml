@@ -25,6 +25,8 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import { Project } from '../data/projects';
 
+const { shell } = require('electron')
+
 interface ProjectListState {
   showSpinner: boolean;
   showDownloadProject: boolean;
@@ -111,17 +113,19 @@ class ProjectList extends Component<{}, ProjectListState> {
       return;
     }
 
-    try {
-      await this.requestService.deleteProject(project.folder);  // rimraf and fs.rmDir both hang for some reason
+    var succeeded= shell.moveItemToTrash(project.folder);
+    if (succeeded){
       wikiStore.projects.refreshList();
-    } catch(error) {
+    }
+    else{
       const err = {
         errorCode: -1,
         errorTitle: "Can't delete project",
-        errorDescription: error.toString(),
+        errorDescription: "",
       }
       this.setState({ errorMessage: err });
     }
+
     this.setState( { showSpinner: false });
   }
 
