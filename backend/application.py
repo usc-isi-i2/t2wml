@@ -4,7 +4,7 @@ import sys
 import shutil
 from pathlib import Path
 from flask import request
-
+from send2trash import send2trash
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.api import Project as apiProject
 from t2wml.api import add_entities_from_file
@@ -384,11 +384,16 @@ def delete_project():
 
     project_folder = get_project_folder()
     project = get_project(project_folder)
+    status=200
     if project:
-        shutil.rmtree(project.directory)
+        try:
+            send2trash(project.directory)
+        except Exception as e:
+            data['error']=str(e)
+            status=500
         Project.delete(project.id)
     data['projects'] = get_project_details()
-    return data, 200
+    return data, status
 
 
 @app.route('/api/project', methods=['PUT'])
