@@ -419,8 +419,9 @@ def update_settings():
     """
     project_folder = get_project_folder()
     project = get_project(project_folder)
-    project.update_settings(request.form)
-    update_t2wml_settings(project)
+    if request.method == 'PUT':
+        project.update_settings(request.form)
+        update_t2wml_settings(project)
     response = {
         "endpoint":project.sparql_endpoint,
         "warnEmpty":project.warn_for_empty_cells
