@@ -114,10 +114,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     }
 
     var succeeded= shell.moveItemToTrash(project.folder);
-    if (succeeded){
-      wikiStore.projects.refreshList();
-    }
-    else{
+    if (!succeeded){
       const err = {
         errorCode: -1,
         errorTitle: "Can't delete project",
@@ -125,7 +122,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       }
       this.setState({ errorMessage: err });
     }
-
+    wikiStore.projects.refreshList();
     this.setState( { showSpinner: false });
   }
 
