@@ -1,5 +1,6 @@
 data_files:
 - homicide_report_total_and_sex.xlsx
+directory: D:\Sources\Pedro\t2wml-root\t2wml\Datasets\homicide
 entity_files:
 - homicide_extra_edges.tsv
 - homicide_properties.tsv

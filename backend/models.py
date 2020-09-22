@@ -25,17 +25,17 @@ def default_project_folder(context):
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True) #defunct
-    creation_date = db.Column( #defunct
+    name = db.Column(db.String(64), index=True)  # defunct
+    creation_date = db.Column(  # defunct
         db.DateTime, nullable=False, default=datetime.utcnow)
-    modification_date = db.Column( #defunct
+    modification_date = db.Column(  # defunct
         db.DateTime, nullable=False, default=datetime.utcnow)
-    sparql_endpoint = db.Column( #defunct
+    sparql_endpoint = db.Column(  # defunct
         db.String(64), nullable=True, default=DEFAULT_SPARQL_ENDPOINT)
-    warn_for_empty_cells=db.Column(db.Boolean, default=False) #defunct
-    file_directory=db.Column(db.String(300), nullable=True)
-    files = db.relationship("SavedFile", back_populates="project") #semi-defunct
-    
+    warn_for_empty_cells = db.Column(db.Boolean, default=False)  # defunct
+    file_directory = db.Column(db.String(300), nullable=True)
+    files = db.relationship("SavedFile", back_populates="project")  # semi-defunct
+
     @property
     def current_file(self):
         # this is a temporary measure while we are only supporting a single file
@@ -51,13 +51,13 @@ class Project(db.Model):
             project_id=self.id).order_by(WikifierFile.id.desc()).first()
         if current:
             return current
-    
+
     @property
     def api_project(self):
         try:
             return self._api_proj
         except AttributeError:
-            self._api_proj=self.create_project_file()
+            self._api_proj = self.create_project_file()
             return self._api_proj
 
     def __repr__(self):
@@ -109,6 +109,7 @@ class Project(db.Model):
             print("WARNING: projects with more than one data file not yet supported. will use last-added data file")
         if len(api_proj.wikifier_files) > 1:
             print("WARNING: projects with more than one wikifier file not yet supported. will use last-added data file")
+
         if len(api_proj.specific_wikifiers):
             print("WARNING: specific wikifiers not yet supported, will be ignored")
 
@@ -158,7 +159,7 @@ class Project(db.Model):
 
         proj.save()
         return proj
-        
+
     def update_settings(self, settings):
         endpoint = settings.get("endpoint", None)
         if endpoint:

@@ -1,9 +1,15 @@
+_saved_state:
+  current_data_file: null
+  current_sheet: null
+  current_wikifiers: null
+  current_yaml: null
 data_files:
-- dataset.xlsx
+  dataset.xlsx:
+  - Sheet3
+  - Sheet4
 entity_files:
 - kgtk_item_defs.tsv
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
-specific_wikifiers: {}
 title: Unit test renamed
 warn_for_empty_cells: false
 wikifier_files:

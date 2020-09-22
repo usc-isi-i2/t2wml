@@ -21,6 +21,9 @@ interface qnodeState {
 }
 
 class QnodeEditor extends Component<qnodeProperties, qnodeState> {
+
+  tempQnodeEditorRef: any = React.createRef();
+
   constructor(props: qnodeProperties) {
     super(props);
     // console.log(props);
@@ -42,11 +45,11 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
 
   componentDidMount() {
     // Talya - find out how to write this the correct way
-    (this.refs.tempQnodeEditor as HTMLInputElement).addEventListener('keydown', this.handleKeyDown);
+    (this.tempQnodeEditorRef as HTMLInputElement).addEventListener('keydown', this.handleKeyDown);
   }
 
   componentWillUnmount() {
-    (this.refs.tempQnodeEditor as HTMLInputElement).removeEventListener('keydown', this.handleKeyDown);
+    (this.tempQnodeEditorRef as HTMLInputElement).removeEventListener('keydown', this.handleKeyDown);
   }
 
   createInitState(props: qnodeProperties) {
@@ -82,7 +85,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
 
   afterGuiAttached() {
     // get ref from React component
-    const eInput = this.refs.tempQnodeEditor as HTMLInputElement;
+    const eInput = this.tempQnodeEditorRef as HTMLInputElement;
     (eInput).focus();
     if (this.state.highlightAllOnFocus) {
       eInput.select();
@@ -210,7 +213,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
 
         {/* input */}
         <input
-          ref="tempQnodeEditor"
+          ref={this.tempQnodeEditorRef}
           value={value}
           onChange={(event) => this.handleChangeValue(event.target.value)}
           style={isValidValue ? { width: "100%" } : { width: "100%", borderColor: "red" }}

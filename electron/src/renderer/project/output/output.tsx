@@ -116,7 +116,7 @@ class Output extends Component<{}, OutputState> {
 
       // else, success
       const { data, internalErrors } = json;
-      if (internalErrors !== undefined) {
+      if (internalErrors) {
         console.log("ERRORS in input to download:")
         console.log(internalErrors);
         this.setState({
@@ -214,7 +214,7 @@ class Output extends Component<{}, OutputState> {
     if (json["statement"]["unit"]) {
       let unitName = json["statement"]["unit"];
       let unitID = null;
-      if (/^[PQ]\d+$/.test(unitName)) {
+      if (/^[PQ]\d+$/.test(unitName) && qnodesLabel[unitName]) {
         unitID = unitName;
         unitName = qnodesLabel[unitName].label;
       }

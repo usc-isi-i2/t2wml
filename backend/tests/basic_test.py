@@ -25,6 +25,7 @@ class TestBasicWorkflow(BaseClass):
         #POST /api/project
         global pid
         pid=create_project(client)
+        assert pid is not None
         
     
     def test_01b_change_project_name(self, client):
