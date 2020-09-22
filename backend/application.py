@@ -31,7 +31,7 @@ def get_project(project_folder):
     update_t2wml_settings(project)
     return project
 
-def get_calc_params(project):    
+def get_calc_params(project):
     data_file = project.current_file
     if data_file:
         sheet = data_file.current_sheet
@@ -287,7 +287,7 @@ def wikify_region():
 
         cell_qnode_map, problem_cells = wikify(calc_params, region, context)
         wf = WikifierFile.create_from_dataframe(project, cell_qnode_map)
-        
+
         calc_params=get_calc_params(project)
         data = serialize_item_table(calc_params)
 
@@ -425,7 +425,7 @@ def update_settings():
         "endpoint":project.sparql_endpoint,
         "warnEmpty":project.warn_for_empty_cells
     }
-    return response, 200 
+    return response, 200
 
 
 
