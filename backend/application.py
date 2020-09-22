@@ -375,7 +375,7 @@ def rename_project():
     project = get_project(project_folder)
     project.title=ptitle
     project.save()
-    response=dict()
+    response=dict(error=None)
     response['project']=project.__dict__
     return response, 200
 

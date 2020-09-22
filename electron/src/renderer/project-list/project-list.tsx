@@ -113,7 +113,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       return;
     }
 
-    var succeeded= shell.moveItemToTrash(project.folder);
+    const succeeded= shell.moveItemToTrash(project.folder);
     if (!succeeded){
       const err = {
         errorCode: -1,
