@@ -4,7 +4,7 @@ import tempfile
 import pandas as pd
 from glob import glob
 from pathlib import Path
-from requests import post
+from requests import post, get
 from app_config import DATAMART_API_ENDPOINT
 
 
@@ -81,10 +81,31 @@ class AnnotationIntegration(object):
                     annotation_df.columns = headers
                     new_df = pd.concat([annotation_df.iloc[0:6], self.df])
                     new_df.columns = range(new_df.shape[1])
-                    new_df.iloc[6,0] = 'header'
-                    new_df.iloc[7,0] = 'data'
+                    new_df.iloc[6, 0] = 'header'
+                    new_df.iloc[7, 0] = 'data'
                     break
         return annotation_found, new_df
+
+    def check_dataset_exists(self):
+        # This function will check if the dataset exists or not.
+        # In case the dataset does not exist, we have the ability to create it using the information in cells A1, B1, C1 and D1.
+        # If the information is not present and the dataset does not exist, ring the alarm bells
+
+        if self.df.iloc[0, 1].strip() != '' and \
+                self.df.iloc[0, 2].strip() != '' and \
+                self.df.iloc[0, 3].strip() != '' and \
+                self.df.iloc[0, 4].strip() != '':
+            # we have enough information to create dataset if it does not exist, all is well
+            return True
+
+        else:
+            response = get(f'{DATAMART_API_ENDPOINT}/metadata/datasets/{self.dataset}')
+            dataset_metadata = response.json()
+            if isinstance(dataset_metadata, dict):
+                if 'Error' in dataset_metadata:
+                    # dataset does not exist and we do not have enough information to create it, report the error
+                    return False
+        return True
 
     def get_files(self, filename):
         temp_dir = tempfile.mkdtemp()
@@ -100,6 +121,7 @@ class AnnotationIntegration(object):
         response = post(
             f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true&create_if_not_exist=true',
             files=files)
+
         if response.status_code != 200:
             if "Error" in response.json():
                 raise ValueError(response.json()["Error"])

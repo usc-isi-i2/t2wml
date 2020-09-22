@@ -28,7 +28,7 @@ debug_mode = False
 
 
 def get_project(project_folder):
-    project=Project.query.filter_by(file_directory=project_folder).first()
+    project = Project.query.filter_by(file_directory=project_folder).first()
     if not project:
         raise web_exceptions.ProjectNotFoundException
     update_t2wml_settings(project)
@@ -109,9 +109,9 @@ def create_project():
     project_file = Path(project_folder) / "project.t2wml"
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(project_folder)
-    #create project
-    api_proj=apiProject(project_folder)
-    api_proj.title=Path(project_folder).stem
+    # create project
+    api_proj = apiProject(project_folder)
+    api_proj.title = Path(project_folder).stem
     api_proj.save()
     # ...and the database id for it
     project = Project.load(api_proj)
@@ -127,9 +127,9 @@ def load_project():
     :return:
     """
     project_folder = get_project_folder()
-    project=Project.query.filter_by(file_directory=project_folder).first()
+    project = Project.query.filter_by(file_directory=project_folder).first()
     if not project:
-        proj=apiProject.load(project_folder)
+        proj = apiProject.load(project_folder)
         update_t2wml_settings(proj)
         project = Project.load(proj)
     else:
@@ -181,7 +181,6 @@ def add_entity_definitions():
     return response, 200
 
 
-
 @app.route('/api/data', methods=['POST'])
 @json_response
 def upload_data_file():
@@ -210,7 +209,19 @@ def upload_data_file():
     ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
                                w_requests=request)
     if ai.is_annotated_spreadsheet(project.directory):
-        automate_integration(ai, project, response, sheet)
+        dataset_exists = automate_integration(ai, project, response, sheet)
+        if not dataset_exists:
+            # report to user
+            error_dict = {
+                "errorCode": 404,
+                "errorTitle": "Datamart Integration Error",
+                "errorDescription": f"Dataset: \"{ai.dataset}\" does not exist. To create this dataset, "
+                                    f"please provide dataset name in cell C1 \n"
+                                    f"dataset description in cell D1 \n"
+                                    f"and url in cell E1\n\n"
+            }
+            response['error'] = error_dict
+            return response, 404
     else:  # not annotation file, check if annotation is available
         annotation_found, new_df = ai.is_annotation_available(project.directory)
         if annotation_found and new_df is not None:
@@ -221,6 +232,8 @@ def upload_data_file():
             ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
                                        df=new_df)
 
+            # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
+            # TODO the users. There has to be a better way to handle it. For Future implementation
             automate_integration(ai, project, response, sheet)
 
     calc_params = get_calc_params(project)
@@ -232,16 +245,20 @@ def upload_data_file():
 
 def automate_integration(ai, project, response, sheet):
     try:
+        dataset_exists = ai.check_dataset_exists()
+        if not dataset_exists:
+            return False
         t2wml_yaml, consolidated_wikifier_df, combined_item_df, annotation_df = ai.get_files(
             response['tableData']['filename'])
         i_f = ItemsFile.create_from_dataframe(project, combined_item_df)
         add_entities_from_file(i_f.file_path)
         WikifierFile.create_from_dataframe(project, consolidated_wikifier_df)
         YamlFile.create_from_formdata(project, t2wml_yaml, sheet)
-
+        return True
     except Exception as e:
         traceback.print_exc()
         print(e)  # continue to normal spreadsheet handling
+        return True
 
 
 @app.route('/api/data/<sheet_name>', methods=['GET'])
@@ -343,6 +360,7 @@ def wikify_region():
         data['project'] = project.api_project.__dict__
         return data, 200
     return {}, 404
+
 
 @app.route('/api/yaml', methods=['POST'])
 @json_response
