@@ -18,6 +18,7 @@ class TestBasicWorkflow(BaseClass):
         #POST /api/project
         global project_folder
         project_folder=create_project(client)
+        assert project_folder is not None 
         
     def test_01b_change_project_name(self, client):
         url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
