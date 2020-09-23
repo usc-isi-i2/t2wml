@@ -66,7 +66,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   }
 
 
-  handleDoCall(region: string, flag: string, context: string) {
+  async handleDoCall(region: string, flag: string, context: string) {
     // validate input
     if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(region) || !utils.isValidRegion(region)) {
       alert("Error: Invalid region.\n\nRegion must:\n* be defined as A1:B2, etc.\n* start from top left cell and end in bottom right cell.");
@@ -87,7 +87,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     formData.append("region", region);
     formData.append("context", context);
     formData.append("flag", flag);
-    this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData).then((json) => {
+    try {
+      const json = await this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData);
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -109,14 +110,14 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // follow-ups (success)
       wikiStore.wikifier.showSpinner = false;
 
-    }).catch((error: ErrorMessage) => {
+    } catch(error) {
       console.log(error);
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
       wikiStore.table.updateQnodeCells();
         wikiStore.wikifier.showSpinner = false;
-    });
+    }
   }
 
   cancelCallWikifier() {
@@ -133,7 +134,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
   }
 
-  uploadEntitiesFile(event: any) {
+  async uploadEntitiesFile(event: any) {
     // get entities file
     const file = event.target.files[0];
     if (!file) return;
@@ -145,7 +146,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     // send request
     const formData = new FormData();
     formData.append("file", file);
-    this.requestService.uploadEntities(wikiStore.projects.current!.folder, formData).then((json) => {
+    try {
+      const json = await this.requestService.uploadEntities(wikiStore.projects.current!.folder, formData);
       console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -174,14 +176,14 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // follow-ups (success)
       wikiStore.wikifier.showSpinner = false;
 
-    }).catch((error: ErrorMessage) => {
+    } catch(error) {
       console.log(error);
       error.errorDescription += "\n\nCannot upload entities file!";
       this.setState({ errorMessage: error });
     
       // follow-ups (failure)
       wikiStore.wikifier.showSpinner = false;
-    });
+    }
   }
 
 

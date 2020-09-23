@@ -58,14 +58,6 @@ class ProjectList extends Component<{}, ProjectListState> {
     super(props);
     this.requestService = new RequestService();
 
-    // this.handleRenameProject = this.handleRenameProject.bind(this);
-
-    // fetch data from flask
-    // const { userData } = this.props;
-
-    // init global variables
-    // window.sparqlEndpoint = DEFAULT_SPARQL_ENDPOINT;
-
     // init state
     this.state = {
 
@@ -93,7 +85,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     document.title = "T2WML - Projects";
   }
 
@@ -130,7 +122,7 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
 
-  handleDownloadProject(path = "") {
+  async handleDownloadProject(path = "") {
     this.setState({ errorMessage: {} as ErrorMessage });
     if (path === "") {
       path = this.state.downloadingProjectPath;
@@ -142,7 +134,8 @@ class ProjectList extends Component<{}, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadProject(path).then(json => {
+    try {
+      const json = await this.requestService.downloadProject(path);
       console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -159,15 +152,13 @@ class ProjectList extends Component<{}, ProjectListState> {
       // follow-ups (success)
       this.setState({ showSpinner: false });
 
-    }).catch((error: ErrorMessage) => {
-      // console.log(error);
+    } catch(error) {
       error.errorDescription += "\n\nCannot download project!";
       this.setState({ errorMessage: error });
-    //   alert("Cannot download project!\n\n" + error);
 
       // follow-ups (failure)
       // nothing
-    });
+    }
   }
 
   cancelDownloadProject() {
