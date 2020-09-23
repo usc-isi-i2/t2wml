@@ -28,6 +28,7 @@ jobs:
           pip install coverage
           cd backend
           coverage run --omit tests/**,t2wml-api/** -m pytest tests
+          coverage report
       - name: Upload coverall results
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
