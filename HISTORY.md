@@ -4,9 +4,9 @@ T2WML Standalone Server App History
 Changes in version 2.3.7:
 ------------------------
 * upgrade to t2wml-api version wip
-* get rid of project database, handle files entirely via project file
+* get rid of project database, handle entirely via project files
 * custom entity definitions are now project-specific
-* downloaded file name based on project name (insread of results.tsv, results.json)
+* downloaded file's names based on project name (ie projectname.json instead of results.json)
 * delete projects by sending to trash rather than deleting directly
 * replace download button with open in filesystem button
 * bug fixes:

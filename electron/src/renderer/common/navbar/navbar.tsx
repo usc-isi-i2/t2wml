@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { Navbar } from 'react-bootstrap';
 import T2WMLLogo from './T2WMLLogo';
+// icons
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCogs} from '@fortawesome/free-solid-svg-icons'
 
 
 interface NavbarProperteis {
@@ -29,7 +32,7 @@ class T2wmlNavbar extends Component<NavbarProperteis> {
             {(this.props.showSettings && 
             this.props.onShowSettingsClicked !== undefined) ? 
             <button style={{ position: 'absolute', right: '1rem' }} onClick={this.props.onShowSettingsClicked.bind(this)}>
-                Settings
+                <FontAwesomeIcon icon={faCogs} />
             </button>: null }
 
         </Navbar>
