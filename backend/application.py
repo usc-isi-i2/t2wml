@@ -12,7 +12,7 @@ import web_exceptions
 from app_config import app
 from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        highlight_region, update_t2wml_settings, wikify)
-from utils import (file_upload_validator, save_file,
+from utils import (file_upload_validator, save_file, save_dataframe,
                    make_frontend_err_dict, string_is_valid, table_data)
 from web_exceptions import WebException
 from t2wml_annotation_integration import AnnotationIntegration
@@ -266,8 +266,7 @@ def wikify_region():
         calc_params=get_calc_params(project)
 
         cell_qnode_map, problem_cells = wikify(calc_params, region, context)
-        file_path = str(Path(project_folder) / "wikify_region_output.csv")
-        cell_qnode_map.to_csv(file_path)
+        file_path = save_dataframe(project_folder, cell_qnode_map, "wikify_region_output")
 
         project.add_wikifier_file(file_path)#, copy_from_elsewhere=True, overwrite=True)
         project.update_saved_state(current_wikifiers=[file_path])

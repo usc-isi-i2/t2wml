@@ -121,15 +121,6 @@ def file_upload_validator(file_extensions):
 
     return in_file
 
-
-def save_file(project_folder, in_file):
-        folder = project_folder
-        filename=Path(in_file.filename).name #otherwise secure_filename does weird things on linux
-        file_path = Path(folder) /filename
-        in_file.save(str(file_path))
-        return file_path
-
-
 def table_data(calc_params):
     sheet_names = calc_params.sheet_names
     sheet_name = calc_params.sheet_name
@@ -169,3 +160,15 @@ def sheet_to_json(calc_params):
     # add to the response
     json_data['rowData'] = initial_json
     return json_data
+
+def save_file(project_folder, in_file):
+        folder = project_folder
+        filename=Path(in_file.filename).name #otherwise secure_filename does weird things on linux
+        file_path = Path(folder) /filename
+        in_file.save(str(file_path))
+        return file_path
+
+def save_dataframe(project_folder, df, name):
+    file_path = str(Path(project_folder) / (name+".csv"))
+    df.to_csv(file_path)
+    return file_path
