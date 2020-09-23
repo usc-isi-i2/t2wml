@@ -8,7 +8,7 @@ from string import punctuation
 from flask import request
 from SPARQLWrapper import SPARQLWrapper, JSON
 import web_exceptions
-from wikidata_models import WikidataEntry
+from wikidata_models import WikidataEntity
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache = {}
@@ -52,7 +52,7 @@ def get_labels_and_descriptions(items, sparql_endpoint):
     response = dict()
     missing_items = []
     for item in items:
-        wp = WikidataEntry.query.filter_by(wd_id=item).first()
+        wp = WikidataEntity.query.filter_by(wd_id=item).first()
         if wp:
             label = desc = ""
             if wp.label:
@@ -70,10 +70,10 @@ def get_labels_and_descriptions(items, sparql_endpoint):
         response.update(additional_items)
         try:
             for item in additional_items:
-                WikidataEntry.add_or_update(item, do_session_commit=False, **additional_items[item])
+                WikidataEntity.add_or_update(item, do_session_commit=False, **additional_items[item])
         except Exception as e:
             print(e)
-        WikidataEntry.do_commit()
+        WikidataEntity.do_commit()
 
     except:  # eg 502 bad gateway error
         pass

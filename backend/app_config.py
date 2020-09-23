@@ -32,7 +32,7 @@ class AppConfig:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
     downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(DATADIR, 't2wml.db')
+        'sqlite:///' + os.path.join(DATADIR, 'entities.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
 
