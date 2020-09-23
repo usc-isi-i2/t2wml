@@ -4,6 +4,7 @@ _saved_state:
   current_wikifiers:
   - wikifier_homicide.csv
   current_yaml: t2wml/table-2a.yaml
+cache_id: a59cc0b4-c9f3-4f02-bbb1-1e77715c4269
 data_files:
   homicide_report_total_and_sex.xlsx:
   - table-1a
@@ -31,6 +32,7 @@ data_files:
 entity_files:
 - homicide_extra_edges.tsv
 - homicide_properties.tsv
+handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: homicide66
 warn_for_empty_cells: false
