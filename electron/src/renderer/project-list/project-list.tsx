@@ -7,7 +7,7 @@ import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faSearch, faSortUp, faSortDown, faTrashAlt, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
@@ -333,16 +333,16 @@ class ProjectList extends Component<{}, ProjectListState> {
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="download">
-                    <span className="text-left small">Download</span>
+                    <span className="text-left small">Show in filesystem</span>
                   </Tooltip>
                 }
               >
                 <span
                   className="action-download"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDownloadProject: true, downloadingProjectPath: project.folder })}
+                  onClick={() => shell.showItemInFolder(project.folder)}
                 >
-                  <FontAwesomeIcon icon={faCloudDownloadAlt} />
+                  <FontAwesomeIcon icon={faFolderOpen} />
                 </span>
               </OverlayTrigger>
 
