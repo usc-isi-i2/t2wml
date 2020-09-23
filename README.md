@@ -1,5 +1,7 @@
 # T2WML: A Cell-Based Language To Map Tables Into Wikidata Records
 
+[![Coverage Status](https://coveralls.io/repos/github/usc-isi-i2/t2wml/badge.svg?branch=master)]
+
 * [Running T2WML for development](#development)
 * [Usage with GUI](#usage_with_gui)
 * [Writing T2WML](#writing_t2wml)
