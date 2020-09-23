@@ -42,8 +42,9 @@ class WikidataEntry(db.Model):
 
 
 class DatabaseProvider(FallbackSparql):
-    def __init__(self, sparql_endpoint):
-        super().__init__(sparql_endpoint)
+    def __init__(self, project):
+        self.project=project
+        super().__init__(project.sparql_endpoint)
 
     def save_entry(self, wd_id, data_type, label=None, description=None, **kwargs):
         return WikidataEntry.add_or_update(wd_id, data_type, label, description, do_session_commit=False)
