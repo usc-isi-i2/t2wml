@@ -13,8 +13,7 @@ import { faPencilAlt, faSearch, faSortUp, faSortDown, faTrashAlt, faFolderOpen }
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 
 import DeleteProject from './delete-project';
-import RenameProject from './rename-project';
-import DownloadProject from './dowmload-project';
+import RenameProject from './rename-project'
 import ToastMessage from '../common/toast';
 
 // console.log
@@ -29,11 +28,9 @@ const { shell } = require('electron')
 
 interface ProjectListState {
   showSpinner: boolean;
-  showDownloadProject: boolean;
   showRenameProject: boolean;
   showDeleteProject: boolean;
   deletingProjectPath: string;
-  downloadingProjectPath: string;
 
   // user
   userData: any,
@@ -73,11 +70,9 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // appearance
       showSpinner: false,
-      showDownloadProject: false,
       showRenameProject: false,
       showDeleteProject: false,
       deletingProjectPath: "",
-      downloadingProjectPath: "",
 
       // user
       userData: {},
@@ -131,49 +126,6 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
 
-  handleDownloadProject(path = "") {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    if (path === "") {
-      path = this.state.downloadingProjectPath;
-      if (path === "") return;
-    }
-
-    // before sending request
-    this.setState({ showDownloadProject: false });
-
-    // send request
-    console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadProject(path).then(json => {
-      console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-        // success
-        // TODO: download all files
-
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      // console.log(error);
-      error.errorDescription += "\n\nCannot download project!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot download project!\n\n" + error);
-
-      // follow-ups (failure)
-      // nothing
-    });
-  }
-
-  cancelDownloadProject() {
-    this.setState({ showDownloadProject: false, downloadingProjectPath: "" });
-  }
 
   async handleRenameProject(name: string) {
     this.setState({ errorMessage: {} as ErrorMessage });
@@ -326,7 +278,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 </span>
               </OverlayTrigger>
 
-              {/* download */}
+              {/* open in filesystem */}
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
@@ -471,11 +423,6 @@ class ProjectList extends Component<{}, ProjectListState> {
           showDeleteProject={this.state.showDeleteProject} 
           handleDeleteProject={() => this.handleDeleteProject()}
           cancelDeleteProject={() => this.cancelDeleteProject()}
-        />
-        <DownloadProject 
-          showDownloadProject={this.state.showDownloadProject} 
-          handleDownloadProject={() => this.handleDownloadProject()}
-          cancelDownloadProject={() => this.cancelDownloadProject()}
         />
         <RenameProject 
           showRenameProject={this.state.showRenameProject}
