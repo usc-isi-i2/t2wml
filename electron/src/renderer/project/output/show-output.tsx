@@ -79,7 +79,6 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
       // value and unit
       let valueDiv: any = this.props.value;
-      debugger
       if (this.props.unitName) {
         const tester = this.props.unitID as string
         if (/^[PQ]\d+$/.test(tester)) {
