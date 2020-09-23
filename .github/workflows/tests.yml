@@ -27,7 +27,8 @@ jobs:
         run: |
           pip install coverage
           cd backend
-          coverage run --omit tests/**,t2wml-api/** -m pytest tests
+          coverage run --source=t2wml -m pytest tests
+          #           coverage run --omit tests/**,t2wml-api/** -m pytest tests
           coverage report
       - name: Upload coverall results
         env:
