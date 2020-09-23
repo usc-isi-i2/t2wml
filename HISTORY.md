@@ -1,6 +1,22 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.3.7:
+------------------------
+* upgrade to t2wml-api version wip
+* get rid of project database, handle files entirely via project file
+* downloaded file name based on project name (insread of results.tsv, results.json)
+* delete projects by sending to trash rather than deleting directly
+* replace download button with open in filesystem button
+* bug fixes:
+    * reloading the app would cause previously viewed project to rapidly flash in display
+    * synchronization errors between database and filesystem (resolved by getting rid of database)
+    * download results always displayed error, even if there was none
+    * scroll bar too thin to select properly
+    * various compilation warnings removed
+    * rename project would lock up
+
+
 Changes in version 2.3.6:
 ------------------------
 * t2wml-api version change 0.0.13
