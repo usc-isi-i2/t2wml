@@ -24,7 +24,7 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import { Project } from '../data/projects';
 
-const { shell } = require('electron')
+import {shell} from 'electron';
 
 interface ProjectListState {
   showSpinner: boolean;
