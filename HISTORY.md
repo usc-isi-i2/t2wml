@@ -5,6 +5,7 @@ Changes in version 2.3.7:
 ------------------------
 * upgrade to t2wml-api version wip
 * get rid of project database, handle files entirely via project file
+* custom entity definitions are now project-specific
 * downloaded file name based on project name (insread of results.tsv, results.json)
 * delete projects by sending to trash rather than deleting directly
 * replace download button with open in filesystem button
