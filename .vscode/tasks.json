@@ -15,13 +15,19 @@
             "type": "npm",
             "script": "dev",
             "path": "electron/",
-            "problemMatcher": [{
-                "base": "$ts-checker5-eslint-webpack-watch",
-                "fileLocation": ["relative", "${workspaceFolder}/electron"]
-            }],
+            "problemMatcher": [],
             "isBackground": true,
             "label": "Build and Watch GUI",
             "detail": "Continuously builds the frontend"
+        },
+        {
+            "type": "npm",
+            "script": "lint-watch",
+            "path": "electron/",
+            "problemMatcher": ["$eslint-stylish"],
+            "isBackground": true,
+            "label": "Lint and Watch GUI",
+            "detail": "Look for errors and warnings in the entire code base"
         },
         {
             "type": "shell",
@@ -36,5 +42,13 @@
             },
             "problemMatcher": []
         },
+        {
+            "type": "npm",
+            "script": "lint",
+            "path": "electron/",
+            "problemMatcher": [],
+            "label": "npm: lint - electron",
+            "detail": "eslint --ext *.ts --ext *.tsx src"
+        }
     ]
 }
