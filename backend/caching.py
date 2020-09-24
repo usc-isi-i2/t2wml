@@ -17,9 +17,6 @@ class Cacher:
 
     @property
     def cache_path(self):
-        return self.get_cache_path()
-
-    def get_cache_path(self):
         api_project_str=str(self.project.__dict__)
         cache_hash=sha256(api_project_str.encode('utf-8'))
         m_time_str = str(os.path.getmtime(self.yaml_file_path))+str(os.path.getmtime(self.data_file_path))

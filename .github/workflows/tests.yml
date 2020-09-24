@@ -22,17 +22,17 @@ jobs:
       - name: Run Tests
         run: |
           cd backend
-          pytest tests     
-       # This step should be enabled when SLACK_WEBHOOK_URL is added to the repo
-      # - name: Report to Slack
-      #   uses: 8398a7/action-slack@v3
-      #   with:
-      #     status: ${{ job.status }}
-      #     fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
-      #   env:
-      #     GITHUB_TOKEN: ${{ github.token }} # optional
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-      #   if: always() # Pick up events even if the job fails or is canceled.
-
-
-
+          pytest tests
+      - name: Coverage
+        run: |
+          pip install coverage
+          cd backend
+          coverage run -m pytest tests
+          #           coverage run --omit tests/**,t2wml-api/** -m pytest tests
+          coverage report
+      - name: Upload coverall results
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+        run: |
+          pip install coveralls
+          coveralls

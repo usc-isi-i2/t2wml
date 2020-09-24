@@ -45,11 +45,11 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
 
   componentDidMount() {
     // Talya - find out how to write this the correct way
-    (this.tempQnodeEditorRef as HTMLInputElement).addEventListener('keydown', this.handleKeyDown);
+    (this.tempQnodeEditorRef.current as HTMLInputElement).addEventListener('keydown', this.handleKeyDown);
   }
 
   componentWillUnmount() {
-    (this.tempQnodeEditorRef as HTMLInputElement).removeEventListener('keydown', this.handleKeyDown);
+    (this.tempQnodeEditorRef.current as HTMLInputElement).removeEventListener('keydown', this.handleKeyDown);
   }
 
   createInitState(props: qnodeProperties) {
@@ -85,7 +85,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
 
   afterGuiAttached() {
     // get ref from React component
-    const eInput = this.tempQnodeEditorRef as HTMLInputElement;
+    const eInput = this.tempQnodeEditorRef.current as HTMLInputElement;
     (eInput).focus();
     if (this.state.highlightAllOnFocus) {
       eInput.select();

@@ -8,7 +8,7 @@ from string import punctuation
 from flask import request
 from SPARQLWrapper import SPARQLWrapper, JSON
 import web_exceptions
-from wikidata_models import WikidataEntry
+from wikidata_models import WikidataEntity
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
 wikidata_label_query_cache = {}
@@ -52,7 +52,7 @@ def get_labels_and_descriptions(items, sparql_endpoint):
     response = dict()
     missing_items = []
     for item in items:
-        wp = WikidataEntry.query.filter_by(wd_id=item).first()
+        wp = WikidataEntity.query.filter_by(wd_id=item).first()
         if wp:
             label = desc = ""
             if wp.label:
@@ -70,10 +70,10 @@ def get_labels_and_descriptions(items, sparql_endpoint):
         response.update(additional_items)
         try:
             for item in additional_items:
-                WikidataEntry.add_or_update(item, do_session_commit=False, **additional_items[item])
+                WikidataEntity.add_or_update(item, do_session_commit=False, **additional_items[item])
         except Exception as e:
             print(e)
-        WikidataEntry.do_commit()
+        WikidataEntity.do_commit()
 
     except:  # eg 502 bad gateway error
         pass
@@ -121,36 +121,6 @@ def file_upload_validator(file_extensions):
 
     return in_file
 
-
-def get_project_details():
-    from models import Project
-
-    #temporary fix for double IDs that didn't get deleted:
-    project_dirs=defaultdict(list)
-    for project in Project.query.order_by(Project.modification_date.desc()).all():
-        project_dirs[project.directory].append(project)
-    for dir, projects in project_dirs.items():
-        if len(projects)>1:
-            projects.sort(key= lambda x:x.modification_date)
-        for project in projects[1:]:
-            Project.delete(project.id)
-
-    projects = list()
-    for project in Project.query.order_by(Project.modification_date.desc()).all():
-        if os.path.isdir(project.directory):
-            project_detail = dict()
-            project_detail["pid"] = project.id
-            project_detail["directory"] = project.directory
-            project_detail["ptitle"] = project.name
-            project_detail["cdate"] = str(project.creation_date)
-            project_detail["mdate"] = str(project.modification_date)
-            projects.append(project_detail)
-        else:
-            Project.delete(project.id)
-    
-    return projects
-
-
 def table_data(calc_params):
     sheet_names = calc_params.sheet_names
     sheet_name = calc_params.sheet_name
@@ -190,3 +160,15 @@ def sheet_to_json(calc_params):
     # add to the response
     json_data['rowData'] = initial_json
     return json_data
+
+def save_file(project_folder, in_file):
+        folder = project_folder
+        filename=Path(in_file.filename).name #otherwise secure_filename does weird things on linux
+        file_path = Path(folder) /filename
+        in_file.save(str(file_path))
+        return file_path
+
+def save_dataframe(project_folder, df, name):
+    file_path = str(Path(project_folder) / (name+".csv"))
+    df.to_csv(file_path)
+    return file_path

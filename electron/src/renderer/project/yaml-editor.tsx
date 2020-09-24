@@ -81,6 +81,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // }
     try {
       const json = await this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData);
+      console.debug('Uploaidng yaml ', this.state.yamlText);
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -113,7 +114,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.table.isCellSelectable = false;
 
     // Talya: find out what's the right way to do this
-    const yamlText = (this.monacoRef as any).editor.getModel().getValue();
+    const yamlText = (this.monacoRef.current as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
       const yamlJson = (yaml.safeLoad(yamlText) as JSON);

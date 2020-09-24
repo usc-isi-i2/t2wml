@@ -7,14 +7,13 @@ import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faSearch, faSortUp, faSortDown, faTrashAlt, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 
 import DeleteProject from './delete-project';
-import RenameProject from './rename-project';
-import DownloadProject from './dowmload-project';
+import RenameProject from './rename-project'
 import ToastMessage from '../common/toast';
 
 // console.log
@@ -25,13 +24,13 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import { Project } from '../data/projects';
 
+import {shell} from 'electron';
+
 interface ProjectListState {
   showSpinner: boolean;
-  showDownloadProject: boolean;
   showRenameProject: boolean;
   showDeleteProject: boolean;
   deletingProjectPath: string;
-  downloadingProjectPath: string;
 
   // user
   userData: any,
@@ -63,11 +62,9 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // appearance
       showSpinner: false,
-      showDownloadProject: false,
       showRenameProject: false,
       showDeleteProject: false,
       deletingProjectPath: "",
-      downloadingProjectPath: "",
 
       // user
       userData: {},
@@ -103,66 +100,21 @@ class ProjectList extends Component<{}, ProjectListState> {
       return;
     }
 
-    try {
-      await this.requestService.deleteProject(project.folder);  // rimraf and fs.rmDir both hang for some reason
-      wikiStore.projects.refreshList();
-    } catch(error) {
+    const succeeded= shell.moveItemToTrash(project.folder);
+    if (!succeeded){
       const err = {
         errorCode: -1,
         errorTitle: "Can't delete project",
-        errorDescription: error.toString(),
+        errorDescription: "Can't delete project",
       }
       this.setState({ errorMessage: err });
     }
+    wikiStore.projects.refreshList();
     this.setState( { showSpinner: false });
   }
 
   cancelDeleteProject() {
     this.setState({ showDeleteProject: false, deletingProjectPath: "" });
-  }
-
-
-  async handleDownloadProject(path = "") {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    if (path === "") {
-      path = this.state.downloadingProjectPath;
-      if (path === "") return;
-    }
-
-    // before sending request
-    this.setState({ showDownloadProject: false });
-
-    // send request
-    console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
-    try {
-      const json = await this.requestService.downloadProject(path);
-      console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-        // success
-        // TODO: download all files
-
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    } catch(error) {
-      error.errorDescription += "\n\nCannot download project!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
-      // nothing
-    }
-  }
-
-  cancelDownloadProject() {
-    this.setState({ showDownloadProject: false, downloadingProjectPath: "" });
   }
 
   async handleRenameProject(name: string) {
@@ -185,6 +137,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       if (json['error'] !== null){
         console.warn('Renaming a project returned an error: ', json);
       }
+      this.setState({ showRenameProject: false, showSpinner: false });
       wikiStore.projects.refreshList();
     } catch(error) {
       // console.log(error);
@@ -315,23 +268,23 @@ class ProjectList extends Component<{}, ProjectListState> {
                 </span>
               </OverlayTrigger>
 
-              {/* download */}
+              {/* open in filesystem */}
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="download">
-                    <span className="text-left small">Download</span>
+                    <span className="text-left small">Show in filesystem</span>
                   </Tooltip>
                 }
               >
                 <span
                   className="action-download"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDownloadProject: true, downloadingProjectPath: project.folder })}
+                  onClick={() => shell.showItemInFolder(project.folder)}
                 >
-                  <FontAwesomeIcon icon={faCloudDownloadAlt} />
+                  <FontAwesomeIcon icon={faFolderOpen} />
                 </span>
               </OverlayTrigger>
 
@@ -460,11 +413,6 @@ class ProjectList extends Component<{}, ProjectListState> {
           showDeleteProject={this.state.showDeleteProject} 
           handleDeleteProject={() => this.handleDeleteProject()}
           cancelDeleteProject={() => this.cancelDeleteProject()}
-        />
-        <DownloadProject 
-          showDownloadProject={this.state.showDownloadProject} 
-          handleDownloadProject={() => this.handleDownloadProject()}
-          cancelDownloadProject={() => this.cancelDownloadProject()}
         />
         <RenameProject 
           showRenameProject={this.state.showRenameProject}
