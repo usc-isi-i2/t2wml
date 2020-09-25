@@ -22,11 +22,14 @@
         },
         {
             "type": "npm",
-            "script": "lint-watch",
+            "script": "watch",
             "path": "electron/",
-            "problemMatcher": ["$eslint-stylish"],
+            "problemMatcher": ["$eslint-stylish", {
+                "base": "$tsc-watch",
+                "fileLocation": ["relative", "${workspaceFolder}/electron"]
+            }],
             "isBackground": true,
-            "label": "Lint and Watch GUI",
+            "label": "Watch for GUI Errors",
             "detail": "Look for errors and warnings in the entire code base"
         },
         {

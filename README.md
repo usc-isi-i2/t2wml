@@ -103,7 +103,7 @@ To develop the GUI you need to run three tasks:
 
 1. `Backend` - runs the Python backend.
 2. `Build and Watch GUI` - this task runs the npm `dev` script which builds the GUI and contiously watches for changes.
-3. `Lint and Watch GUI` - this tasks continuously scans the sources for errors and updates the Problems pane.
+3. `Watch for GUI errors` - this tasks continuously scans the sources for errors and updates the Problems pane.
 3. `Start GUI` - opens the Electron based GUI.
 
 The GUI will not work unless the backend is up and running.
