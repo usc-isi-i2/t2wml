@@ -95,8 +95,6 @@ Note that in development, the GUI will wait for the backend to start on port 130
 ## Using Visual Studio Code
 The project has preconfigured settings file for Visual Studio Code. Before starting you need to copy the settings template appropriate for your OS.
 
-Note: you will need to install the 'TypeScript + Webpack Problem Matchers' Visual Studio Code extension, otherwise compilation errors are not going to appear in the Problems pane properly.
-
 On Macs and Linux machines, copy `.vscode/settings.linux.json` to `.vscode/settings.json` . On Windows, copy `.vscode/settings.windows.json` to `.vscode/settings.json`
 Start Visual Studio Code and open it in the t2wml-root/t2wml directory.
 
@@ -105,6 +103,7 @@ To develop the GUI you need to run three tasks:
 
 1. `Backend` - runs the Python backend.
 2. `Build and Watch GUI` - this task runs the npm `dev` script which builds the GUI and contiously watches for changes.
+3. `Lint and Watch GUI` - this tasks continuously scans the sources for errors and updates the Problems pane.
 3. `Start GUI` - opens the Electron based GUI.
 
 The GUI will not work unless the backend is up and running.
