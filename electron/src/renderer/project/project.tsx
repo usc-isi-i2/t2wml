@@ -90,6 +90,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     // before fetching project files
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
+    wikiStore.output.isDownloadDisabled = true;
 
     // fetch project files
     console.debug('Refreshing project ', this.props.path);
