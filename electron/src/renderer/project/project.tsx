@@ -118,6 +118,9 @@ class Project extends Component<ProjectProps, ProjectState> {
       if (yamlData !== null) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
+
+        // Save data regions (enable get the output to these cells).
+        wikiStore.table.dataRegionsCells = yamlData.yamlRegions.dataRegion.list;
       } else {
         wikiStore.table.isCellSelectable = false;
       }

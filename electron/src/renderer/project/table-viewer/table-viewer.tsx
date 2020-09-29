@@ -247,7 +247,7 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  async handleSelectCell(params: any) {
+  async handleSelectCell(params: any) { 
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
@@ -266,6 +266,11 @@ class TableViewer extends Component<{}, TableState> {
 
     // else, normal cell
     this.updateSelectedCell(colName, rowName, value);
+
+    // Check if this cell in data region list (in green cells)
+    if (!wikiStore.table.dataRegionsCells.includes(colName+rowName) ) {
+      return
+    }
 
     // before sending request
     if (!wikiStore.table.isCellSelectable) return;
