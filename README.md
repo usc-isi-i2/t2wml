@@ -2,7 +2,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/usc-isi-i2/t2wml/badge.svg?branch=master&service=github)](https://coveralls.io/github/usc-isi-i2/t2wml)
 
-* [Running T2WML for development](#development)
+* [Running T2WML for Development](#development)
 * [Usage with GUI](#usage_with_gui)
 * [Writing T2WML](#writing_t2wml)
 * [Features](#features)
@@ -17,7 +17,7 @@ This is the repository for the T2WMl server-based GUI. You may be looking for th
 
 
 
-## Setting up for Development
+## Running T2WML for Development
 <span id="development"></span>  
 
 ### Setting up the sources
@@ -63,15 +63,15 @@ pip install -r requirements.txt
 
 Note: Python 3.6 and higher are supported.
 
-## Running outside of an IDE
-### Running the backend
+### Running outside of an IDE
+#### Running the backend
 
 ```
 cd t2wml-root/t2wml/backend
 python t2wml-server.py
 ```
 
-### Running the frontend GUI
+#### Running the frontend GUI
 Since we're using Electron, you need to run two scripts to run the GUI on development:
 
 ```sh
@@ -92,13 +92,13 @@ This script starts Electron, and you should see the GUI.
 
 Note that in development, the GUI will wait for the backend to start on port 13000, so you will need to run it.
 
-## Using Visual Studio Code
+### Using Visual Studio Code
 The project has preconfigured settings file for Visual Studio Code. Before starting you need to copy the settings template appropriate for your OS.
 
 On Macs and Linux machines, copy `.vscode/settings.linux.json` to `.vscode/settings.json` . On Windows, copy `.vscode/settings.windows.json` to `.vscode/settings.json`
 Start Visual Studio Code and open it in the t2wml-root/t2wml directory.
 
-### GUI Development
+#### GUI Development
 To develop the GUI you need to run three tasks:
 
 1. `Backend` - runs the Python backend.
@@ -112,7 +112,7 @@ When updating the GUI code, it will be automatically rebuilt by the `Build and W
 
 You can also open the Chrome Developers Tools from the GUI's `Debug` menu.
 
-### Backend Development
+#### Backend Development
 To develop the backend, you need to launch the `Backend` from the debug menu. You will be able to set breakpoints and debug properly. If you want to run the GUI, start the `Build and Watch GUI` and `t2wml GUI` tasks, as well.
 
 ## Usage with GUI
@@ -138,7 +138,7 @@ To develop the backend, you need to launch the `Backend` from the debug menu. Yo
 ## Writing T2WML
 <span id="writing_t2wml"></span>
 
-Check out the [grammar guide](docs/grammar.md)
+Check out the [grammar guide](https://github.com/usc-isi-i2/t2wml-api/blob/master/docs/grammar.md)
 
 
 ## Features
