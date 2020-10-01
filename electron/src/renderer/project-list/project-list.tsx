@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 
 import './project-list.css';
@@ -7,12 +7,11 @@ import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faSearch, faSortUp, faSortDown, faTrashAlt, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faSearch, faSortUp, faSortDown, faTimes, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 
-import DeleteProject from './delete-project';
 import RenameProject from './rename-project'
 import ToastMessage from '../common/toast';
 
@@ -29,7 +28,6 @@ import {shell} from 'electron';
 interface ProjectListState {
   showSpinner: boolean;
   showRenameProject: boolean;
-  showDeleteProject: boolean;
   deletingProjectPath: string;
 
   // user
@@ -63,7 +61,6 @@ class ProjectList extends Component<{}, ProjectListState> {
       // appearance
       showSpinner: false,
       showRenameProject: false,
-      showDeleteProject: false,
       deletingProjectPath: "",
 
       // user
@@ -86,35 +83,15 @@ class ProjectList extends Component<{}, ProjectListState> {
     document.title = "T2WML - Projects";
   }
 
-  async handleDeleteProject(path = "") {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    if (path === "") {
-      path = this.state.deletingProjectPath;
-      if (path === "") return;
-    }
-
-    this.setState({ showSpinner: true, showDeleteProject: false });
+  handleDeleteProject(path: string) {    
     const project = wikiStore.projects.find(path);
     if (!project) {
       console.warn(`No project for ${path} in project list`);
       return;
     }
 
-    const succeeded= shell.moveItemToTrash(project.folder);
-    if (!succeeded){
-      const err = {
-        errorCode: -1,
-        errorTitle: "Can't delete project",
-        errorDescription: "Can't delete project",
-      }
-      this.setState({ errorMessage: err });
-    }
+    ipcRenderer.send('remove-project', path);
     wikiStore.projects.refreshList();
-    this.setState( { showSpinner: false });
-  }
-
-  cancelDeleteProject() {
-    this.setState({ showDeleteProject: false, deletingProjectPath: "" });
   }
 
   async handleRenameProject(name: string) {
@@ -302,9 +279,9 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-delete"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDeleteProject: true, deletingProjectPath: project.folder })}
+                  onClick={() => this.handleDeleteProject(project.folder)}
                 >
-                  <FontAwesomeIcon icon={faTrashAlt} />
+                  <FontAwesomeIcon icon={faTimes} />
                 </span>     
               </OverlayTrigger>
             </td>
@@ -408,21 +385,14 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   renderModals() {
     return (
-      <Fragment>
-         <DeleteProject 
-          showDeleteProject={this.state.showDeleteProject} 
-          handleDeleteProject={() => this.handleDeleteProject()}
-          cancelDeleteProject={() => this.cancelDeleteProject()}
-        />
-        <RenameProject 
-          showRenameProject={this.state.showRenameProject}
-          showSpinner={this.state.showSpinner}
-          tempRenameProject={this.state.tempRenameProject}
-          isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
-          handleRenameProject={(name) => this.handleRenameProject(name)}
-          cancelRenameProject={() => this.cancelRenameProject()}
-        />
-      </Fragment>
+      <RenameProject 
+        showRenameProject={this.state.showRenameProject}
+        showSpinner={this.state.showSpinner}
+        tempRenameProject={this.state.tempRenameProject}
+        isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
+        handleRenameProject={(name) => this.handleRenameProject(name)}
+        cancelRenameProject={() => this.cancelRenameProject()}
+      />
     );
   }
 
