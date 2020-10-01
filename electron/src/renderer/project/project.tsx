@@ -65,9 +65,10 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    console.log("project- componentDidMount");
     if (this.props.path) {
-      await this.loadProject();
+      this.loadProject();
     } else {
       console.error("There is no project id.")
     }
@@ -76,13 +77,14 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   componentWillUnmount() {
+    console.log("project- componentWillUnmount");
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
   }
 
-  async componentDidUpdate(prevProps: ProjectProps) {
+  componentDidUpdate(prevProps: ProjectProps) {
     if (this.props.path !== prevProps.path) {
-      await this.loadProject();
+      this.loadProject();
     }
   }
 
@@ -103,8 +105,13 @@ class Project extends Component<ProjectProps, ProjectState> {
       const { tableData, yamlData, wikifierData, settings } = json;
 
       // load table data
-      wikiStore.table.updateTableData(tableData);
-
+      if (tableData) {
+        wikiStore.table.updateTableData(tableData);
+      } else {// else: reset data
+        wikiStore.table.updateTableData();
+      }
+      
+      // todo: reset output window
       // load wikifier data
       if (wikifierData !== null) {
         wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
@@ -147,8 +154,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
   }
 
-  async onRefreshProject() {
-    await this.loadProject();
+  onRefreshProject() {
+    this.loadProject();
   }
 
   async onShowSettingsClicked() {

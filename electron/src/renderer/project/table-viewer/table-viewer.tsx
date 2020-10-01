@@ -508,6 +508,7 @@ class TableViewer extends Component<{}, TableState> {
       tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
     }
 
+    console.log("before update the state, file name=", this.state.filename);
     this.setState({
       filename: tableData?.filename || null,
       isCSV: tableData?.isCSV || false,
@@ -516,6 +517,7 @@ class TableViewer extends Component<{}, TableState> {
       columnDefs: tableData?.sheetData?.columnDefs || columns,
       rowData: tableData?.sheetData?.rowData || rows
     });
+    console.log("-----updateTableData---- after update: this.state", this.state)
     // this.gridColumnApi.autoSizeAllColumns();
   }
 

@@ -16,7 +16,7 @@ class TabletState {
     @observable public dataRegionsCells: string[];
     @observable public updateYamlRegions: (newYamlRegions?: any) => void;
     @observable public updateQnodeCells: (qnodes?: any, rowData?: any) => void;
-    @observable public updateTableData: (tableData: any) => void; // tableData as type TableData
+    @observable public updateTableData: (tableData?: any) => void; // tableData as type TableData
     @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) => void;
     @observable public handleOpenWikifierFile:(event: any) => void;
     
