@@ -12,7 +12,7 @@ class WikidataEntity(db.Model):
     cache_id=db.Column(db.String(64), nullable=True)
 
     @staticmethod
-    def add_or_update(wd_id, data_type=None, label=None, description=None, P31=None, cache_id=None, do_session_commit=True):
+    def add_or_update(wd_id, data_type=None, label=None, description=None, P31=None, cache_id=None, do_session_commit=True, **kwargs):
         wd = WikidataEntity.query.filter_by(wd_id=wd_id, cache_id=cache_id).first()
         if wd:
             added = False

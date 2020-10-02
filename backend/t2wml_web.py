@@ -1,6 +1,3 @@
-import os
-import json
-from pathlib import Path
 from collections import defaultdict
 from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToInput
 from t2wml.api import Sheet, WikifierService, t2wml_settings
@@ -17,20 +14,22 @@ def wikify(calc_params, region, context):
 
 
 def update_t2wml_settings(project):
-    t2wml_settings.sparql_endpoint=project.sparql_endpoint
+    t2wml_settings.sparql_endpoint = project.sparql_endpoint
     t2wml_settings.wikidata_provider = DatabaseProvider(project)
-    t2wml_settings.warn_for_empty_cells=project.warn_for_empty_cells
+    t2wml_settings.warn_for_empty_cells = project.warn_for_empty_cells
     t2wml_settings.cache_data_files = True
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
 
+
 def get_kg(calc_params):
-    kg=calc_params.get_kg()
+    kg = calc_params.get_kg()
     db.session.commit()  # save any queried properties
     return kg
-    
+
 
 def download(calc_params, filetype):
-    cache_holder=calc_params.cache
+    cache_holder = calc_params.cache
+
     response = dict()
     kg = cache_holder.result_cacher.get_kg()
     if not kg:
@@ -114,7 +113,7 @@ def get_cell(calc_params, col, row):
     try:
         #get cell statement
         row = int(row)
-        col = column_letter_to_index(col)+1
+        col = column_letter_to_index(col) + 1
         statement, errors = cache_holder.cell_mapper.get_cell_statement(
             sheet, wikifier, col, row)
         data = {'statement': statement,
@@ -144,9 +143,6 @@ def get_cell(calc_params, col, row):
     return data
 
 
-
-
-
 def handle_yaml(calc_params):
     if calc_params.yaml_path:
         yaml_path = calc_params.yaml_path
@@ -155,21 +151,20 @@ def handle_yaml(calc_params):
             response["yamlFileContent"] = f.read()
         try:
             response['yamlRegions'] = highlight_region(calc_params)
-        except Exception as e: #this is something of a stopgap measure for now. need to do it properly later.
+        except Exception as e:  # this is something of a stopgap measure for now. need to do it properly later.
             orange = '#FF8000'
             red = '#FF3333'
-            response['yamlRegions']  = {
-                "dataRegion": {"color": "hsl(150, 50%, 90%)", "list":[]},
+            response['yamlRegions'] = {
+                "dataRegion": {"color": "hsl(150, 50%, 90%)", "list": []},
                 "item": {"color": "hsl(200, 50%, 90%)", "list": []},
                 "qualifierRegion": {"color": "hsl(250, 50%, 90%)", "list": []},
                 'referenceRegion': {"color": "yellow", "list": []},
-                'dangerCells' : {'color': orange, 'list': []},
-                'errorCells' : {'color': red, 'list': []},
+                'dangerCells': {'color': orange, 'list': []},
+                'errorCells': {'color': red, 'list': []},
                 'error': dict()}
-            #response['error']="Invalid YAML" #for now the UI is not good for this. once we separate the calls...
+            # response['error']="Invalid YAML" #for now the UI is not good for this. once we separate the calls...
         return response
     return None
-
 
 
 def serialize_item_table(calc_params):

@@ -104,6 +104,11 @@ class RequestService {
     const response = await backendPost(`/project/entity?project_folder=${folder}`, formData);
     return response;
   }
+  
+  public async loadToDatamart(folder: string) {
+    const response = await backendGet(`/project/datamart?project_folder=${folder}`);
+    return response;
+  }
 
 }
 

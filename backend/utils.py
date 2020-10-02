@@ -1,5 +1,5 @@
 import os
-from collections import defaultdict
+import csv
 import json
 import pandas as pd
 from t2wml.spreadsheets.conversions import column_index_to_letter
@@ -168,7 +168,25 @@ def save_file(project_folder, in_file):
         in_file.save(str(file_path))
         return file_path
 
-def save_dataframe(project_folder, df, name):
-    file_path = str(Path(project_folder) / (name+".csv"))
-    df.to_csv(file_path)
-    return file_path
+def save_dataframe(project, df, file_name, kgtk=False):
+    #entities and wikifiers
+    folder = project.directory
+    filepath = str( Path(folder) / file_name)
+    if kgtk:
+        df.to_csv(filepath, sep='\t', index=False, quoting=csv.QUOTE_NONE)
+    else:
+        df.to_csv(filepath, index=False)
+    return filepath
+
+def save_yaml(project, yaml_data, yaml_title=None):
+    sheet_name = project.current_sheet #TODO: FIX
+    if not yaml_title:
+        yaml_title=sheet_name+".yaml"
+    
+    file_path= Path(project.directory) / yaml_title 
+    with open(file_path, 'w', newline='', encoding="utf-8") as f:
+            f.write(yaml_data)
+
+    project.add_yaml_file(file_path, project.current_data_file, sheet_name)
+    project.update_saved_state(current_yaml=file_path)
+    project.save()

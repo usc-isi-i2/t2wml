@@ -39,6 +39,7 @@ interface OutputState {
   showDownload: boolean,
   isDownloadDisabled: boolean,
   isDownloading: boolean;
+  isLoadDatamart: boolean;
 
   propertyName: string;
   errorMessage: ErrorMessage;
@@ -76,6 +77,7 @@ class Output extends Component<{}, OutputState> {
       showDownload: false,
       isDownloadDisabled: wikiStore.output.isDownloadDisabled,
       isDownloading: false,
+      isLoadDatamart: false,
 
       errorMessage: {} as ErrorMessage,
     } as OutputState;
@@ -95,6 +97,7 @@ class Output extends Component<{}, OutputState> {
 
     // before sending request
     this.setState({ isDownloading: true, showDownload: false });
+
     // send request
     console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
 
@@ -178,7 +181,7 @@ class Output extends Component<{}, OutputState> {
     if(json["error"]) {
         this.setState({errors: JSON.stringify(json["error"])});
     }
-    
+
     this.setState({
       valueCol: colName,
       valueRow: rowName
@@ -191,7 +194,7 @@ class Output extends Component<{}, OutputState> {
     const itemID = json["statement"]["item"];
     // const itemName = window.TableViewer.state.rowData[row][col];
     this.setState({ itemID: itemID, itemName: qnodesLabel[itemID]["label"] });
-    
+
     if (json["statement"]["cell"]) {
       const [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
       wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
@@ -271,6 +274,33 @@ class Output extends Component<{}, OutputState> {
   }
 
 
+  loadToDatamart() {
+    // TODO !
+    wikiStore.output.showSpinner = true;
+    wikiStore.table.showSpinner = true;
+    this.setState({ isLoadDatamart: true });
+    console.log("Load to Datamart");
+    this.requestService.loadToDatamart(this.projectPath).then((json) => {
+        console.log(json);
+        const { datamart_get_url, description } = json;
+        if (datamart_get_url !== undefined) {
+            alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
+            // prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
+        } else {
+            alert("Failed to load to Datamart\nError: " + description)
+        }
+    }).catch((error: any) => {
+        console.log(error);
+        const { errorTitle, errorDescription } = error;
+        if (errorTitle !== undefined) {
+            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription)
+        }
+    });
+    this.setState({ isLoadDatamart: false });
+    wikiStore.output.showSpinner = false;
+    wikiStore.table.showSpinner = true;
+  }
+
   render() {
     return (
       <div className="w-100 h-100 p-1">
@@ -287,15 +317,25 @@ class Output extends Component<{}, OutputState> {
             {/* title */}
             <div
               className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 90px)", cursor: "default" }}
+              style={{ width: "calc(100% - 290px)", cursor: "default" }}
             >Output</div>
+
+            <Button
+              className="d-inline-block float-right"
+              variant="outline-light"
+              size="sm"
+              style={{ padding: "0rem 0.5rem" }}
+              onClick={() => this.loadToDatamart()}
+            >
+              {this.state.isLoadDatamart ? <Spinner as="span" animation="border" size="sm" /> : "Load to Datamart"}
+            </Button>
 
             {/* button to download */}
             <Button
               className="d-inline-block float-right"
               variant="outline-light"
               size="sm"
-              style={{ padding: "0rem 0.5rem", width: "83px" }}
+              style={{padding: "0rem 0.5rem", marginRight: "0.5rem" }}
               onClick={() => this.setState({ showDownload: true })}
               disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >

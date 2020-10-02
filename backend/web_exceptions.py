@@ -20,7 +20,7 @@ class ProjectNotFoundException(WebException):
     message = "Project not found"
 
 class ProjectAlreadyExistsException(WebException):
-    message = "A project already exists at this location"
+    message = "Cannot create new project in folder with existing project"
 
 class NoFilePartException(WebException):
     message = "Missing file parameter in the upload request"
@@ -57,8 +57,11 @@ class WikifyWithoutDataFileException(WebException):
 class FileTypeNotSupportedException(WebException):
     message = "This file type is currently not supported"
 
-# possibly to be deleted
-
 
 class InvalidYAMLFileException(WebException):
     message = "YAML file is either empty or not valid"
+
+class NoSuchDatasetIDException(WebException):
+    code=404
+    message="The dataset ID specified in cell B1 does not exist"
+

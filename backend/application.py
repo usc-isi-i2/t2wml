@@ -1,8 +1,8 @@
 import json
 import os
 import sys
-import shutil
 from pathlib import Path
+import shutil
 from flask import request
 
 from t2wml.utils.t2wml_exceptions import T2WMLException
@@ -13,10 +13,18 @@ from app_config import app
 from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
                        highlight_region, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe,
-                   make_frontend_err_dict, string_is_valid, table_data)
+                   make_frontend_err_dict, string_is_valid, table_data, save_yaml)
 from web_exceptions import WebException
-from t2wml_annotation_integration import AnnotationIntegration
 from calc_params import CalcParams
+from datamart_upload import upload_to_datamart
+from t2wml_annotation_integration import AnnotationIntegration, create_datafile
+
+annotation_integration=False
+try:
+    from local_settings import *
+except:
+    pass
+
 
 debug_mode = False
 
@@ -26,7 +34,8 @@ def get_project(project_folder):
     update_t2wml_settings(project)
     return project
 
-def get_calc_params(project):    
+
+def get_calc_params(project):
     if not project.current_data_file:
         return None
     data_file = Path(project.directory) / project.current_data_file
@@ -82,13 +91,13 @@ def create_project():
     """
 
     project_folder = get_project_folder()
-    #check we're not overwriting existing project
+    # check we're not overwriting existing project
     project_file = Path(project_folder) / "project.t2wml"
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(project_folder)
-    #create project
-    api_proj=apiProject(project_folder)
-    api_proj.title=Path(project_folder).stem
+    # create project
+    api_proj = apiProject(project_folder)
+    api_proj.title = Path(project_folder).stem
     api_proj.save()
 
     response = dict(project=api_proj.__dict__)
@@ -111,7 +120,6 @@ def load_project():
     return response, 201
 
 
-
 @app.route('/api/project', methods=['GET'])
 @json_response
 def get_project_files():
@@ -132,7 +140,7 @@ def get_project_files():
 
     response["name"] = project.title
 
-    calc_params=get_calc_params(project)
+    calc_params = get_calc_params(project)
     if calc_params:
         response["tableData"] = table_data(calc_params)
         response["wikifierData"] = serialize_item_table(calc_params)
@@ -162,7 +170,6 @@ def add_entity_definitions():
     return response, 200
 
 
-
 @app.route('/api/data', methods=['POST'])
 @json_response
 def upload_data_file():
@@ -185,7 +192,45 @@ def upload_data_file():
     project.save()
 
     calc_params=get_calc_params(project)
+
+    calc_params = get_calc_params(project)
     response["tableData"] = table_data(calc_params)
+    sheet = project.current_sheet
+
+    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
+    # and item definitions automatically
+    if annotation_integration:
+        ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
+                                w_requests=request)
+        if ai.is_annotated_spreadsheet(project.directory):
+            dataset_exists = ai.automate_integration(project, response, sheet)
+            if not dataset_exists:
+                # report to user
+                error_dict = {
+                    "errorCode": 404,
+                    "errorTitle": "Datamart Integration Error",
+                    "errorDescription": f"Dataset: \"{ai.dataset}\" does not exist. To create this dataset, "
+                                        f"please provide dataset name in cell C1 \n"
+                                        f"dataset description in cell D1 \n"
+                                        f"and url in cell E1\n\n"
+                }
+                response['error'] = error_dict
+                return response, 404
+        else:  # not annotation file, check if annotation is available
+            annotation_found, new_df = ai.is_annotation_available(project.directory)
+            if annotation_found and new_df is not None:
+                create_datafile(project, new_df, response['tableData']['filename'], response['tableData']['currSheetName'])
+                calc_params = get_calc_params(project)
+                response["tableData"] = table_data(calc_params)
+                sheet = project.current_sheet
+                ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
+                                        df=new_df)
+
+                # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
+                # TODO the users. There has to be a better way to handle it. For Future implementation
+                ai.automate_integration(project, response, sheet)
+
+        calc_params = get_calc_params(project)
     response["wikifierData"] = serialize_item_table(calc_params)
     response["yamlData"] = handle_yaml(calc_params)
     response['project']=project.__dict__
@@ -237,7 +282,7 @@ def upload_wikifier_output():
     project.update_saved_state(current_wikifiers=[file_path])
     project.save()
 
-    calc_params=get_calc_params(project)
+    calc_params = get_calc_params(project)
     if calc_params:
         serialized_item_table = serialize_item_table(calc_params)
         # does not go into field wikifierData but is dumped directly
@@ -263,16 +308,15 @@ def wikify_region():
         if not project.current_data_file:
             raise web_exceptions.WikifyWithoutDataFileException(
                 "Upload data file before wikifying a region")
-        calc_params=get_calc_params(project)
+        calc_params = get_calc_params(project)
 
         cell_qnode_map, problem_cells = wikify(calc_params, region, context)
-        file_path = save_dataframe(project_folder, cell_qnode_map, "wikify_region_output")
-
+        file_path = save_dataframe(project_folder, cell_qnode_map, "wikify_region_output.csv")
         project.add_wikifier_file(file_path)#, copy_from_elsewhere=True, overwrite=True)
         project.update_saved_state(current_wikifiers=[file_path])
         project.save()
-        
-        calc_params=get_calc_params(project)
+
+        calc_params = get_calc_params(project)
         data = serialize_item_table(calc_params)
 
         if problem_cells:
@@ -287,6 +331,7 @@ def wikify_region():
         data['project']=project.__dict__
         return data, 200
     return {}, 404
+
 
 @app.route('/api/yaml', methods=['POST'])
 @json_response
@@ -307,19 +352,7 @@ def upload_yaml():
     if not project.current_data_file:
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload data file before applying YAML.")
-    
-    sheet_name = project.current_sheet #TODO: FIX
-    if not yaml_title:
-        yaml_title=sheet_name+".yaml"
-    
-    file_path= Path(project_folder) / yaml_title 
-    with open(file_path, 'w', newline='', encoding="utf-8") as f:
-            f.write(yaml_data)
-
-    project.add_yaml_file(file_path, project.current_data_file, sheet_name)
-    project.update_saved_state(current_yaml=file_path)
-    project.save()
-
+    save_yaml(project, yaml_data, yaml_title)
     calc_params=get_calc_params(project)
     response['yamlRegions'] = highlight_region(calc_params)
     response['project']=project.__dict__
@@ -337,7 +370,7 @@ def get_cell_statement(col, row):
     project = get_project(project_folder)
     data = {}
 
-    calc_params=get_calc_params(project)
+    calc_params = get_calc_params(project)
     if not calc_params.yaml_path:
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Upload YAML file before resolving cell.")
@@ -354,12 +387,27 @@ def downloader(filetype):
     """
     project_folder = get_project_folder()
     project = get_project(project_folder)
-    calc_params=get_calc_params(project)
+    calc_params = get_calc_params(project)
     if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Cannot download report without uploading YAML file first")
     response = download(calc_params, filetype)
     return response, 200
+
+
+@app.route('/api/project/datamart', methods=['GET'])
+@json_response
+def load_to_datamart():
+    project_folder = get_project_folder()
+    project = get_project(project_folder)
+    calc_params = get_calc_params(project)
+    try:
+        sheet = project.current_sheet
+    except:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Can't upload to datamart without datafile and sheet")
+    data = upload_to_datamart(calc_params)
+    return data, 201
 
 
 @app.route('/api/project', methods=['PUT'])
@@ -398,11 +446,10 @@ def update_settings():
     project.save()
     update_t2wml_settings(project)
     response = {
-        "endpoint":project.sparql_endpoint,
-        "warnEmpty":project.warn_for_empty_cells
+        "endpoint": project.sparql_endpoint,
+        "warnEmpty": project.warn_for_empty_cells
     }
-    return response, 200 
-
+    return response, 200
 
 
 @app.route('/api/is-alive')
