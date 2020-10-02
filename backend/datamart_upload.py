@@ -1,3 +1,4 @@
+import os
 import requests
 import tempfile
 from pathlib import Path
@@ -7,10 +8,9 @@ from app_config import DATAMART_API_ENDPOINT
 from web_exceptions import NoSuchDatasetIDException, CellResolutionWithoutYAMLFileException
 
 
-def get_dataset_id(data_sheet):
+def get_dataset_id(sheet):
     # step one: extract dataset id from cell B1
     try:
-        sheet = Sheet(data_sheet.data_file.file_path, data_sheet.name)
         data_cell = str(sheet[0, 1])
     except:
         raise ValueError("Could not get dataset id from sheet")
@@ -27,15 +27,16 @@ def get_download(calc_params):
     kgtk = response["data"]
     return kgtk
 
-def get_item_file(calc_params):
-    #TODO
-    pass
+def get_item_definitions_filepath(calc_params):
+    item_files=calc_params.project.entity_files # a list of filepaths (to tsv files)
+    #TODO: concat all the files into one file, return the path to that file
+    return os.path.join(calc_params.project.directory, item_files[0])
 
 
-def upload_to_datamart(data_sheet, calc_params):
+def upload_to_datamart(calc_params):
     # get the dataset id
     try:
-        dataset_id = get_dataset_id(data_sheet)
+        dataset_id = get_dataset_id(calc_params.sheet)
     except Exception as e:
         raise NoSuchDatasetIDException(str(e))
 
@@ -43,7 +44,7 @@ def upload_to_datamart(data_sheet, calc_params):
     kgtk = get_download(calc_params)
 
     # get the item file
-    item_file_path = get_item_file(calc_params)
+    item_file_path = get_item_definitions_filepath(calc_params)
 
     with tempfile.TemporaryFile(suffix=".tsv") as tmpfile:
         tmpfile.write(kgtk.encode("utf-8"))

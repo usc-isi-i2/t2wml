@@ -406,7 +406,7 @@ def load_to_datamart():
     except:
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Can't upload to datamart without datafile and sheet")
-    data = upload_to_datamart(sheet, calc_params)
+    data = upload_to_datamart(calc_params)
     return data, 201
 
 
