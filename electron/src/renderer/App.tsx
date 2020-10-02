@@ -40,14 +40,14 @@ class App extends Component<{}, AppState> {
     wikiStore.changeProject();
   }
 
-  onNewProject(folder: string) {
+  async onNewProject(folder: string) {
     console.log('Creating project in folder ', folder);
-    this.handleNewProject(folder);
+    await this.handleNewProject(folder);
   }
   
-  onOpenProject(folder: string) {
+  async onOpenProject(folder: string) {
     console.log('Opening project from folder ', folder);
-    this.handleOpenProject(folder);
+    await this.handleOpenProject(folder);
   }
 
   async handleNewProject(folder: string) {

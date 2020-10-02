@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 
 import './project-list.css';
@@ -7,13 +7,12 @@ import Navbar from '../common/navbar/navbar'
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencilAlt, faCloudDownloadAlt, faSearch, faSortUp, faSortDown, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPencilAlt, faSearch, faSortUp, faSortDown, faTimes, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 
-import RenameProject from './rename-project';
-import DownloadProject from './dowmload-project';
+import RenameProject from './rename-project'
 import ToastMessage from '../common/toast';
 
 // console.log
@@ -24,14 +23,12 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import { Project } from '../data/projects';
 
+import {shell} from 'electron';
+
 interface ProjectListState {
   showSpinner: boolean;
-  showDownloadProject: boolean;
   showRenameProject: boolean;
-
-  showDeleteProject: boolean;
   deletingProjectPath: string;
-  downloadingProjectPath: string;
 
   // user
   userData: any,
@@ -58,24 +55,13 @@ class ProjectList extends Component<{}, ProjectListState> {
     super(props);
     this.requestService = new RequestService();
 
-    // this.handleRenameProject = this.handleRenameProject.bind(this);
-
-    // fetch data from flask
-    // const { userData } = this.props;
-
-    // init global variables
-    // window.sparqlEndpoint = DEFAULT_SPARQL_ENDPOINT;
-
     // init state
     this.state = {
 
       // appearance
       showSpinner: false,
-      showDownloadProject: false,
       showRenameProject: false,
-      showDeleteProject: false,
       deletingProjectPath: "",
-      downloadingProjectPath: "",
 
       // user
       userData: {},
@@ -93,85 +79,19 @@ class ProjectList extends Component<{}, ProjectListState> {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     document.title = "T2WML - Projects";
   }
 
-  async handleDeleteProject(path = "") {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    if (path === "") {
-      path = this.state.deletingProjectPath;
-      if (path === "") return;
-    }
-
-    this.setState({ showSpinner: true, showDeleteProject: false });
+  handleDeleteProject(path: string) {    
     const project = wikiStore.projects.find(path);
     if (!project) {
       console.warn(`No project for ${path} in project list`);
       return;
     }
 
-    try {
-      await this.requestService.deleteProject(project.folder);  // rimraf and fs.rmDir both hang for some reason
-      wikiStore.projects.refreshList();
-    } catch(error) {
-      const err = {
-        errorCode: -1,
-        errorTitle: "Can't delete project",
-        errorDescription: error.toString(),
-      }
-      this.setState({ errorMessage: err });
-    }
-    this.setState( { showSpinner: false });
-  }
-
-  cancelDeleteProject() {
-    this.setState({ showDeleteProject: false, deletingProjectPath: "" });
-  }
-
-
-  handleDownloadProject(path = "") {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    if (path === "") {
-      path = this.state.downloadingProjectPath;
-      if (path === "") return;
-    }
-
-    // before sending request
-    this.setState({ showDownloadProject: false });
-
-    // send request
-    console.log("<App> -> %c/download_project%c to download all files in project with pid: %c" + path, LOG.link, LOG.default, LOG.highlight);
-    this.requestService.downloadProject(path).then(json => {
-      console.log("<App> <- %c/download_project%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // do something here
-      if (json !== null) {
-        // success
-        // TODO: download all files
-
-      } else {
-        // failure
-        throw Error("Session doesn't exist or invalid request")
-      }
-
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    }).catch((error: ErrorMessage) => {
-      // console.log(error);
-      error.errorDescription += "\n\nCannot download project!";
-      this.setState({ errorMessage: error });
-    //   alert("Cannot download project!\n\n" + error);
-
-      // follow-ups (failure)
-      // nothing
-    });
-  }
-
-  cancelDownloadProject() {
-    this.setState({ showDownloadProject: false, downloadingProjectPath: "" });
+    ipcRenderer.send('remove-project', path);
+    wikiStore.projects.refreshList();
   }
 
   async handleRenameProject(name: string) {
@@ -194,6 +114,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       if (json['error'] !== null){
         console.warn('Renaming a project returned an error: ', json);
       }
+      this.setState({ showRenameProject: false, showSpinner: false });
       wikiStore.projects.refreshList();
     } catch(error) {
       // console.log(error);
@@ -324,23 +245,23 @@ class ProjectList extends Component<{}, ProjectListState> {
                 </span>
               </OverlayTrigger>
 
-              {/* download */}
+              {/* open in filesystem */}
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
                 popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="download">
-                    <span className="text-left small">Download</span>
+                    <span className="text-left small">Show in filesystem</span>
                   </Tooltip>
                 }
               >
                 <span
                   className="action-download"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDownloadProject: true, downloadingProjectPath: project.folder })}
+                  onClick={() => shell.showItemInFolder(project.folder)}
                 >
-                  <FontAwesomeIcon icon={faCloudDownloadAlt} />
+                  <FontAwesomeIcon icon={faFolderOpen} />
                 </span>
               </OverlayTrigger>
 
@@ -358,9 +279,9 @@ class ProjectList extends Component<{}, ProjectListState> {
                 <span
                   className="action-delete"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showDeleteProject: true, deletingProjectPath: project.folder })}
+                  onClick={() => this.handleDeleteProject(project.folder)}
                 >
-                  <FontAwesomeIcon icon={faTrashAlt} />
+                  <FontAwesomeIcon icon={faTimes} />
                 </span>     
               </OverlayTrigger>
             </td>
@@ -464,21 +385,14 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   renderModals() {
     return (
-      <Fragment>
-        <DownloadProject 
-          showDownloadProject={this.state.showDownloadProject} 
-          handleDownloadProject={() => this.handleDownloadProject()}
-          cancelDownloadProject={() => this.cancelDownloadProject()}
-        />
-        <RenameProject 
-          showRenameProject={this.state.showRenameProject}
-          showSpinner={this.state.showSpinner}
-          tempRenameProject={this.state.tempRenameProject}
-          isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
-          handleRenameProject={(name) => this.handleRenameProject(name)}
-          cancelRenameProject={() => this.cancelRenameProject()}
-        />
-      </Fragment>
+      <RenameProject 
+        showRenameProject={this.state.showRenameProject}
+        showSpinner={this.state.showSpinner}
+        tempRenameProject={this.state.tempRenameProject}
+        isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
+        handleRenameProject={(name) => this.handleRenameProject(name)}
+        cancelRenameProject={() => this.cancelRenameProject()}
+      />
     );
   }
 

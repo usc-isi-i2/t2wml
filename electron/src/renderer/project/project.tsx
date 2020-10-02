@@ -65,9 +65,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.props.path) {
-      this.loadProject();
+      await this.loadProject();
     } else {
       console.error("There is no project id.")
     }
@@ -80,21 +80,22 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
   }
 
-  componentDidUpdate(prevProps: ProjectProps) {
+  async componentDidUpdate(prevProps: ProjectProps) {
     if (this.props.path !== prevProps.path) {
-      this.loadProject();
+      await this.loadProject();
     }
   }
 
-  loadProject() {
+  async loadProject() {
     // before fetching project files
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
+    wikiStore.output.isDownloadDisabled = true;
 
     // fetch project files
-    // TODO: Switch to async/await
     console.debug('Refreshing project ', this.props.path);
-    this.requestService.getProjectFiles(this.props.path).then(json => {
+    try{
+      const json = await this.requestService.getProjectFiles(this.props.path);
       document.title = 't2wml: ' + json.name;
       this.setState({name: json.name});
 
@@ -117,6 +118,9 @@ class Project extends Component<ProjectProps, ProjectState> {
       if (yamlData !== null) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
+
+        // Save data regions (enable get the output to these cells).
+        wikiStore.table.dataRegionsCells = yamlData.yamlRegions.dataRegion.list;
       } else {
         wikiStore.table.isCellSelectable = false;
       }
@@ -132,7 +136,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    }).catch((error: ErrorMessage) => {
+    } catch(error) {
       console.error("Can't fetch project: ", error);
       error.errorDescription += "\n\nCannot fetch project!";
       this.setState({ errorMessage: error });
@@ -140,27 +144,23 @@ class Project extends Component<ProjectProps, ProjectState> {
       // follow-ups (failure)
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
+    }
+  }
+
+  async onRefreshProject() {
+    await this.loadProject();
+  }
+
+  async onShowSettingsClicked() {
+    const data = await this.requestService.getSettings(this.props.path);
+    this.setState({
+      endpoint: data.endpoint,
+      warnEmpty: data.warnEmpty,
+      showSettings: true
     });
   }
 
-  onRefreshProject() {
-    this.loadProject();
-  }
-
-  onShowSettingsClicked() {
-    // TODO: Switch to async/await
-    this.requestService.getSettings(this.props.path)
-      .then((data) => {
-        this.setState({
-          endpoint: data.endpoint,
-          warnEmpty: data.warnEmpty,
-          showSettings: true
-        });
-      });
-
-  }
-
-  handleSaveSettings() {
+  async handleSaveSettings() {
     // update settings
     this.setState({ showSettings: false });
 
@@ -169,12 +169,13 @@ class Project extends Component<ProjectProps, ProjectState> {
     formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
     formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
 
-    // TODO: Switch to async/await
-    this.requestService.updateSettings(this.props.path, formData).catch((error: ErrorMessage) => {
+    try {
+      await this.requestService.updateSettings(this.props.path, formData);
+    } catch(error) {
       console.error('Error updating settings: ', error);
       error.errorDescription += "\n\nCannot update settings!";
       this.setState({ errorMessage: error });
-    });
+    }
   }
 
   cancelSaveSettings() {

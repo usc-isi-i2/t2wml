@@ -32,7 +32,7 @@ class AppConfig:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
     downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(DATADIR, 't2wml.db')
+        'sqlite:///' + os.path.join(DATADIR, 'entities.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
 
@@ -40,8 +40,8 @@ app.config.from_object(AppConfig)
 
 DEFAULT_SPARQL_ENDPOINT = 'https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql'
 GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
-DATAMART_API_ENDPOINT = 'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
-# DATAMART_API_ENDPOINT = 'http://localhost:12543'
+#DATAMART_API_ENDPOINT = 'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
+DATAMART_API_ENDPOINT = 'http://localhost:12543'
 
 #############SQL STUFF
 
@@ -68,7 +68,6 @@ metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(app, metadata=metadata)
 
-from models import *
 from wikidata_models import *
 
 migrate = Migrate(app, db, render_as_batch=True) #, directory=MIGRATE_DIR

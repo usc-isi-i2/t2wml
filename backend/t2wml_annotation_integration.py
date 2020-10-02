@@ -1,4 +1,5 @@
 import re
+import traceback
 import tarfile
 import tempfile
 import pandas as pd
@@ -6,7 +7,8 @@ from glob import glob
 from pathlib import Path
 from requests import post, get
 from app_config import DATAMART_API_ENDPOINT
-
+from utils import save_yaml, save_dataframe
+from t2wml.api import add_entities_from_file
 
 class AnnotationIntegration(object):
     def __init__(self, is_csv, sheet_name, w_requests=None, df=None):
@@ -163,3 +165,51 @@ class AnnotationIntegration(object):
             data_row = df.index.tolist().index("data")
         df.reset_index(inplace=True)
         return header_row, data_row
+
+
+
+
+    def automate_integration(self, project, response, sheet):
+        try:
+            filename=response['tableData']['filename']
+            dataset_exists = self.check_dataset_exists()
+            if not dataset_exists:
+                return False
+            t2wml_yaml, consolidated_wikifier_df, combined_item_df, annotation_df = self.get_files(
+                filename)
+            if_path = save_dataframe(project, combined_item_df, "datamart_item_definitions.tsv", kgtk=True)
+            add_entities_from_file(if_path)
+            project.add_entity_file(if_path, copy_from_elsewhere=True, overwrite=True)
+
+            wf_path=save_dataframe(project, consolidated_wikifier_df, "annotation_wikify_region_output.csv")
+            project.add_wikifier_file(wf_path) # , copy_from_elsewhere=True, overwrite=True)
+            project.update_saved_state(current_wikifiers=[wf_path])
+            
+            save_yaml(project, t2wml_yaml) # give it a better name eventually 
+
+            project.save()
+            return True
+        except Exception as e:
+            traceback.print_exc()
+            print(e)  # continue to normal spreadsheet handling
+            return True
+
+
+    
+def create_datafile(project, df, file_name, sheet_name):
+    folder = project.directory
+    filepath = str(folder / file_name)
+    if file_name.endswith('.csv'):
+        df.to_csv(filepath, index=False, header=False)
+    elif file_name.endswith('.xlsx') or file_name.endswith('.xls'):
+        with pd.ExcelWriter(file_name, engine='openpyxl', mode='a') as writer: 
+            workBook = writer.book
+            try:
+                workBook.remove(workBook[sheet_name])
+            except:
+                print("Worksheet does not exist")
+            finally:
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+                writer.save()
+    return df
+

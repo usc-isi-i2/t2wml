@@ -13,6 +13,7 @@ class TabletState {
 
     @observable public showSpinner: boolean;
     @observable public errorCells: string[] | undefined;
+    @observable public dataRegionsCells: string[];
     @observable public updateYamlRegions: (newYamlRegions?: any) => void;
     @observable public updateQnodeCells: (qnodes?: any, rowData?: any) => void;
     @observable public updateTableData: (tableData: any) => void; // tableData as type TableData
@@ -24,6 +25,7 @@ class TabletState {
 
         this.showSpinner = false;
         this.errorCells = undefined;
+        this.dataRegionsCells = [];
         this.updateYamlRegions = () => undefined;
         this.updateQnodeCells = () => undefined;
         this.updateTableData = () => undefined;

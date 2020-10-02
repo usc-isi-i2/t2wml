@@ -80,7 +80,8 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       // value and unit
       let valueDiv: any = this.props.value;
       if (this.props.unitName) {
-        if(this.props.unitID) {
+        const tester = this.props.unitID as string
+        if (/^[PQ]\d+$/.test(tester)) {
           valueDiv = <span>{this.props.value}
             <a
             href={"https://www.wikidata.org/wiki/Property:" + this.props.unitID}

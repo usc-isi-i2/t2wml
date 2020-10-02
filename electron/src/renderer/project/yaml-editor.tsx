@@ -59,7 +59,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.yaml.updateYamlText = (yamlText: string | null = null) => this.updateYamlText(yamlText);
   }
 
-  handleApplyYaml() {
+  async handleApplyYaml() {
     this.setState({ errorMessage: {} as ErrorMessage });
     console.log("<YamlEditor> clicked apply");
 
@@ -79,53 +79,42 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)
     // }
-    // TODO: Switch to async/await
-    this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData).then(json => {
+    try {
+      const json = await this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData);
+      console.debug('Uploaidng yaml ', this.state.yamlText);
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
       console.log(json);
 
-    //   const { error } = json;
-    //   // if failure
-    //   if (error !== null) {
-    //       this.setState({
-    //           yamlJson: null,
-    //           isValidYaml: false,
-    //           errMsg: "⚠️There was an error applying YAML. Check browser console for details.",
-    //           errStack: '',
-    //       });
-    //     // throw Error(error);
-    //   }
+        // else, success
+      const { yamlRegions } = json;
+      const internalError = yamlRegions.error;
+      if (internalError){
 
-          // else, success
-        const { yamlRegions } = json;
-        const internalError = yamlRegions.error;
-        if (internalError){
+          console.log("ERRORS while applying yaml:");
+          console.log(internalError);
+      }
+      wikiStore.table.updateYamlRegions(yamlRegions);
 
-            console.log("ERRORS while applying yaml:");
-            console.log(internalError);
-        }
-        wikiStore.table.updateYamlRegions(yamlRegions);
+      // follow-ups (success)
+      wikiStore.table.showSpinner = false;
+      wikiStore.output.isDownloadDisabled = false;
+      wikiStore.table.isCellSelectable = true;
 
-        // follow-ups (success)
-        wikiStore.table.showSpinner = false;
-        wikiStore.output.isDownloadDisabled = false;
-        wikiStore.table.isCellSelectable = true;
-
-    }).catch((error: ErrorMessage) => {
+    } catch(error) {
     //   alert("Failed to apply. 🙁\n\n" + error);
         error.errorDescription += "\n\nFailed to apply. 🙁";
         this.setState({ errorMessage: error });
 
       // follow-ups (failure)
         wikiStore.table.showSpinner = false;
-    });
+    }
   }
 
   handleChangeYaml() {
     wikiStore.table.isCellSelectable = false;
 
     // Talya: find out what's the right way to do this
-    const yamlText = (this.monacoRef as any).editor.getModel().getValue();
+    const yamlText = (this.monacoRef.current as any).editor.getModel().getValue();
     this.setState({ yamlText: yamlText });
     try {
       const yamlJson = (yaml.safeLoad(yamlText) as JSON);

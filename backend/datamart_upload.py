@@ -2,7 +2,6 @@ import requests
 import tempfile
 from pathlib import Path
 from t2wml.api import Sheet
-from models import ItemsFile
 from t2wml_web import download
 from app_config import DATAMART_API_ENDPOINT
 from web_exceptions import NoSuchDatasetIDException, CellResolutionWithoutYAMLFileException
@@ -28,8 +27,12 @@ def get_download(calc_params):
     kgtk = response["data"]
     return kgtk
 
+def get_item_file(calc_params):
+    #TODO
+    pass
 
-def upload_to_datamart(project, data_sheet, calc_params):
+
+def upload_to_datamart(data_sheet, calc_params):
     # get the dataset id
     try:
         dataset_id = get_dataset_id(data_sheet)
@@ -40,8 +43,7 @@ def upload_to_datamart(project, data_sheet, calc_params):
     kgtk = get_download(calc_params)
 
     # get the item file
-    item_file = ItemsFile.query.filter_by(
-        project_id=project.id).order_by(ItemsFile.id.desc()).first()
+    item_file_path = get_item_file(calc_params)
 
     with tempfile.TemporaryFile(suffix=".tsv") as tmpfile:
         tmpfile.write(kgtk.encode("utf-8"))
@@ -49,7 +51,7 @@ def upload_to_datamart(project, data_sheet, calc_params):
 
         # upload to datamart
         files = {
-            'item_definitions': ('item_definitions.tsv', open(item_file.file_path), 'application/octet-stream'),
+            'item_definitions': ('item_definitions.tsv', open(item_file_path), 'application/octet-stream'),
             'kgtk_output': ('kgt_output.tsv', tmpfile, 'application/octet-stream')
         }
 
