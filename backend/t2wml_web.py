@@ -111,7 +111,7 @@ def get_cell(calc_params, col, row):
     cache_holder = calc_params.cache
     sheet = calc_params.sheet
     try:
-        #get cell statement
+        # get cell statement
         row = int(row)
         col = column_letter_to_index(col) + 1
         statement, errors = cache_holder.cell_mapper.get_cell_statement(
@@ -119,22 +119,22 @@ def get_cell(calc_params, col, row):
         data = {'statement': statement,
                 'internalErrors': errors if errors else None, "error": None}
 
-        #get cell qnodes
-        qnodes={}
+        # get cell qnodes
+        qnodes = {}
         for outer_key, outer_value in statement.items():
-            if outer_key=="qualifier":
+            if outer_key == "qualifier":
                 for qual_dict in outer_value:
                     for inner_key, inner_value in qual_dict.items():
                         if str(inner_value).upper()[0] in ["P", "Q"]:
-                            qnodes[str(inner_value)]=None
+                            qnodes[str(inner_value)] = None
             else:
                 if str(outer_value).upper()[0] in ["P", "Q"]:
-                    qnodes[str(outer_value)]=None
+                    qnodes[str(outer_value)] = None
 
         labels = get_labels_and_descriptions(qnodes, calc_params.project.sparql_endpoint)
         qnodes.update(labels)
 
-        data["qnodesLabels"]=qnodes
+        data["qnodesLabels"] = qnodes
 
     except TemplateDidNotApplyToInput as e:
         data = dict(error=e.errors)

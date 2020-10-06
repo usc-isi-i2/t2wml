@@ -19,8 +19,10 @@ class ProjectNotFoundException(WebException):
     code = 404
     message = "Project not found"
 
+
 class ProjectAlreadyExistsException(WebException):
     message = "Cannot create new project in folder with existing project"
+
 
 class NoFilePartException(WebException):
     message = "Missing file parameter in the upload request"
@@ -61,7 +63,7 @@ class FileTypeNotSupportedException(WebException):
 class InvalidYAMLFileException(WebException):
     message = "YAML file is either empty or not valid"
 
-class NoSuchDatasetIDException(WebException):
-    code=404
-    message="The dataset ID specified in cell B1 does not exist"
 
+class NoSuchDatasetIDException(WebException):
+    code = 404
+    message = "The dataset ID specified in cell B1 does not exist"

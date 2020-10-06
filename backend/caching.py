@@ -1,32 +1,31 @@
 import os
 import json
 from hashlib import sha256
-from pathlib import Path
-from t2wml.mapping.statement_mapper import YamlMapper
 from t2wml.api import KnowledgeGraph
 from app_config import UPLOAD_FOLDER, app
+from t2wml.mapping.statement_mapper import YamlMapper
+
 
 class Cacher:
     title = ""
 
     def __init__(self, project, data_file_path, sheet_name, yaml_file_path):
-        self.project=project
-        self.data_file_path=data_file_path
-        self.yaml_file_path=yaml_file_path
-        self.sheet_name=sheet_name
+        self.project = project
+        self.data_file_path = data_file_path
+        self.yaml_file_path = yaml_file_path
+        self.sheet_name = sheet_name
 
     @property
     def cache_path(self):
-        api_project_str=str(self.project.__dict__)
-        cache_hash=sha256(api_project_str.encode('utf-8'))
-        m_time_str = str(os.path.getmtime(self.yaml_file_path))+str(os.path.getmtime(self.data_file_path))
+        api_project_str = str(self.project.__dict__)
+        cache_hash = sha256(api_project_str.encode('utf-8'))
+        m_time_str = str(os.path.getmtime(self.yaml_file_path)) + str(os.path.getmtime(self.data_file_path))
         cache_hash.update(m_time_str.encode('utf-8'))
-        file_name= self.sheet_name +"_"+cache_hash.hexdigest()+".json"
+        file_name = self.sheet_name + "_" + cache_hash.hexdigest() + ".json"
         file_path = os.path.join(UPLOAD_FOLDER, "calc_cache")
         if not os.path.isdir(file_path):
             os.makedirs(file_path)
         return os.path.join(file_path, file_name)
-
 
     def save(self, highlight_data, statement_data, errors, metadata):
         d = {
