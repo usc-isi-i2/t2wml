@@ -19,12 +19,11 @@ from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration, create_datafile
 
-annotation_integration=False
+annotation_integration = False
 try:
     from local_settings import *
 except:
     pass
-
 
 debug_mode = False
 
@@ -41,14 +40,14 @@ def get_calc_params(project):
     data_file = Path(project.directory) / project.current_data_file
     sheet_name = project.current_sheet
     if project.current_yaml:
-        yaml_file=Path(project.directory) /  project.current_yaml
+        yaml_file = Path(project.directory) / project.current_yaml
     else:
-        yaml_file=None
+        yaml_file = None
     if project.current_wikifiers:
-        wikifier_files=[Path(project.directory) / wf for wf in project.current_wikifiers]
+        wikifier_files = [Path(project.directory) / wf for wf in project.current_wikifiers]
     else:
-        wikifier_files=None
-    calc_params=CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
+        wikifier_files = None
+    calc_params = CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
     return calc_params
 
 
@@ -81,7 +80,6 @@ def json_response(func):
     return wrapper
 
 
-
 @app.route('/api/project', methods=['POST'])
 @json_response
 def create_project():
@@ -112,9 +110,9 @@ def load_project():
     :return:
     """
     project_folder = get_project_folder()
-    project=apiProject.load(project_folder)
+    project = apiProject.load(project_folder)
     for f in project.entity_files:
-        response= add_entities_from_file(Path(project.directory) / f)
+        response = add_entities_from_file(Path(project.directory) / f)
     update_t2wml_settings(project)
     response = dict(project=project.__dict__)
     return response, 201
@@ -145,7 +143,7 @@ def get_project_files():
         response["tableData"] = table_data(calc_params)
         response["wikifierData"] = serialize_item_table(calc_params)
         response["yamlData"] = handle_yaml(calc_params)
-    response['project']=project.__dict__
+    response['project'] = project.__dict__
     return response, 200
 
 
@@ -154,19 +152,19 @@ def get_project_files():
 def add_entity_definitions():
     project_folder = get_project_folder()
     project = get_project(project_folder)
-    
+
     in_file = file_upload_validator({"tsv"})
     file_path = save_file(project_folder, in_file)
     project.add_entity_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
 
     return_dict = add_entities_from_file(file_path)
-    response = {"widget":return_dict}
-    calc_params=get_calc_params(project)
+    response = {"widget": return_dict}
+    calc_params = get_calc_params(project)
     if calc_params:
         serialized_item_table = serialize_item_table(calc_params)
         response.update(serialized_item_table)
-    response['project']=project.__dict__
+    response['project'] = project.__dict__
     return response, 200
 
 
@@ -187,11 +185,11 @@ def upload_data_file():
     }
     in_file = file_upload_validator({'xlsx', 'xls', 'csv'})
     file_path = save_file(project_folder, in_file)
-    project.add_data_file(file_path)#, copy_from_elsewhere=True, overwrite=True)
+    project.add_data_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
     project.update_saved_state(current_data_file=file_path)
     project.save()
 
-    calc_params=get_calc_params(project)
+    calc_params = get_calc_params(project)
 
     calc_params = get_calc_params(project)
     response["tableData"] = table_data(calc_params)
@@ -201,7 +199,7 @@ def upload_data_file():
     # and item definitions automatically
     if annotation_integration:
         ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
-                                w_requests=request)
+                                   w_requests=request)
         if ai.is_annotated_spreadsheet(project.directory):
             dataset_exists = ai.automate_integration(project, response, sheet)
             if not dataset_exists:
@@ -219,12 +217,13 @@ def upload_data_file():
         else:  # not annotation file, check if annotation is available
             annotation_found, new_df = ai.is_annotation_available(project.directory)
             if annotation_found and new_df is not None:
-                create_datafile(project, new_df, response['tableData']['filename'], response['tableData']['currSheetName'])
+                create_datafile(project, new_df, response['tableData']['filename'],
+                                response['tableData']['currSheetName'])
                 calc_params = get_calc_params(project)
                 response["tableData"] = table_data(calc_params)
                 sheet = project.current_sheet
                 ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
-                                        df=new_df)
+                                           df=new_df)
 
                 # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
                 # TODO the users. There has to be a better way to handle it. For Future implementation
@@ -233,7 +232,7 @@ def upload_data_file():
         calc_params = get_calc_params(project)
     response["wikifierData"] = serialize_item_table(calc_params)
     response["yamlData"] = handle_yaml(calc_params)
-    response['project']=project.__dict__
+    response['project'] = project.__dict__
     return response, 200
 
 
@@ -256,7 +255,7 @@ def change_sheet(sheet_name):
     project.update_saved_state(current_sheet=sheet_name)
     project.save()
 
-    calc_params=get_calc_params(project)
+    calc_params = get_calc_params(project)
     if calc_params:
         response["tableData"] = table_data(calc_params)
         response["wikifierData"] = serialize_item_table(calc_params)
@@ -276,7 +275,7 @@ def upload_wikifier_output():
     project = get_project(project_folder)
     response = {"error": None}
     in_file = file_upload_validator({"csv"})
-    
+
     file_path = save_file(project_folder, in_file)
     project.add_wikifier_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.update_saved_state(current_wikifiers=[file_path])
@@ -287,7 +286,7 @@ def upload_wikifier_output():
         serialized_item_table = serialize_item_table(calc_params)
         # does not go into field wikifierData but is dumped directly
         response.update(serialized_item_table)
-    response['project']=project.__dict__
+    response['project'] = project.__dict__
     return response, 200
 
 
@@ -312,7 +311,7 @@ def wikify_region():
 
         cell_qnode_map, problem_cells = wikify(calc_params, region, context)
         file_path = save_dataframe(project_folder, cell_qnode_map, "wikify_region_output.csv")
-        project.add_wikifier_file(file_path)#, copy_from_elsewhere=True, overwrite=True)
+        project.add_wikifier_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
         project.update_saved_state(current_wikifiers=[file_path])
         project.save()
 
@@ -328,7 +327,7 @@ def wikify_region():
             data['problemCells'] = error_dict
         else:
             data['problemCells'] = False
-        data['project']=project.__dict__
+        data['project'] = project.__dict__
         return data, 200
     return {}, 404
 
@@ -353,9 +352,9 @@ def upload_yaml():
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload data file before applying YAML.")
     save_yaml(project, yaml_data, yaml_title)
-    calc_params=get_calc_params(project)
+    calc_params = get_calc_params(project)
     response['yamlRegions'] = highlight_region(calc_params)
-    response['project']=project.__dict__
+    response['project'] = project.__dict__
     return response, 200
 
 
@@ -420,10 +419,10 @@ def rename_project():
     ptitle = request.form["ptitle"]
     project_folder = get_project_folder()
     project = get_project(project_folder)
-    project.title=ptitle
+    project.title = ptitle
     project.save()
-    response=dict(error=None)
-    response['project']=project.__dict__
+    response = dict(error=None)
+    response['project'] = project.__dict__
     return response, 200
 
 
@@ -436,13 +435,13 @@ def update_settings():
     """
     project_folder = get_project_folder()
     project = get_project(project_folder)
-    
+
     endpoint = request.form.get("endpoint", None)
     if endpoint:
         project.sparql_endpoint = endpoint
     warn = request.form.get("warnEmpty", None)
     if warn is not None:
-        project.warn_for_empty_cells=warn.lower()=='true'
+        project.warn_for_empty_cells = warn.lower() == 'true'
     project.save()
     update_t2wml_settings(project)
     response = {
