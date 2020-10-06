@@ -27,10 +27,14 @@ def get_download(calc_params):
     kgtk = response["data"]
     return kgtk
 
+
 def get_item_definitions_filepath(calc_params):
-    item_files=calc_params.project.entity_files # a list of filepaths (to tsv files)
-    #TODO: concat all the files into one file, return the path to that file
-    return os.path.join(calc_params.project.directory, item_files[0])
+    item_files = calc_params.project.entity_files  # a list of filepaths (to tsv files)p
+    # TODO: we only want the item definitions, not the Wikidata or preexisting properties
+
+    if 'datamart_item_definitions.tsv' in item_files:
+        return os.path.join(calc_params.project.directory, 'datamart_item_definitions.tsv')
+    return None
 
 
 def upload_to_datamart(calc_params):
@@ -45,7 +49,8 @@ def upload_to_datamart(calc_params):
 
     # get the item file
     item_file_path = get_item_definitions_filepath(calc_params)
-
+    if not item_file_path:
+        raise Exception('Item File Path not found!!')
     with tempfile.TemporaryFile(suffix=".tsv") as tmpfile:
         tmpfile.write(kgtk.encode("utf-8"))
         tmpfile.seek(0)
@@ -70,7 +75,6 @@ def upload_to_datamart(calc_params):
                 for variable_id in variable_ids:
                     url_param += f'variable={variable_id}&'
                 get_url = f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/variables{url_param[:-1]}'
-                print(get_url)
                 data = {'datamart_get_url': get_url}
             else:
                 data = {'description': 'No variables defined'}
