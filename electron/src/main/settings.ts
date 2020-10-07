@@ -1,9 +1,24 @@
 // The App's settings
 import * as os from 'os';
 import * as fs from 'fs';
+import { BrowserWindow } from 'electron';
+
+interface WindowSettings {
+    x?: number;
+    y?: number;
+    width: number;
+    height: number;
+    maximized: boolean;
+}
+
+interface DevSettings {
+    devToolsOpen: boolean;
+}
 
 interface AppSettings {
     recentlyUsed: string[];
+    window: WindowSettings;
+    dev: DevSettings;
 }
 
 // Settings stored here 
@@ -20,13 +35,25 @@ export class Settings implements AppSettings {
     }
 
     recentlyUsed: string[] = [];
+    window: WindowSettings = { width: 1000, height: 700, maximized: false }
+    dev: DevSettings = { devToolsOpen: false };
 
     private constructor() {
         try {
             const content = fs.readFileSync(file, {encoding: 'utf8'});
             if (content) {
                 const contentObj: any = JSON.parse(content);
-                this.recentlyUsed = contentObj.recentlyUsed || [];
+                if (contentObj.recentlyUsed) {
+                    this.recentlyUsed = contentObj.recentlyUsed;
+                }
+
+                if (contentObj.window) {
+                    this.window = contentObj.window;
+                }
+
+                if (contentObj.dev) {
+                    this.dev = contentObj.dev;
+                }
             }
         } catch {
             // If the file doen't exist, don't change the defaults
@@ -34,7 +61,11 @@ export class Settings implements AppSettings {
     }
 
     saveSettings() {
-        fs.writeFileSync(file, JSON.stringify({recentlyUsed: this.recentlyUsed}));
+        fs.writeFileSync(file, JSON.stringify({
+            recentlyUsed: this.recentlyUsed,
+            window: this.window,
+            dev: this.dev,
+        }));
     }
 
     addRecentlyUsed(folder: string) {
@@ -53,6 +84,18 @@ export class Settings implements AppSettings {
             this.recentlyUsed.splice(index, 1);
             this.saveSettings();
         }
+    }
+
+    getSettingsFromWindow(mainWindow: BrowserWindow) {  
+        this.window.maximized = mainWindow.isMaximized();
+        const bounds = mainWindow.getNormalBounds();
+
+        this.window.x = bounds.x;
+        this.window.y = bounds.y;
+        this.window.width = bounds.width;
+        this.window.height = bounds.height;
+
+        this.dev.devToolsOpen = mainWindow.webContents.isDevToolsOpened();
     }
 }
 

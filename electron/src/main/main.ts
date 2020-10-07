@@ -13,6 +13,7 @@ import { config } from './config';
 import MainMenuManager from './menu';
 import { RendererEventListener } from './renderer-event-listener';
 import { rendererNotifier } from './renderer-notifier';
+import { settings } from './settings';
 
 /* Splash Screen */
 let splashWindow: Electron.BrowserWindow | null;
@@ -50,8 +51,10 @@ const rendererEventListener = new RendererEventListener(); // Used by splash-scr
 function createMainWindow(): void {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        height: 1000,
-        width: 1600,
+        x: settings.window.x,
+        y: settings.window.y,
+        height: settings.window.height,
+        width: settings.window.width,
         show: false,
         webPreferences: {
             nodeIntegration: true,
@@ -82,10 +85,24 @@ function createMainWindow(): void {
             splashWindow.close();
             splashWindow = null;
         }
+
+        if (settings.window.maximized) {
+            mainWindow!.maximize();
+        }
+
+        if (settings.dev.devToolsOpen && config.mode === 'dev') {
+            // In prod, dev tools never open automatically
+            mainWindow!.webContents.openDevTools();
+        }
     });
     
+    mainWindow.once('close', () => {
+        settings.getSettingsFromWindow(mainWindow!);
+        settings.saveSettings();
+    });
+
     // Emitted when the window is closed.
-    mainWindow.on('closed', () => {
+    mainWindow.once('closed', () => {
         mainWindow = null;
     });
 }
