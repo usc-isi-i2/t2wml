@@ -17,8 +17,8 @@
             "path": "electron/",
             "problemMatcher": [],
             "isBackground": true,
-            "label": "Build and Watch GUI",
-            "detail": "Continuously builds the frontend"
+            "label": "Build Dev GUI Continuously",
+            "detail": "Continuously builds the GUI in development mode"
         },
         {
             "type": "npm",
@@ -29,7 +29,7 @@
                 "fileLocation": ["relative", "${workspaceFolder}/electron"]
             }],
             "isBackground": true,
-            "label": "Watch for GUI Errors",
+            "label": "Report GUI Coding Errors",
             "detail": "Look for errors and warnings in the entire code base"
         },
         {
@@ -44,14 +44,6 @@
                 "cwd": "${workspaceFolder}"
             },
             "problemMatcher": []
-        },
-        {
-            "type": "npm",
-            "script": "lint",
-            "path": "electron/",
-            "problemMatcher": [],
-            "label": "npm: lint - electron",
-            "detail": "eslint --ext *.ts --ext *.tsx src"
         }
     ]
 }

@@ -97,8 +97,7 @@ function createMainWindow(): void {
     });
     
     mainWindow.once('close', () => {
-        settings.getSettingsFromWindow(mainWindow!);
-        settings.saveSettings();
+        settings.updateSettingsFromWindow(mainWindow!);
     });
 
     // Emitted when the window is closed.

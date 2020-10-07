@@ -86,7 +86,7 @@ export class Settings implements AppSettings {
         }
     }
 
-    getSettingsFromWindow(mainWindow: BrowserWindow) {  
+    updateSettingsFromWindow(mainWindow: BrowserWindow) {  
         this.window.maximized = mainWindow.isMaximized();
         const bounds = mainWindow.getNormalBounds();
 
@@ -96,6 +96,8 @@ export class Settings implements AppSettings {
         this.window.height = bounds.height;
 
         this.dev.devToolsOpen = mainWindow.webContents.isDevToolsOpened();
+
+        this.saveSettings();
     }
 }
 
