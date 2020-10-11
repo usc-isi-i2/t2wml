@@ -64,21 +64,16 @@ class DatabaseProvider(FallbackSparql):
         return WikidataEntity.add_or_update(wd_id, data_type, do_session_commit=False, cache_id=cache_id, **kwargs)
 
     def try_get_property_type(self, wikidata_property, *args, **kwargs):
-        props = WikidataEntity.query.filter_by(wd_id=wikidata_property)
-        if props is None:
+        prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=None).first()
+        if not prop:
+            prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
+        if not prop:
             raise ValueError("Not found")
-        matching_prop = None
-        for prop in props:
-            if prop.cache_id is None or prop.cache_id == self.cache_id:
-                matching_prop = prop
-                break
-        if matching_prop is None:
-            raise ValueError("Not found")
-        if matching_prop.data_type is None:
+        if prop.data_type is None:
             raise ValueError("No datatype defined for that ID")
-        if matching_prop.data_type == "Property Not Found":
+        if prop.data_type == "Property Not Found":
             raise ValueError("Not found")
-        return matching_prop.data_type
+        return prop.data_type
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         WikidataEntity.do_commit()
