@@ -65,9 +65,9 @@ class DatabaseProvider(FallbackSparql):
         return WikidataEntity.add_or_update(wd_id, data_type, do_session_commit=False, cache_id=cache_id, **kwargs)
 
     def try_get_property_type(self, wikidata_property, *args, **kwargs):
-        prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=None).first()
-        if not prop:
-            prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
+        prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
+        if not prop or prop.data_type is None or prop.data_type == "Property Not Found":
+            prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=None).first()
         if not prop:
             raise ValueError("Not found")
         if prop.data_type is None:
@@ -134,15 +134,16 @@ def get_labels_and_descriptions(items, sparql_endpoint):
         else:
             missing_items.append(item)
     try:
-        additional_items = query_wikidata_for_label_and_description(
-            missing_items, sparql_endpoint)
-        response.update(additional_items)
-        try:
-            for item in additional_items:
-                WikidataEntity.add_or_update(item, do_session_commit=False, **additional_items[item])
-        except Exception as e:
-            print(e)
-        WikidataEntity.do_commit()
+        if missing_items:
+            additional_items = query_wikidata_for_label_and_description(
+                missing_items, sparql_endpoint)
+            response.update(additional_items)
+            try:
+                for item in additional_items:
+                    WikidataEntity.add_or_update(item, do_session_commit=False, **additional_items[item])
+            except Exception as e:
+                print(e)
+            WikidataEntity.do_commit()
 
     except:  # eg 502 bad gateway error
         pass
