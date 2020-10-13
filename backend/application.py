@@ -310,7 +310,7 @@ def wikify_region():
         calc_params = get_calc_params(project)
 
         cell_qnode_map, problem_cells = wikify(calc_params, region, context)
-        file_path = save_dataframe(project_folder, cell_qnode_map, "wikify_region_output.csv")
+        file_path = save_dataframe(project, cell_qnode_map, "wikify_region_output.csv")
         project.add_wikifier_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
         project.update_saved_state(current_wikifiers=[file_path])
         project.save()
