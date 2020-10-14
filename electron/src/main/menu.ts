@@ -71,10 +71,12 @@ export default class MainMenuManager {
             },
             {
                 label: 'Debug',
-                submenu: [
-                    { label: 'Reload App', click: () => this.onReloadAppClick() },
-                    { role: 'toggleDevTools' },
-                ]
+                submenu: [{
+                  label: 'Reload App',
+                  click: () => this.onReloadAppClick(),
+                }, {
+                  role: 'toggleDevTools',
+                }]
             },
         ]
 
