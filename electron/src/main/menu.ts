@@ -73,6 +73,7 @@ export default class MainMenuManager {
                 label: 'Debug',
                 submenu: [{
                   label: 'Reload App',
+                  accelerator: config.platform === 'mac' ? 'Cmd+Shift+R' : 'F12',
                   click: () => this.onReloadAppClick(),
                 }, {
                   role: 'toggleDevTools',
