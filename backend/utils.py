@@ -6,8 +6,73 @@ from t2wml.spreadsheets.conversions import column_index_to_letter
 from pathlib import Path
 from string import punctuation
 from flask import request
+from SPARQLWrapper import SPARQLWrapper, JSON
 import web_exceptions
+from wikidata_models import WikidataEntity
 
+wikidata_label_query_cache = {}
+
+def query_wikidata_for_label_and_description(items, sparql_endpoint):
+    items = ' wd:'.join(items)
+    items = "wd:" + items
+
+    query = """SELECT ?qnode ?qnodeLabel ?qnodeDescription WHERE 
+            {{
+            VALUES ?qnode {{{items}}}
+            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}
+            }}
+            """.format(items=items)
+    sparql = SPARQLWrapper(sparql_endpoint)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    try:
+        results = sparql.query().convert()
+    except Exception as e:
+        raise e
+    response = dict()
+    try:
+        for i in range(len(results["results"]["bindings"])):
+            qnode = results["results"]["bindings"][i]["qnode"]["value"].split(
+                "/")[-1]
+            label = results["results"]["bindings"][i]["qnodeLabel"]["value"]
+            desc = results["results"]["bindings"][i]["qnodeDescription"]["value"]
+            response[qnode] = {'label': label, 'description': desc}
+    except IndexError:
+        pass
+    return response
+
+
+def get_labels_and_descriptions(items, sparql_endpoint):
+    response = dict()
+    missing_items = []
+    for item in items:
+        wp = WikidataEntity.query.filter_by(wd_id=item).first()
+        if wp:
+            label = desc = ""
+            if wp.label:
+                label = wp.label
+                if wp.description:
+                    desc = wp.description
+                response[item] = dict(label=label, description=desc)
+            else:
+                missing_items.append(item)
+        else:
+            missing_items.append(item)
+    try:
+        if missing_items:
+            additional_items = query_wikidata_for_label_and_description(
+                missing_items, sparql_endpoint)
+            response.update(additional_items)
+            try:
+                for item in additional_items:
+                    WikidataEntity.add_or_update(item, do_session_commit=False, **additional_items[item])
+            except Exception as e:
+                print(e)
+            WikidataEntity.do_commit()
+
+    except:  # eg 502 bad gateway error
+        pass
+    return response
 
 
 def make_frontend_err_dict(error):
@@ -125,3 +190,4 @@ def save_yaml(project, yaml_data, yaml_title=None):
     project.add_yaml_file(file_path, project.current_data_file, sheet_name)
     project.update_saved_state(current_yaml=file_path)
     project.save()
+
