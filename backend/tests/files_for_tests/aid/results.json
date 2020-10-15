@@ -336,6 +336,40 @@
     "add_items": {
         "widget": {
             "added": [
+                "Qaid-security-22",
+                "Qaid-security-47",
+                "Qaid-security-73",
+                "Qaid-security-103",
+                "Qaid-security-475",
+                "Qaid-security-782",
+                "Qaid-security-793",
+                "Qaid-security-942",
+                "Qaid-security-964",
+                "Qaid-security-1069",
+                "Qaid-security-1060",
+                "Qaid-security-1102",
+                "Qaid-security-1281",
+                "Qaid-security-1479",
+                "Qaid-security-1713",
+                "Qaid-security-1689",
+                "Qaid-security-1931",
+                "Qaid-security-1924",
+                "Qaid-security-1923",
+                "Qaid-security-1934",
+                "Qaid-security-2143",
+                "Qaid-security-2135",
+                "Qaid-security-2692",
+                "Qaid-security-2623",
+                "Qaid-security-2641",
+                "Qaid-security-2952",
+                "Qaid-security-2916",
+                "Qaid-security-3006",
+                "Qaid-security-2895",
+                "Qaid-security-2896",
+                "Qaid-security-2768",
+                "Qaid-security-2897",
+                "Qaid-security-2911",
+                "Qaid-security-2997",
                 "P2006020001",
                 "P2006020002",
                 "P2006020003",
@@ -380,266 +414,49 @@
                 "Paid-security-030"
             ],
             "updated": [],
-            "failed": [
-                [
-                    "Qaid-security-22",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-22"
-                ],
-                [
-                    "Qaid-security-47",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-47"
-                ],
-                [
-                    "Qaid-security-73",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-73"
-                ],
-                [
-                    "Qaid-security-103",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-103"
-                ],
-                [
-                    "Qaid-security-475",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-475"
-                ],
-                [
-                    "Qaid-security-782",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-782"
-                ],
-                [
-                    "Qaid-security-793",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-793"
-                ],
-                [
-                    "Qaid-security-942",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-942"
-                ],
-                [
-                    "Qaid-security-964",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-964"
-                ],
-                [
-                    "Qaid-security-1069",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1069"
-                ],
-                [
-                    "Qaid-security-1060",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1060"
-                ],
-                [
-                    "Qaid-security-1102",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1102"
-                ],
-                [
-                    "Qaid-security-1281",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1281"
-                ],
-                [
-                    "Qaid-security-1479",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1479"
-                ],
-                [
-                    "Qaid-security-1713",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1713"
-                ],
-                [
-                    "Qaid-security-1689",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1689"
-                ],
-                [
-                    "Qaid-security-1931",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1931"
-                ],
-                [
-                    "Qaid-security-1924",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1924"
-                ],
-                [
-                    "Qaid-security-1923",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1923"
-                ],
-                [
-                    "Qaid-security-1934",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-1934"
-                ],
-                [
-                    "Qaid-security-2143",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2143"
-                ],
-                [
-                    "Qaid-security-2135",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2135"
-                ],
-                [
-                    "Qaid-security-2692",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2692"
-                ],
-                [
-                    "Qaid-security-2623",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2623"
-                ],
-                [
-                    "Qaid-security-2641",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2641"
-                ],
-                [
-                    "Qaid-security-2952",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2952"
-                ],
-                [
-                    "Qaid-security-2916",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2916"
-                ],
-                [
-                    "Qaid-security-3006",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-3006"
-                ],
-                [
-                    "Qaid-security-2895",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2895"
-                ],
-                [
-                    "Qaid-security-2896",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2896"
-                ],
-                [
-                    "Qaid-security-2768",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2768"
-                ],
-                [
-                    "Qaid-security-2897",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2897"
-                ],
-                [
-                    "Qaid-security-2911",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2911"
-                ],
-                [
-                    "Qaid-security-2997",
-                    "Only entity IDs beginning with P or Q are supported: Qaid-security-2997"
-                ],
-                [
-                    "P248",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P248"
-                ],
-                [
-                    "P1687",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P1687"
-                ],
-                [
-                    "P1476",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P1476"
-                ],
-                [
-                    "P2699",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P2699"
-                ],
-                [
-                    "P1813",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P1813"
-                ],
-                [
-                    "P170",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P170"
-                ],
-                [
-                    "P767",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P767"
-                ],
-                [
-                    "P2860",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P2860"
-                ],
-                [
-                    "P275",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P275"
-                ],
-                [
-                    "P356",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P356"
-                ],
-                [
-                    "P921",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P921"
-                ],
-                [
-                    "P625",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P625"
-                ],
-                [
-                    "P3896",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P3896"
-                ],
-                [
-                    "P17",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P17"
-                ],
-                [
-                    "P276",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P276"
-                ],
-                [
-                    "P580",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P580"
-                ],
-                [
-                    "P582",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P582"
-                ],
-                [
-                    "P6339",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P6339"
-                ],
-                [
-                    "P856",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P856"
-                ],
-                [
-                    "P6269",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P6269"
-                ],
-                [
-                    "P527",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P527"
-                ],
-                [
-                    "P1880",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P1880"
-                ],
-                [
-                    "P1114",
-                    "Custom entity ID Pnum where num<10000 is not allowed: P1114"
-                ]
-            ]
+            "failed": []
         },
         "qnodes": {
             "B3": {
                 "main subject": {
-                    "item": "Qaid-security-22"
+                    "item": "Qaid-security-22",
+                    "label": "Incident ID 22",
+                    "description": "incident related to aid worker security"
                 }
             },
             "B4": {
                 "main subject": {
-                    "item": "Qaid-security-47"
+                    "item": "Qaid-security-47",
+                    "label": "Incident ID 47",
+                    "description": "incident related to aid worker security"
                 }
             },
             "B5": {
                 "main subject": {
-                    "item": "Qaid-security-73"
+                    "item": "Qaid-security-73",
+                    "label": "Incident ID 73",
+                    "description": "incident related to aid worker security"
                 }
             },
             "B6": {
                 "main subject": {
-                    "item": "Qaid-security-103"
+                    "item": "Qaid-security-103",
+                    "label": "Incident ID 103",
+                    "description": "incident related to aid worker security"
                 }
             },
             "B7": {
                 "main subject": {
-                    "item": "Qaid-security-475"
+                    "item": "Qaid-security-475",
+                    "label": "Incident ID 475",
+                    "description": "incident related to aid worker security"
                 }
             },
             "B8": {
                 "main subject": {
-                    "item": "Qaid-security-782"
+                    "item": "Qaid-security-782",
+                    "label": "Incident ID 782",
+                    "description": "incident related to aid worker security"
                 }
             },
             "F1": {
@@ -692,42 +509,54 @@
                 "col": "B",
                 "row": "3",
                 "value": "22",
-                "item": "Qaid-security-22"
+                "item": "Qaid-security-22",
+                "label": "Incident ID 22",
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "4",
                 "value": "47",
-                "item": "Qaid-security-47"
+                "item": "Qaid-security-47",
+                "label": "Incident ID 47",
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "5",
                 "value": "73",
-                "item": "Qaid-security-73"
+                "item": "Qaid-security-73",
+                "label": "Incident ID 73",
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "6",
                 "value": "103",
-                "item": "Qaid-security-103"
+                "item": "Qaid-security-103",
+                "label": "Incident ID 103",
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "7",
                 "value": "475",
-                "item": "Qaid-security-475"
+                "item": "Qaid-security-475",
+                "label": "Incident ID 475",
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "main subject",
                 "col": "B",
                 "row": "8",
                 "value": "782",
-                "item": "Qaid-security-782"
+                "item": "Qaid-security-782",
+                "label": "Incident ID 782",
+                "description": "incident related to aid worker security"
             },
             {
                 "context": "unit",
@@ -1332,7 +1161,7 @@
             },
             "P17": {
                 "label": "country",
-                "description": "sovereign state of this item; don't use on humans"
+                "description": "sovereign state of this item (not to be used for human beings)"
             },
             "Q21203": {
                 "label": "Aruba",
@@ -1564,27 +1393,37 @@
             "qnodes": {
                 "B3": {
                     "main subject": {
-                        "item": "Qaid-security-22"
+                        "item": "Qaid-security-22",
+                        "label": "Incident ID 22",
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B5": {
                     "main subject": {
-                        "item": "Qaid-security-73"
+                        "item": "Qaid-security-73",
+                        "label": "Incident ID 73",
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B6": {
                     "main subject": {
-                        "item": "Qaid-security-103"
+                        "item": "Qaid-security-103",
+                        "label": "Incident ID 103",
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B7": {
                     "main subject": {
-                        "item": "Qaid-security-475"
+                        "item": "Qaid-security-475",
+                        "label": "Incident ID 475",
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "B8": {
                     "main subject": {
-                        "item": "Qaid-security-782"
+                        "item": "Qaid-security-782",
+                        "label": "Incident ID 782",
+                        "description": "incident related to aid worker security"
                     }
                 },
                 "F1": {
@@ -1637,35 +1476,45 @@
                     "col": "B",
                     "row": "3",
                     "value": "22",
-                    "item": "Qaid-security-22"
+                    "item": "Qaid-security-22",
+                    "label": "Incident ID 22",
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "5",
                     "value": "73",
-                    "item": "Qaid-security-73"
+                    "item": "Qaid-security-73",
+                    "label": "Incident ID 73",
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "6",
                     "value": "103",
-                    "item": "Qaid-security-103"
+                    "item": "Qaid-security-103",
+                    "label": "Incident ID 103",
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "7",
                     "value": "475",
-                    "item": "Qaid-security-475"
+                    "item": "Qaid-security-475",
+                    "label": "Incident ID 475",
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "main subject",
                     "col": "B",
                     "row": "8",
                     "value": "782",
-                    "item": "Qaid-security-782"
+                    "item": "Qaid-security-782",
+                    "label": "Incident ID 782",
+                    "description": "incident related to aid worker security"
                 },
                 {
                     "context": "unit",
@@ -1735,7 +1584,7 @@
                 "wikifier test": {
                     "item": "Q115",
                     "label": "Ethiopia",
-                    "description": "country in East Africa"
+                    "description": "Country in East Africa"
                 }
             },
             "I4": {
@@ -1749,7 +1598,7 @@
                 "wikifier test": {
                     "item": "Q115",
                     "label": "Ethiopia",
-                    "description": "country in East Africa"
+                    "description": "Country in East Africa"
                 }
             },
             "I7": {
@@ -1763,7 +1612,7 @@
                 "wikifier test": {
                     "item": "Q115",
                     "label": "Ethiopia",
-                    "description": "country in East Africa"
+                    "description": "Country in East Africa"
                 }
             }
         },
@@ -1775,7 +1624,7 @@
                 "value": "Ethiopia",
                 "item": "Q115",
                 "label": "Ethiopia",
-                "description": "country in East Africa"
+                "description": "Country in East Africa"
             },
             {
                 "context": "wikifier test",
@@ -1793,7 +1642,7 @@
                 "value": "Ethiopia",
                 "item": "Q115",
                 "label": "Ethiopia",
-                "description": "country in East Africa"
+                "description": "Country in East Africa"
             },
             {
                 "context": "wikifier test",
@@ -1811,7 +1660,7 @@
                 "value": "Ethiopia",
                 "item": "Q115",
                 "label": "Ethiopia",
-                "description": "country in East Africa"
+                "description": "Country in East Africa"
             }
         ],
         "problemCells": {

@@ -219,54 +219,6 @@ P2006190002-data-type-1	P2006190002	data_type	WikibaseItem
 P2006190003-label-1	P2006190003	label	located in the third-level administrative country subdivision
 P2006190003-description-1	P2006190003	description	The item is located in the third-level administrative country subdivision. A third-level adminstrative country subdivision is located within itself
 P2006190003-data-type-1	P2006190003	data_type	WikibaseItem
-P248-label-1	P248	label	stated in
-P1687-label-1	P1687	label	corresponds to property
-P1687-data_type-1	P1687	data_type	WikibaseProperty
-P1476-label-1	P1476	label	title
-P1476-data_type-1	P1476	data_type	String
-P2699-label-1	P2699	label	URL
-P2699-data_type-1	P2699	data_type	String
-P1813-data-type-1	P1813	data_type	String
-P170-label-1	P170	label	creator
-P170-data-type-1	P170	data_type	WikibaseItem
-P767-label-1	P767	label	contributor
-P767-data-type-1	P767	data_type	WikibaseItem
-P2860-label-1	P2860	label	cites work
-P2860-data-type-1	P2860	data_type	String
-P275-label-1	P275	label	copyright license
-P275-data-type-1	P275	data_type	String
-P356-label-1	P356	label	doi
-P356-data-type-1	P356	data_type	String
-P921-label-1	P921	label	main subject
-P921-data-type-1	P921	data_type	WikibaseItem
-P625-label-1	P625	label	coordinate location
-P625-data-type-1	P625	data_type	GlobeCoordinate
-P3896-label-1	P3896	label	geoshape
-P3896-data-type-1	P3896	data_type	String
-P17-label-1	P17	label	country
-P17-data-type-1	P17	data_type	WikibaseItem
-P276-label-1	P276	label	location
-P276-data-type-1	P276	data_type	String
-P580-label-1	P580	label	start time
-P580-data-type-1	P580	data_type	Time
-P582-label-1	P582	label	end time
-P582-data-type-1	P582	data_type	Time
-P6339-label-1	P6339	label	data interval
-P6339-data-type-1	P6339	data_type	WikibaseItem
-P856-label-1	P856	label	official website
-P856-data-type-1	P856	data_type	String
-P6269-label-1	P6269	label	api endpoint
-P6269-data-type-1	P6269	data_type	String
-P527-label-1	P527	label	has part
-P527-data-type-1	P527	data_type	String
-P1813-label-1	P1813	label	short name
-P1813-data-type-1	P1813	data_type	String
-P921-label-1	P921	label	main subject
-P921-data-type-1	P921	data_type	WikibaseItem
-P1880-label-1	P1880	label	unit of measure
-P1880-data-type-1	P1880	data_type	String
-P1114-label-1	P1114	label	count
-P1114-data-type-1	P1114	data_type	Quantity
 PVARIABLE-QEth-fertilizer-002-data_type	PVARIABLE-QEth-fertilizer-002	data_type	Quantity
 PVARIABLE-QEth-fertilizer-002-P31	PVARIABLE-QEth-fertilizer-002	P31	Q18616576
 PVARIABLE-QEth-fertilizer-002-label	PVARIABLE-QEth-fertilizer-002	label	 Area(HA) 
