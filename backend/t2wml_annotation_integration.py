@@ -1,7 +1,8 @@
 import re
-import traceback
+import hashlib
 import tarfile
 import tempfile
+import traceback
 import pandas as pd
 from glob import glob
 from pathlib import Path
@@ -59,9 +60,10 @@ class AnnotationIntegration(object):
         header_str = header_str.replace("#", "")
         header_str = header_str.replace("&", "")
 
+        header_path = hashlib.sha256(header_str.encode()).hexdigest()
         # create the annotations folder for this project if it does not exist
         Path(f'{project_path}/annotations').mkdir(parents=True, exist_ok=True)
-        self.annotation.to_csv(f'{project_path}/annotations/{header_str}.tsv', index=False, header=None, sep='\t')
+        self.annotation.to_csv(f'{project_path}/annotations/{header_path}.tsv', index=False, header=None, sep='\t')
 
     def is_annotation_available(self, project_path):
         # treat the first row as header as we don't know any better
@@ -180,7 +182,7 @@ class AnnotationIntegration(object):
             project.add_entity_file(if_path, copy_from_elsewhere=True, overwrite=True)
 
             wf_path = save_dataframe(project, consolidated_wikifier_df, "annotation_wikify_region_output.csv")
-            project.add_wikifier_file(wf_path)  # , copy_from_elsewhere=True, overwrite=True)
+            project.add_wikifier_file(wf_path)
             project.update_saved_state(current_wikifiers=[wf_path])
 
             save_yaml(project, t2wml_yaml)  # give it a better name eventually
