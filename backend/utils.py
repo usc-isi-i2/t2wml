@@ -30,15 +30,15 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
     except Exception as e:
         raise e
     response = dict()
-    try:
-        for i in range(len(results["results"]["bindings"])):
+    for i in range(len(results["results"]["bindings"])):
+        try:
             qnode = results["results"]["bindings"][i]["qnode"]["value"].split(
                 "/")[-1]
             label = results["results"]["bindings"][i]["qnodeLabel"]["value"]
             desc = results["results"]["bindings"][i]["qnodeDescription"]["value"]
             response[qnode] = {'label': label, 'description': desc}
-    except IndexError:
-        pass
+        except (IndexError, KeyError):
+            pass
     return response
 
 
