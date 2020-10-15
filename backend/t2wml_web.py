@@ -3,7 +3,8 @@ from t2wml.utils.t2wml_exceptions import T2WMLException, TemplateDidNotApplyToIn
 from t2wml.api import Sheet, WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import column_index_to_letter, to_excel, column_letter_to_index
 from app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
-from wikidata_models import DatabaseProvider, get_labels_and_descriptions
+from wikidata_models import DatabaseProvider
+from utils import get_labels_and_descriptions
 
 
 def wikify(calc_params, region, context):
