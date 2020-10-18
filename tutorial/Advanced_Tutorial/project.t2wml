@@ -1,10 +1,21 @@
+_saved_state:
+  current_data_file: advanced.xlsx
+  current_sheet: 00_advanced
+  current_wikifiers:
+  - wikifier.csv
+  current_yaml: 00_advanced_id339.yaml
+cache_id: 410df160-96c8-4722-bcb4-27b0dd67e12f
 data_files:
-- advanced.xlsx
-directory: /home/ktyao/dev/dsbox/t2wml/tutorial/Advanced_Tutorial
+  advanced.xlsx:
+  - 00_advanced
+  - 01_advanced
+  - 02_advanced
+  - 03_advanced_exercise
+  - 03_advanced_solution
 entity_files:
 - properties.tsv
+handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
-specific_wikifiers: {}
 title: Advanced_Tutorial
 warn_for_empty_cells: false
 wikifier_files:

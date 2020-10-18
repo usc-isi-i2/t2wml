@@ -14,6 +14,7 @@ export interface ProjectDTO {
     warn_for_empty_cells: boolean;
     handle_calendar: string;
     cache_id: string;
+    error?: string;
     _saved_state: any;
  }
 
