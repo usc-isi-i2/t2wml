@@ -383,7 +383,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
 
-  updateQnodeCells(qnodeData: any | null = null, rowData = null) {
+  updateQnodeCells(qnodeData: any | null = null, rowData: any = null) {
     if (qnodeData === null) {
       // reset qnode cells
       if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;
