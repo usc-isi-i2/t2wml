@@ -16,7 +16,7 @@ import { observer } from "mobx-react";
 import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
-import { reaction } from 'mobx';
+import { autorun, IReactionDisposer, reaction } from 'mobx';
 
 interface OutputComponentState {
   showSpinner: boolean,
@@ -49,6 +49,7 @@ interface OutputComponentState {
 @observer
 class Output extends Component<{}, OutputComponentState> {
   private requestService: RequestService;
+  private disposeAutorun?: IReactionDisposer;
 
   constructor(props: {}) {
     super(props);
@@ -87,13 +88,15 @@ class Output extends Component<{}, OutputComponentState> {
     reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
   }
 
-  // componentDidMount() {
-  //   this.autoRunDisposer = autorun(this.updateStateFromStore);
-  // }
+  componentDidMount() {
+    this.disposeAutorun = autorun(this.updateStateFromStore);
+  }
 
-  // componentWillUnmount() {
-  //   this.autoRunDisposer();
-  // }
+  componentWillUnmount() {
+    if (this.disposeAutorun) {
+      this.disposeAutorun();
+    }
+  }
 
   private get projectPath() {
     return wikiStore.projects.current!.folder;
@@ -185,17 +188,16 @@ class Output extends Component<{}, OutputComponentState> {
 
   updateStateFromStore() {
     // remove current status
-    debugger
     this.removeOutput();
+
+    const json = wikiStore.output.json;
+    const colName = wikiStore.output.col;
+    const rowName = wikiStore.output.row;
 
     if(!wikiStore.output.showOutput) {
       return;
     }
 
-    const json = wikiStore.output.json;
-    const colName = wikiStore.output.col;
-    const rowName = wikiStore.output.row;
-    
     if(json["error"]) {
         this.setState({errors: JSON.stringify(json["error"])});
     }
