@@ -16,8 +16,9 @@ import { observer } from "mobx-react";
 import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
+import { reaction } from 'mobx';
 
-interface OutputState {
+interface OutputComponentState {
   showSpinner: boolean,
   currCol: string;
   currRow: string;
@@ -46,7 +47,7 @@ interface OutputState {
 }
 
 @observer
-class Output extends Component<{}, OutputState> {
+class Output extends Component<{}, OutputComponentState> {
   private requestService: RequestService;
 
   constructor(props: {}) {
@@ -80,16 +81,19 @@ class Output extends Component<{}, OutputState> {
       isLoadDatamart: false,
 
       errorMessage: {} as ErrorMessage,
-    } as OutputState;
+    } as OutputComponentState;
 
 
-    // TODO: Remove these
-    //wikiStore.output.removeOutput = () => this.removeOutput();
-    //wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
-
-    // TODO: Add a rection on the wikiStore.output
-    // Use wikiStore.output.showOutput to decide whether to show the output
+    reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
   }
+
+  // componentDidMount() {
+  //   this.autoRunDisposer = autorun(this.updateStateFromStore);
+  // }
+
+  // componentWillUnmount() {
+  //   this.autoRunDisposer();
+  // }
 
   private get projectPath() {
     return wikiStore.projects.current!.folder;
@@ -179,16 +183,26 @@ class Output extends Component<{}, OutputState> {
     }
   }
 
-  updateOutput(colName: string, rowName: string, json: any) {
+  updateStateFromStore() {
     // remove current status
+    debugger
     this.removeOutput();
+
+    if(!wikiStore.output.showOutput) {
+      return;
+    }
+
+    const json = wikiStore.output.json;
+    const colName = wikiStore.output.col;
+    const rowName = wikiStore.output.row;
+    
     if(json["error"]) {
         this.setState({errors: JSON.stringify(json["error"])});
     }
 
     this.setState({
       valueCol: colName,
-      valueRow: rowName
+      valueRow: rowName,
     });
  
     if (json["statement"] === undefined) return;

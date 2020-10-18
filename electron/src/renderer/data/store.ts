@@ -65,20 +65,33 @@ class WikifierState {
 class OutputState {
     @observable public showSpinner: boolean;
     @observable public isDownloadDisabled: boolean;
-    // TODO: Add the three fields - row, col, json
-    // TODO: Add a computed property showOutput that returns true when the output should be shown (if row and col !== '')
+    @observable public col: string;
+    @observable public row: string;
+    @observable public json: any;
+    
+    // Computed property showOutput that returns true when the output should be shown.
+    @computed get showOutput(): boolean {
+        return this.row !== '' && this.col !== '';
+    }
 
-    // TODO: Add a function updateOutput that sets col, row, json. Make it an @action
     @action
-    public updateOutput(colName: string, rowName: string, json: any) { };
+    public updateOutput(colName: string, rowName: string, json: any) {
+        this.col = colName;
+        this.row = rowName;
+        this.json = json;
+    }
 
-    // TODO: Add a function removeOutput that sets colName and rowName to '', make it in @action
     @action
-    public clearOutput() { } ;
+    public clearOutput() {
+        this.col = '';
+        this.row = '';
+    }
 
     constructor() {
         this.showSpinner = false;
         this.isDownloadDisabled = true;
+        this.col = '';
+        this.row = '';
     }
 }
 
