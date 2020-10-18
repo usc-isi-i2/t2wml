@@ -8,7 +8,7 @@ class EditorsState {
     @observable public nowShowing: EditorsStatus = "Wikifier";
 }
 
-class TabletState {
+class TableState {
     @observable public isCellSelectable: boolean;
 
     @observable public showSpinner: boolean;
@@ -78,20 +78,17 @@ class OutputState {
 }
 
 class YamlEditorState {
-    // TODO: 1 - remove this function
-    @observable public updateYamlText: (yamlText?: string | null) => void;
-
-    // TODO: 2 - Add a yamlText string field
+    @observable public yamlText: string | null;
 
     constructor() {
-        this.updateYamlText = () => undefined;
+        this.yamlText = null;
     }
 }
 
 
 class WikiStore {
     @observable public editors = new EditorsState();
-    @observable public table = new TabletState();
+    @observable public table = new TableState();
     @observable public settings = new SettingsState();
     @observable public wikifier = new WikifierState();
     @observable public output = new OutputState();

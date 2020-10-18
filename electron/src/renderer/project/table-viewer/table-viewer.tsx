@@ -169,8 +169,7 @@ class TableViewer extends Component<{}, TableState> {
 
       // load yaml data
       if (yamlData !== null) {
-        // TODO 3: Set the yaml string in the store, instead of calling the function
-        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.yaml.yamlText = yamlData.yamlFileContent;
         this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
       } else {
@@ -316,7 +315,7 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
-    wikiStore.yaml.updateYamlText();
+    wikiStore.yaml.yamlText = null;
     this.updateYamlRegions();
     this.updateQnodeCells();
     wikiStore.output.removeOutput();
@@ -359,7 +358,7 @@ class TableViewer extends Component<{}, TableState> {
 
       // load yaml data
       if (yamlData !== null) {
-        wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
+        wikiStore.yaml.yamlText = yamlData.yamlFileContent;
         this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;

@@ -120,7 +120,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       }
 
       // load yaml data
-      wikiStore.yaml.updateYamlText(yamlData?.yamlFileContent);
+      wikiStore.yaml.yamlText = yamlData?.yamlFileContent;
       wikiStore.table.updateYamlRegions(yamlData?.yamlRegions);
       if (yamlData !== null) {
         wikiStore.table.isCellSelectable = true;
