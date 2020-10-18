@@ -169,6 +169,7 @@ class TableViewer extends Component<{}, TableState> {
 
       // load yaml data
       if (yamlData !== null) {
+        // TODO 3: Set the yaml string in the store, instead of calling the function
         wikiStore.yaml.updateYamlText(yamlData.yamlFileContent);
         this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;

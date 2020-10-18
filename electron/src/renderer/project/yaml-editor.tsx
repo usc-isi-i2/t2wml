@@ -15,6 +15,7 @@ import ToastMessage from '../common/toast';
 import { observer } from "mobx-react"
 import wikiStore from '../data/store';
 import { defaultYamlText } from "./default-values";
+import { reaction } from 'mobx';
 
 
 interface yamlProperties {
@@ -56,7 +57,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // init functions
     this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
 
+    // TODO 4: Do not set the event handler
     wikiStore.yaml.updateYamlText = (yamlText: string | null = null) => this.updateYamlText(yamlText);
+
+    reaction(() => wikiStore.yaml.yamlText, (newYamlText) => this.updateYamlText(newYamlText));
   }
 
   async handleApplyYaml() {

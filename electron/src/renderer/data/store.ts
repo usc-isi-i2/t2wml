@@ -78,7 +78,10 @@ class OutputState {
 }
 
 class YamlEditorState {
+    // TODO: 1 - remove this function
     @observable public updateYamlText: (yamlText?: string | null) => void;
+
+    // TODO: 2 - Add a yamlText string field
 
     constructor() {
         this.updateYamlText = () => undefined;
