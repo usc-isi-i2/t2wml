@@ -88,7 +88,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
         // else, success
       const { yamlRegions } = json;
-      const internalError = yamlRegions.error;
+      const internalError = json.error;
       if (internalError){
 
           console.log("ERRORS while applying yaml:");

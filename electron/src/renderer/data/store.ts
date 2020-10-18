@@ -81,6 +81,7 @@ class OutputState {
         this.json = json;
     }
 
+
     @action
     public clearOutput() {
         this.col = '';
