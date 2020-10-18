@@ -360,7 +360,7 @@ def upload_yaml():
     return response, 200
 
 
-@app.route('/api/data//cell/<col>/<row>', methods=['GET'])
+@app.route('/api/data/cell/<col>/<row>', methods=['GET'])
 @json_response
 def get_cell_statement(col, row):
     """
