@@ -1,4 +1,5 @@
 import { backendGet, backendPost, backendPut, backendDelete } from './comm';
+import { t2wmlResultDTO } from './dtos';
 
 // I did it as a class because we will add a state instance
 
@@ -84,9 +85,9 @@ class RequestService {
     return response;
   }
 
-  public async getProjectFiles(folder: string) {
-    //returns name, project, tableData, yamlData, wikifierData
-    const response = await backendGet(`/project?project_folder=${folder}`);
+  public async getProjectFiles(folder: string): Promise<t2wmlResultDTO> {
+       //returns name, project, tableData, yamlData, wikifierData
+    const response = await backendGet(`/project?project_folder=${folder}`) as t2wmlResultDTO;
     return response;
   }
 

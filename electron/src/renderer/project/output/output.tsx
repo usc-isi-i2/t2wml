@@ -83,8 +83,12 @@ class Output extends Component<{}, OutputState> {
     } as OutputState;
 
 
-    wikiStore.output.removeOutput = () => this.removeOutput();
-    wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
+    // TODO: Remove these
+    //wikiStore.output.removeOutput = () => this.removeOutput();
+    //wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
+
+    // TODO: Add a rection on the wikiStore.output
+    // Use wikiStore.output.showOutput to decide whether to show the output
   }
 
   private get projectPath() {
