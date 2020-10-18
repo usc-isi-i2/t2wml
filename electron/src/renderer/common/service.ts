@@ -1,21 +1,9 @@
-import { backendGet, backendPost, backendPut, backendDelete } from './comm';
+import { backendGet, backendPost, backendPut } from './comm';
 import { t2wmlResultDTO } from './dtos';
 
 // I did it as a class because we will add a state instance
 
 class RequestService {
-
-  public async logout() {
-    //this url no longer exists at all
-    const response = await backendPost('/logout');
-    return response;
-  }
-
-  public async getProjects() {
-    //this url no longer exists at all
-    const response = await backendGet('/projects');
-    return response;
-  }
 
   public async createProject(folder: string) {
     //"project": the project class I sent
@@ -26,12 +14,6 @@ class RequestService {
   public async loadProject(folder: string) {
     //"project": the project class I sent
     const response = await backendPost(`/project/load?project_folder=${folder}`);
-    return response;
-  }
-
-  public async uploadProperties(folder: string, formData: any) {
-    //this url no longer exists at all
-    const response = await backendPost(`/project/properties?project_folder=${folder}`, formData);
     return response;
   }
 
@@ -91,12 +73,6 @@ class RequestService {
     return response;
   }
 
-  public async deleteProject(folder: string) {
-        //this url no longer exists at all
-    const response = await backendDelete(`/project?project_folder=${folder}`);
-    return response;
-  }
-
   public async renameProject(folder: string, formData: any) {
     //returns project
     const response = await backendPut(`/project?project_folder=${folder}`, formData);
@@ -115,18 +91,6 @@ class RequestService {
     return response;
   }
 
-  // It doesn't exist in the backend - note from talya, i think, but correct, there's a different url for downloading
-  //this may be something leftover from amandeep and datamart integration?
-  public async downloadProject(folder: string) {
-    const response = await backendGet(`/project/download?project_folder=${folder}`);
-    return response;
-  }
-
-  public async getQnode(folder: string, node: string) {
-    //this url no longer exists at all
-    const response = await backendGet(`/qnode/${node}?project_folder=${folder}`);
-    return response;
-  }
 
   public async uploadEntities(folder: string, formData: any) {
     //returns "widget", "project", "rowData", "qnodes"

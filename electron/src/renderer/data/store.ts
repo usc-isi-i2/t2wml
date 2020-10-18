@@ -70,11 +70,15 @@ class OutputState {
 
     // TODO: Add a function updateOutput that sets col, row, json. Make it an @action
     @action
-    public updateOutput(colName: string, rowName: string, json: any) { };
+    public updateOutput(colName: string, rowName: string, json: any) { 
+        //
+    };
 
     // TODO: Add a function removeOutput that sets colName and rowName to '', make it in @action
     @action
-    public clearOutput() { } ;
+    public clearOutput() {
+        //
+    } ;
 
     constructor() {
         this.showSpinner = false;
