@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
@@ -65,15 +65,20 @@ class WikifierState {
 class OutputState {
     @observable public showSpinner: boolean;
     @observable public isDownloadDisabled: boolean;
-    @observable public removeOutput: () => void;
-    @observable public updateOutput: (colName: string, rowName: string, json: any) => void;
+    // TODO: Add the three fields - row, col, json
+    // TODO: Add a computed property showOutput that returns true when the output should be shown (if row and col !== '')
 
+    // TODO: Add a function updateOutput that sets col, row, json. Make it an @action
+    @action
+    public updateOutput(colName: string, rowName: string, json: any) { };
+
+    // TODO: Add a function removeOutput that sets colName and rowName to '', make it in @action
+    @action
+    public clearOutput() { } ;
 
     constructor() {
         this.showSpinner = false;
         this.isDownloadDisabled = true;
-        this.removeOutput = () => undefined;
-        this.updateOutput = () => undefined;
     }
 }
 
