@@ -36,9 +36,8 @@ def test_switching_back_to_sheets(client):
 
     #some of the results are sent back as unordered lists and need to be compared separately
     
-    set_keys=sanitize_highlight_region(yaml_1_data, switch_back_data)
-    for key in set_keys:
-        yaml_2_data.pop(key, None)
+    #set_keys=sanitize_highlight_region(yaml_1_data, switch_back_data)
+
     
     assert yaml_1_data!=yaml_2_data
     assert yaml_1_data==switch_back_data

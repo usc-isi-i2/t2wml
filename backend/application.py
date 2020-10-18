@@ -353,7 +353,9 @@ def upload_yaml():
             "Upload data file before applying YAML.")
     save_yaml(project, yaml_data, yaml_title)
     calc_params = get_calc_params(project)
-    response['yamlRegions'] = highlight_region(calc_params)
+    region_data, statement_data = highlight_region(calc_params)
+    response["yamlRegions"]=region_data
+    response["statementData"]=statement_data
     response['project'] = project.__dict__
     return response, 200
 

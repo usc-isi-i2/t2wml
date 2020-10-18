@@ -82,7 +82,7 @@ class TestBasicWorkflow(BaseClass):
         #some of the results are sent back as unordered lists and need to be compared separately
         dict_1=data["yamlRegions"]
         dict_2=self.expected_results_dict["add_yaml"]["yamlRegions"]
-        sanitize_highlight_region(dict_1, dict_2)
+        #sanitize_highlight_region(dict_1, dict_2)
 
         self.compare_jsons(data, 'add_yaml')
 
@@ -184,7 +184,7 @@ class TestLoadingProject(BaseClass):
         set_keys=[]
         dict_1=data["yamlData"]["yamlRegions"]
         dict_2=self.expected_results_dict["load_from_path"]["yamlData"]["yamlRegions"]
-        sanitize_highlight_region(dict_1, dict_2)
+        #sanitize_highlight_region(dict_1, dict_2)
 
         data['tableData'].pop('filename', None)
         self.expected_results_dict['load_from_path']['tableData'].pop('filename', None)

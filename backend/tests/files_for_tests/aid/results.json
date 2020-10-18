@@ -621,49 +621,95 @@
         "error": null,
         "yamlRegions": {
             "dataRegion": {
+                "regionType": "data",
                 "color": "hsl(150, 50%, 90%)",
                 "list": [
-                    "G8",
-                    "F5",
+                    "F3",
                     "F4",
-                    "H5",
-                    "H6",
-                    "F8",
-                    "G6",
-                    "H8",
-                    "H3",
-                    "H4",
-                    "G3",
-                    "F7",
+                    "F5",
                     "F6",
+                    "F7",
+                    "F8",
+                    "G3",
                     "G4",
                     "G5",
+                    "G6",
                     "G7",
-                    "F3",
-                    "H7"
+                    "G8",
+                    "H3",
+                    "H4",
+                    "H5",
+                    "H6",
+                    "H7",
+                    "H8"
                 ]
             },
             "item": {
+                "regionType": "item",
                 "color": "hsl(200, 50%, 90%)",
                 "list": [
-                    "B4",
-                    "B8",
                     "B3",
+                    "B4",
+                    "B5",
                     "B6",
                     "B7",
-                    "B5"
+                    "B8",
+                    "B3",
+                    "B4",
+                    "B5",
+                    "B6",
+                    "B7",
+                    "B8",
+                    "B3",
+                    "B4",
+                    "B5",
+                    "B6",
+                    "B7",
+                    "B8"
                 ]
             },
             "qualifierRegion": {
+                "regionType": "qualifier",
                 "color": "hsl(250, 50%, 90%)",
                 "list": [
+                    "I4",
+                    "I4",
                     "I4"
                 ]
             },
             "referenceRegion": {
+                "regionType": "reference",
                 "color": "yellow",
                 "list": []
             },
+            "errorCells": {
+                "regionType": "warning",
+                "color": "#FF8000",
+                "list": []
+            },
+            "dangerCells": {
+                "regionType": "majorError",
+                "color": "#FF3333",
+                "list": [
+                    "F3",
+                    "F5",
+                    "F6",
+                    "F7",
+                    "F8",
+                    "G3",
+                    "G5",
+                    "G6",
+                    "G7",
+                    "G8",
+                    "H3",
+                    "H5",
+                    "H6",
+                    "H7",
+                    "H8"
+                ]
+            }
+        },
+        "statementData": {
             "error": {
                 "F3": {
                     "qualifier": {
@@ -770,30 +816,6 @@
                         }
                     }
                 }
-            },
-            "dangerCells": {
-                "color": "#FF8000",
-                "list": [
-                    "F3",
-                    "F5",
-                    "F6",
-                    "F7",
-                    "F8",
-                    "G3",
-                    "G5",
-                    "G6",
-                    "G7",
-                    "G8",
-                    "H3",
-                    "H5",
-                    "H6",
-                    "H7",
-                    "H8"
-                ]
-            },
-            "errorCells": {
-                "color": "#FF3333",
-                "list": []
             },
             "cellStatements": {
                 "F3": {

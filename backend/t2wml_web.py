@@ -43,67 +43,58 @@ def download(calc_params, filetype):
 
 def highlight_region(calc_params):
     cache_holder = calc_params.cache
-    highlight_data, statement_data, errors = cache_holder.result_cacher.get_highlight_region()
-    if highlight_data:
-        highlight_data['error'] = errors if errors else None
-        highlight_data['cellStatements'] = statement_data
-        return highlight_data
+    region_data, statements, errors = cache_holder.result_cacher.get_highlight_region()
+    if region_data:
+        statement_data= dict()
+        statement_data['error'] = errors if errors else None
+        statement_data['cellStatements'] = statements
+        return region_data, statement_data
 
-    highlight_data = {
-        "dataRegion": {"color": "hsl(150, 50%, 90%)", "list": set()},
-        "item": {"color": "hsl(200, 50%, 90%)", "list": set()},
-        "qualifierRegion": {"color": "hsl(250, 50%, 90%)", "list": set()},
-        'referenceRegion': {"color": "yellow", "list": set()},
-        'error': dict()}
+    region_data = {
+        "dataRegion": {"regionType":"data", "color": "hsl(150, 50%, 90%)", "list": []},
+        "item": {"regionType": "item", "color": "hsl(200, 50%, 90%)", "list": []},
+        "qualifierRegion": {"regionType": "qualifier", "color": "hsl(250, 50%, 90%)", "list": []},
+        'referenceRegion': {"regionType": "reference", "color": "yellow", "list": []},
+        'errorCells':{"regionType": "warning", 'color': '#FF8000', 'list': []},
+        'dangerCells':{"regionType": "majorError", 'color': '#FF3333', 'list': []}
+        }
     kg = get_kg(calc_params)
-    statement_data = kg.statements
-    errors = kg.errors
-    for cell in statement_data:
-        highlight_data["dataRegion"]["list"].add(cell)
-        statement = statement_data[cell]
+
+    statements=kg.statements
+    errors=kg.errors
+    for cell in statements:
+        region_data["dataRegion"]["list"].append(cell)
+        statement = statements[cell]
         item_cell = statement.get("cell", None)
         if item_cell:
-            highlight_data["item"]["list"].add(item_cell)
+            region_data["item"]["list"].append(item_cell)
         qualifiers = statement.get("qualifier", None)
         if qualifiers:
             for qualifier in qualifiers:
                 qual_cell = qualifier.get("cell", None)
                 if qual_cell:
-                    highlight_data["qualifierRegion"]["list"].add(qual_cell)
+                    region_data["qualifierRegion"]["list"].append(qual_cell)
 
         references = statement.get("reference", None)
         if references:
             for ref in references:
                 ref_cell = ref.get("cell", None)
                 if ref_cell:
-                    highlight_data["referenceRegion"]["list"].add(ref_cell)
+                    region_data["referenceRegion"]["list"].append(ref_cell)
 
-    highlight_data['dataRegion']['list'] = list(
-        highlight_data['dataRegion']['list'])
-    highlight_data['item']['list'] = list(highlight_data['item']['list'])
-    highlight_data['qualifierRegion']['list'] = list(
-        highlight_data['qualifierRegion']['list'])
-    highlight_data['referenceRegion']['list'] = list(
-        highlight_data['referenceRegion']['list'])
-
-    # handle error colors:
-    orange = '#FF8000'
-    red = '#FF3333'
-
-    highlight_data['error'] = errors if errors else None
-    highlight_data['dangerCells'] = {'color': orange, 'list': []}
-    highlight_data['errorCells'] = {'color': red, 'list': []}
 
     for cell in errors:
-        if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):
-            highlight_data['errorCells']['list'].append(cell)
-        else:
-            highlight_data['dangerCells']['list'].append(cell)
+            if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):
+                region_data['errorCells']['list'].append(cell)
+            else:
+                region_data['dangerCells']['list'].append(cell)
+    cache_holder.result_cacher.save(region_data, statements, errors, kg.metadata)
 
-    cache_holder.result_cacher.save(highlight_data, statement_data, errors, kg.metadata)
+    statement_data= dict()
+    statement_data['error'] = kg.errors if errors else None
+    statement_data['cellStatements'] = kg.statements
 
-    highlight_data['cellStatements'] = statement_data
-    return highlight_data
+    return region_data, statement_data
 
 
 def get_cell(calc_params, col, row):
@@ -150,7 +141,9 @@ def handle_yaml(calc_params):
         with open(yaml_path, "r", encoding="utf-8") as f:
             response["yamlFileContent"] = f.read()
         try:
-            response['yamlRegions'] = highlight_region(calc_params)
+            region_data, statement_data = highlight_region(calc_params)
+            response["yamlRegions"]=region_data
+            response["statementData"]=statement_data
         except Exception as e:  # this is something of a stopgap measure for now. need to do it properly later.
             orange = '#FF8000'
             red = '#FF3333'
