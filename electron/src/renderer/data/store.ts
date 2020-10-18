@@ -78,11 +78,7 @@ class OutputState {
 }
 
 class YamlEditorState {
-    @observable public yamlText: string | null;
-
-    constructor() {
-        this.yamlText = null;
-    }
+    @observable public yamlText?: string;
 }
 
 

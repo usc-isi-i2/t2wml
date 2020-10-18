@@ -315,7 +315,7 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
-    wikiStore.yaml.yamlText = null;
+    wikiStore.yaml.yamlText = undefined;
     this.updateYamlRegions();
     this.updateQnodeCells();
     wikiStore.output.removeOutput();

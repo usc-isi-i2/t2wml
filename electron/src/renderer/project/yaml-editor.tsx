@@ -168,11 +168,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     });
   }
 
-  updateYamlText(yamlText: string | null = null) {
-    let newYamlText = yamlText;
-    if (newYamlText === null) {
-      newYamlText = defaultYamlText;
-    }
+  updateYamlText(yamlText: string | undefined) {
+    const newYamlText = yamlText || defaultYamlText;
     this.setState({ yamlText: newYamlText });
     try {
       const yamlJson = (yaml.safeLoad(newYamlText)) as JSON;

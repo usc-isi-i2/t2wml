@@ -102,7 +102,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       this.setState({name: json.name});
 
       // do something here
-      const { tableData, yamlData, wikifierData, settings } = json;
+      const { tableData, yamlData, wikifierData } = json;
 
       // load table data
       if (tableData) {
@@ -120,7 +120,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       }
 
       // load yaml data
-      wikiStore.yaml.yamlText = yamlData?.yamlFileContent;
+      wikiStore.yaml.yamlText = yamlData?.yamlFileContent || undefined;
       wikiStore.table.updateYamlRegions(yamlData?.yamlRegions);
       if (yamlData !== null) {
         wikiStore.table.isCellSelectable = true;
@@ -133,11 +133,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       }
 
       // load settings
-      if (settings) {
-        wikiStore.settings.sparqlEndpoint = settings.endpoint;
-      } else {
-        wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
-      }
+      wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
 
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
