@@ -44,13 +44,9 @@ class SettingsState {
     }
 }
 
-class WikifierInnerState {
-    @observable public qnodeData: any = {};
-    @observable public currRegion = ''; // Is it needed?
-}
 class WikifierState {
     @observable public showSpinner: boolean;
-    @observable public state: WikifierInnerState | undefined;
+    @observable public currRegion: string; // Is it needed?
     @observable public scope: number; // Is it needed?
     @observable public qnodeData: any;
     @observable public rowData: any;
@@ -58,7 +54,7 @@ class WikifierState {
 
     constructor() {
         this.showSpinner = false;
-        this.state = new WikifierInnerState();
+        this.currRegion = '';
         this.scope = 0;
         this.qnodeData = {};
         this.rowData = [];

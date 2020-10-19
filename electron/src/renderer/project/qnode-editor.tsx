@@ -242,7 +242,7 @@ class QnodeEditor extends Component<qnodeProperties, qnodeState> {
                   variant="outline-light"
                   size="sm"
                   style={(scope === 1) ? currScopeStyle : otherScopeStyle}
-                  disabled={wikiStore.wikifier.state && wikiStore.wikifier.state.currRegion === "All"}
+                  disabled={wikiStore.wikifier.currRegion === "All"}
                   onClick={() => this.handleChangeScope(1)}
                 >
                   Region

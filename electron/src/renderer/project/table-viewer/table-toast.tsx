@@ -22,8 +22,8 @@ class TableToast extends Component<TableToastProperties, {}> {
 
   renderToastBody() {
     // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    if (wikiStore.wikifier === undefined || wikiStore.wikifier.state === undefined) return;
-    const { qnodeData } = wikiStore.wikifier.state;
+    if (wikiStore.wikifier === undefined) return;
+    const { qnodeData } = wikiStore.wikifier;
     if (qnodeData === undefined) return;
 
     // get qnode according to cell index, e.g. "Q967"

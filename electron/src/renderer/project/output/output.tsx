@@ -78,9 +78,6 @@ class Output extends Component<{}, OutputComponentState> {
 
       errorMessage: {} as ErrorMessage,
     } as OutputComponentState;
-
-
-    // reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -186,7 +183,6 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
   updateStateFromStore() {
-     console.debug('output updateStateFromStore called ', JSON.stringify(wikiStore.output, null, 4));
     this.removeOutput();
 
     const json = wikiStore.output.json;

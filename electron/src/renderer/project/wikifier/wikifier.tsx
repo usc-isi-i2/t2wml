@@ -14,7 +14,7 @@ import WikifierOutput from './wikifier-output';
 
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
-import { autorun, IReactionDisposer } from 'mobx';
+import { reaction, IReactionDisposer } from 'mobx';
 
 
 interface WikifierProperties {
@@ -38,7 +38,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   public gridColumnApi: any;
 
   private requestService: RequestService;
-  private disposeAutorun?: IReactionDisposer;
 
   constructor(props: WikifierProperties) {
     super(props);
@@ -51,7 +50,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
-      qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
+      qnodeData: wikiStore.wikifier.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in Africa" }]
 
       // call wikifier service
@@ -66,16 +65,18 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     };
   }
 
+  private disposers: IReactionDisposer[] = [];
+
   componentDidMount() {
-    // this.disposeAutorun = autorun(this.updateWikifierFromStore.bind(this));
+    this.disposers.push(reaction(() => wikiStore.wikifier.qnodeData, () => this.updateWikifierFromStore()));
+    this.disposers.push(reaction(() => wikiStore.wikifier.rowData, () => this.updateWikifierFromStore()));
   }
 
   componentWillUnmount() {
-    if (this.disposeAutorun) {
-      this.disposeAutorun();
+    for(const disposer of this.disposers) {
+      disposer();
     }
   }
-
 
   async handleDoCall(region: string, flag: string, context: string) {
     // validate input
@@ -141,10 +142,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     const rowData = wikiStore.wikifier.rowData;
     this.setState({
         rowData: rowData,
+        qnodeData: qnodeData
     });
-    if (wikiStore.wikifier.state) { // todo !!
-       wikiStore.wikifier.state.qnodeData = qnodeData;
-    }
   }
 
   async uploadEntitiesFile(event: any) {

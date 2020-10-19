@@ -386,8 +386,8 @@ class TableViewer extends Component<{}, TableState> {
   updateQnodeCells(qnodeData: any | null = null, rowData: any = null) {
     if (qnodeData === null) {
       // reset qnode cells
-      if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;
-      const qnodes = Object.keys(wikiStore.wikifier.state.qnodeData);
+      if (!wikiStore.wikifier.qnodeData) return;
+      const qnodes = Object.keys(wikiStore.wikifier.qnodeData);
       if (qnodes.length === 0) return;
       const cells = { qnode: { list: qnodes } };
       const presets = {
