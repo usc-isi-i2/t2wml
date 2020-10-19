@@ -14,7 +14,8 @@ class TableState {
     @observable public showSpinner: boolean;
     @observable public errorCells: string[] | undefined;
     @observable public dataRegionsCells: string[];
-    @observable public updateYamlRegions: (newYamlRegions?: any) => void;
+
+    @observable public yamlRegions: any;
     @observable public updateQnodeCells: (qnodes?: any, rowData?: any) => void;
     @observable public updateTableData: (tableData?: any) => void; // tableData as type TableData
     @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) => void;
@@ -26,7 +27,8 @@ class TableState {
         this.showSpinner = false;
         this.errorCells = undefined;
         this.dataRegionsCells = [];
-        this.updateYamlRegions = () => undefined;
+
+        this.yamlRegions = {};
         this.updateQnodeCells = () => undefined;
         this.updateTableData = () => undefined;
         this.updateStyleByCell = () => undefined;

@@ -20,6 +20,7 @@ import TableLegend from './table-legend';
 import SheetSelector from './sheet-selector';
 import TableToast from './table-toast';
 import { columns, rows } from './table-definition';
+import { IReactionDisposer, reaction } from 'mobx';
 
 interface Column {
   headerName: string;
@@ -64,6 +65,8 @@ class TableViewer extends Component<{}, TableState> {
   public gridColumnApi: any;
 
   private requestService: RequestService;
+  private disposeReaction?: IReactionDisposer;
+
 
   constructor(props: {}) {
     super(props);
@@ -98,11 +101,20 @@ class TableViewer extends Component<{}, TableState> {
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
 
-    wikiStore.table.updateYamlRegions = (newYamlRegions = null) => this.updateYamlRegions(newYamlRegions);
     wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
     wikiStore.table.updateTableData = (tableData?: TableData) => this.updateTableData(tableData);
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
     wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
+  }
+
+  componentDidMount() {
+    this.disposeReaction = reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg));
+  }
+
+  componentWillUnmount() {
+    if (this.disposeReaction) {
+      this.disposeReaction();
+    }
   }
 
   onGridReady(params: WikifierData) {
@@ -170,7 +182,8 @@ class TableViewer extends Component<{}, TableState> {
       // load yaml data
       if (yamlData !== null) {
         wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-        this.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.table.yamlRegions = yamlData.yamlRegions;
+        // this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
       } else {
         wikiStore.table.isCellSelectable = false;
@@ -316,7 +329,8 @@ class TableViewer extends Component<{}, TableState> {
     // remove current status
     this.updateSelectedCell();
     wikiStore.yaml.yamlText = undefined;
-    this.updateYamlRegions();
+    // this.updateYamlRegions();
+    wikiStore.table.yamlRegions = undefined;
     this.updateQnodeCells();
     wikiStore.output.clearOutput();
     wikiStore.output.isDownloadDisabled = true;
@@ -359,7 +373,8 @@ class TableViewer extends Component<{}, TableState> {
       // load yaml data
       if (yamlData !== null) {
         wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-        this.updateYamlRegions(yamlData.yamlRegions);
+        // this.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.table.yamlRegions = yamlData.yamlRegions;
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
