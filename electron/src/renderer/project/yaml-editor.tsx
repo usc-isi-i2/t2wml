@@ -15,7 +15,7 @@ import ToastMessage from '../common/toast';
 import { observer } from "mobx-react"
 import wikiStore from '../data/store';
 import { defaultYamlText } from "./default-values";
-import { reaction } from 'mobx';
+import { IReactionDisposer, reaction } from 'mobx';
 
 
 interface yamlProperties {
@@ -37,6 +37,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   private requestService: RequestService;
 
   monacoRef: any = React.createRef();
+  private disposeReaction?: IReactionDisposer;
 
   constructor(props: yamlProperties) {
     super(props);
@@ -56,8 +57,16 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // init functions
     this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
+  }
 
-    reaction(() => wikiStore.yaml.yamlText, (newYamlText) => this.updateYamlText(newYamlText));
+  componentDidMount() {
+    this.disposeReaction = reaction(() => wikiStore.yaml.yamlText, (newYamlText) => this.updateYamlText(newYamlText));
+  }
+
+  componentWillUnmount() {
+    if (this.disposeReaction) {
+      this.disposeReaction();
+    }
   }
 
   async handleApplyYaml() {
@@ -66,7 +75,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // remove current status
     wikiStore.table.updateYamlRegions();
-    wikiStore.output.removeOutput();
+    wikiStore.output.clearOutput();
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -88,7 +97,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
         // else, success
       const { yamlRegions } = json;
-      const internalError = yamlRegions.error;
+      const internalError = json.error;
       if (internalError){
 
           console.log("ERRORS while applying yaml:");

@@ -251,7 +251,7 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
-    wikiStore.output.removeOutput();
+    wikiStore.output.clearOutput();
 
     // get selected cell index
     const colName = String(params.colDef["headerName"]);
@@ -318,7 +318,7 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.yaml.yamlText = undefined;
     this.updateYamlRegions();
     this.updateQnodeCells();
-    wikiStore.output.removeOutput();
+    wikiStore.output.clearOutput();
     wikiStore.output.isDownloadDisabled = true;
 
     // before sending request
@@ -383,7 +383,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
 
-  updateQnodeCells(qnodeData: any | null = null, rowData = null) {
+  updateQnodeCells(qnodeData: any | null = null, rowData: any = null) {
     if (qnodeData === null) {
       // reset qnode cells
       if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;

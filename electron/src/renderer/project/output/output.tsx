@@ -16,8 +16,9 @@ import { observer } from "mobx-react";
 import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
+import { autorun, IReactionDisposer, reaction } from 'mobx';
 
-interface OutputState {
+interface OutputComponentState {
   showSpinner: boolean,
   currCol: string;
   currRow: string;
@@ -46,8 +47,9 @@ interface OutputState {
 }
 
 @observer
-class Output extends Component<{}, OutputState> {
+class Output extends Component<{}, OutputComponentState> {
   private requestService: RequestService;
+  private disposeAutorun?: IReactionDisposer;
 
   constructor(props: {}) {
     super(props);
@@ -80,15 +82,20 @@ class Output extends Component<{}, OutputState> {
       isLoadDatamart: false,
 
       errorMessage: {} as ErrorMessage,
-    } as OutputState;
+    } as OutputComponentState;
 
 
-    // TODO: Remove these
-    //wikiStore.output.removeOutput = () => this.removeOutput();
-    //wikiStore.output.updateOutput = (colName: string, rowName: string, json: any) => this.updateOutput(colName, rowName, json);
+    reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
+  }
 
-    // TODO: Add a rection on the wikiStore.output
-    // Use wikiStore.output.showOutput to decide whether to show the output
+  componentDidMount() {
+    this.disposeAutorun = autorun(this.updateStateFromStore);
+  }
+
+  componentWillUnmount() {
+    if (this.disposeAutorun) {
+      this.disposeAutorun();
+    }
   }
 
   private get projectPath() {
@@ -179,16 +186,25 @@ class Output extends Component<{}, OutputState> {
     }
   }
 
-  updateOutput(colName: string, rowName: string, json: any) {
+  updateStateFromStore() {
     // remove current status
     this.removeOutput();
+
+    const json = wikiStore.output.json;
+    const colName = wikiStore.output.col;
+    const rowName = wikiStore.output.row;
+
+    if(!wikiStore.output.showOutput) {
+      return;
+    }
+
     if(json["error"]) {
         this.setState({errors: JSON.stringify(json["error"])});
     }
 
     this.setState({
       valueCol: colName,
-      valueRow: rowName
+      valueRow: rowName,
     });
  
     if (json["statement"] === undefined) return;
