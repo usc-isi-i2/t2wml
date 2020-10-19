@@ -50,15 +50,24 @@ class WikifierInnerState {
 }
 class WikifierState {
     @observable public showSpinner: boolean;
-    @observable public updateWikifier: (qnodeData?: any, rowData?: any) => void;
     @observable public state: WikifierInnerState | undefined;
     @observable public scope: number; // Is it needed?
+    @observable public qnodeData: any;
+    @observable public rowData: any;
+
 
     constructor() {
         this.showSpinner = false;
-        this.updateWikifier = () => undefined;
         this.state = new WikifierInnerState();
         this.scope = 0;
+        this.qnodeData = {};
+        this.rowData = [];
+    }
+
+    @action
+    public updateWikifier(qnodeData: any = {}, rowData: any = []) {
+        this.qnodeData = qnodeData;
+        this.rowData = rowData;
     }
 }
 

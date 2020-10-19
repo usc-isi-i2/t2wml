@@ -14,6 +14,8 @@ import WikifierOutput from './wikifier-output';
 
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
+import { autorun, IReactionDisposer } from 'mobx';
+
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -35,7 +37,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   public gridApi: any;
   public gridColumnApi: any;
 
-  private requestService: RequestService
+  private requestService: RequestService;
+  private disposeAutorun?: IReactionDisposer;
 
   constructor(props: WikifierProperties) {
     super(props);
@@ -61,8 +64,16 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       errorMessage: {} as ErrorMessage,
       propertiesMessage: ''
     };
+  }
 
-    wikiStore.wikifier.updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
+  componentDidMount() {
+    this.disposeAutorun = autorun(this.updateWikifierFromStore.bind(this));
+  }
+
+  componentWillUnmount() {
+    if (this.disposeAutorun) {
+      this.disposeAutorun();
+    }
   }
 
 
@@ -125,11 +136,13 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   }
 
 
-  updateWikifier(qnodeData = {}, rowData = []) {
+  updateWikifierFromStore() {
+    const qnodeData = wikiStore.wikifier.qnodeData;
+    const rowData = wikiStore.wikifier.rowData;
     this.setState({
         rowData: rowData,
     });
-    if (wikiStore.wikifier.state) {
+    if (wikiStore.wikifier.state) { // todo !!
        wikiStore.wikifier.state.qnodeData = qnodeData;
     }
   }
@@ -162,7 +175,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // else, success
       // load wikifier data
       const { qnodes, rowData } = json;
-      this.updateWikifier(qnodes, rowData);
+      wikiStore.wikifier.updateWikifier(qnodes, rowData);
 
       const { added, failed, updated } = json.widget;
           let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;

@@ -16,7 +16,7 @@ import { observer } from "mobx-react";
 import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
-import { autorun, IReactionDisposer, reaction } from 'mobx';
+import { autorun, IReactionDisposer } from 'mobx';
 
 interface OutputComponentState {
   showSpinner: boolean,
@@ -85,11 +85,13 @@ class Output extends Component<{}, OutputComponentState> {
     } as OutputComponentState;
 
 
-    reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
+    // reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
   }
 
   componentDidMount() {
-    this.disposeAutorun = autorun(this.updateStateFromStore);
+    // this.disposeAutorun = autorun(this.updateStateFromStore);
+
+    this.disposeAutorun = autorun(this.updateStateFromStore.bind(this));
   }
 
   componentWillUnmount() {
@@ -187,6 +189,7 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
   updateStateFromStore() {
+    // console.log("######updateStateFromStore")
     // remove current status
     this.removeOutput();
 
