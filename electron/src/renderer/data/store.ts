@@ -18,9 +18,9 @@ class TableState {
     @observable public qnodes: any;
     @observable public rowData: any;
     @observable public tableData: any;// tableData as type TableData
+    @observable public wikifierFile: any; // File
 
     @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) => void;
-    @observable public handleOpenWikifierFile:(event: any) => void;
     
     constructor() {
         this.isCellSelectable = false;
@@ -33,9 +33,9 @@ class TableState {
         this.qnodes = undefined;
         this.rowData = undefined;
         this.tableData = undefined;
+        this.wikifierFile = undefined;
 
         this.updateStyleByCell = () => undefined;
-        this.handleOpenWikifierFile = () => undefined;
     }
 
     @action

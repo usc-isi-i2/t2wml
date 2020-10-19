@@ -95,12 +95,10 @@ class TableViewer extends Component<{}, TableState> {
 
     // init functions
     this.handleOpenTableFile = this.handleOpenTableFile.bind(this);
-    this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
 
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
-    wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -110,6 +108,7 @@ class TableViewer extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.tableData, (tableData: any) => this.updateTableData(tableData)));
+    this.disposers.push(reaction(() => wikiStore.table.wikifierFile, (wikifierFile: File) => this.handleOpenWikifierFile(wikifierFile)));
 
   }
 
@@ -207,13 +206,12 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  async handleOpenWikifierFile(event: any) {
+  async handleOpenWikifierFile() {
+    const file = wikiStore.table.wikifierFile;
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     wikiStore.table.updateQnodeCells();
 
-    // get wikifier file
-    const file = event.target.files[0];
     if (!file) return;
 
     // before sending request

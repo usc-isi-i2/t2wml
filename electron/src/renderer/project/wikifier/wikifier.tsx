@@ -304,7 +304,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               id="file_wikifier"
               accept=".csv"
               style={{ display: "none" }}
-              onChange={wikiStore.table.handleOpenWikifierFile}
+              onChange={(event) => wikiStore.table.wikifierFile = (event.target as any).files[0]}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
