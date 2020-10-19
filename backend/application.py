@@ -28,7 +28,7 @@ except:
 debug_mode = False
 
 
-def get_project(project_folder):
+def get_project_instance(project_folder):
     project = apiProject.load(project_folder)
     update_t2wml_settings(project)
     return project
@@ -111,8 +111,7 @@ def load_project():
     """
     project_folder = get_project_folder()
     project = apiProject.load(project_folder)
-    for f in project.entity_files:
-        response = add_entities_from_file(Path(project.directory) / f)
+
     update_t2wml_settings(project)
     response = dict(project=project.__dict__)
     return response, 201
@@ -120,13 +119,15 @@ def load_project():
 
 @app.route('/api/project', methods=['GET'])
 @json_response
-def get_project_files():
+def get_project():
     """
     This function fetches the last session of the last opened files in a project when that project is reopened later.
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
+    for f in project.entity_files:
+        response = add_entities_from_file(Path(project.directory) / f)
 
     for f in project.entity_files:
         add_entities_from_file(Path(project.directory) / f)
@@ -151,7 +152,7 @@ def get_project_files():
 @json_response
 def add_entity_definitions():
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
 
     in_file = file_upload_validator({"tsv"})
     file_path = save_file(project_folder, in_file)
@@ -176,7 +177,7 @@ def upload_data_file():
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     response = {
         "tableData": dict(),
         "wikifierData": dict(),
@@ -244,7 +245,7 @@ def change_sheet(sheet_name):
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     response = {
         "tableData": dict(),
         "wikifierData": dict(),
@@ -272,7 +273,7 @@ def upload_wikifier_output():
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     response = {"error": None}
     in_file = file_upload_validator({"csv"})
 
@@ -298,7 +299,7 @@ def wikify_region():
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     action = request.form["action"]
     region = request.form["region"]
     context = request.form["context"]
@@ -340,7 +341,7 @@ def upload_yaml():
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
     response = {"error": None,
@@ -368,7 +369,7 @@ def get_cell_statement(col, row):
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     data = {}
 
     calc_params = get_calc_params(project)
@@ -387,7 +388,7 @@ def downloader(filetype):
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     calc_params = get_calc_params(project)
     if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
@@ -400,7 +401,7 @@ def downloader(filetype):
 @json_response
 def load_to_datamart():
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     calc_params = get_calc_params(project)
     try:
         sheet = project.current_sheet
@@ -420,7 +421,7 @@ def rename_project():
     """
     ptitle = request.form["ptitle"]
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
     project.title = ptitle
     project.save()
     response = dict(error=None)
@@ -436,7 +437,7 @@ def update_settings():
     :return:
     """
     project_folder = get_project_folder()
-    project = get_project(project_folder)
+    project = get_project_instance(project_folder)
 
     endpoint = request.form.get("endpoint", None)
     if endpoint:
