@@ -65,8 +65,6 @@ class TableViewer extends Component<{}, TableState> {
   public gridColumnApi: any;
 
   private requestService: RequestService;
-  private disposeReaction?: IReactionDisposer;
-
 
   constructor(props: {}) {
     super(props);
@@ -101,19 +99,23 @@ class TableViewer extends Component<{}, TableState> {
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
 
-    wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
-    wikiStore.table.updateTableData = (tableData?: TableData) => this.updateTableData(tableData);
     wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
     wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
 
+  private disposers: IReactionDisposer[] = [];
+
   componentDidMount() {
-    this.disposeReaction = reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg));
+    this.disposers.push(reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg)));
+    this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.tableData, (tableData: any) => this.updateTableData(tableData)));
+
   }
 
   componentWillUnmount() {
-    if (this.disposeReaction) {
-      this.disposeReaction();
+    for(const disposer of this.disposers) {
+      disposer();
     }
   }
 
@@ -129,7 +131,7 @@ class TableViewer extends Component<{}, TableState> {
     // remove current status
     wikiStore.table.isCellSelectable = false;
     this.updateSelectedCell();
-    this.updateQnodeCells();
+    wikiStore.table.updateQnodeCells();
 
     // get table file
     const file = event.target.files[0];
@@ -174,9 +176,9 @@ class TableViewer extends Component<{}, TableState> {
 
       // load wikifier data
       if (wikifierData !== null) {
-        this.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        this.updateQnodeCells(); // reset
+        wikiStore.table.updateQnodeCells(); // reset
       }
 
       // load yaml data
@@ -208,7 +210,7 @@ class TableViewer extends Component<{}, TableState> {
   async handleOpenWikifierFile(event: any) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
-    this.updateQnodeCells();
+    wikiStore.table.updateQnodeCells();
 
     // get wikifier file
     const file = event.target.files[0];
@@ -237,7 +239,7 @@ class TableViewer extends Component<{}, TableState> {
 
       // else, success
       const { qnodes, rowData } = json;
-      this.updateQnodeCells(qnodes, rowData);
+      wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
       this.setState({
@@ -254,7 +256,7 @@ class TableViewer extends Component<{}, TableState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      this.updateQnodeCells();
+      wikiStore.table.updateQnodeCells();
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
@@ -331,7 +333,7 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.yaml.yamlText = undefined;
     // this.updateYamlRegions();
     wikiStore.table.yamlRegions = undefined;
-    this.updateQnodeCells();
+    wikiStore.table.updateQnodeCells();
     wikiStore.output.clearOutput();
     wikiStore.output.isDownloadDisabled = true;
 
@@ -365,9 +367,9 @@ class TableViewer extends Component<{}, TableState> {
 
       // load wikifier data
       if (wikifierData !== null) {
-        this.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        this.updateQnodeCells(); // reset
+        wikiStore.table.updateQnodeCells(); // reset
       }
 
       // load yaml data
@@ -398,8 +400,10 @@ class TableViewer extends Component<{}, TableState> {
   }
 
 
-  updateQnodeCells(qnodeData: any | null = null, rowData: any = null) {
-    if (qnodeData === null) {
+  updateQnodeCellsFromStore() {
+    const qnodeData = wikiStore.table.qnodes;
+    const rowData = wikiStore.table.rowData;
+    if (!qnodeData) {
       // reset qnode cells
       if (!wikiStore.wikifier.qnodeData) return;
       const qnodes = Object.keys(wikiStore.wikifier.qnodeData);
@@ -425,7 +429,7 @@ class TableViewer extends Component<{}, TableState> {
       this.updateStyleByDict(cells, presets);
 
       // update wikifier data
-        wikiStore.wikifier.updateWikifier(qnodeData, rowData);
+      wikiStore.wikifier.updateWikifier(qnodeData, rowData);
     }
   }
 

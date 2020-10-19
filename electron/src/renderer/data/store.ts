@@ -10,14 +10,15 @@ class EditorsState {
 
 class TableState {
     @observable public isCellSelectable: boolean;
-
     @observable public showSpinner: boolean;
     @observable public errorCells: string[] | undefined;
     @observable public dataRegionsCells: string[];
 
     @observable public yamlRegions: any;
-    @observable public updateQnodeCells: (qnodes?: any, rowData?: any) => void;
-    @observable public updateTableData: (tableData?: any) => void; // tableData as type TableData
+    @observable public qnodes: any;
+    @observable public rowData: any;
+    @observable public tableData: any;// tableData as type TableData
+
     @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) => void;
     @observable public handleOpenWikifierFile:(event: any) => void;
     
@@ -28,11 +29,19 @@ class TableState {
         this.errorCells = undefined;
         this.dataRegionsCells = [];
 
-        this.yamlRegions = {};
-        this.updateQnodeCells = () => undefined;
-        this.updateTableData = () => undefined;
+        this.yamlRegions = undefined;
+        this.qnodes = undefined;
+        this.rowData = undefined;
+        this.tableData = undefined;
+
         this.updateStyleByCell = () => undefined;
         this.handleOpenWikifierFile = () => undefined;
+    }
+
+    @action
+    public updateQnodeCells(qnodes: any = {}, rowData: any = []) {
+        this.qnodes = qnodes;
+        this.rowData = rowData;
     }
 }
 

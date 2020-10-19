@@ -106,9 +106,9 @@ class Project extends Component<ProjectProps, ProjectState> {
 
       // load table data
       if (tableData) {
-        wikiStore.table.updateTableData(tableData);
+        wikiStore.table.tableData = tableData;
       } else {// else: reset data
-        wikiStore.table.updateTableData();
+        wikiStore.table.tableData = undefined;
       }
       
       // todo: reset output window
