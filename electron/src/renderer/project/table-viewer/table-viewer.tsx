@@ -97,8 +97,6 @@ class TableViewer extends Component<{}, TableState> {
     this.handleOpenTableFile = this.handleOpenTableFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
-
-    wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -110,6 +108,10 @@ class TableViewer extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.tableData, (tableData: any) => this.updateTableData(tableData)));
     this.disposers.push(reaction(() => wikiStore.table.wikifierFile, (wikifierFile: File) => this.handleOpenWikifierFile(wikifierFile)));
 
+    this.disposers.push(reaction(() => wikiStore.table.styledColName, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.styleCell, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.styledOverride, () => this.updateStyleByCellFromStore()));
   }
 
   componentWillUnmount() {
@@ -206,8 +208,7 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  async handleOpenWikifierFile() {
-    const file = wikiStore.table.wikifierFile;
+  async handleOpenWikifierFile(file: File) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     wikiStore.table.updateQnodeCells();
@@ -436,7 +437,7 @@ class TableViewer extends Component<{}, TableState> {
       // reset
       const { selectedCell } = this.state;
       if (selectedCell !== null) {
-        this.updateStyleByCell(selectedCell.col, selectedCell.row, { border: "" });
+        wikiStore.table.updateStyleByCell(selectedCell.col, selectedCell.row, { border: "" });
       }
       this.setState({
         selectedCell: null,
@@ -444,7 +445,7 @@ class TableViewer extends Component<{}, TableState> {
       });
     } else {
       // update
-      this.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
+      wikiStore.table.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
       this.setState({
         selectedCell: { col: col, row: row, value: value },
         showToast0: true,
@@ -453,7 +454,12 @@ class TableViewer extends Component<{}, TableState> {
 
   }
 
-  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: any, override = false) {
+  updateStyleByCellFromStore() {
+    const colName = wikiStore.table.styledColName; 
+    const rowName = wikiStore.table.styledRowName; 
+    const style = wikiStore.table.styleCell; 
+    const override = wikiStore.table.styledOverride;
+
     if (rowName && colName) {
       const col = colName;
       const row = Number(rowName) - 1;

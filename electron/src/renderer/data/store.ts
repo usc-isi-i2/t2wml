@@ -19,8 +19,10 @@ class TableState {
     @observable public rowData: any;
     @observable public tableData: any;// tableData as type TableData
     @observable public wikifierFile: any; // File
-
-    @observable public updateStyleByCell: (colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) => void;
+    @observable public styledColName: string | number | null;
+    @observable public styledRowName: string | number | null;
+    @observable public styleCell: string;
+    @observable public styledOverride?: boolean;
     
     constructor() {
         this.isCellSelectable = false;
@@ -35,13 +37,25 @@ class TableState {
         this.tableData = undefined;
         this.wikifierFile = undefined;
 
-        this.updateStyleByCell = () => undefined;
+        // updateStyleByCell
+        this.styledColName = null;
+        this.styledRowName = null;
+        this.styleCell = '';
+        this.styledOverride = false;
     }
 
     @action
     public updateQnodeCells(qnodes: any = {}, rowData: any = []) {
         this.qnodes = qnodes;
         this.rowData = rowData;
+    }
+
+    @action
+    public updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) {
+        this.styledColName = colName;
+        this.styledRowName = rowName;
+        this.styleCell = style;
+        this.styledOverride = override;
     }
 }
 
