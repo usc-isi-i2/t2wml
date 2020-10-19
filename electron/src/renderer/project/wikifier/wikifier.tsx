@@ -67,7 +67,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   }
 
   componentDidMount() {
-    this.disposeAutorun = autorun(this.updateWikifierFromStore.bind(this));
+    // this.disposeAutorun = autorun(this.updateWikifierFromStore.bind(this));
   }
 
   componentWillUnmount() {

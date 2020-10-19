@@ -16,10 +16,9 @@ import { observer } from "mobx-react";
 import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
-import { autorun, IReactionDisposer } from 'mobx';
+import { reaction, IReactionDisposer } from 'mobx';
 
 interface OutputComponentState {
-  showSpinner: boolean,
   currCol: string;
   currRow: string;
   // data
@@ -49,7 +48,6 @@ interface OutputComponentState {
 @observer
 class Output extends Component<{}, OutputComponentState> {
   private requestService: RequestService;
-  private disposeAutorun?: IReactionDisposer;
 
   constructor(props: {}) {
     super(props);
@@ -57,9 +55,6 @@ class Output extends Component<{}, OutputComponentState> {
 
     // init state
     this.state = {
-
-      // appearance
-      showSpinner: wikiStore.output.showSpinner,
 
       // data
       valueCol: null,
@@ -88,15 +83,17 @@ class Output extends Component<{}, OutputComponentState> {
     // reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
   }
 
-  componentDidMount() {
-    // this.disposeAutorun = autorun(this.updateStateFromStore);
+  private disposers: IReactionDisposer[] = [];
 
-    this.disposeAutorun = autorun(this.updateStateFromStore.bind(this));
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.output.col, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.output.row, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.output.json, () => this.updateStateFromStore()));
   }
 
   componentWillUnmount() {
-    if (this.disposeAutorun) {
-      this.disposeAutorun();
+    for(const disposer of this.disposers) {
+      disposer();
     }
   }
 
@@ -189,8 +186,7 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
   updateStateFromStore() {
-    // console.log("######updateStateFromStore")
-    // remove current status
+     console.debug('output updateStateFromStore called ', JSON.stringify(wikiStore.output, null, 4));
     this.removeOutput();
 
     const json = wikiStore.output.json;
