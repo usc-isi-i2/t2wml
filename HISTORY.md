@@ -1,6 +1,17 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.3.8:
+-----------------------
+* upgrade to t2wml-api version 0.0.15
+* delete project no longer deletes it at all, it just removes it from the project list (the icon is now an x)
+* save window state (size, position, devtools open/not)
+* bug fixes:
+   - clicking on a non-data (non-green) cell should not show anything (including red error message) in Output window
+   - race condition when fetching properties meant getting property not found for uploaded properties
+   - (wip) load new project crashes frontend
+
+
 Changes in version 2.3.7:
 ------------------------
 * upgrade to t2wml-api version 0.0.14
