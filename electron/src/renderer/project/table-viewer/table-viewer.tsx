@@ -130,6 +130,11 @@ class TableViewer extends Component<{}, TableState> {
     // store the api
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
+    // Need to call this here, for some reason the grid is initially displayed with no styles
+    // and we need to apply them again once the grid is ready.
+    if (this.state.rowData) {
+      this.gridApi.setRowData(this.state.rowData);
+    }
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
   }
 
@@ -490,8 +495,12 @@ class TableViewer extends Component<{}, TableState> {
         this.setState({
           rowData: rowData2
         });
-        this.gridApi.setRowData(rowData2);
-        // console.log("<TableViewer> updated style of (" + colName + rowName + ") by " + JSON.stringify(style) + ".");
+
+        /*if (this.gridApi) {
+          this.gridApi.setRowData(rowData2);
+        } else {
+          console.warn("Can't update style, gridApi is undefined");
+        } */
       }
     } else {
       // console.log("<TableViewer> updated nothing.");
@@ -536,7 +545,11 @@ class TableViewer extends Component<{}, TableState> {
       rowData: rowData2
     });
     // TODO: check this part
-    this.gridApi.setRowData(rowData2);
+    /*if (this.gridApi) {
+      this.gridApi.setRowData(rowData2);
+    } else {
+      console.warn("Can't update style, gridApi is undefined");
+    } */
   }
 
   updateTableData(tableData?: TableData) {
@@ -699,7 +712,7 @@ class TableViewer extends Component<{}, TableState> {
               onGridReady={this.onGridReady.bind(this)}
               columnDefs={columnDefs}
               rowData={rowData}
-              rowDataChangeDetectionStrategy={ChangeDetectionStrategyType.IdentityCheck}
+              rowDataChangeDetectionStrategy={ChangeDetectionStrategyType.DeepValueCheck}
               suppressScrollOnNewData={true} // prevent unintended scrolling top after grid updated
               headerHeight={18}
               rowHeight={18}
@@ -749,7 +762,7 @@ class TableViewer extends Component<{}, TableState> {
               }}
             >
             </AgGridReact>
-           : <label>Table flag is false</label>}
+           : <div /> }
           </Card.Body>
 
           {/* sheet selector */}
