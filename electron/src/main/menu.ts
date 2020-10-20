@@ -31,7 +31,7 @@ export default class MainMenuManager {
                 { role: 'quit' }
             ]
         };
-        
+
         const mainMenuTemplate: MenuItemConstructorOptions[] = [
             {
                 label: 'File',
@@ -71,10 +71,13 @@ export default class MainMenuManager {
             },
             {
                 label: 'Debug',
-                submenu: [
-                    { label: 'Reload App', click: () => this.onReloadAppClick() },
-                    { role: 'toggleDevTools' },
-                ]
+                submenu: [{
+                  label: 'Reload App',
+                  accelerator: config.platform === 'mac' ? 'Cmd+Shift+R' : 'F12',
+                  click: () => this.onReloadAppClick(),
+                }, {
+                  role: 'toggleDevTools',
+                }]
             },
         ]
 
@@ -96,7 +99,7 @@ export default class MainMenuManager {
         subMenu = [
             ...subMenu,
             { type: 'separator' },
-            { label: 'Clear Recently Opened', 
+            { label: 'Clear Recently Opened',
               click: this.onClearRecentlyOpenedClick.bind(this),
               enabled }
         ];
@@ -106,8 +109,8 @@ export default class MainMenuManager {
 
     private fillProjectSubMenu() {
         const enabled = uiState.displayMode === 'project';
-        this.projectSubMenu = [{ 
-            label: 'Refresh', 
+        this.projectSubMenu = [{
+            label: 'Refresh',
             accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',
             click: () => this.onRefreshProjectClick(),
             enabled,
