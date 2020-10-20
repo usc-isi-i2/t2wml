@@ -111,7 +111,8 @@ class Project extends Component<ProjectProps, ProjectState> {
         wikiStore.table.tableData = undefined;
       }
       
-      // todo: reset output window
+      // reset output window
+      wikiStore.output.clearOutput();
       // load wikifier data
       if (wikifierData !== null) {
         wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);

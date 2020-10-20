@@ -308,7 +308,8 @@ class Output extends Component<{}, OutputComponentState> {
         console.log(error);
         const { errorTitle, errorDescription } = error;
         if (errorTitle !== undefined) {
-            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription)
+            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription);
+            wikiStore.table.showSpinner = false;
         }
     });
     this.setState({ isLoadDatamart: false });
