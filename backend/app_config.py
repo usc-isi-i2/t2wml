@@ -21,7 +21,7 @@ UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
 CACHE_FOLDER=os.path.join(DATADIR, "cache")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
 
-Path(CACHE_FOLDER).mkdir(parent=True, exist_ok=True)
+Path(CACHE_FOLDER).mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__, static_folder=None)
 CORS(app, supports_credentials=True)
