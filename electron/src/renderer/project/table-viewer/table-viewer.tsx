@@ -57,7 +57,7 @@ interface TableState  {
   yamlRegions: any; // null,
 
   errorMessage: ErrorMessage;
-  tableFlag: boolean;
+  showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
 }
 
 @observer
@@ -92,7 +92,7 @@ class TableViewer extends Component<{}, TableState> {
       yamlRegions: null,
 
       errorMessage: {} as ErrorMessage,
-      tableFlag: false,
+      showTable: true,
     };
 
     // init functions
@@ -123,7 +123,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   // shouldComponentUpdate() {
-  //   return this.state.tableFlag;
+  //   return this.state.showTable;
   // }
 
   onGridReady(params: WikifierData) {
@@ -141,7 +141,7 @@ class TableViewer extends Component<{}, TableState> {
   async handleOpenTableFile(event:any) {
     this.setState({ 
       errorMessage: {} as ErrorMessage,
-      tableFlag: false
+      showTable: false
     });  
     // remove current status
     wikiStore.table.isCellSelectable = false;
@@ -186,7 +186,7 @@ class TableViewer extends Component<{}, TableState> {
         currSheetName: tableData.currSheetName,
         columnDefs: tableData.sheetData.columnDefs,
         rowData: tableData.sheetData.rowData,
-        tableFlag: true,
+        showTable: true,
       });
       // this.gridColumnApi.autoSizeAllColumns();
 
@@ -343,7 +343,7 @@ class TableViewer extends Component<{}, TableState> {
   async handleSelectSheet(event: any) {
     this.setState({ 
       errorMessage: {} as ErrorMessage,
-      tableFlag: false
+      showTable: false
     });
     // remove current status
     this.updateSelectedCell();
@@ -379,7 +379,7 @@ class TableViewer extends Component<{}, TableState> {
         currSheetName: tableData.currSheetName,
         columnDefs: tableData.sheetData.columnDefs,
         rowData: tableData.sheetData.rowData,
-        tableFlag: true,
+        showTable: true,
       });
       // this.gridColumnApi.autoSizeAllColumns();
 
@@ -555,7 +555,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   updateTableData(tableData?: TableData) {
-    this.setState({ tableFlag: false }); //
+    this.setState({ showTable: false }); //
 
     if (tableData?.sheetData) {
       tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
@@ -570,7 +570,7 @@ class TableViewer extends Component<{}, TableState> {
       currSheetName: tableData?.currSheetName || null,
       columnDefs: tableData?.sheetData?.columnDefs || columns,
       rowData: tableData?.sheetData?.rowData || rows,
-      tableFlag: true,
+      showTable: true,
       showToast0: false,
       showToast1: false,
     });
@@ -711,7 +711,7 @@ class TableViewer extends Component<{}, TableState> {
             {/* table */}
             {/* FUTURE: adapt large dataset by: https://github.com/NeXTs/Clusterize.js */}
             {
-             this.state.tableFlag ?
+             this.state.showTable ?
             <AgGridReact
               onGridReady={this.onGridReady.bind(this)}
               columnDefs={columnDefs}
