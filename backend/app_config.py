@@ -7,9 +7,8 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate, upgrade, current, init
-import pathlib
 
-home_dir = str(pathlib.Path.home())
+home_dir = str(Path.home())
 DATADIR = os.path.join(home_dir, ".t2wml")
 if not os.path.exists(DATADIR):
     os.makedirs(DATADIR)
@@ -21,6 +20,8 @@ if BASEDIR not in sys.path:
 UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
 CACHE_FOLDER=os.path.join(DATADIR, "cache")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
+
+Path(CACHE_FOLDER).mkdir(parent=True, exist_ok=True)
 
 app = Flask(__name__, static_folder=None)
 CORS(app, supports_credentials=True)
