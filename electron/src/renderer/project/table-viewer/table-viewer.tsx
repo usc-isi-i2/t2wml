@@ -132,9 +132,9 @@ class TableViewer extends Component<{}, TableState> {
     this.gridColumnApi = params.columnApi;
     // Need to call this here, for some reason the grid is initially displayed with no styles
     // and we need to apply them again once the grid is ready.
-    /*if (this.state.rowData) {
+    if (this.state.rowData) {
       this.gridApi.setRowData(this.state.rowData);
-    } */
+    }
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
   }
 
@@ -496,9 +496,9 @@ class TableViewer extends Component<{}, TableState> {
           rowData: rowData2
         });
 
-        /*if (this.gridApi) {
+        if (this.gridApi) {
           this.gridApi.setRowData(rowData2);
-        } else {
+        } /* else {
           console.warn("Can't update style, gridApi is undefined");
         } */
       }
@@ -517,11 +517,11 @@ class TableViewer extends Component<{}, TableState> {
   updateStyleByDict(dict: any, presets: any, override = false) {
     // dict = { "styleName": ["A1", "A2", ...] }
     // window.TableViewer.updateStyleByDict({ "data_region": ["A14", "A15"], "qualifier_region": ["B14", "B15"], "item": ["C14", "C15"] });
-    if (!this.state.rowData) {
+    const rowData2 = this.state.rowData;
+    if (!rowData2) {
       return;
     }
 
-    const rowData2 = { ...this.state.rowData };
     const styleNames = Object.keys(presets);
     for (let i = 0; i < styleNames.length; i++) {
       const styleName = styleNames[i];
@@ -547,10 +547,9 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({
       rowData: rowData2
     });
-    // TODO: check this part
-    /*if (this.gridApi) {
+    if (this.gridApi) {
       this.gridApi.setRowData(rowData2);
-    } else {
+    } /* else {
       console.warn("Can't update style, gridApi is undefined");
     } */
   }
@@ -715,7 +714,7 @@ class TableViewer extends Component<{}, TableState> {
               onGridReady={this.onGridReady.bind(this)}
               columnDefs={columnDefs}
               rowData={rowData}
-              rowDataChangeDetectionStrategy={ChangeDetectionStrategyType.DeepValueCheck}
+              rowDataChangeDetectionStrategy={ChangeDetectionStrategyType.IdentityCheck}
               suppressScrollOnNewData={true} // prevent unintended scrolling top after grid updated
               headerHeight={18}
               rowHeight={18}
