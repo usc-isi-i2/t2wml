@@ -593,6 +593,7 @@ class TableViewer extends Component<{}, TableState> {
       }
       this.updateStyleByDict(yamlRegions, presets);
       this.setState({ yamlRegions: null });
+      wikiStore.table.dataRegionsCells = [];
     } else {
       // update
       const presets = {
@@ -605,6 +606,9 @@ class TableViewer extends Component<{}, TableState> {
       }
       this.updateStyleByDict(newYamlRegions, presets);
       this.setState({ yamlRegions: newYamlRegions });
+
+      // Save data regions (enable get the output to these cells).
+      wikiStore.table.dataRegionsCells = (newYamlRegions as any).dataRegion.list;
     }
   }
 
