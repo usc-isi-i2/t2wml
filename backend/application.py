@@ -102,21 +102,6 @@ def create_project():
     return response, 201
 
 
-@app.route('/api/project/load', methods=['POST'])
-@json_response
-def load_project():
-    """
-    This route loads an existing project
-    :return:
-    """
-    project_folder = get_project_folder()
-    project = apiProject.load(project_folder)
-
-    update_t2wml_settings(project)
-    response = dict(project=project.__dict__)
-    return response, 201
-
-
 @app.route('/api/project', methods=['GET'])
 @json_response
 def get_project():
@@ -137,8 +122,6 @@ def get_project():
         "wikifierData": None,
     }
 
-    response["name"] = project.title
-
     calc_params = get_calc_params(project)
     if calc_params:
         response["tableData"] = table_data(calc_params)
@@ -150,7 +133,7 @@ def get_project():
 
 @app.route('/api/project/entity', methods=['POST'])
 @json_response
-def add_entity_definitions():
+def upload_entities():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
 
@@ -182,7 +165,6 @@ def upload_data_file():
         "tableData": dict(),
         "wikifierData": dict(),
         "yamlData": dict(),  # this is never not empty
-        "error": None
     }
     in_file = file_upload_validator({'xlsx', 'xls', 'csv'})
     file_path = save_file(project_folder, in_file)
@@ -250,7 +232,6 @@ def change_sheet(sheet_name):
         "tableData": dict(),
         "wikifierData": dict(),
         "yamlData": dict(),
-        "error": None
     }
 
     project.update_saved_state(current_sheet=sheet_name)
@@ -274,7 +255,7 @@ def upload_wikifier_output():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    response = {"error": None}
+    response=dict()
     in_file = file_upload_validator({"csv"})
 
     file_path = save_file(project_folder, in_file)
@@ -293,7 +274,7 @@ def upload_wikifier_output():
 
 @app.route('/api/wikifier_service', methods=['POST'])
 @json_response
-def wikify_region():
+def call_wikifier_service():
     """
     This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
@@ -344,8 +325,7 @@ def upload_yaml():
     project = get_project_instance(project_folder)
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
-    response = {"error": None,
-                "yamlRegions": None}
+    response = {"yamlRegions": None}
     if not string_is_valid(yaml_data):
         raise web_exceptions.InvalidYAMLFileException(
             "YAML file is either empty or not valid")
@@ -361,28 +341,9 @@ def upload_yaml():
     return response, 200
 
 
-@app.route('/api/data/cell/<col>/<row>', methods=['GET'])
-@json_response
-def get_cell_statement(col, row):
-    """
-    This function returns the statement of a particular cell
-    :return:
-    """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    data = {}
-
-    calc_params = get_calc_params(project)
-    if not calc_params.yaml_path:
-        raise web_exceptions.CellResolutionWithoutYAMLFileException(
-            "Upload YAML file before resolving cell.")
-    data = get_cell(calc_params, col, row)
-    return data, 200
-
-
 @app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response
-def downloader(filetype):
+def download_results(filetype):
     """
     This functions initiates the download
     :return:
@@ -424,7 +385,6 @@ def rename_project():
     project = get_project_instance(project_folder)
     project.title = ptitle
     project.save()
-    response = dict(error=None)
     response['project'] = project.__dict__
     return response, 200
 
@@ -447,10 +407,7 @@ def update_settings():
         project.warn_for_empty_cells = warn.lower() == 'true'
     project.save()
     update_t2wml_settings(project)
-    response = {
-        "endpoint": project.sparql_endpoint,
-        "warnEmpty": project.warn_for_empty_cells
-    }
+    response=dict(project = project.__dict__)
     return response, 200
 
 
