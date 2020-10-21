@@ -571,6 +571,8 @@ class TableViewer extends Component<{}, TableState> {
       columnDefs: tableData?.sheetData?.columnDefs || columns,
       rowData: tableData?.sheetData?.rowData || rows,
       tableFlag: true,
+      showToast0: false,
+      showToast1: false,
     });
     console.log("-----updateTableData---- after update: this.state", this.state)
     // this.gridColumnApi.autoSizeAllColumns();
