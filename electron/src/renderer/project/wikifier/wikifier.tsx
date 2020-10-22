@@ -14,6 +14,8 @@ import WikifierOutput from './wikifier-output';
 
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
+import { reaction, IReactionDisposer } from 'mobx';
+
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -35,7 +37,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   public gridApi: any;
   public gridColumnApi: any;
 
-  private requestService: RequestService
+  private requestService: RequestService;
 
   constructor(props: WikifierProperties) {
     super(props);
@@ -48,7 +50,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
-      qnodeData: wikiStore.wikifier.state?.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
+      qnodeData: wikiStore.wikifier.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in Africa" }]
 
       // call wikifier service
@@ -61,10 +63,20 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       errorMessage: {} as ErrorMessage,
       propertiesMessage: ''
     };
-
-    wikiStore.wikifier.updateWikifier = (qnodeData: any = {}, rowData: any = []) => this.updateWikifier(qnodeData, rowData);        
   }
 
+  private disposers: IReactionDisposer[] = [];
+
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.wikifier.qnodeData, () => this.updateWikifierFromStore()));
+    this.disposers.push(reaction(() => wikiStore.wikifier.rowData, () => this.updateWikifierFromStore()));
+  }
+
+  componentWillUnmount() {
+    for(const disposer of this.disposers) {
+      disposer();
+    }
+  }
 
   async handleDoCall(region: string, flag: string, context: string) {
     // validate input
@@ -125,13 +137,13 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   }
 
 
-  updateWikifier(qnodeData = {}, rowData = []) {
+  updateWikifierFromStore() {
+    const qnodeData = wikiStore.wikifier.qnodeData;
+    const rowData = wikiStore.wikifier.rowData;
     this.setState({
         rowData: rowData,
+        qnodeData: qnodeData
     });
-    if (wikiStore.wikifier.state) {
-       wikiStore.wikifier.state.qnodeData = qnodeData;
-    }
   }
 
   async uploadEntitiesFile(event: any) {
@@ -162,7 +174,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // else, success
       // load wikifier data
       const { qnodes, rowData } = json;
-      this.updateWikifier(qnodes, rowData);
+      wikiStore.wikifier.updateWikifier(qnodes, rowData);
 
       const { added, failed, updated } = json.widget;
           let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
@@ -292,7 +304,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               id="file_wikifier"
               accept=".csv"
               style={{ display: "none" }}
-              onChange={wikiStore.table.handleOpenWikifierFile}
+              onChange={(event) => wikiStore.table.wikifierFile = (event.target as any).files[0]}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 

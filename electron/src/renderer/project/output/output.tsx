@@ -16,10 +16,9 @@ import { observer } from "mobx-react";
 import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
-import { autorun, IReactionDisposer, reaction } from 'mobx';
+import { reaction, IReactionDisposer } from 'mobx';
 
 interface OutputComponentState {
-  showSpinner: boolean,
   currCol: string;
   currRow: string;
   // data
@@ -49,7 +48,6 @@ interface OutputComponentState {
 @observer
 class Output extends Component<{}, OutputComponentState> {
   private requestService: RequestService;
-  private disposeAutorun?: IReactionDisposer;
 
   constructor(props: {}) {
     super(props);
@@ -57,9 +55,6 @@ class Output extends Component<{}, OutputComponentState> {
 
     // init state
     this.state = {
-
-      // appearance
-      showSpinner: wikiStore.output.showSpinner,
 
       // data
       valueCol: null,
@@ -83,18 +78,19 @@ class Output extends Component<{}, OutputComponentState> {
 
       errorMessage: {} as ErrorMessage,
     } as OutputComponentState;
-
-
-    reaction(() => wikiStore.output.col, () => this.updateStateFromStore());
   }
 
+  private disposers: IReactionDisposer[] = [];
+
   componentDidMount() {
-    this.disposeAutorun = autorun(this.updateStateFromStore);
+    this.disposers.push(reaction(() => wikiStore.output.col, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.output.row, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.output.json, () => this.updateStateFromStore()));
   }
 
   componentWillUnmount() {
-    if (this.disposeAutorun) {
-      this.disposeAutorun();
+    for(const disposer of this.disposers) {
+      disposer();
     }
   }
 
@@ -187,7 +183,6 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
   updateStateFromStore() {
-    // remove current status
     this.removeOutput();
 
     const json = wikiStore.output.json;
@@ -313,7 +308,8 @@ class Output extends Component<{}, OutputComponentState> {
         console.log(error);
         const { errorTitle, errorDescription } = error;
         if (errorTitle !== undefined) {
-            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription)
+            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription);
+            wikiStore.table.showSpinner = false;
         }
     });
     this.setState({ isLoadDatamart: false });

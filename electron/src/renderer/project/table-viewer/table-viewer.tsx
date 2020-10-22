@@ -20,6 +20,7 @@ import TableLegend from './table-legend';
 import SheetSelector from './sheet-selector';
 import TableToast from './table-toast';
 import { columns, rows } from './table-definition';
+import { IReactionDisposer, reaction } from 'mobx';
 
 interface Column {
   headerName: string;
@@ -56,6 +57,7 @@ interface TableState  {
   yamlRegions: any; // null,
 
   errorMessage: ErrorMessage;
+  showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
 }
 
 @observer
@@ -90,34 +92,61 @@ class TableViewer extends Component<{}, TableState> {
       yamlRegions: null,
 
       errorMessage: {} as ErrorMessage,
+      showTable: true,
     };
 
     // init functions
     this.handleOpenTableFile = this.handleOpenTableFile.bind(this);
-    this.handleOpenWikifierFile = this.handleOpenWikifierFile.bind(this);
     this.handleSelectCell = this.handleSelectCell.bind(this);
     this.handleSelectSheet = this.handleSelectSheet.bind(this);
-
-    wikiStore.table.updateYamlRegions = (newYamlRegions = null) => this.updateYamlRegions(newYamlRegions);
-    wikiStore.table.updateQnodeCells = (qnodes?: any, rowData?: any) => this.updateQnodeCells(qnodes, rowData);
-    wikiStore.table.updateTableData = (tableData?: TableData) => this.updateTableData(tableData);
-    wikiStore.table.updateStyleByCell = (col: string | number | null, row: string | number | null, style: any) => this.updateStyleByCell(col, row, style);
-    wikiStore.table.handleOpenWikifierFile = (event: any) => this.handleOpenWikifierFile(event);
   }
+
+  private disposers: IReactionDisposer[] = [];
+
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg)));
+    this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.tableData, (tableData: any) => this.updateTableData(tableData)));
+    this.disposers.push(reaction(() => wikiStore.table.wikifierFile, (wikifierFile: File) => this.handleOpenWikifierFile(wikifierFile)));
+
+    this.disposers.push(reaction(() => wikiStore.table.styledColName, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.styleCell, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.styledOverride, () => this.updateStyleByCellFromStore()));
+  }
+
+  componentWillUnmount() {
+    for(const disposer of this.disposers) {
+      disposer();
+    }
+  }
+
+  // shouldComponentUpdate() {
+  //   return this.state.showTable;
+  // }
 
   onGridReady(params: WikifierData) {
     // store the api
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
+    // Need to call this here, for some reason the grid is initially displayed with no styles
+    // and we need to apply them again once the grid is ready.
+    if (this.state.rowData) {
+      this.gridApi.setRowData(this.state.rowData);
+    }
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
   }
 
   async handleOpenTableFile(event:any) {
-    this.setState({ errorMessage: {} as ErrorMessage });  
+    this.setState({ 
+      errorMessage: {} as ErrorMessage,
+      showTable: false
+    });  
     // remove current status
     wikiStore.table.isCellSelectable = false;
     this.updateSelectedCell();
-    this.updateQnodeCells();
+    wikiStore.table.updateQnodeCells();
 
     // get table file
     const file = event.target.files[0];
@@ -157,20 +186,22 @@ class TableViewer extends Component<{}, TableState> {
         currSheetName: tableData.currSheetName,
         columnDefs: tableData.sheetData.columnDefs,
         rowData: tableData.sheetData.rowData,
+        showTable: true,
       });
       // this.gridColumnApi.autoSizeAllColumns();
 
       // load wikifier data
       if (wikifierData !== null) {
-        this.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        this.updateQnodeCells(); // reset
+        wikiStore.table.updateQnodeCells(); // reset
       }
 
       // load yaml data
       if (yamlData !== null) {
         wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-        this.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.table.yamlRegions = yamlData.yamlRegions;
+        // this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
       } else {
         wikiStore.table.isCellSelectable = false;
@@ -192,13 +223,11 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  async handleOpenWikifierFile(event: any) {
+  async handleOpenWikifierFile(file: File) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
-    this.updateQnodeCells();
+    wikiStore.table.updateQnodeCells();
 
-    // get wikifier file
-    const file = event.target.files[0];
     if (!file) return;
 
     // before sending request
@@ -224,7 +253,7 @@ class TableViewer extends Component<{}, TableState> {
 
       // else, success
       const { qnodes, rowData } = json;
-      this.updateQnodeCells(qnodes, rowData);
+      wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
       this.setState({
@@ -241,7 +270,7 @@ class TableViewer extends Component<{}, TableState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      this.updateQnodeCells();
+      wikiStore.table.updateQnodeCells();
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
@@ -312,12 +341,16 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   async handleSelectSheet(event: any) {
-    this.setState({ errorMessage: {} as ErrorMessage });
+    this.setState({ 
+      errorMessage: {} as ErrorMessage,
+      showTable: false
+    });
     // remove current status
     this.updateSelectedCell();
     wikiStore.yaml.yamlText = undefined;
-    this.updateYamlRegions();
-    this.updateQnodeCells();
+    // this.updateYamlRegions();
+    wikiStore.table.yamlRegions = undefined;
+    wikiStore.table.updateQnodeCells();
     wikiStore.output.clearOutput();
     wikiStore.output.isDownloadDisabled = true;
 
@@ -346,20 +379,22 @@ class TableViewer extends Component<{}, TableState> {
         currSheetName: tableData.currSheetName,
         columnDefs: tableData.sheetData.columnDefs,
         rowData: tableData.sheetData.rowData,
+        showTable: true,
       });
       // this.gridColumnApi.autoSizeAllColumns();
 
       // load wikifier data
       if (wikifierData !== null) {
-        this.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
       } else {
-        this.updateQnodeCells(); // reset
+        wikiStore.table.updateQnodeCells(); // reset
       }
 
       // load yaml data
       if (yamlData !== null) {
         wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-        this.updateYamlRegions(yamlData.yamlRegions);
+        // this.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.table.yamlRegions = yamlData.yamlRegions;
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
@@ -383,11 +418,13 @@ class TableViewer extends Component<{}, TableState> {
   }
 
 
-  updateQnodeCells(qnodeData: any | null = null, rowData: any = null) {
-    if (qnodeData === null) {
+  updateQnodeCellsFromStore() {
+    const qnodeData = wikiStore.table.qnodes;
+    const rowData = wikiStore.table.rowData;
+    if (!qnodeData) {
       // reset qnode cells
-      if (!wikiStore.wikifier.state || !wikiStore.wikifier.state.qnodeData) return;
-      const qnodes = Object.keys(wikiStore.wikifier.state.qnodeData);
+      if (!wikiStore.wikifier.qnodeData) return;
+      const qnodes = Object.keys(wikiStore.wikifier.qnodeData);
       if (qnodes.length === 0) return;
       const cells = { qnode: { list: qnodes } };
       const presets = {
@@ -410,7 +447,7 @@ class TableViewer extends Component<{}, TableState> {
       this.updateStyleByDict(cells, presets);
 
       // update wikifier data
-        wikiStore.wikifier.updateWikifier(qnodeData, rowData);
+      wikiStore.wikifier.updateWikifier(qnodeData, rowData);
     }
   }
 
@@ -419,7 +456,7 @@ class TableViewer extends Component<{}, TableState> {
       // reset
       const { selectedCell } = this.state;
       if (selectedCell !== null) {
-        this.updateStyleByCell(selectedCell.col, selectedCell.row, { border: "" });
+        wikiStore.table.updateStyleByCell(selectedCell.col, selectedCell.row, { border: "" });
       }
       this.setState({
         selectedCell: null,
@@ -427,7 +464,7 @@ class TableViewer extends Component<{}, TableState> {
       });
     } else {
       // update
-      this.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
+      wikiStore.table.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
       this.setState({
         selectedCell: { col: col, row: row, value: value },
         showToast0: true,
@@ -436,7 +473,12 @@ class TableViewer extends Component<{}, TableState> {
 
   }
 
-  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: any, override = false) {
+  updateStyleByCellFromStore() {
+    const colName = wikiStore.table.styledColName; 
+    const rowName = wikiStore.table.styledRowName; 
+    const style = wikiStore.table.styleCell; 
+    const override = wikiStore.table.styledOverride;
+
     if (rowName && colName) {
       const col = colName;
       const row = Number(rowName) - 1;
@@ -453,8 +495,12 @@ class TableViewer extends Component<{}, TableState> {
         this.setState({
           rowData: rowData2
         });
-        this.gridApi.setRowData(rowData2);
-        // console.log("<TableViewer> updated style of (" + colName + rowName + ") by " + JSON.stringify(style) + ".");
+
+        if (this.gridApi) {
+          this.gridApi.setRowData(rowData2);
+        } /* else {
+          console.warn("Can't update style, gridApi is undefined");
+        } */
       }
     } else {
       // console.log("<TableViewer> updated nothing.");
@@ -472,7 +518,10 @@ class TableViewer extends Component<{}, TableState> {
     // dict = { "styleName": ["A1", "A2", ...] }
     // window.TableViewer.updateStyleByDict({ "data_region": ["A14", "A15"], "qualifier_region": ["B14", "B15"], "item": ["C14", "C15"] });
     const rowData2 = this.state.rowData;
-    if (!rowData2) return;
+    if (!rowData2) {
+      return;
+    }
+
     const styleNames = Object.keys(presets);
     for (let i = 0; i < styleNames.length; i++) {
       const styleName = styleNames[i];
@@ -498,11 +547,16 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({
       rowData: rowData2
     });
-    // TODO: check this part
-    this.gridApi.setRowData(rowData2);
+    if (this.gridApi) {
+      this.gridApi.setRowData(rowData2);
+    } /* else {
+      console.warn("Can't update style, gridApi is undefined");
+    } */
   }
 
   updateTableData(tableData?: TableData) {
+    this.setState({ showTable: false }); //
+
     if (tableData?.sheetData) {
       tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
       tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
@@ -515,7 +569,10 @@ class TableViewer extends Component<{}, TableState> {
       sheetNames: tableData?.sheetNames || null,
       currSheetName: tableData?.currSheetName || null,
       columnDefs: tableData?.sheetData?.columnDefs || columns,
-      rowData: tableData?.sheetData?.rowData || rows
+      rowData: tableData?.sheetData?.rowData || rows,
+      showTable: true,
+      showToast0: false,
+      showToast1: false,
     });
     console.log("-----updateTableData---- after update: this.state", this.state)
     // this.gridColumnApi.autoSizeAllColumns();
@@ -536,6 +593,7 @@ class TableViewer extends Component<{}, TableState> {
       }
       this.updateStyleByDict(yamlRegions, presets);
       this.setState({ yamlRegions: null });
+      wikiStore.table.dataRegionsCells = [];
     } else {
       // update
       const presets = {
@@ -548,6 +606,9 @@ class TableViewer extends Component<{}, TableState> {
       }
       this.updateStyleByDict(newYamlRegions, presets);
       this.setState({ yamlRegions: newYamlRegions });
+
+      // Save data regions (enable get the output to these cells).
+      wikiStore.table.dataRegionsCells = (newYamlRegions as any).dataRegion.list;
     }
   }
 
@@ -653,6 +714,8 @@ class TableViewer extends Component<{}, TableState> {
 
             {/* table */}
             {/* FUTURE: adapt large dataset by: https://github.com/NeXTs/Clusterize.js */}
+            {
+             this.state.showTable ?
             <AgGridReact
               onGridReady={this.onGridReady.bind(this)}
               columnDefs={columnDefs}
@@ -707,6 +770,7 @@ class TableViewer extends Component<{}, TableState> {
               }}
             >
             </AgGridReact>
+           : <div /> }
           </Card.Body>
 
           {/* sheet selector */}

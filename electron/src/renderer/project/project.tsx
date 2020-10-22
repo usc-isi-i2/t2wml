@@ -106,12 +106,13 @@ class Project extends Component<ProjectProps, ProjectState> {
 
       // load table data
       if (tableData) {
-        wikiStore.table.updateTableData(tableData);
+        wikiStore.table.tableData = tableData;
       } else {// else: reset data
-        wikiStore.table.updateTableData();
+        wikiStore.table.tableData = undefined;
       }
       
-      // todo: reset output window
+      // reset output window
+      wikiStore.output.clearOutput();
       // load wikifier data
       if (wikifierData !== null) {
         wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
@@ -121,13 +122,10 @@ class Project extends Component<ProjectProps, ProjectState> {
 
       // load yaml data
       wikiStore.yaml.yamlText = yamlData?.yamlFileContent || undefined;
-      wikiStore.table.updateYamlRegions(yamlData?.yamlRegions);
+      wikiStore.table.yamlRegions = yamlData?.yamlRegions;
       if (yamlData !== null) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
-
-        // Save data regions (enable get the output to these cells).
-        wikiStore.table.dataRegionsCells = yamlData.yamlRegions.dataRegion.list;
       } else {
         wikiStore.table.isCellSelectable = false;
       }
