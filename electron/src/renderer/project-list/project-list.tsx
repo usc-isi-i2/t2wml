@@ -83,7 +83,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     document.title = "T2WML - Projects";
   }
 
-  handleDeleteProject(path: string) {    
+  handleDeleteProject(path: string) {
     const project = wikiStore.projects.find(path);
     if (!project) {
       console.warn(`No project for ${path} in project list`);
@@ -212,7 +212,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             <td>
               <span className="text-left small">
                 {this.formatTime(project.modified)}
-              </span> 
+              </span>
             </td>
 
             {/* date created */}
@@ -282,7 +282,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                   onClick={() => this.handleDeleteProject(project.folder)}
                 >
                   <FontAwesomeIcon icon={faTimes} />
-                </span>     
+                </span>
               </OverlayTrigger>
             </td>
           </tr>
@@ -385,7 +385,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   renderModals() {
     return (
-      <RenameProject 
+      <RenameProject
         showRenameProject={this.state.showRenameProject}
         showSpinner={this.state.showSpinner}
         tempRenameProject={this.state.tempRenameProject}
@@ -408,7 +408,7 @@ class ProjectList extends Component<{}, ProjectListState> {
         {this.renderModals()}
 
         <Navbar/>
-        
+
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
           {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
