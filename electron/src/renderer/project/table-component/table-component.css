@@ -1,4 +1,4 @@
-table {
+.table-wrapper table {
   border: 1px solid #c7c7c7;
   border-collapse: collapse;
   border-spacing: 0;
@@ -8,7 +8,7 @@ table {
   cursor: pointer;
 }
 
-table th:nth-child(1) {
+.table-wrapper table th:nth-child(1) {
   padding: 0.15em 0.5em;
   text-align: center;
   background: #f9f9f9;
@@ -20,7 +20,7 @@ table th:nth-child(1) {
   top: 0;
 }
 
-table th:nth-child(1)::after {
+.table-wrapper table th:nth-child(1)::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -32,7 +32,7 @@ table th:nth-child(1)::after {
   border-top: 1.25em solid transparent;
 }
 
-table td:nth-child(1) {
+.table-wrapper table td:nth-child(1) {
   border-right: 2px solid #c7c7c7;
   text-align: center;
   background: #f9f9f9;
@@ -44,7 +44,7 @@ table td:nth-child(1) {
   left: 0;
 }
 
-table th {
+.table-wrapper table th {
   border-top: 1px solid #c7c7c7;
   border-left: 1px solid #c7c7c7;
   border-right: 1px solid #c7c7c7;
@@ -59,7 +59,7 @@ table th {
   top: 0;
 }
 
-table td {
+.table-wrapper table td {
   border: 1px solid #c7c7c7;
   padding: 0.15em 0.5em;
   line-height: 1.25em;
@@ -67,25 +67,25 @@ table td {
   z-index: 1;
 }
 
-table td.active {
+.table-wrapper table td.active {
   background: #fafafa;
   z-index: 25;
 }
-table td.active-top {
+.table-wrapper table td.active-top {
   border-top: 2px solid rgb(51, 153, 102);
 }
-table tr:nth-child(1) td.active-top {
+.table-wrapper table tr:nth-child(1) td.active-top {
   border-top-width: 3px;
 }
-table td.active-left {
+.table-wrapper table td.active-left {
   border-left: 2px solid rgb(51, 153, 102);
 }
-table td:nth-child(2).active-left {
+.table-wrapper table td:nth-child(2).active-left {
   border-left-width: 3px;
 }
-table td.active-right {
+.table-wrapper table td.active-right {
   border-right: 2px solid rgb(51, 153, 102);
 }
-table td.active-bottom {
+.table-wrapper table td.active-bottom {
   border-bottom: 2px solid rgb(51, 153, 102);
 }
