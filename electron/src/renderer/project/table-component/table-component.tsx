@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import './table-component.css';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';

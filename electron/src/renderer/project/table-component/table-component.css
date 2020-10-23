@@ -1,0 +1,91 @@
+table {
+  border: 1px solid #c7c7c7;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-weight: 400;
+  user-select: none;
+  position: relative;
+  cursor: pointer;
+}
+
+table th:nth-child(1) {
+  padding: 0.15em 0.5em;
+  text-align: center;
+  background: #f9f9f9;
+  min-width: 1em;
+  position: sticky;
+  color: #777;
+  z-index: 5;
+  left: 0;
+  top: 0;
+}
+
+table th:nth-child(1)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-left: 1.25em solid transparent;
+  border-right: 1.25em solid #ddd;
+  border-top: 1.25em solid transparent;
+}
+
+table td:nth-child(1) {
+  border-right: 2px solid #c7c7c7;
+  text-align: center;
+  background: #f9f9f9;
+  padding: 0.15em 0.5em;
+  min-width: 1em;
+  position: sticky;
+  color: #777;
+  z-index: 0;
+  left: 0;
+}
+
+table th {
+  border-top: 1px solid #c7c7c7;
+  border-left: 1px solid #c7c7c7;
+  border-right: 1px solid #c7c7c7;
+  border-bottom: 2px solid #c7c7c7;
+  padding: 0.15em 0.5em;
+  min-width: 100px;
+  text-align: center;
+  background: #f9f9f9;
+  position: sticky;
+  color: #777;
+  z-index: 3;
+  top: 0;
+}
+
+table td {
+  border: 1px solid #c7c7c7;
+  padding: 0.15em 0.5em;
+  line-height: 1.25em;
+  min-width: 100px;
+  z-index: 1;
+}
+
+table td.active {
+  background: #fafafa;
+  z-index: 25;
+}
+table td.active-top {
+  border-top: 2px solid rgb(51, 153, 102);
+}
+table tr:nth-child(1) td.active-top {
+  border-top-width: 3px;
+}
+table td.active-left {
+  border-left: 2px solid rgb(51, 153, 102);
+}
+table td:nth-child(2).active-left {
+  border-left-width: 3px;
+}
+table td.active-right {
+  border-right: 2px solid rgb(51, 153, 102);
+}
+table td.active-bottom {
+  border-bottom: 2px solid rgb(51, 153, 102);
+}
