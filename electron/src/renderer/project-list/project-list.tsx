@@ -229,7 +229,6 @@ class ProjectList extends Component<{}, ProjectListState> {
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="rename">
                     <span className="text-left small">Rename</span>
@@ -249,7 +248,6 @@ class ProjectList extends Component<{}, ProjectListState> {
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="download">
                     <span className="text-left small">Show in filesystem</span>
@@ -269,7 +267,6 @@ class ProjectList extends Component<{}, ProjectListState> {
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="delete">
                     <span className="text-left small">Delete</span>
