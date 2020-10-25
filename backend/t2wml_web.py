@@ -144,7 +144,7 @@ def get_qnodes_layer(calc_params):
         labels_and_descriptions = get_labels_and_descriptions(list(ids_to_get), calc_params.sparql_endpoint)
         for id in qnode_entries:
             if id in labels_and_descriptions:
-                qnode_entries[id]['qNode'].update(labels_and_descriptions[id])
+                qnode_entries[id]['qNode'].update(**labels_and_descriptions[id])
         
         for id in qnode_entries:
             qNode=qnode_entries[id].pop("qNode")
