@@ -207,11 +207,8 @@
                         "id": "Q21203",
                         "value": "Aruba",
                         "context": "",
-                        "label": {
-                            "label": "Aruba",
-                            "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
-                        },
-                        "description": "",
+                        "label": "Aruba",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
                         "url": "https://www.wikidata.org/wiki/Q21203"
                     }
                 ]
@@ -315,11 +312,8 @@
                         "id": "Qaid-security-22",
                         "value": "22",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 22",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 22",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -332,11 +326,8 @@
                         "id": "Qaid-security-47",
                         "value": "47",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 47",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 47",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -349,11 +340,8 @@
                         "id": "Qaid-security-73",
                         "value": "73",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 73",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 73",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -366,11 +354,8 @@
                         "id": "Qaid-security-103",
                         "value": "103",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 103",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 103",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -383,11 +368,8 @@
                         "id": "Qaid-security-475",
                         "value": "475",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 475",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 475",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -400,11 +382,8 @@
                         "id": "Qaid-security-782",
                         "value": "782",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 782",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 782",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -439,10 +418,7 @@
                         "id": "Paid-security-002",
                         "value": "UN",
                         "context": "property",
-                        "label": {
-                            "label": "UN",
-                            "description": ""
-                        },
+                        "label": "UN",
                         "description": "",
                         "url": ""
                     },
@@ -456,10 +432,7 @@
                         "id": "Paid-security-003",
                         "value": "INGO",
                         "context": "property",
-                        "label": {
-                            "label": "INGO",
-                            "description": ""
-                        },
+                        "label": "INGO",
                         "description": "",
                         "url": ""
                     },
@@ -473,10 +446,7 @@
                         "id": "Paid-security-004",
                         "value": "LNGO/NRCS",
                         "context": "property",
-                        "label": {
-                            "label": "LNGO/NRCS",
-                            "description": ""
-                        },
+                        "label": "LNGO/NRCS",
                         "description": "",
                         "url": ""
                     },
@@ -490,11 +460,8 @@
                         "id": "Q21203",
                         "value": "Aruba",
                         "context": "",
-                        "label": {
-                            "label": "Aruba",
-                            "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
-                        },
-                        "description": "",
+                        "label": "Aruba",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
                         "url": "https://www.wikidata.org/wiki/Q21203"
                     }
                 ]
@@ -1373,11 +1340,8 @@
                         "id": "Qaid-security-22",
                         "value": "22",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 22",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 22",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -1390,11 +1354,8 @@
                         "id": "Qaid-security-73",
                         "value": "73",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 73",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 73",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -1407,11 +1368,8 @@
                         "id": "Qaid-security-103",
                         "value": "103",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 103",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 103",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -1424,11 +1382,8 @@
                         "id": "Qaid-security-475",
                         "value": "475",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 475",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 475",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -1441,11 +1396,8 @@
                         "id": "Qaid-security-782",
                         "value": "782",
                         "context": "main subject",
-                        "label": {
-                            "label": "Incident ID 782",
-                            "description": "incident related to aid worker security"
-                        },
-                        "description": "",
+                        "label": "Incident ID 782",
+                        "description": "incident related to aid worker security",
                         "url": ""
                     },
                     {
@@ -1480,10 +1432,7 @@
                         "id": "Paid-security-002",
                         "value": "UN",
                         "context": "property",
-                        "label": {
-                            "label": "UN",
-                            "description": ""
-                        },
+                        "label": "UN",
                         "description": "",
                         "url": ""
                     },
@@ -1497,10 +1446,7 @@
                         "id": "Paid-security-003",
                         "value": "INGO",
                         "context": "property",
-                        "label": {
-                            "label": "INGO",
-                            "description": ""
-                        },
+                        "label": "INGO",
                         "description": "",
                         "url": ""
                     },
@@ -1514,10 +1460,7 @@
                         "id": "Paid-security-004",
                         "value": "LNGO/NRCS",
                         "context": "property",
-                        "label": {
-                            "label": "LNGO/NRCS",
-                            "description": ""
-                        },
+                        "label": "LNGO/NRCS",
                         "description": "",
                         "url": ""
                     },
@@ -1531,11 +1474,8 @@
                         "id": "Q21203",
                         "value": "Aruba",
                         "context": "",
-                        "label": {
-                            "label": "Aruba",
-                            "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
-                        },
-                        "description": "",
+                        "label": "Aruba",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
                         "url": "https://www.wikidata.org/wiki/Q21203"
                     }
                 ]
@@ -1594,11 +1534,8 @@
                         "id": "Q115",
                         "value": "Ethiopia",
                         "context": "wikifier test",
-                        "label": {
-                            "label": "Ethiopia",
-                            "description": "country in East Africa"
-                        },
-                        "description": "",
+                        "label": "Ethiopia",
+                        "description": "Country in East Africa",
                         "url": "https://www.wikidata.org/wiki/Q115"
                     },
                     {
@@ -1611,11 +1548,8 @@
                         "id": "Q21203",
                         "value": "Aruba",
                         "context": "wikifier test",
-                        "label": {
-                            "label": "Aruba",
-                            "description": "island country in the Caribbean, part of the Kingdom of the Netherlands"
-                        },
-                        "description": "",
+                        "label": "Aruba",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
                         "url": "https://www.wikidata.org/wiki/Q21203"
                     },
                     {
@@ -1628,11 +1562,8 @@
                         "id": "Q82770",
                         "value": "bad qualifier",
                         "context": "wikifier test",
-                        "label": {
-                            "label": "Bad D\u00fcrrheim",
-                            "description": "municipality in Germany"
-                        },
-                        "description": "",
+                        "label": "Bad D\u00fcrrheim",
+                        "description": "municipality in Germany",
                         "url": "https://www.wikidata.org/wiki/Q82770"
                     }
                 ]
