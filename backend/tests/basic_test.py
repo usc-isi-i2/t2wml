@@ -133,8 +133,8 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         project=data.pop('project')
-        assert project["endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
-        assert project["warnEmpty"]==False
+        assert project["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
+        assert project["warn_for_empty_cells"]==False
     
     def xtest_999_save(self):
         #used when overwriting all old results with new ones 
@@ -155,10 +155,8 @@ class TestLoadingProject(BaseClass):
         data = json.loads(data)
         data.pop('project')
         self.results_dict['load_from_path']=data
-
-
-        data['tableData'].pop('filename', None)
-        self.expected_results_dict['load_from_path']['tableData'].pop('filename', None)
+        #with open(self.expected_results_path, 'w') as f:
+        #    json.dump(self.results_dict, f, sort_keys=False, indent=4)
 
         self.compare_jsons(data, 'load_from_path')
 
