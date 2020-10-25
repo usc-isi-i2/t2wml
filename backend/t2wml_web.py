@@ -116,7 +116,7 @@ class QNode:
         return url
         
 
-    def update(self, label, description, **kwargs):
+    def update(self, label="", description="", **kwargs):
         self.label=label
         self.description=description
 
@@ -126,27 +126,28 @@ def get_qnodes_layer(calc_params):
     wikifier = calc_params.wikifier
     item_table = wikifier.item_table
     qnode_entries=dict()
-    ids_to_get = set()
-    for col in range(sheet.col_len):
-        for row in range(sheet.row_len):
-            id, context, value = item_table.get_cell_info(col, row, sheet)
-            if id:
-                ids_to_get.add(id)
-                if id in qnode_entries:
-                    qnode_entries[id]["indices"].append[col, row]
-                else:
-                    qnode_entries[id]=dict(
-                        qNode= QNode(id, value, context),
-                        indices=[[col, row]])
+    if len(item_table.lookup_table):
+        ids_to_get = set()
+        for col in range(sheet.col_len):
+            for row in range(sheet.row_len):
+                id, context, value = item_table.get_cell_info(col, row, sheet)
+                if id:
+                    ids_to_get.add(id)
+                    if id in qnode_entries:
+                        qnode_entries[id]["indices"].append([col, row])
+                    else:
+                        qnode_entries[id]=dict(
+                            qNode= QNode(id, value, context),
+                            indices=[[col, row]])
 
-    labels_and_descriptions = get_labels_and_descriptions(list(ids_to_get), calc_params.sparql_endpoint)
-    for id in qnode_entries:
-        if id in labels_and_descriptions:
-            qnode_entries[id]['qNode'].update(labels_and_descriptions[id])
-    
-    for id in qnode_entries:
-        qNode=qnode_entries[id].pop("qNode")
-        qnode_entries[id].update(qNode.__dict__)
+        labels_and_descriptions = get_labels_and_descriptions(list(ids_to_get), calc_params.sparql_endpoint)
+        for id in qnode_entries:
+            if id in labels_and_descriptions:
+                qnode_entries[id]['qNode'].update(labels_and_descriptions[id])
+        
+        for id in qnode_entries:
+            qNode=qnode_entries[id].pop("qNode")
+            qnode_entries[id].update(qNode.__dict__)
     
     return dict(layerType="qNode", entries=list(qnode_entries.values()))
 
@@ -170,6 +171,6 @@ def get_all_layers_and_table(response, calc_params):
     #convenience function for code that repeats three times
     response["table"] = get_table(calc_params)
     qnodes_layer = get_qnodes_layer(calc_params)
-    response["layers"].append(qnodes_layer)
+    response["layers"]=[qnodes_layer]
     yaml_layers = get_yaml_layers(calc_params)
     response["layers"].extend(yaml_layers)

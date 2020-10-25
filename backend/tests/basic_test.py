@@ -33,23 +33,18 @@ class TestBasicWorkflow(BaseClass):
 
     def test_02_get_project_files(self, client):
         data=get_project_files(client, project_folder)
-        data.pop('project')
-        assert data == {
-            'name': 'Unit test',
-            'tableData': None,
-            'yamlData': None,
-            'wikifierData': None
-        }
+        assert data["table"] is None
+        assert data["layers"] == []
+        assert data["yamlContent"] is None
+
 
     def test_03_add_data_file(self, client):   
         filename=os.path.join(self.files_dir, "dataset.xlsx")
         response=load_data_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
-        data = json.loads(data)
-        self.results_dict['add_data_file']=data
+        data = json.loads(data)  
         data.pop('project')
-        data['tableData'].pop('filename', None)
-        self.expected_results_dict['add_data_file']['tableData'].pop('filename', None)
+        self.results_dict['add_data_file']=data
         self.compare_jsons(data, 'add_data_file')
 
     def test_05_add_wikifier_file(self, client):
@@ -78,22 +73,7 @@ class TestBasicWorkflow(BaseClass):
         data = json.loads(data)
         data.pop('project')
         self.results_dict['add_yaml']=data
-
-        #some of the results are sent back as unordered lists and need to be compared separately
-        dict_1=data["yamlRegions"]
-        dict_2=self.expected_results_dict["add_yaml"]["yamlRegions"]
-        #sanitize_highlight_region(dict_1, dict_2)
-
         self.compare_jsons(data, 'add_yaml')
-
-    def test_09_get_cell(self, client):
-        #GET '/api/data/{project_folder}/cell/<col>/<row>'
-        url='/api/data/cell/{col}/{row}?project_folder={project_folder}'.format(project_folder=project_folder, col="G", row=4)
-        response=client.get(url) 
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        self.results_dict['get_cell']=data
-        self.compare_jsons(data, 'get_cell')
 
     def test_11_get_download(self, client):
         #GET '/api/project/{project_folder}/download/<filetype>'
@@ -112,9 +92,9 @@ class TestBasicWorkflow(BaseClass):
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        project=data.pop('project')
+        assert project["_saved_state"]["current_sheet"]=="Sheet4"
         self.results_dict['change_sheet']=data
-        data['tableData'].pop('filename', None)
-        self.expected_results_dict['change_sheet']['tableData'].pop('filename', None)
         self.compare_jsons(data, 'change_sheet')
 
     def test_12_wikify_region(self, client):
@@ -152,8 +132,9 @@ class TestBasicWorkflow(BaseClass):
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
-        assert data["endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
-        assert data["warnEmpty"]==False
+        project=data.pop('project')
+        assert project["endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
+        assert project["warnEmpty"]==False
     
     def xtest_999_save(self):
         #used when overwriting all old results with new ones 
@@ -165,13 +146,6 @@ class TestBasicWorkflow(BaseClass):
 class TestLoadingProject(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "project_results.json")
-
-    def test_10_load_from_path(self, client):
-        url='/api/project/load?project_folder={path}'.format(path=self.files_dir)
-        response=client.post(url)
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        assert response.status_code==201
     
     def test_11_get_loaded_yaml_files(self, client):
         url= '/api/project?project_folder={path}'.format(path=self.files_dir)
