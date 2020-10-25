@@ -13,7 +13,7 @@ project_folder=None #we need to use a global for some reason... self.project_fol
 class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
-
+    results_dict={}
     def test_01_add_project(self, client):
         #POST /api/project
         global project_folder
@@ -146,6 +146,7 @@ class TestBasicWorkflow(BaseClass):
 class TestLoadingProject(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "project_results.json")
+    results_dict={}
     
     def test_11_get_loaded_yaml_files(self, client):
         url= '/api/project?project_folder={path}'.format(path=self.files_dir)
@@ -154,11 +155,7 @@ class TestLoadingProject(BaseClass):
         data = json.loads(data)
         data.pop('project')
         self.results_dict['load_from_path']=data
-        #some of the results are sent back as unordered lists and need to be compared separately
-        set_keys=[]
-        dict_1=data["yamlData"]["yamlRegions"]
-        dict_2=self.expected_results_dict["load_from_path"]["yamlData"]["yamlRegions"]
-        #sanitize_highlight_region(dict_1, dict_2)
+
 
         data['tableData'].pop('filename', None)
         self.expected_results_dict['load_from_path']['tableData'].pop('filename', None)
