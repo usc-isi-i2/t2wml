@@ -100,9 +100,9 @@ class QNode:
         self.context = context
         self.label = label
         self.description = description
+        self.url=self.get_url()
 
-    @property
-    def url(self):
+    def get_url(self):
         url=""
         first_letter=str(self.id).upper()[0]
         try:
@@ -119,6 +119,7 @@ class QNode:
     def update(self, label="", description="", **kwargs):
         self.label=label
         self.description=description
+        
 
 
 def get_qnodes_layer(calc_params):
