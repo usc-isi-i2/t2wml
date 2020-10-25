@@ -46,6 +46,8 @@ def get_yaml_layers(calc_params):
     qualifierEntry=dict(indices=[], type="qualifier")
     itemEntry=dict(indices=[], type="item")
     dataEntry=dict(indices=[], type="data")
+    majorErrorEntry=dict(indices=[], type="majorError")
+    minorErrorEntry=dict(indices=[], type="minorError")
     errorLayer=dict(layerType="error", entries=[])
     statementLayer=dict(layerType="statement", entries=[])
     cleanedLayer=dict(layerType="cleaned", entries=[])
@@ -57,8 +59,14 @@ def get_yaml_layers(calc_params):
         
         for cell in errors:
             #todo: convert cell to indices
-            errorEntry=dict(indices=[indexer(cell)], error=errors[cell])
+            cell_index=indexer(cell)
+            errorEntry=dict(indices=[cell_index], error=errors[cell])
             errorLayer["entries"].append(errorEntry)
+
+            if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):	
+                majorErrorEntry["indices"].append(cell_index)
+            else:	
+                minorErrorEntry["indices"].append(cell_index)
 
         for cell in statements:
             dataEntry["indices"].append(indexer(cell))
@@ -81,7 +89,7 @@ def get_yaml_layers(calc_params):
         
         #TODO: handle cleaned layer
         
-    typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry])
+    typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
 
     return [errorLayer, statementLayer, cleanedLayer, typeLayer]
 
