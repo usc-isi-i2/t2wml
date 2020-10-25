@@ -1,8 +1,4 @@
-import os
 import csv
-import json
-import pandas as pd
-from t2wml.spreadsheets.conversions import column_index_to_letter
 from pathlib import Path
 from string import punctuation
 from flask import request
@@ -115,48 +111,6 @@ def file_upload_validator(file_extensions):
             "File with extension '" + file_extension + "' is not allowed")
 
     return in_file
-
-
-def table_data(calc_params):
-    sheet_names = calc_params.sheet_names
-    sheet_name = calc_params.sheet_name
-    data_path = Path(calc_params.data_path)
-    is_csv = True if data_path.suffix.lower() == ".csv" else False
-    sheetData = sheet_to_json(calc_params)
-    return {
-        "filename": data_path.name,
-        "isCSV": is_csv,
-        "sheetNames": sheet_names,
-        "currSheetName": sheet_name,
-        "sheetData": sheetData
-    }
-
-
-def sheet_to_json(calc_params):
-    sheet = calc_params.sheet
-    data = sheet.data.copy()
-    json_data = {'columnDefs': [{'headerName': "", 'field': "^", 'pinned': "left"}],
-                 'rowData': []}
-    # get col names
-    col_names = []
-    for i in range(len(sheet.data.iloc[0])):
-        column = column_index_to_letter(i)
-        col_names.append(column)
-        json_data['columnDefs'].append({'headerName': column, 'field': column})
-    # rename cols
-    data.columns = col_names
-    # rename rows
-    data.index += 1
-    # get json
-    json_string = data.to_json(orient='table')
-    json_dict = json.loads(json_string)
-    initial_json = json_dict['data']
-    # add the ^ column
-    for i, row in enumerate(initial_json):
-        row["^"] = str(i + 1)
-    # add to the response
-    json_data['rowData'] = initial_json
-    return json_data
 
 
 def save_file(project_folder, in_file):

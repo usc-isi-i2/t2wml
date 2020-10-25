@@ -10,10 +10,10 @@ from t2wml.api import Project as apiProject
 from t2wml.api import add_entities_from_file
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_cell, handle_yaml, serialize_item_table,
-                       highlight_region, update_t2wml_settings, wikify)
+from t2wml_web import (download, get_all_layers_and_table, get_yaml_layers, get_yaml_content, 
+                        get_qnodes_layer, get_table, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe,
-                   make_frontend_err_dict, string_is_valid, table_data, save_yaml)
+                   make_frontend_err_dict, string_is_valid, save_yaml)
 from web_exceptions import WebException
 from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
@@ -112,22 +112,14 @@ def get_project():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
     for f in project.entity_files:
-        response = add_entities_from_file(Path(project.directory) / f)
-
-    for f in project.entity_files:
         add_entities_from_file(Path(project.directory) / f)
-    response = {
-        "tableData": None,
-        "yamlData": None,
-        "wikifierData": None,
-    }
 
+    response=dict(project=project.__dict__, table=None, layers=[], yamlContent=None)
     calc_params = get_calc_params(project)
     if calc_params:
-        response["tableData"] = table_data(calc_params)
-        response["wikifierData"] = serialize_item_table(calc_params)
-        response["yamlData"] = handle_yaml(calc_params)
-    response['project'] = project.__dict__
+        get_all_layers_and_table(response, calc_params)
+        response["yamlContent"] = get_yaml_content(calc_params)
+
     return response, 200
 
 
@@ -142,13 +134,12 @@ def upload_entities():
     project.add_entity_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
 
-    return_dict = add_entities_from_file(file_path)
-    response = {"widget": return_dict}
+    entities_stats = add_entities_from_file(file_path)
+    response = dict(entitiesStats= entities_stats, project=project.__dict__)
     calc_params = get_calc_params(project)
     if calc_params:
-        serialized_item_table = serialize_item_table(calc_params)
-        response.update(serialized_item_table)
-    response['project'] = project.__dict__
+        qnodes_layer = get_qnodes_layer(calc_params)
+        response["layers"]=[qnodes_layer]
     return response, 200
 
 
@@ -161,11 +152,7 @@ def upload_data_file():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    response = {
-        "tableData": dict(),
-        "wikifierData": dict(),
-        "yamlData": dict(),  # this is never not empty
-    }
+
     in_file = file_upload_validator({'xlsx', 'xls', 'csv'})
     file_path = save_file(project_folder, in_file)
     project.add_data_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
@@ -174,13 +161,13 @@ def upload_data_file():
 
     calc_params = get_calc_params(project)
 
-    calc_params = get_calc_params(project)
-    response["tableData"] = table_data(calc_params)
-    sheet = project.current_sheet
+    response=dict(project=project.__dict__)
+    
 
     # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
     # and item definitions automatically
     if annotation_integration:
+        sheet = project.current_sheet
         ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
                                    w_requests=request)
         if ai.is_annotated_spreadsheet(project.directory):
@@ -203,7 +190,6 @@ def upload_data_file():
                 create_datafile(project, new_df, response['tableData']['filename'],
                                 response['tableData']['currSheetName'])
                 calc_params = get_calc_params(project)
-                response["tableData"] = table_data(calc_params)
                 sheet = project.current_sheet
                 ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
                                            df=new_df)
@@ -212,10 +198,8 @@ def upload_data_file():
                 # TODO the users. There has to be a better way to handle it. For Future implementation
                 ai.automate_integration(project, response, sheet)
 
-        calc_params = get_calc_params(project)
-    response["wikifierData"] = serialize_item_table(calc_params)
-    response["yamlData"] = handle_yaml(calc_params)
-    response['project'] = project.__dict__
+    calc_params = get_calc_params(project)
+    get_all_layers_and_table(response, calc_params)
     return response, 200
 
 
@@ -228,20 +212,14 @@ def change_sheet(sheet_name):
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    response = {
-        "tableData": dict(),
-        "wikifierData": dict(),
-        "yamlData": dict(),
-    }
 
     project.update_saved_state(current_sheet=sheet_name)
     project.save()
-
+    response=dict(project=project.__dict__)
     calc_params = get_calc_params(project)
     if calc_params:
-        response["tableData"] = table_data(calc_params)
-        response["wikifierData"] = serialize_item_table(calc_params)
-        response["yamlData"] = handle_yaml(calc_params)
+        response["yamlContent"]=get_yaml_content(calc_params)
+        get_all_layers_and_table(response, calc_params)
 
     return response, 200
 
@@ -255,20 +233,17 @@ def upload_wikifier_output():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    response=dict()
-    in_file = file_upload_validator({"csv"})
 
+    in_file = file_upload_validator({"csv"})
     file_path = save_file(project_folder, in_file)
     project.add_wikifier_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.update_saved_state(current_wikifiers=[file_path])
     project.save()
 
+    response=dict(project=project.__dict__)
     calc_params = get_calc_params(project)
     if calc_params:
-        serialized_item_table = serialize_item_table(calc_params)
-        # does not go into field wikifierData but is dumped directly
-        response.update(serialized_item_table)
-    response['project'] = project.__dict__
+        response["layers"]=[get_qnodes_layer(calc_params)]
     return response, 200
 
 
@@ -284,34 +259,31 @@ def call_wikifier_service():
     action = request.form["action"]
     region = request.form["region"]
     context = request.form["context"]
-    flag = int(request.form["flag"])
-    if action == "wikify_region":
-        if not project.current_data_file:
-            raise web_exceptions.WikifyWithoutDataFileException(
-                "Upload data file before wikifying a region")
-        calc_params = get_calc_params(project)
+    
+    if not project.current_data_file:
+        raise web_exceptions.WikifyWithoutDataFileException(
+            "Upload data file before wikifying a region")
+    calc_params = get_calc_params(project)
 
-        cell_qnode_map, problem_cells = wikify(calc_params, region, context)
-        file_path = save_dataframe(project, cell_qnode_map, "wikify_region_output.csv")
-        project.add_wikifier_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
-        project.update_saved_state(current_wikifiers=[file_path])
-        project.save()
+    cell_qnode_map, problem_cells = wikify(calc_params, region, context)
+    file_path = save_dataframe(project, cell_qnode_map, "wikify_region_output.csv")
+    project.add_wikifier_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
+    project.update_saved_state(current_wikifiers=[file_path])
+    project.save()
 
-        calc_params = get_calc_params(project)
-        data = serialize_item_table(calc_params)
+    calc_params = get_calc_params(project)
+    response=dict(project=project.__dict__)
+    response["layers"]=[get_qnodes_layer(calc_params)]
 
-        if problem_cells:
-            error_dict = {
-                "errorCode": 400,
-                "errorTitle": "Failed to wikify some cellsr",
-                "errorDescription": "Failed to wikify: " + ",".join(problem_cells)
-            }
-            data['problemCells'] = error_dict
-        else:
-            data['problemCells'] = False
-        data['project'] = project.__dict__
-        return data, 200
-    return {}, 404
+    if problem_cells:
+        error_dict = {
+            "errorCode": 400,
+            "errorTitle": "Failed to wikify some cellsr",
+            "errorDescription": "Failed to wikify: " + ",".join(problem_cells)
+        }
+        response['wikifierError'] = error_dict
+
+    return response, 200
 
 
 @app.route('/api/yaml', methods=['POST'])
@@ -325,7 +297,7 @@ def upload_yaml():
     project = get_project_instance(project_folder)
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
-    response = {"yamlRegions": None}
+
     if not string_is_valid(yaml_data):
         raise web_exceptions.InvalidYAMLFileException(
             "YAML file is either empty or not valid")
@@ -334,10 +306,8 @@ def upload_yaml():
             "Upload data file before applying YAML.")
     save_yaml(project, yaml_data, yaml_title)
     calc_params = get_calc_params(project)
-    region_data, statement_data = highlight_region(calc_params)
-    response["yamlRegions"]=region_data
-    response["statementData"]=statement_data
-    response['project'] = project.__dict__
+    response=dict(project=project.__dict__)
+    response["layers"] = get_yaml_layers(calc_params)
     return response, 200
 
 
@@ -385,7 +355,7 @@ def rename_project():
     project = get_project_instance(project_folder)
     project.title = ptitle
     project.save()
-    response['project'] = project.__dict__
+    response = dict(project= project.__dict__)
     return response, 200
 
 
