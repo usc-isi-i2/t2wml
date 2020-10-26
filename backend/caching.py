@@ -3,12 +3,9 @@ import json
 from hashlib import sha256
 from t2wml.api import KnowledgeGraph
 from app_config import UPLOAD_FOLDER, app
-from t2wml.mapping.statement_mapper import YamlMapper
 
 
-class Cacher:
-    title = ""
-
+class CacheHolder:
     def __init__(self, project, data_file_path, sheet_name, yaml_file_path):
         self.project = project
         self.data_file_path = data_file_path
@@ -27,37 +24,35 @@ class Cacher:
             os.makedirs(file_path)
         return os.path.join(file_path, file_name)
 
-    def save(self, highlight_data, statement_data, errors, metadata):
-        d = {
-            "highlight region": highlight_data,
-            "statements": statement_data,
-            "errors": errors,
-            "metadata": metadata
-        }
-        s = json.dumps(d)
-        with open(self.cache_path, 'w', encoding="utf-8") as f:
-            f.write(s)
-
-    def get_highlight_region(self):
+    def save(self, kg, layers):
         if app.config['USE_CACHE']:
-            try:
-                with open(self.cache_path, 'r', encoding="utf-8") as f:
-                    data = json.load(f)
-                return data["highlight region"], data["statements"], data["errors"]
-            except:
-                pass
-        return None, None, None
+            d = {
+                "statements": kg.statements,
+                "errors": kg.errors,
+                "metadata": kg.metadata,
+                "sheet": kg.sheet.to_json(),
+                "layers": layers
+            }
+            s = json.dumps(d)
+            with open(self.cache_path, 'w', encoding="utf-8") as f:
+                f.write(s)
 
     def get_kg(self):
         if app.config['USE_CACHE']:
             try:
                 return KnowledgeGraph.load_json(self.cache_path)
-            except:
+            except Exception as e:
+                pass
+        return None
+    
+    def get_layers(self):
+        if app.config['USE_CACHE']:
+            try:
+                with open(self.cache_path, 'r', encoding="utf-8") as f:
+                    cache = json.load(f)
+                    return cache["layers"]
+            except Exception as e:
                 pass
         return None
 
 
-class CacheHolder():
-    def __init__(self, project, data_path, sheet_name, yaml_path):
-        self.result_cacher = Cacher(project, data_path, sheet_name, yaml_path)
-        self.cell_mapper = YamlMapper(yaml_path)

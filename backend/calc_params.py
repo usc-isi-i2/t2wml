@@ -1,4 +1,4 @@
-from t2wml.api import Sheet, SpreadsheetFile, Wikifier, KnowledgeGraph, Project
+from t2wml.api import Sheet, SpreadsheetFile, Wikifier, KnowledgeGraph, Project, YamlMapper
 from caching import CacheHolder
 
 
@@ -20,7 +20,8 @@ class CalcParams:
 
     @property
     def cache(self):
-        return CacheHolder(self.project, self.data_path, self.sheet_name, self.yaml_path)
+        if self.yaml_path:
+            return CacheHolder(self.project, self.data_path, self.sheet_name, self.yaml_path)
 
     @property
     def wikifier(self):
@@ -41,5 +42,6 @@ class CalcParams:
         return p.sparql_endpoint
 
     def get_kg(self):
-        kg = KnowledgeGraph.generate(self.cache.cell_mapper, self.sheet, self.wikifier)
+        self.cell_mapper = YamlMapper(self.yaml_path)
+        kg = KnowledgeGraph.generate(self.cell_mapper, self.sheet, self.wikifier)
         return kg

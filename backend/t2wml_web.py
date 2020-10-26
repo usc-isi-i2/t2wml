@@ -21,19 +21,18 @@ def update_t2wml_settings(project):
 
 
 def get_kg(calc_params):
+    if calc_params.cache:
+        kg = calc_params.cache.get_kg()
+        if kg:
+            return kg
     kg = calc_params.get_kg()
     db.session.commit()  # save any queried properties
     return kg
 
 
 def download(calc_params, filetype):
-    cache_holder = calc_params.cache
-
     response = dict()
-    kg = cache_holder.result_cacher.get_kg()
-    if not kg:
-        kg = get_kg(calc_params)
-
+    kg = get_kg(calc_params)
     response["data"] = kg.get_output(filetype)
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
@@ -42,7 +41,15 @@ def download(calc_params, filetype):
 def indexer(cell):
     return list(cell_str_to_tuple(cell))
 
+def get_cleaned():
+    pass
+
 def get_yaml_layers(calc_params):
+    if calc_params.cache:
+        layers=calc_params.cache.get_layers()
+        if layers:
+            return layers
+    
     qualifierEntry=dict(indices=[], type="qualifier")
     itemEntry=dict(indices=[], type="item")
     dataEntry=dict(indices=[], type="data")
@@ -91,7 +98,11 @@ def get_yaml_layers(calc_params):
         
     typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
 
-    return [errorLayer, statementLayer, cleanedLayer, typeLayer]
+    layers= [errorLayer, statementLayer, cleanedLayer, typeLayer]
+    if calc_params.yaml_path:
+        calc_params.cache.save(kg, layers)
+    return layers
+
 
 def get_yaml_content(calc_params):
     yaml_path = calc_params.yaml_path
