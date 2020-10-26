@@ -105,19 +105,19 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       console.log(json);
 
       // do something here
-      const { error } = json;
+      // const { error } = json;
 
-      // if failure
-      if (error !== undefined && error!==null) {
-        throw Error(error);
-      }
+      // // if failure
+      // if (error !== undefined && error!==null) {
+      //   throw Error(error);
+      // }
 
       // else, success
-      const { qnodes, rowData, problemCells} = json;
-      if (problemCells){
-        this.setState({ errorMessage: problemCells as ErrorMessage });
-      }
-      wikiStore.table.updateQnodeCells(qnodes, rowData);
+      // const { qnodes, rowData, problemCells} = json;
+      // if (problemCells){
+      //   this.setState({ errorMessage: problemCells as ErrorMessage });
+      // }
+      // wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
       wikiStore.wikifier.showSpinner = false;
@@ -128,7 +128,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
       // follow-ups (failure)
       wikiStore.table.updateQnodeCells();
-        wikiStore.wikifier.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
     }
   }
 
@@ -163,20 +163,20 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
-      // do something here
-      const { error } = json;
+      // // do something here
+      // const { error } = json;
 
-      // if failure
-      if (error) {
-        throw Error(error);
-      }
+      // // if failure
+      // if (error) {
+      //   throw Error(error);
+      // }
 
       // else, success
       // load wikifier data
-      const { qnodes, rowData } = json;
-      wikiStore.wikifier.updateWikifier(qnodes, rowData);
+      // const { qnodes, rowData } = json;
+      // wikiStore.wikifier.updateWikifier(qnodes, rowData);
 
-      const { added, failed, updated } = json.widget;
+      const { added, failed, updated } = json.entitiesStats;
           let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
           if (failed.length) {
               message += '\n\nCheck the console for the failures reasons.'

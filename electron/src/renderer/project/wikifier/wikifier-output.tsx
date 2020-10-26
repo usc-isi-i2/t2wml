@@ -91,7 +91,7 @@ class WikifierOutput extends Component<WikifierOutputProperties, {}> {
                 children: [
                 {
 
-                    headerName: "item", field: "item", width: 60,
+                    headerName: "id", field: "item", width: 60,
                     cellStyle: { color: "hsl(200, 100%, 30%)" },
                     // **** QNODE EDITOR ************************************************
                     // editable: true, cellEditor: "qnodeEditor",

@@ -165,47 +165,47 @@ class TableViewer extends Component<{}, TableState> {
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
       console.log(json);
 
-      // do something here
-      const { error } = json;
+      // // do something here
+      // const { error } = json;
 
-      // if failure
-      if (error !== null) {
-        throw Error(error);
-      }
+      // // if failure
+      // if (error !== null) {
+      //   throw Error(error);
+      // }
 
       // else, success
-      const { tableData, wikifierData, yamlData } = json;
+      // const { tableData, wikifierData, yamlData } = json;
 
-      // load table data
-      tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
-      tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
-      this.setState({
-        filename: tableData.filename,
-        isCSV: tableData.isCSV,
-        sheetNames: tableData.sheetNames,
-        currSheetName: tableData.currSheetName,
-        columnDefs: tableData.sheetData.columnDefs,
-        rowData: tableData.sheetData.rowData,
-        showTable: true,
-      });
-      // this.gridColumnApi.autoSizeAllColumns();
+      // // load table data
+      // tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
+      // tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
+      // this.setState({
+      //   filename: tableData.filename,
+      //   isCSV: tableData.isCSV,
+      //   sheetNames: tableData.sheetNames,
+      //   currSheetName: tableData.currSheetName,
+      //   columnDefs: tableData.sheetData.columnDefs,
+      //   rowData: tableData.sheetData.rowData,
+      //   showTable: true,
+      // });
+      // // this.gridColumnApi.autoSizeAllColumns();
 
-      // load wikifier data
-      if (wikifierData !== null) {
-        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
-      } else {
-        wikiStore.table.updateQnodeCells(); // reset
-      }
+      // // load wikifier data
+      // if (wikifierData !== null) {
+      //   wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+      // } else {
+      //   wikiStore.table.updateQnodeCells(); // reset
+      // }
 
-      // load yaml data
-      if (yamlData !== null) {
-        wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-        wikiStore.table.yamlRegions = yamlData.yamlRegions;
-        // this.updateYamlRegions(yamlData.yamlRegions);
-        wikiStore.table.isCellSelectable = true;
-      } else {
-        wikiStore.table.isCellSelectable = false;
-      }
+      // // load yaml data
+      // if (yamlData !== null) {
+      //   wikiStore.yaml.yamlText = yamlData.yamlFileContent;
+      //   wikiStore.table.yamlRegions = yamlData.yamlRegions;
+      //   // this.updateYamlRegions(yamlData.yamlRegions);
+      //   wikiStore.table.isCellSelectable = true;
+      // } else {
+      //   wikiStore.table.isCellSelectable = false;
+      // }
 
 
       // follow-ups (success)
@@ -244,16 +244,16 @@ class TableViewer extends Component<{}, TableState> {
       console.log(json);
 
       // do something here
-      const { error } = json;
+      // const { error } = json;
 
-      // if failure
-      if (error) {
-        throw Error(error);
-      }
+      // // if failure
+      // if (error) {
+      //   throw Error(error);
+      // }
 
       // else, success
-      const { qnodes, rowData } = json;
-      wikiStore.table.updateQnodeCells(qnodes, rowData);
+      // const { qnodes, rowData } = json;
+      // wikiStore.table.updateQnodeCells(qnodes, rowData);
 
       // follow-ups (success)
       this.setState({
@@ -307,37 +307,37 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.output.showSpinner = true;
 
     // send request
-    console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    try {
-      const json = await this.requestService.resolveCell(wikiStore.projects.current!.folder, colName, rowName);
-      console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
-      console.log(json);
+    // console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
+    // try {
+    //   const json = await this.requestService.resolveCell(wikiStore.projects.current!.folder, colName, rowName);
+    //   console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
+    //   console.log(json);
 
-    //   const { error } = json;
-    //   // if failure      
-    //   if (error) {
-    //     throw {errorDescription: error.value} as ErrorMessage;
+    // //   const { error } = json;
+    // //   // if failure      
+    // //   if (error) {
+    // //     throw {errorDescription: error.value} as ErrorMessage;
+    // //   }
+
+    //   // else, success
+    //   const {internalErrors} = json;
+    //   if (internalErrors){
+    //         console.log(internalErrors);
     //   }
+    //   wikiStore.output.updateOutput(colName, rowName, json)
 
-      // else, success
-      const {internalErrors} = json;
-      if (internalErrors){
-            console.log(internalErrors);
-      }
-      wikiStore.output.updateOutput(colName, rowName, json)
+    //   // follow-ups (success)
+    //   wikiStore.output.showSpinner = false;
+    //   wikiStore.table.showSpinner = false;
+    // } catch(error) {
+    //   console.log(error);
+    // //   error.errorDescription += "\n\nCannot resolve cell!";
+    //   this.setState({ errorMessage: error });
 
-      // follow-ups (success)
-      wikiStore.output.showSpinner = false;
-      wikiStore.table.showSpinner = false;
-    } catch(error) {
-      console.log(error);
-    //   error.errorDescription += "\n\nCannot resolve cell!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
-      wikiStore.output.showSpinner = false;
-      wikiStore.table.showSpinner = false;
-    }
+    //   // follow-ups (failure)
+    //   wikiStore.output.showSpinner = false;
+    //   wikiStore.table.showSpinner = false;
+    // }
   }
 
   async handleSelectSheet(event: any) {
@@ -367,39 +367,39 @@ class TableViewer extends Component<{}, TableState> {
       console.log(json);
 
     
-      const { tableData, wikifierData, yamlData } = json;
+      // const { tableData, wikifierData, yamlData } = json;
 
-      // load table data
-      tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
-      tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
-      this.setState({
-        filename: tableData.filename,
-        isCSV: tableData.isCSV,
-        // sheetNames: tableData.sheetNames, // backend would not send this
-        currSheetName: tableData.currSheetName,
-        columnDefs: tableData.sheetData.columnDefs,
-        rowData: tableData.sheetData.rowData,
-        showTable: true,
-      });
-      // this.gridColumnApi.autoSizeAllColumns();
+      // // load table data
+      // tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
+      // tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
+      // this.setState({
+      //   filename: tableData.filename,
+      //   isCSV: tableData.isCSV,
+      //   // sheetNames: tableData.sheetNames, // backend would not send this
+      //   currSheetName: tableData.currSheetName,
+      //   columnDefs: tableData.sheetData.columnDefs,
+      //   rowData: tableData.sheetData.rowData,
+      //   showTable: true,
+      // });
+      // // this.gridColumnApi.autoSizeAllColumns();
 
-      // load wikifier data
-      if (wikifierData !== null) {
-        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
-      } else {
-        wikiStore.table.updateQnodeCells(); // reset
-      }
+      // // load wikifier data
+      // if (wikifierData !== null) {
+      //   wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
+      // } else {
+      //   wikiStore.table.updateQnodeCells(); // reset
+      // }
 
-      // load yaml data
-      if (yamlData !== null) {
-        wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-        // this.updateYamlRegions(yamlData.yamlRegions);
-        wikiStore.table.yamlRegions = yamlData.yamlRegions;
-        wikiStore.table.isCellSelectable = true;
-        wikiStore.output.isDownloadDisabled = false;
-      } else {
-        wikiStore.table.isCellSelectable = false;
-      }
+      // // load yaml data
+      // if (yamlData !== null) {
+      //   wikiStore.yaml.yamlText = yamlData.yamlFileContent;
+      //   // this.updateYamlRegions(yamlData.yamlRegions);
+      //   wikiStore.table.yamlRegions = yamlData.yamlRegions;
+      //   wikiStore.table.isCellSelectable = true;
+      //   wikiStore.output.isDownloadDisabled = false;
+      // } else {
+      //   wikiStore.table.isCellSelectable = false;
+      // }
 
 
       // follow-ups (success)

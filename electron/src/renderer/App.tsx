@@ -86,7 +86,7 @@ class App extends Component<{}, AppState> {
 
     // send request
     try {
-      const response = await this.requestService.loadProject(folder);
+      const response = await this.requestService.getProject(folder);
     
       console.log("<App> <- %c/load_project%c with:", LOG.link, LOG.default);
       console.log(response);
