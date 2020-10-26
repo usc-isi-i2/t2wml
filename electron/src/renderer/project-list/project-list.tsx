@@ -385,7 +385,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   render() {
     return (
-      <div>
+      <div className="project-list">
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!this.state.showSpinner}>
