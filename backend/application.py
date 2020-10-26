@@ -114,7 +114,7 @@ def get_project():
     for f in project.entity_files:
         add_entities_from_file(Path(project.directory) / f)
 
-    response=dict(project=project.__dict__, table=None, layers=[], yamlContent=None)
+    response=dict(project=project.__dict__, table=None, layers={}, yamlContent=None)
     calc_params = get_calc_params(project)
     if calc_params:
         get_all_layers_and_table(response, calc_params)
@@ -138,8 +138,7 @@ def upload_entities():
     response = dict(entitiesStats= entities_stats, project=project.__dict__)
     calc_params = get_calc_params(project)
     if calc_params:
-        qnodes_layer = get_qnodes_layer(calc_params)
-        response["layers"]=[qnodes_layer]
+        response["layers"] = get_qnodes_layer(calc_params)
     return response, 200
 
 
@@ -243,7 +242,7 @@ def upload_wikifier_output():
     response=dict(project=project.__dict__)
     calc_params = get_calc_params(project)
     if calc_params:
-        response["layers"]=[get_qnodes_layer(calc_params)]
+        response["layers"]=get_qnodes_layer(calc_params)
     return response, 200
 
 
@@ -273,7 +272,7 @@ def call_wikifier_service():
 
     calc_params = get_calc_params(project)
     response=dict(project=project.__dict__)
-    response["layers"]=[get_qnodes_layer(calc_params)]
+    response["layers"]=get_qnodes_layer(calc_params)
 
     if problem_cells:
         error_dict = {
