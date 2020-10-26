@@ -63,6 +63,8 @@ class TableComponent extends Component<{}, TableState> {
 
       errorMessage: {} as ErrorMessage,
     };
+
+    this.tableRef = React.createRef();
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -173,7 +175,7 @@ class TableComponent extends Component<{}, TableState> {
 
             {/* table */}
             <div className="table-wrapper">
-              <table>
+              <table ref={this.tableRef}>
                 <thead></thead>
                 <tbody></tbody>
               </table>
