@@ -170,6 +170,15 @@ class TableComponent extends Component<{}, TableState> {
             <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
               <Spinner animation="border" />
             </div>
+
+            {/* table */}
+            <div className="table-wrapper">
+              <table>
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
           </Card.Body>
 
           <Card.Footer>
