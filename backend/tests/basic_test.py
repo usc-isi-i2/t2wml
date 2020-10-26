@@ -34,7 +34,7 @@ class TestBasicWorkflow(BaseClass):
     def test_02_get_project_files(self, client):
         data=get_project_files(client, project_folder)
         assert data["table"] is None
-        assert data["layers"] == []
+        assert data["layers"] == {}
         assert data["yamlContent"] is None
 
 

@@ -1,8 +1,7 @@
-from pathlib import Path
-import json
-from t2wml.api import Sheet, WikifierService, t2wml_settings
+import numpy as np
+from t2wml.api import WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-from app_config import db, UPLOAD_FOLDER, CACHE_FOLDER
+from app_config import db, CACHE_FOLDER
 from wikidata_models import DatabaseProvider
 from utils import get_labels_and_descriptions
 
@@ -21,19 +20,18 @@ def update_t2wml_settings(project):
 
 
 def get_kg(calc_params):
+    if calc_params.cache:
+        kg = calc_params.cache.get_kg()
+        if kg:
+            return kg
     kg = calc_params.get_kg()
     db.session.commit()  # save any queried properties
     return kg
 
 
 def download(calc_params, filetype):
-    cache_holder = calc_params.cache
-
     response = dict()
-    kg = cache_holder.result_cacher.get_kg()
-    if not kg:
-        kg = get_kg(calc_params)
-
+    kg = get_kg(calc_params)
     response["data"] = kg.get_output(filetype)
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
@@ -42,7 +40,26 @@ def download(calc_params, filetype):
 def indexer(cell):
     return list(cell_str_to_tuple(cell))
 
+def get_cleaned(kg):
+    cleanedLayer=dict(layerType="cleaned", entries=[])
+    if kg.sheet:
+        cleaned_data=kg.sheet.cleaned_data
+        if cleaned_data: 
+            comparison=cleaned_data.ne(kg.sheet.raw_data)
+            comparison=comparison.to_numpy()
+            changed_values = np.argwhere(comparison)
+            for entry in changed_values:
+                new_value = cleaned_data.iloc[entry[0], entry[1]]
+                entry=dict(indices=[entry[0], entry[1]], cleaned=new_value)
+                cleanedLayer["entries"].append(entry)
+    return cleanedLayer
+
 def get_yaml_layers(calc_params):
+    if calc_params.cache:
+        layers=calc_params.cache.get_layers()
+        if layers:
+            return layers
+    
     qualifierEntry=dict(indices=[], type="qualifier")
     itemEntry=dict(indices=[], type="item")
     dataEntry=dict(indices=[], type="data")
@@ -56,6 +73,8 @@ def get_yaml_layers(calc_params):
         kg = get_kg(calc_params)
         statements=kg.statements
         errors=kg.errors
+
+
         
         for cell in errors:
             #todo: convert cell to indices
@@ -68,30 +87,41 @@ def get_yaml_layers(calc_params):
             else:	
                 minorErrorEntry["indices"].append(cell_index)
 
+        qualifier_indices={}
+        item_indices={}
         for cell in statements:
             dataEntry["indices"].append(indexer(cell))
 
             statement = statements[cell]
             item_cell = statement.get("cell", None)
             if item_cell:
-                itemEntry["indices"].append(indexer(item_cell)) 
+                item_indices[item_cell]=None
             
             qualifiers = statement.get("qualifier", None)
             if qualifiers:
                 for qualifier in qualifiers:
                     qual_cell = qualifier.get("cell", None)
                     if qual_cell:
-                        qualifierEntry["indices"].append(indexer(qual_cell))
+                        qualifier_indices[qual_cell]=None
             
             statementEntry=dict(indices=[indexer(cell)])
             statementEntry.update(**statements[cell])
             statementLayer["entries"].append(statementEntry)
-        
-        #TODO: handle cleaned layer
+        itemEntry["indices"]=[indexer(key) for key in item_indices]
+        qualifierEntry["indices"]=[indexer(key) for key in qualifier_indices]
+
+        cleanedLayer=get_cleaned(kg)
         
     typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
 
-    return [errorLayer, statementLayer, cleanedLayer, typeLayer]
+    layers= dict(error= errorLayer, 
+            statement= statementLayer, 
+            cleaned= cleanedLayer, 
+            type = typeLayer)
+    if calc_params.yaml_path:
+        calc_params.cache.save(kg, layers)
+    return layers
+
 
 def get_yaml_content(calc_params):
     yaml_path = calc_params.yaml_path
@@ -158,7 +188,7 @@ def get_qnodes_layer(calc_params):
             qNode=qnode_entries[id].pop("qNode")
             qnode_entries[id].update(qNode.__dict__)
     
-    return dict(layerType="qNode", entries=list(qnode_entries.values()))
+    return {"qnode": dict(layerType="qNode", entries=list(qnode_entries.values()))}
 
 
 def get_table(calc_params, first_index=0, num_rows=None):
@@ -179,7 +209,7 @@ def get_table(calc_params, first_index=0, num_rows=None):
 def get_all_layers_and_table(response, calc_params):
     #convenience function for code that repeats three times
     response["table"] = get_table(calc_params)
-    qnodes_layer = get_qnodes_layer(calc_params)
-    response["layers"]=[qnodes_layer]
+    response["layers"]=get_qnodes_layer(calc_params)
     yaml_layers = get_yaml_layers(calc_params)
-    response["layers"].extend(yaml_layers)
+    response["layers"].update(yaml_layers)
+

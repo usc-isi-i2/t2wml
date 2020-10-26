@@ -8,24 +8,24 @@
             "firstRowIndex": 0,
             "cells": "[[\"\",\"\",\"\",\"\",\"unit:\",\"person\",\"person\",\"person\",\"\"],[\"\",\"Incident ID\",\"Year\",\"Month\",\"Day\",\"UN\",\"INGO\",\"LNGO\\/NRCS\",\"Country\"],[\"\",\"22\",\"1997\",\"9\",\"24\",\"2\",\"0\",\"0\",\"Ethiopia\"],[\"\",\"47\",\"1998\",\"6\",\"25\",\"0\",\"0\",\"0\",\"Aruba\"],[\"\",\"73\",\"1999\",\"4\",\"\",\"0\",\"1\",\"0\",\"Afghanistant\"],[\"\",\"103\",\"2000\",\"2\",\"\",\"0\",\"2\",\"0\",\"Ethiopia\"],[\"\",\"475\",\"2006\",\"9\",\"20\",\"0\",\"0\",\"0\",\"Ethiopia\"],[\"\",\"782\",\"2008\",\"\",\"\",\"0\",\"0\",\"3\",\"Ethiopia\"]]"
         },
-        "layers": [
-            {
+        "layers": {
+            "qnode": {
                 "layerType": "qNode",
                 "entries": []
             },
-            {
+            "error": {
                 "layerType": "error",
                 "entries": []
             },
-            {
+            "statement": {
                 "layerType": "statement",
                 "entries": []
             },
-            {
+            "cleaned": {
                 "layerType": "cleaned",
                 "entries": []
             },
-            {
+            "type": {
                 "layerType": "type",
                 "entries": [
                     {
@@ -50,11 +50,11 @@
                     }
                 ]
             }
-        ]
+        }
     },
     "add_wikifier_file": {
-        "layers": [
-            {
+        "layers": {
+            "qnode": {
                 "layerType": "qNode",
                 "entries": [
                     {
@@ -221,7 +221,7 @@
                     }
                 ]
             }
-        ]
+        }
     },
     "add_items": {
         "entitiesStats": {
@@ -306,8 +306,8 @@
             "updated": [],
             "failed": []
         },
-        "layers": [
-            {
+        "layers": {
+            "qnode": {
                 "layerType": "qNode",
                 "entries": [
                     {
@@ -474,11 +474,11 @@
                     }
                 ]
             }
-        ]
+        }
     },
     "add_yaml": {
-        "layers": [
-            {
+        "layers": {
+            "error": {
                 "layerType": "error",
                 "entries": [
                     {
@@ -708,7 +708,7 @@
                     }
                 ]
             },
-            {
+            "statement": {
                 "layerType": "statement",
                 "entries": [
                     {
@@ -1142,23 +1142,15 @@
                     }
                 ]
             },
-            {
+            "cleaned": {
                 "layerType": "cleaned",
                 "entries": []
             },
-            {
+            "type": {
                 "layerType": "type",
                 "entries": [
                     {
                         "indices": [
-                            [
-                                8,
-                                3
-                            ],
-                            [
-                                8,
-                                3
-                            ],
                             [
                                 8,
                                 3
@@ -1168,54 +1160,6 @@
                     },
                     {
                         "indices": [
-                            [
-                                1,
-                                2
-                            ],
-                            [
-                                1,
-                                3
-                            ],
-                            [
-                                1,
-                                4
-                            ],
-                            [
-                                1,
-                                5
-                            ],
-                            [
-                                1,
-                                6
-                            ],
-                            [
-                                1,
-                                7
-                            ],
-                            [
-                                1,
-                                2
-                            ],
-                            [
-                                1,
-                                3
-                            ],
-                            [
-                                1,
-                                4
-                            ],
-                            [
-                                1,
-                                5
-                            ],
-                            [
-                                1,
-                                6
-                            ],
-                            [
-                                1,
-                                7
-                            ],
                             [
                                 1,
                                 2
@@ -1391,7 +1335,7 @@
                     }
                 ]
             }
-        ]
+        }
     },
     "change_sheet": {
         "yamlContent": null,
@@ -1403,8 +1347,8 @@
             "firstRowIndex": 0,
             "cells": "[[\"\",\"\",\"\",\"\",\"unit:\",\"person\",\"person\",\"person\",\"\",\"\",\"\",\"\",\"\",\"\"],[\"\",\"Incident ID\",\"Year\",\"Month\",\"Day\",\"UN\",\"INGO\",\"LNGO\\/NRCS\",\"Country\",\"\",\"\",\"\",\"\",\"\"],[\"\",\"22\",\"bad date\",\"9\",\"24\",\"2\",\"0\",\"0\",\"Ethiopia\",\"\",\"\",\"\",\"\",\"4\"],[\"\",\"bad item\",\"1998\",\"6\",\"25\",\"0\",\"0\",\"0\",\"Aruba\",\"\",\"\",\"\",\"\",\"\"],[\"\",\"73\",\"1999\",\"4\",\"\",\"bad value\",\"1\",\"0\",\"Afghanistant\",\"\",\"\",\"\",\"\",\"\"],[\"\",\"103\",\"2000\",\"2\",\"\",\"\",\"\",\"\",\"Ethiopia\",\"\",\"\",\"\",\"\",\"\"],[\"\",\"475\",\"2006\",\"9\",\"20\",\"0\",\"0\",\"0\",\"bad qualifier\",\"\",\"\",\"\",\"\",\"\"],[\"\",\"782\",\"2008\",\"\",\"\",\"0\",\"0\",\"3\",\"Ethiopia\",\"\",\"\",\"\",\"\",\"\"]]"
         },
-        "layers": [
-            {
+        "layers": {
+            "qnode": {
                 "layerType": "qNode",
                 "entries": [
                     {
@@ -1557,19 +1501,19 @@
                     }
                 ]
             },
-            {
+            "error": {
                 "layerType": "error",
                 "entries": []
             },
-            {
+            "statement": {
                 "layerType": "statement",
                 "entries": []
             },
-            {
+            "cleaned": {
                 "layerType": "cleaned",
                 "entries": []
             },
-            {
+            "type": {
                 "layerType": "type",
                 "entries": [
                     {
@@ -1594,11 +1538,11 @@
                     }
                 ]
             }
-        ]
+        }
     },
     "wikify_region": {
-        "layers": [
-            {
+        "layers": {
+            "qnode": {
                 "layerType": "qNode",
                 "entries": [
                     {
@@ -1653,7 +1597,7 @@
                     }
                 ]
             }
-        ],
+        },
         "wikifierError": {
             "errorCode": 400,
             "errorTitle": "Failed to wikify some cellsr",
