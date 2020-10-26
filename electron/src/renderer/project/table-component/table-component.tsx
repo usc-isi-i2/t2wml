@@ -46,6 +46,8 @@ interface TableState {
   errorMessage: ErrorMessage;
 }
 
+const NUM_ROWS = 100; // how many rows do we want?
+const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUpperCase());
 
 @observer
 class TableComponent extends Component<{}, TableState> {
@@ -78,6 +80,9 @@ class TableComponent extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.styleCell, () => this.updateStyleByCellFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.styledOverride, () => this.updateStyleByCellFromStore()));
+
+    // Set up the table elements
+    this.createTable();
   }
 
   componentWillUnmount() {
@@ -100,6 +105,42 @@ class TableComponent extends Component<{}, TableState> {
 
   updateStyleByCellFromStore() {
     console.log('updateStyleByCellFromStore called');
+  }
+
+  createTable() {
+
+    // Create the table header row
+    this.tableRef.current.createTHead();
+
+    // Append the first th element (empty)
+    const th = document.createElement('th');
+    this.tableRef.current.tHead.appendChild(th);
+
+    // Append the letter columns to the table header
+    CHARACTERS.map(char => {
+      const th = document.createElement('th');
+      th.innerText = char;
+      this.tableRef.current.tHead.appendChild(th);
+    });
+
+    // Create the table body
+    const tableBody = this.tableRef.current.createTBody();
+
+    // Append the rows in the table
+    for (let i = 0; i < NUM_ROWS; i++ ) {
+
+      // Create the table row element
+      const tr = document.createElement('tr');
+
+      // Create the first table cell with the index
+      const td = document.createElement('td');
+      td.innerText = i+1;
+      tr.appendChild(td);
+
+      // Create other table cells in that row
+      CHARACTERS.map(char => tr.appendChild(document.createElement('td')));
+      tableBody.appendChild(tr);
+    }
   }
 
   render() {
@@ -175,10 +216,7 @@ class TableComponent extends Component<{}, TableState> {
 
             {/* table */}
             <div className="table-wrapper">
-              <table ref={this.tableRef}>
-                <thead></thead>
-                <tbody></tbody>
-              </table>
+              <table ref={this.tableRef} />
             </div>
 
           </Card.Body>
