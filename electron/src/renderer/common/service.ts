@@ -1,3 +1,4 @@
+import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, 
   UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO } from './dtos';
@@ -6,29 +7,29 @@ import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWik
 
 class RequestService {
 
-  public async createProject(folder: string): Promise<ProjectDTO> {
+  public async createProject(folder: string) {
     const response = await backendPost(`/project?project_folder=${folder}`) as ProjectDTO;
-    return response;
+    wikiStore.projects.projectDTO = response;
   }
   
-  public async uploadDataFile(folder: string, formData: any): Promise<UploadDataFileResponseDTO> {
+  public async uploadDataFile(folder: string, formData: any) {
     const response = await backendPost(`/data?project_folder=${folder}`, formData) as UploadDataFileResponseDTO;
-    return response;
+    this.fillStore(response);
   }
 
-  public async changeSheet(folder: string, sheetName: string): Promise<GetProjectResponseDTO> {
+  public async changeSheet(folder: string, sheetName: string) {
     const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as GetProjectResponseDTO;
-    return response;
+    this.fillStore(response);
   }
 
-  public async uploadWikifierOutput(folder: string, formData: any): Promise<UploadWikifierOutputResponseDTO> {
+  public async uploadWikifierOutput(folder: string, formData: any) {
     const response = await backendPost(`/wikifier?project_folder=${folder}`, formData) as UploadWikifierOutputResponseDTO;
-    return response;
+    this.fillStore(response);
   }
 
-  public async uploadYaml(folder: string, formData: any): Promise<UploadYamlResponseDTO> {
+  public async uploadYaml(folder: string, formData: any) {
     const response = await backendPost(`/yaml?project_folder=${folder}`, formData) as UploadYamlResponseDTO;
-    return response;
+    this.fillStore(response);
   }
 
   public async downloadResults(folder: string, fileType: string) {
@@ -37,34 +38,34 @@ class RequestService {
     return response;
   }
 
-  public async callWikifierService(folder: string, formData: any): Promise<CallWikifierServiceDTO> {
+  public async callWikifierService(folder: string, formData: any) {
     //returns project, rowData, qnodes
     //also returns problemCells (an error dict, or False)
     const response = await backendPost(`/wikifier_service?project_folder=${folder}`, formData) as CallWikifierServiceDTO;
-    return response;
+    this.fillStore(response);
   }
 
-  public async getProject(folder: string): Promise<GetProjectResponseDTO> {
+  public async getProject(folder: string) {
     const response = await backendGet(`/project?project_folder=${folder}`) as GetProjectResponseDTO;
-    return response;
+    this.fillStore(response);
   }
 
-  public async renameProject(folder: string, formData: any): Promise<ProjectDTO> {
+  public async renameProject(folder: string, formData: any) {
     //returns project
     const response = await backendPut(`/project?project_folder=${folder}`, formData) as ProjectDTO;
-    return response;
+    wikiStore.projects.projectDTO = response;
   }
 
-  public async getSettings(folder: string, formData: any): Promise<ProjectDTO> {
+  public async getSettings(folder: string, formData: any) {
     //returns endpoint, warnEmpty
     const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ProjectDTO;
-    return response;
+    wikiStore.projects.projectDTO = response;
   }
 
-  public async uploadEntities(folder: string, formData: any): Promise<UploadEntitiesDTO> {
+  public async uploadEntities(folder: string, formData: any) {
     //returns "widget", "project", "rowData", "qnodes"
     const response = await backendPost(`/project/entity?project_folder=${folder}`, formData) as UploadEntitiesDTO;
-    return response;
+    this.fillStore(response);
   }
   
   public async loadToDatamart(folder: string) {
@@ -73,6 +74,26 @@ class RequestService {
     return response;
   }
 
+  public fillStore(response: GetProjectResponseDTO | UploadYamlResponseDTO | UploadDataFileResponseDTO | UploadWikifierOutputResponseDTO) {
+    wikiStore.projects.projectDTO = response.project;
+    wikiStore.layers = response.layers;
+
+    if ((response as GetProjectResponseDTO).yamlContent) {
+      wikiStore.yaml.yamlContent = (response as GetProjectResponseDTO).yamlContent;
+    }
+
+    if ((response as GetProjectResponseDTO).table) {
+      wikiStore.table.table = (response as GetProjectResponseDTO).table;
+    }
+
+    if ((response as CallWikifierServiceDTO).wikifierError) {
+      wikiStore.wikifier.wikifierError = (response as CallWikifierServiceDTO).wikifierError;
+    }
+
+    if ((response as UploadEntitiesDTO).entitiesStats) {
+      wikiStore.entitiesStats = (response as UploadEntitiesDTO).entitiesStats;
+    }
+  }
 }
 
 export default RequestService;

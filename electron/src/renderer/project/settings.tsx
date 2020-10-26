@@ -39,8 +39,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
   }
 
   handleSaveSettings() {
-    wikiStore.settings.sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
-    wikiStore.settings.warnEmpty = this.state.tmpWarnEmpty;
+    wikiStore.projects.projectDTO!.sparql_endpoint = (this.tempSparqlEndpointRef as any).current.value;
+    wikiStore.projects.projectDTO!.warn_for_empty_cells = this.state.tmpWarnEmpty;
     this.props.handleSaveSettings();
   }
 

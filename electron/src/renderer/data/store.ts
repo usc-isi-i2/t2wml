@@ -2,6 +2,7 @@ import { observable, action, computed } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
+import { EntitiesStatsDTO, Entry, LayerDTO, TableDTO, WikifierErrorDTO } from '../common/dtos';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
 class EditorsState {
@@ -9,6 +10,7 @@ class EditorsState {
 }
 
 class TableState {
+    @observable public table: TableDTO;
     @observable public isCellSelectable: boolean;
     @observable public showSpinner: boolean;
     @observable public errorCells: string[] | undefined;
@@ -25,6 +27,7 @@ class TableState {
     @observable public styledOverride?: boolean;
     
     constructor() {
+        this.table = {} as TableDTO;
         this.isCellSelectable = false;
 
         this.showSpinner = false;
@@ -59,22 +62,13 @@ class TableState {
     }
 }
 
-class SettingsState {
-    @observable public sparqlEndpoint: string;
-    @observable public warnEmpty: boolean;
-
-    constructor() {
-        this.sparqlEndpoint = '';
-        this.warnEmpty = false;
-    }
-}
-
 class WikifierState {
     @observable public showSpinner: boolean;
     @observable public currRegion: string; // Is it needed?
     @observable public scope: number; // Is it needed?
     @observable public qnodeData: any;
     @observable public rowData: any;
+    @observable public wikifierError?: WikifierErrorDTO;
 
 
     constructor() {
@@ -127,17 +121,17 @@ class OutputState {
 }
 
 class YamlEditorState {
-    @observable public yamlText?: string;
+    @observable public yamlContent?: string;
 }
-
 
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
-    @observable public settings = new SettingsState();
     @observable public wikifier = new WikifierState();
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
+    @observable public layers?: LayerDTO<Entry>[];
+    @observable public entitiesStats?: EntitiesStatsDTO;
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();
 

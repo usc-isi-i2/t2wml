@@ -46,7 +46,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // init global variables
     wikiStore.table.isCellSelectable = false;
-    wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
+    wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
 
     // init state
     this.state = {
@@ -97,24 +97,21 @@ class Project extends Component<ProjectProps, ProjectState> {
     // fetch project files
     console.debug('Refreshing project ', this.props.path);
     try{
-      const json = await this.requestService.getProject(this.props.path);      
-
-      // do something here
-      const { project, table, yamlContent, layers } = json;
+      await this.requestService.getProject(this.props.path);      
       
-      document.title = 't2wml: ' + project.title;
-      this.setState({name: project.title});
+      document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
+      this.setState({name: wikiStore.projects.projectDTO!.title});
 
       // load table data
-      if (table) {
-        wikiStore.table.tableData = table;
-      } else {// else: reset data
-        wikiStore.table.tableData = undefined;
-      }
-      console.log(layers);
+      // if (table) {
+      //   wikiStore.table.tableData = table;
+      // } else {// else: reset data
+      //   wikiStore.table.tableData = undefined;
+      // }
       
       // reset output window
       wikiStore.output.clearOutput();
+
       // // load wikifier data
       // if (wikifierData !== null) {
       //   wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
@@ -123,9 +120,9 @@ class Project extends Component<ProjectProps, ProjectState> {
       // }
 
       // load yaml data
-      wikiStore.yaml.yamlText = yamlContent || undefined;
+      // wikiStore.yaml.yamlContent = yamlContent || undefined;
       // wikiStore.table.yamlRegions = yamlData?.yamlRegions;
-      if (yamlContent !== null) {
+      if (wikiStore.yaml.yamlContent !== null) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
@@ -133,10 +130,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       }
 
       // load settings
-      if (project.sparql_endpoint) {
-        wikiStore.settings.sparqlEndpoint = project.sparql_endpoint;
-      } else {
-        wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
+      if (!wikiStore.projects.projectDTO!.sparql_endpoint) {
+        wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
       }
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
@@ -158,10 +153,10 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   async onShowSettingsClicked() {
-    const data = await this.requestService.getSettings(this.props.path, {});
+    await this.requestService.getSettings(this.props.path, {});
     this.setState({
-      endpoint: data.sparql_endpoint,
-      warnEmpty: data.warn_for_empty_cells,
+      endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
+      warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
       showSettings: true
     });
   }
@@ -172,8 +167,8 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // notify backend
     const formData = new FormData();
-    formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
-    formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
+    formData.append("endpoint", wikiStore.projects.projectDTO!.sparql_endpoint);
+    formData.append("warnEmpty", wikiStore.projects.projectDTO!.warn_for_empty_cells.toString());
 
     try {
       await this.requestService.getSettings(this.props.path, formData);

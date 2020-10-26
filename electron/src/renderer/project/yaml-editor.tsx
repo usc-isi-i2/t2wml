@@ -14,7 +14,7 @@ import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react"
 import wikiStore from '../data/store';
-import { defaultYamlText } from "./default-values";
+import { defaultYamlContent } from "./default-values";
 import { IReactionDisposer, reaction } from 'mobx';
 
 
@@ -23,7 +23,7 @@ interface yamlProperties {
 }
 
 interface yamlState {
-  yamlText: string;
+  yamlContent: string;
   yamlTitle: string;
   yamlJson: JSON | null;
   isValidYaml: boolean;
@@ -46,7 +46,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // init state
     this.state = {
       // yaml
-      yamlText: defaultYamlText,
+      yamlContent: defaultYamlContent,
       yamlTitle: "",
       yamlJson: null,
       isValidYaml: true,
@@ -60,7 +60,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   componentDidMount() {
-    this.disposeReaction = reaction(() => wikiStore.yaml.yamlText, (newYamlText) => this.updateYamlText(newYamlText));
+    this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
   }
 
   componentWillUnmount() {
@@ -83,27 +83,26 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
     const formData = new FormData();
-    formData.append("yaml", this.state.yamlText);
+    formData.append("yaml", this.state.yamlContent);
     formData.append("title", this.state.yamlTitle);
     // const sheetName = window.TableViewer.state.currSheetName;
     // if (sheetName !== null) {
     //   formData.append("sheet_name", sheetName)
     // }
     try {
-      const json = await this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData);
-      console.debug('Uploaidng yaml ', this.state.yamlText);
+      await this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData);
+      console.debug('Uploaidng yaml ', this.state.yamlContent);
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
-      console.log(json);
 
         // else, success
-      const { yamlRegions } = json;
-      const internalError = json.error;
-      if (internalError){
+      // const { yamlRegions } = json;
+      // const internalError = json.error;
+      // if (internalError){
 
-          console.log("ERRORS while applying yaml:");
-          console.log(internalError);
-      }
-      wikiStore.table.yamlRegions = yamlRegions;
+      //     console.log("ERRORS while applying yaml:");
+      //     console.log(internalError);
+      // }
+      // wikiStore.table.yamlRegions = yamlRegions;
 
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
@@ -124,10 +123,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.table.isCellSelectable = false;
 
     // Talya: find out what's the right way to do this
-    const yamlText = (this.monacoRef.current as any).editor.getModel().getValue();
-    this.setState({ yamlText: yamlText });
+    const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
+    this.setState({ yamlContent: yamlContent });
     try {
-      const yamlJson = (yaml.safeLoad(yamlText) as JSON);
+      const yamlJson = (yaml.safeLoad(yamlContent) as JSON);
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
@@ -156,10 +155,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onloadend = (() => {
-      const yamlText = reader.result;
-      this.setState({ yamlText: yamlText as string, yamlTitle:file.name });
+      const yamlContent = reader.result;
+      this.setState({ yamlContent: yamlContent as string, yamlTitle:file.name });
       try {
-        const yamlJson = (yaml.safeLoad((yamlText as string))) as JSON;
+        const yamlJson = (yaml.safeLoad((yamlContent as string))) as JSON;
         this.setState({
           yamlJson: yamlJson,
           isValidYaml: true,
@@ -177,11 +176,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     });
   }
 
-  updateYamlText(yamlText: string | undefined) {
-    const newYamlText = yamlText || defaultYamlText;
-    this.setState({ yamlText: newYamlText });
+  updateYamlContent(yamlContent: string | undefined) {
+    const newYamlContent = yamlContent || defaultYamlContent;
+    this.setState({ yamlContent: newYamlContent });
     try {
-      const yamlJson = (yaml.safeLoad(newYamlText)) as JSON;
+      const yamlJson = (yaml.safeLoad(newYamlContent)) as JSON;
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
@@ -199,7 +198,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   render() {
-    const { yamlText } = this.state;
+    const { yamlContent } = this.state;
 
     // render upload tooltip
     const uploadToolTipHtml = (
@@ -269,7 +268,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 height="100%"
                 language="yaml"
                 theme="vs"
-                value={yamlText}
+                value={yamlContent}
                 options={{
                 // All options for construction of monaco editor:
                 // https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ieditorconstructionoptions.html

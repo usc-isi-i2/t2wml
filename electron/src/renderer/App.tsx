@@ -58,10 +58,9 @@ class App extends Component<{}, AppState> {
 
     // send request
     try {
-      const response = await this.requestService.createProject(folder);
+      await this.requestService.createProject(folder);
     
       console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
-      console.log(response);
 
       // do something here
       wikiStore.changeProject(folder);
@@ -86,11 +85,8 @@ class App extends Component<{}, AppState> {
 
     // send request
     try {
-      const response = await this.requestService.getProject(folder);
+      await this.requestService.getProject(folder);
     
-      console.log("<App> <- %c/load_project%c with:", LOG.link, LOG.default);
-      console.log(response);
-
       wikiStore.changeProject(folder);
 
       // follow-ups (success)

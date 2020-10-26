@@ -2,6 +2,13 @@
  * Types returned from the server
  */
 
+ interface SavedStateDTO {
+    current_data_file: string;
+    current_sheet: string;
+    current_wikifiers: string[];
+    current_yaml: string;
+ }
+
 export interface ProjectDTO {
     directory: string;
     title: string;
@@ -14,7 +21,7 @@ export interface ProjectDTO {
     warn_for_empty_cells: boolean;
     handle_calendar: string;
     cache_id: string;
-    _saved_state: any;
+    _saved_state: SavedStateDTO;
  }
 
 

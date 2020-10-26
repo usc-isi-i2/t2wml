@@ -161,9 +161,8 @@ class TableViewer extends Component<{}, TableState> {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const json = await this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData);
+      await this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData);
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
-      console.log(json);
 
       // // do something here
       // const { error } = json;
@@ -174,7 +173,7 @@ class TableViewer extends Component<{}, TableState> {
       // }
 
       // else, success
-      // const { tableData, wikifierData, yamlData } = json;
+      // const { tableData, wikifierData, yamlContent } = json;
 
       // // load table data
       // tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
@@ -197,16 +196,14 @@ class TableViewer extends Component<{}, TableState> {
       //   wikiStore.table.updateQnodeCells(); // reset
       // }
 
-      // // load yaml data
-      // if (yamlData !== null) {
-      //   wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-      //   wikiStore.table.yamlRegions = yamlData.yamlRegions;
-      //   // this.updateYamlRegions(yamlData.yamlRegions);
-      //   wikiStore.table.isCellSelectable = true;
-      // } else {
-      //   wikiStore.table.isCellSelectable = false;
-      // }
-
+      // load yaml data
+      if (wikiStore.yaml.yamlContent) {
+        // wikiStore.table.yamlRegions = yamlData.yamlRegions;
+        // this.updateYamlRegions(yamlData.yamlRegions);
+        wikiStore.table.isCellSelectable = true;
+      } else {
+        wikiStore.table.isCellSelectable = false;
+      }
 
       // follow-ups (success)
       wikiStore.table.showSpinner = false;
@@ -239,9 +236,8 @@ class TableViewer extends Component<{}, TableState> {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const json = await this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData);
+      await this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData);
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
-      console.log(json);
 
       // do something here
       // const { error } = json;
@@ -347,7 +343,7 @@ class TableViewer extends Component<{}, TableState> {
     });
     // remove current status
     this.updateSelectedCell();
-    wikiStore.yaml.yamlText = undefined;
+    wikiStore.yaml.yamlContent = undefined;
     // this.updateYamlRegions();
     wikiStore.table.yamlRegions = undefined;
     wikiStore.table.updateQnodeCells();
@@ -362,12 +358,10 @@ class TableViewer extends Component<{}, TableState> {
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try{ 
-      const json = await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
+      await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
-      console.log(json);
-
     
-      // const { tableData, wikifierData, yamlData } = json;
+      // const { tableData, wikifierData, yamlContent } = json;
 
       // // load table data
       // tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
@@ -390,16 +384,15 @@ class TableViewer extends Component<{}, TableState> {
       //   wikiStore.table.updateQnodeCells(); // reset
       // }
 
-      // // load yaml data
-      // if (yamlData !== null) {
-      //   wikiStore.yaml.yamlText = yamlData.yamlFileContent;
-      //   // this.updateYamlRegions(yamlData.yamlRegions);
-      //   wikiStore.table.yamlRegions = yamlData.yamlRegions;
-      //   wikiStore.table.isCellSelectable = true;
-      //   wikiStore.output.isDownloadDisabled = false;
-      // } else {
-      //   wikiStore.table.isCellSelectable = false;
-      // }
+      // load yaml data
+      if (wikiStore.yaml.yamlContent) {
+        // this.updateYamlRegions(yamlData.yamlRegions);
+        // wikiStore.table.yamlRegions = yamlData.yamlRegions;
+        wikiStore.table.isCellSelectable = true;
+        wikiStore.output.isDownloadDisabled = false;
+      } else {
+        wikiStore.table.isCellSelectable = false;
+      }
 
 
       // follow-ups (success)

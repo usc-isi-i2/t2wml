@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { observable } from 'mobx';
 import * as path from 'path';
+import { ProjectDTO } from '../common/dtos';
 
 export class Project {
     private _folder: string;
@@ -82,6 +83,7 @@ export class Project {
 export class ProjectList {
     @observable public projects: Project[] = [];
     @observable public current?: Project;
+    @observable public projectDTO?: ProjectDTO;
     
     constructor() {
         this.refreshList();
