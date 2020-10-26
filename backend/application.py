@@ -19,7 +19,7 @@ from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration, create_datafile
 
-annotation_integration = False
+annotation_integration = True
 try:
     from local_settings import *
 except:

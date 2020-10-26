@@ -41,8 +41,8 @@ app.config.from_object(AppConfig)
 
 DEFAULT_SPARQL_ENDPOINT = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql'
 GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
-#DATAMART_API_ENDPOINT = 'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
-DATAMART_API_ENDPOINT = 'http://localhost:12543'
+DATAMART_API_ENDPOINT = 'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
+#DATAMART_API_ENDPOINT = 'http://localhost:12543'
 
 #############SQL STUFF
 
