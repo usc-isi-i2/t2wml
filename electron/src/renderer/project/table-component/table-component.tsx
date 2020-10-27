@@ -61,6 +61,8 @@ class TableComponent extends Component<{}, TableState> {
       showSpinner: wikiStore.table.showSpinner,
 
       // table data
+      seleting: false,
+      selection: {},
       filename: null,       // if null, show "Table Viewer"
       rowData: null,
 
@@ -107,12 +109,104 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   handleOnMouseUp(event) {
+    this.setState({selecting: false});
   }
 
   handleOnMouseDown(event) {
+    const element = event.target;
+
+    // Make sure users can only select table cells
+    if ( element.nodeName === 'TD' ) {
+
+      // Make sure users are not able to select the cells in the index column
+      if ( element.parentElement.firstChild !== event.target ) {
+
+        // Set both coordinates to the same cell
+        const x1 = element.cellIndex;
+        const x2 = element.cellIndex;
+        const y1 = element.parentElement.rowIndex;
+        const y2 = element.parentElement.rowIndex;
+
+        // Update selection coordinates
+        this.setState({
+          selecting: true,
+          selection: {x1, x2, y1, y2},
+        });
+
+        // Activate the element on click
+        element.classList.add('active');
+      }
+    }
   }
 
   handleOnMouseMove(event) {
+    const { selecting, selection } = this.state;
+    const element = event.target;
+
+    if ( selecting && element.nodeName === 'TD' ) {
+
+      // Make sure users are not able to select the cells in the index column
+      if ( element.parentElement.firstChild !== event.target ) {
+
+        // Update selection x coordinate
+        const x2 = element.cellIndex;
+        selection['x2'] = x2;
+
+        // Update selection y coordinate
+        const y2 = element.parentElement.rowIndex;
+        selection['y2'] = y2;
+
+        // Update selection
+        this.setState({selection});
+      }
+    }
+  }
+
+  getClassNames(rowIndex, colIndex) {
+    const { selecting, selection } = this.state;
+    if ( selecting ) {
+      const {x1, x2, y1, y2} = selection;
+      const leftCol = Math.min(x1, x2);
+      const rightCol = Math.max(x1, x2);
+      const topRow = Math.min(y1, y2);
+      const bottomRow = Math.max(y1, y2);
+
+      // Initialize class names array
+      let classNames = [];
+
+      if ( rowIndex >= topRow &&
+           rowIndex <= bottomRow &&
+           colIndex >= leftCol &&
+           colIndex <= rightCol ) {
+
+        // Activate the current cell
+        classNames.push('active');
+
+        // Add active class for the top border
+        if ( rowIndex === topRow ) {
+          classNames.push('active-top');
+        }
+
+        // Add active class for the left border
+        if ( colIndex === leftCol ) {
+          classNames.push('active-left');
+        }
+
+        // Add active class for the right border
+        if ( colIndex === rightCol ) {
+          classNames.push('active-right');
+        }
+
+        // Add active class for the bottom border
+        if ( rowIndex === bottomRow ) {
+          classNames.push('active-bottom');
+        }
+      }
+
+      // Return list of applicable class names as a string
+      return classNames.join(' ');
+    }
+    return ''
   }
 
   renderPlaceholder() {
@@ -131,7 +225,9 @@ class TableComponent extends Component<{}, TableState> {
           {[...Array(MIN_NUM_ROWS)].map((e, i) => (
             <tr key={`row-${i}`}>
               <td>{i+1}</td>
-              {CHARACTERS.map((c, j) => <td key={`cell-${j}`}></td>)}
+              {CHARACTERS.map((c, j) => (
+                <td key={`cell-${j}`} className={this.getClassNames(i+1, j+1)}></td>
+              ))}
             </tr>
           ))}
         </tbody>
@@ -158,7 +254,7 @@ class TableComponent extends Component<{}, TableState> {
               <tr key={`row-${i}`}>
                 <td>{i+1}</td>
                 {CHARACTERS.map((c, j) => (
-                  <td key={`cell-${j}`}>
+                  <td key={`cell-${j}`} className={this.getClassNames(i+1, j+1)}>
                     {i >= rowData.length ? '' : rowData[i][c]}
                   </td>
                 ))}
