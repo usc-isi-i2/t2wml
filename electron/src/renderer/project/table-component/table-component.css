@@ -67,7 +67,10 @@
 }
 
 .table-wrapper table td {
-  border: 1px solid #c7c7c7;
+  border-top: 1px solid #c7c7c7;
+  border-left: 1px solid #c7c7c7;
+  border-right: 1px solid #c7c7c7;
+  border-bottom: 1px solid #c7c7c7;
   padding: 0.15em 0.5em;
   line-height: 1.25em;
   white-space: nowrap;
