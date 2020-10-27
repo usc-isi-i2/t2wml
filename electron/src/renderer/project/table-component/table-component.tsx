@@ -65,8 +65,6 @@ class TableComponent extends Component<{}, TableState> {
 
       errorMessage: {} as ErrorMessage,
     };
-
-    this.tableRef = React.createRef();
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -80,9 +78,6 @@ class TableComponent extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.styleCell, () => this.updateStyleByCellFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.styledOverride, () => this.updateStyleByCellFromStore()));
-
-    // Set up the table elements
-    this.createTable();
   }
 
   componentWillUnmount() {
@@ -107,40 +102,25 @@ class TableComponent extends Component<{}, TableState> {
     console.log('updateStyleByCellFromStore called');
   }
 
-  createTable() {
-
-    // Create the table header row
-    this.tableRef.current.createTHead();
-
-    // Append the first th element (empty)
-    const th = document.createElement('th');
-    this.tableRef.current.tHead.appendChild(th);
-
-    // Append the letter columns to the table header
-    CHARACTERS.map(char => {
-      const th = document.createElement('th');
-      th.innerText = char;
-      this.tableRef.current.tHead.appendChild(th);
-    });
-
-    // Create the table body
-    const tableBody = this.tableRef.current.createTBody();
-
-    // Append the rows in the table
-    for (let i = 0; i < NUM_ROWS; i++ ) {
-
-      // Create the table row element
-      const tr = document.createElement('tr');
-
-      // Create the first table cell with the index
-      const td = document.createElement('td');
-      td.innerText = i+1;
-      tr.appendChild(td);
-
-      // Create other table cells in that row
-      CHARACTERS.map(char => tr.appendChild(document.createElement('td')));
-      tableBody.appendChild(tr);
-    }
+  renderTable() {
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            {CHARACTERS.map(c => <th key={c}>{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {[...Array(100)].map((e, i) => (
+            <tr key={`row-${i}`}>
+              <td>{i}</td>
+              {CHARACTERS.map((c, i) => <td key={`cell-${i}`}></td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
   }
 
   render() {
@@ -216,7 +196,7 @@ class TableComponent extends Component<{}, TableState> {
 
             {/* table */}
             <div className="table-wrapper">
-              <table ref={this.tableRef} />
+              {this.renderTable()}
             </div>
 
           </Card.Body>
