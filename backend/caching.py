@@ -26,11 +26,14 @@ class CacheHolder:
 
     def save(self, kg, layers):
         if app.config['USE_CACHE']:
+            sheet=None
+            if kg.sheet:
+                sheet=kg.sheet.to_json()
             d = {
                 "statements": kg.statements,
                 "errors": kg.errors,
                 "metadata": kg.metadata,
-                "sheet": kg.sheet.to_json(),
+                "sheet": sheet,
                 "layers": layers
             }
             s = json.dumps(d)
