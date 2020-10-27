@@ -134,6 +134,7 @@ class WikiStore {
     @observable public entitiesStats?: EntitiesStatsDTO;
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();
+    @observable public qNodeData: any;
 
     @action
     public changeProject(path?: string) {

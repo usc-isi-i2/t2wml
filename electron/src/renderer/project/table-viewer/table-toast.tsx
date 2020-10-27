@@ -22,10 +22,12 @@ class TableToast extends Component<TableToastProperties, {}> {
 
   renderToastBody() {
     // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    if (wikiStore.wikifier === undefined) return;
-    const { qnodeData } = wikiStore.wikifier;
+    if (wikiStore.qNodeData === undefined) return;
+    const { qnodeData } = wikiStore.qNodeData;
+    console.log("hi", qnodeData)
+    debugger
     if (qnodeData === undefined) return;
-
+    console.log("toast qnodedata", qnodeData)
     // get qnode according to cell index, e.g. "Q967"
     const { selectedCell } = this.props;
 
@@ -33,39 +35,26 @@ class TableToast extends Component<TableToastProperties, {}> {
     const selectedCellIndex = String(selectedCell.col) + String(selectedCell.row);
 
     // fill in data
+    console.log("selected qnode", qnodeData[selectedCellIndex] )
     if (qnodeData[selectedCellIndex] === undefined) return;
-    const contexts = Object.keys(qnodeData[selectedCellIndex]);
-    if (contexts.length === 0) return;
-    const items = [], labels = [], descs = [];
-    for (let i = 0; i < contexts.length; i++) {
-      items.push(qnodeData[selectedCellIndex][contexts[i]]["item"]);
-      labels.push(qnodeData[selectedCellIndex][contexts[i]]["label"]);
-      descs.push(qnodeData[selectedCellIndex][contexts[i]]["description"]);
-    }
-
+    const {id, url, label, description} = qnodeData[selectedCellIndex]
     // render qnode
-    let itemHref;
-    const itemType = items[0].match(/[a-z]+|\d+/gi)[0];
-    if (itemType.charAt(itemType.length - 1) === "Q") {
-      itemHref = "https://www.wikidata.org/wiki/" + items[0];
-    } else {
-      itemHref = "https://www.wikidata.org/wiki/Property:" + items[0];
-    }
+    let idHref = url 
 
-    const itemHtml = (
+    const idHtml = (
       <a
-        href={itemHref}
+        href={idHref}
         target="_blank"
         rel="noopener noreferrer"
         style={{ "color": "hsl(200, 100%, 30%)" }}
-      >{items[0]}</a>
+      >{id}</a>
     );
 
     return (
       <Toast.Body>
-        <strong>{labels[0]}</strong>&nbsp;({itemHtml})<br />
+        <strong>{label}</strong>&nbsp;({idHtml})<br />
         <br />
-        {descs[0]}
+        {description}
       </Toast.Body>
     );
   }

@@ -15,7 +15,7 @@ import WikifierOutput from './wikifier-output';
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { reaction, IReactionDisposer } from 'mobx';
-
+import {getColumnTitleFromIndex} from '../../common/utils'
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -68,8 +68,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.wikifier.qnodeData, () => this.updateWikifierFromStore()));
-    this.disposers.push(reaction(() => wikiStore.wikifier.rowData, () => this.updateWikifierFromStore()));
     this.disposers.push(reaction(() => wikiStore.layers["qnode"], () => this.updateWikifierFromStoreQnodes()));
   }
 
@@ -139,30 +137,33 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
   updateWikifierFromStoreQnodes(){
     //rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in Africa" }]
+    //qnodeData: wikiStore.wikifier.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
+
     if (wikiStore.layers["qnode"]){
       var newRowData = [] 
+      var newQnodeData = {}
+      var last_label= ""
       for (let entry of wikiStore.layers["qnode"].entries){
         const {indices, url, ...row} = entry
         for (let index_pair of indices){
-          let row_entry = {col:index_pair[0], row:index_pair[1], ...row}
+          let column_letter = getColumnTitleFromIndex(index_pair[0])
+          let row_number= index_pair[1]+0
+          let row_entry = {col:column_letter, row:row_number, ...row}
           console.log(row_entry)
           newRowData.push(row_entry)
+          let cell_label = column_letter + row_number.toString()
+          last_label=cell_label
+          newQnodeData[cell_label] = {url, ...entry}
               }
 
           }
-        console.log(newRowData)
+        debugger
         this.setState({rowData: newRowData})
-      }
+        wikiStore.qNodeData=newQnodeData
+        console.log("new qnode data", newQnodeData)
+    }
   }
 
-  updateWikifierFromStore() {
-    const qnodeData = wikiStore.wikifier.qnodeData;
-    const rowData = wikiStore.wikifier.rowData;
-    this.setState({
-        rowData: rowData,
-        qnodeData: qnodeData
-    });
-  }
 
   async uploadEntitiesFile(event: any) {
     // get entities file
