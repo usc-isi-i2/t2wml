@@ -46,8 +46,9 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // init global variables
     wikiStore.table.isCellSelectable = false;
-    wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
-
+    if (wikiStore.projects.projectDTO) {
+      wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+    }
     // init state
     this.state = {
 
