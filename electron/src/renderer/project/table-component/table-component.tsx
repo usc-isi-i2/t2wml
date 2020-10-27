@@ -106,9 +106,21 @@ class TableComponent extends Component<{}, TableState> {
     console.log('updateStyleByCellFromStore called');
   }
 
+  handleOnMouseUp(event) {
+  }
+
+  handleOnMouseDown(event) {
+  }
+
+  handleOnMouseMove(event) {
+  }
+
   renderPlaceholder() {
     return (
-      <table>
+      <table
+        onMouseUp={this.handleOnMouseUp.bind(this)}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={this.handleOnMouseMove.bind(this)}>
         <thead>
           <tr>
             <th></th>
@@ -131,7 +143,10 @@ class TableComponent extends Component<{}, TableState> {
     const { rowData } = this.state;
     if ( !!rowData ) {
       return (
-        <table>
+        <table
+          onMouseUp={this.handleOnMouseUp.bind(this)}
+          onMouseDown={this.handleOnMouseDown.bind(this)}
+          onMouseMove={this.handleOnMouseMove.bind(this)}>
           <thead>
             <tr>
               <th></th>
