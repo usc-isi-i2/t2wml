@@ -46,7 +46,7 @@ interface TableState {
   errorMessage: ErrorMessage;
 }
 
-const NUM_ROWS = 100; // how many rows do we want?
+const MIN_NUM_ROWS = 100; // how many rows do we want?
 const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUpperCase());
 
 @observer
@@ -116,7 +116,7 @@ class TableComponent extends Component<{}, TableState> {
           </tr>
         </thead>
         <tbody>
-          {[...Array(100)].map((e, i) => (
+          {[...Array(MIN_NUM_ROWS)].map((e, i) => (
             <tr key={`row-${i}`}>
               <td>{i+1}</td>
               {CHARACTERS.map((c, j) => <td key={`cell-${j}`}></td>)}
@@ -139,7 +139,7 @@ class TableComponent extends Component<{}, TableState> {
             </tr>
           </thead>
           <tbody>
-            {[...Array(Math.max(rowData.length, 100))].map((e, i) => (
+            {[...Array(Math.max(rowData.length, MIN_NUM_ROWS))].map((e, i) => (
               <tr key={`row-${i}`}>
                 <td>{i+1}</td>
                 {CHARACTERS.map((c, j) => (
