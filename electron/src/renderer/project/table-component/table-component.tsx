@@ -62,6 +62,7 @@ class TableComponent extends Component<{}, TableState> {
 
       // table data
       filename: null,       // if null, show "Table Viewer"
+      rowData: null,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -96,13 +97,16 @@ class TableComponent extends Component<{}, TableState> {
 
   updateTableData(tableData?: TableData) {
     console.log('updateTableData called');
+    this.setState({
+      rowData: tableData?.sheetData?.rowData,
+    })
   }
 
   updateStyleByCellFromStore() {
     console.log('updateStyleByCellFromStore called');
   }
 
-  renderTable() {
+  renderPlaceholder() {
     return (
       <table>
         <thead>
@@ -114,13 +118,43 @@ class TableComponent extends Component<{}, TableState> {
         <tbody>
           {[...Array(100)].map((e, i) => (
             <tr key={`row-${i}`}>
-              <td>{i}</td>
-              {CHARACTERS.map((c, i) => <td key={`cell-${i}`}></td>)}
+              <td>{i+1}</td>
+              {CHARACTERS.map((c, j) => <td key={`cell-${j}`}></td>)}
             </tr>
           ))}
         </tbody>
       </table>
     )
+  }
+
+  renderTable() {
+    const { rowData } = this.state;
+    if ( !!rowData ) {
+      return (
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              {CHARACTERS.map(c => <th key={c}>{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(Math.max(rowData.length, 100))].map((e, i) => (
+              <tr key={`row-${i}`}>
+                <td>{i+1}</td>
+                {CHARACTERS.map((c, j) => (
+                  <td key={`cell-${j}`}>
+                    {i >= rowData.length ? '' : rowData[i][c]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )
+    } else {
+      return this.renderPlaceholder();
+    }
   }
 
   render() {
