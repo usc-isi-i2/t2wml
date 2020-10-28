@@ -10,7 +10,7 @@ from t2wml.api import Project as apiProject
 from t2wml.api import add_entities_from_file
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table, get_yaml_layers, get_yaml_content, 
+from t2wml_web import (download, get_all_layers_and_table, get_empty_layers, get_yaml_layers, get_yaml_content, 
                         get_qnodes_layer, get_table, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe,
                    make_frontend_err_dict, string_is_valid, save_yaml)
@@ -114,7 +114,7 @@ def get_project():
     for f in project.entity_files:
         add_entities_from_file(Path(project.directory) / f)
 
-    response=dict(project=project.__dict__, table=None, layers={}, yamlContent=None)
+    response=dict(project=project.__dict__, table=None, layers=get_empty_layers(), yamlContent=None)
     calc_params = get_calc_params(project)
     if calc_params:
         get_all_layers_and_table(response, calc_params)

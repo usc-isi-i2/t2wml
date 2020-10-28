@@ -37,6 +37,19 @@ def download(calc_params, filetype):
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
 
+def get_empty_layers():
+    errorLayer=dict(layerType="error", entries=[])
+    statementLayer=dict(layerType="statement", entries=[])
+    cleanedLayer=dict(layerType="cleaned", entries=[])
+    typeLayer=dict(layerType="type", entries=[])
+    qnodeLayer=dict(layerType="qnode", entries=[])
+
+    return dict(error= errorLayer, 
+            statement= statementLayer, 
+            cleaned= cleanedLayer, 
+            type = typeLayer,
+            qnode=qnodeLayer)
+
 def get_qnode_url(id):
     url=""
     first_letter=str(id).upper()[0]
@@ -63,6 +76,8 @@ class QNode:
         self.label=label
         self.description=description
         
+
+
 
 
 def get_qnodes_layer(calc_params):
@@ -139,6 +154,7 @@ def get_yaml_layers(calc_params):
     dataEntry=dict(indices=[], type="data")
     majorErrorEntry=dict(indices=[], type="majorError")
     minorErrorEntry=dict(indices=[], type="minorError")
+
     errorLayer=dict(layerType="error", entries=[])
     statementLayer=dict(layerType="statement", entries=[])
     cleanedLayer=dict(layerType="cleaned", entries=[])
