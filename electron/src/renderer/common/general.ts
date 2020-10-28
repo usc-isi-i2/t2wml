@@ -38,14 +38,27 @@ export class Cell {
     row: number | null = null;
     value: string | null = null;
 
+    constructor(col?: string | null, row?: number | null, value?: string | null) {
+        if (col && row) {
+            this.col = col;
+            this.row = row;
+        }
+        if (value == undefined) {
+            this.value = null;
+        }
+        else {
+            this.value = value
+        }
+    }
+
     get rowIndex(): number | null {
         if (this.row) { return this.row - 1; }
         return null;
     }
 
     get colIndex(): number | null {
-        if (this.col) { 
-            return colName2colIdx(this.col)-1;
+        if (this.col) {
+            return colName2colIdx(this.col) - 1;
         }
         return null;
     }

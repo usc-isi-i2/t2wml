@@ -126,10 +126,10 @@ class YamlEditorState {
 
 class Layer<T extends Entry> {
     @observable public entries: T[];
-    private entryMap: Map<CellIndex, T>;
+    private entryMap: Map<string, T>;
 
     constructor(responseLayer?: LayerDTO<T>) {
-        this.entryMap = new Map<CellIndex, T>();
+        this.entryMap = new Map<string, T>();
         if (!responseLayer) {
             this.entries = []
         }
@@ -137,7 +137,7 @@ class Layer<T extends Entry> {
             this.entries = responseLayer.entries;
             for (const entry of this.entries) {
                 for (const index_pair of entry.indices) {
-                    this.entryMap.set(index_pair, entry)
+                    this.entryMap.set(`${index_pair[0]},${index_pair[1]}`, entry)
                 }
 
             }
@@ -145,7 +145,7 @@ class Layer<T extends Entry> {
     }
 
     public find(row: number, col: number): T|undefined {
-        const index: CellIndex = [row, col];
+        const index = `${row},${col}`;
         // In case a map doesn't support an array as an index, use `${row},${col}`
         return this.entryMap.get(index);
     }    

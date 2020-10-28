@@ -32,9 +32,7 @@ class TableToast extends Component<TableToastProperties, {}> {
 
     const selectedQnode = wikiStore.layers.qnode.find(selectedCell.rowIndex, selectedCell.colIndex)
 
-
     // fill in data
-    console.log("selected qnode", selectedQnode)
     if (selectedQnode === undefined) return;
     const {id, url, label, description} = selectedQnode
     // render qnode

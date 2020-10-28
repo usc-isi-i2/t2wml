@@ -459,7 +459,7 @@ class TableViewer extends Component<{}, TableState> {
       // update
       wikiStore.table.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
       this.setState({
-        selectedCell: { col: col, row: row, value: value },
+        selectedCell: new Cell(col, row, value),
         showToast0: true,
       });
     }
@@ -614,18 +614,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   render() {
-    // console.log(this.state);
-
-    // const { showToast0, showToast1, msgInToast1 } = this.state;
     const { filename, isCSV, columnDefs, rowData } = this.state;
-    // const { selectedCell } = this.state;
-
-    // let msgInToast0;
-    // if (selectedCell === null) {
-    //   msgInToast0 = "No cell selected";
-    // } else {
-    //   msgInToast0 = "{ $col: " + selectedCell.col + ", $row: " + selectedCell.row + " }";
-    // }
 
     // render title
     let titleHtml;
