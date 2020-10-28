@@ -69,6 +69,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateWikifierFromStoreQnodes()));
+    this.updateWikifierFromStoreQnodes();
   }
 
   componentWillUnmount() {
@@ -137,6 +138,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
   updateWikifierFromStoreQnodes() {
     //rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "id": "Q967", "label": "Burundi", "description": "country in Africa" }]
+    console.debug('updateWikiferFromStoreQnodes called');
     const newRowData = [];
     if (wikiStore.layers.qnode) {
       for (const entry of wikiStore.layers.qnode.entries) {

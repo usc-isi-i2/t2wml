@@ -75,8 +75,10 @@ class RequestService {
   }
 
   public fillStore(response: GetProjectResponseDTO | UploadYamlResponseDTO | UploadDataFileResponseDTO | UploadWikifierOutputResponseDTO) {
+    // Talya - this is a bad way of writing this. You should probably have one fillStore function per DTO type. Or use inheritence to share
+    // properties among DTOs - look at the example in dtos.ts
     wikiStore.projects.projectDTO = response.project;
-    wikiStore.layers.updateFromDTO(response.layers as LayersDTO)
+    wikiStore.layers.updateFromDTO(response.layers)  // respone.layers should be LayersDTO, instead of casting
 
     if ((response as GetProjectResponseDTO).yamlContent) {
       wikiStore.yaml.yamlContent = (response as GetProjectResponseDTO).yamlContent;

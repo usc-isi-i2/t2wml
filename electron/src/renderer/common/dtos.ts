@@ -83,20 +83,34 @@ export interface ProjectDTO {
 //     sheetData: SheetDataDTO;
 // }
 
+// Talya, try doing something like this:
+// interface ResponseWithProjectDTO {
+//      project: ProjectDTO;
+// }
+// interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
+//      layers: LayersDTO;
+// }
+// interface UploadDataFileResponseDTO extends ResponseWithLayersDTO {
+//     table: TableDTO;
+// }
+// interface UploadWikifierOutputResponseDTO extens ResponseWithLayersDTO { }
+//
+// And so on.
+
 export interface UploadDataFileResponseDTO {
     project: ProjectDTO;
     table: TableDTO;
-    layers: LayerDTO<Entry>[];
+    layers: LayersDTO;
 }
 
 export interface UploadWikifierOutputResponseDTO {
     project: ProjectDTO;
-    layers: LayerDTO<Entry>[];
+    layers: LayersDTO;
 }
 
 export interface UploadYamlResponseDTO {
     project: ProjectDTO;
-    layers: LayerDTO<Entry>[];
+    layers: LayersDTO;
 }
 
 export type CellIndex = [number, number];
@@ -151,7 +165,7 @@ export interface WikifierErrorDTO {
 
 export interface GetProjectResponseDTO {
     project: ProjectDTO;
-    layers: LayerDTO<Entry>[];
+    layers: LayersDTO;
     table: TableDTO;
     yamlContent: string;
 }
@@ -159,11 +173,11 @@ export interface GetProjectResponseDTO {
 export interface UploadEntitiesDTO {
     project: ProjectDTO;
     entitiesStats: EntitiesStatsDTO;
-    layers: LayerDTO<Entry>[];
+    layers: LayersDTO;
 }
 
 export interface CallWikifierServiceDTO {
     project: ProjectDTO;
-    layers: LayerDTO<Entry>[];
+    layers: LayersDTO;
     wikifierError: WikifierErrorDTO;
 }

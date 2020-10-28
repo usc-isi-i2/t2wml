@@ -110,10 +110,10 @@ class ProjectList extends Component<{}, ProjectListState> {
     const formData = new FormData();
     formData.append("ptitle", ptitle);
     try {
-      const json = await this.requestService.renameProject(path, formData);
-      if (json.error) {
+      /*const json = */ await this.requestService.renameProject(path, formData);
+      /*if (json.error) {
         console.warn('Renaming a project returned an error: ', json);
-      }
+      } */
       this.setState({ showRenameProject: false, showSpinner: false });
       wikiStore.projects.refreshList();
     } catch(error) {

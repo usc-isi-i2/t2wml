@@ -125,7 +125,7 @@ class YamlEditorState {
 }
 
 class Layer<T extends Entry> {
-    public entries: T[];
+    @observable public entries: T[];
     private entryMap: Map<CellIndex, T>;
 
     constructor(responseLayer?: LayerDTO<T>) {
@@ -153,11 +153,11 @@ class Layer<T extends Entry> {
 
 
 class LayerState {
-    public qnode: Layer<QNodeEntry>;
-    public type: Layer<Entry>;
-    public statement: Layer<Entry>;
-    public error: Layer<Entry>;
-    public cleaned: Layer<Entry>;
+    @observable public qnode: Layer<QNodeEntry>;
+    @observable public type: Layer<Entry>;
+    @observable public statement: Layer<Entry>;
+    @observable public error: Layer<Entry>;
+    @observable public cleaned: Layer<Entry>;
 
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
@@ -167,7 +167,9 @@ class LayerState {
         this.cleaned = new Layer<Entry>();
     }
 
+    @action
     public updateFromDTO(dto: LayersDTO) {
+        console.debug('Updating layers: ', dto);
         if (dto.qnode) {
             this.qnode = new Layer(dto.qnode);
         }
