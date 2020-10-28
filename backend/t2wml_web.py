@@ -38,7 +38,8 @@ def download(calc_params, filetype):
     return response
 
 def indexer(cell):
-    return list(cell_str_to_tuple(cell))
+    col, row = cell_str_to_tuple(cell)
+    return [row, col]
 
 def get_cleaned(kg):
     cleanedLayer=dict(layerType="cleaned", entries=[])
@@ -173,11 +174,11 @@ def get_qnodes_layer(calc_params):
                 if id:
                     ids_to_get.add(id)
                     if id in qnode_entries:
-                        qnode_entries[id]["indices"].append([col, row])
+                        qnode_entries[id]["indices"].append([row, col])
                     else:
                         qnode_entries[id]=dict(
                             qNode= QNode(id, value, context),
-                            indices=[[col, row]])
+                            indices=[[row, col]])
 
         labels_and_descriptions = get_labels_and_descriptions(list(ids_to_get), calc_params.sparql_endpoint)
         for id in qnode_entries:
