@@ -24,10 +24,8 @@ interface WikifierProperties {
 interface WikifierState {
   showSpinner: boolean;
   showCallWikifier: boolean;
-  qnodeData: any,
   rowData: Array<any>,
   flag: number;
-  scope: number;
   errorMessage: ErrorMessage;
   propertiesMessage: string;
 }
@@ -50,15 +48,12 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
-      qnodeData: wikiStore.wikifier.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
       rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in Africa" }]
 
       // call wikifier service
       showCallWikifier: false,
       flag: 0,
 
-      // qnode editor
-      scope: wikiStore.wikifier.scope,
 
       errorMessage: {} as ErrorMessage,
       propertiesMessage: ''
