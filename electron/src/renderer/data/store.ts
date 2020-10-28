@@ -2,7 +2,7 @@ import { observable, action, computed } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { EntitiesStatsDTO, Entry, LayerDTO, TableDTO, WikifierErrorDTO } from '../common/dtos';
+import { CellIndex, EntitiesStatsDTO, Entry, LayerDTO, LayersDTO, QNodeEntry, TableDTO, WikifierErrorDTO } from '../common/dtos';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
 class EditorsState {
@@ -25,7 +25,7 @@ class TableState {
     @observable public styledRowName: string | number | null;
     @observable public styleCell: string;
     @observable public styledOverride?: boolean;
-    
+
     constructor() {
         this.table = {} as TableDTO;
         this.isCellSelectable = false;
@@ -92,7 +92,7 @@ class OutputState {
     @observable public col: string;
     @observable public row: string;
     @observable public json: any;
-    
+
     // Computed property showOutput that returns true when the output should be shown.
     @computed get showOutput(): boolean {
         return this.row !== '' && this.col !== '';
@@ -124,17 +124,81 @@ class YamlEditorState {
     @observable public yamlContent?: string;
 }
 
+class Layer<T extends Entry> {
+    public entries: T[];
+    private entryMap: Map<CellIndex, T>;
+
+    constructor(responseLayer?: LayerDTO<T>) {
+        this.entryMap = new Map<CellIndex, T>();
+        if (!responseLayer) {
+            this.entries = []
+        }
+        else {
+            this.entries = responseLayer.entries;
+            for (const entry of this.entries) {
+                for (const index_pair of entry.indices) {
+                    this.entryMap.set(index_pair, entry)
+                }
+
+            }
+        }
+    }
+
+    public find(row: number, col: number): T|undefined {
+        const index: CellIndex = [row, col];
+        // In case a map doesn't support an array as an index, use `${row},${col}`
+        return this.entryMap.get(index);
+    }    
+}
+
+
+class LayerState {
+    public qnode: Layer<QNodeEntry>;
+    public type: Layer<Entry>;
+    public statement: Layer<Entry>;
+    public error: Layer<Entry>;
+    public cleaned: Layer<Entry>;
+
+    constructor() {
+        this.qnode = new Layer<QNodeEntry>();
+        this.type = new Layer<Entry>();
+        this.statement = new Layer<Entry>();
+        this.error = new Layer<Entry>();
+        this.cleaned = new Layer<Entry>();
+    }
+
+    public updateFromDTO(dto: LayersDTO) {
+        if (dto.qnode) {
+            this.qnode = new Layer(dto.qnode);
+        }
+        if (dto.type) {
+            this.type = new Layer(dto.type);
+        }
+        if (dto.statement) {
+            this.statement = new Layer(dto.statement);
+        }
+        if (dto.error) {
+            this.error = new Layer(dto.error);
+        }
+        if (dto.cleaned) {
+            this.cleaned = new Layer(dto.cleaned);
+        }
+    }
+
+
+}
+
+
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
     @observable public wikifier = new WikifierState();
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
-    @observable public layers?: LayerDTO<Entry>[];
+    @observable public layers = new LayerState();
     @observable public entitiesStats?: EntitiesStatsDTO;
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();
-    @observable public qNodeData: any;
 
     @action
     public changeProject(path?: string) {

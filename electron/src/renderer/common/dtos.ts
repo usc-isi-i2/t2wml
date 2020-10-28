@@ -99,10 +99,7 @@ export interface UploadYamlResponseDTO {
     layers: LayerDTO<Entry>[];
 }
 
-export interface CellIndex {
-    rowIdnex: number;
-    cellIndex: number;
-}
+export type CellIndex = [number, number];
 export interface Entry {
     indices: CellIndex[];
 }
@@ -111,15 +108,22 @@ export interface CleanEntry extends Entry {
     cleaned: string;
 }
  
-export type LayerType = "qNode" | "statement" | "error" | "type"| "cleaned";
+export type LayerType = "qnode" | "statement" | "error" | "type"| "cleaned";
 
-export interface LayerDTO <T extends Entry>{
-    [key: string]: { // LayerType ?
-        layerType: LayerType,
-        entries: T[];
-    }
+export interface LayerDTO<T extends Entry> {
+    layerType: LayerType;
+    entries: T[];
 }
-export interface QNode extends Entry {
+
+export interface LayersDTO {
+    qnode?: LayerDTO<QNodeEntry>;
+    statement?: LayerDTO<Entry>;
+    error?: LayerDTO<Entry>;
+    type?: LayerDTO<Entry>;
+    cleaned?: LayerDTO<CleanEntry>;
+}
+
+export interface QNodeEntry extends Entry {
     label: string
     description: string
     id: string

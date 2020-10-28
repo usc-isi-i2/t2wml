@@ -22,22 +22,21 @@ class TableToast extends Component<TableToastProperties, {}> {
 
   renderToastBody() {
     // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    if (wikiStore.qNodeData === undefined) return;
-    const { qnodeData } = wikiStore.qNodeData;
-    console.log("hi", qnodeData)
-    debugger
-    if (qnodeData === undefined) return;
-    console.log("toast qnodedata", qnodeData)
+    if (wikiStore.layers.qnode === undefined) return;
+    if (wikiStore.layers.qnode.entries.length < 1) return;
+
     // get qnode according to cell index, e.g. "Q967"
     const { selectedCell } = this.props;
 
-    if (selectedCell === null || selectedCell.col === null || selectedCell.row === null) return;
-    const selectedCellIndex = String(selectedCell.col) + String(selectedCell.row);
+    if (selectedCell === null || selectedCell.colIndex === null || selectedCell.rowIndex === null) return;
+
+    const selectedQnode = wikiStore.layers.qnode.find(selectedCell.rowIndex, selectedCell.colIndex)
+
 
     // fill in data
-    console.log("selected qnode", qnodeData[selectedCellIndex] )
-    if (qnodeData[selectedCellIndex] === undefined) return;
-    const {id, url, label, description} = qnodeData[selectedCellIndex]
+    console.log("selected qnode", selectedQnode)
+    if (selectedQnode === undefined) return;
+    const {id, url, label, description} = selectedQnode
     // render qnode
     let idHref = url 
 

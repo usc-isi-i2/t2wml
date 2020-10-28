@@ -1,13 +1,16 @@
+import { colName2colIdx } from "./utils";
+
+
 // console.log
 export const LOG = {
-  default: "background: ; color: ",
-  highlight: "background: yellow; color: black",
-  link: "background: white; color: blue"
+    default: "background: ; color: ",
+    highlight: "background: yellow; color: black",
+    link: "background: white; color: blue"
 };
 
 export interface WikifierData {
-  api: any;
-  columnApi: any;
+    api: any;
+    columnApi: any;
 }
 
 export interface ErrorMessage {
@@ -19,11 +22,11 @@ export interface ErrorMessage {
 interface ErrorCellData {
     ["item"]?: string;
     ["qualifier"]?: {
-        [key: string] : {
+        [key: string]: {
             ["value"]?: string;
             ["time parsing"]?: string;
         };
-    }; 
+    };
 }
 
 // export interface ErrorCell {
@@ -34,4 +37,17 @@ export class Cell {
     col: string | null = null;
     row: number | null = null;
     value: string | null = null;
+
+    get rowIndex(): number | null {
+        if (this.row) { return this.row - 1; }
+        return null;
+    }
+
+    get colIndex(): number | null {
+        if (this.col) { 
+            return colName2colIdx(this.col)-1;
+        }
+        return null;
+    }
+
 }

@@ -15,7 +15,7 @@ import WikifierOutput from './wikifier-output';
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { reaction, IReactionDisposer } from 'mobx';
-import {getColumnTitleFromIndex} from '../../common/utils'
+import { getColumnTitleFromIndex } from '../../common/utils'
 
 interface WikifierProperties {
   isShowing: boolean;
@@ -68,11 +68,11 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.layers["qnode"], () => this.updateWikifierFromStoreQnodes()));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateWikifierFromStoreQnodes()));
   }
 
   componentWillUnmount() {
-    for(const disposer of this.disposers) {
+    for (const disposer of this.disposers) {
       disposer();
     }
   }
@@ -121,7 +121,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // follow-ups (success)
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       this.setState({ errorMessage: error });
 
@@ -135,33 +135,21 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     this.setState({ showCallWikifier: false });
   }
 
-  updateWikifierFromStoreQnodes(){
-    //rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in Africa" }]
-    //qnodeData: wikiStore.wikifier.qnodeData,  // e.g. { "A1": { "context1": { "item": "Q111", "label": "xxx", "description": "xxx" }, ... }, ... }
-
-    if (wikiStore.layers["qnode"]){
-      var newRowData = [] 
-      var newQnodeData = {}
-      var last_label= ""
-      for (let entry of wikiStore.layers["qnode"].entries){
-        const {indices, url, ...row} = entry
-        for (let index_pair of indices){
-          let column_letter = getColumnTitleFromIndex(index_pair[0])
-          let row_number= index_pair[1]+0
-          let row_entry = {col:column_letter, row:row_number, ...row}
-          console.log(row_entry)
-          newRowData.push(row_entry)
-          let cell_label = column_letter + row_number.toString()
-          last_label=cell_label
-          newQnodeData[cell_label] = {url, ...entry}
-              }
-
-          }
-        debugger
-        this.setState({rowData: newRowData})
-        wikiStore.qNodeData=newQnodeData
-        console.log("new qnode data", newQnodeData)
+  updateWikifierFromStoreQnodes() {
+    //rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "id": "Q967", "label": "Burundi", "description": "country in Africa" }]
+    const newRowData = [];
+    if (wikiStore.layers.qnode) {
+      for (const entry of wikiStore.layers.qnode.entries) {
+        const { indices, url, ...row } = entry;
+        for (const index_pair of indices) {
+          const row_number = index_pair[0] + 1;
+          const column_letter = getColumnTitleFromIndex(index_pair[1]);
+          const row_entry = { col: column_letter, row: row_number, ...row };
+          newRowData.push(row_entry);
+        }
+      }
     }
+    this.setState({ rowData: newRowData });
   }
 
 
@@ -196,22 +184,22 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // wikiStore.wikifier.updateWikifier(qnodes, rowData);
 
       const { added, failed, updated } = wikiStore.entitiesStats!;
-          let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
-          if (failed.length) {
-              message += '\n\nCheck the console for the failures reasons.'
-          }
-          this.setState({
-            propertiesMessage: message
-          });
+      let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
+      if (failed.length) {
+        message += '\n\nCheck the console for the failures reasons.'
+      }
+      this.setState({
+        propertiesMessage: message
+      });
 
       // follow-ups (success)
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       error.errorDescription += "\n\nCannot upload entities file!";
       this.setState({ errorMessage: error });
-    
+
       // follow-ups (failure)
       wikiStore.wikifier.showSpinner = false;
     }
@@ -231,84 +219,84 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     );
 
     const uploadDefToolTipHtml = (
-        <Tooltip style={{ width: "fit-content" }} id="upload">
-          <div className="text-left small">
-            <b>Accepted file types:</b><br />
+      <Tooltip style={{ width: "fit-content" }} id="upload">
+        <div className="text-left small">
+          <b>Accepted file types:</b><br />
             • Tab-Separated kgtk files(.tsv)
           </div>
-        </Tooltip>
-      );
+      </Tooltip>
+    );
 
     return (
-    <Fragment>
-        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
-        {this.state.propertiesMessage != '' ? <ToastMessage message={this.state.propertiesMessage}/> : null }
+      <Fragment>
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
+        {this.state.propertiesMessage != '' ? <ToastMessage message={this.state.propertiesMessage} /> : null}
 
         <Card
-            className="w-100 shadow-sm"
-            style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
+          className="w-100 shadow-sm"
+          style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
 
-            <CallWikifier
-                showCallWikifier={this.state.showCallWikifier}
-                cancelCallWikifier={() => this.cancelCallWikifier()}
-                handleDoCall={(region, flag, context) => this.handleDoCall(region, flag, context)} />
+          <CallWikifier
+            showCallWikifier={this.state.showCallWikifier}
+            cancelCallWikifier={() => this.cancelCallWikifier()}
+            handleDoCall={(region, flag, context) => this.handleDoCall(region, flag, context)} />
 
-            {/* header */}
-            <Card.Header
+          {/* header */}
+          <Card.Header
             style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
-            onClick={() => wikiStore.editors.nowShowing = "Wikifier" }
-            >
+            onClick={() => wikiStore.editors.nowShowing = "Wikifier"}
+          >
 
             {/* title */}
             <div
-                className="text-white font-weight-bold d-inline-block text-truncate"
+              className="text-white font-weight-bold d-inline-block text-truncate"
 
-                // style={{ width: "calc(100% - 75px)", cursor: "default" }}
-                style={{ width: "calc(100% - 300px)", cursor: "default" }}
+              // style={{ width: "calc(100% - 75px)", cursor: "default" }}
+              style={{ width: "calc(100% - 300px)", cursor: "default" }}
             >
-                Wikifier
+              Wikifier
             </div>
 
             {/* button to upload wikifier file */}
             <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-                <Button
+              <Button
                 className="d-inline-block float-right"
                 variant="outline-light"
                 size="sm"
                 style={{ padding: "0rem 0.5rem" }}
                 onClick={() => { document.getElementById("file_wikifier")?.click(); }}
-                >
+              >
                 Upload
                 </Button>
             </OverlayTrigger>
 
 
             <Button
+              className="d-inline-block float-right"
+              variant="outline-light"
+              size="sm"
+              style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
+              onClick={() => { this.setState({ showCallWikifier: true }) }}
+            >
+              Wikify
+            </Button>
+
+            {/* button to upload wikidata file */}
+            <OverlayTrigger overlay={uploadDefToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
+              <Button
                 className="d-inline-block float-right"
                 variant="outline-light"
                 size="sm"
                 style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
-                onClick={() => { this.setState({ showCallWikifier: true }) }}
-            >
-                Wikify
-            </Button>
-        
-            {/* button to upload wikidata file */}
-            <OverlayTrigger overlay={uploadDefToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-                <Button
-                    className="d-inline-block float-right"
-                    variant="outline-light"
-                    size="sm"
-                    style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
-                    onClick={() => { document.getElementById("file_wikidata")?.click(); }}
-                >
-                    Import Entities
+                onClick={() => { document.getElementById("file_wikidata")?.click(); }}
+              >
+                Import Entities
                 </Button>
             </OverlayTrigger>
 
-             {/* hidden input of wikidata file */}
-             <input
+            {/* hidden input of wikidata file */}
+            <input
               type="file"
               id="file_wikidata"
               accept=".tsv"
@@ -327,29 +315,29 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
-            </Card.Header>
+          </Card.Header>
 
-            {/* wikifier */}
-            <Card.Body
+          {/* wikifier */}
+          <Card.Body
             className="w-100 h-100 p-0"
             style={
-                // (this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }
-                { display: "flex", overflow: "hidden" }
+              // (this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }
+              { display: "flex", overflow: "hidden" }
             }
-            >
+          >
 
             <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
-                <Spinner animation="border" />
+              <Spinner animation="border" />
             </div>
 
 
             {/* wikifier output */}
-            <WikifierOutput 
-                rowData={this.state.rowData} />
-            </Card.Body>
+            <WikifierOutput
+              rowData={this.state.rowData} />
+          </Card.Body>
 
-            {/* card footer */}
-            {/* <Card.Footer
+          {/* card footer */}
+          {/* <Card.Footer
             style={
                 (this.props.isShowing) ? { height: "40px", padding: "0.5rem 1rem", background: "whitesmoke" } : { display: "none" }
             }
@@ -366,7 +354,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             </Card.Footer> */}
 
         </Card >
-    </Fragment>
+      </Fragment>
     );
   }
 }

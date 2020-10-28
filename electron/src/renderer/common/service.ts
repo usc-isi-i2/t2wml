@@ -1,7 +1,7 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, 
-  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO } from './dtos';
+  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, LayersDTO } from './dtos';
 
 // I did it as a class because we will add a state instance
 
@@ -76,7 +76,7 @@ class RequestService {
 
   public fillStore(response: GetProjectResponseDTO | UploadYamlResponseDTO | UploadDataFileResponseDTO | UploadWikifierOutputResponseDTO) {
     wikiStore.projects.projectDTO = response.project;
-    wikiStore.layers = response.layers;
+    wikiStore.layers.updateFromDTO(response.layers as LayersDTO)
 
     if ((response as GetProjectResponseDTO).yamlContent) {
       wikiStore.yaml.yamlContent = (response as GetProjectResponseDTO).yamlContent;
