@@ -69,7 +69,7 @@ class TableComponent extends Component<{}, TableState> {
 
     this.tableRef = React.createRef();
     this.selecting = false;
-    this.selection = {};
+    this.selections = [];
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -112,6 +112,10 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseUp(event) {
     this.selecting = false;
+    if ( !event.metaKey ) {
+      this.selections = [];
+      this.resetSelections();
+    }
   }
 
   handleOnMouseDown(event) {
@@ -131,7 +135,13 @@ class TableComponent extends Component<{}, TableState> {
         const x2 = element.cellIndex;
         const y1 = element.parentElement.rowIndex;
         const y2 = element.parentElement.rowIndex;
-        this.selection = {x1, x2, y1, y2};
+
+        // Update selection coordinates
+        if ( !event.metaKey ) {
+          this.selections = [{x1, x2, y1, y2}];
+        } else {
+          this.selections.push({x1, x2, y1, y2});
+        }
 
         // Activate the element on click
         element.classList.add('active');
@@ -147,21 +157,21 @@ class TableComponent extends Component<{}, TableState> {
       // Make sure users are not able to select the cells in the index column
       if ( element.parentElement.firstChild !== event.target ) {
 
-        // Update selection x coordinate
+        // Update the last x coordinate of the selection
         const x2 = element.cellIndex;
-        this.selection['x2'] = x2;
+        this.selections[this.selections.length-1]['x2'] = x2;
 
-        // Update selection y coordinate
+        // Update the last y coordinate of the selection
         const y2 = element.parentElement.rowIndex;
-        this.selection['y2'] = y2;
+        this.selections[this.selections.length-1]['y2'] = y2;
 
         // Update selections
-        this.updateSelection();
+        this.updateSelections();
       }
     }
   }
 
-  resetSelection() {
+  resetSelections() {
     const table = this.tableRef.current;
     table.querySelectorAll('.active').forEach(e => e.className = '');
     table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
@@ -170,59 +180,61 @@ class TableComponent extends Component<{}, TableState> {
     table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
   }
 
-  updateSelection() {
+  updateSelections() {
     const table = this.tableRef.current;
 
     // Reset selections before update
-    this.resetSelection();
+    this.resetSelections();
 
     const rows = table.querySelectorAll('tr');
-    const {x1, x2, y1, y2} = this.selection;
-    const leftCol = Math.min(x1, x2);
-    const rightCol = Math.max(x1, x2);
-    const topRow = Math.min(y1, y2);
-    const bottomRow = Math.max(y1, y2);
-    let rowIndex = topRow;
-    while ( rowIndex <= bottomRow ) {
-      let colIndex = leftCol;
-      while ( colIndex <= rightCol ) {
-        const cell = rows[rowIndex].children[colIndex];
+    this.selections.forEach(selection => {
+      const {x1, x2, y1, y2} = selection;
+      const leftCol = Math.min(x1, x2);
+      const rightCol = Math.max(x1, x2);
+      const topRow = Math.min(y1, y2);
+      const bottomRow = Math.max(y1, y2);
+      let rowIndex = topRow;
+      while ( rowIndex <= bottomRow ) {
+        let colIndex = leftCol;
+        while ( colIndex <= rightCol ) {
+          const cell = rows[rowIndex].children[colIndex];
 
-        // Activate the current cell
-        cell.classList.add('active');
+          // Activate the current cell
+          cell.classList.add('active');
 
-        // Add a top border to the cells at the top of the selection
-        if ( rowIndex === topRow ) {
-          const borderTop = document.createElement('div');
-          borderTop.classList.add('cell-border-top');
-          cell.appendChild(borderTop);
+          // Add a top border to the cells at the top of the selection
+          if ( rowIndex === topRow ) {
+            const borderTop = document.createElement('div');
+            borderTop.classList.add('cell-border-top');
+            cell.appendChild(borderTop);
+          }
+
+          // Add a left border to the cells on the left of the selection
+          if ( colIndex === leftCol ) {
+            const borderLeft = document.createElement('div');
+            borderLeft.classList.add('cell-border-left');
+            cell.appendChild(borderLeft);
+          }
+
+          // Add a right border to the cells on the right of the selection
+          if ( colIndex === rightCol ) {
+            const borderRight = document.createElement('div');
+            borderRight.classList.add('cell-border-right');
+            cell.appendChild(borderRight);
+          }
+
+          // Add a bottom border to the cells at the bottom of the selection
+          if ( rowIndex === bottomRow ) {
+            const borderBottom = document.createElement('div');
+            borderBottom.classList.add('cell-border-bottom');
+            cell.appendChild(borderBottom);
+          }
+
+          colIndex += 1;
         }
-
-        // Add a left border to the cells on the left of the selection
-        if ( colIndex === leftCol ) {
-          const borderLeft = document.createElement('div');
-          borderLeft.classList.add('cell-border-left');
-          cell.appendChild(borderLeft);
-        }
-
-        // Add a right border to the cells on the right of the selection
-        if ( colIndex === rightCol ) {
-          const borderRight = document.createElement('div');
-          borderRight.classList.add('cell-border-right');
-          cell.appendChild(borderRight);
-        }
-
-        // Add a bottom border to the cells at the bottom of the selection
-        if ( rowIndex === bottomRow ) {
-          const borderBottom = document.createElement('div');
-          borderBottom.classList.add('cell-border-bottom');
-          cell.appendChild(borderBottom);
-        }
-
-        colIndex += 1;
+        rowIndex += 1;
       }
-      rowIndex += 1;
-    }
+    });
   }
 
   renderPlaceholder() {
