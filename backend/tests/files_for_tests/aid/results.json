@@ -1140,7 +1140,52 @@
                         ],
                         "cell": "B8"
                     }
-                ]
+                ],
+                "qnodes": {
+                    "Paid-security-002": {
+                        "label": "UN",
+                        "description": "",
+                        "url": "",
+                        "id": "Paid-security-002"
+                    },
+                    "Qaid-security-U002": null,
+                    "P585": {
+                        "label": "point in time",
+                        "description": "time and date something took place, existed or a statement was true",
+                        "url": "https://www.wikidata.org/wiki/Property:P585",
+                        "id": "P585"
+                    },
+                    "Q1985727": {
+                        "label": "proleptic Gregorian calendar",
+                        "description": "extension of the Gregorian calendar before its introduction",
+                        "url": "https://www.wikidata.org/wiki/Q1985727",
+                        "id": "Q1985727"
+                    },
+                    "P17": {
+                        "label": "country",
+                        "description": "sovereign state of this item (not to be used for human beings)",
+                        "url": "https://www.wikidata.org/wiki/Property:P17",
+                        "id": "P17"
+                    },
+                    "Q21203": {
+                        "label": "Aruba",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "url": "https://www.wikidata.org/wiki/Q21203",
+                        "id": "Q21203"
+                    },
+                    "Paid-security-003": {
+                        "label": "INGO",
+                        "description": "",
+                        "url": "",
+                        "id": "Paid-security-003"
+                    },
+                    "Paid-security-004": {
+                        "label": "LNGO/NRCS",
+                        "description": "",
+                        "url": "",
+                        "id": "Paid-security-004"
+                    }
+                }
             },
             "cleaned": {
                 "layerType": "cleaned",

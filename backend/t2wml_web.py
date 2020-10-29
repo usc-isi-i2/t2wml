@@ -209,7 +209,10 @@ def get_yaml_layers(calc_params):
         for id in qnodes:
             if qnodes[id]:
                 qnodes[id]["url"]=get_qnode_url(id)
+                qnodes[id]["id"]=id
         
+        statementLayer["qnodes"]=qnodes
+
     typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
 
     layers= dict(error= errorLayer, 
