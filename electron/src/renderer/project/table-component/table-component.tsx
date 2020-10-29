@@ -61,13 +61,15 @@ class TableComponent extends Component<{}, TableState> {
       showSpinner: wikiStore.table.showSpinner,
 
       // table data
-      seleting: false,
-      selection: {},
+      selecting: false,
       filename: null,       // if null, show "Table Viewer"
       rowData: null,
 
       errorMessage: {} as ErrorMessage,
     };
+
+    this.tableRef = React.createRef();
+    this.selection = {};
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -126,11 +128,11 @@ class TableComponent extends Component<{}, TableState> {
         const x2 = element.cellIndex;
         const y1 = element.parentElement.rowIndex;
         const y2 = element.parentElement.rowIndex;
+        this.selection = {x1, x2, y1, y2};
 
         // Update selection coordinates
         this.setState({
           selecting: true,
-          selection: {x1, x2, y1, y2},
         });
 
         // Activate the element on click
@@ -140,7 +142,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   handleOnMouseMove(event) {
-    const { selecting, selection } = this.state;
+    const { selecting } = this.state;
     const element = event.target;
 
     if ( selecting && element.nodeName === 'TD' ) {
@@ -150,68 +152,54 @@ class TableComponent extends Component<{}, TableState> {
 
         // Update selection x coordinate
         const x2 = element.cellIndex;
-        selection['x2'] = x2;
+        this.selection['x2'] = x2;
 
         // Update selection y coordinate
         const y2 = element.parentElement.rowIndex;
-        selection['y2'] = y2;
+        this.selection['y2'] = y2;
 
-        // Update selection
-        this.setState({selection});
+        // Update selections
+        this.updateSelection();
       }
     }
   }
 
-  getClassNames(rowIndex, colIndex) {
-    const { selecting, selection } = this.state;
-    if ( selecting ) {
-      const {x1, x2, y1, y2} = selection;
-      const leftCol = Math.min(x1, x2);
-      const rightCol = Math.max(x1, x2);
-      const topRow = Math.min(y1, y2);
-      const bottomRow = Math.max(y1, y2);
+  resetSelection() {
+    const table = this.tableRef.current;
+    table.querySelectorAll('.active').forEach(e => e.className = '');
+  }
 
-      // Initialize class names array
-      let classNames = [];
+  updateSelection() {
+    const table = this.tableRef.current;
 
-      if ( rowIndex >= topRow &&
-           rowIndex <= bottomRow &&
-           colIndex >= leftCol &&
-           colIndex <= rightCol ) {
+    // Reset selections before update
+    this.resetSelection();
+
+    const rows = table.querySelectorAll('tr');
+    const {x1, x2, y1, y2} = this.selection;
+    const leftCol = Math.min(x1, x2);
+    const rightCol = Math.max(x1, x2);
+    const topRow = Math.min(y1, y2);
+    const bottomRow = Math.max(y1, y2);
+    let rowIndex = topRow;
+    while ( rowIndex <= bottomRow ) {
+      let colIndex = leftCol;
+      while ( colIndex <= rightCol ) {
+        const cell = rows[rowIndex].children[colIndex];
 
         // Activate the current cell
-        classNames.push('active');
+        cell.classList.add('active');
 
-        // Add active class for the top border
-        if ( rowIndex === topRow ) {
-          classNames.push('active-top');
-        }
-
-        // Add active class for the left border
-        if ( colIndex === leftCol ) {
-          classNames.push('active-left');
-        }
-
-        // Add active class for the right border
-        if ( colIndex === rightCol ) {
-          classNames.push('active-right');
-        }
-
-        // Add active class for the bottom border
-        if ( rowIndex === bottomRow ) {
-          classNames.push('active-bottom');
-        }
+        colIndex += 1;
       }
-
-      // Return list of applicable class names as a string
-      return classNames.join(' ');
+      rowIndex += 1;
     }
-    return ''
   }
 
   renderPlaceholder() {
+    const { selecting } = this.state;
     return (
-      <table
+      <table ref={this.tableRef}
         onMouseUp={this.handleOnMouseUp.bind(this)}
         onMouseDown={this.handleOnMouseDown.bind(this)}
         onMouseMove={this.handleOnMouseMove.bind(this)}>
@@ -226,7 +214,7 @@ class TableComponent extends Component<{}, TableState> {
             <tr key={`row-${i}`}>
               <td>{i+1}</td>
               {CHARACTERS.map((c, j) => (
-                <td key={`cell-${j}`} className={this.getClassNames(i+1, j+1)}></td>
+                <td key={`cell-${j}`}></td>
               ))}
             </tr>
           ))}
@@ -239,7 +227,7 @@ class TableComponent extends Component<{}, TableState> {
     const { rowData } = this.state;
     if ( !!rowData ) {
       return (
-        <table
+        <table ref={this.tableRef}
           onMouseUp={this.handleOnMouseUp.bind(this)}
           onMouseDown={this.handleOnMouseDown.bind(this)}
           onMouseMove={this.handleOnMouseMove.bind(this)}>
@@ -254,7 +242,7 @@ class TableComponent extends Component<{}, TableState> {
               <tr key={`row-${i}`}>
                 <td>{i+1}</td>
                 {CHARACTERS.map((c, j) => (
-                  <td key={`cell-${j}`} className={this.getClassNames(i+1, j+1)}>
+                  <td key={`cell-${j}`}>
                     {i >= rowData.length ? '' : rowData[i][c]}
                   </td>
                 ))}
