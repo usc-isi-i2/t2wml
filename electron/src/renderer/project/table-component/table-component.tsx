@@ -61,7 +61,6 @@ class TableComponent extends Component<{}, TableState> {
       showSpinner: wikiStore.table.showSpinner,
 
       // table data
-      selecting: false,
       filename: null,       // if null, show "Table Viewer"
       rowData: null,
 
@@ -69,6 +68,7 @@ class TableComponent extends Component<{}, TableState> {
     };
 
     this.tableRef = React.createRef();
+    this.selecting = false;
     this.selection = {};
   }
 
@@ -111,7 +111,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   handleOnMouseUp(event) {
-    this.setState({selecting: false});
+    this.selecting = false;
   }
 
   handleOnMouseDown(event) {
@@ -123,17 +123,15 @@ class TableComponent extends Component<{}, TableState> {
       // Make sure users are not able to select the cells in the index column
       if ( element.parentElement.firstChild !== event.target ) {
 
+        // Activate the selection mode
+        this.selecting = true;
+
         // Set both coordinates to the same cell
         const x1 = element.cellIndex;
         const x2 = element.cellIndex;
         const y1 = element.parentElement.rowIndex;
         const y2 = element.parentElement.rowIndex;
         this.selection = {x1, x2, y1, y2};
-
-        // Update selection coordinates
-        this.setState({
-          selecting: true,
-        });
 
         // Activate the element on click
         element.classList.add('active');
@@ -142,10 +140,9 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   handleOnMouseMove(event) {
-    const { selecting } = this.state;
     const element = event.target;
 
-    if ( selecting && element.nodeName === 'TD' ) {
+    if ( this.selecting && element.nodeName === 'TD' ) {
 
       // Make sure users are not able to select the cells in the index column
       if ( element.parentElement.firstChild !== event.target ) {
@@ -229,7 +226,6 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderPlaceholder() {
-    const { selecting } = this.state;
     return (
       <table ref={this.tableRef}
         onMouseUp={this.handleOnMouseUp.bind(this)}
