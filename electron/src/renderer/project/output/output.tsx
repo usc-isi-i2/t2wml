@@ -17,22 +17,11 @@ import wikiStore from '../../data/store';
 import Download from './download';
 import ShowOutput from './show-output';
 import { reaction, IReactionDisposer } from 'mobx';
+import { StatementEntry } from '@/renderer/common/dtos';
 
 interface OutputComponentState {
-  currCol: string;
-  currRow: string;
-  // data
-  valueCol: string | null;
-  valueRow: string | null;
-  value: string | null;
-  unitName: string | null;
-  unitID: string | null;
-  itemID: string | null;
-  itemName: string | null;
-  itemCol: string | undefined;
-  itemRow: string | undefined;
-  propertyID: string | null;
-  qualifiers: any; //  null;
+  // statement
+  statement: StatementEntry | null
   errors: string;
 
   // download
@@ -55,21 +44,8 @@ class Output extends Component<{}, OutputComponentState> {
 
     // init state
     this.state = {
-
-      // data
-      valueCol: null,
-      valueRow: null,
-      value: null,
-      unitName: null,
-      unitID: null,
-      itemID: null,
-      itemName: null,
-      itemCol: undefined,
-      itemRow: undefined,
-      propertyID: null,
-      qualifiers: null,
-      errors: '',
-
+      statement: null,
+      errors: "",
       // download
       showDownload: false,
       isDownloadDisabled: wikiStore.output.isDownloadDisabled,
@@ -83,9 +59,7 @@ class Output extends Component<{}, OutputComponentState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.output.col, () => this.updateStateFromStore()));
-    this.disposers.push(reaction(() => wikiStore.output.row, () => this.updateStateFromStore()));
-    this.disposers.push(reaction(() => wikiStore.output.json, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.updateStateFromStore()));
   }
 
   componentWillUnmount() {
@@ -155,136 +129,76 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
   removeBorders() {
-    // remove value border
-    let col: string | undefined = this.state.currCol;
-    let row: string | undefined = this.state.currRow;
-    if (col !== undefined && row !== undefined) {
-      wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    }
+    // // remove value border
+    // let col: string | undefined = this.state.currCol;
+    // let row: string | undefined = this.state.currRow;
+    // if (col !== undefined && row !== undefined) {
+    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    // }
 
-    // remove item border
-    col = this.state.itemCol;
-    row = this.state.itemRow;
-    if (col !== undefined && row !== undefined) {
-      wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    }
+    // // remove item border
+    // col = this.state.itemCol;
+    // row = this.state.itemRow;
+    // if (col !== undefined && row !== undefined) {
+    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    // }
 
-    // remove qualifier borders
-    const qualifiers = this.state.qualifiers;
-    if (qualifiers !== undefined && qualifiers != null) {
-      for (let i = 0, len = qualifiers.length; i < len; i++) {
-        col = qualifiers[i]["col"];
-        row = qualifiers[i]["row"];
-        if (col && row) {
-          wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-        }
-      }
-    }
+    // // remove qualifier borders
+    // const qualifiers = this.state.qualifiers;
+    // if (qualifiers !== undefined && qualifiers != null) {
+    //   for (let i = 0, len = qualifiers.length; i < len; i++) {
+    //     col = qualifiers[i]["col"];
+    //     row = qualifiers[i]["row"];
+    //     if (col && row) {
+    //       wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    //     }
+    //   }
+    // }
   }
 
   updateStateFromStore() {
     this.removeOutput();
+    if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row){return}; //no cell selected
+    const selectedCell=wikiStore.table.selectedCell;
+    const error=wikiStore.layers.error.find(selectedCell.rowIndex, selectedCell.colIndex)
+    const statement=wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
 
-    const json = wikiStore.output.json;
-    const colName = wikiStore.output.col;
-    const rowName = wikiStore.output.row;
-
-    if(!wikiStore.output.showOutput) {
-      return;
+    if(error) {
+        this.setState({errors: JSON.stringify(error)});
     }
 
-    if(json["error"]) {
-        this.setState({errors: JSON.stringify(json["error"])});
+
+    if (!statement) {
+        this.setState({statement: null});
+        return;
     }
-
-    this.setState({
-      valueCol: colName,
-      valueRow: rowName,
-    });
+    this.setState({statement: statement});
+    //update outlined cells in tableviewer:
  
-    if (json["statement"] === undefined) return;
-    const qnodesLabel = json["qnodesLabels"];
- 
-    // item
-    const itemID = json["statement"]["item"];
-    // const itemName = window.TableViewer.state.rowData[row][col];
-    this.setState({ itemID: itemID, itemName: qnodesLabel[itemID]["label"] });
-
-    if (json["statement"]["cell"]) {
-      const [col, row] = json["statement"]["cell"].match(/[a-z]+|[^a-z]+/gi);
+    if (statement.cell) {
+      const [col, row] = statement.cell.match(/[a-z]+|[^a-z]+/gi) as any;
       wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
-      this.setState({ itemCol: col, itemRow: row });
-    }
-    // property
-    const propertyID = json["statement"]["property"];
-    this.setState({ propertyID: propertyID, propertyName: qnodesLabel[propertyID]["label"] });
- 
-    // value
-    const value = json["statement"]["value"];
-    this.setState({ value: value });
-    wikiStore.table.updateStyleByCell(colName, rowName, { "border": "1px solid hsl(150, 50%, 40%) !important" });
-    this.setState({ currCol: colName, currRow: rowName });
- 
-    // unit
-    if (json["statement"]["unit"]) {
-      let unitName = json["statement"]["unit"];
-      let unitID = null;
-      if (qnodesLabel[unitName]) {
-        unitID = unitName;
-        unitName = qnodesLabel[unitName].label;
-      }
-      this.setState({ unitName: unitName, unitID: unitID });
-    } else {
-      this.setState({ unitName: null });
     }
  
     // qualifiers
-    const statementQualifiers = json["statement"]["qualifier"];
-    const qualifiers = [];
+    const statementQualifiers = statement.qualifier;
     if (statementQualifiers !== undefined) {
       for (const statementQualifier of statementQualifiers) {
-        const qualifier: any = {};
- 
-        qualifier.propertyID = statementQualifier.property;
-        qualifier.propertyName = qnodesLabel[qualifier.propertyID].label;
- 
-        qualifier.valueName = statementQualifier.value;
-        if (/^[PQ]\d+$/.test(qualifier.valueName)) {
-          qualifier.valueID = qualifier.valueName;
-          qualifier.valueName = qnodesLabel[qualifier.valueName].label;
-        }
- 
         if (statementQualifier["cell"]) {
           const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
-          qualifier.col = q_col;
-          qualifier.row = q_row;
-          // let hue = utils.getHueByRandom(10); // first param is the total number of colors
-          const hue = utils.getHueByQnode(10, qualifier["propertyID"]);
+          const hue = utils.getHueByQnode(10, statementQualifier.property);
           wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
         }
- 
-        qualifiers.push(qualifier);
       }
  
     }
-    this.setState({ qualifiers: qualifiers });
   }
 
   removeOutput() {
     this.removeBorders();
     this.setState({
-      valueCol: null,
-      valueRow: null,
-      value: null,
-      unitName: null,
-      unitID: null,
-      itemID: null,
-      itemName: null,
-      itemCol: undefined,
-      itemRow: undefined,
-      propertyID: null,
-      qualifiers: null,
-      errors: '',
+      statement: null,
+      errors: ""
     });
   }
 
@@ -370,15 +284,8 @@ class Output extends Component<{}, OutputComponentState> {
             {/* output */}
             <div className="w-100 p-3" style={{ height: "1px" }}>
               <ShowOutput
+                statement={this.state.statement}
                 errors={this.state.errors}
-                itemName={this.state.itemName}
-                itemID={this.state.itemID}
-                propertyID={this.state.propertyID}
-                propertyName={this.state.propertyName}
-                value={this.state.value}
-                unitID={this.state.unitID}
-                unitName={this.state.unitName}
-                qualifiers={this.state.qualifiers}
               />
             </div>
           </Card.Body>

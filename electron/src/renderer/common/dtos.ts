@@ -118,9 +118,7 @@ export interface Entry {
     indices: CellIndex[];
 }
 
-export interface CleanEntry extends Entry {
-    cleaned: string;
-}
+
  
 export type LayerType = "qnode" | "statement" | "error" | "type"| "cleaned";
 
@@ -129,20 +127,43 @@ export interface LayerDTO<T extends Entry> {
     entries: T[];
 }
 
+export interface QNode{
+    label: string
+    description: string
+    id: string
+    url?: string;
+}
+
+export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
+    qnodes: {[key: string]: QNode };
+}
+
 export interface LayersDTO {
     qnode?: LayerDTO<QNodeEntry>;
-    statement?: LayerDTO<Entry>;
+    statement?: StatementLayerDTO;
     error?: LayerDTO<Entry>;
     type?: LayerDTO<Entry>;
     cleaned?: LayerDTO<CleanEntry>;
 }
 
-export interface QNodeEntry extends Entry {
-    label: string
-    description: string
-    id: string
-    url?: string;
+
+
+export interface QNodeEntry extends Entry, QNode {
     context: string; // null or ""
+}
+
+export interface CleanEntry extends Entry {
+    cleaned: string;
+}
+
+export interface StatementEntry extends Entry{
+    item: string
+    property: string
+    cell: string
+    value: string
+    qnodes: any
+    qualifier?: any
+    unit?: string
 }
 
 export interface TableDTO {

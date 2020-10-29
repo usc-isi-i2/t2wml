@@ -2,7 +2,8 @@ import { observable, action, computed } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { CellIndex, EntitiesStatsDTO, Entry, LayerDTO, LayersDTO, QNodeEntry, TableDTO, WikifierErrorDTO } from '../common/dtos';
+import { CellIndex, CleanEntry, EntitiesStatsDTO, Entry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, WikifierErrorDTO } from '../common/dtos';
+import { Cell } from '../common/general';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
 class EditorsState {
@@ -15,6 +16,8 @@ class TableState {
     @observable public showSpinner: boolean;
     @observable public errorCells: string[] | undefined;
     @observable public dataRegionsCells: string[];
+
+    @observable public selectedCell: Cell | undefined | null;
 
     @observable public yamlRegions: any;
     @observable public qnodes: any;
@@ -99,14 +102,6 @@ class OutputState {
     }
 
     @action
-    public updateOutput(colName: string, rowName: string, json: any) {
-        this.col = colName;
-        this.row = rowName;
-        this.json = json;
-    }
-
-
-    @action
     public clearOutput() {
         this.col = '';
         this.row = '';
@@ -144,27 +139,52 @@ class Layer<T extends Entry> {
         }
     }
 
-    public find(row: number, col: number): T|undefined {
-        const index = `${row},${col}`;
-        // In case a map doesn't support an array as an index, use `${row},${col}`
-        return this.entryMap.get(index);
-    }    
+    public find(row: number | null, col: number | null): T | undefined {
+        if (row && col) {
+            const index = `${row},${col}`;
+            // In case a map doesn't support an array as an index, use `${row},${col}`
+            return this.entryMap.get(index);
+        }
+        return undefined
+    }
+}
+
+class StatementLayer extends Layer<StatementEntry>{
+    qnodes: Map<string, QNode>
+
+    constructor(responseLayer?: StatementLayerDTO) {
+        super(responseLayer);
+        if (responseLayer) {
+            this.qnodes = new Map<string, QNode>(Object.entries(responseLayer.qnodes));
+        }
+        else {
+            this.qnodes = new Map<string, QNode>();
+        }
+    }
+
+    public getQNode(id: string): QNode {
+        const return_val = this.qnodes.get(id);
+        if (return_val) {
+            return return_val;
+        }
+        return { "label": id, "url": "", description: "", "id": id };
+    }
 }
 
 
 class LayerState {
     @observable public qnode: Layer<QNodeEntry>;
     @observable public type: Layer<Entry>;
-    @observable public statement: Layer<Entry>;
+    @observable public statement: StatementLayer;
     @observable public error: Layer<Entry>;
-    @observable public cleaned: Layer<Entry>;
+    @observable public cleaned: Layer<CleanEntry>;
 
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
         this.type = new Layer<Entry>();
-        this.statement = new Layer<Entry>();
+        this.statement = new StatementLayer();
         this.error = new Layer<Entry>();
-        this.cleaned = new Layer<Entry>();
+        this.cleaned = new Layer<CleanEntry>();
     }
 
     @action
@@ -177,7 +197,7 @@ class LayerState {
             this.type = new Layer(dto.type);
         }
         if (dto.statement) {
-            this.statement = new Layer(dto.statement);
+            this.statement = new StatementLayer(dto.statement);
         }
         if (dto.error) {
             this.error = new Layer(dto.error);

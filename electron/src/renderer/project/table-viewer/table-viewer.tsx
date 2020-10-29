@@ -320,7 +320,7 @@ class TableViewer extends Component<{}, TableState> {
     //   if (internalErrors){
     //         console.log(internalErrors);
     //   }
-    //   wikiStore.output.updateOutput(colName, rowName, json)
+    //   
 
     //   // follow-ups (success)
     //   wikiStore.output.showSpinner = false;
@@ -445,12 +445,14 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   updateSelectedCell(col: string | null = null, row: number | null = null, value: string | null = null) {
+    let { selectedCell } = this.state;
     if (col === null) {
       // reset
-      const { selectedCell } = this.state;
       if (selectedCell !== null) {
         wikiStore.table.updateStyleByCell(selectedCell.col, selectedCell.row, { border: "" });
       }
+      selectedCell=null;
+      wikiStore.table.selectedCell=selectedCell
       this.setState({
         selectedCell: null,
         showToast0: false
@@ -458,8 +460,10 @@ class TableViewer extends Component<{}, TableState> {
     } else {
       // update
       wikiStore.table.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
+      selectedCell= new Cell(col, row, value);
+      wikiStore.table.selectedCell=selectedCell
       this.setState({
-        selectedCell: new Cell(col, row, value),
+        selectedCell: selectedCell,
         showToast0: true,
       });
     }
