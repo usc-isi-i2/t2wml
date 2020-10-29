@@ -2,7 +2,7 @@
  * Types returned from the server
  */
 
- interface SavedStateDTO {
+interface SavedStateDTO {
     current_data_file: string;
     current_sheet: string;
     current_wikifiers: string[];
@@ -22,7 +22,7 @@ export interface ProjectDTO {
     handle_calendar: string;
     cache_id: string;
     _saved_state: SavedStateDTO;
- }
+}
 
 
 // export interface ColumnDefDTO {
@@ -83,34 +83,34 @@ export interface ProjectDTO {
 //     sheetData: SheetDataDTO;
 // }
 
-// Talya, try doing something like this:
-// interface ResponseWithProjectDTO {
-//      project: ProjectDTO;
-// }
-// interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
-//      layers: LayersDTO;
-// }
-// interface UploadDataFileResponseDTO extends ResponseWithLayersDTO {
-//     table: TableDTO;
-// }
-// interface UploadWikifierOutputResponseDTO extens ResponseWithLayersDTO { }
-//
-// And so on.
 
-export interface UploadDataFileResponseDTO {
-    project: ProjectDTO;
+interface ResponseWithProjectDTO {
+     project: ProjectDTO;
+}
+
+export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
+     layers: LayersDTO;
+}
+
+export interface UploadDataFileResponseDTO extends ResponseWithLayersDTO {
     table: TableDTO;
-    layers: LayersDTO;
 }
 
-export interface UploadWikifierOutputResponseDTO {
-    project: ProjectDTO;
-    layers: LayersDTO;
+export interface UploadWikifierOutputResponseDTO extends ResponseWithLayersDTO { }
+
+export interface UploadYamlResponseDTO extends ResponseWithLayersDTO { }
+
+export interface GetProjectResponseDTO extends UploadDataFileResponseDTO {
+    yamlContent: string;    
+}
+export interface ChangeSheetResponseDTO extends GetProjectResponseDTO { }
+
+export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
+    entitiesStats: EntitiesStatsDTO;
 }
 
-export interface UploadYamlResponseDTO {
-    project: ProjectDTO;
-    layers: LayersDTO;
+export interface CallWikifierServiceDTO extends ResponseWithLayersDTO {
+    wikifierError: WikifierErrorDTO;
 }
 
 export type CellIndex = [number, number];
@@ -182,23 +182,4 @@ export interface WikifierErrorDTO {
     errorCode: number;
     errorTitle: string;
     errorDescription: string;
-}
-
-export interface GetProjectResponseDTO {
-    project: ProjectDTO;
-    layers: LayersDTO;
-    table: TableDTO;
-    yamlContent: string;
-}
-
-export interface UploadEntitiesDTO {
-    project: ProjectDTO;
-    entitiesStats: EntitiesStatsDTO;
-    layers: LayersDTO;
-}
-
-export interface CallWikifierServiceDTO {
-    project: ProjectDTO;
-    layers: LayersDTO;
-    wikifierError: WikifierErrorDTO;
 }

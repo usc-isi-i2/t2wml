@@ -24,6 +24,12 @@
     "@typescript-eslint/no-non-null-assertion": "off",
     "prefer-const": "warn",
     "react/no-string-refs": "warn",
-    "no-debugger": "off"
+    "no-debugger": "off",
+    "@typescript-eslint/no-empty-interface": [
+      "error",
+      {
+        "allowSingleExtends": true
+      }
+    ]
   }
 }
