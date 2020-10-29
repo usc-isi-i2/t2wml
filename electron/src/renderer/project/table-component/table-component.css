@@ -101,21 +101,47 @@
   background: #efefef;
   z-index: 5;
 }
-.table-wrapper table td.active-top {
-  border-top: 2px solid rgb(51, 153, 102);
+
+/* top border */
+.table-wrapper table tr td div.cell-border-top {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgb(51, 153, 102);
 }
-.table-wrapper table tr:nth-child(1) td.active-top {
-  border-top-width: 3px;
+
+/* left border */
+.table-wrapper table tr td div.cell-border-left {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgb(51, 153, 102);
 }
-.table-wrapper table td.active-left {
-  border-left: 2px solid rgb(51, 153, 102);
+
+/* right border */
+.table-wrapper table tr td div.cell-border-right {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgb(51, 153, 102);
 }
-.table-wrapper table td:nth-child(2).active-left {
-  border-left-width: 3px;
-}
-.table-wrapper table td.active-right {
-  border-right: 2px solid rgb(51, 153, 102);
-}
-.table-wrapper table td.active-bottom {
-  border-bottom: 2px solid rgb(51, 153, 102);
+
+/* bottom border */
+.table-wrapper table tr td div.cell-border-bottom {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: rgb(51, 153, 102);
 }

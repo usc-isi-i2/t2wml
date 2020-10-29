@@ -167,6 +167,10 @@ class TableComponent extends Component<{}, TableState> {
   resetSelection() {
     const table = this.tableRef.current;
     table.querySelectorAll('.active').forEach(e => e.className = '');
+    table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
+    table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
+    table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
+    table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
   }
 
   updateSelection() {
@@ -189,6 +193,34 @@ class TableComponent extends Component<{}, TableState> {
 
         // Activate the current cell
         cell.classList.add('active');
+
+        // Add a top border to the cells at the top of the selection
+        if ( rowIndex === topRow ) {
+          const borderTop = document.createElement('div');
+          borderTop.classList.add('cell-border-top');
+          cell.appendChild(borderTop);
+        }
+
+        // Add a left border to the cells on the left of the selection
+        if ( colIndex === leftCol ) {
+          const borderLeft = document.createElement('div');
+          borderLeft.classList.add('cell-border-left');
+          cell.appendChild(borderLeft);
+        }
+
+        // Add a right border to the cells on the right of the selection
+        if ( colIndex === rightCol ) {
+          const borderRight = document.createElement('div');
+          borderRight.classList.add('cell-border-right');
+          cell.appendChild(borderRight);
+        }
+
+        // Add a bottom border to the cells at the bottom of the selection
+        if ( rowIndex === bottomRow ) {
+          const borderBottom = document.createElement('div');
+          borderBottom.classList.add('cell-border-bottom');
+          cell.appendChild(borderBottom);
+        }
 
         colIndex += 1;
       }
