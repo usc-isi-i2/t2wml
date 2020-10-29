@@ -60,8 +60,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                2
+                                2,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-22",
@@ -74,8 +74,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                3
+                                3,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-47",
@@ -88,8 +88,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                4
+                                4,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-73",
@@ -102,8 +102,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                5
+                                5,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-103",
@@ -116,8 +116,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                6
+                                6,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-475",
@@ -130,8 +130,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                7
+                                7,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-782",
@@ -144,16 +144,16 @@
                     {
                         "indices": [
                             [
-                                5,
-                                0
+                                0,
+                                5
                             ],
                             [
-                                6,
-                                0
+                                0,
+                                6
                             ],
                             [
-                                7,
-                                0
+                                0,
+                                7
                             ]
                         ],
                         "id": "Qaid-security-U002",
@@ -166,8 +166,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                1
+                                1,
+                                5
                             ]
                         ],
                         "id": "Paid-security-002",
@@ -180,8 +180,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                1
+                                1,
+                                6
                             ]
                         ],
                         "id": "Paid-security-003",
@@ -194,8 +194,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                1
+                                1,
+                                7
                             ]
                         ],
                         "id": "Paid-security-004",
@@ -208,8 +208,8 @@
                     {
                         "indices": [
                             [
-                                8,
-                                3
+                                3,
+                                8
                             ]
                         ],
                         "id": "Q21203",
@@ -313,8 +313,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                2
+                                2,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-22",
@@ -327,8 +327,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                3
+                                3,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-47",
@@ -341,8 +341,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                4
+                                4,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-73",
@@ -355,8 +355,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                5
+                                5,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-103",
@@ -369,8 +369,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                6
+                                6,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-475",
@@ -383,8 +383,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                7
+                                7,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-782",
@@ -397,16 +397,16 @@
                     {
                         "indices": [
                             [
-                                5,
-                                0
+                                0,
+                                5
                             ],
                             [
-                                6,
-                                0
+                                0,
+                                6
                             ],
                             [
-                                7,
-                                0
+                                0,
+                                7
                             ]
                         ],
                         "id": "Qaid-security-U002",
@@ -419,8 +419,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                1
+                                1,
+                                5
                             ]
                         ],
                         "id": "Paid-security-002",
@@ -433,8 +433,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                1
+                                1,
+                                6
                             ]
                         ],
                         "id": "Paid-security-003",
@@ -447,8 +447,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                1
+                                1,
+                                7
                             ]
                         ],
                         "id": "Paid-security-004",
@@ -461,8 +461,8 @@
                     {
                         "indices": [
                             [
-                                8,
-                                3
+                                3,
+                                8
                             ]
                         ],
                         "id": "Q21203",
@@ -484,8 +484,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                2
+                                2,
+                                5
                             ]
                         ],
                         "error": {
@@ -499,8 +499,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                4
+                                4,
+                                5
                             ]
                         ],
                         "error": {
@@ -529,8 +529,128 @@
                     {
                         "indices": [
                             [
+                                6,
+                                5
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
+                                7,
+                                5
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
+                                2,
+                                6
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
+                                4,
+                                6
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
                                 5,
                                 6
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
+                                6,
+                                6
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
+                                7,
+                                6
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
+                                2,
+                                7
+                            ]
+                        ],
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "indices": [
+                            [
+                                4,
+                                7
                             ]
                         ],
                         "error": {
@@ -560,127 +680,7 @@
                         "indices": [
                             [
                                 6,
-                                2
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                4
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                5
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                6
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
                                 7
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                2
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                4
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                5
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                6
                             ]
                         ],
                         "error": {
@@ -714,8 +714,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                2
+                                2,
+                                5
                             ]
                         ],
                         "property": "Paid-security-002",
@@ -737,8 +737,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                3
+                                3,
+                                5
                             ]
                         ],
                         "property": "Paid-security-002",
@@ -765,8 +765,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                4
+                                4,
+                                5
                             ]
                         ],
                         "property": "Paid-security-002",
@@ -811,8 +811,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                6
+                                6,
+                                5
                             ]
                         ],
                         "property": "Paid-security-002",
@@ -834,8 +834,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                7
+                                7,
+                                5
                             ]
                         ],
                         "property": "Paid-security-002",
@@ -857,8 +857,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                2
+                                2,
+                                6
                             ]
                         ],
                         "property": "Paid-security-003",
@@ -880,8 +880,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                3
+                                3,
+                                6
                             ]
                         ],
                         "property": "Paid-security-003",
@@ -908,8 +908,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                4
+                                4,
+                                6
                             ]
                         ],
                         "property": "Paid-security-003",
@@ -931,8 +931,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                5
+                                5,
+                                6
                             ]
                         ],
                         "property": "Paid-security-003",
@@ -977,8 +977,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                7
+                                7,
+                                6
                             ]
                         ],
                         "property": "Paid-security-003",
@@ -1000,8 +1000,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                2
+                                2,
+                                7
                             ]
                         ],
                         "property": "Paid-security-004",
@@ -1023,8 +1023,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                3
+                                3,
+                                7
                             ]
                         ],
                         "property": "Paid-security-004",
@@ -1051,8 +1051,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                4
+                                4,
+                                7
                             ]
                         ],
                         "property": "Paid-security-004",
@@ -1074,8 +1074,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                5
+                                5,
+                                7
                             ]
                         ],
                         "property": "Paid-security-004",
@@ -1097,8 +1097,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                6
+                                6,
+                                7
                             ]
                         ],
                         "property": "Paid-security-004",
@@ -1140,7 +1140,52 @@
                         ],
                         "cell": "B8"
                     }
-                ]
+                ],
+                "qnodes": {
+                    "Paid-security-002": {
+                        "label": "UN",
+                        "description": "",
+                        "url": "",
+                        "id": "Paid-security-002"
+                    },
+                    "Qaid-security-U002": null,
+                    "P585": {
+                        "label": "point in time",
+                        "description": "time and date something took place, existed or a statement was true",
+                        "url": "https://www.wikidata.org/wiki/Property:P585",
+                        "id": "P585"
+                    },
+                    "Q1985727": {
+                        "label": "proleptic Gregorian calendar",
+                        "description": "extension of the Gregorian calendar before its introduction",
+                        "url": "https://www.wikidata.org/wiki/Q1985727",
+                        "id": "Q1985727"
+                    },
+                    "P17": {
+                        "label": "country",
+                        "description": "sovereign state of this item (not to be used for human beings)",
+                        "url": "https://www.wikidata.org/wiki/Property:P17",
+                        "id": "P17"
+                    },
+                    "Q21203": {
+                        "label": "Aruba",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "url": "https://www.wikidata.org/wiki/Q21203",
+                        "id": "Q21203"
+                    },
+                    "Paid-security-003": {
+                        "label": "INGO",
+                        "description": "",
+                        "url": "",
+                        "id": "Paid-security-003"
+                    },
+                    "Paid-security-004": {
+                        "label": "LNGO/NRCS",
+                        "description": "",
+                        "url": "",
+                        "id": "Paid-security-004"
+                    }
+                }
             },
             "cleaned": {
                 "layerType": "cleaned",
@@ -1152,8 +1197,8 @@
                     {
                         "indices": [
                             [
-                                8,
-                                3
+                                3,
+                                8
                             ]
                         ],
                         "type": "qualifier"
@@ -1161,28 +1206,28 @@
                     {
                         "indices": [
                             [
-                                1,
-                                2
+                                2,
+                                1
                             ],
                             [
-                                1,
-                                3
+                                3,
+                                1
                             ],
                             [
-                                1,
-                                4
+                                4,
+                                1
                             ],
                             [
-                                1,
-                                5
+                                5,
+                                1
                             ],
                             [
-                                1,
-                                6
+                                6,
+                                1
                             ],
                             [
-                                1,
-                                7
+                                7,
+                                1
                             ]
                         ],
                         "type": "item"
@@ -1190,24 +1235,64 @@
                     {
                         "indices": [
                             [
-                                5,
-                                2
+                                2,
+                                5
                             ],
                             [
-                                5,
-                                3
+                                3,
+                                5
                             ],
                             [
-                                5,
-                                4
+                                4,
+                                5
                             ],
                             [
                                 5,
                                 5
                             ],
                             [
+                                6,
+                                5
+                            ],
+                            [
+                                7,
+                                5
+                            ],
+                            [
+                                2,
+                                6
+                            ],
+                            [
+                                3,
+                                6
+                            ],
+                            [
+                                4,
+                                6
+                            ],
+                            [
                                 5,
                                 6
+                            ],
+                            [
+                                6,
+                                6
+                            ],
+                            [
+                                7,
+                                6
+                            ],
+                            [
+                                2,
+                                7
+                            ],
+                            [
+                                3,
+                                7
+                            ],
+                            [
+                                4,
+                                7
                             ],
                             [
                                 5,
@@ -1215,47 +1300,7 @@
                             ],
                             [
                                 6,
-                                2
-                            ],
-                            [
-                                6,
-                                3
-                            ],
-                            [
-                                6,
-                                4
-                            ],
-                            [
-                                6,
-                                5
-                            ],
-                            [
-                                6,
-                                6
-                            ],
-                            [
-                                6,
                                 7
-                            ],
-                            [
-                                7,
-                                2
-                            ],
-                            [
-                                7,
-                                3
-                            ],
-                            [
-                                7,
-                                4
-                            ],
-                            [
-                                7,
-                                5
-                            ],
-                            [
-                                7,
-                                6
                             ],
                             [
                                 7,
@@ -1271,20 +1316,52 @@
                     {
                         "indices": [
                             [
-                                5,
-                                2
+                                2,
+                                5
                             ],
                             [
-                                5,
-                                4
+                                4,
+                                5
                             ],
                             [
                                 5,
                                 5
                             ],
                             [
+                                6,
+                                5
+                            ],
+                            [
+                                7,
+                                5
+                            ],
+                            [
+                                2,
+                                6
+                            ],
+                            [
+                                4,
+                                6
+                            ],
+                            [
                                 5,
                                 6
+                            ],
+                            [
+                                6,
+                                6
+                            ],
+                            [
+                                7,
+                                6
+                            ],
+                            [
+                                2,
+                                7
+                            ],
+                            [
+                                4,
+                                7
                             ],
                             [
                                 5,
@@ -1292,39 +1369,7 @@
                             ],
                             [
                                 6,
-                                2
-                            ],
-                            [
-                                6,
-                                4
-                            ],
-                            [
-                                6,
-                                5
-                            ],
-                            [
-                                6,
-                                6
-                            ],
-                            [
-                                6,
                                 7
-                            ],
-                            [
-                                7,
-                                2
-                            ],
-                            [
-                                7,
-                                4
-                            ],
-                            [
-                                7,
-                                5
-                            ],
-                            [
-                                7,
-                                6
                             ],
                             [
                                 7,
@@ -1354,8 +1399,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                2
+                                2,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-22",
@@ -1368,8 +1413,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                4
+                                4,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-73",
@@ -1382,8 +1427,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                5
+                                5,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-103",
@@ -1396,8 +1441,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                6
+                                6,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-475",
@@ -1410,8 +1455,8 @@
                     {
                         "indices": [
                             [
-                                1,
-                                7
+                                7,
+                                1
                             ]
                         ],
                         "id": "Qaid-security-782",
@@ -1424,16 +1469,16 @@
                     {
                         "indices": [
                             [
-                                5,
-                                0
+                                0,
+                                5
                             ],
                             [
-                                6,
-                                0
+                                0,
+                                6
                             ],
                             [
-                                7,
-                                0
+                                0,
+                                7
                             ]
                         ],
                         "id": "Qaid-security-U002",
@@ -1446,8 +1491,8 @@
                     {
                         "indices": [
                             [
-                                5,
-                                1
+                                1,
+                                5
                             ]
                         ],
                         "id": "Paid-security-002",
@@ -1460,8 +1505,8 @@
                     {
                         "indices": [
                             [
-                                6,
-                                1
+                                1,
+                                6
                             ]
                         ],
                         "id": "Paid-security-003",
@@ -1474,8 +1519,8 @@
                     {
                         "indices": [
                             [
-                                7,
-                                1
+                                1,
+                                7
                             ]
                         ],
                         "id": "Paid-security-004",
@@ -1488,8 +1533,8 @@
                     {
                         "indices": [
                             [
-                                8,
-                                3
+                                3,
+                                8
                             ]
                         ],
                         "id": "Q21203",

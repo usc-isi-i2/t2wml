@@ -37,100 +37,31 @@ def download(calc_params, filetype):
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
 
-def indexer(cell):
-    col, row = cell_str_to_tuple(cell)
-    return [row, col]
-
-def get_cleaned(kg):
-    cleanedLayer=dict(layerType="cleaned", entries=[])
-    if kg.sheet:
-        cleaned_data=kg.sheet.cleaned_data
-        if cleaned_data: 
-            comparison=cleaned_data.ne(kg.sheet.raw_data)
-            comparison=comparison.to_numpy()
-            changed_values = np.argwhere(comparison)
-            for entry in changed_values:
-                new_value = cleaned_data.iloc[entry[0], entry[1]]
-                entry=dict(indices=[entry[0], entry[1]], cleaned=new_value)
-                cleanedLayer["entries"].append(entry)
-    return cleanedLayer
-
-def get_yaml_layers(calc_params):
-    if calc_params.cache:
-        layers=calc_params.cache.get_layers()
-        if layers:
-            return layers
-    
-    qualifierEntry=dict(indices=[], type="qualifier")
-    itemEntry=dict(indices=[], type="item")
-    dataEntry=dict(indices=[], type="data")
-    majorErrorEntry=dict(indices=[], type="majorError")
-    minorErrorEntry=dict(indices=[], type="minorError")
+def get_empty_layers():
     errorLayer=dict(layerType="error", entries=[])
     statementLayer=dict(layerType="statement", entries=[])
     cleanedLayer=dict(layerType="cleaned", entries=[])
+    typeLayer=dict(layerType="type", entries=[])
+    qnodeLayer=dict(layerType="qnode", entries=[])
 
-    if calc_params.yaml_path:
-        kg = get_kg(calc_params)
-        statements=kg.statements
-        errors=kg.errors
-
-
-        
-        for cell in errors:
-            #todo: convert cell to indices
-            cell_index=indexer(cell)
-            errorEntry=dict(indices=[cell_index], error=errors[cell])
-            errorLayer["entries"].append(errorEntry)
-
-            if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):	
-                majorErrorEntry["indices"].append(cell_index)
-            else:	
-                minorErrorEntry["indices"].append(cell_index)
-
-        qualifier_indices={}
-        item_indices={}
-        for cell in statements:
-            dataEntry["indices"].append(indexer(cell))
-
-            statement = statements[cell]
-            item_cell = statement.get("cell", None)
-            if item_cell:
-                item_indices[item_cell]=None
-            
-            qualifiers = statement.get("qualifier", None)
-            if qualifiers:
-                for qualifier in qualifiers:
-                    qual_cell = qualifier.get("cell", None)
-                    if qual_cell:
-                        qualifier_indices[qual_cell]=None
-            
-            statementEntry=dict(indices=[indexer(cell)])
-            statementEntry.update(**statements[cell])
-            statementLayer["entries"].append(statementEntry)
-        itemEntry["indices"]=[indexer(key) for key in item_indices]
-        qualifierEntry["indices"]=[indexer(key) for key in qualifier_indices]
-
-        cleanedLayer=get_cleaned(kg)
-        
-    typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
-
-    layers= dict(error= errorLayer, 
+    return dict(error= errorLayer, 
             statement= statementLayer, 
             cleaned= cleanedLayer, 
-            type = typeLayer)
-    if calc_params.yaml_path:
-        calc_params.cache.save(kg, layers)
-    return layers
+            type = typeLayer,
+            qnode=qnodeLayer)
 
-
-def get_yaml_content(calc_params):
-    yaml_path = calc_params.yaml_path
-    if yaml_path:
-        with open(yaml_path, "r", encoding="utf-8") as f:
-            yamlFileContent = f.read()
-        return yamlFileContent
-    return None
+def get_qnode_url(id):
+    url=""
+    first_letter=str(id).upper()[0]
+    try:
+        num=int(id[1:])
+        if first_letter=="P" and num<10000:
+            url="https://www.wikidata.org/wiki/Property:"+id
+        if first_letter=="Q" and num<1000000000:
+            url="https://www.wikidata.org/wiki/"+id
+    except: #conversion to int failed, is not Pnum or Qnum
+        pass
+    return url
 
 class QNode:
     def __init__(self, id, value, context="", label="", description=""):
@@ -139,26 +70,14 @@ class QNode:
         self.context = context
         self.label = label
         self.description = description
-        self.url=self.get_url()
-
-    def get_url(self):
-        url=""
-        first_letter=str(self.id).upper()[0]
-        try:
-            num=int(self.id[1:])
-            if first_letter=="P" and num<10000:
-                url="https://www.wikidata.org/wiki/Property:"+self.id
-            if first_letter=="Q" and num<1000000000:
-                url="https://www.wikidata.org/wiki/"+self.id
-        except: #conversion to int failed, is not Pnum or Qnum
-            pass
-        return url
-        
+        self.url=get_qnode_url(self.id)
 
     def update(self, label="", description="", **kwargs):
         self.label=label
         self.description=description
         
+
+
 
 
 def get_qnodes_layer(calc_params):
@@ -190,6 +109,128 @@ def get_qnodes_layer(calc_params):
             qnode_entries[id].update(qNode.__dict__)
     
     return {"qnode": dict(layerType="qNode", entries=list(qnode_entries.values()))}
+
+
+
+def indexer(cell):
+    col, row = cell_str_to_tuple(cell)
+    return [row, col]
+
+def get_cleaned(kg):
+    cleanedLayer=dict(layerType="cleaned", entries=[])
+    if kg.sheet:
+        cleaned_data=kg.sheet.cleaned_data
+        if cleaned_data: 
+            comparison=cleaned_data.ne(kg.sheet.raw_data)
+            comparison=comparison.to_numpy()
+            changed_values = np.argwhere(comparison)
+            for entry in changed_values:
+                new_value = cleaned_data.iloc[entry[0], entry[1]]
+                entry=dict(indices=[entry[0], entry[1]], cleaned=new_value)
+                cleanedLayer["entries"].append(entry)
+    return cleanedLayer
+
+def get_cell_qnodes(statement, qnodes):
+        # get cell qnodes	
+        for outer_key, outer_value in statement.items():	
+            if outer_key == "qualifier":	
+                for qual_dict in outer_value:	
+                    for inner_key, inner_value in qual_dict.items():	
+                        if str(inner_value).upper()[0] in ["P", "Q"]:	
+                            qnodes[str(inner_value)] = None	
+            else:	
+                if str(outer_value).upper()[0] in ["P", "Q"]:	
+                    qnodes[str(outer_value)] = None	
+
+
+def get_yaml_layers(calc_params):
+    if calc_params.cache:
+        layers=calc_params.cache.get_layers()
+        if layers:
+            return layers
+    
+    qualifierEntry=dict(indices=[], type="qualifier")
+    itemEntry=dict(indices=[], type="item")
+    dataEntry=dict(indices=[], type="data")
+    majorErrorEntry=dict(indices=[], type="majorError")
+    minorErrorEntry=dict(indices=[], type="minorError")
+
+    errorLayer=dict(layerType="error", entries=[])
+    statementLayer=dict(layerType="statement", entries=[])
+    cleanedLayer=dict(layerType="cleaned", entries=[])
+    qnodes={} #passed by reference everywhere, so gets updated simultaneously across all of them
+
+    if calc_params.yaml_path:
+        kg = get_kg(calc_params)
+        statements=kg.statements
+        errors=kg.errors
+        
+
+        
+        for cell in errors:
+            #todo: convert cell to indices
+            cell_index=indexer(cell)
+            errorEntry=dict(indices=[cell_index], error=errors[cell])
+            errorLayer["entries"].append(errorEntry)
+
+            if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):	
+                majorErrorEntry["indices"].append(cell_index)
+            else:	
+                minorErrorEntry["indices"].append(cell_index)
+
+        qualifier_indices={}
+        item_indices={}
+        for cell in statements:
+            dataEntry["indices"].append(indexer(cell))
+
+            statement = statements[cell]
+            get_cell_qnodes(statement, qnodes)
+            item_cell = statement.get("cell", None)
+            if item_cell:
+                item_indices[item_cell]=None
+            
+            qualifiers = statement.get("qualifier", None)
+            if qualifiers:
+                for qualifier in qualifiers:
+                    qual_cell = qualifier.get("cell", None)
+                    if qual_cell:
+                        qualifier_indices[qual_cell]=None
+            
+            statementEntry=dict(indices=[indexer(cell)])#, qnodes=qnodes)
+            statementEntry.update(**statements[cell])
+            statementLayer["entries"].append(statementEntry)
+        itemEntry["indices"]=[indexer(key) for key in item_indices]
+        qualifierEntry["indices"]=[indexer(key) for key in qualifier_indices]
+
+        cleanedLayer=get_cleaned(kg)
+
+        labels = get_labels_and_descriptions(qnodes, calc_params.project.sparql_endpoint)	
+        qnodes.update(labels)	
+        for id in qnodes:
+            if qnodes[id]:
+                qnodes[id]["url"]=get_qnode_url(id)
+                qnodes[id]["id"]=id
+        
+        statementLayer["qnodes"]=qnodes
+
+    typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
+
+    layers= dict(error= errorLayer, 
+            statement= statementLayer, 
+            cleaned= cleanedLayer, 
+            type = typeLayer)
+    if calc_params.yaml_path:
+        calc_params.cache.save(kg, layers)
+    return layers
+
+
+def get_yaml_content(calc_params):
+    yaml_path = calc_params.yaml_path
+    if yaml_path:
+        with open(yaml_path, "r", encoding="utf-8") as f:
+            yamlFileContent = f.read()
+        return yamlFileContent
+    return None
 
 
 def get_table(calc_params, first_index=0, num_rows=None):
