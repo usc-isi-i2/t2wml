@@ -113,8 +113,6 @@ class TableViewer extends Component<{}, TableState> {
 
     this.disposers.push(reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg)));
     this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.tableData, (tableData: any) => this.updateTableData(tableData)));
     this.disposers.push(reaction(() => wikiStore.table.wikifierFile, (wikifierFile: File) => this.handleOpenWikifierFile(wikifierFile)));
 
 
