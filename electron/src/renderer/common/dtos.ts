@@ -169,7 +169,7 @@ export interface StatementEntry extends Entry{
 export interface TableDTO {
     cells: string[][];
     firstRowIndex: number;
-    tableDims: number[];
+    dims: number[];
 }
 
 export interface EntitiesStatsDTO {

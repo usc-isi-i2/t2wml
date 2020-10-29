@@ -1,7 +1,7 @@
 {
     "add_data_file": {
         "table": {
-            "tableDims": [
+            "dims": [
                 8,
                 9
             ],
@@ -1385,7 +1385,7 @@
     "change_sheet": {
         "yamlContent": null,
         "table": {
-            "tableDims": [
+            "dims": [
                 8,
                 14
             ],

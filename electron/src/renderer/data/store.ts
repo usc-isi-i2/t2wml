@@ -42,7 +42,6 @@ class TableState {
         this.rowData = undefined;
         this.tableData = undefined;
         this.wikifierFile = undefined;
-
         // updateStyleByCell
         this.styledColName = null;
         this.styledRowName = null;

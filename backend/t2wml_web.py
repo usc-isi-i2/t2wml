@@ -1,3 +1,4 @@
+import json
 import numpy as np
 from t2wml.api import WikifierService, t2wml_settings
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
@@ -236,16 +237,16 @@ def get_yaml_content(calc_params):
 def get_table(calc_params, first_index=0, num_rows=None):
     sheet = calc_params.sheet
     df = sheet.data
-    tableDims = list(df.shape)
+    dims = list(df.shape)
     
     if num_rows:
         last_index=first_index+num_rows
     else:
         last_index=None
     
-    cells = df[first_index:last_index].to_json(orient="values")
+    cells = json.loads(df[first_index:last_index].to_json(orient="values"))
 
-    return dict(tableDims=tableDims, firstRowIndex=first_index, cells=cells)
+    return dict(dims=dims, firstRowIndex=first_index, cells=cells)
 
 
 def get_all_layers_and_table(response, calc_params):

@@ -19,8 +19,9 @@ import wikiStore from '../../data/store';
 import TableLegend from './table-legend';
 import SheetSelector from './sheet-selector';
 import TableToast from './table-toast';
-import { columns, rows } from './table-definition';
+import { defaultColumns, defaultRows } from './table-definition';
 import { IReactionDisposer, reaction } from 'mobx';
+import { getColumns, getRowData } from './agGrid-Converter';
 
 interface Column {
   headerName: string;
@@ -31,7 +32,7 @@ interface Column {
 
 interface TableData {
   filename: string;
-  isCSV: boolean;
+  multipleSheets: boolean;
   sheetNames: Array<string>;
   currSheetName: string;
   columnDefs: Array<string>;
@@ -40,7 +41,7 @@ interface TableData {
   sheetData: any;
 }
 
-interface TableState  {
+interface TableState {
   showSpinner: boolean;
   showToast0: boolean;  // showing details of current cell
   showToast1: boolean;  // showing temperary messages
@@ -48,10 +49,10 @@ interface TableState  {
 
   // table data
   filename: string | null,       // if null, show "Table Viewer"
-  isCSV: boolean,         // csv: true   excel: false
+  multipleSheets: boolean,         // csv: true   excel: false
   sheetNames: Array<string> | null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
   currSheetName: string | null,  // csv: null    excel: "sheet1"
-  columnDefs:  Array<Column>; 
+  columnDefs: Array<Column>;
   rowData: any; // Array<object>; // todo: add interface
   selectedCell: Cell | null;
   yamlRegions: any; // null,
@@ -70,7 +71,7 @@ class TableViewer extends Component<{}, TableState> {
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
-    
+
     // init state
     this.state = {
       // appearance
@@ -81,11 +82,11 @@ class TableViewer extends Component<{}, TableState> {
 
       // table data
       filename: null,       // if null, show "Table Viewer"
-      isCSV: true,         // csv: true   excel: false
+      multipleSheets: false,         // csv: true   excel: false
       sheetNames: null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
       currSheetName: null,  // csv: null    excel: "sheet1"
-      columnDefs: columns,
-      rowData: rows,
+      columnDefs: defaultColumns,
+      rowData: defaultRows,
 
       // temp
       selectedCell: new Cell(),
@@ -104,12 +105,25 @@ class TableViewer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+    //table names
+    this.disposers.push(reaction(() => wikiStore.projects.current, () => this.updateTableData()));
+    //fill table
+    this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateTableData()));
+
+
     this.disposers.push(reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg)));
     this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.tableData, (tableData: any) => this.updateTableData(tableData)));
     this.disposers.push(reaction(() => wikiStore.table.wikifierFile, (wikifierFile: File) => this.handleOpenWikifierFile(wikifierFile)));
 
+
+    //css cells
+    this.disposers.push(reaction(() => wikiStore.layers.type, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.layers.cleaned, () => this.updateStyleByCellFromStore()));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateQnodeCellsFromStore()));
+
+    //???
     this.disposers.push(reaction(() => wikiStore.table.styledColName, () => this.updateStyleByCellFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.styleCell, () => this.updateStyleByCellFromStore()));
@@ -117,7 +131,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    for(const disposer of this.disposers) {
+    for (const disposer of this.disposers) {
       disposer();
     }
   }
@@ -138,11 +152,11 @@ class TableViewer extends Component<{}, TableState> {
     // console.log("<TableViewer> inited ag-grid and retrieved its API");
   }
 
-  async handleOpenTableFile(event:any) {
-    this.setState({ 
+  async handleOpenTableFile(event: any) {
+    this.setState({
       errorMessage: {} as ErrorMessage,
       showTable: false
-    });  
+    });
     // remove current status
     wikiStore.table.isCellSelectable = false;
     this.updateSelectedCell();
@@ -209,11 +223,11 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       error.errorDescription += "\n\nCannot upload data file!";
       this.setState({ errorMessage: error });
-    
+
       // follow-ups (failure)
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -260,7 +274,7 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       error.errorDescription += "\n\nCannot upload wikifier file!";
       this.setState({ errorMessage: error });
@@ -272,7 +286,7 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  async handleSelectCell(params: any) { 
+  async handleSelectCell(params: any) {
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
@@ -293,7 +307,7 @@ class TableViewer extends Component<{}, TableState> {
     this.updateSelectedCell(colName, rowName, value);
 
     // Check if this cell in data region list (in green cells)
-    if (!wikiStore.table.dataRegionsCells.includes(colName+rowName) ) {
+    if (!wikiStore.table.dataRegionsCells.includes(colName + rowName)) {
       return
     }
 
@@ -337,7 +351,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   async handleSelectSheet(event: any) {
-    this.setState({ 
+    this.setState({
       errorMessage: {} as ErrorMessage,
       showTable: false
     });
@@ -357,10 +371,10 @@ class TableViewer extends Component<{}, TableState> {
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
-    try{ 
+    try {
       await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
-    
+
       // const { tableData, wikifierData, yamlContent } = json;
 
       // // load table data
@@ -399,7 +413,7 @@ class TableViewer extends Component<{}, TableState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
@@ -451,8 +465,8 @@ class TableViewer extends Component<{}, TableState> {
       if (selectedCell !== null) {
         wikiStore.table.updateStyleByCell(selectedCell.col, selectedCell.row, { border: "" });
       }
-      selectedCell=null;
-      wikiStore.table.selectedCell=selectedCell
+      selectedCell = null;
+      wikiStore.table.selectedCell = selectedCell
       this.setState({
         selectedCell: null,
         showToast0: false
@@ -460,8 +474,8 @@ class TableViewer extends Component<{}, TableState> {
     } else {
       // update
       wikiStore.table.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
-      selectedCell= new Cell(col, row, value);
-      wikiStore.table.selectedCell=selectedCell
+      selectedCell = new Cell(col, row, value);
+      wikiStore.table.selectedCell = selectedCell
       this.setState({
         selectedCell: selectedCell,
         showToast0: true,
@@ -471,9 +485,9 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   updateStyleByCellFromStore() {
-    const colName = wikiStore.table.styledColName; 
-    const rowName = wikiStore.table.styledRowName; 
-    const style = wikiStore.table.styleCell; 
+    const colName = wikiStore.table.styledColName;
+    const rowName = wikiStore.table.styledRowName;
+    const style = wikiStore.table.styleCell;
     const override = wikiStore.table.styledOverride;
 
     if (rowName && colName) {
@@ -507,7 +521,7 @@ class TableViewer extends Component<{}, TableState> {
   getColAndRow(cellName: string) {
     const chars = cellName.slice(0, cellName.search(/\d/));
     const nums = cellName.replace(chars, '');
-    return {col: chars, row: nums};
+    return { col: chars, row: nums };
   }
 
 
@@ -522,10 +536,10 @@ class TableViewer extends Component<{}, TableState> {
     const styleNames = Object.keys(presets);
     for (let i = 0; i < styleNames.length; i++) {
       const styleName = styleNames[i];
-    
+
       let cells = undefined;
-      if (dict[styleName]){
-       cells = dict[styleName]['list'];
+      if (dict[styleName]) {
+        cells = dict[styleName]['list'];
       }
       if (cells === undefined) continue;
       for (let j = 0; j < cells.length; j++) {
@@ -551,26 +565,54 @@ class TableViewer extends Component<{}, TableState> {
     } */
   }
 
-  updateTableData(tableData?: TableData) {
-    this.setState({ showTable: false }); //
-
-    if (tableData?.sheetData) {
-      tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
-      tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
-    }
-
-    console.log("before update the state, file name=", this.state.filename);
+  updateTableData() {
     this.setState({
-      filename: tableData?.filename || null,
-      isCSV: tableData?.isCSV || false,
-      sheetNames: tableData?.sheetNames || null,
-      currSheetName: tableData?.currSheetName || null,
-      columnDefs: tableData?.sheetData?.columnDefs || columns,
-      rowData: tableData?.sheetData?.rowData || rows,
-      showTable: true,
+      showTable: false,
       showToast0: false,
       showToast1: false,
-    });
+    }); //
+
+
+    console.log("before update the state, file name=", this.state.filename);
+
+    if (wikiStore.projects.projectDTO) {
+      const project = wikiStore.projects.projectDTO;
+      const filename = project._saved_state.current_data_file
+      const sheetNames = project.data_files[filename]
+      let multipleSheets = false;
+      if (sheetNames.length > 1) {
+        multipleSheets = true;
+      }
+      const currSheetName = project._saved_state.current_sheet;
+      debugger
+      const columns = getColumns(wikiStore.table.table);
+      const rows = getRowData(wikiStore.table.table);
+
+
+      this.setState({
+        filename: filename,
+        multipleSheets: multipleSheets,
+        sheetNames: sheetNames,
+        currSheetName: currSheetName,
+        columnDefs: columns,
+        rowData: rows,
+        showTable: true,
+
+      });
+    }
+    else {
+      this.setState({
+        filename: null,
+        multipleSheets: false,
+        sheetNames: null,
+        currSheetName: null,
+        columnDefs: defaultColumns,
+        rowData: defaultRows,
+        showTable: true,
+
+      });
+    }
+
     console.log("-----updateTableData---- after update: this.state", this.state)
     // this.gridColumnApi.autoSizeAllColumns();
   }
@@ -610,15 +652,15 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   onCloseToast(toastNum: string) {
-      if (toastNum === 'showToast0') {
-        this.setState({ showToast0: false });
-      } else {
-        this.setState({ showToast1: false });
-      }
+    if (toastNum === 'showToast0') {
+      this.setState({ showToast0: false });
+    } else {
+      this.setState({ showToast1: false });
+    }
   }
 
   render() {
-    const { filename, isCSV, columnDefs, rowData } = this.state;
+    const { filename, multipleSheets, columnDefs, rowData } = this.state;
 
     // render title
     let titleHtml;
@@ -641,7 +683,7 @@ class TableViewer extends Component<{}, TableState> {
 
     return (
       <div className="w-100 h-100 p-1">
-        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
         <Card className="w-100 h-100 shadow-sm">
 
           {/* header */}
@@ -667,7 +709,7 @@ class TableViewer extends Component<{}, TableState> {
                 Upload data file
               </Button>
             </OverlayTrigger>
-            
+
             {/* TODO: move following inputs to another place */}
             {/* hidden input of table file */}
             <input
@@ -679,89 +721,89 @@ class TableViewer extends Component<{}, TableState> {
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
           </Card.Header>
-          
+
           {/* table */}
           <Card.Body className="ag-theme-balham w-100 h-100 p-0" style={{ overflow: "hidden" }}>
-           
+
             {/* loading spinner */}
             <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
               <Spinner animation="border" />
             </div>
 
-            <TableToast 
-                selectedCell={this.state.selectedCell}
-                showToast0={this.state.showToast0}
-                showToast1={this.state.showToast1}
-                msgInToast1={this.state.msgInToast1}
-                onCloseToast={(toastNum) => this.onCloseToast(toastNum)}
+            <TableToast
+              selectedCell={this.state.selectedCell}
+              showToast0={this.state.showToast0}
+              showToast1={this.state.showToast1}
+              msgInToast1={this.state.msgInToast1}
+              onCloseToast={(toastNum) => this.onCloseToast(toastNum)}
             />
 
-            <TableLegend isCSV={this.state.isCSV} />
+            <TableLegend multipleSheets={this.state.multipleSheets} />
 
             {/* table */}
             {/* FUTURE: adapt large dataset by: https://github.com/NeXTs/Clusterize.js */}
             {
-             this.state.showTable ?
-            <AgGridReact
-              onGridReady={this.onGridReady.bind(this)}
-              columnDefs={columnDefs}
-              rowData={rowData}
-              rowDataChangeDetectionStrategy={ChangeDetectionStrategyType.IdentityCheck}
-              suppressScrollOnNewData={true} // prevent unintended scrolling top after grid updated
-              headerHeight={18}
-              rowHeight={18}
-              rowStyle={{ background: "white" }}
-              defaultColDef={{
-                // All options: https://www.ag-grid.com/javascript-grid-column-properties/
+              this.state.showTable ?
+                <AgGridReact
+                  onGridReady={this.onGridReady.bind(this)}
+                  columnDefs={columnDefs}
+                  rowData={rowData}
+                  rowDataChangeDetectionStrategy={ChangeDetectionStrategyType.IdentityCheck}
+                  suppressScrollOnNewData={true} // prevent unintended scrolling top after grid updated
+                  headerHeight={18}
+                  rowHeight={18}
+                  rowStyle={{ background: "white" }}
+                  defaultColDef={{
+                    // All options: https://www.ag-grid.com/javascript-grid-column-properties/
 
-                // width
-                width: 70,
-                minWidth: 40,
-                // maxWidth: 200,
+                    // width
+                    width: 70,
+                    minWidth: 40,
+                    // maxWidth: 200,
 
-                // others
-                editable: false,
-                lockPosition: true,
-                resizable: true,
-                // rowBuffer: 100,
-                sortable: false,
-                // suppressMaxRenderedRowRestriction: true, // 500 rows
+                    // others
+                    editable: false,
+                    lockPosition: true,
+                    resizable: true,
+                    // rowBuffer: 100,
+                    sortable: false,
+                    // suppressMaxRenderedRowRestriction: true, // 500 rows
 
-                // color
-                cellClass: function (params) {
-                  if (params.colDef.field === "^") {
-                    return ["cell", "cell-row-header"];
-                  } else {
-                    return "cell";
-                  }
-                },
-                cellStyle: function (params) {
-                  const col = params.colDef.field;
-                  // let row = params.node.rowIndex;
-                  if (params.data.styles && params.data.styles[col]) {
-                    return params.data.styles[col];
-                  }
-                },
+                    // color
+                    cellClass: function (params) {
+                      if (params.colDef.field === "^") {
+                        return ["cell", "cell-row-header"];
+                      } else {
+                        return "cell";
+                      }
+                    },
+                    cellStyle: function (params) {
+                      const col = params.colDef.field;
+                      // let row = params.node.rowIndex;
+                      if (params.data.styles && params.data.styles[col]) {
+                        return params.data.styles[col];
+                      }
+                    },
 
-                // on cell clicked
-                onCellClicked: this.handleSelectCell,
+                    // on cell clicked
+                    onCellClicked: this.handleSelectCell,
 
-                // stop keyboard event
-                suppressKeyboardEvent: () => true,
+                    // stop keyboard event
+                    suppressKeyboardEvent: () => true,
 
-                // custom cell renderer (to support hyperlink, ...), significantly degrade performance!
-                // FUTURE: only use custom cell renderer when backend requires
-                // cellRendererFramework: Cell
+                    // custom cell renderer (to support hyperlink, ...), significantly degrade performance!
+                    // FUTURE: only use custom cell renderer when backend requires
+                    // cellRendererFramework: Cell
 
-              }}
-            >
-            </AgGridReact>
-           : <div /> }
+                  }}
+                >
+                </AgGridReact>
+                : <div />}
           </Card.Body>
 
           {/* sheet selector */}
           <Card.Footer
-            hidden={isCSV}
+            hidden={!multipleSheets}
             id="sheetSelector" // apply custom scroll bar
             style={{
               height: "55px",
@@ -774,9 +816,9 @@ class TableViewer extends Component<{}, TableState> {
             }}
           >
             <SheetSelector
-                sheetNames={this.state.sheetNames}
-                currSheetName={this.state.currSheetName}
-                handleSelectSheet={(event) => this.handleSelectSheet(event)}
+              sheetNames={this.state.sheetNames}
+              currSheetName={this.state.currSheetName}
+              handleSelectSheet={(event) => this.handleSelectSheet(event)}
             />
           </Card.Footer>
         </Card>
