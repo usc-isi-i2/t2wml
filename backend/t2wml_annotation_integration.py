@@ -33,20 +33,26 @@ class AnnotationIntegration(object):
                 and self.df.iloc[2, 0].strip().lower() == 'type' \
                 and self.df.iloc[3, 0].strip().lower() == 'description' \
                 and self.df.iloc[4, 0].strip().lower() == 'name' \
-                and self.df.iloc[5, 0].strip().lower() == 'unit':
+                and self.df.iloc[5, 0].strip().lower() == 'unit' \
+                and self.df.iloc[6, 0].strip().lower() == 'tag':
             self.dataset = self.df.iloc[0, 1].strip()
 
-            header_row, data_row = self.find_data_start_row()
-            annotation_rows = list(range(0, 6)) + [header_row]
+            try:
+                header_row, data_row = self.find_data_start_row()
+            except:
+                return False
+            annotation_rows = list(range(0, 7)) + [header_row]
             self.annotation = self.df.iloc[annotation_rows].fillna("")
-            self.save_annotation_file(project_path)
+            self.annotation.iat[0, 5] = header_row
+            self.annotation.iat[0, 6] = data_row
+
+            self.save_annotation_file(project_path, header_row)
             return True
 
         return False
 
-    def save_annotation_file(self, project_path):
-        header_row = self.annotation.iloc[6]
-        header_str = '_'.join(header_row).lower().strip()
+    def save_annotation_file(self, project_path, header_row):
+        header_str = '_'.join(self.annotation.iloc[header_row]).lower().strip()
 
         # basic cleanup
         header_str = re.sub(r"\s+", '_', header_str)
@@ -115,6 +121,7 @@ class AnnotationIntegration(object):
     def get_files(self, filename):
         temp_dir = tempfile.mkdtemp()
         t_file = f'{temp_dir}/{filename}'
+
         if filename.endswith(".csv"):
             self.df.to_csv(t_file, index=False, header=None)
         elif filename.endswith(".xlsx") or filename.endswith(".xls"):
@@ -153,21 +160,16 @@ class AnnotationIntegration(object):
                     combined_item_df = pd.read_csv(f, dtype=object, sep='\t')
         return t2wml_yaml, consolidated_wikifier_df, combined_item_df, self.annotation
 
+    @staticmethod
+    def get_index(series: pd.Series, value, *, pos=0) -> int:
+        return int(series[series == value].index[pos])
+
     def find_data_start_row(self) -> (int, int):
         # finds and returns header and data row index
-        header_row = 6
-        data_row = 7
-        df = self.df.set_index(0)
+        header_index = self.get_index(self.df.iloc[:, 0], 'header')
+        data_index = self.get_index(self.df.iloc[:, 0], 'data')
 
-        if "header" in df.index:
-            header_row = df.index.tolist().index("header")
-            if "data" not in df.index:
-                data_row = header_row + 1
-
-        if "data" in df.index:
-            data_row = df.index.tolist().index("data")
-        df.reset_index(inplace=True)
-        return header_row, data_row
+        return header_index, data_index
 
     def automate_integration(self, project, response, sheet):
         try:
