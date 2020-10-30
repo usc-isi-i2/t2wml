@@ -81,7 +81,9 @@ class AnnotationIntegration(object):
             ann_files = glob(f'{annotation_path}/*tsv')
             for annotation_file in ann_files:
                 annotation_df = pd.read_csv(annotation_file, header=None, sep='\t').fillna('')
-                headers = list(annotation_df.iloc[6])
+                header_row = int(annotation_df.iloc[0, 5])
+                data_row = int(annotation_df.iloc[0, 6])
+                headers = list(annotation_df.iloc[header_row])
 
                 for c in input_file_columns:
                     annotation_found = annotation_found and (c in headers)
@@ -90,10 +92,10 @@ class AnnotationIntegration(object):
                     self.df.columns = n_header
                     self.df = self.df.reindex(columns=headers).fillna('')
                     annotation_df.columns = headers
-                    new_df = pd.concat([annotation_df.iloc[0:6], self.df])
+                    new_df = pd.concat([annotation_df.iloc[0:7], self.df])
                     new_df.columns = range(new_df.shape[1])
-                    new_df.iloc[6, 0] = 'header'
-                    new_df.iloc[7, 0] = 'data'
+                    new_df.iloc[header_row, 0] = 'header'
+                    new_df.iloc[data_row, 0] = 'data'
                     break
         return annotation_found, new_df
 
