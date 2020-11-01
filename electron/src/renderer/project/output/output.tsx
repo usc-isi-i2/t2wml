@@ -128,36 +128,14 @@ class Output extends Component<{}, OutputComponentState> {
     this.setState({ showDownload: false });
   }
 
-  removeBorders() {
-    // // remove value border
-    // let col: string | undefined = this.state.currCol;
-    // let row: string | undefined = this.state.currRow;
-    // if (col !== undefined && row !== undefined) {
-    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    // }
 
-    // // remove item border
-    // col = this.state.itemCol;
-    // row = this.state.itemRow;
-    // if (col !== undefined && row !== undefined) {
-    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    // }
-
-    // // remove qualifier borders
-    // const qualifiers = this.state.qualifiers;
-    // if (qualifiers !== undefined && qualifiers != null) {
-    //   for (let i = 0, len = qualifiers.length; i < len; i++) {
-    //     col = qualifiers[i]["col"];
-    //     row = qualifiers[i]["row"];
-    //     if (col && row) {
-    //       wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    //     }
-    //   }
-    // }
-  }
 
   updateStateFromStore() {
-    this.removeOutput();
+    this.setState({
+      statement: null,
+      errors: ""
+    });
+
     if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row){return}; //no cell selected
     const selectedCell=wikiStore.table.selectedCell;
     const error=wikiStore.layers.error.find(selectedCell.rowIndex, selectedCell.colIndex)
@@ -167,40 +145,11 @@ class Output extends Component<{}, OutputComponentState> {
         this.setState({errors: JSON.stringify(error)});
     }
 
-
-    if (!statement) {
-        this.setState({statement: null});
-        return;
-    }
+    if (!statement) {return;}
+    
     this.setState({statement: statement});
-    //update outlined cells in tableviewer:
- 
-    if (statement.cell) {
-      const [col, row] = statement.cell.match(/[a-z]+|[^a-z]+/gi) as any;
-      wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
-    }
- 
-    // qualifiers
-    const statementQualifiers = statement.qualifier;
-    if (statementQualifiers !== undefined) {
-      for (const statementQualifier of statementQualifiers) {
-        if (statementQualifier["cell"]) {
-          const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
-          const hue = utils.getHueByQnode(10, statementQualifier.property);
-          wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
-        }
-      }
- 
-    }
   }
 
-  removeOutput() {
-    this.removeBorders();
-    this.setState({
-      statement: null,
-      errors: ""
-    });
-  }
 
 
   loadToDatamart() {

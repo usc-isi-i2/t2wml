@@ -284,7 +284,58 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
+  removeBorders() {
+    // // remove value border
+    // let col: string | undefined = this.state.currCol;
+    // let row: string | undefined = this.state.currRow;
+    // if (col !== undefined && row !== undefined) {
+    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    // }
+
+    // // remove item border
+    // col = this.state.itemCol;
+    // row = this.state.itemRow;
+    // if (col !== undefined && row !== undefined) {
+    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    // }
+
+    // // remove qualifier borders
+    // const qualifiers = this.state.qualifiers;
+    // if (qualifiers !== undefined && qualifiers != null) {
+    //   for (let i = 0, len = qualifiers.length; i < len; i++) {
+    //     col = qualifiers[i]["col"];
+    //     row = qualifiers[i]["row"];
+    //     if (col && row) {
+    //       wikiStore.table.updateStyleByCell(col, row, { "border": "" });
+    //     }
+    //   }
+    // }
+  }
+
   async handleSelectCell(params: any) {
+
+    /*
+        //update outlined cells in tableviewer:
+ 
+    if (statement.cell) {
+      const [col, row] = statement.cell.match(/[a-z]+|[^a-z]+/gi) as any;
+      wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
+    }
+ 
+    // qualifiers
+    const statementQualifiers = statement.qualifier;
+    if (statementQualifiers !== undefined) {
+      for (const statementQualifier of statementQualifiers) {
+        if (statementQualifier["cell"]) {
+          const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
+          const hue = utils.getHueByQnode(10, statementQualifier.property);
+          wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
+        }
+      }
+ 
+    }
+    */
+
     this.setState({ errorMessage: {} as ErrorMessage });
     // remove current status
     this.updateSelectedCell();
