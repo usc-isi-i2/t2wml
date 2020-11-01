@@ -113,8 +113,6 @@ class TableViewer extends Component<{}, TableState> {
 
     this.disposers.push(reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg)));
     this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.wikifierFile, (wikifierFile: File) => this.handleOpenWikifierFile(wikifierFile)));
-
 
     //css cells
     this.disposers.push(reaction(() => wikiStore.layers.type, () => this.updateStyleByCellFromStore()));
@@ -227,58 +225,6 @@ class TableViewer extends Component<{}, TableState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-    }
-  }
-
-  async handleOpenWikifierFile(file: File) {
-    this.setState({ errorMessage: {} as ErrorMessage });
-    // remove current status
-    wikiStore.table.updateQnodeCells();
-
-    if (!file) return;
-
-    // before sending request
-    wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
-
-    // send request
-    console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      await this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData);
-      console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
-
-      // do something here
-      // const { error } = json;
-
-      // // if failure
-      // if (error) {
-      //   throw Error(error);
-      // }
-
-      // else, success
-      // const { qnodes, rowData } = json;
-      // wikiStore.table.updateQnodeCells(qnodes, rowData);
-
-      // follow-ups (success)
-      this.setState({
-        // showSpinner: false,
-        msgInToast1: "✅ Wikifier file loaded",
-        showToast1: true,
-      });
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-
-    } catch (error) {
-      console.log(error);
-      error.errorDescription += "\n\nCannot upload wikifier file!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
-      wikiStore.table.updateQnodeCells();
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
@@ -424,33 +370,8 @@ class TableViewer extends Component<{}, TableState> {
       await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 
-      // const { tableData, wikifierData, yamlContent } = json;
 
-      // // load table data
-      // tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
-      // tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
-      // this.setState({
-      //   filename: tableData.filename,
-      //   isCSV: tableData.isCSV,
-      //   // sheetNames: tableData.sheetNames, // backend would not send this
-      //   currSheetName: tableData.currSheetName,
-      //   columnDefs: tableData.sheetData.columnDefs,
-      //   rowData: tableData.sheetData.rowData,
-      //   showTable: true,
-      // });
-      // // this.gridColumnApi.autoSizeAllColumns();
-
-      // // load wikifier data
-      // if (wikifierData !== null) {
-      //   wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
-      // } else {
-      //   wikiStore.table.updateQnodeCells(); // reset
-      // }
-
-      // load yaml data
       if (wikiStore.yaml.yamlContent) {
-        // this.updateYamlRegions(yamlData.yamlRegions);
-        // wikiStore.table.yamlRegions = yamlData.yamlRegions;
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
@@ -759,7 +680,6 @@ class TableViewer extends Component<{}, TableState> {
               </Button>
             </OverlayTrigger>
 
-            {/* TODO: move following inputs to another place */}
             {/* hidden input of table file */}
             <input
               type="file"

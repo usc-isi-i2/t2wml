@@ -57,7 +57,7 @@ class ToastMessage extends Component<ToastProperties, ToastState> {
                 }}
             >
                 <Toast.Header>
-                    <strong className="mr-auto">Properties</strong>
+                    <strong className="mr-auto">Message</strong>
                     <small>{new Date().getHours()}:{new Date().getMinutes()}</small>
                 </Toast.Header>
                 <Toast.Body>{this.props.message}</Toast.Body>

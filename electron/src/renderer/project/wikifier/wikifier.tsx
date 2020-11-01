@@ -202,6 +202,37 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
   }
 
+  async handleOpenWikifierFile(event: any) {
+    const file:File = (event.target as any).files[0];
+
+    if (!file) return;
+
+    // before sending request
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+
+    // send request
+    console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      await this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData);
+      console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
+
+      this.setState({
+        propertiesMessage: "✅ Wikifier file loaded"
+      });
+
+    } catch (error) {
+      console.log(error);
+      error.errorDescription += "\n\nCannot upload wikifier file!";
+      this.setState({ errorMessage: error });
+
+    }
+    wikiStore.table.showSpinner = false;
+    wikiStore.wikifier.showSpinner = false;
+  }
+
 
   render() {
 
@@ -308,7 +339,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               id="file_wikifier"
               accept=".csv"
               style={{ display: "none" }}
-              onChange={(event) => wikiStore.table.wikifierFile = (event.target as any).files[0]}
+              onChange= {this.handleOpenWikifierFile.bind(this)}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 
