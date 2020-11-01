@@ -8,7 +8,6 @@ import Downloader from 'js-file-download';
 
 // console.log
 import { LOG, ErrorMessage } from '../../common/general';
-import * as utils from '../../common/utils'
 import RequestService from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -136,7 +135,7 @@ class Output extends Component<{}, OutputComponentState> {
       errors: ""
     });
 
-    if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row){return}; //no cell selected
+    if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row){return;} //no cell selected
     const selectedCell=wikiStore.table.selectedCell;
     const error=wikiStore.layers.error.find(selectedCell.rowIndex, selectedCell.colIndex)
     const statement=wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)

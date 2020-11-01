@@ -36,7 +36,7 @@ export function getRowData(table:TableDTO){
 function getDefaultGrid(numCols: number, numRows: number): TableDTO{
     const cells=[]
     for (let i = 0; i < numRows; ++i){
-        let a = new Array(numCols); for (let j=0; j<numCols; ++j) a[j] = "";
+        const a = new Array(numCols); for (let j=0; j<numCols; ++j) a[j] = "";
         cells.push(a)
     }
     
@@ -49,4 +49,4 @@ function getDefaultGrid(numCols: number, numRows: number): TableDTO{
 
 }
 
-const defaultGrid:TableDTO = getDefaultGrid(52, 100)
+//const defaultGrid:TableDTO = getDefaultGrid(52, 100)

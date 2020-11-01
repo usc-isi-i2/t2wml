@@ -36,7 +36,7 @@ class TableToast extends Component<TableToastProperties, {}> {
     if (selectedQnode === undefined) return;
     const {id, url, label, description} = selectedQnode
     // render qnode
-    let idHref = url 
+    const idHref = url 
 
     const idHtml = (
       <a
