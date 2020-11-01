@@ -3,7 +3,6 @@ import {getColumnTitleFromIndex} from '../../common/utils'
 
 
 export function getColumns(table:TableDTO){
-    debugger
     const [numRows, numCols] = table.dims
     const agGridColumns=[]
     agGridColumns.push( { "headerName": "", "field": "^", "pinned": "left", "width": 40 })
@@ -16,11 +15,9 @@ export function getColumns(table:TableDTO){
 }
 
 export function getRowData(table:TableDTO){
-    debugger
     const agGridRows=[]
     for (const [rowIndex, row] of table.cells.entries()) 
     {
-        debugger
         const rowData:{ [key: string]: string} = {}
         rowData["^"]=(rowIndex+table.firstRowIndex).toString()
 

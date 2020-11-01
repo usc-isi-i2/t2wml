@@ -98,29 +98,10 @@ class Project extends Component<ProjectProps, ProjectState> {
     // fetch project files
     console.debug('Refreshing project ', this.props.path);
     try{
-      await this.requestService.getProject(this.props.path);      
-      
+      await this.requestService.getProject(this.props.path);    
       document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
       this.setState({name: wikiStore.projects.projectDTO!.title});
 
-      // load table data
-      // if (table) {
-      //   wikiStore.table.tableData = table;
-      // } else {// else: reset data
-      //   wikiStore.table.tableData = undefined;
-      // }
-      
-
-      // // load wikifier data
-      // if (wikifierData !== null) {
-      //   wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
-      // } else {
-      //   wikiStore.table.updateQnodeCells(); // reset
-      // }
-
-      // load yaml data
-      // wikiStore.yaml.yamlContent = yamlContent || undefined;
-      // wikiStore.table.yamlRegions = yamlData?.yamlRegions;
       if (wikiStore.yaml.yamlContent !== null) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;

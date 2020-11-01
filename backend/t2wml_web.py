@@ -40,7 +40,7 @@ def download(calc_params, filetype):
 
 def get_empty_layers():
     errorLayer=dict(layerType="error", entries=[])
-    statementLayer=dict(layerType="statement", entries=[])
+    statementLayer=dict(layerType="statement", entries=[], qnodes={})
     cleanedLayer=dict(layerType="cleaned", entries=[])
     typeLayer=dict(layerType="type", entries=[])
     qnodeLayer=dict(layerType="qnode", entries=[])

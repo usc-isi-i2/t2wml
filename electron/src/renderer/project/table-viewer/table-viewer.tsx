@@ -40,7 +40,7 @@ interface TableState {
   // table data
   filename: string | null,       // if null, show "Table Viewer"
 
-  multipleSheets: boolean,        
+  multipleSheets: boolean,
   sheetNames: Array<string> | null,     // if not multipleSheets, null
   currSheetName: string | null,  // if not multipleSheets, null
 
@@ -104,7 +104,7 @@ class TableViewer extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.layers.cleaned, () => this.styleCleanedCells()));
     this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.styleQnodeCells()));
 
- }
+  }
 
   componentWillUnmount() {
     for (const disposer of this.disposers) {
@@ -275,59 +275,59 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.wikifier.showSpinner = false;
   }
 
-  styleCellTypeColors(){
+  styleCellTypeColors() {
     return;
   }
 
-  styleCleanedCells(){
+  styleCleanedCells() {
     return;
   }
 
-  styleQnodeCells(){
+  styleQnodeCells() {
     return;
   }
 
-  styleSelectedCell(selectedCell:Cell, clear=false){
-    let style = { border: ""}
+  styleSelectedCell(selectedCell: Cell, clear = false) {
+    let style = { border: "" }
 
-    if (selectedCell.isCell){
-      if (!clear){
+    if (selectedCell.isCell) {
+      if (!clear) {
         style = { border: "1px solid hsl(150, 50%, 40%) !important" }
       }
       this.updateStyleByCell(selectedCell.col, selectedCell.row, style);
-    }else{
+    } else {
       return;
     }
 
-    const statement=wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
-    if(!statement){return;}
- 
+    const statement = wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
+    if (!statement) { return; }
+
     if (statement.cell) {
       const [col, row] = statement.cell.match(/[a-z]+|[^a-z]+/gi) as any;
-      if (!clear){
+      if (!clear) {
         style = { "border": "1px solid black !important" };
       }
       this.updateStyleByCell(col, row, style);
     }
- 
+
     // qualifiers
     const statementQualifiers = statement.qualifier;
     if (statementQualifiers !== undefined) {
       for (const statementQualifier of statementQualifiers) {
         if (statementQualifier["cell"]) {
           const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
-          if (!clear){
+          if (!clear) {
             const hue = utils.getHueByQnode(10, statementQualifier.property);
-            style= { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" }
+            style = { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" }
           }
           this.updateStyleByCell(q_col, q_row, style);
         }
       }
- 
+
     }
   }
 
-  clearSelectedCell(cell: Cell){
+  clearSelectedCell(cell: Cell) {
     //a tiny little function with a clearer name for what it does
     this.styleSelectedCell(cell, true);
   }
@@ -335,7 +335,7 @@ class TableViewer extends Component<{}, TableState> {
 
   async handleSelectCell(params: any) {
     this.setState({ errorMessage: {} as ErrorMessage });
-    
+
     // get selected cell index
     const colName = String(params.colDef["headerName"]);
     const rowName = params.rowIndex + 1;
@@ -348,19 +348,19 @@ class TableViewer extends Component<{}, TableState> {
 
     // else, normal cell
     this.updateSelectedCell(new Cell(colName, rowName, value));
-    
+
   }
 
 
 
-  updateSelectedCell(newSelectedCell:Cell) {
-    const oldSelectedCell  = wikiStore.table.selectedCell;
+  updateSelectedCell(newSelectedCell: Cell) {
+    const oldSelectedCell = wikiStore.table.selectedCell;
     this.clearSelectedCell(oldSelectedCell);
 
 
     this.setState({
-        selectedCell: newSelectedCell,
-        showToast0: false
+      selectedCell: newSelectedCell,
+      showToast0: false
     });
 
 
@@ -368,7 +368,7 @@ class TableViewer extends Component<{}, TableState> {
 
   }
 
-  updateStyleByCell(colName:string | number | null, rowName:string | number | null, style:any, override?:boolean) {
+  updateStyleByCell(colName: string | number | null, rowName: string | number | null, style: any, override?: boolean) {
     if (rowName && colName) {
       const col = colName;
       const row = Number(rowName) - 1;
