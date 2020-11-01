@@ -207,35 +207,7 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  removeBorders() {
-    // // remove value border
-    // let col: string | undefined = this.state.currCol;
-    // let row: string | undefined = this.state.currRow;
-    // if (col !== undefined && row !== undefined) {
-    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    // }
-
-    // // remove item border
-    // col = this.state.itemCol;
-    // row = this.state.itemRow;
-    // if (col !== undefined && row !== undefined) {
-    //   wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    // }
-
-    // // remove qualifier borders
-    // const qualifiers = this.state.qualifiers;
-    // if (qualifiers !== undefined && qualifiers != null) {
-    //   for (let i = 0, len = qualifiers.length; i < len; i++) {
-    //     col = qualifiers[i]["col"];
-    //     row = qualifiers[i]["row"];
-    //     if (col && row) {
-    //       wikiStore.table.updateStyleByCell(col, row, { "border": "" });
-    //     }
-    //   }
-    // }
-  }
-
-
+  
   async handleSelectSheet(event: any) {
     this.setState({
       errorMessage: {} as ErrorMessage,
@@ -280,6 +252,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   styleCleanedCells() {
+    //TODO: whenever we design the css for cleaning
     return;
   }
 
