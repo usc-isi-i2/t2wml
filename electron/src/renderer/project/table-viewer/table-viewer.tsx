@@ -450,15 +450,27 @@ class TableViewer extends Component<{}, TableState> {
     if (wikiStore.projects.projectDTO) {
       const project = wikiStore.projects.projectDTO;
       const filename = project._saved_state.current_data_file
-      const sheetNames = project.data_files[filename]
+      let sheetNames;
+      sheetNames = project.data_files[filename]
+      if (sheetNames == undefined){
+        sheetNames=null;
+      }
+
       let multipleSheets = false;
-      if (sheetNames.length > 1) {
+      if (sheetNames && sheetNames.length > 1) {
         multipleSheets = true;
       }
       const currSheetName = project._saved_state.current_sheet;
-      debugger
-      const columns = getColumns(wikiStore.table.table);
-      const rows = getRowData(wikiStore.table.table);
+      
+      let columns;
+      let rows;
+      if (wikiStore.table.table){
+      columns = getColumns(wikiStore.table.table);
+      rows = getRowData(wikiStore.table.table);
+      }else{
+        columns=defaultColumns;
+        rows=defaultRows;
+      }
 
 
       this.setState({
