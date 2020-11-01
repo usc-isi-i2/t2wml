@@ -8,7 +8,6 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 // console.log
 import { WikifierData } from '../../common/general';
 import * as utils from '../../common/utils'
-import QnodeEditor from '../qnode-editor';
 
 import { observer } from "mobx-react"
 
@@ -67,9 +66,6 @@ class WikifierOutput extends Component<WikifierOutputProperties, {}> {
     >
         <AgGridReact
             onGridReady={this.onGridReady.bind(this)}
-            frameworkComponents={{
-            qnodeEditor: QnodeEditor
-            }}
             columnDefs={[
             {
 
