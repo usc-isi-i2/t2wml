@@ -22,23 +22,13 @@ import TableToast from './table-toast';
 import { defaultColumns, defaultRows } from './table-definition';
 import { IReactionDisposer, reaction } from 'mobx';
 import { getColumns, getRowData } from './agGrid-Converter';
+import * as utils from '../../common/utils'
 
 interface Column {
   headerName: string;
   field: string;
   pinned?: string; // "left" | "right";
   width?: number;
-}
-
-interface TableData {
-  filename: string;
-  multipleSheets: boolean;
-  sheetNames: Array<string>;
-  currSheetName: string;
-  columnDefs: Array<string>;
-  rowData: string;
-
-  sheetData: any;
 }
 
 interface TableState {
@@ -49,13 +39,14 @@ interface TableState {
 
   // table data
   filename: string | null,       // if null, show "Table Viewer"
-  multipleSheets: boolean,         // csv: true   excel: false
-  sheetNames: Array<string> | null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
-  currSheetName: string | null,  // csv: null    excel: "sheet1"
+
+  multipleSheets: boolean,        
+  sheetNames: Array<string> | null,     // if not multipleSheets, null
+  currSheetName: string | null,  // if not multipleSheets, null
+
   columnDefs: Array<Column>;
   rowData: any; // Array<object>; // todo: add interface
-  selectedCell: Cell | null;
-  yamlRegions: any; // null,
+  selectedCell: Cell;
 
   errorMessage: ErrorMessage;
   showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
@@ -88,10 +79,7 @@ class TableViewer extends Component<{}, TableState> {
       columnDefs: defaultColumns,
       rowData: defaultRows,
 
-      // temp
       selectedCell: new Cell(),
-      yamlRegions: null,
-
       errorMessage: {} as ErrorMessage,
       showTable: true,
     };
@@ -109,22 +97,14 @@ class TableViewer extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.projects.current, () => this.updateTableData()));
     //fill table
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateTableData()));
-
-
-    this.disposers.push(reaction(() => wikiStore.table.yamlRegions, (newYamlReg: any) => this.updateYamlRegions(newYamlReg)));
-    this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
-
+    //select cell
+    this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.styleSelectedCell(wikiStore.table.selectedCell)));
     //css cells
-    this.disposers.push(reaction(() => wikiStore.layers.type, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.layers.cleaned, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateQnodeCellsFromStore()));
+    this.disposers.push(reaction(() => wikiStore.layers.type, () => this.styleCellTypeColors()));
+    this.disposers.push(reaction(() => wikiStore.layers.cleaned, () => this.styleCleanedCells()));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.styleQnodeCells()));
 
-    //???
-    this.disposers.push(reaction(() => wikiStore.table.styledColName, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.styleCell, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.styledOverride, () => this.updateStyleByCellFromStore()));
-  }
+ }
 
   componentWillUnmount() {
     for (const disposer of this.disposers) {
@@ -155,8 +135,7 @@ class TableViewer extends Component<{}, TableState> {
     });
     // remove current status
     wikiStore.table.isCellSelectable = false;
-    this.updateSelectedCell();
-    wikiStore.table.updateQnodeCells();
+    this.updateSelectedCell(new Cell());
 
     // get table file
     const file = event.target.files[0];
@@ -208,8 +187,6 @@ class TableViewer extends Component<{}, TableState> {
 
       // load yaml data
       if (wikiStore.yaml.yamlContent) {
-        // wikiStore.table.yamlRegions = yamlData.yamlRegions;
-        // this.updateYamlRegions(yamlData.yamlRegions);
         wikiStore.table.isCellSelectable = true;
       } else {
         wikiStore.table.isCellSelectable = false;
@@ -258,92 +235,6 @@ class TableViewer extends Component<{}, TableState> {
     // }
   }
 
-  async handleSelectCell(params: any) {
-
-    /*
-        //update outlined cells in tableviewer:
- 
-    if (statement.cell) {
-      const [col, row] = statement.cell.match(/[a-z]+|[^a-z]+/gi) as any;
-      wikiStore.table.updateStyleByCell(col, row, { "border": "1px solid black !important" });
-    }
- 
-    // qualifiers
-    const statementQualifiers = statement.qualifier;
-    if (statementQualifiers !== undefined) {
-      for (const statementQualifier of statementQualifiers) {
-        if (statementQualifier["cell"]) {
-          const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
-          const hue = utils.getHueByQnode(10, statementQualifier.property);
-          wikiStore.table.updateStyleByCell(q_col, q_row, { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" });
-        }
-      }
- 
-    }
-    */
-
-    this.setState({ errorMessage: {} as ErrorMessage });
-    // remove current status
-    this.updateSelectedCell();
-    wikiStore.output.clearOutput();
-
-    // get selected cell index
-    const colName = String(params.colDef["headerName"]);
-    const rowName = params.rowIndex + 1;
-    const value = String(params.value);
-
-    // check if row header
-    if (colName === "") {
-      console.log("<TableViewer> clicked row: %c[" + rowName + "]", LOG.highlight);
-      return;
-    }
-
-    // else, normal cell
-    this.updateSelectedCell(colName, rowName, value);
-
-    // Check if this cell in data region list (in green cells)
-    if (!wikiStore.table.dataRegionsCells.includes(colName + rowName)) {
-      return
-    }
-
-    // before sending request
-    if (!wikiStore.table.isCellSelectable) return;
-    wikiStore.table.showSpinner = true;
-    wikiStore.output.showSpinner = true;
-
-    // send request
-    // console.log("<TableViewer> -> %c/resolve_cell%c for cell: %c" + colName + rowName + "%c " + value, LOG.link, LOG.default, LOG.highlight, LOG.default);
-    // try {
-    //   const json = await this.requestService.resolveCell(wikiStore.projects.current!.folder, colName, rowName);
-    //   console.log("<TableViewer> <- %c/resolve_cell%c with:", LOG.link, LOG.default);
-    //   console.log(json);
-
-    // //   const { error } = json;
-    // //   // if failure      
-    // //   if (error) {
-    // //     throw {errorDescription: error.value} as ErrorMessage;
-    // //   }
-
-    //   // else, success
-    //   const {internalErrors} = json;
-    //   if (internalErrors){
-    //         console.log(internalErrors);
-    //   }
-    //   
-
-    //   // follow-ups (success)
-    //   wikiStore.output.showSpinner = false;
-    //   wikiStore.table.showSpinner = false;
-    // } catch(error) {
-    //   console.log(error);
-    // //   error.errorDescription += "\n\nCannot resolve cell!";
-    //   this.setState({ errorMessage: error });
-
-    //   // follow-ups (failure)
-    //   wikiStore.output.showSpinner = false;
-    //   wikiStore.table.showSpinner = false;
-    // }
-  }
 
   async handleSelectSheet(event: any) {
     this.setState({
@@ -351,12 +242,8 @@ class TableViewer extends Component<{}, TableState> {
       showTable: false
     });
     // remove current status
-    this.updateSelectedCell();
+    this.updateSelectedCell(new Cell());
     wikiStore.yaml.yamlContent = undefined;
-    // this.updateYamlRegions();
-    wikiStore.table.yamlRegions = undefined;
-    wikiStore.table.updateQnodeCells();
-    wikiStore.output.clearOutput();
     wikiStore.output.isDownloadDisabled = true;
 
     // before sending request
@@ -379,87 +266,109 @@ class TableViewer extends Component<{}, TableState> {
       }
 
 
-      // follow-ups (success)
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-
     } catch (error) {
       console.log(error);
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
     }
+    wikiStore.table.showSpinner = false;
+    wikiStore.wikifier.showSpinner = false;
   }
 
-
-  updateQnodeCellsFromStore() {
-    const qnodeData = wikiStore.table.qnodes;
-    const rowData = wikiStore.table.rowData;
-    if (!qnodeData) {
-      // reset qnode cells
-      if (!wikiStore.wikifier.qnodeData) return;
-      const qnodes = Object.keys(wikiStore.wikifier.qnodeData);
-      if (qnodes.length === 0) return;
-      const cells = { qnode: { list: qnodes } };
-      const presets = {
-        qnode: { color: "" }
-      };
-      this.updateStyleByDict(cells, presets);
-
-      // reset wikifier data
-      wikiStore.wikifier.updateWikifier();
-
-    } else {
-      // update qnode cells
-
-      // const qnodes = Object.keys(Object.fromEntries(Object.entries(qnodeData).filter(([k, v]) => v !== "")));
-      const qnodes = Object.keys(qnodeData);
-      const cells = { qnode: { list: qnodes } };
-      const presets = {
-        qnode: { color: "hsl(200, 100%, 30%)" }
-      };
-      this.updateStyleByDict(cells, presets);
-
-      // update wikifier data
-      wikiStore.wikifier.updateWikifier(qnodeData, rowData);
-    }
+  styleCellTypeColors(){
+    return;
   }
 
-  updateSelectedCell(col: string | null = null, row: number | null = null, value: string | null = null) {
-    let { selectedCell } = this.state;
-    if (col === null) {
-      // reset
-      if (selectedCell !== null) {
-        wikiStore.table.updateStyleByCell(selectedCell.col, selectedCell.row, { border: "" });
+  styleCleanedCells(){
+    return;
+  }
+
+  styleQnodeCells(){
+    return;
+  }
+
+  styleSelectedCell(selectedCell:Cell, clear=false){
+    let style = { border: ""}
+
+    if (selectedCell.isCell){
+      if (!clear){
+        style = { border: "1px solid hsl(150, 50%, 40%) !important" }
       }
-      selectedCell = null;
-      wikiStore.table.selectedCell = selectedCell
-      this.setState({
-        selectedCell: null,
-        showToast0: false
-      });
-    } else {
-      // update
-      wikiStore.table.updateStyleByCell(col, row, { border: "1px solid hsl(150, 50%, 40%) !important" });
-      selectedCell = new Cell(col, row, value);
-      wikiStore.table.selectedCell = selectedCell
-      this.setState({
-        selectedCell: selectedCell,
-        showToast0: true,
-      });
+      this.updateStyleByCell(selectedCell.col, selectedCell.row, style);
+    }else{
+      return;
     }
+
+    const statement=wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
+    if(!statement){return;}
+ 
+    if (statement.cell) {
+      const [col, row] = statement.cell.match(/[a-z]+|[^a-z]+/gi) as any;
+      if (!clear){
+        style = { "border": "1px solid black !important" };
+      }
+      this.updateStyleByCell(col, row, style);
+    }
+ 
+    // qualifiers
+    const statementQualifiers = statement.qualifier;
+    if (statementQualifiers !== undefined) {
+      for (const statementQualifier of statementQualifiers) {
+        if (statementQualifier["cell"]) {
+          const [q_col, q_row] = statementQualifier["cell"].match(/[a-z]+|[^a-z]+/gi);
+          if (!clear){
+            const hue = utils.getHueByQnode(10, statementQualifier.property);
+            style= { "border": "1px solid hsl(" + hue + ", 100%, 40%) !important" }
+          }
+          this.updateStyleByCell(q_col, q_row, style);
+        }
+      }
+ 
+    }
+  }
+
+  clearSelectedCell(cell: Cell){
+    //a tiny little function with a clearer name for what it does
+    this.styleSelectedCell(cell, true);
+  }
+
+
+  async handleSelectCell(params: any) {
+    this.setState({ errorMessage: {} as ErrorMessage });
+    
+    // get selected cell index
+    const colName = String(params.colDef["headerName"]);
+    const rowName = params.rowIndex + 1;
+    const value = String(params.value);
+
+    // check if row header, if so, ignore click
+    if (colName === "") {
+      return;
+    }
+
+    // else, normal cell
+    this.updateSelectedCell(new Cell(colName, rowName, value));
+    
+  }
+
+
+
+  updateSelectedCell(newSelectedCell:Cell) {
+    const oldSelectedCell  = wikiStore.table.selectedCell;
+    this.clearSelectedCell(oldSelectedCell);
+
+
+    this.setState({
+        selectedCell: newSelectedCell,
+        showToast0: false
+    });
+
+
+    wikiStore.table.selectedCell = newSelectedCell;
 
   }
 
-  updateStyleByCellFromStore() {
-    const colName = wikiStore.table.styledColName;
-    const rowName = wikiStore.table.styledRowName;
-    const style = wikiStore.table.styleCell;
-    const override = wikiStore.table.styledOverride;
-
+  updateStyleByCell(colName:string | number | null, rowName:string | number | null, style:any, override?:boolean) {
     if (rowName && colName) {
       const col = colName;
       const row = Number(rowName) - 1;
@@ -487,13 +396,6 @@ class TableViewer extends Component<{}, TableState> {
       // console.log("<TableViewer> updated nothing.");
     }
   }
-
-  getColAndRow(cellName: string) {
-    const chars = cellName.slice(0, cellName.search(/\d/));
-    const nums = cellName.replace(chars, '');
-    return { col: chars, row: nums };
-  }
-
 
   updateStyleByDict(dict: any, presets: any, override = false) {
     // dict = { "styleName": ["A1", "A2", ...] }
@@ -587,39 +489,6 @@ class TableViewer extends Component<{}, TableState> {
     // this.gridColumnApi.autoSizeAllColumns();
   }
 
-  updateYamlRegions(newYamlRegions: any = undefined) {
-    if (!newYamlRegions) {
-      // reset
-      const { yamlRegions } = this.state;
-      if (yamlRegions === null) return;
-      const presets = {
-        item: { backgroundColor: "" },
-        qualifierRegion: { backgroundColor: "" },
-        dataRegion: { backgroundColor: "" },
-        skippedRegion: { backgroundColor: "" },
-        errorCells: { backgroundColor: "" },
-        dangerCells: { backgroundColor: "" }
-      }
-      this.updateStyleByDict(yamlRegions, presets);
-      this.setState({ yamlRegions: null });
-      wikiStore.table.dataRegionsCells = [];
-    } else {
-      // update
-      const presets = {
-        item: { backgroundColor: newYamlRegions['item']['color'] }, // blue
-        qualifierRegion: { backgroundColor: newYamlRegions['qualifierRegion']['color'] }, // violet
-        dataRegion: { backgroundColor: newYamlRegions['dataRegion']['color'] }, // green
-        // skippedRegion: { backgroundColor: "hsl(0, 0%, 90%)" }, // gray
-        errorCells: { backgroundColor: newYamlRegions['errorCells']['color'] },
-        dangerCells: { backgroundColor: newYamlRegions['dangerCells']['color'] },
-      }
-      this.updateStyleByDict(newYamlRegions, presets);
-      this.setState({ yamlRegions: newYamlRegions });
-
-      // Save data regions (enable get the output to these cells).
-      wikiStore.table.dataRegionsCells = (newYamlRegions as any).dataRegion.list;
-    }
-  }
 
   onCloseToast(toastNum: string) {
     if (toastNum === 'showToast0') {

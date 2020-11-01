@@ -73,10 +73,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.setState({ errorMessage: {} as ErrorMessage });
     console.log("<YamlEditor> clicked apply");
 
-    // remove current status
-    wikiStore.table.yamlRegions = undefined;
-    wikiStore.output.clearOutput();
-
     // before sending request
     wikiStore.table.showSpinner = true;
 
@@ -105,18 +101,16 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       // wikiStore.table.yamlRegions = yamlRegions;
 
       // follow-ups (success)
-      wikiStore.table.showSpinner = false;
       wikiStore.output.isDownloadDisabled = false;
-      wikiStore.table.isCellSelectable = true;
+      
 
     } catch(error) {
-    //   alert("Failed to apply. 🙁\n\n" + error);
         error.errorDescription += "\n\nFailed to apply. 🙁";
         this.setState({ errorMessage: error });
 
-      // follow-ups (failure)
-        wikiStore.table.showSpinner = false;
     }
+    wikiStore.table.showSpinner = false;
+    wikiStore.table.isCellSelectable = true;
   }
 
   handleChangeYaml() {

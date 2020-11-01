@@ -63,4 +63,11 @@ export class Cell {
         return null;
     }
 
+    get isCell(): boolean{
+        if (this.col && this.row){
+            return true;
+        }
+        return false;
+    }
+
 }

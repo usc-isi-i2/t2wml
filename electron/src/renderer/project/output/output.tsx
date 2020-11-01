@@ -25,7 +25,6 @@ interface OutputComponentState {
 
   // download
   showDownload: boolean,
-  isDownloadDisabled: boolean,
   isDownloading: boolean;
   isLoadDatamart: boolean;
 
@@ -47,7 +46,6 @@ class Output extends Component<{}, OutputComponentState> {
       errors: "",
       // download
       showDownload: false,
-      isDownloadDisabled: wikiStore.output.isDownloadDisabled,
       isDownloading: false,
       isLoadDatamart: false,
 

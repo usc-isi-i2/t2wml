@@ -113,7 +113,7 @@ class RequestService {
 
   public fillEntitiesData(response: UploadEntitiesDTO) {
     this.fillProjectAndLayers(response);
-    wikiStore.entitiesStats = response.entitiesStats;
+    wikiStore.wikifier.entitiesStats = response.entitiesStats;
   }
 }
 

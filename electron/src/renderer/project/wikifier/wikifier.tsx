@@ -122,7 +122,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       this.setState({ errorMessage: error });
 
       // follow-ups (failure)
-      wikiStore.table.updateQnodeCells();
       wikiStore.wikifier.showSpinner = false;
     }
   }
@@ -180,7 +179,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       // const { qnodes, rowData } = json;
       // wikiStore.wikifier.updateWikifier(qnodes, rowData);
 
-      const { added, failed, updated } = wikiStore.entitiesStats!;
+      const { added, failed, updated } = wikiStore.wikifier.entitiesStats!;
       let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
       if (failed.length) {
         message += '\n\nCheck the console for the failures reasons.'

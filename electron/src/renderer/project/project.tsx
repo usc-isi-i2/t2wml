@@ -110,8 +110,6 @@ class Project extends Component<ProjectProps, ProjectState> {
       //   wikiStore.table.tableData = undefined;
       // }
       
-      // reset output window
-      wikiStore.output.clearOutput();
 
       // // load wikifier data
       // if (wikifierData !== null) {
