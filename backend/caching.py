@@ -5,6 +5,7 @@ from t2wml.api import KnowledgeGraph
 from app_config import UPLOAD_FOLDER, app
 from t2wml.mapping.statement_mapper import YamlMapper
 
+__cache_version__ = "1" #should be changed every time a breaking change is introduced to results format.
 
 class Cacher:
     title = ""
@@ -22,7 +23,7 @@ class Cacher:
         m_time_str = str(os.path.getmtime(self.yaml_file_path)) + str(os.path.getmtime(self.data_file_path))
         cache_hash.update(m_time_str.encode('utf-8'))
         file_name = self.sheet_name + "_" + cache_hash.hexdigest() + ".json"
-        file_path = os.path.join(UPLOAD_FOLDER, "calc_cache")
+        file_path = os.path.join(UPLOAD_FOLDER, "calc_cache_v"+__cache_version__)
         if not os.path.isdir(file_path):
             os.makedirs(file_path)
         return os.path.join(file_path, file_name)
