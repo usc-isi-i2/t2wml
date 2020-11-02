@@ -81,24 +81,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const formData = new FormData();
     formData.append("yaml", this.state.yamlContent);
     formData.append("title", this.state.yamlTitle);
-    // const sheetName = window.TableViewer.state.currSheetName;
-    // if (sheetName !== null) {
-    //   formData.append("sheet_name", sheetName)
-    // }
+
     try {
       await this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData);
       console.debug('Uploaidng yaml ', this.state.yamlContent);
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
-
-        // else, success
-      // const { yamlRegions } = json;
-      // const internalError = json.error;
-      // if (internalError){
-
-      //     console.log("ERRORS while applying yaml:");
-      //     console.log(internalError);
-      // }
-      // wikiStore.table.yamlRegions = yamlRegions;
 
       // follow-ups (success)
       wikiStore.output.isDownloadDisabled = false;

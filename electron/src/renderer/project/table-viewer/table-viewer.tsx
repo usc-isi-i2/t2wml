@@ -123,10 +123,6 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  // shouldComponentUpdate() {
-  //   return this.state.showTable;
-  // }
-
   onGridReady(params: WikifierData) {
     // store the api
     this.gridApi = params.api;
@@ -163,38 +159,6 @@ class TableViewer extends Component<{}, TableState> {
     try {
       await this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData);
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
-
-      // // do something here
-      // const { error } = json;
-
-      // // if failure
-      // if (error !== null) {
-      //   throw Error(error);
-      // }
-
-      // else, success
-      // const { tableData, wikifierData, yamlContent } = json;
-
-      // // load table data
-      // tableData.sheetData.columnDefs[0].pinned = "left"; // set first col pinned at left
-      // tableData.sheetData.columnDefs[0].width = 40; // set first col 40px width (max 5 digits, e.g. "12345")
-      // this.setState({
-      //   filename: tableData.filename,
-      //   isCSV: tableData.isCSV,
-      //   sheetNames: tableData.sheetNames,
-      //   currSheetName: tableData.currSheetName,
-      //   columnDefs: tableData.sheetData.columnDefs,
-      //   rowData: tableData.sheetData.rowData,
-      //   showTable: true,
-      // });
-      // // this.gridColumnApi.autoSizeAllColumns();
-
-      // // load wikifier data
-      // if (wikifierData !== null) {
-      //   wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
-      // } else {
-      //   wikiStore.table.updateQnodeCells(); // reset
-      // }
 
       // load yaml data
       if (wikiStore.yaml.yamlContent) {
