@@ -4,7 +4,7 @@ from hashlib import sha256
 from t2wml.api import KnowledgeGraph
 from app_config import UPLOAD_FOLDER, app
 
-__cache_version__ = "1" #should be changed every time a breaking change is introduced to results format.
+__cache_version__ = "2" #should be changed every time a breaking change is introduced to results format.
 
 class CacheHolder:
     def __init__(self, project, data_file_path, sheet_name, yaml_file_path):
