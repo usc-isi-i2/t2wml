@@ -133,7 +133,6 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   async onShowSettingsClicked() {
-    // await this.requestService.getSettings(this.props.path, {});
     this.setState({
       endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
