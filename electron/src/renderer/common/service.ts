@@ -1,14 +1,14 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
-import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, 
-  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO, ProjectDTOResponse } from './dtos';
+import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, ResponseWithProjectDTO,
+  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO } from './dtos';
 
 // I did it as a class because we will add a state instance
 
 class RequestService {
 
   public async createProject(folder: string) {
-    const response = await backendPost(`/project?project_folder=${folder}`) as ProjectDTOResponse;
+    const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
     this.fillProjectInStore(response.project); // not necessary
   }
   
@@ -39,8 +39,6 @@ class RequestService {
   }
 
   public async callWikifierService(folder: string, formData: any) {
-    //returns project, rowData, qnodes
-    //also returns problemCells (an error dict, or False)
     const response = await backendPost(`/wikifier_service?project_folder=${folder}`, formData) as CallWikifierServiceDTO;
     this.fillCallWikifier(response);
   }
@@ -52,24 +50,22 @@ class RequestService {
 
   public async renameProject(folder: string, formData: any) {
     //returns project
-    const response = await backendPut(`/project?project_folder=${folder}`, formData) as ProjectDTOResponse;
+    const response = await backendPut(`/project?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
     this.fillProjectInStore(response.project); // not necessary
   }
 
   public async getSettings(folder: string, formData: any) {
     //returns endpoint, warnEmpty
-    const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ProjectDTOResponse;
+    const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
     this.fillProjectInStore(response.project);
   }
 
   public async uploadEntities(folder: string, formData: any) {
-    //returns "widget", "project", "rowData", "qnodes"
     const response = await backendPost(`/project/entity?project_folder=${folder}`, formData) as UploadEntitiesDTO;
     this.fillEntitiesData(response);
   }
   
   public async loadToDatamart(folder: string) {
-    //returns "description" (an error message) or "datamart_get_url"
     const response = await backendGet(`/project/datamart?project_folder=${folder}`);
     return response;
   }

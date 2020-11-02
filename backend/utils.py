@@ -1,5 +1,6 @@
 import csv
 from pathlib import Path
+import numpy as np
 from string import punctuation
 from flask import request
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -7,6 +8,10 @@ import web_exceptions
 from wikidata_models import WikidataEntity
 
 wikidata_label_query_cache = {}
+
+def numpy_converter(o):
+    if isinstance(o, np.generic): return o.item()  
+    raise TypeError
 
 def query_wikidata_for_label_and_description(items, sparql_endpoint):
     items = ' wd:'.join(items)

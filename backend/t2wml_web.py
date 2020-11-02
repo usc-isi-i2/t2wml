@@ -121,13 +121,13 @@ def get_cleaned(kg):
     cleanedLayer=dict(layerType="cleaned", entries=[])
     if kg.sheet:
         cleaned_data=kg.sheet.cleaned_data
-        if cleaned_data: 
+        if cleaned_data is not None: 
             comparison=cleaned_data.ne(kg.sheet.raw_data)
             comparison=comparison.to_numpy()
             changed_values = np.argwhere(comparison)
             for entry in changed_values:
                 new_value = cleaned_data.iloc[entry[0], entry[1]]
-                entry=dict(indices=[entry[0], entry[1]], cleaned=new_value)
+                entry=dict(indices=[[entry[0], entry[1]]], cleaned=new_value)
                 cleanedLayer["entries"].append(entry)
     return cleanedLayer
 
@@ -174,7 +174,7 @@ def get_yaml_layers(calc_params):
             errorEntry=dict(indices=[cell_index], error=errors[cell])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):	
+            if len(set(["property", "value", "item", "fatal"]).intersection(errors[cell].keys())):	
                 majorErrorEntry["indices"].append(cell_index)
             else:	
                 minorErrorEntry["indices"].append(cell_index)

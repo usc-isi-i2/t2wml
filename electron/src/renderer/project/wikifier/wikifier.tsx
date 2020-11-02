@@ -99,21 +99,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       console.log(json);
 
-      // do something here
-      // const { error } = json;
-
-      // // if failure
-      // if (error !== undefined && error!==null) {
-      //   throw Error(error);
-      // }
-
-      // else, success
-      // const { qnodes, rowData, problemCells} = json;
-      // if (problemCells){
-      //   this.setState({ errorMessage: problemCells as ErrorMessage });
-      // }
-      // wikiStore.table.updateQnodeCells(qnodes, rowData);
-
       // follow-ups (success)
       wikiStore.wikifier.showSpinner = false;
 
@@ -165,19 +150,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       const json = await this.requestService.uploadEntities(wikiStore.projects.current!.folder, formData);
       console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
       console.log(json);
-
-      // // do something here
-      // const { error } = json;
-
-      // // if failure
-      // if (error) {
-      //   throw Error(error);
-      // }
-
-      // else, success
-      // load wikifier data
-      // const { qnodes, rowData } = json;
-      // wikiStore.wikifier.updateWikifier(qnodes, rowData);
 
       const { added, failed, updated } = wikiStore.wikifier.entitiesStats!;
       let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
@@ -362,23 +334,6 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
             <WikifierOutput
               rowData={this.state.rowData} />
           </Card.Body>
-
-          {/* card footer */}
-          {/* <Card.Footer
-            style={
-                (this.props.isShowing) ? { height: "40px", padding: "0.5rem 1rem", background: "whitesmoke" } : { display: "none" }
-            }
-            >
-            <Button
-                className="d-inline-block float-right"
-                size="sm"
-                style={{ borderColor: "#006699", background: "#006699", padding: "0rem 0.5rem" }}
-            // onClick={this.handleApply.bind(this)}
-            // disabled={!this.state.isValidYaml}
-            >
-                Download
-            </Button>
-            </Card.Footer> */}
 
         </Card >
       </Fragment>
