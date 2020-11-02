@@ -174,7 +174,7 @@ def get_yaml_layers(calc_params):
             errorEntry=dict(indices=[cell_index], error=errors[cell])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "item"]).intersection(errors[cell].keys())):	
+            if len(set(["property", "value", "item", "fatal"]).intersection(errors[cell].keys())):	
                 majorErrorEntry["indices"].append(cell_index)
             else:	
                 minorErrorEntry["indices"].append(cell_index)
