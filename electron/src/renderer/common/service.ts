@@ -1,15 +1,15 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, 
-  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO } from './dtos';
+  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO, ProjectDTOResponse } from './dtos';
 
 // I did it as a class because we will add a state instance
 
 class RequestService {
 
   public async createProject(folder: string) {
-    const response = await backendPost(`/project?project_folder=${folder}`) as ProjectDTO;
-    this.fillProjectInStore(response);
+    const response = await backendPost(`/project?project_folder=${folder}`) as ProjectDTOResponse;
+    this.fillProjectInStore(response.project); // not necessary
   }
   
   public async uploadDataFile(folder: string, formData: any) {
@@ -52,14 +52,14 @@ class RequestService {
 
   public async renameProject(folder: string, formData: any) {
     //returns project
-    const response = await backendPut(`/project?project_folder=${folder}`, formData) as ProjectDTO;
-    this.fillProjectInStore(response);
+    const response = await backendPut(`/project?project_folder=${folder}`, formData) as ProjectDTOResponse;
+    this.fillProjectInStore(response.project); // not necessary
   }
 
   public async getSettings(folder: string, formData: any) {
     //returns endpoint, warnEmpty
-    const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ProjectDTO;
-    this.fillProjectInStore(response);
+    const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ProjectDTOResponse;
+    this.fillProjectInStore(response.project);
   }
 
   public async uploadEntities(folder: string, formData: any) {

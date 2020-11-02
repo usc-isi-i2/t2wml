@@ -24,6 +24,9 @@ export interface ProjectDTO {
     _saved_state: SavedStateDTO;
 }
 
+export interface ProjectDTOResponse {
+    project: ProjectDTO;
+}
 
 // export interface ColumnDefDTO {
 //     headerName: string;
