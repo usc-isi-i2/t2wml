@@ -17,7 +17,6 @@ BASEDIR = os.path.abspath(os.path.dirname(__file__))
 if BASEDIR not in sys.path:
     sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
-UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
 CACHE_FOLDER=os.path.join(DATADIR, "cache")
 DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
 
@@ -29,7 +28,6 @@ app.secret_key = "secret key" # This will no longer be used once we stop using s
 
 class AppConfig:
     USE_CACHE=True
-    UPLOAD_FOLDER = UPLOAD_FOLDER
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
     downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
