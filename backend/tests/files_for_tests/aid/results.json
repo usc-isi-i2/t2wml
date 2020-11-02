@@ -580,7 +580,7 @@
                         "error": {
                             "qualifier": {
                                 "1": {
-                                    "value": "Failed to resolve",
+                                    "value": "Failed to resolve"
                                 }
                             }
                         }
