@@ -18,18 +18,14 @@ if BASEDIR not in sys.path:
     sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
 
 CACHE_FOLDER=os.path.join(DATADIR, "cache")
-DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
-
 Path(CACHE_FOLDER).mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__, static_folder=None)
 CORS(app, supports_credentials=True)
-app.secret_key = "secret key" # This will no longer be used once we stop using session cookies
 
 class AppConfig:
     USE_CACHE=True
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
-    downloads = DOWNLOAD_FOLDER
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(DATADIR, 'entities.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -38,7 +34,6 @@ class AppConfig:
 app.config.from_object(AppConfig)
 
 DEFAULT_SPARQL_ENDPOINT = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql'
-GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
 #DATAMART_API_ENDPOINT = 'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
 DATAMART_API_ENDPOINT = 'http://localhost:12543'
 
