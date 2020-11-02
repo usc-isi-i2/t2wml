@@ -39,8 +39,6 @@ class RequestService {
   }
 
   public async callWikifierService(folder: string, formData: any) {
-    //returns project, rowData, qnodes
-    //also returns problemCells (an error dict, or False)
     const response = await backendPost(`/wikifier_service?project_folder=${folder}`, formData) as CallWikifierServiceDTO;
     this.fillCallWikifier(response);
   }
@@ -51,25 +49,21 @@ class RequestService {
   }
 
   public async renameProject(folder: string, formData: any) {
-    //returns project
     const response = await backendPut(`/project?project_folder=${folder}`, formData) as ProjectDTO;
     this.fillProjectInStore(response);
   }
 
   public async getSettings(folder: string, formData: any) {
-    //returns endpoint, warnEmpty
     const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ProjectDTO;
     this.fillProjectInStore(response);
   }
 
   public async uploadEntities(folder: string, formData: any) {
-    //returns "widget", "project", "rowData", "qnodes"
     const response = await backendPost(`/project/entity?project_folder=${folder}`, formData) as UploadEntitiesDTO;
     this.fillEntitiesData(response);
   }
   
   public async loadToDatamart(folder: string) {
-    //returns "description" (an error message) or "datamart_get_url"
     const response = await backendGet(`/project/datamart?project_folder=${folder}`);
     return response;
   }

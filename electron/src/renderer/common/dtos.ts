@@ -24,66 +24,6 @@ export interface ProjectDTO {
     _saved_state: SavedStateDTO;
 }
 
-
-// export interface ColumnDefDTO {
-//     headerName: string;
-//     field: string;
-//     pinned: 'left' | undefined;
-//     width?: number;
-// }
-
-// export type RowDataDTO = {[key:string]:string};
-
-// export interface SheetDataDTO {
-//     columnDefs: ColumnDefDTO[];
-//     rowData: RowDataDTO[];
-// }
-
-// export interface YamlRegionDTO {
-//     type: string;
-//     color: string;
-//     list: string[];
-// }
-//
-// export interface YamlDataDTO {
-//     yamlFileContent: string | undefined;
-//     yamlRegions: { [key: string]: YamlRegionDTO };
-//
-//     // The following are used for debug prints only, so we do not define their content
-//     error: { [key: string]: any };
-//     cellStatements: { [key: string]: any };
-// }
-//
-// export interface QnodeDataDTO {
-//     context: string;
-//     col: string;
-//     row: string;
-//     value: string;
-//     item: string;
-//     label?: string;
-//     description?: string;
-// }
-//
-// export interface QnodeDTO {
-//     item: string;
-//     label?: string;
-//     description?: string;
-// }
-//
-// export interface WikifierDataDTO {
-//     qnodes: { [key: string]: { [key: string]: QnodeDTO } }
-//     rowData: QnodeDataDTO[];
-// }
-
-// export interface TableDataDTO {
-//     filename: string;
-//     isCSV: boolean;
-//     sheetNames: string[];
-//     currSheetName: string;
-//     sheetData: SheetDataDTO;
-// }
-
-
 interface ResponseWithProjectDTO {
      project: ProjectDTO;
 }
