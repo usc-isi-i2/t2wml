@@ -89,7 +89,7 @@ class StatementLayer extends Layer<StatementEntry>{
 
     constructor(responseLayer?: StatementLayerDTO) {
         super(responseLayer);
-        if (responseLayer) {
+        if (responseLayer && responseLayer.qnodes) {
             this.qnodes = new Map<string, QNode>(Object.entries(responseLayer.qnodes));
         }
         else {
