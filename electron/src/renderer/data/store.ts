@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { CleanEntry, EntitiesStatsDTO, Entry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, WikifierErrorDTO } from '../common/dtos';
+import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, WikifierErrorDTO } from '../common/dtos';
 import { Cell } from '../common/general';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
@@ -109,16 +109,16 @@ class StatementLayer extends Layer<StatementEntry>{
 
 class LayerState {
     @observable public qnode: Layer<QNodeEntry>;
-    @observable public type: Layer<Entry>;
+    @observable public type: Layer<TypeEntry>;
     @observable public statement: StatementLayer;
-    @observable public error: Layer<Entry>;
+    @observable public error: Layer<ErrorEntry>;
     @observable public cleaned: Layer<CleanEntry>;
 
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
-        this.type = new Layer<Entry>();
+        this.type = new Layer<TypeEntry>();
         this.statement = new StatementLayer();
-        this.error = new Layer<Entry>();
+        this.error = new Layer<ErrorEntry>();
         this.cleaned = new Layer<CleanEntry>();
     }
 

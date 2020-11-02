@@ -18,6 +18,7 @@ function convertToExcel(n: number): string {
 }
 
 export function getColumnTitleFromIndex(index: number): string {
+  // 0 -> A, 1-> B
   if (index in quickColumnConversions) {
     return quickColumnConversions[index]
   }

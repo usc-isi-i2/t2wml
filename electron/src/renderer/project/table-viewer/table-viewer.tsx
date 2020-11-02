@@ -23,6 +23,7 @@ import { defaultColumns, defaultRows } from './table-definition';
 import { IReactionDisposer, reaction } from 'mobx';
 import { getColumns, getRowData } from './agGrid-Converter';
 import * as utils from '../../common/utils'
+import { CellIndex } from '@/renderer/common/dtos';
 
 interface Column {
   headerName: string;
@@ -47,6 +48,11 @@ interface TableState {
   columnDefs: Array<Column>;
   rowData: any; // Array<object>; // todo: add interface
   selectedCell: Cell;
+
+  //cache styled cells for quick wiping
+  styledCellsQnode: Array<CellIndex>
+  styledCellsType: Array<CellIndex>
+  styledCellsClean: Array<CellIndex>
 
   errorMessage: ErrorMessage;
   showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
@@ -80,6 +86,11 @@ class TableViewer extends Component<{}, TableState> {
       rowData: defaultRows,
 
       selectedCell: new Cell(),
+
+      styledCellsQnode: new Array<CellIndex>(),
+      styledCellsType: new Array<CellIndex>(),
+      styledCellsClean: new Array<CellIndex>(),
+
       errorMessage: {} as ErrorMessage,
       showTable: true,
     };
@@ -247,19 +258,6 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.wikifier.showSpinner = false;
   }
 
-  styleCellTypeColors() {
-    return;
-  }
-
-  styleCleanedCells() {
-    //TODO: whenever we design the css for cleaning
-    return;
-  }
-
-  styleQnodeCells() {
-    return;
-  }
-
   styleSelectedCell(selectedCell: Cell, clear = false) {
     let style = { border: "" }
 
@@ -370,44 +368,98 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  updateStyleByDict(dict: any, presets: any, override = false) {
-    // dict = { "styleName": ["A1", "A2", ...] }
-    // window.TableViewer.updateStyleByDict({ "data_region": ["A14", "A15"], "qualifier_region": ["B14", "B15"], "item": ["C14", "C15"] });
+  updateStyleByArray(cellsForStyling: Array<CellIndex>, style: any) {
     const rowData2 = this.state.rowData;
     if (!rowData2) {
       return;
     }
-
-    const styleNames = Object.keys(presets);
-    for (let i = 0; i < styleNames.length; i++) {
-      const styleName = styleNames[i];
-
-      let cells = undefined;
-      if (dict[styleName]) {
-        cells = dict[styleName]['list'];
-      }
-      if (cells === undefined) continue;
-      for (let j = 0; j < cells.length; j++) {
-        const [col, row1Based] = cells[j].match(/[a-z]+|[^a-z]+/gi);
-        const row = row1Based - 1;
-        if (rowData2[row] === undefined) continue;
-        if (rowData2[row][col] === undefined) continue;
-        if (rowData2[row]["styles"] === undefined) { rowData2[row]["styles"] = {}; }
-        if (override) {
-          rowData2[row]["styles"][col] = presets[styleName];
-        } else {
-          rowData2[row]["styles"][col] = Object.assign({}, rowData2[row]["styles"][col], presets[styleName]); // combine old and new styles
-        }
-      }
+    for (let cell of cellsForStyling){
+      const row = cell[0]
+      const col = utils.getColumnTitleFromIndex(cell[1])
+      if (rowData2[row] === undefined) continue;
+      if (rowData2[row][col] === undefined) continue;
+      if (rowData2[row]["styles"] === undefined) { rowData2[row]["styles"] = {}; }
+      rowData2[row]["styles"][col] = Object.assign({}, rowData2[row]["styles"][col], style); // combine old and new styles
     }
+
     this.setState({
       rowData: rowData2
     });
     if (this.gridApi) {
       this.gridApi.setRowData(rowData2);
-    } /* else {
-      console.warn("Can't update style, gridApi is undefined");
-    } */
+    }
+
+  }
+
+
+  styleCellTypeColors() {
+    const oldTypes = this.state.styledCellsType;
+    this.updateStyleByArray(oldTypes, { backgroundColor: "" })
+
+    let allIndices = Array<CellIndex>();
+    const types = wikiStore.layers.type;
+    const typeStyles=new Map<string, any>([
+      ["data", { backgroundColor:  "hsl(150, 50%, 90%)"}],
+      ["item", { backgroundColor:  "hsl(200, 50%, 90%)"}],
+      ["qualifier", { backgroundColor:  "hsl(250, 50%, 90%)"}],
+      ["reference", { backgroundColor:  "hsl(150, 50%, 90%)"}],
+      ["minorError", { backgroundColor:   '#FF8000'}],
+      ["majorError", { backgroundColor:  '#FF3333'}]
+    ])
+    for (let entry of types.entries){
+      allIndices=allIndices.concat(entry.indices)
+      const style = typeStyles.get(entry.type)
+      if (style==undefined){
+        continue;
+        //for now, pass. 
+        //later, we may want to generate a random color here, so we can color different qualifiers
+      }
+      this.updateStyleByArray(entry.indices, style)
+    }
+
+    this.setState({
+      styledCellsType: allIndices
+    })
+  }
+
+  styleCleanedCells() {
+    console.log("rowdata before cleaning styling", this.state.rowData);
+        //reset
+        const oldCleaned = this.state.styledCellsClean;
+        this.updateStyleByArray(oldCleaned, { fontStyle: "normal" })
+    
+        //color
+        const cleaned = wikiStore.layers.cleaned;
+        let allIndices = Array<CellIndex>();
+        for (let entry of cleaned.entries){
+          allIndices = allIndices.concat(entry.indices)
+        }
+        this.updateStyleByArray(allIndices, { fontStyle: "italic"  })
+        console.log("rowdata after cleaning styling", this.state.rowData);
+        
+        this.setState({
+          styledCellsClean: allIndices
+        })
+
+    return;
+  }
+
+  styleQnodeCells() {
+    //reset
+    const oldQnodes = this.state.styledCellsQnode;
+    this.updateStyleByArray(oldQnodes, { color: "" })
+
+    //color
+    const qnodes = wikiStore.layers.qnode;
+    let allIndices = Array<CellIndex>();
+    for (let entry of qnodes.entries){
+      allIndices = allIndices.concat(entry.indices)
+    }
+    this.updateStyleByArray(allIndices, { color: "hsl(200, 100%, 30%)" })
+    
+    this.setState({
+      styledCellsQnode: allIndices
+    })
   }
 
   updateTableData() {

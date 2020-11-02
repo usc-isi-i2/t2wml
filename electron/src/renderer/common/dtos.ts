@@ -81,8 +81,8 @@ export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
 export interface LayersDTO {
     qnode?: LayerDTO<QNodeEntry>;
     statement?: StatementLayerDTO;
-    error?: LayerDTO<Entry>;
-    type?: LayerDTO<Entry>;
+    error?: LayerDTO<ErrorEntry>;
+    type?: LayerDTO<TypeEntry>;
     cleaned?: LayerDTO<CleanEntry>;
 }
 
@@ -94,6 +94,14 @@ export interface QNodeEntry extends Entry, QNode {
 
 export interface CleanEntry extends Entry {
     cleaned: string;
+}
+
+export interface TypeEntry extends Entry {
+    type: string;
+}
+
+export interface ErrorEntry extends Entry {
+    error: any;
 }
 
 export interface StatementEntry extends Entry{
