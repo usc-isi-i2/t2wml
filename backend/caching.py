@@ -1,15 +1,16 @@
 import os
 import json
 from hashlib import sha256
+import numpy
 from t2wml.api import KnowledgeGraph
 from app_config import CACHE_FOLDER, app
+from utils import numpy_converter
 
 __cache_version__ = "2" #should be changed every time a breaking change is introduced to results format.
 
 def use_cache():
     #return True
     return app.config['USE_CACHE']
-
 
 class CacheHolder:
     def __init__(self, project, data_file_path, sheet_name, yaml_file_path):
@@ -32,19 +33,22 @@ class CacheHolder:
 
     def save(self, kg, layers):
         if use_cache():
-            sheet=None
-            if kg.sheet:
-                sheet=kg.sheet.to_json()
-            d = {
-                "statements": kg.statements,
-                "errors": kg.errors,
-                "metadata": kg.metadata,
-                "sheet": sheet,
-                "layers": layers
-            }
-            s = json.dumps(d)
-            with open(self.cache_path, 'w', encoding="utf-8") as f:
-                f.write(s)
+            try:
+                sheet=None
+                if kg.sheet:
+                    sheet=kg.sheet.to_json()
+                d = {
+                    "statements": kg.statements,
+                    "errors": kg.errors,
+                    "metadata": kg.metadata,
+                    "sheet": sheet,
+                    "layers": layers
+                }
+                s = json.dumps(d, default=numpy_converter)
+                with open(self.cache_path, 'w', encoding="utf-8") as f:
+                    f.write(s)
+            except Exception as e: #I really don't want bugs in this optional section breaking the program
+                print("error when caching:", str(e))
 
     def get_kg(self):
         if use_cache():

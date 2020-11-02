@@ -121,13 +121,13 @@ def get_cleaned(kg):
     cleanedLayer=dict(layerType="cleaned", entries=[])
     if kg.sheet:
         cleaned_data=kg.sheet.cleaned_data
-        if cleaned_data: 
+        if cleaned_data is not None: 
             comparison=cleaned_data.ne(kg.sheet.raw_data)
             comparison=comparison.to_numpy()
             changed_values = np.argwhere(comparison)
             for entry in changed_values:
                 new_value = cleaned_data.iloc[entry[0], entry[1]]
-                entry=dict(indices=[entry[0], entry[1]], cleaned=new_value)
+                entry=dict(indices=[[entry[0], entry[1]]], cleaned=new_value)
                 cleanedLayer["entries"].append(entry)
     return cleanedLayer
 
