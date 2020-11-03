@@ -193,10 +193,7 @@ class Project extends Component<ProjectProps, ProjectState> {
         {/* content */}
         <div>
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-            <SplitPane className="p-3" split="vertical">
-              <Sidebar />
-              <TableViewer />
-            </SplitPane>
+            <TableViewer />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />
               <Output />

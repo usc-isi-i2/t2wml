@@ -68,11 +68,11 @@ export default class MainMenuManager {
                     { type: 'separator' },
                     { role: 'togglefullscreen' },
                     { type: 'separator' },
-                    {
-                        label: 'Toggle File Tree',
-                        click: () => this.onToggleFileTreeClick(),
-                        enabled: uiState.displayMode === 'project',
-                    }
+                    // {
+                    //     label: 'Toggle File Tree',
+                    //     click: () => this.onToggleFileTreeClick(),
+                    //     enabled: uiState.displayMode === 'project',
+                    // }
                 ]
             },
             {
