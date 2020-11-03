@@ -97,7 +97,7 @@ class TestBasicWorkflow(BaseClass):
         self.results_dict['change_sheet']=data
         self.compare_jsons(data, 'change_sheet')
 
-    def xtest_12_wikify_region(self, client):
+    def test_12_wikify_region(self, client):
         #POST '/api/wikifier_service/{project_folder}'
         url='/api/wikifier_service?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.post(url,
