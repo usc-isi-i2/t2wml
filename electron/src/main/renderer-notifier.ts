@@ -48,9 +48,15 @@ class RendererNotifier {
 
     }
 
-    // TODO:
-    // Add a notification function that sends the layer to the rendered process
-    // Use this.mainWindow.webContents.send()
+    public toggleShowCleanedData(checked: boolean){
+        console.log("entered the renderer")
+        if(!this.mainWindow) {
+            console.warn("mainWindow not set on RendererNotifier");
+            return;
+        }
+        this.mainWindow.webContents.send('toggle-cleaned', checked);
+    }
+
 }
 
 export const rendererNotifier = RendererNotifier.instance;

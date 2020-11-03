@@ -38,8 +38,16 @@ class App extends Component<{}, AppState> {
       this.onNewProject(folder);
     });
 
-    // TODO: Hook into the layer change event with ipcRenderer.on
+    ipcRenderer.on('toggle-cleaned', (sender: IpcRendererEvent, checked: boolean) => {
+      this.onToggleCleaned(checked);
+    });
+
     wikiStore.changeProject();
+  }
+
+  onToggleCleaned(checked: boolean){
+    console.log("entered app.tsx with checked: ", checked)
+    wikiStore.table.showCleanedData = checked;
   }
 
   async onNewProject(folder: string) {
@@ -103,8 +111,6 @@ class App extends Component<{}, AppState> {
     }
   }  
 
-  // TODO: Add an event handler that receives the event for layer change, and change the store
-  
   render() {
     return (
       <div>

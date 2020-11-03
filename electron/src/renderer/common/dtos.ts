@@ -94,6 +94,7 @@ export interface QNodeEntry extends Entry, QNode {
 
 export interface CleanEntry extends Entry {
     cleaned: string;
+    original: string;
 }
 
 export interface TypeEntry extends Entry {

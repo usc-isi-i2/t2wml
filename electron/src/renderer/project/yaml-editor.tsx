@@ -226,7 +226,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 </Button>
             </OverlayTrigger>
 
-            {/* TODO: move following input to another place */}
             {/* hidden input of yaml file */}
             <input
                 type="file"

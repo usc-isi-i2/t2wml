@@ -127,7 +127,8 @@ def get_cleaned(kg):
             changed_values = np.argwhere(comparison)
             for entry in changed_values:
                 new_value = cleaned_data.iloc[entry[0], entry[1]]
-                entry=dict(indices=[[entry[0], entry[1]]], cleaned=new_value)
+                old_value = kg.sheet.raw_data.iloc[entry[0], entry[1]]
+                entry=dict(indices=[[entry[0], entry[1]]], cleaned=new_value, original=old_value)
                 cleanedLayer["entries"].append(entry)
     return cleanedLayer
 

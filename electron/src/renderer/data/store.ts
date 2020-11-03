@@ -15,8 +15,7 @@ class TableState {
     @observable public isCellSelectable: boolean;
     @observable public showSpinner: boolean;
     @observable public selectedCell: Cell;
-
-    // TODO: Add an observable indicating whether we show the cleaned or original data
+    @observable public showCleanedData: boolean;
 
 
     constructor() {
@@ -24,6 +23,7 @@ class TableState {
         this.isCellSelectable = false;
         this.showSpinner = false;
         this.selectedCell = new Cell()
+        this.showCleanedData = false;
 
     }
 

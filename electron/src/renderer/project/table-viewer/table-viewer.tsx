@@ -58,7 +58,6 @@ interface TableState {
   showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
 }
 
-// TODO: Handle the state variable indicating which layer to show
 @observer
 class TableViewer extends Component<{}, TableState> {
   public gridApi: any;
@@ -109,6 +108,7 @@ class TableViewer extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.projects.current, () => this.updateTableData()));
     //fill table
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateTableData()));
+    this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleDataView()));
     //select cell
     this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.styleSelectedCell(wikiStore.table.selectedCell)));
     //css cells
@@ -221,6 +221,33 @@ class TableViewer extends Component<{}, TableState> {
     }
     wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = false;
+  }
+
+  toggleDataView(){
+    const rowData2 = this.state.rowData;
+    if (!rowData2) {return;}
+
+    const cleaned = wikiStore.layers.cleaned;
+    if (cleaned.entries.length < 1){return;} 
+
+    for (const  entry of cleaned.entries){
+      for (const cell of entry.indices){
+        const row = cell[0]
+        const col = utils.getColumnTitleFromIndex(cell[1])
+        if (rowData2[row] === undefined) continue;
+        if (rowData2[row][col] === undefined) continue;
+        if (wikiStore.table.showCleanedData){
+          rowData2[row][col] = entry.cleaned;
+          }else{
+          rowData2[row][col] = entry.original;
+        }
+      }
+      
+    }
+
+    this.setState({
+      rowData: rowData2
+    });
   }
 
   styleSelectedCell(selectedCell: Cell, clear = false) {
@@ -338,7 +365,7 @@ class TableViewer extends Component<{}, TableState> {
     if (!rowData2) {
       return;
     }
-    for (let cell of cellsForStyling){
+    for (const cell of cellsForStyling){
       const row = cell[0]
       const col = utils.getColumnTitleFromIndex(cell[1])
       if (rowData2[row] === undefined) continue;
@@ -371,7 +398,7 @@ class TableViewer extends Component<{}, TableState> {
       ["minorError", { backgroundColor:   '#FF8000'}],
       ["majorError", { backgroundColor:  '#FF3333'}]
     ])
-    for (let entry of types.entries){
+    for (const entry of types.entries){
       allIndices=allIndices.concat(entry.indices)
       const style = typeStyles.get(entry.type)
       if (style==undefined){
@@ -388,7 +415,6 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   styleCleanedCells() {
-    console.log("rowdata before cleaning styling", this.state.rowData);
         //reset
         const oldCleaned = this.state.styledCellsClean;
         this.updateStyleByArray(oldCleaned, { fontStyle: "normal" })
@@ -396,16 +422,15 @@ class TableViewer extends Component<{}, TableState> {
         //color
         const cleaned = wikiStore.layers.cleaned;
         let allIndices = Array<CellIndex>();
-        for (let entry of cleaned.entries){
+        for (const entry of cleaned.entries){
           allIndices = allIndices.concat(entry.indices)
         }
         this.updateStyleByArray(allIndices, { fontStyle: "italic"  })
-        console.log("rowdata after cleaning styling", this.state.rowData);
         
         this.setState({
           styledCellsClean: allIndices
         })
-
+    this.toggleDataView();
     return;
   }
 
@@ -417,7 +442,7 @@ class TableViewer extends Component<{}, TableState> {
     //color
     const qnodes = wikiStore.layers.qnode;
     let allIndices = Array<CellIndex>();
-    for (let entry of qnodes.entries){
+    for (const entry of qnodes.entries){
       allIndices = allIndices.concat(entry.indices)
     }
     this.updateStyleByArray(allIndices, { color: "hsl(200, 100%, 30%)" })
