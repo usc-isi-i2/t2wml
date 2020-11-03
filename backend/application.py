@@ -235,12 +235,7 @@ def change_data_file():
         raise web_exceptions.InvalidRequestException("data file parameter not specified")
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    response = {
-        "tableData": dict(),
-        "wikifierData": dict(),
-        "yamlData": dict(),
-        "error": None
-    }
+    response = dict(project=project.__dict__)
 
     project.update_saved_state(current_data_file=data_file)
     project.save()
