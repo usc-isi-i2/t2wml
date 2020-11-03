@@ -121,3 +121,22 @@ body {
 .myTextButton:hover {
   font-weight: 900;
 }
+
+.closed-sidebar {
+  width: 0;
+}
+
+.opened-sidebar {
+  width: 250px;
+  background-color: #339966;
+}
+
+.table-sidebar-open {
+ margin-left: 250px;
+ height: auto;
+}
+
+.table-sidebar-close {
+  margin-left: 0px;
+  height: 100vh - 50px;
+}

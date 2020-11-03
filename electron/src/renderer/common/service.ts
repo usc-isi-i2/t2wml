@@ -1,7 +1,7 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, ResponseWithProjectDTO,
-  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO } from './dtos';
+  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO, ChangeDataFileResponseDTO } from './dtos';
 
 // I did it as a class because we will add a state instance
 
@@ -19,6 +19,11 @@ class RequestService {
 
   public async changeSheet(folder: string, sheetName: string) {
     const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ChangeSheetResponseDTO;
+    this.fillgetProjectData(response);
+  }
+
+  public async changeDataFile(dataFileName: string, folder: string) {
+    const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ChangeDataFileResponseDTO;
     this.fillgetProjectData(response);
   }
 

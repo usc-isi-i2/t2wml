@@ -45,6 +45,8 @@ export interface GetProjectResponseDTO extends UploadDataFileResponseDTO {
 }
 export interface ChangeSheetResponseDTO extends GetProjectResponseDTO { }
 
+export interface ChangeDataFileResponseDTO extends GetProjectResponseDTO {}
+
 export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
     entitiesStats: EntitiesStatsDTO;
 }

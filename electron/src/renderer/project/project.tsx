@@ -23,6 +23,8 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
+import Sidebar from './sidebar/sidebar';
+
 
 interface ProjectState {
   showSettings: boolean;
@@ -30,6 +32,7 @@ interface ProjectState {
   warnEmpty: boolean;
   name: string;
   errorMessage: ErrorMessage;
+  showTreeFlag: boolean;
 }
 
 interface ProjectProps {
@@ -59,11 +62,13 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
+      showTreeFlag: false,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
     this.onRefreshProject = this.onRefreshProject.bind(this);
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
+    this.onShowFileTreeClicked = this.onShowFileTreeClicked.bind(this);
   }
 
   componentDidMount() {
@@ -75,12 +80,14 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
+    ipcRenderer.on('toggle-file-tree', this.onShowFileTreeClicked);
   }
 
   componentWillUnmount() {
     console.log("project- componentWillUnmount");
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
+    ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -140,6 +147,10 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
+  onShowFileTreeClicked() {
+    wikiStore.projects.showFileTree = !wikiStore.projects.showFileTree;
+  }
+
   async handleSaveSettings() {
     // update settings
     this.setState({ showSettings: false });
@@ -182,7 +193,10 @@ class Project extends Component<ProjectProps, ProjectState> {
         {/* content */}
         <div>
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-            <TableViewer />
+            <SplitPane className="p-3" split="vertical">
+              <Sidebar />
+              <TableViewer />
+            </SplitPane>
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />
               <Output />

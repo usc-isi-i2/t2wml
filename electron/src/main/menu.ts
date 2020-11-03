@@ -66,7 +66,13 @@ export default class MainMenuManager {
                     { role: 'zoomOut' },
                     { role: 'resetZoom' },
                     { type: 'separator' },
-                    { role: 'togglefullscreen' }
+                    { role: 'togglefullscreen' },
+                    { type: 'separator' },
+                    {
+                        label: 'Toggle File Tree',
+                        click: () => this.onToggleFileTreeClick(),
+                        enabled: uiState.displayMode === 'project',
+                    }
                 ]
             },
             {
@@ -170,6 +176,10 @@ export default class MainMenuManager {
 
     private onProjectSettingsClick() {
         rendererNotifier.projectSettings();
+    }
+    
+    private onToggleFileTreeClick() {
+        rendererNotifier.toggleFileTree();
     }
 
     private onClearRecentlyOpenedClick() {

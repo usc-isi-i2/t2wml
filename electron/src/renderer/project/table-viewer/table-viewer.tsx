@@ -548,7 +548,7 @@ class TableViewer extends Component<{}, TableState> {
     );
 
     return (
-      <div className="w-100 h-100 p-1">
+      <div className={(wikiStore.projects.showFileTree ? "table-sidebar-open " : "table-sidebar-close") + "w-100 h-100 p-1"}>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
         <Card className="w-100 h-100 shadow-sm">
 

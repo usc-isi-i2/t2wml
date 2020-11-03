@@ -57,6 +57,14 @@ class RendererNotifier {
         this.mainWindow.webContents.send('toggle-cleaned', checked);
     }
 
+    public toggleFileTree() {
+        if(!this.mainWindow) {
+            console.warn("mainWindow not set on RendererNotifier");
+            return;
+        }
+        this.mainWindow.webContents.send('toggle-file-tree');
+    }
+
 }
 
 export const rendererNotifier = RendererNotifier.instance;

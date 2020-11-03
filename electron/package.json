@@ -118,6 +118,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "react-split-pane": "^0.1.91",
+    "react-treebeard": "^3.2.4",
     "source-map-loader": "^0.2.4",
     "spectron": "^5.0.0",
     "style-loader": "^0.23.1",

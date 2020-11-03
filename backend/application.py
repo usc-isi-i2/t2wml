@@ -222,6 +222,36 @@ def change_sheet(sheet_name):
 
     return response, 200
 
+@app.route('/api/data/change_data_file', methods=['GET'])
+@json_response
+def change_data_file():
+    """
+    This route is used when switching a data file in the file tree.
+    :return:
+    """
+    try:
+        data_file = request.args['data_file'] 
+    except KeyError:
+        raise web_exceptions.InvalidRequestException("data file parameter not specified")
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    response = {
+        "tableData": dict(),
+        "wikifierData": dict(),
+        "yamlData": dict(),
+        "error": None
+    }
+
+    project.update_saved_state(current_data_file=data_file)
+    project.save()
+
+    calc_params = get_calc_params(project)
+    if calc_params:
+        response["yamlContent"]=get_yaml_content(calc_params)
+        get_all_layers_and_table(response, calc_params)
+
+    return response, 200
+
 
 @app.route('/api/wikifier', methods=['POST'])
 @json_response
