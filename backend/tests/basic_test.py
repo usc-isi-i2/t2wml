@@ -97,7 +97,7 @@ class TestBasicWorkflow(BaseClass):
         self.results_dict['change_sheet']=data
         self.compare_jsons(data, 'change_sheet')
 
-    def test_12_wikify_region(self, client):
+    def xtest_12_wikify_region(self, client):
         #POST '/api/wikifier_service/{project_folder}'
         url='/api/wikifier_service?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.post(url,
@@ -160,4 +160,14 @@ class TestLoadingProject(BaseClass):
 
         self.compare_jsons(data, 'load_from_path')
 
-    
+
+class TestCleaning(BaseClass):
+    files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
+    def test_11_get_cleaned_data(self, client):
+        url= '/api/project?project_folder={path}'.format(path=self.files_dir)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        cleaned_entries = data['layers']['cleaned']['entries']
+        assert len(cleaned_entries)== 3
+        assert cleaned_entries[1] == {'cleaned': '200', 'indices': [[6,3]], 'original': '4'}
