@@ -94,7 +94,11 @@ class Sidebar extends Component<{}, SidebarState> {
         }
     }
     
-    async onToggle(node: any, toggled: any){
+    async onToggle(node: any, toggled: any) {
+        // Does nothing when clickןמע on the current file
+        if (node.name === wikiStore.projects.projectDTO?._saved_state.current_data_file) {
+            return;
+        }
         const cursor = this.state.cursor;
         cursor.active = false;
         this.setState({ cursor });
