@@ -46,7 +46,6 @@ class App extends Component<{}, AppState> {
   }
 
   onToggleCleaned(checked: boolean){
-    console.log("entered app.tsx with checked: ", checked)
     wikiStore.table.showCleanedData = checked;
   }
 

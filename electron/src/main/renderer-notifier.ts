@@ -49,7 +49,6 @@ class RendererNotifier {
     }
 
     public toggleShowCleanedData(checked: boolean){
-        console.log("entered the renderer")
         if(!this.mainWindow) {
             console.warn("mainWindow not set on RendererNotifier");
             return;

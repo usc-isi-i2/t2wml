@@ -189,7 +189,6 @@ export default class MainMenuManager {
     }
 
     private onShowCleanedClick(checked: boolean) {
-        console.log("clicked the toggle");
         rendererNotifier.toggleShowCleanedData(checked);
     }
 }

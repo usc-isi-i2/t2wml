@@ -140,7 +140,7 @@ class Output extends Component<{}, OutputComponentState> {
     const statement=wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
 
     if(error) {
-        this.setState({errors: JSON.stringify(error)});
+        this.setState({errors: JSON.stringify(error)}); //TODO: fix to work better.
     }
 
     if (!statement) {return;}

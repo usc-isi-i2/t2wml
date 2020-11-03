@@ -14,6 +14,7 @@ import MainMenuManager from './menu';
 import { RendererEventListener } from './renderer-event-listener';
 import { rendererNotifier } from './renderer-notifier';
 import { settings } from './settings';
+import { uiState } from './ui-state';
 
 /* Splash Screen */
 let splashWindow: Electron.BrowserWindow | null;
@@ -94,8 +95,8 @@ function createMainWindow(): void {
             // In prod, dev tools never open automatically
             mainWindow!.webContents.openDevTools();
         }
-
-        // TODO: Notify the renderer of the initial viewed layer (using the renderer notifier function)
+        
+        rendererNotifier.toggleShowCleanedData(uiState.showCleanedData);
     });
     
     mainWindow.once('close', () => {

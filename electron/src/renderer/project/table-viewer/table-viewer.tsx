@@ -23,7 +23,7 @@ import { defaultColumns, defaultRows } from './table-definition';
 import { IReactionDisposer, reaction } from 'mobx';
 import { getColumns, getRowData } from './agGrid-Converter';
 import * as utils from '../../common/utils'
-import { CellIndex } from '@/renderer/common/dtos';
+import { CellIndex, CleanEntry } from '@/renderer/common/dtos';
 
 interface Column {
   headerName: string;
@@ -52,7 +52,7 @@ interface TableState {
   //cache styled cells for quick wiping
   styledCellsQnode: Array<CellIndex>
   styledCellsType: Array<CellIndex>
-  styledCellsClean: Array<CellIndex>
+  styledCellsClean: Array<CleanEntry>
 
   errorMessage: ErrorMessage;
   showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
@@ -89,7 +89,7 @@ class TableViewer extends Component<{}, TableState> {
 
       styledCellsQnode: new Array<CellIndex>(),
       styledCellsType: new Array<CellIndex>(),
-      styledCellsClean: new Array<CellIndex>(),
+      styledCellsClean: new Array<CleanEntry>(),
 
       errorMessage: {} as ErrorMessage,
       showTable: true,
@@ -183,7 +183,7 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  
+
   async handleSelectSheet(event: any) {
     this.setState({
       errorMessage: {} as ErrorMessage,
@@ -221,33 +221,6 @@ class TableViewer extends Component<{}, TableState> {
     }
     wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = false;
-  }
-
-  toggleDataView(){
-    const rowData2 = this.state.rowData;
-    if (!rowData2) {return;}
-
-    const cleaned = wikiStore.layers.cleaned;
-    if (cleaned.entries.length < 1){return;} 
-
-    for (const  entry of cleaned.entries){
-      for (const cell of entry.indices){
-        const row = cell[0]
-        const col = utils.getColumnTitleFromIndex(cell[1])
-        if (rowData2[row] === undefined) continue;
-        if (rowData2[row][col] === undefined) continue;
-        if (wikiStore.table.showCleanedData){
-          rowData2[row][col] = entry.cleaned;
-          }else{
-          rowData2[row][col] = entry.original;
-        }
-      }
-      
-    }
-
-    this.setState({
-      rowData: rowData2
-    });
   }
 
   styleSelectedCell(selectedCell: Cell, clear = false) {
@@ -365,7 +338,7 @@ class TableViewer extends Component<{}, TableState> {
     if (!rowData2) {
       return;
     }
-    for (const cell of cellsForStyling){
+    for (const cell of cellsForStyling) {
       const row = cell[0]
       const col = utils.getColumnTitleFromIndex(cell[1])
       if (rowData2[row] === undefined) continue;
@@ -374,6 +347,7 @@ class TableViewer extends Component<{}, TableState> {
       rowData2[row]["styles"][col] = Object.assign({}, rowData2[row]["styles"][col], style); // combine old and new styles
     }
 
+    console.log("setting state from updateStyleByArray", rowData2);
     this.setState({
       rowData: rowData2
     });
@@ -390,18 +364,18 @@ class TableViewer extends Component<{}, TableState> {
 
     let allIndices = Array<CellIndex>();
     const types = wikiStore.layers.type;
-    const typeStyles=new Map<string, any>([
-      ["data", { backgroundColor:  "hsl(150, 50%, 90%)"}],
-      ["item", { backgroundColor:  "hsl(200, 50%, 90%)"}],
-      ["qualifier", { backgroundColor:  "hsl(250, 50%, 90%)"}],
-      ["reference", { backgroundColor:  "hsl(150, 50%, 90%)"}],
-      ["minorError", { backgroundColor:   '#FF8000'}],
-      ["majorError", { backgroundColor:  '#FF3333'}]
+    const typeStyles = new Map<string, any>([
+      ["data", { backgroundColor: "hsl(150, 50%, 90%)" }],
+      ["item", { backgroundColor: "hsl(200, 50%, 90%)" }],
+      ["qualifier", { backgroundColor: "hsl(250, 50%, 90%)" }],
+      ["reference", { backgroundColor: "hsl(150, 50%, 90%)" }],
+      ["minorError", { backgroundColor: '#FF8000' }],
+      ["majorError", { backgroundColor: '#FF3333' }]
     ])
-    for (const entry of types.entries){
-      allIndices=allIndices.concat(entry.indices)
+    for (const entry of types.entries) {
+      allIndices = allIndices.concat(entry.indices)
       const style = typeStyles.get(entry.type)
-      if (style==undefined){
+      if (style == undefined) {
         continue;
         //for now, pass. 
         //later, we may want to generate a random color here, so we can color different qualifiers
@@ -414,23 +388,75 @@ class TableViewer extends Component<{}, TableState> {
     })
   }
 
-  styleCleanedCells() {
-        //reset
-        const oldCleaned = this.state.styledCellsClean;
-        this.updateStyleByArray(oldCleaned, { fontStyle: "normal" })
-    
-        //color
-        const cleaned = wikiStore.layers.cleaned;
-        let allIndices = Array<CellIndex>();
-        for (const entry of cleaned.entries){
-          allIndices = allIndices.concat(entry.indices)
+  toggleDataView(reset = false) {
+    console.log("entered toggleDataView")
+    const rowData2 = this.state.rowData;
+    if (!rowData2) { return; }
+
+    if (reset) {
+      const oldCleaned = this.state.styledCellsClean;
+      for (const entry of oldCleaned) {
+        for (const cell of entry.indices) {
+          const row = cell[0]
+          const col = utils.getColumnTitleFromIndex(cell[1])
+          if (rowData2[row] === undefined) continue;
+          if (rowData2[row][col] === undefined) continue;
+          rowData2[row][col] = entry.original;
         }
-        this.updateStyleByArray(allIndices, { fontStyle: "italic"  })
-        
-        this.setState({
-          styledCellsClean: allIndices
-        })
-    this.toggleDataView();
+      }
+    } else {
+      const cleaned = wikiStore.layers.cleaned;
+      if (cleaned.entries.length < 1) { return; }
+
+      for (const entry of cleaned.entries) {
+        for (const cell of entry.indices) {
+          const row = cell[0]
+          const col = utils.getColumnTitleFromIndex(cell[1])
+          if (rowData2[row] === undefined) continue;
+          if (rowData2[row][col] === undefined) continue;
+          if (wikiStore.table.showCleanedData) {
+            rowData2[row][col] = entry.cleaned;
+          } else {
+            rowData2[row][col] = entry.original;
+          }
+        }
+
+      }
+    }
+
+
+    console.log("setting state from toggle data", rowData2)
+    this.setState({
+      rowData: rowData2
+    });
+    if (this.gridApi) {
+      this.gridApi.setRowData(rowData2);
+    }
+  }
+
+  styleCleanedCells() {
+    //reset
+    let oldCleaned = Array<CellIndex>();
+    for (const entry of this.state.styledCellsClean) {
+      oldCleaned = oldCleaned.concat(entry.indices);
+    }
+    this.updateStyleByArray(oldCleaned, { fontWeight: "normal" })
+    this.toggleDataView(true); //reset
+
+    //color
+    const cleaned = wikiStore.layers.cleaned;
+    let allIndices = Array<CellIndex>();
+    for (const entry of cleaned.entries) {
+      allIndices = allIndices.concat(entry.indices)
+    }
+    this.updateStyleByArray(allIndices, { fontWeight: "bold" })
+
+    this.setState({
+      styledCellsClean: cleaned.entries
+    })
+    if (wikiStore.table.showCleanedData) { //because we reset above, not necessary if not showing cleaned
+      this.toggleDataView();
+    }
     return;
   }
 
@@ -442,11 +468,11 @@ class TableViewer extends Component<{}, TableState> {
     //color
     const qnodes = wikiStore.layers.qnode;
     let allIndices = Array<CellIndex>();
-    for (const entry of qnodes.entries){
+    for (const entry of qnodes.entries) {
       allIndices = allIndices.concat(entry.indices)
     }
     this.updateStyleByArray(allIndices, { color: "hsl(200, 100%, 30%)" })
-    
+
     this.setState({
       styledCellsQnode: allIndices
     })
@@ -467,8 +493,8 @@ class TableViewer extends Component<{}, TableState> {
       const filename = project._saved_state.current_data_file
       let sheetNames;
       sheetNames = project.data_files[filename]
-      if (sheetNames == undefined){
-        sheetNames=null;
+      if (sheetNames == undefined) {
+        sheetNames = null;
       }
 
       let multipleSheets = false;
@@ -476,15 +502,15 @@ class TableViewer extends Component<{}, TableState> {
         multipleSheets = true;
       }
       const currSheetName = project._saved_state.current_sheet;
-      
+
       let columns;
       let rows;
-      if (wikiStore.table.table){
-      columns = getColumns(wikiStore.table.table);
-      rows = getRowData(wikiStore.table.table);
-      }else{
-        columns=defaultColumns;
-        rows=defaultRows;
+      if (wikiStore.table.table) {
+        columns = getColumns(wikiStore.table.table);
+        rows = getRowData(wikiStore.table.table);
+      } else {
+        columns = defaultColumns;
+        rows = defaultRows;
       }
 
 
