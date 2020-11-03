@@ -47,6 +47,10 @@ class RendererNotifier {
         this.mainWindow.webContents.send('project-settings');
 
     }
+
+    // TODO:
+    // Add a notification function that sends the layer to the rendered process
+    // Use this.mainWindow.webContents.send()
 }
 
 export const rendererNotifier = RendererNotifier.instance;

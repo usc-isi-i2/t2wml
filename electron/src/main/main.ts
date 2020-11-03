@@ -94,6 +94,8 @@ function createMainWindow(): void {
             // In prod, dev tools never open automatically
             mainWindow!.webContents.openDevTools();
         }
+
+        // TODO: Notify the renderer of the initial viewed layer (using the renderer notifier function)
     });
     
     mainWindow.once('close', () => {

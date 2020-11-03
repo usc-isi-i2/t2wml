@@ -58,6 +58,7 @@ interface TableState {
   showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
 }
 
+// TODO: Handle the state variable indicating which layer to show
 @observer
 class TableViewer extends Component<{}, TableState> {
   public gridApi: any;

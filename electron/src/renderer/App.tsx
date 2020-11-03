@@ -37,6 +37,8 @@ class App extends Component<{}, AppState> {
     ipcRenderer.on('new-project', (sender: IpcRendererEvent, folder: string) => {
       this.onNewProject(folder);
     });
+
+    // TODO: Hook into the layer change event with ipcRenderer.on
     wikiStore.changeProject();
   }
 
@@ -100,6 +102,8 @@ class App extends Component<{}, AppState> {
       this.setState({ showSpinner: false });
     }
   }  
+
+  // TODO: Add an event handler that receives the event for layer change, and change the store
   
   render() {
     return (

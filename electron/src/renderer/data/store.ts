@@ -16,6 +16,7 @@ class TableState {
     @observable public showSpinner: boolean;
     @observable public selectedCell: Cell;
 
+    // TODO: Add an observable indicating whether we show the cleaned or original data
 
 
     constructor() {

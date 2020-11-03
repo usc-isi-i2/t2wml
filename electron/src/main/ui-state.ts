@@ -11,8 +11,11 @@ class UIState {
 
     public displayMode: DisplayMode;
 
+    // TODO: Add another parameter indicating whether we see the cleaned or original data.
+
     private constructor() {
         this.displayMode = 'project-list';
+        // Set a default value of cleaned/original
     }
 }
 

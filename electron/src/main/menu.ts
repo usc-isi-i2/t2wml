@@ -11,6 +11,13 @@ export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
     private projectSubMenu: MenuItemConstructorOptions[] = [];
 
+    // TODO: Add a private MenuItemConstructionOptions[] with the layer options
+    // One for clean, one for original, one of them is checked.
+    
+    // TODO: Add a function that builds the layerMenu, check the right version, which should be
+    // based on the layer paramater in uiState
+    // Add a menu handler for these menu options, similar to this.onNewProjectClick
+
     constructor(private mainWindow: BrowserWindow) { }
 
     public setMainMenu() {
@@ -169,4 +176,9 @@ export default class MainMenuManager {
         settings.saveSettings();
         this.setMainMenu();
     }
+
+    // TODO:
+    // private onViewLayerClick(layer: string) {
+    //     Use rendererNotifier to pass this event to the renderer process.
+    // }
 }
