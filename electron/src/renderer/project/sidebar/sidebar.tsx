@@ -1,14 +1,13 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import { Treebeard } from 'react-treebeard';
 
 // icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faWindowClose} from '@fortawesome/free-solid-svg-icons';
 import wikiStore from '@/renderer/data/store';
 import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '@/renderer/common/service';
+import { Spinner } from 'react-bootstrap';
 
 // const data = {
 //     name: 'root',
@@ -49,6 +48,7 @@ interface SidebarState {
     treeFlag: boolean,
     cursor: any,
     active: boolean,
+    showSpinner: boolean,
 }
 
 @observer
@@ -66,6 +66,7 @@ class Sidebar extends Component<{}, SidebarState> {
             treeFlag: wikiStore.projects.showFileTree,
             cursor: {},
             active: false,
+            showSpinner: false,
         } as SidebarState;
 
         this.fileTreeStyle = {
@@ -95,10 +96,6 @@ class Sidebar extends Component<{}, SidebarState> {
     }
     
     async onToggle(node: any, toggled: any) {
-        // Does nothing when clickןמע on the current file
-        if (node.name === wikiStore.projects.projectDTO?._saved_state.current_data_file) {
-            return;
-        }
         const cursor = this.state.cursor;
         cursor.active = false;
         this.setState({ cursor });
@@ -108,8 +105,15 @@ class Sidebar extends Component<{}, SidebarState> {
             node.toggled = toggled; 
         }
     
-        if (!node.children && this.state.cursor.name !== node.name) {
-            await this.changeDataFile(node.name);
+        // Does nothing when clicking on the current file
+        if (!node.children && this.state.cursor.name !== node.name
+            && node.name !== wikiStore.projects.projectDTO?._saved_state.current_data_file) {
+                wikiStore.wikifier.showSpinner = true;
+                this.setState({showSpinner: true});
+
+                await this.changeDataFile(node.name);
+                wikiStore.wikifier.showSpinner = false;
+                this.setState({showSpinner: false});
         }
         
         this.setState({ cursor: node }); 
@@ -141,25 +145,21 @@ class Sidebar extends Component<{}, SidebarState> {
 
     render(){
         return (
-            <Fragment>
-                <div className={wikiStore.projects.showFileTree ? 'opened-sidebar' : 'closed-sidebar'}>
-                    <button onClick={() => {wikiStore.projects.showFileTree = !wikiStore.projects.showFileTree}}>
-                        {
-                            this.state.treeFlag ?
-                            <FontAwesomeIcon icon={faWindowClose} />:
-                            <FontAwesomeIcon icon={faBars} />
-                        }
-                    </button>
-                    {
-                        this.state.treeFlag ?
-                        <Treebeard
-                        style={this.fileTreeStyle}
-                            data={this.state.data}
-                            onToggle={this.onToggle}
-                        />
-                        : null}
+            <div className={wikiStore.projects.showFileTree ? 'opened-sidebar' : 'closed-sidebar'}>  
+            {
+                /* loading spinner */}
+                <div className="mySpinner" hidden={!this.state.showSpinner}>
+                    <Spinner animation="border" />
                 </div>
-            </Fragment>
+                {
+                    this.state.treeFlag ?
+                    <Treebeard
+                    style={this.fileTreeStyle}
+                        data={this.state.data}
+                        onToggle={this.onToggle}
+                    />
+                    : null}
+            </div>
         );
     }
 }

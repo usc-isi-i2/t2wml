@@ -54,7 +54,9 @@
       "icon": "icons/t2wml-windows.ico"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/react-split-pane": "^0.1.67"
+  },
   "devDependencies": {
     "@babel/core": "^7.11.1",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -117,7 +119,7 @@
     "react-monaco-editor": "^0.36.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
-    "react-split-pane": "^0.1.91",
+    "react-split-pane": "^2.0.3",
     "react-treebeard": "^3.2.4",
     "source-map-loader": "^0.2.4",
     "spectron": "^5.0.0",

@@ -132,11 +132,10 @@ body {
 }
 
 .table-sidebar-open {
- margin-left: 250px;
+ margin-left: 100px;
  height: auto;
 }
 
 .table-sidebar-close {
   margin-left: 0px;
-  height: 100vh - 50px;
 }

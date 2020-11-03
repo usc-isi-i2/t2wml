@@ -7,7 +7,8 @@ import Navbar from '../common/navbar/navbar';
 
 // App
 import SplitPane from 'react-split-pane';
-
+import Pane from '../../../node_modules/react-split-pane';
+// import Pane from 'react-split-pane/lib/Pane';
 import Config from '@/shared/config';
 
 import { ErrorMessage } from '../common/general';
@@ -24,6 +25,7 @@ import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
+import { IReactionDisposer, reaction } from 'mobx';
 
 
 interface ProjectState {
@@ -42,6 +44,7 @@ interface ProjectProps {
 @observer
 class Project extends Component<ProjectProps, ProjectState> {
   private requestService: RequestService;
+  private disposeReaction?: IReactionDisposer;
 
   constructor(props: ProjectProps) {
     super(props);
@@ -62,7 +65,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
-      showTreeFlag: false,
+      showTreeFlag: wikiStore.projects.showFileTree,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
@@ -81,6 +84,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
     ipcRenderer.on('toggle-file-tree', this.onShowFileTreeClicked);
+
+    this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
   }
 
   componentWillUnmount() {
@@ -88,6 +93,10 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
+
+    if (this.disposeReaction) {
+      this.disposeReaction();
+    }
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -191,16 +200,21 @@ class Project extends Component<ProjectProps, ProjectState> {
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
-        <div>
-          <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-            <SplitPane className="p-3" split="vertical">
+        <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+          {/* { this.state.showTreeFlag ? */}
+          <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
+            <Pane initialSize="10%" minSize = "20%" maxSize = "30%"> 
               <Sidebar />
+            </Pane>
+            <Pane initialSize="90%" minSize = "50%" maxSize = "40%" split="vertical" className={(wikiStore.projects.showFileTree ? "table-sidebar-open" : "table-sidebar-close")}>
               <TableViewer />
-            </SplitPane>
-            <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-              <Editors />
-              <Output />
-            </SplitPane>
+
+              <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
+                <Editors />
+                <Output />
+              </SplitPane>
+            </Pane>
+            
           </SplitPane>
         </div>
 
