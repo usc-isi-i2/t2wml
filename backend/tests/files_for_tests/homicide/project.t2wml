@@ -6,6 +6,8 @@ _saved_state:
   current_yaml: t2wml/table-1a.yaml
 cache_id: 019af0e3-e959-4cd3-b656-6e96ed9ea290
 data_files:
+  csv/sheet-2.csv:
+  - sheet-2.csv
   homicide_report_total_and_sex.xlsx:
   - table-1a
   - table-1b
@@ -42,6 +44,9 @@ yaml_files:
 - t2wml/table-1a.yaml
 - t2wml/table-1b.yaml
 yaml_sheet_associations:
+  csv/sheet-2.csv:
+    sheet-2.csv:
+    - t2wml/table-1b.yaml
   homicide_report_total_and_sex.xlsx:
     table-1a:
     - t2wml/table-1a.yaml
