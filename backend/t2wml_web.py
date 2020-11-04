@@ -1,10 +1,11 @@
 import json
 import numpy as np
 from t2wml.api import WikifierService, t2wml_settings
+from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from app_config import db, CACHE_FOLDER
 from wikidata_models import DatabaseProvider
-from utils import get_labels_and_descriptions
+from utils import get_labels_and_descriptions, make_frontend_err_dict
 
 
 def wikify(calc_params, region, context):
@@ -252,8 +253,27 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 def get_all_layers_and_table(response, calc_params):
     #convenience function for code that repeats three times
-    response["table"] = get_table(calc_params)
-    response["layers"]=get_qnodes_layer(calc_params)
-    yaml_layers = get_yaml_layers(calc_params)
-    response["layers"].update(yaml_layers)
+    response["layers"]=get_empty_layers()
+    try:
+        response["table"] = get_table(calc_params)
+    except Exception as e:
+        response["table"]=None
+        response["error"]=make_frontend_err_dict(e)
+        return response
+
+    try:
+        response["layers"].update(get_qnodes_layer(calc_params))
+    except Exception as e:
+        response["error"]= make_frontend_err_dict(e)
+
+
+    try:
+        response["layers"].update(get_yaml_layers(calc_params))
+    except T2WMLException as e:
+        print(e.detail_message)
+        response["error"] = e.error_dict
+    except Exception as e:
+        print(str(e))
+        response["error"]= make_frontend_err_dict(e)
+
 
