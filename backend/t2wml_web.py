@@ -4,8 +4,9 @@ from t2wml.api import WikifierService, t2wml_settings
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from app_config import db, CACHE_FOLDER
-from wikidata_models import DatabaseProvider
-from utils import get_labels_and_descriptions, make_frontend_err_dict
+from database_provider import DatabaseProvider
+from utils import get_empty_layers
+from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
 
 def wikify(calc_params, region, context):
@@ -38,47 +39,6 @@ def download(calc_params, filetype):
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
-
-def get_empty_layers():
-    errorLayer=dict(layerType="error", entries=[])
-    statementLayer=dict(layerType="statement", entries=[], qnodes={})
-    cleanedLayer=dict(layerType="cleaned", entries=[])
-    typeLayer=dict(layerType="type", entries=[])
-    qnodeLayer=dict(layerType="qnode", entries=[])
-
-    return dict(error= errorLayer, 
-            statement= statementLayer, 
-            cleaned= cleanedLayer, 
-            type = typeLayer,
-            qnode=qnodeLayer)
-
-def get_qnode_url(id):
-    url=""
-    first_letter=str(id).upper()[0]
-    try:
-        num=int(id[1:])
-        if first_letter=="P" and num<10000:
-            url="https://www.wikidata.org/wiki/Property:"+id
-        if first_letter=="Q" and num<1000000000:
-            url="https://www.wikidata.org/wiki/"+id
-    except: #conversion to int failed, is not Pnum or Qnum
-        pass
-    return url
-
-class QNode:
-    def __init__(self, id, value, context="", label="", description=""):
-        self.id = id
-        self.value = value
-        self.context = context
-        self.label = label
-        self.description = description
-        self.url=get_qnode_url(self.id)
-
-    def update(self, label="", description="", **kwargs):
-        self.label=label
-        self.description=description
-        
-
 
 
 
@@ -227,14 +187,6 @@ def get_yaml_layers(calc_params):
     return layers
 
 
-def get_yaml_content(calc_params):
-    yaml_path = calc_params.yaml_path
-    if yaml_path:
-        with open(yaml_path, "r", encoding="utf-8") as f:
-            yamlFileContent = f.read()
-        return yamlFileContent
-    return None
-
 
 def get_table(calc_params, first_index=0, num_rows=None):
     sheet = calc_params.sheet
@@ -258,13 +210,13 @@ def get_all_layers_and_table(response, calc_params):
         response["table"] = get_table(calc_params)
     except Exception as e:
         response["table"]=None
-        response["error"]=make_frontend_err_dict(e)
+        response["error"]=str(e)
         return response
 
     try:
         response["layers"].update(get_qnodes_layer(calc_params))
     except Exception as e:
-        response["error"]= make_frontend_err_dict(e)
+        response["error"]= str(e)
 
 
     try:
@@ -274,6 +226,6 @@ def get_all_layers_and_table(response, calc_params):
         response["error"] = e.error_dict
     except Exception as e:
         print(str(e))
-        response["error"]= make_frontend_err_dict(e)
+        response["error"]= str(e)
 
 

@@ -5,16 +5,15 @@ from pathlib import Path
 import shutil
 from flask import request
 
-from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.api import Project as apiProject
 from t2wml.api import add_entities_from_file
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table, get_empty_layers, get_yaml_layers, get_yaml_content, 
-                        get_qnodes_layer, get_table, update_t2wml_settings, wikify)
+from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, 
+                         get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe, numpy_converter,
-                   make_frontend_err_dict, string_is_valid, save_yaml)
-from web_exceptions import WebException
+                   get_empty_layers, get_yaml_content, string_is_valid, save_yaml)
+from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration, create_datafile
@@ -67,12 +66,7 @@ def json_response(func):
         except WebException as e:
             data = {"error": e.error_dict}
             return json.dumps(data, indent=3, default=numpy_converter), e.code
-        except T2WMLException as e:
-            print(e.detail_message)
-            data = {"error": e.error_dict}  # error code from the exception
-            return json.dumps(data, indent=3, default=numpy_converter), e.code
         except Exception as e:
-            print(str(e))
             data = {"error": make_frontend_err_dict(e)}
             return json.dumps(data, indent=3, default=numpy_converter), 500
 
