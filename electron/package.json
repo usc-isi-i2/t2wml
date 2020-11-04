@@ -55,7 +55,6 @@
     }
   },
   "dependencies": {
-    "@types/react-split-pane": "^0.1.67"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",

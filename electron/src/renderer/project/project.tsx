@@ -25,7 +25,7 @@ import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
-import { IReactionDisposer, reaction } from 'mobx';
+// import { IReactionDisposer, reaction } from 'mobx';
 
 
 interface ProjectState {
@@ -34,7 +34,7 @@ interface ProjectState {
   warnEmpty: boolean;
   name: string;
   errorMessage: ErrorMessage;
-  showTreeFlag: boolean;
+  // showTreeFlag: boolean;
 }
 
 interface ProjectProps {
@@ -44,7 +44,7 @@ interface ProjectProps {
 @observer
 class Project extends Component<ProjectProps, ProjectState> {
   private requestService: RequestService;
-  private disposeReaction?: IReactionDisposer;
+  // private disposeReaction?: IReactionDisposer;
 
   constructor(props: ProjectProps) {
     super(props);
@@ -65,7 +65,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
-      showTreeFlag: wikiStore.projects.showFileTree,
+      // showTreeFlag: wikiStore.projects.showFileTree,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
@@ -85,7 +85,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
     ipcRenderer.on('toggle-file-tree', this.onShowFileTreeClicked);
 
-    this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
+    // this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
   }
 
   componentWillUnmount() {
@@ -94,9 +94,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
 
-    if (this.disposeReaction) {
-      this.disposeReaction();
-    }
+    // if (this.disposeReaction) {
+    //   this.disposeReaction();
+    // }
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
