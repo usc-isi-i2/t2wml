@@ -1,13 +1,34 @@
 import json
 import numpy as np
-from t2wml.api import WikifierService, t2wml_settings
+from pathlib import Path
+
+from t2wml.api import add_entities_from_file as api_add_entities_from_file
+from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
+from t2wml.api import Project as apiProject
 from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
+def add_entities_from_project(project):
+    for f in project.entity_files:
+        api_add_entities_from_file(Path(project.directory) / f)
+
+def add_entities_from_file(file_path):
+    return api_add_entities_from_file(file_path)
+
+def create_api_project(project_folder):
+    api_proj = apiProject(project_folder)
+    api_proj.title = Path(project_folder).stem
+    api_proj.save()
+    return api_proj
+
+def get_project_instance(project_folder):
+    project = apiProject.load(project_folder)
+    update_t2wml_settings(project)
+    return project
 
 def wikify(calc_params, region, context):
     ws = WikifierService()
@@ -24,10 +45,11 @@ def update_t2wml_settings(project):
 
 def get_kg(calc_params):
     if calc_params.cache:
-        kg = calc_params.cache.get_kg()
+        kg = calc_params.cache.load_kg()
         if kg:
             return kg
-    kg = calc_params.get_kg()
+    cell_mapper = YamlMapper(calc_params.yaml_path)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
     db.session.commit()  # save any queried properties
     return kg
 

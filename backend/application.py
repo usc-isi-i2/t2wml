@@ -5,12 +5,12 @@ from pathlib import Path
 import shutil
 from flask import request
 
-from t2wml.api import Project as apiProject
-from t2wml.api import add_entities_from_file
+
 import web_exceptions
 from app_config import app
 from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, 
-                         get_qnodes_layer, update_t2wml_settings, wikify)
+                        get_project_instance, create_api_project, add_entities_from_project,
+                        add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe, numpy_converter,
                    get_empty_layers, get_yaml_content, string_is_valid, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
@@ -27,10 +27,7 @@ except:
 debug_mode = False
 
 
-def get_project_instance(project_folder):
-    project = apiProject.load(project_folder)
-    update_t2wml_settings(project)
-    return project
+
 
 
 def get_calc_params(project):
@@ -88,10 +85,7 @@ def create_project():
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(project_folder)
     # create project
-    api_proj = apiProject(project_folder)
-    api_proj.title = Path(project_folder).stem
-    api_proj.save()
-
+    api_proj=create_api_project(project_folder)
     response = dict(project=api_proj.__dict__)
     return response, 201
 
@@ -105,8 +99,7 @@ def get_project():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    for f in project.entity_files:
-        add_entities_from_file(Path(project.directory) / f)
+    add_entities_from_project(project)
 
     response=dict(project=project.__dict__, table=None, layers=get_empty_layers(), yamlContent=None)
     calc_params = get_calc_params(project)
