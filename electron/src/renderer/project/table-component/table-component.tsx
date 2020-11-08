@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import './table-component.css';
+import { TableDTO } from '../../common/dtos'
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
@@ -62,7 +63,7 @@ class TableComponent extends Component<{}, TableState> {
 
       // table data
       filename: null,       // if null, show "Table Viewer"
-      rowData: null,
+      tableData: null,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -77,7 +78,8 @@ class TableComponent extends Component<{}, TableState> {
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.tableData, (tableData: any) => this.updateTableData(tableData)));
+
+    this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
 
     this.disposers.push(reaction(() => wikiStore.table.styledColName, () => this.updateStyleByCellFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
@@ -99,11 +101,16 @@ class TableComponent extends Component<{}, TableState> {
     console.log('updateQnodeCellsFromStore called');
   }
 
-  updateTableData(tableData?: TableData) {
-    console.log('updateTableData called');
-    this.setState({
-      rowData: tableData?.sheetData?.rowData,
-    })
+  updateTableData(table?: TableDTO) {
+    let tableData = [];
+    for ( const [rowIndex, row] of table.cells.entries() ) {
+      let rowData = [];
+      for ( const [colIndex, cellContent] of row.entries() ) {
+        rowData.push(cellContent);
+      }
+      tableData.push(rowData);
+    }
+    this.setState({tableData});
   }
 
   updateStyleByCellFromStore() {
@@ -273,8 +280,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderTable() {
-    const { rowData } = this.state;
-    if ( !!rowData ) {
+    const { tableData } = this.state;
+    if ( !!tableData ) {
       return (
         <table ref={this.tableRef}
           onMouseUp={this.handleOnMouseUp.bind(this)}
@@ -287,12 +294,12 @@ class TableComponent extends Component<{}, TableState> {
             </tr>
           </thead>
           <tbody>
-            {[...Array(Math.max(rowData.length, MIN_NUM_ROWS))].map((e, i) => (
+            {[...Array(Math.max(tableData.length, MIN_NUM_ROWS))].map((e, i) => (
               <tr key={`row-${i}`}>
                 <td>{i+1}</td>
                 {CHARACTERS.map((c, j) => (
                   <td key={`cell-${j}`}>
-                    {i >= rowData.length ? '' : rowData[i][c]}
+                    {i >= tableData.length ? '' : tableData[i][j]}
                   </td>
                 ))}
               </tr>
