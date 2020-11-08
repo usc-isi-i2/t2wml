@@ -20,17 +20,6 @@ interface Column {
 }
 
 
-interface TableData {
-  filename: string;
-  isCSV: boolean;
-  sheetNames: Array<string>;
-  currSheetName: string;
-  columnDefs: Array<string>;
-  rowData: string;
-  sheetData: any;
-}
-
-
 interface TableState {
   showSpinner: boolean;
 
