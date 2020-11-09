@@ -25,13 +25,14 @@ interface TableState {
 
   // table data
   filename: string | null,       // if null, show "Table Viewer"
-  isCSV: boolean,         // csv: true   excel: false
-  sheetNames: Array<string> | null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
-  currSheetName: string | null,  // csv: null    excel: "sheet1"
-  columnDefs:  Array<Column>;
-  rowData: any; // Array<object>; // todo: add interface
-  selectedCell: Cell | null;
+  multipleSheets: false,
+  sheetNames: Array<string> | null,
+  currSheetName: string | null,
+
+  tableData: any; // Array<object>; // todo: add interface
+
   yamlRegions: any; // null,
+  selectedCell: Cell | null;
 
   errorMessage: ErrorMessage;
 }
@@ -51,8 +52,11 @@ class TableComponent extends Component<{}, TableState> {
       showSpinner: wikiStore.table.showSpinner,
 
       // table data
-      filename: null,       // if null, show "Table Viewer"
+      filename: null,
       tableData: null,
+      sheetNames: null,
+      currSheetName: null,
+      multipleSheets: false,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -94,7 +98,10 @@ class TableComponent extends Component<{}, TableState> {
     if ( wikiStore.projects.projectDTO ) {
       const project = wikiStore.projects.projectDTO;
       const filename = project._saved_state.current_data_file;
-      this.setState({ filename });
+      const sheetNames = project.data_files[filename];
+      const currSheetName = project._saved_state.current_sheet;
+      const multipleSheets = sheetNames && sheetNames.length > 1;
+      this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
   }
 
