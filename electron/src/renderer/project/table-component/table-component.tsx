@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 
 import './table-component.css';
-import { TableDTO } from '../../common/dtos'
+import { TableDTO } from '../../common/dtos';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
+import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
 
-import { observer } from "mobx-react";
+import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 
@@ -44,8 +45,12 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUppe
 @observer
 class TableComponent extends Component<{}, TableState> {
 
+  private requestService: RequestService;
+
   constructor(props: {}) {
     super(props);
+
+    this.requestService = new RequestService();
 
     // init state
     this.state = {
@@ -87,8 +92,48 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  async handleOpenTableFile(event:any) {
+  async handleOpenTableFile(event: any) {
     console.log('handleOpenTableFile called');
+  }
+
+  resetTableData() {
+    this.setState({
+      errorMessage: {} as ErrorMessage,
+    });
+  }
+
+  async handleSelectSheet(event: any) {
+    this.resetTableData();
+
+    // remove current status
+    wikiStore.yaml.yamlContent = undefined;
+    wikiStore.output.isDownloadDisabled = true;
+
+    // before sending request
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+
+    // send request
+    const sheetName = event.target.innerHTML;
+    console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
+    try {
+      await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
+      console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
+
+      if (wikiStore.yaml.yamlContent) {
+        wikiStore.table.isCellSelectable = true;
+        wikiStore.output.isDownloadDisabled = false;
+      } else {
+        wikiStore.table.isCellSelectable = false;
+      }
+
+    } catch (error) {
+      console.log(error);
+      error.errorDescription += "\n\nCannot change sheet!";
+      this.setState({ errorMessage: error });
+    }
+    wikiStore.table.showSpinner = false;
+    wikiStore.wikifier.showSpinner = false;
   }
 
   updateQnodeCellsFromStore() {
