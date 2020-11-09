@@ -114,7 +114,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     // fetch project files
     console.debug('Refreshing project ', this.props.path);
     try{
-      await this.requestService.getProject(this.props.path);    
+      await this.requestService.getProject(this.props
+        .path);    
       document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
       this.setState({name: wikiStore.projects.projectDTO!.title});
 
@@ -202,7 +203,7 @@ class Project extends Component<ProjectProps, ProjectState> {
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
           {/* { this.state.showTreeFlag ? */}
-          <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
+          {/* <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
             <Pane initialSize="0%" minSize="0%" maxSize="0%" className={(wikiStore.projects.showFileTree ? "opened-sidebar" : "closed-sidebar")}>
               <Sidebar />
             </Pane>
@@ -213,6 +214,22 @@ class Project extends Component<ProjectProps, ProjectState> {
                 <Editors />
                 <Output />
               </SplitPane>
+            </Pane>
+            
+          </SplitPane> */}
+
+
+          <SplitPane className="p-3" split="vertical">
+            <Pane defaultSize="0%" minSize="0%" maxSize="10%" className={(wikiStore.projects.showFileTree ? "opened-sidebar" : "closed-sidebar")}>
+              <Sidebar />
+            </Pane>
+            <Pane split="vertical" defaultSize="40%" minSize={100} maxSize={-100}  className={(wikiStore.projects.showFileTree ? "table-sidebar-open" : "table-sidebar-close")}>
+              <TableViewer />
+
+              <Pane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
+                <Editors />
+                <Output />
+              </Pane>
             </Pane>
             
           </SplitPane>
