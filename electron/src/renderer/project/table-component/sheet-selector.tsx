@@ -21,39 +21,29 @@ interface SheetProperties  {
 @observer
 class SheetSelector extends Component<SheetProperties, {}> {
 
-  render() {
-    const { currSheetName, handleSelectSheet, sheetNames} = this.props;
-
-    // CSV files don't have any sheets
+  renderSheets() {
+    const { currSheetName, handleSelectSheet, sheetNames } = this.props;
     if ( !sheetNames ) { return null; }
-
-    // Excel files have sheets
-    const currSheetStyle = {
-      borderColor: "#339966",
-      background: "#339966",
-      padding: "0rem 0.5rem",
-      margin: "0rem 0.25rem",
-    };
-
-    const otherSheetStyle = {
-      borderColor: "#339966",
-      background: "whitesmoke",
-      color: "#339966",
-      padding: "0rem 0.5rem",
-      margin: "0rem 0.25rem",
-    };
-
     return sheetNames.map((sheet, i) => (
       <Button
         key={i}
         size="sm"
         variant="success"
-        style={sheet === currSheetName ? currSheetStyle : otherSheetStyle}
+        className={sheet === currSheetName ? 'active' : '' }
         onClick={(event: any) => { handleSelectSheet(event) }}>
         {sheet}
       </Button>
     ));
   }
+
+  render() {
+    return (
+      <div className="sheetSelector">
+        {this.renderSheets()}
+      </div>
+    )
+  }
 }
+
 
 export default SheetSelector;
