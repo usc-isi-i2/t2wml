@@ -75,6 +75,8 @@ class TableComponent extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
+
     this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
     this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
 
@@ -82,7 +84,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    for(const disposer of this.disposers) {
+    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    for ( const disposer of this.disposers ) {
       disposer();
     }
   }
@@ -232,6 +235,13 @@ class TableComponent extends Component<{}, TableState> {
       const borderBottom = document.createElement('div');
       borderBottom.classList.add('cell-border-bottom');
       cell.appendChild(borderBottom);
+    }
+  }
+
+  handleOnKeyDown(event) {
+    if ( event.keyCode == 27 ) {
+      this.selecting = false;
+      this.resetSelections();
     }
   }
 
