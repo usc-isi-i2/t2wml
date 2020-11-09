@@ -1,0 +1,21 @@
+/* sheet selector scrollbar*/
+.sheetSelector {
+  height: 50px;
+  padding: 0.5rem 0.75rem;
+  background: whitesmoke;
+  white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  cursor: pointer;
+}
+.sheetSelector::-webkit-scrollbar {
+  height: 5px;
+}
+.sheetSelector::-webkit-scrollbar-thumb {
+  background: #339966;
+}
+
+/* Handle on hover */
+.sheetSelector::-webkit-scrollbar-thumb:hover {
+  background: #266444;
+}

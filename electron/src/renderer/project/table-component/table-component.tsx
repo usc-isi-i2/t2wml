@@ -5,6 +5,7 @@ import { TableDTO } from '../../common/dtos'
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
+import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react";
@@ -338,7 +339,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   render() {
-    const { multipleSheets } = this.state;
+    const { currSheetName, multipleSheets, sheetNames } = this.state;
 
     // render upload tooltip
     const uploadToolTipHtml = (
@@ -402,7 +403,12 @@ class TableComponent extends Component<{}, TableState> {
 
           </Card.Body>
 
-          <Card.Footer hidden={!multipleSheets}>
+          <Card.Footer className="sheetSelector"
+            hidden={!multipleSheets}>
+            <SheetSelector
+              sheetNames={sheetNames}
+              currSheetName={currSheetName}
+              handleSelectSheet={(event) => this.handleSelectSheet(event)} />
           </Card.Footer>
         </Card>
       </div>
