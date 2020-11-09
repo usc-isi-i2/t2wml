@@ -392,11 +392,8 @@ class TableComponent extends Component<{}, TableState> {
     )
   }
 
-  render() {
-    const { currSheetName, multipleSheets, sheetNames } = this.state;
-
-    // render upload tooltip
-    const uploadToolTipHtml = (
+  renderUploadTooltip() {
+    return (
       <Tooltip style={{ width: "fit-content" }} id="upload">
         <div className="text-left small">
           <b>Accepted file types:</b><br />
@@ -404,7 +401,39 @@ class TableComponent extends Component<{}, TableState> {
           • Microsoft Excel (.xls/.xlsx)
         </div>
       </Tooltip>
-    );
+    )
+  }
+
+  renderUploadButton() {
+    return (
+      <React.Fragment>
+        <OverlayTrigger
+          placement="bottom"
+          trigger={["hover", "focus"]}
+          overlay={this.renderUploadTooltip()}>
+          <Button size="sm"
+            className="d-inline-block float-right py-0 px-2"
+            variant="outline-light"
+            onClick={() => document.getElementById("file_table")?.click()}>
+            Upload data file
+          </Button>
+        </OverlayTrigger>
+
+        {/* hidden input of table file */}
+        <input
+          type="file"
+          id="file_table"
+          accept=".csv, .xls, .xlsx"
+          style={{ display: "none" }}
+          onChange={this.handleOpenTableFile.bind(this)}
+          onClick={(event) => (event.target as HTMLInputElement).value = ''}
+        />
+      </React.Fragment>
+    )
+  }
+
+  render() {
+    const { currSheetName, multipleSheets, sheetNames } = this.state;
 
     return (
       <div className="w-100 h-100 p-1">
@@ -413,34 +442,10 @@ class TableComponent extends Component<{}, TableState> {
 
         <Card className="w-100 h-100 shadow-sm">
 
-          {/* header */}
-          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#339966" }}>
-
-            {/* title */}
+          <Card.Header className={"py-2 px-3"}
+            style={{ height: "40px", background: "#339966" }}>
             {this.renderTitle()}
-
-            {/* button to upload table file */}
-            <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-              <Button
-                className="d-inline-block float-right"
-                variant="outline-light"
-                size="sm"
-                style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document.getElementById("file_table")?.click(); }}
-              >
-                Upload data file
-              </Button>
-            </OverlayTrigger>
-
-            {/* hidden input of table file */}
-            <input
-              type="file"
-              id="file_table"
-              accept=".csv, .xls, .xlsx"
-              style={{ display: "none" }}
-              onChange={this.handleOpenTableFile.bind(this)}
-              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
-            />
+            {this.renderUploadButton()}
           </Card.Header>
 
           <Card.Body className="ag-theme-balham w-100 h-100 p-0" style={{ overflow: "hidden" }}>
