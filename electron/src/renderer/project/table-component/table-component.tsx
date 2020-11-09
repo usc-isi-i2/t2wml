@@ -432,6 +432,14 @@ class TableComponent extends Component<{}, TableState> {
     )
   }
 
+  renderLoading() {
+    return (
+      <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
+        <Spinner animation="border" />
+      </div>
+    )
+  }
+
   render() {
     const { currSheetName, multipleSheets, sheetNames } = this.state;
 
@@ -448,18 +456,9 @@ class TableComponent extends Component<{}, TableState> {
             {this.renderUploadButton()}
           </Card.Header>
 
-          <Card.Body className="ag-theme-balham w-100 h-100 p-0" style={{ overflow: "hidden" }}>
-
-            {/* loading spinner */}
-            <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
-              <Spinner animation="border" />
-            </div>
-
-            {/* table */}
-            <div className="table-wrapper">
-              {this.renderTable()}
-            </div>
-
+          <Card.Body className="ag-theme-balham w-100 h-100 p-0 table-wrapper">
+            {this.renderLoading()}
+            {this.renderTable()}
           </Card.Body>
 
           <Card.Footer hidden={!multipleSheets} className={'p-0'}>
