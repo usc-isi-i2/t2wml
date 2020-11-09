@@ -79,11 +79,6 @@ class TableComponent extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-
-    this.disposers.push(reaction(() => wikiStore.table.styledColName, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.styledRowName, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.styleCell, () => this.updateStyleByCellFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.styledOverride, () => this.updateStyleByCellFromStore()));
   }
 
   componentWillUnmount() {
@@ -163,10 +158,6 @@ class TableComponent extends Component<{}, TableState> {
     }
     this.setState({tableData});
     this.updateProjectInfo();
-  }
-
-  updateStyleByCellFromStore() {
-    console.log('updateStyleByCellFromStore called');
   }
 
   resetSelections() {
