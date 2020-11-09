@@ -93,16 +93,6 @@ body {
   -webkit-transition: all 0.25s ease;
   transition: all 0.25s ease;
 }
-#sheetSelector::-webkit-scrollbar {
-  height: 10px;
-}
-#sheetSelector::-webkit-scrollbar-thumb {
-  background: #339966;
-}
-/* Handle on hover */
-#sheetSelector::-webkit-scrollbar-thumb:hover {
-  background: #266444; 
-}
 
 .cell {
   padding: 0px;

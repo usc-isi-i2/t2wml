@@ -145,3 +145,16 @@
   height: 2px;
   background: rgb(51, 153, 102);
 }
+
+/* sheet selector scrollbar*/
+#sheetSelector::-webkit-scrollbar {
+  cursor: pointer;
+  height: 8px;
+}
+#sheetSelector::-webkit-scrollbar-thumb {
+  background: #339966;
+}
+/* Handle on hover */
+#sheetSelector::-webkit-scrollbar-thumb:hover {
+  background: #266444;
+}
