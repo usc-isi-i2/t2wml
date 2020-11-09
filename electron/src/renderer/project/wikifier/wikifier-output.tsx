@@ -6,7 +6,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
 // console.log
-import { WikifierData } from '../../common/general';
+import { gridApiInterface } from '../../common/general';
 import * as utils from '../../common/utils'
 
 import { observer } from "mobx-react"
@@ -20,7 +20,7 @@ class WikifierOutput extends Component<WikifierOutputProperties, {}> {
   public gridApi: any;
   public gridColumnApi: any;
 
-  onGridReady(params: WikifierData) {
+  onGridReady(params: gridApiInterface) {
     // store the api
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;

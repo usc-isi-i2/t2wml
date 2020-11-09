@@ -10,7 +10,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
+import { LOG, gridApiInterface, ErrorMessage, Cell } from '../../common/general';
 import RequestService from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -124,7 +124,7 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  onGridReady(params: WikifierData) {
+  onGridReady(params: gridApiInterface) {
     // store the api
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;

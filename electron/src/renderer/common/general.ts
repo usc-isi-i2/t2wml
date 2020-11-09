@@ -8,7 +8,7 @@ export const LOG = {
     link: "background: white; color: blue"
 };
 
-export interface WikifierData {
+export interface gridApiInterface {
     api: any;
     columnApi: any;
 }
@@ -19,19 +19,6 @@ export interface ErrorMessage {
     errorDescription: string;
 }
 
-interface ErrorCellData {
-    ["item"]?: string;
-    ["qualifier"]?: {
-        [key: string]: {
-            ["value"]?: string;
-            ["time parsing"]?: string;
-        };
-    };
-}
-
-// export interface ErrorCell {
-//     [key: string] : ErrorCellData;   
-// }
 
 export class Cell {
     col: string | null = null;
