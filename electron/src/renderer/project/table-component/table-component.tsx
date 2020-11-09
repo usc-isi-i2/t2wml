@@ -301,17 +301,26 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
+  renderTitle() {
+    const { filename } = this.state;
+    return (
+      <div style={{ width: "calc(100% - 250px)", cursor: "default" }}
+        className="text-white font-weight-bold d-inline-block text-truncate">
+        {!!filename ? (
+          <span>
+            {filename}
+            <span style={{ opacity: "0.5", paddingLeft: "5px" }}>
+              [Read-Only]
+            </span>
+          </span>
+        ) : (
+          <span>Table&nbsp;Viewer</span>
+        )}
+      </div>
+    )
+  }
+
   render() {
-
-    const { filename, isCSV, columnDefs, rowData } = this.state;
-
-    // render title
-    let titleHtml;
-    if (!filename) {
-      titleHtml = <span>Table&nbsp;Viewer</span>;
-    } else {
-      titleHtml = <span>{filename}<span style={{ color: "hsl(150, 50%, 70%)" }}>&nbsp;[Read-Only]</span></span>;
-    }
 
     // render upload tooltip
     const uploadToolTipHtml = (
@@ -335,11 +344,7 @@ class TableComponent extends Component<{}, TableState> {
           <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#339966" }}>
 
             {/* title */}
-            <div
-              className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 305px)", cursor: "default" }}>
-              {titleHtml}
-            </div>
+            {this.renderTitle()}
 
             {/* button to upload table file */}
             <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
