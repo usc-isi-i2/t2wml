@@ -99,6 +99,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateTableData(table?: TableDTO) {
+    if ( !table ) { return; }
     let tableData = [];
     for ( const [rowIndex, row] of table.cells.entries() ) {
       let rowData = [];
