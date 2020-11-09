@@ -260,6 +260,15 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
+  renderErrorMessage() {
+    const { errorMessage } = this.state;
+    if ( errorMessage.errorDescription ) {
+      return (
+        <ToastMessage message={this.state.errorMessage} />
+      )
+    }
+  }
+
   renderPlaceholder() {
     return (
       <table ref={this.tableRef}
@@ -355,7 +364,7 @@ class TableComponent extends Component<{}, TableState> {
     return (
       <div className="w-100 h-100 p-1">
 
-        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
+        {this.renderErrorMessage()}
 
         <Card className="w-100 h-100 shadow-sm">
 
