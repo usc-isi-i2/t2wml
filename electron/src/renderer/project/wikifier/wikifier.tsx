@@ -72,7 +72,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
   }
 
-  async handleDoCall(region: string, flag: string, context: string) {
+  async handleWikifyRegion(region: string, flag: string, context: string) {
     // validate input
     if (!/^[a-z]+\d+:[a-z]+\d+$/i.test(region) || !utils.isValidRegion(region)) {
       alert("Error: Invalid region.\n\nRegion must:\n* be defined as A1:B2, etc.\n* start from top left cell and end in bottom right cell.");
@@ -220,7 +220,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
           <CallWikifier
             showCallWikifier={this.state.showCallWikifier}
             cancelCallWikifier={() => this.cancelCallWikifier()}
-            handleDoCall={(region, flag, context) => this.handleDoCall(region, flag, context)} />
+            handleWikifyRegion={(region, flag, context) => this.handleWikifyRegion(region, flag, context)} />
 
           {/* header */}
           <Card.Header
