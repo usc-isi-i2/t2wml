@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, WikifierErrorDTO } from '../common/dtos';
+import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
 import { Cell } from '../common/general';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
@@ -31,7 +31,7 @@ class TableState {
 
 class WikifierState {
     @observable public showSpinner: boolean;
-    @observable public wikifierError?: WikifierErrorDTO;
+    @observable public wikifierError?: string;
     @observable public entitiesStats?: EntitiesStatsDTO;
 
 

@@ -52,7 +52,7 @@ export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
 }
 
 export interface CallWikifierServiceDTO extends ResponseWithLayersDTO {
-    wikifierError: WikifierErrorDTO;
+    wikifierError: string;
 }
 
 export type CellIndex = [number, number];
@@ -127,10 +127,4 @@ export interface EntitiesStatsDTO {
     added: string[];
     updated: string[];
     failed: string[];
-}
-
-export interface WikifierErrorDTO {
-    errorCode: number;
-    errorTitle: string;
-    errorDescription: string;
 }

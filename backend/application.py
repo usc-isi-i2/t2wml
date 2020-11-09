@@ -287,12 +287,7 @@ def call_wikifier_service():
     response["layers"]=get_qnodes_layer(calc_params)
 
     if problem_cells:
-        error_dict = {
-            "errorCode": 400,
-            "errorTitle": "Failed to wikify some cellsr",
-            "errorDescription": "Failed to wikify: " + ",".join(problem_cells)
-        }
-        response['wikifierError'] = error_dict
+        response['wikifierError'] =  "Failed to wikify: " + ",".join(problem_cells)
 
     return response, 200
 
