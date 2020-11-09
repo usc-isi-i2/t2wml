@@ -1861,10 +1861,6 @@
                 ]
             }
         },
-        "wikifierError": {
-            "errorCode": 400,
-            "errorTitle": "Failed to wikify some cellsr",
-            "errorDescription": "Failed to wikify: I5"
-        }
+        "wikifierError": "Failed to wikify: I5"
     }
 }
