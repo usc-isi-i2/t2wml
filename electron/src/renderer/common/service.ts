@@ -2,6 +2,7 @@ import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, ResponseWithProjectDTO,
   UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO, ChangeDataFileResponseDTO } from './dtos';
+import { Cell } from './general';
 
 // I did it as a class because we will add a state instance
 
@@ -24,7 +25,7 @@ class RequestService {
 
   public async changeDataFile(dataFileName: string, folder: string) {
     const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ChangeDataFileResponseDTO;
-    this.fillgetProjectData(response);
+    this.fillChangeDataFile(response);
   }
 
   public async uploadWikifierOutput(folder: string, formData: any) {
@@ -90,7 +91,6 @@ class RequestService {
   }
 
 
-
   public fillUploadDataInStore(response: UploadDataFileResponseDTO) {
     this.fillProjectInStore(response.project);
     this.fillTableInStore(response.table);
@@ -115,6 +115,17 @@ class RequestService {
   public fillEntitiesData(response: UploadEntitiesDTO) {
     this.fillProjectAndLayers(response);
     wikiStore.wikifier.entitiesStats = response.entitiesStats;
+  }
+
+  public fillChangeDataFile(response: ChangeDataFileResponseDTO) {
+    this.fillTableInStore(response.table);
+    this.fillLayersInStore(response.layers);
+    this.fillYamlContentInStore(response.yamlContent);
+    
+    // don't change project when changing file in file tree
+    wikiStore.projects.projectDTO!._saved_state = response.project._saved_state;
+    // clear output window
+    wikiStore.table.selectedCell = new Cell('', 0, '');
   }
 }
 

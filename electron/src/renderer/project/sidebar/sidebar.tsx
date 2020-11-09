@@ -95,19 +95,18 @@ class Sidebar extends Component<{}, SidebarState> {
         }
     }
     
-    async onToggle(node: any, toggled: any) {
+    async onToggle(node: any) {//, toggled: any) {
         const cursor = this.state.cursor;
         cursor.active = false;
         this.setState({ cursor });
 
         node.active = true;
-        if (node.children) { 
-            node.toggled = toggled; 
-        }
+        // if (node.children) { 
+        //     node.toggled = toggled; 
+        // }
     
         // Does nothing when clicking on the current file
-        if (!node.children && this.state.cursor.name !== node.name
-            && node.name !== wikiStore.projects.projectDTO?._saved_state.current_data_file) {
+        if (!node.children && node.name !== wikiStore.projects.projectDTO?._saved_state.current_data_file) {
                 wikiStore.wikifier.showSpinner = true;
                 this.setState({showSpinner: true});
 
@@ -115,12 +114,11 @@ class Sidebar extends Component<{}, SidebarState> {
                 wikiStore.wikifier.showSpinner = false;
                 this.setState({showSpinner: false});
         }
-        
-        this.setState({ cursor: node }); 
+
+        this.setState({ cursor: node });
     }
 
     async changeDataFile(fileName: string) {
-        //TODO- check the data updating after merging
         try {
             await this.requestService.changeDataFile(fileName, wikiStore.projects.current!.folder);
         } catch {
@@ -140,6 +138,9 @@ class Sidebar extends Component<{}, SidebarState> {
                 children: dataFiles
             }
             this.setState({data: data});
+
+            const currentNode = dataFiles.find(n => n.name === wikiStore.projects.projectDTO!._saved_state.current_data_file)
+            this.onToggle(currentNode);
         }
     }
 
