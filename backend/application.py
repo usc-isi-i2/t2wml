@@ -309,7 +309,7 @@ def upload_yaml():
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
     
-    response=dict(project=project.__dict__)
+    response=dict(project=project.__dict__, layers=get_empty_layers())
 
     try:
         yaml.safe_load(yaml_data)
