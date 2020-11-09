@@ -338,6 +338,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   render() {
+    const { multipleSheets } = this.state;
 
     // render upload tooltip
     const uploadToolTipHtml = (
@@ -401,7 +402,7 @@ class TableComponent extends Component<{}, TableState> {
 
           </Card.Body>
 
-          <Card.Footer>
+          <Card.Footer hidden={!multipleSheets}>
           </Card.Footer>
         </Card>
       </div>
