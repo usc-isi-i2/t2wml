@@ -122,6 +122,9 @@ body {
   font-weight: 900;
 }
 
+/*
+ * Sidebar
+ */
 .closed-sidebar {
   width: 0;
 }
@@ -132,6 +135,8 @@ body {
 
 .table-sidebar-open {
  margin-left: 250px;
+ margin-top: 50px;
+ top: 0;
 }
 
 .table-sidebar-close {

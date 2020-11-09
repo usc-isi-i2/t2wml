@@ -107,12 +107,12 @@ class Sidebar extends Component<{}, SidebarState> {
     
         // Does nothing when clicking on the current file
         if (!node.children && node.name !== wikiStore.projects.projectDTO?._saved_state.current_data_file) {
-                wikiStore.wikifier.showSpinner = true;
-                this.setState({showSpinner: true});
+            wikiStore.wikifier.showSpinner = true;
+            this.setState({showSpinner: true});
 
-                await this.changeDataFile(node.name);
-                wikiStore.wikifier.showSpinner = false;
-                this.setState({showSpinner: false});
+            await this.changeDataFile(node.name);
+            wikiStore.wikifier.showSpinner = false;
+            this.setState({showSpinner: false});
         }
 
         this.setState({ cursor: node });
@@ -146,7 +146,7 @@ class Sidebar extends Component<{}, SidebarState> {
 
     render(){
         return (
-            <div className={wikiStore.projects.showFileTree ? 'opened-sidebar' : 'closed-sidebar'}>  
+            <div className={this.state.treeFlag ? 'opened-sidebar' : 'closed-sidebar'}>  
             {
                 /* loading spinner */}
                 <div className="mySpinner" hidden={!this.state.showSpinner}>

@@ -7,8 +7,6 @@ import Navbar from '../common/navbar/navbar';
 
 // App
 import SplitPane from 'react-split-pane';
-import Pane from '../../../node_modules/react-split-pane';
-// import Pane from 'react-split-pane/lib/Pane';
 import Config from '@/shared/config';
 
 import { ErrorMessage } from '../common/general';
@@ -25,7 +23,7 @@ import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
-// import { IReactionDisposer, reaction } from 'mobx';
+import { IReactionDisposer, reaction } from 'mobx';
 
 
 interface ProjectState {
@@ -34,7 +32,7 @@ interface ProjectState {
   warnEmpty: boolean;
   name: string;
   errorMessage: ErrorMessage;
-  // showTreeFlag: boolean;
+  showTreeFlag: boolean;
 }
 
 interface ProjectProps {
@@ -44,7 +42,7 @@ interface ProjectProps {
 @observer
 class Project extends Component<ProjectProps, ProjectState> {
   private requestService: RequestService;
-  // private disposeReaction?: IReactionDisposer;
+  private disposeReaction?: IReactionDisposer;
 
   constructor(props: ProjectProps) {
     super(props);
@@ -65,7 +63,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
-      // showTreeFlag: wikiStore.projects.showFileTree,
+      showTreeFlag: wikiStore.projects.showFileTree,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
@@ -85,7 +83,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
     ipcRenderer.on('toggle-file-tree', this.onShowFileTreeClicked);
 
-    // this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
+    this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
   }
 
   componentWillUnmount() {
@@ -94,9 +92,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
 
-    // if (this.disposeReaction) {
-    //   this.disposeReaction();
-    // }
+    if (this.disposeReaction) {
+      this.disposeReaction();
+    }
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -202,39 +200,19 @@ class Project extends Component<ProjectProps, ProjectState> {
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
-          {/* { this.state.showTreeFlag ? */}
-          {/* <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
-            <Pane initialSize="0%" minSize="0%" maxSize="0%" className={(wikiStore.projects.showFileTree ? "opened-sidebar" : "closed-sidebar")}>
-              <Sidebar />
-            </Pane>
-            <Pane initialSize="100%" minSize="100%" maxSize="100%" split="vertical" className={(wikiStore.projects.showFileTree ? "table-sidebar-open" : "table-sidebar-close")}>
-              <TableViewer />
+          <div>
+            <Sidebar />
+          </div>
 
-              <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-                <Editors />
-                <Output />
-              </SplitPane>
-            </Pane>
-            
-          </SplitPane> */}
-
-
-          <SplitPane className="p-3" split="vertical">
-            <Pane defaultSize="0%" minSize="0%" maxSize="10%" className={(wikiStore.projects.showFileTree ? "opened-sidebar" : "closed-sidebar")}>
-              <Sidebar />
-            </Pane>
-            <Pane split="vertical" defaultSize="40%" minSize={100} maxSize={-100}  className={(wikiStore.projects.showFileTree ? "table-sidebar-open" : "table-sidebar-close")}>
-              <TableViewer />
-
-              <Pane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-                <Editors />
-                <Output />
-              </Pane>
-            </Pane>
-            
+          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300} 
+            style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+            <TableViewer />
+            <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
+              <Editors />
+              <Output />
+            </SplitPane>
           </SplitPane>
         </div>
-
       </div>
     );
   }
