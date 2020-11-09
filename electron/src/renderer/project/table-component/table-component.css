@@ -111,6 +111,7 @@
   right: 0;
   height: 2px;
   background: rgb(51, 153, 102);
+  pointer-events: none;
 }
 
 /* left border */
@@ -122,6 +123,7 @@
   bottom: 0;
   width: 2px;
   background: rgb(51, 153, 102);
+  pointer-events: none;
 }
 
 /* right border */
@@ -133,6 +135,7 @@
   bottom: 0;
   width: 2px;
   background: rgb(51, 153, 102);
+  pointer-events: none;
 }
 
 /* bottom border */
@@ -144,4 +147,5 @@
   bottom: 0;
   height: 2px;
   background: rgb(51, 153, 102);
+  pointer-events: none;
 }
