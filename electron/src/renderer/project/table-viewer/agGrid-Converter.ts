@@ -19,7 +19,7 @@ export function getRowData(table:TableDTO){
     for (const [rowIndex, row] of table.cells.entries()) 
     {
         const rowData:{ [key: string]: string} = {}
-        rowData["^"]=(rowIndex+table.firstRowIndex).toString()
+        rowData["^"]=(rowIndex+1+table.firstRowIndex).toString()
 
         for (const [colIndex, colContent] of row.entries()) {
         rowData[getColumnTitleFromIndex(colIndex)] =  colContent

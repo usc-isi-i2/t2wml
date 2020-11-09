@@ -145,14 +145,14 @@ class Project extends Component<ProjectProps, ProjectState> {
     wikiStore.projects.showFileTree = !wikiStore.projects.showFileTree;
   }
 
-  async handleSaveSettings() {
+  async handleSaveSettings(endpoint: string, warn: boolean) {
     // update settings
     this.setState({ showSettings: false });
 
     // notify backend
     const formData = new FormData();
-    formData.append("endpoint", wikiStore.projects.projectDTO!.sparql_endpoint);
-    formData.append("warnEmpty", wikiStore.projects.projectDTO!.warn_for_empty_cells.toString());
+    formData.append("endpoint", endpoint);
+    formData.append("warnEmpty", warn.toString());
 
     try {
       await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
@@ -178,7 +178,7 @@ class Project extends Component<ProjectProps, ProjectState> {
         <Settings showSettings={this.state.showSettings}
           endpoint={this.state.endpoint}
           warnEmpty={this.state.warnEmpty}
-          handleSaveSettings={() => this.handleSaveSettings()}
+          handleSaveSettings={(endpoint, warn) => this.handleSaveSettings(endpoint, warn)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
