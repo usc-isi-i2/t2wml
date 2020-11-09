@@ -403,8 +403,7 @@ class TableComponent extends Component<{}, TableState> {
 
           </Card.Body>
 
-          <Card.Footer className="sheetSelector"
-            hidden={!multipleSheets}>
+          <Card.Footer hidden={!multipleSheets} className={'p-0'}>
             <SheetSelector
               sheetNames={sheetNames}
               currSheetName={currSheetName}
