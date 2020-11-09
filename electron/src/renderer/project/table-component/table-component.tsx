@@ -90,6 +90,14 @@ class TableComponent extends Component<{}, TableState> {
     console.log('updateQnodeCellsFromStore called');
   }
 
+  updateProjectInfo() {
+    if ( wikiStore.projects.projectDTO ) {
+      const project = wikiStore.projects.projectDTO;
+      const filename = project._saved_state.current_data_file;
+      this.setState({ filename });
+    }
+  }
+
   updateTableData(table?: TableDTO) {
     let tableData = [];
     for ( const [rowIndex, row] of table.cells.entries() ) {
@@ -100,6 +108,7 @@ class TableComponent extends Component<{}, TableState> {
       tableData.push(rowData);
     }
     this.setState({tableData});
+    this.updateProjectInfo();
   }
 
   updateStyleByCellFromStore() {
