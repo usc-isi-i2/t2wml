@@ -10,7 +10,7 @@
   font-weight: 400;
   user-select: none;
   position: relative;
-  cursor: pointer;
+  cursor: crosshair;
 }
 
 /* top left corner piece */
@@ -98,7 +98,7 @@
 
 /* active cell */
 .table-wrapper table tr td.active {
-  background: #efefef;
+  background: #f9f9f9;
   z-index: 5;
 }
 
