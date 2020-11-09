@@ -2,7 +2,7 @@ import json
 import os
 import sys
 from pathlib import Path
-import shutil
+import yaml
 from flask import request
 
 
@@ -12,7 +12,7 @@ from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe, numpy_converter,
-                   get_empty_layers, get_yaml_content, string_is_valid, save_yaml)
+                   get_empty_layers, get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
@@ -304,7 +304,9 @@ def upload_yaml():
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
 
-    if not string_is_valid(yaml_data):
+    try:
+        yaml.safe_load(yaml_data)
+    except:
         raise web_exceptions.InvalidYAMLFileException(
             "YAML file is either empty or not valid")
     if not project.current_data_file:
