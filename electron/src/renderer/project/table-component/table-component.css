@@ -50,6 +50,7 @@
   color: #777;
   z-index: 3;
   top: 0;
+  pointer-events: none;
 }
 .table-wrapper table thead tr th::after {
   content: "";
@@ -60,6 +61,7 @@
   height: 1px;
   position: absolute;
   background: #c7c7c7;
+  pointer-events: none;
 }
 
 /* left column */
@@ -72,6 +74,7 @@
   color: #777;
   z-index: 3;
   left: 0;
+  pointer-events: none;
 }
 .table-wrapper table tr td:nth-child(1)::after {
   content: "";
@@ -82,6 +85,7 @@
   width: 1px;
   position: absolute;
   background: #c7c7c7;
+  pointer-events: none;
 }
 
 .table-wrapper table tr td {
