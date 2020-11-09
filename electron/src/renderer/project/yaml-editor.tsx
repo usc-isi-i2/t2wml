@@ -60,6 +60,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   componentDidMount() {
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
+    this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
   }
 
   componentWillUnmount() {
@@ -173,6 +174,20 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         yamlParseErrFloatMessage: err.stack
       });
     }
+  }
+
+  updateErrorFromStore(){
+    const yamlError = wikiStore.yaml.yamlError;
+    if (yamlError && yamlError!=""){
+      console.log("Errors while applying yaml:")
+      console.log(yamlError);
+      console.log(wikiStore.layers.error);
+      this.setState({
+        yamlParseErrMsg: "⚠️ " + yamlError
+      });
+    }
+
+
   }
 
   render() {

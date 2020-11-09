@@ -25,6 +25,7 @@ class StoreFiller {
     wikiStore.yaml.yamlContent = content;
   }
 
+
   public fillUploadDataInStore(response: UploadDataFileResponseDTO) {
     this.fillProjectInStore(response.project);
     this.fillTableInStore(response.table);
@@ -34,11 +35,13 @@ class StoreFiller {
   public fillgetProjectData(response: GetProjectResponseDTO) {
     this.fillUploadDataInStore(response);
     this.fillYamlContentInStore(response.yamlContent);
+    wikiStore.yaml.yamlError = response.yamlError;
   }
 
   public fillProjectAndLayers(response: ResponseWithLayersDTO) {
     this.fillProjectInStore(response.project);
     this.fillLayersInStore(response.layers);
+    wikiStore.yaml.yamlError = response.yamlError;
   }
 
   public fillCallWikifier(response: CallWikifierServiceDTO) {

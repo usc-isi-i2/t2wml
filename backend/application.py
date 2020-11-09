@@ -301,21 +301,29 @@ def upload_yaml():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
+
+    if not project.current_data_file:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Upload data file before applying YAML.")
+
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
+    
+    response=dict(project=project.__dict__)
 
     try:
         yaml.safe_load(yaml_data)
     except:
-        raise web_exceptions.InvalidYAMLFileException(
-            "YAML file is either empty or not valid")
-    if not project.current_data_file:
-        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-            "Upload data file before applying YAML.")
+        response["yamlError"]="YAML file is either empty or not valid"
+        return response
+    
+
     save_yaml(project, yaml_data, yaml_title)
     calc_params = get_calc_params(project)
-    response=dict(project=project.__dict__)
-    response["layers"] = get_yaml_layers(calc_params)
+    try:
+        response["layers"] = get_yaml_layers(calc_params)
+    except Exception as e:
+        response["yamlError"] = str(e)
     return response, 200
 
 

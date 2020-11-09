@@ -1,7 +1,7 @@
+import os
 import json
 import numpy as np
 from pathlib import Path
-
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
@@ -40,6 +40,8 @@ def update_t2wml_settings(project):
     t2wml_settings.sparql_endpoint = project.sparql_endpoint
     t2wml_settings.wikidata_provider = DatabaseProvider(project)
     t2wml_settings.warn_for_empty_cells = project.warn_for_empty_cells
+    if not os.path.isdir(CACHE_FOLDER):
+        os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
 
 
@@ -212,6 +214,8 @@ def get_yaml_layers(calc_params):
 
 def get_table(calc_params, first_index=0, num_rows=None):
     sheet = calc_params.sheet
+    if not sheet:
+        raise ValueError("Calc params does not have sheet loaded")
     df = sheet.data
     dims = list(df.shape)
     
@@ -219,7 +223,8 @@ def get_table(calc_params, first_index=0, num_rows=None):
         last_index=first_index+num_rows
     else:
         last_index=None
-    
+
+    #There's no need to check for overflow, as pandas handles that automatically
     cells = json.loads(df[first_index:last_index].to_json(orient="values"))
 
     return dict(dims=dims, firstRowIndex=first_index, cells=cells)
@@ -228,26 +233,12 @@ def get_table(calc_params, first_index=0, num_rows=None):
 def get_all_layers_and_table(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
-    try:
-        response["table"] = get_table(calc_params)
-    except Exception as e:
-        response["table"]=None
-        response["error"]=str(e)
-        return response
 
-    try:
-        response["layers"].update(get_qnodes_layer(calc_params))
-    except Exception as e:
-        response["error"]= str(e)
-
+    response["table"] = get_table(calc_params)
+    response["layers"].update(get_qnodes_layer(calc_params))
 
     try:
         response["layers"].update(get_yaml_layers(calc_params))
-    except T2WMLException as e:
-        print(e.detail_message)
-        response["error"] = e.error_dict
     except Exception as e:
-        print(str(e))
-        response["error"]= str(e)
-
+        response["yamlError"] = str(e)
 

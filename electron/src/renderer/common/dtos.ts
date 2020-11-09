@@ -30,6 +30,7 @@ export interface ResponseWithProjectDTO {
 
 export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     layers: LayersDTO;
+    yamlError?: string;
 }
 
 export interface UploadDataFileResponseDTO extends ResponseWithLayersDTO {
@@ -87,7 +88,6 @@ export interface LayersDTO {
     type?: LayerDTO<TypeEntry>;
     cleaned?: LayerDTO<CleanEntry>;
 }
-
 
 
 export interface QNodeEntry extends Entry, QNode {

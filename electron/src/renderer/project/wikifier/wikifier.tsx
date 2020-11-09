@@ -99,7 +99,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       await this.requestService.call(this, () => this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData));
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       if (wikiStore.wikifier.wikifierError) {
-        console.log(wikiStore.wikifier.wikifierError)
+        console.log("Wikify region cell errors:", wikiStore.wikifier.wikifierError)
         this.setState({
           wikifyRegionMessage: wikiStore.wikifier.wikifierError
         });
