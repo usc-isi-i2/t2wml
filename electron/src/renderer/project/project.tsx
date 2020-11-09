@@ -203,10 +203,10 @@ class Project extends Component<ProjectProps, ProjectState> {
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
           {/* { this.state.showTreeFlag ? */}
           <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
-            <Pane initialSize="10%" minSize = "20%" maxSize = "30%"> 
+            <Pane initialSize="0%" minSize="0%" maxSize="0%" className={(wikiStore.projects.showFileTree ? "opened-sidebar" : "closed-sidebar")}>
               <Sidebar />
             </Pane>
-            <Pane initialSize="90%" minSize = "50%" maxSize = "40%" split="vertical" className={(wikiStore.projects.showFileTree ? "table-sidebar-open" : "table-sidebar-close")}>
+            <Pane initialSize="100%" minSize="100%" maxSize="100%" split="vertical" className={(wikiStore.projects.showFileTree ? "table-sidebar-open" : "table-sidebar-close")}>
               <TableViewer />
 
               <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>

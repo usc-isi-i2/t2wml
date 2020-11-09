@@ -128,12 +128,10 @@ body {
 
 .opened-sidebar {
   width: 250px;
-  background-color: #339966;
 }
 
 .table-sidebar-open {
- margin-left: 100px;
- height: auto;
+ margin-left: 250px;
 }
 
 .table-sidebar-close {
