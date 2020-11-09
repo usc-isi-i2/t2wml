@@ -7,7 +7,7 @@ import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap'
 import { LOG, ErrorMessage } from '../../common/general';
 import * as utils from '../../common/utils'
 
-import RequestService from '../../common/service';
+import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 import CallWikifier from './call-wikifier';
 import WikifierOutput from './wikifier-output';
@@ -21,12 +21,11 @@ interface WikifierProperties {
   isShowing: boolean;
 }
 
-interface WikifierState {
+interface WikifierState extends IStateWithError {
   showSpinner: boolean;
   showCallWikifier: boolean;
   rowData: Array<any>,
   flag: number;
-  errorMessage: ErrorMessage;
   propertiesMessage: string;
 }
 
@@ -82,8 +81,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // before sending request
     this.setState({
-      showCallWikifier: false,
-      errorMessage: {} as ErrorMessage,
+      showCallWikifier: false
     });
     wikiStore.wikifier.showSpinner = true;
 
@@ -95,18 +93,11 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     formData.append("context", context);
     formData.append("flag", flag);
     try {
-      const json = await this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData);
+      await this.requestService.call(this, () => this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData));
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
-      console.log(json);
-
-      // follow-ups (success)
-      wikiStore.wikifier.showSpinner = false;
 
     } catch (error) {
-      console.log(error);
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
+    } finally {
       wikiStore.wikifier.showSpinner = false;
     }
   }
@@ -147,34 +138,27 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const json = await this.requestService.uploadEntities(wikiStore.projects.current!.folder, formData);
+      await this.requestService.call(this, () => this.requestService.uploadEntities(wikiStore.projects.current!.folder, formData));
       console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
-      console.log(json);
 
       const { added, failed, updated } = wikiStore.wikifier.entitiesStats!;
       let message = `✅ Entities file loaded: ${added.length} added, ${updated.length} updated, ${failed.length} failed.`;
       if (failed.length) {
         message += '\n\nCheck the console for the failures reasons.'
+        console.log(failed)
       }
       this.setState({
         propertiesMessage: message
       });
 
-      // follow-ups (success)
-      wikiStore.wikifier.showSpinner = false;
 
-    } catch (error) {
-      console.log(error);
-      error.errorDescription += "\n\nCannot upload entities file!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
+    } catch { } finally {
       wikiStore.wikifier.showSpinner = false;
     }
   }
 
   async handleOpenWikifierFile(event: any) {
-    const file:File = (event.target as any).files[0];
+    const file: File = (event.target as any).files[0];
 
     if (!file) return;
 
@@ -187,21 +171,18 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      await this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData);
+      await this.requestService.call(this, () => this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData));
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
 
       this.setState({
         propertiesMessage: "✅ Wikifier file loaded"
       });
 
-    } catch (error) {
-      console.log(error);
-      error.errorDescription += "\n\nCannot upload wikifier file!";
-      this.setState({ errorMessage: error });
-
+    } catch { } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
     }
-    wikiStore.table.showSpinner = false;
-    wikiStore.wikifier.showSpinner = false;
+
   }
 
 
@@ -310,7 +291,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               id="file_wikifier"
               accept=".csv"
               style={{ display: "none" }}
-              onChange= {this.handleOpenWikifierFile.bind(this)}
+              onChange={this.handleOpenWikifierFile.bind(this)}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
 

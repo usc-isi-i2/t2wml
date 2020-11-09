@@ -16,7 +16,7 @@ import { ErrorMessage } from '../common/general';
 import Editors from './editor';
 import Output from './output/output';
 import TableViewer from './table-viewer/table-viewer';
-import RequestService from '../common/service';
+import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react";
@@ -26,12 +26,11 @@ import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
 
 
-interface ProjectState {
+interface ProjectState extends IStateWithError {
   showSettings: boolean;
   endpoint: string;
   warnEmpty: boolean;
   name: string;
-  errorMessage: ErrorMessage;
   showTreeFlag: boolean;
 }
 
@@ -104,10 +103,10 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // fetch project files
     console.debug('Refreshing project ', this.props.path);
-    try{
-      await this.requestService.getProject(this.props.path);    
+    try {
+      await this.requestService.call(this, () => this.requestService.getProject(this.props.path));
       document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
-      this.setState({name: wikiStore.projects.projectDTO!.title});
+      this.setState({ name: wikiStore.projects.projectDTO!.title });
 
       if (wikiStore.yaml.yamlContent !== null) {
         wikiStore.table.isCellSelectable = true;
@@ -120,19 +119,14 @@ class Project extends Component<ProjectProps, ProjectState> {
       if (!wikiStore.projects.projectDTO!.sparql_endpoint) {
         wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
       }
-      // follow-ups (success)
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
 
-    } catch(error) {
-      console.error("Can't fetch project: ", error);
-      error.errorDescription += "\n\nCannot fetch project!";
-      this.setState({ errorMessage: error });
+    } catch {
 
-      // follow-ups (failure)
+    } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
+
   }
 
   onRefreshProject() {
@@ -161,11 +155,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     formData.append("warnEmpty", wikiStore.projects.projectDTO!.warn_for_empty_cells.toString());
 
     try {
-      await this.requestService.getSettings(this.props.path, formData);
-    } catch(error) {
-      console.error('Error updating settings: ', error);
-      error.errorDescription += "\n\nCannot update settings!";
-      this.setState({ errorMessage: error });
+      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
+    } catch {
     }
   }
 

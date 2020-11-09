@@ -8,7 +8,7 @@ import Downloader from 'js-file-download';
 
 // console.log
 import { LOG, ErrorMessage } from '../../common/general';
-import RequestService from '../../common/service';
+import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react";
@@ -18,7 +18,7 @@ import ShowOutput from './show-output';
 import { reaction, IReactionDisposer } from 'mobx';
 import { StatementEntry } from '@/renderer/common/dtos';
 
-interface OutputComponentState {
+interface OutputComponentState extends IStateWithError {
   // statement
   statement: StatementEntry | null
   errors: string;
@@ -29,7 +29,6 @@ interface OutputComponentState {
   isLoadDatamart: boolean;
 
   propertyName: string;
-  errorMessage: ErrorMessage;
 }
 
 @observer
@@ -61,7 +60,7 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
   componentWillUnmount() {
-    for(const disposer of this.disposers) {
+    for (const disposer of this.disposers) {
       disposer();
     }
   }
@@ -71,7 +70,6 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
   async handleDoDownload(fileName: string, fileType: string) {
-    this.setState({ errorMessage: {} as ErrorMessage });
     const filename = fileName + "." + fileType;
 
     // before sending request
@@ -81,7 +79,7 @@ class Output extends Component<{}, OutputComponentState> {
     console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
 
     try {
-      const json = await this.requestService.downloadResults(this.projectPath, fileType);
+      const json = await this.requestService.call(this, () => this.requestService.downloadResults(this.projectPath, fileType));
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -109,15 +107,8 @@ class Output extends Component<{}, OutputComponentState> {
       }
       Downloader(data, filename);
 
-      // follow-ups (success)
-      this.setState({ isDownloading: false });
-
     } catch (error) {
-      //   console.log(error);
-      error.errorDescription += "\n\nCannot download!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
+    } finally {
       this.setState({ isDownloading: false });
     }
   }
@@ -134,45 +125,46 @@ class Output extends Component<{}, OutputComponentState> {
       errors: ""
     });
 
-    if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row){return;} //no cell selected
-    const selectedCell=wikiStore.table.selectedCell;
-    const error=wikiStore.layers.error.find(selectedCell.rowIndex, selectedCell.colIndex)
-    const statement=wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
+    if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row) { return; } //no cell selected
+    const selectedCell = wikiStore.table.selectedCell;
+    const error = wikiStore.layers.error.find(selectedCell.rowIndex, selectedCell.colIndex)
+    const statement = wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
 
-    if(error) {
-        this.setState({errors: JSON.stringify(error)}); //TODO: fix to work better.
+    if (error) {
+      this.setState({ errors: JSON.stringify(error) }); //TODO: fix to work better.
     }
 
-    if (!statement) {return;}
-    
-    this.setState({statement: statement});
+    if (!statement) { return; }
+
+    this.setState({ statement: statement });
   }
 
 
 
-  loadToDatamart() {
+  async loadToDatamart() {
     // TODO !
     wikiStore.output.showSpinner = true;
     wikiStore.table.showSpinner = true;
     this.setState({ isLoadDatamart: true });
     console.log("Load to Datamart");
-    this.requestService.loadToDatamart(this.projectPath).then((json) => {
-        console.log(json);
-        const { datamart_get_url, description } = json;
-        if (datamart_get_url !== undefined) {
-            alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
-            // prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
-        } else {
-            alert("Failed to load to Datamart\nError: " + description)
-        }
-    }).catch((error: any) => {
-        console.log(error);
-        const { errorTitle, errorDescription } = error;
-        if (errorTitle !== undefined) {
-            alert("Failed to load to Datamart\nError: " + errorTitle +"\nDescription: " + errorDescription);
-            wikiStore.table.showSpinner = false;
-        }
-    });
+    try {
+      const json = await this.requestService.call(this, () => this.requestService.loadToDatamart(this.projectPath))
+      console.log(json);
+      const { datamart_get_url, description } = json;
+      if (datamart_get_url !== undefined) {
+        alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
+        // prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
+      } else {
+        alert("Failed to load to Datamart\nError: " + description)
+      }
+    } catch (error: any) {
+      console.log(error);
+      const { errorTitle, errorDescription } = error;
+      if (errorTitle !== undefined) {
+        alert("Failed to load to Datamart\nError: " + errorTitle + "\nDescription: " + errorDescription);
+        wikiStore.table.showSpinner = false;
+      }
+    }
     this.setState({ isLoadDatamart: false });
     wikiStore.output.showSpinner = false;
     wikiStore.table.showSpinner = true;
@@ -212,7 +204,7 @@ class Output extends Component<{}, OutputComponentState> {
               className="d-inline-block float-right"
               variant="outline-light"
               size="sm"
-              style={{padding: "0rem 0.5rem", marginRight: "0.5rem" }}
+              style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
               onClick={() => this.setState({ showDownload: true })}
               disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >
