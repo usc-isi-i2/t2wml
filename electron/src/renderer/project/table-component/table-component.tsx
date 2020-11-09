@@ -246,10 +246,6 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseUp(event) {
     this.selecting = false;
-    if ( !event.metaKey ) {
-      this.selections = [];
-      this.resetSelections();
-    }
   }
 
   handleOnMouseDown(event) {
@@ -258,28 +254,25 @@ class TableComponent extends Component<{}, TableState> {
     // Make sure users can only select table cells
     if ( element.nodeName === 'TD' ) {
 
-      // Make sure users are not able to select the cells in the index column
-      if ( element.parentElement.firstChild !== event.target ) {
+      // Activate the selection mode
+      this.selecting = true;
 
-        // Activate the selection mode
-        this.selecting = true;
+      // Set both coordinates to the same cell
+      const x1 = element.cellIndex;
+      const x2 = element.cellIndex;
+      const y1 = element.parentElement.rowIndex;
+      const y2 = element.parentElement.rowIndex;
 
-        // Set both coordinates to the same cell
-        const x1 = element.cellIndex;
-        const x2 = element.cellIndex;
-        const y1 = element.parentElement.rowIndex;
-        const y2 = element.parentElement.rowIndex;
-
-        // Update selection coordinates
-        if ( !event.metaKey ) {
-          this.selections = [{x1, x2, y1, y2}];
-        } else {
-          this.selections.push({x1, x2, y1, y2});
-        }
-
-        // Activate the element on click
-        this.selectCell(element, y1, x1, y1, x1, x1, y1);
+      // Update selection coordinates
+      if ( !event.metaKey ) {
+        this.resetSelections();
+        this.selections = [{x1, x2, y1, y2}];
+      } else {
+        this.selections.push({x1, x2, y1, y2});
       }
+
+      // Activate the element on click
+      this.selectCell(element, y1, x1, y1, x1, x1, y1);
     }
   }
 
@@ -302,6 +295,8 @@ class TableComponent extends Component<{}, TableState> {
         // Update selections
         this.updateSelections();
       }
+    } else {
+      this.selecting = false;
     }
   }
 
