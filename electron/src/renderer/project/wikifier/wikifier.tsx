@@ -27,6 +27,7 @@ interface WikifierState extends IStateWithError {
   rowData: Array<any>,
   flag: number;
   propertiesMessage: string;
+  wikifyRegionMessage: string;
 }
 
 @observer
@@ -55,7 +56,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
 
       errorMessage: {} as ErrorMessage,
-      propertiesMessage: ''
+      propertiesMessage: '',
+      wikifyRegionMessage: ''
     };
   }
 
@@ -81,7 +83,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // before sending request
     this.setState({
-      showCallWikifier: false
+      showCallWikifier: false,
+      wikifyRegionMessage: ''
     });
     wikiStore.wikifier.showSpinner = true;
 
@@ -95,6 +98,12 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     try {
       await this.requestService.call(this, () => this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData));
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
+      if (wikiStore.wikifier.wikifierError) {
+        console.log(wikiStore.wikifier.wikifierError)
+        this.setState({
+          wikifyRegionMessage: wikiStore.wikifier.wikifierError
+        });
+      }
 
     } catch (error) {
     } finally {
@@ -211,6 +220,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
         {this.state.propertiesMessage != '' ? <ToastMessage message={this.state.propertiesMessage} /> : null}
+        {this.state.wikifyRegionMessage != '' ? <ToastMessage message={this.state.wikifyRegionMessage} /> : null}
 
         <Card
           className="w-100 shadow-sm"
