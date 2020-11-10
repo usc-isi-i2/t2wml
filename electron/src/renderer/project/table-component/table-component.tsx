@@ -81,6 +81,7 @@ class TableComponent extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
+    this.disposers.push(reaction(() => wikiStore.layers.type, () => this.styleCellTypeColors()));
   }
 
   componentWillUnmount() {
@@ -98,6 +99,19 @@ class TableComponent extends Component<{}, TableState> {
     this.setState({
       errorMessage: {} as ErrorMessage,
     });
+  }
+
+  styleCellTypeColors() {
+    const { tableData } = this.state;
+    const types = wikiStore.layers.type;
+    for (const entry of types.entries) {
+      const type = entry.type;
+      for (const index of entry.indices) {
+        let item = tableData[index[0]][index[1]];
+        tableData[index[0]][index[1]] = {...item, type};
+      }
+    }
+    this.setState({tableData});
   }
 
   async handleSelectSheet(event: any) {
@@ -357,7 +371,8 @@ class TableComponent extends Component<{}, TableState> {
                 {CHARACTERS.map((c, j) => {
                   if ( i < tableData.length && j < tableData[i].length ) {
                     return (
-                      <td key={`cell-${j}`}>
+                      <td key={`cell-${j}`}
+                        className={`type-${tableData[i][j]['type']}`}>
                         {tableData[i][j]['data']}
                       </td>
                     )
