@@ -15,8 +15,8 @@ class UIState {
 
     private constructor() {
         this.displayMode = 'project-list';
-        this.showCleanedData = false;
-        this.showFileTree=false;
+        this.showCleanedData = true;
+        this.showFileTree = true;
     }
 }
 
