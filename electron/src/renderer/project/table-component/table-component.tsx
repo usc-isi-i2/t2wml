@@ -370,10 +370,11 @@ class TableComponent extends Component<{}, TableState> {
                 <td>{i+1}</td>
                 {CHARACTERS.map((c, j) => {
                   if ( i < tableData.length && j < tableData[i].length ) {
+                    const item = tableData[i][j]
                     return (
                       <td key={`cell-${j}`}
-                        className={`type-${tableData[i][j]['type']}`}>
-                        {tableData[i][j]['data']}
+                        className={!!item['type'] ? `type-${item['type']}` : ''}>
+                        {item['data']}
                       </td>
                     )
                   } else {
