@@ -99,10 +99,8 @@
   z-index: 1;
 }
 
-
 /* active cell */
 .table-wrapper table tr td.active {
-  background: #f9f9f9;
   z-index: 5;
 }
 
