@@ -354,11 +354,17 @@ class TableComponent extends Component<{}, TableState> {
             {[...Array(Math.max(tableData.length, MIN_NUM_ROWS))].map((e, i) => (
               <tr key={`row-${i}`}>
                 <td>{i+1}</td>
-                {CHARACTERS.map((c, j) => (
-                  <td key={`cell-${j}`}>
-                    {i >= tableData.length ? '' : tableData[i][j]}
-                  </td>
-                ))}
+                {CHARACTERS.map((c, j) => {
+                  if ( i < tableData.length && j < tableData[i].length ) {
+                    return (
+                      <td key={`cell-${j}`}>
+                        {tableData[i][j]['data']}
+                      </td>
+                    )
+                  } else {
+                    return <td key={`cell-${j}`} />
+                  }
+                })}
               </tr>
             ))}
           </tbody>
