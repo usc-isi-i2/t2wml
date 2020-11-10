@@ -15,45 +15,42 @@ if not os.path.exists(DATADIR):
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 if BASEDIR not in sys.path:
-    sys.path.append(BASEDIR) #when running migrate, needed to not get import errors
+    sys.path.append(BASEDIR)  # when running migrate, needed to not get import errors
 
-UPLOAD_FOLDER = os.path.join(DATADIR, "storage")
-CACHE_FOLDER=os.path.join(DATADIR, "cache")
-DOWNLOAD_FOLDER = os.path.join(BASEDIR, "downloads")
-
+CACHE_FOLDER = os.path.join(DATADIR, "cache")
 Path(CACHE_FOLDER).mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__, static_folder=None)
 CORS(app, supports_credentials=True)
-app.secret_key = "secret key" # This will no longer be used once we stop using session cookies
+
 
 class AppConfig:
-    USE_CACHE=True
-    UPLOAD_FOLDER = UPLOAD_FOLDER
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max file size
-    downloads = DOWNLOAD_FOLDER
+    USE_CACHE = True
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max file size
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(DATADIR, 'entities.db')
+                              'sqlite:///' + os.path.join(DATADIR, 'entities.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
+
 
 app.config.from_object(AppConfig)
 
 DEFAULT_SPARQL_ENDPOINT = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql'
-GOOGLE_CLIENT_ID = '552769010846-tpv08vhddblg96b42nh6ltg36j41pln1.apps.googleusercontent.com'
 DATAMART_API_ENDPOINT = 'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
-#DATAMART_API_ENDPOINT = 'http://localhost:12543'
 
 #############SQL STUFF
 
-AUTO_MIGRATE= "sqlite" in AppConfig.SQLALCHEMY_DATABASE_URI #only set to true if database is sqlite
-#MIGRATE_DIR=os.path.join(BASEDIR, "migrations")
+AUTO_MIGRATE = "sqlite" in AppConfig.SQLALCHEMY_DATABASE_URI  # only set to true if database is sqlite
+
+
+# MIGRATE_DIR=os.path.join(BASEDIR, "migrations")
 
 def auto_constraint_name(constraint, table):
     if constraint.name is None or constraint.name == "_unnamed_":
         return "sa_autoname_%s" % str(uuid.uuid4())[0:5]
     else:
         return constraint.name
+
 
 convention = {
     "auto_constraint_name": auto_constraint_name,
@@ -64,15 +61,13 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 
-
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(app, metadata=metadata)
 
 from wikidata_models import *
 
-migrate = Migrate(app, db, render_as_batch=True) #, directory=MIGRATE_DIR
-
+migrate = Migrate(app, db, render_as_batch=True)  # , directory=MIGRATE_DIR
 
 if AUTO_MIGRATE:
     with app.app_context():

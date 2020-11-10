@@ -7,7 +7,6 @@ import Navbar from '../common/navbar/navbar';
 
 // App
 import SplitPane from 'react-split-pane';
-
 import Config from '@/shared/config';
 
 import { ErrorMessage } from '../common/general';
@@ -16,20 +15,24 @@ import { ErrorMessage } from '../common/general';
 import Editors from './editor';
 import Output from './output/output';
 import TableViewer from './table-viewer/table-viewer';
-import RequestService from '../common/service';
+import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
+import { IpcRendererEvent } from 'electron/renderer';
+import Sidebar from './sidebar/sidebar';
+import { IReactionDisposer, reaction } from 'mobx';
 
-interface ProjectState {
+
+interface ProjectState extends IStateWithError {
   showSettings: boolean;
   endpoint: string;
   warnEmpty: boolean;
   name: string;
-  errorMessage: ErrorMessage;
+  showTreeFlag: boolean;
 }
 
 interface ProjectProps {
@@ -39,6 +42,7 @@ interface ProjectProps {
 @observer
 class Project extends Component<ProjectProps, ProjectState> {
   private requestService: RequestService;
+  private disposeReaction?: IReactionDisposer;
 
   constructor(props: ProjectProps) {
     super(props);
@@ -46,8 +50,9 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // init global variables
     wikiStore.table.isCellSelectable = false;
-    wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
-
+    if (wikiStore.projects.projectDTO) {
+      wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+    }
     // init state
     this.state = {
 
@@ -58,11 +63,13 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
+      showTreeFlag: wikiStore.projects.showFileTree,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
     this.onRefreshProject = this.onRefreshProject.bind(this);
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
+    this.onShowFileTreeClicked = this.onShowFileTreeClicked.bind(this);
   }
 
   componentDidMount() {
@@ -74,12 +81,22 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
+    ipcRenderer.on('toggle-file-tree', (sender: IpcRendererEvent, checked: boolean) => {
+      this.onShowFileTreeClicked(checked);
+    });
+
+    this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
   }
 
   componentWillUnmount() {
     console.log("project- componentWillUnmount");
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
+    ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
+
+    if (this.disposeReaction) {
+      this.disposeReaction();
+    }
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -96,34 +113,12 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // fetch project files
     console.debug('Refreshing project ', this.props.path);
-    try{
-      const json = await this.requestService.getProjectFiles(this.props.path);
-      document.title = 't2wml: ' + json.name;
-      this.setState({name: json.name});
+    try {
+      await this.requestService.call(this, () => this.requestService.getProject(this.props.path));
+      document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
+      this.setState({ name: wikiStore.projects.projectDTO!.title });
 
-      // do something here
-      const { tableData, yamlData, wikifierData } = json;
-
-      // load table data
-      if (tableData) {
-        wikiStore.table.tableData = tableData;
-      } else {// else: reset data
-        wikiStore.table.tableData = undefined;
-      }
-      
-      // reset output window
-      wikiStore.output.clearOutput();
-      // load wikifier data
-      if (wikifierData !== null) {
-        wikiStore.table.updateQnodeCells(wikifierData.qnodes, wikifierData.rowData);
-      } else {
-        wikiStore.table.updateQnodeCells(); // reset
-      }
-
-      // load yaml data
-      wikiStore.yaml.yamlText = yamlData?.yamlFileContent || undefined;
-      wikiStore.table.yamlRegions = yamlData?.yamlRegions;
-      if (yamlData !== null) {
+      if (wikiStore.yaml.yamlContent !== null) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
@@ -131,21 +126,17 @@ class Project extends Component<ProjectProps, ProjectState> {
       }
 
       // load settings
-      wikiStore.settings.sparqlEndpoint = Config.defaultSparqlEndpoint;
+      if (!wikiStore.projects.projectDTO!.sparql_endpoint) {
+        wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+      }
 
-      // follow-ups (success)
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
+    } catch {
 
-    } catch(error) {
-      console.error("Can't fetch project: ", error);
-      error.errorDescription += "\n\nCannot fetch project!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
+    } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
+
   }
 
   onRefreshProject() {
@@ -153,29 +144,29 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   async onShowSettingsClicked() {
-    const data = await this.requestService.getSettings(this.props.path);
     this.setState({
-      endpoint: data.endpoint,
-      warnEmpty: data.warnEmpty,
+      endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
+      warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
       showSettings: true
     });
   }
 
-  async handleSaveSettings() {
+  onShowFileTreeClicked(checked: boolean) {
+    wikiStore.projects.showFileTree = checked;
+  }
+
+  async handleSaveSettings(endpoint: string, warn: boolean) {
     // update settings
     this.setState({ showSettings: false });
 
     // notify backend
     const formData = new FormData();
-    formData.append("endpoint", wikiStore.settings.sparqlEndpoint);
-    formData.append("warnEmpty", wikiStore.settings.warnEmpty.toString());
+    formData.append("endpoint", endpoint);
+    formData.append("warnEmpty", warn.toString());
 
     try {
-      await this.requestService.updateSettings(this.props.path, formData);
-    } catch(error) {
-      console.error('Error updating settings: ', error);
-      error.errorDescription += "\n\nCannot update settings!";
-      this.setState({ errorMessage: error });
+      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
+    } catch {
     }
   }
 
@@ -197,12 +188,17 @@ class Project extends Component<ProjectProps, ProjectState> {
         <Settings showSettings={this.state.showSettings}
           endpoint={this.state.endpoint}
           warnEmpty={this.state.warnEmpty}
-          handleSaveSettings={() => this.handleSaveSettings()}
+          handleSaveSettings={(endpoint, warn) => this.handleSaveSettings(endpoint, warn)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
-        <div>
-          <SplitPane className="p-3" split="vertical" defaultSize="55%" minSize={300} maxSize={-300} style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+        <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+          <div>
+            <Sidebar />
+          </div>
+
+          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300} 
+            style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
             <TableViewer />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />
@@ -210,7 +206,6 @@ class Project extends Component<ProjectProps, ProjectState> {
             </SplitPane>
           </SplitPane>
         </div>
-
       </div>
     );
   }

@@ -1,0 +1,54 @@
+_saved_state:
+  current_data_file: homicide_report_total_and_sex.xlsx
+  current_sheet: table-1a
+  current_wikifiers:
+  - wikifier_general.csv
+  current_yaml: t2wml/table-1a.yaml
+cache_id: 019af0e3-e959-4cd3-b656-6e96ed9ea290
+data_files:
+  csv/sheet-2.csv:
+  - sheet-2.csv
+  homicide_report_total_and_sex.xlsx:
+  - table-1a
+  - table-1b
+  - table-2a
+  - table-2b
+  - table-3a
+  - table-3b
+  - table-4a
+  - table-4b
+  - table-5a
+  - table-5b
+  - table-6
+  - table-7
+  - table-8
+  - table-9
+  - table-10a
+  - table-10e
+  - table-10b
+  - table-10c
+  - table-10d
+  - Total Count and Rate
+  - By Sex Count and Rate
+  - Sources Codes
+entity_files:
+- homicide_extra_edges.tsv
+- homicide_properties.tsv
+handle_calendar: leave
+sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
+title: homicide
+warn_for_empty_cells: false
+wikifier_files:
+- wikifier_general.csv
+yaml_files:
+- t2wml/table-1a.yaml
+- t2wml/table-1b.yaml
+yaml_sheet_associations:
+  csv/sheet-2.csv:
+    sheet-2.csv:
+    - t2wml/table-1b.yaml
+  homicide_report_total_and_sex.xlsx:
+    table-1a:
+    - t2wml/table-1a.yaml
+    table-1b:
+    - t2wml/table-1b.yaml

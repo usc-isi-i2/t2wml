@@ -10,14 +10,13 @@ import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-boots
 import Config from '@/shared/config';
 
 import { observer } from "mobx-react";
-import wikiStore from '../data/store';
 
 interface SettingsProperties {
     showSettings: boolean;
     endpoint: string;
     warnEmpty: boolean;
 
-    handleSaveSettings: () => void;
+    handleSaveSettings: (endpoint: string, warn: boolean) => void;
     cancelSaveSettings: () => void;
 }
 
@@ -39,9 +38,9 @@ class Settings extends Component<SettingsProperties, SettingsState> {
   }
 
   handleSaveSettings() {
-    wikiStore.settings.sparqlEndpoint = (this.tempSparqlEndpointRef as any).current.value;
-    wikiStore.settings.warnEmpty = this.state.tmpWarnEmpty;
-    this.props.handleSaveSettings();
+    const endpoint = (this.tempSparqlEndpointRef as any).current.value;
+    const warn = this.state.tmpWarnEmpty;
+    this.props.handleSaveSettings(endpoint, warn);
   }
 
 

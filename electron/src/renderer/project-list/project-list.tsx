@@ -17,15 +17,15 @@ import ToastMessage from '../common/toast';
 
 // console.log
 import { LOG, ErrorMessage } from '../common/general';
-import RequestService from '../common/service';
+import RequestService, { IStateWithError } from '../common/service';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import { Project } from '../data/projects';
 
-import {shell} from 'electron';
+import { shell } from 'electron';
 
-interface ProjectListState {
+interface ProjectListState extends IStateWithError {
   showSpinner: boolean;
   showRenameProject: boolean;
   deletingProjectPath: string;
@@ -42,8 +42,6 @@ interface ProjectListState {
   // projects
   sortBy: SortByField;
   isAscending: boolean;
-
-  errorMessage: ErrorMessage;
 }
 
 type SortByField = 'name' | 'folder' | 'created' | 'modified';
@@ -83,7 +81,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     document.title = "T2WML - Projects";
   }
 
-  handleDeleteProject(path: string) {    
+  handleDeleteProject(path: string) {
     const project = wikiStore.projects.find(path);
     if (!project) {
       console.warn(`No project for ${path} in project list`);
@@ -95,7 +93,6 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
   async handleRenameProject(name: string) {
-    this.setState({ errorMessage: {} as ErrorMessage });
     const path = this.state.tempRenameProjectPath;
     let ptitle = name.trim();
     if (ptitle === "") ptitle = "Untitled project";
@@ -110,16 +107,9 @@ class ProjectList extends Component<{}, ProjectListState> {
     const formData = new FormData();
     formData.append("ptitle", ptitle);
     try {
-      const json = await this.requestService.renameProject(path, formData);
-      if (json.error) {
-        console.warn('Renaming a project returned an error: ', json);
-      }
-      this.setState({ showRenameProject: false, showSpinner: false });
+      await this.requestService.call(this, () => this.requestService.renameProject(path, formData));
       wikiStore.projects.refreshList();
-    } catch(error) {
-      // console.log(error);
-      error.errorDescription += "\n\nCannot rename project!";
-      this.setState({ errorMessage: error });
+    } catch { } finally {
       this.setState({ showRenameProject: false, showSpinner: false });
     }
   }
@@ -196,7 +186,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             {/* title */}
             <td>
               <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(project.folder)}>
-                  {project.name}
+                {project.name}
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
             </td>
@@ -204,7 +194,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             {/* path */}
             <td>
               <span>
-                  {project.folder}
+                {project.folder}
               </span>
             </td>
 
@@ -212,7 +202,7 @@ class ProjectList extends Component<{}, ProjectListState> {
             <td>
               <span className="text-left small">
                 {this.formatTime(project.modified)}
-              </span> 
+              </span>
             </td>
 
             {/* date created */}
@@ -229,7 +219,6 @@ class ProjectList extends Component<{}, ProjectListState> {
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="rename">
                     <span className="text-left small">Rename</span>
@@ -249,7 +238,6 @@ class ProjectList extends Component<{}, ProjectListState> {
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="download">
                     <span className="text-left small">Show in filesystem</span>
@@ -269,7 +257,6 @@ class ProjectList extends Component<{}, ProjectListState> {
               <OverlayTrigger
                 placement="top"
                 trigger={["hover", "focus"]}
-                popperConfig={{ modifiers: { hide: { enabled: false }, preventOverflow: { enabled: false } } }}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="delete">
                     <span className="text-left small">Delete</span>
@@ -282,7 +269,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                   onClick={() => this.handleDeleteProject(project.folder)}
                 >
                   <FontAwesomeIcon icon={faTimes} />
-                </span>     
+                </span>
               </OverlayTrigger>
             </td>
           </tr>
@@ -385,7 +372,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   renderModals() {
     return (
-      <RenameProject 
+      <RenameProject
         showRenameProject={this.state.showRenameProject}
         showSpinner={this.state.showSpinner}
         tempRenameProject={this.state.tempRenameProject}
@@ -407,11 +394,11 @@ class ProjectList extends Component<{}, ProjectListState> {
 
         {this.renderModals()}
 
-        <Navbar/>
-        
+        <Navbar />
+
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa", paddingTop: "20px" }}>
-          {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage}/> : null }
+          {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
           <Card className="shadow-sm" style={{ width: "80%", height: "calc(100vh - 90px)", margin: "0 auto" }}>
             <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#343a40" }}>
               <div
@@ -425,7 +412,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
               <div style={{ marginBottom: "20px" }}>
                 <div style={{ display: "inline-block", width: "40%" }}>
-                <Button
+                  <Button
                     variant="primary"
                     size="sm"
                     style={{ fontWeight: 600, marginRight: '1rem' }}

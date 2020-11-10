@@ -2,7 +2,6 @@ import os
 import requests
 import tempfile
 from pathlib import Path
-from t2wml.api import Sheet
 from t2wml_web import download
 from app_config import DATAMART_API_ENDPOINT
 from web_exceptions import NoSuchDatasetIDException, CellResolutionWithoutYAMLFileException

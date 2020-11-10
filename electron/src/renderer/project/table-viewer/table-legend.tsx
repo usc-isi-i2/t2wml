@@ -10,7 +10,7 @@ import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { observer } from "mobx-react";
 
 interface LegendProperties {
-    isCSV: boolean;
+    multipleSheets: boolean;
 }
 
 @observer
@@ -37,7 +37,7 @@ class TableLegend extends Component<LegendProperties, {}> {
           <Button
             className="myPopover shadow"
             variant="secondary"
-            style={this.props.isCSV ? { cursor: "default" } : { cursor: "default", bottom: "70px" }}
+            style={this.props.multipleSheets ? { cursor: "default", bottom: "70px" }: { cursor: "default" } }
           >
             <FontAwesomeIcon icon={faQuestion} />
           </Button>

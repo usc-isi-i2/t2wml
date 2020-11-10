@@ -66,7 +66,9 @@ export default class MainMenuManager {
                     { role: 'zoomOut' },
                     { role: 'resetZoom' },
                     { type: 'separator' },
-                    { role: 'togglefullscreen' }
+                    { role: 'togglefullscreen' },
+                    { type: 'separator' },
+
                 ]
             },
             {
@@ -118,7 +120,22 @@ export default class MainMenuManager {
             label: 'Settings...',
             click: () => this.onProjectSettingsClick(),
             enabled,
-        }];
+        },
+        {
+            label: 'Show Cleaned Data',
+            type: 'checkbox',
+            checked: uiState.showCleanedData,
+            click: (checkbox) => this.onShowCleanedClick(checkbox.checked),
+            enabled,
+        },
+        {
+            label: 'Show File Tree',
+            type: 'checkbox',
+            checked: uiState.showFileTree,
+            click: (checkbox) => this.onToggleFileTreeClick(checkbox.checked),
+            enabled,
+        }
+    ];
     }
 
     public async onNewProjectClick() {
@@ -163,10 +180,18 @@ export default class MainMenuManager {
     private onProjectSettingsClick() {
         rendererNotifier.projectSettings();
     }
+    
+    private onToggleFileTreeClick(checked: boolean) {
+        rendererNotifier.toggleFileTree(checked);
+    }
 
     private onClearRecentlyOpenedClick() {
         settings.recentlyUsed = [];
         settings.saveSettings();
         this.setMainMenu();
+    }
+
+    private onShowCleanedClick(checked: boolean) {
+        rendererNotifier.toggleShowCleanedData(checked);
     }
 }

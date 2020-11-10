@@ -22,50 +22,40 @@ class TableToast extends Component<TableToastProperties, {}> {
 
   renderToastBody() {
     // get qnodeData from wikifier, e.g. { "A1": "Q967", ... }
-    if (wikiStore.wikifier === undefined) return;
-    const { qnodeData } = wikiStore.wikifier;
-    if (qnodeData === undefined) return;
+    if (wikiStore.layers.qnode === undefined) return;
+    if (wikiStore.layers.qnode.entries.length < 1) return;
 
     // get qnode according to cell index, e.g. "Q967"
     const { selectedCell } = this.props;
 
-    if (selectedCell === null || selectedCell.col === null || selectedCell.row === null) return;
-    const selectedCellIndex = String(selectedCell.col) + String(selectedCell.row);
+    if (selectedCell === null || selectedCell.colIndex === null || selectedCell.rowIndex === null) return;
+
+    const selectedQnode = wikiStore.layers.qnode.find(selectedCell.rowIndex, selectedCell.colIndex)
 
     // fill in data
-    if (qnodeData[selectedCellIndex] === undefined) return;
-    const contexts = Object.keys(qnodeData[selectedCellIndex]);
-    if (contexts.length === 0) return;
-    const items = [], labels = [], descs = [];
-    for (let i = 0; i < contexts.length; i++) {
-      items.push(qnodeData[selectedCellIndex][contexts[i]]["item"]);
-      labels.push(qnodeData[selectedCellIndex][contexts[i]]["label"]);
-      descs.push(qnodeData[selectedCellIndex][contexts[i]]["description"]);
-    }
-
+    if (selectedQnode === undefined) return;
+    const {id, url, label, description} = selectedQnode
     // render qnode
-    let itemHref;
-    const itemType = items[0].match(/[a-z]+|\d+/gi)[0];
-    if (itemType.charAt(itemType.length - 1) === "Q") {
-      itemHref = "https://www.wikidata.org/wiki/" + items[0];
-    } else {
-      itemHref = "https://www.wikidata.org/wiki/Property:" + items[0];
-    }
+    const idHref = url 
 
-    const itemHtml = (
+    let idHtml;
+    if (url!=""){
+      idHtml = (
       <a
-        href={itemHref}
+        href={idHref}
         target="_blank"
         rel="noopener noreferrer"
         style={{ "color": "hsl(200, 100%, 30%)" }}
-      >{items[0]}</a>
-    );
+      >{id}</a>
+    );}else{
+      idHtml = <span>{id}</span>
+    }
 
     return (
       <Toast.Body>
-        <strong>{labels[0]}</strong>&nbsp;({itemHtml})<br />
+        <strong>{label}</strong>&nbsp;({idHtml})<br />
         <br />
-        {descs[0]}
+        {description}
       </Toast.Body>
     );
   }

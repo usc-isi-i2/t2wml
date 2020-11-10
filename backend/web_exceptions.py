@@ -1,3 +1,13 @@
+def make_frontend_err_dict(error):
+    '''
+    convenience function to convert all errors to frontend readable ones
+    '''
+    return {
+        "errorCode": 500,
+        "errorTitle": "Undefined Backend Error",
+        "errorDescription": str(error)
+    }
+
 class WebException(Exception):
     message = "Undefined web exception"
     code = 400

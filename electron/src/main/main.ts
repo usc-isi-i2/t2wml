@@ -14,6 +14,7 @@ import MainMenuManager from './menu';
 import { RendererEventListener } from './renderer-event-listener';
 import { rendererNotifier } from './renderer-notifier';
 import { settings } from './settings';
+import { uiState } from './ui-state';
 
 /* Splash Screen */
 let splashWindow: Electron.BrowserWindow | null;
@@ -94,6 +95,9 @@ function createMainWindow(): void {
             // In prod, dev tools never open automatically
             mainWindow!.webContents.openDevTools();
         }
+        
+        rendererNotifier.toggleShowCleanedData(uiState.showCleanedData);
+        rendererNotifier.toggleFileTree(uiState.showFileTree);
     });
     
     mainWindow.once('close', () => {

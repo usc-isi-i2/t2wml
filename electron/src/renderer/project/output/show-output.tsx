@@ -5,17 +5,12 @@ import { Card } from 'react-bootstrap';
 
 
 import { observer } from "mobx-react";
+import { StatementEntry } from '@/renderer/common/dtos';
+import wikiStore from '@/renderer/data/store';
 
 interface ShowOutputProperties {
-    errors: string;
-    itemName: string | null;
-    itemID: string | null;
-    propertyID: string | null;
-    propertyName: string | null;
-    value: string | null;
-    unitID: string | null;
-    unitName: string | null;
-    qualifiers: any[]; 
+  errors: string;
+  statement: StatementEntry | null;
 }
 
 
@@ -28,120 +23,103 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
     let errorsDiv;
     if (this.props.errors) {
-        errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
-            Errors: {this.props.errors}
-        </div>
+      errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
+        Errors: {this.props.errors}
+      </div>
     }
 
-    const itemName = this.props.itemName;
-    if (itemName) {
+    const statement = this.props.statement
+    if (statement) {
 
-      // item
-      const itemID = this.props.itemID;
-      const itemIDDiv = (
-        <a
-          href={"https://www.wikidata.org/wiki/" + itemID}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ "color": "hsl(200, 100%, 30%)" }}
-        >{itemID}</a>
-      );
+      const itemQNode = wikiStore.layers.statement.getQNode(statement.item);
 
-      // property
-      let propertyDiv;
-      const propertyID = this.props.propertyID;
-      const propertyName = this.props.propertyName;
-      if (propertyName) {
-        propertyDiv =
-          <span key="property">
-            <a
-              href={"https://www.wikidata.org/wiki/Property:" + propertyID}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ "color": "hsl(200, 100%, 30%)" }}
-            >{propertyName}</a>
-          </span>
-          ;
-      } else {
-        propertyDiv =
-          <span key="property">
-            <a
-              href={"https://www.wikidata.org/wiki/Property:" + propertyID}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ "color": "hsl(200, 100%, 30%)" }}
-            >{propertyID}</a>
-          </span>
-          ;
+      let itemIDDiv;
+      if (itemQNode.url != "") {
+        itemIDDiv = (
+          <a
+            href={itemQNode.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ "color": "hsl(200, 100%, 30%)" }}
+          >{itemQNode.id}</a>
+        );
+      }
+      else{
+        itemIDDiv = <span>{statement.item}</span>;
       }
 
-      // value and unit
-      let valueDiv: any = this.props.value;
-      if (this.props.unitName) {
-        const tester = this.props.unitID as string
-        if (/^[PQ]\d+$/.test(tester)) {
-          valueDiv = <span>{this.props.value}
-            <a
-            href={"https://www.wikidata.org/wiki/Property:" + this.props.unitID}
+      const propertyQNode = wikiStore.layers.statement.getQNode(statement.property);
+
+      let propertyDiv = <span>{propertyQNode.label}</span>
+      if (propertyQNode.url != "") {
+        propertyDiv = (
+          <a
+            href={propertyQNode.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ "color": "hsl(200, 100%, 30%)" }}
+          >{propertyQNode.label}</a>
+        );
+      }
+
+      let valueDiv;
+      if (statement.unit) {
+        const unitQNode = wikiStore.layers.statement.getQNode(statement.unit);
+        if (unitQNode.url!= ""){
+        valueDiv = <span>{statement.value}
+          <a
+            href={unitQNode.url}
             target="_blank"
             rel="noopener noreferrer"
             style={{ "color": "hsl(200, 100%, 30%)" }}
             key="unit"
-          > {this.props.unitName}</a></span>;
-        } else {
-          valueDiv = <span>{this.props.value} {this.props.unitName}</span>;
+          > {unitQNode.label}</a></span>;
+        }else{
+          valueDiv = <span>{statement.value} {unitQNode.label}</span>;
         }
       }
-
+      else {
+        valueDiv = <span>{statement.value}</span>;
+      }
       // qualifiers
       const qualifiersDiv = [];
-      const qualifiers = this.props.qualifiers;
+      const qualifiers = statement.qualifier;
       if (qualifiers) {
         for (let i = 0, len = qualifiers.length; i < len; i++) {
           const qualifier = qualifiers[i];
 
           // qualifier property
-          let qualifierPropertyDiv;
-          const qualifierPropertyID = qualifier["propertyID"];
-          const qualifierPropertyName = qualifier["propertyName"];
-          if (qualifierPropertyName) {
+          const qualifierPropertyQNode = wikiStore.layers.statement.getQNode(qualifier["property"]);
+          let qualifierPropertyDiv = <span>{qualifierPropertyQNode.label}</span>
+          if (qualifierPropertyQNode.url != "") {
             qualifierPropertyDiv =
               <a
-                href={"https://www.wikidata.org/wiki/Property:" + qualifierPropertyID}
+                href={qualifierPropertyQNode.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ "color": "hsl(200, 100%, 30%)" }}
                 key="qualifierProperty"
-              >{qualifierPropertyName}</a>
-              ;
-          } else {
-            qualifierPropertyDiv =
-              <a
-                href={"https://www.wikidata.org/wiki/Property:" + qualifierPropertyID}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierProperty"
-              >{qualifierPropertyID}</a>
+              >{qualifierPropertyQNode.label}</a>
               ;
           }
 
           // qualifier value
           let qualifierValueDiv;
-          const qualifierValueID = qualifier["valueID"];
-          const qualifierValueName = qualifier["valueName"];
-          if (qualifierValueID) {
+          const qualifierValueQNode = wikiStore.layers.statement.getQNode(qualifier["value"]);
+
+          if (qualifierValueQNode.url != "") {
+
             qualifierValueDiv =
               <a
-                href={"https://www.wikidata.org/wiki/" + qualifierValueID}
+                href={qualifierValueQNode.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ "color": "hsl(200, 100%, 30%)" }}
                 key="qualifierValue"
-              >{qualifierValueName}</a>
+              >{qualifierValueQNode.label}</a>
               ;
           } else {
-            qualifierValueDiv = qualifierValueName;
+            qualifierValueDiv = qualifierValueQNode.label;
           }
 
           // append to qualifiersDiv
@@ -155,7 +133,7 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       outputDiv.push(
         <Card.Title key="item">
           <span style={{ fontSize: "24px", fontWeight: "bolder" }}>
-            {itemName}
+            {itemQNode.label}
           </span>
           &nbsp;
           <span style={{ fontSize: "20px" }}>
@@ -182,9 +160,11 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
           </tbody>
         </table>
       );
-    }
 
-    outputDiv.push(errorsDiv);
+      outputDiv.push(errorsDiv);
+
+
+    }
 
     return outputDiv;
   }
