@@ -155,7 +155,7 @@ class TableComponent extends Component<{}, TableState> {
     for ( const [rowIndex, row] of table.cells.entries() ) {
       let rowData = [];
       for ( const [colIndex, cellContent] of row.entries() ) {
-        rowData.push(cellContent);
+        rowData.push({data: cellContent});
       }
       tableData.push(rowData);
     }
