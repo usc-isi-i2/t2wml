@@ -38,14 +38,18 @@ class TableToast extends Component<TableToastProperties, {}> {
     // render qnode
     const idHref = url 
 
-    const idHtml = (
+    let idHtml;
+    if (url!=""){
+      idHtml = (
       <a
         href={idHref}
         target="_blank"
         rel="noopener noreferrer"
         style={{ "color": "hsl(200, 100%, 30%)" }}
       >{id}</a>
-    );
+    );}else{
+      idHtml = <span>{id}</span>
+    }
 
     return (
       <Toast.Body>
