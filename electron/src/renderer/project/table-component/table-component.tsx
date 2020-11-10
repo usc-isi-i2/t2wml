@@ -179,7 +179,7 @@ class TableComponent extends Component<{}, TableState> {
 
   resetSelections() {
     const table = this.tableRef.current;
-    table.querySelectorAll('.active').forEach(e => e.className = '');
+    table.querySelectorAll('.active').forEach(e => e.classList.remove('active'));
     table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
     table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
     table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
