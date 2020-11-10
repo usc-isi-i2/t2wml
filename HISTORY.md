@@ -4,6 +4,7 @@ T2WML Standalone Server App History
 Changes in version 2.3.9:
 -----------------------
 * upgrade to t2wml-api version 0.0.16
+* added file tree with support for multiple data files in one project
 * completely changed format of communication between frontend and backend, creating a set of standardized responses with defined DTOs, streamlining the reactivity, etc.
 * Add support for versioning in caching so that running older versions of t2wml doesn't corrupt cache. 
 * change how label fetching for results preview works (faster, less buggy, and more)
