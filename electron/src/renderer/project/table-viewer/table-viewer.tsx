@@ -283,12 +283,16 @@ class TableViewer extends Component<{}, TableState> {
 
 
     this.setState({
-      selectedCell: newSelectedCell,
       showToast0: false
     });
 
 
     wikiStore.table.selectedCell = newSelectedCell;
+
+    this.setState({
+      selectedCell: newSelectedCell,
+      showToast0: true,
+    });
 
   }
 
