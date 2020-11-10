@@ -65,6 +65,7 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       let valueDiv;
       if (statement.unit) {
         const unitQNode = wikiStore.layers.statement.getQNode(statement.unit);
+        if (unitQNode.url!= ""){
         valueDiv = <span>{statement.value}
           <a
             href={unitQNode.url}
@@ -73,6 +74,9 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
             style={{ "color": "hsl(200, 100%, 30%)" }}
             key="unit"
           > {unitQNode.label}</a></span>;
+        }else{
+          valueDiv = <span>{statement.value} {unitQNode.label}</span>;
+        }
       }
       else {
         valueDiv = <span>{statement.value}</span>;
@@ -102,6 +106,7 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
           // qualifier value
           let qualifierValueDiv;
           const qualifierValueQNode = wikiStore.layers.statement.getQNode(qualifier["value"]);
+
           if (qualifierValueQNode.url != "") {
 
             qualifierValueDiv =
