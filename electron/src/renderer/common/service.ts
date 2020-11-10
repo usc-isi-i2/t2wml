@@ -118,12 +118,13 @@ class RequestService {
   }
 
   public fillChangeDataFile(response: ChangeDataFileResponseDTO) {
+    // don't change project when changing file in file tree
+    wikiStore.projects.projectDTO!._saved_state = response.project._saved_state;
+
     this.fillTableInStore(response.table);
     this.fillLayersInStore(response.layers);
     this.fillYamlContentInStore(response.yamlContent);
     
-    // don't change project when changing file in file tree
-    wikiStore.projects.projectDTO!._saved_state = response.project._saved_state;
     // clear output window
     wikiStore.table.selectedCell = new Cell('', 0, '');
   }
