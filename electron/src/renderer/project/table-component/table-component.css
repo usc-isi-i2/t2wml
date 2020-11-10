@@ -153,3 +153,23 @@
   background: rgb(51, 153, 102);
   pointer-events: none;
 }
+
+/* different cell types */
+.table-wrapper table tr td.type-data {
+  background: #D9F2E6;
+}
+.table-wrapper table tr td.type-item {
+  background: #D9EAF2;
+}
+.table-wrapper table tr td.type-qualifier {
+  background: #DDD9F2;
+}
+.table-wrapper table tr td.type-reference {
+  background: #D9F2E6;
+}
+.table-wrapper table tr td.type-minorError {
+  background: #FF8000;
+}
+.table-wrapper table tr td.type-majorError {
+  background: #FF3333;
+}
