@@ -1,14 +1,15 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version wip:
+Changes in version 2.3.9:
 -----------------------
 * upgrade to t2wml-api version 0.0.16
-* completely change format of communication between frontend and backend, creating a set of standardized responses with defined DTOs, streamlining the reactivity, etc.
+* completely changed format of communication between frontend and backend, creating a set of standardized responses with defined DTOs, streamlining the reactivity, etc.
 * Add support for versioning in caching so that running older versions of t2wml doesn't corrupt cache. 
 * change how label fetching for results preview works (faster, less buggy, and more)
 * hot fix to user agent for sparql bug
 * expanded support for cleaningStatement in yaml including a menu item to toggle whether cleaned or raw is displayed and bolded text to indicate changed cells
+* added versioning for numpy to work around bug in windows in numpy 1.19.4
 
 
 
