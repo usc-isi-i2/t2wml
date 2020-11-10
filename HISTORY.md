@@ -1,7 +1,7 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version 2.3.9:
+Changes in version 2.3.9: 
 -----------------------
 * upgrade to t2wml-api version 0.0.16
 * added file tree with support for multiple data files in one project
