@@ -68,11 +68,7 @@ export default class MainMenuManager {
                     { type: 'separator' },
                     { role: 'togglefullscreen' },
                     { type: 'separator' },
-                    {
-                        label: 'Toggle File Tree',
-                        click: () => this.onToggleFileTreeClick(),
-                        enabled: uiState.displayMode === 'project',
-                    }
+
                 ]
             },
             {
@@ -131,6 +127,13 @@ export default class MainMenuManager {
             checked: uiState.showCleanedData,
             click: (checkbox) => this.onShowCleanedClick(checkbox.checked),
             enabled,
+        },
+        {
+            label: 'Show File Tree',
+            type: 'checkbox',
+            checked: uiState.showFileTree,
+            click: (checkbox) => this.onToggleFileTreeClick(checkbox.checked),
+            enabled,
         }
     ];
     }
@@ -178,8 +181,8 @@ export default class MainMenuManager {
         rendererNotifier.projectSettings();
     }
     
-    private onToggleFileTreeClick() {
-        rendererNotifier.toggleFileTree();
+    private onToggleFileTreeClick(checked: boolean) {
+        rendererNotifier.toggleFileTree(checked);
     }
 
     private onClearRecentlyOpenedClick() {

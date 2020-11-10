@@ -22,6 +22,7 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
+import { IpcRendererEvent } from 'electron/renderer';
 import Sidebar from './sidebar/sidebar';
 import { IReactionDisposer, reaction } from 'mobx';
 
@@ -81,7 +82,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
-    ipcRenderer.on('toggle-file-tree', this.onShowFileTreeClicked);
+    ipcRenderer.on('toggle-file-tree', (sender: IpcRendererEvent, checked: boolean) => {
+      this.onShowFileTreeClicked(checked);
+    });
 
     this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
   }
@@ -155,8 +158,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
-  onShowFileTreeClicked() {
-    wikiStore.projects.showFileTree = !wikiStore.projects.showFileTree;
+  onShowFileTreeClicked(checked: boolean) {
+    wikiStore.projects.showFileTree = checked;
   }
 
   async handleSaveSettings() {

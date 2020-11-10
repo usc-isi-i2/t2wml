@@ -97,6 +97,7 @@ function createMainWindow(): void {
         }
         
         rendererNotifier.toggleShowCleanedData(uiState.showCleanedData);
+        rendererNotifier.toggleFileTree(uiState.showFileTree);
     });
     
     mainWindow.once('close', () => {
