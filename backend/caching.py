@@ -1,7 +1,6 @@
 import os
 import json
 from hashlib import sha256
-import numpy
 from t2wml.api import KnowledgeGraph
 from app_config import CACHE_FOLDER, app
 from utils import numpy_converter
@@ -50,7 +49,7 @@ class CacheHolder:
             except Exception as e: #I really don't want bugs in this optional section breaking the program
                 print("error when caching:", str(e))
 
-    def get_kg(self):
+    def load_kg(self):
         if use_cache():
             try:
                 return KnowledgeGraph.load_json(self.cache_path)

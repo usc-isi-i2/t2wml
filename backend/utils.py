@@ -3,100 +3,22 @@ from pathlib import Path
 import numpy as np
 from string import punctuation
 from flask import request
-from SPARQLWrapper import SPARQLWrapper, JSON
-import web_exceptions
-from wikidata_models import WikidataEntity
 
-wikidata_label_query_cache = {}
+import web_exceptions
+
 
 def numpy_converter(o):
     if isinstance(o, np.generic): return o.item()  
     raise TypeError
 
-def query_wikidata_for_label_and_description(items, sparql_endpoint):
-    items = ' wd:'.join(items)
-    items = "wd:" + items
 
-    query = """SELECT ?qnode ?qnodeLabel ?qnodeDescription WHERE 
-            {{
-            VALUES ?qnode {{{items}}}
-            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}
-            }}
-            """.format(items=items)
-    sparql = SPARQLWrapper(sparql_endpoint, agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    try:
-        results = sparql.query().convert()
-    except Exception as e:
-        raise e
-    response = dict()
-    for i in range(len(results["results"]["bindings"])):
-        try:
-            qnode = results["results"]["bindings"][i]["qnode"]["value"].split(
-                "/")[-1]
-            label = results["results"]["bindings"][i]["qnodeLabel"]["value"]
-            desc = results["results"]["bindings"][i]["qnodeDescription"]["value"]
-            response[qnode] = {'label': label, 'description': desc}
-        except (IndexError, KeyError):
-            pass
-    return response
-
-
-def get_labels_and_descriptions(items, sparql_endpoint):
-    response = dict()
-    missing_items = []
-    for item in items:
-        wp = WikidataEntity.query.filter_by(wd_id=item).first()
-        if wp:
-            label = desc = ""
-            if wp.label:
-                label = wp.label
-                if wp.description:
-                    desc = wp.description
-                response[item] = dict(label=label, description=desc)
-            else:
-                missing_items.append(item)
-        else:
-            missing_items.append(item)
-    try:
-        if missing_items:
-            additional_items = query_wikidata_for_label_and_description(
-                missing_items, sparql_endpoint)
-            response.update(additional_items)
-            try:
-                for item in additional_items:
-                    WikidataEntity.add_or_update(item, do_session_commit=False, **additional_items[item])
-            except Exception as e:
-                print(e)
-            WikidataEntity.do_commit()
-
-    except:  # eg 502 bad gateway error
-        pass
-    return response
-
-
-def make_frontend_err_dict(error):
-    '''
-    convenience function to convert all errors to frontend readable ones
-    '''
-    return {
-        "errorCode": 500,
-        "errorTitle": "Undefined Backend Error",
-        "errorDescription": str(error)
-    }
-
-
-def string_is_valid(text: str) -> bool:
-    def check_special_characters(text: str) -> bool:
-        return all(char in punctuation for char in str(text))
-
-    if text is None or check_special_characters(text):
-        return False
-    text = text.strip().lower()
-    if text in ["", "#na", "nan"]:
-        return False
-    return True
+def get_yaml_content(calc_params):
+    yaml_path = calc_params.yaml_path
+    if yaml_path:
+        with open(yaml_path, "r", encoding="utf-8") as f:
+            yamlFileContent = f.read()
+        return yamlFileContent
+    return None
 
 
 def file_upload_validator(file_extensions):
@@ -149,4 +71,18 @@ def save_yaml(project, yaml_data, yaml_title=None):
     project.add_yaml_file(file_path, project.current_data_file, sheet_name)
     project.update_saved_state(current_yaml=file_path)
     project.save()
+
+
+def get_empty_layers():
+    errorLayer=dict(layerType="error", entries=[])
+    statementLayer=dict(layerType="statement", entries=[], qnodes={})
+    cleanedLayer=dict(layerType="cleaned", entries=[])
+    typeLayer=dict(layerType="type", entries=[])
+    qnodeLayer=dict(layerType="qnode", entries=[])
+
+    return dict(error= errorLayer, 
+            statement= statementLayer, 
+            cleaned= cleanedLayer, 
+            type = typeLayer,
+            qnode=qnodeLayer)
 

@@ -2,19 +2,18 @@ import json
 import os
 import sys
 from pathlib import Path
-import shutil
+import yaml
 from flask import request
 
-from t2wml.utils.t2wml_exceptions import T2WMLException
-from t2wml.api import Project as apiProject
-from t2wml.api import add_entities_from_file
+
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table, get_empty_layers, get_yaml_layers, get_yaml_content, 
-                        get_qnodes_layer, get_table, update_t2wml_settings, wikify)
+from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, 
+                        get_project_instance, create_api_project, add_entities_from_project,
+                        add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe, numpy_converter,
-                   make_frontend_err_dict, string_is_valid, save_yaml)
-from web_exceptions import WebException
+                   get_empty_layers, get_yaml_content, save_yaml)
+from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration, create_datafile
@@ -28,10 +27,7 @@ except:
 debug_mode = False
 
 
-def get_project_instance(project_folder):
-    project = apiProject.load(project_folder)
-    update_t2wml_settings(project)
-    return project
+
 
 
 def get_calc_params(project):
@@ -67,12 +63,7 @@ def json_response(func):
         except WebException as e:
             data = {"error": e.error_dict}
             return json.dumps(data, indent=3, default=numpy_converter), e.code
-        except T2WMLException as e:
-            print(e.detail_message)
-            data = {"error": e.error_dict}  # error code from the exception
-            return json.dumps(data, indent=3, default=numpy_converter), e.code
         except Exception as e:
-            print(str(e))
             data = {"error": make_frontend_err_dict(e)}
             return json.dumps(data, indent=3, default=numpy_converter), 500
 
@@ -94,10 +85,7 @@ def create_project():
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(project_folder)
     # create project
-    api_proj = apiProject(project_folder)
-    api_proj.title = Path(project_folder).stem
-    api_proj.save()
-
+    api_proj=create_api_project(project_folder)
     response = dict(project=api_proj.__dict__)
     return response, 201
 
@@ -111,8 +99,7 @@ def get_project():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    for f in project.entity_files:
-        add_entities_from_file(Path(project.directory) / f)
+    add_entities_from_project(project)
 
     response=dict(project=project.__dict__, table=None, layers=get_empty_layers(), yamlContent=None)
     calc_params = get_calc_params(project)
@@ -300,12 +287,7 @@ def call_wikifier_service():
     response["layers"]=get_qnodes_layer(calc_params)
 
     if problem_cells:
-        error_dict = {
-            "errorCode": 400,
-            "errorTitle": "Failed to wikify some cellsr",
-            "errorDescription": "Failed to wikify: " + ",".join(problem_cells)
-        }
-        response['wikifierError'] = error_dict
+        response['wikifierError'] =  "Failed to wikify: " + ",".join(problem_cells)
 
     return response, 200
 
@@ -319,19 +301,29 @@ def upload_yaml():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    yaml_data = request.form["yaml"]
-    yaml_title = request.form["title"]
 
-    if not string_is_valid(yaml_data):
-        raise web_exceptions.InvalidYAMLFileException(
-            "YAML file is either empty or not valid")
     if not project.current_data_file:
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload data file before applying YAML.")
+
+    yaml_data = request.form["yaml"]
+    yaml_title = request.form["title"]
+    
+    response=dict(project=project.__dict__, layers=get_empty_layers())
+
+    try:
+        yaml.safe_load(yaml_data)
+    except:
+        response["yamlError"]="YAML file is either empty or not valid"
+        return response
+    
+
     save_yaml(project, yaml_data, yaml_title)
     calc_params = get_calc_params(project)
-    response=dict(project=project.__dict__)
-    response["layers"] = get_yaml_layers(calc_params)
+    try:
+        response["layers"] = get_yaml_layers(calc_params)
+    except Exception as e:
+        response["yamlError"] = str(e)
     return response, 200
 
 

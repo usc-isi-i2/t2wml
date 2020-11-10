@@ -4,7 +4,7 @@ import ProjectList from './project-list/project-list';
 import Project from './project/project';
 import { observer } from 'mobx-react';
 import wikiStore from './data/store';
-import RequestService from './common/service';
+import RequestService, { IStateWithError } from './common/service';
 import { ipcRenderer } from 'electron';
 import { ErrorMessage, LOG } from './common/general';
 import ToastMessage from './common/toast';
@@ -12,8 +12,7 @@ import { Spinner } from 'react-bootstrap';
 import { IpcRendererEvent } from 'electron/renderer';
 
 
-interface AppState {
-  errorMessage: ErrorMessage;
+interface AppState extends IStateWithError {
   showSpinner: boolean;
 }
 
@@ -25,8 +24,8 @@ class App extends Component<{}, AppState> {
     this.requestService = new RequestService();
 
     this.state = {
-      errorMessage: {} as ErrorMessage,
       showSpinner: false,
+      errorMessage: {} as ErrorMessage
     }
   }
 
@@ -37,7 +36,6 @@ class App extends Component<{}, AppState> {
     ipcRenderer.on('new-project', (sender: IpcRendererEvent, folder: string) => {
       this.onNewProject(folder);
     });
-
     ipcRenderer.on('toggle-cleaned', (sender: IpcRendererEvent, checked: boolean) => {
       this.onToggleCleaned(checked);
     });
@@ -45,7 +43,7 @@ class App extends Component<{}, AppState> {
     wikiStore.changeProject();
   }
 
-  onToggleCleaned(checked: boolean){
+  onToggleCleaned(checked: boolean) {
     wikiStore.table.showCleanedData = checked;
   }
 
@@ -53,74 +51,60 @@ class App extends Component<{}, AppState> {
     console.log('Creating project in folder ', folder);
     await this.handleNewProject(folder);
   }
-  
+
   async onOpenProject(folder: string) {
     console.log('Opening project from folder ', folder);
     await this.handleOpenProject(folder);
   }
 
   async handleNewProject(folder: string) {
-    this.setState({ errorMessage: {} as ErrorMessage });
-
     // before sending request
     this.setState({ showSpinner: true });
 
     // send request
     try {
-      await this.requestService.createProject(folder);
-    
+      await this.requestService.call(this, () => this.requestService.createProject(folder));
       console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
+    } catch {
 
-      // do something here
-      wikiStore.changeProject(folder);
-      
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    } catch (error) {
-      error.errorDescription += "\n\nCannot create project!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
+    } finally {
+      //after request
       this.setState({ showSpinner: false });
     }
+
+
   }
 
   async handleOpenProject(folder: string) {
-    this.setState({ errorMessage: {} as ErrorMessage });
 
     // before sending request
     this.setState({ showSpinner: true });
 
     // send request
     try {
-      await this.requestService.getProject(folder);
-    
+      await this.requestService.call(this, () => this.requestService.getProject(folder));
       wikiStore.changeProject(folder);
+    } catch {
 
-      // follow-ups (success)
-      this.setState({ showSpinner: false });
-
-    } catch (error) {
-      error.errorDescription += "\n\nCannot load project!";
-      this.setState({ errorMessage: error });
-
-      // follow-ups (failure)
+    } finally {
+      //after request
       this.setState({ showSpinner: false });
     }
-  }  
+
+
+  }
 
   render() {
     return (
       <div>
         { this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
-        
+
         {/* loading spinner */}
         <div className="mySpinner" hidden={!this.state.showSpinner} style={{ height: "100%" }}>
           <Spinner animation="border" />
         </div>
-        
-        { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project path={wikiStore.projects.current!.folder}/> }
+
+        { wikiStore.displayMode === "project-list" ? <ProjectList /> : <Project path={wikiStore.projects.current!.folder} />}
       </div>
     );
   }

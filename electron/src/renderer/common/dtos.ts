@@ -30,6 +30,7 @@ export interface ResponseWithProjectDTO {
 
 export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     layers: LayersDTO;
+    yamlError?: string;
 }
 
 export interface UploadDataFileResponseDTO extends ResponseWithLayersDTO {
@@ -52,7 +53,7 @@ export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
 }
 
 export interface CallWikifierServiceDTO extends ResponseWithLayersDTO {
-    wikifierError: WikifierErrorDTO;
+    wikifierError: string;
 }
 
 export type CellIndex = [number, number];
@@ -87,7 +88,6 @@ export interface LayersDTO {
     type?: LayerDTO<TypeEntry>;
     cleaned?: LayerDTO<CleanEntry>;
 }
-
 
 
 export interface QNodeEntry extends Entry, QNode {
@@ -127,10 +127,4 @@ export interface EntitiesStatsDTO {
     added: string[];
     updated: string[];
     failed: string[];
-}
-
-export interface WikifierErrorDTO {
-    errorCode: number;
-    errorTitle: string;
-    errorDescription: string;
 }

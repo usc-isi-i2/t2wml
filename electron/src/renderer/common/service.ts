@@ -1,82 +1,17 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
-import { GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, ResponseWithProjectDTO,
-  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO, ChangeDataFileResponseDTO } from './dtos';
-import { Cell } from './general';
+import {
+  GetProjectResponseDTO, ProjectDTO, UploadDataFileResponseDTO, UploadWikifierOutputResponseDTO, ResponseWithProjectDTO,
+  UploadYamlResponseDTO, UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ChangeSheetResponseDTO, ResponseWithLayersDTO, ChangeDataFileResponseDTO
+} from './dtos';
+import { Cell, ErrorMessage } from './general';
 
-// I did it as a class because we will add a state instance
+export interface IStateWithError {
+  errorMessage: ErrorMessage;
+}
 
-class RequestService {
-
-  public async createProject(folder: string) {
-    const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
-    this.fillProjectInStore(response.project); // not necessary
-  }
-  
-  public async uploadDataFile(folder: string, formData: any) {
-    const response = await backendPost(`/data?project_folder=${folder}`, formData) as UploadDataFileResponseDTO;
-    this.fillUploadDataInStore(response);
-  }
-
-  public async changeSheet(folder: string, sheetName: string) {
-    const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ChangeSheetResponseDTO;
-    this.fillgetProjectData(response);
-  }
-
-  public async changeDataFile(dataFileName: string, folder: string) {
-    const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ChangeDataFileResponseDTO;
-    this.fillChangeDataFile(response);
-  }
-
-  public async uploadWikifierOutput(folder: string, formData: any) {
-    const response = await backendPost(`/wikifier?project_folder=${folder}`, formData) as UploadWikifierOutputResponseDTO;
-    this.fillProjectAndLayers(response);
-  }
-
-  public async uploadYaml(folder: string, formData: any) {
-    const response = await backendPost(`/yaml?project_folder=${folder}`, formData) as UploadYamlResponseDTO;
-    this.fillProjectAndLayers(response);
-  }
-
-  public async downloadResults(folder: string, fileType: string) {
-    //returns "data" (the download), "error": None, and "internalErrors"
-    const response = await backendGet(`/project/download/${fileType}?project_folder=${folder}`);
-    return response;
-  }
-
-  public async callWikifierService(folder: string, formData: any) {
-    const response = await backendPost(`/wikifier_service?project_folder=${folder}`, formData) as CallWikifierServiceDTO;
-    this.fillCallWikifier(response);
-  }
-
-  public async getProject(folder: string) {
-    const response = await backendGet(`/project?project_folder=${folder}`) as GetProjectResponseDTO;
-    this.fillgetProjectData(response);
-  }
-
-  public async renameProject(folder: string, formData: any) {
-    //returns project
-    const response = await backendPut(`/project?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.fillProjectInStore(response.project); // not necessary
-  }
-
-  public async getSettings(folder: string, formData: any) {
-    //returns endpoint, warnEmpty
-    const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.fillProjectInStore(response.project);
-  }
-
-  public async uploadEntities(folder: string, formData: any) {
-    const response = await backendPost(`/project/entity?project_folder=${folder}`, formData) as UploadEntitiesDTO;
-    this.fillEntitiesData(response);
-  }
-  
-  public async loadToDatamart(folder: string) {
-    const response = await backendGet(`/project/datamart?project_folder=${folder}`);
-    return response;
-  }
-
-
+class StoreFiller {
+  //I have created this class to setion off all the filling functions, which were seriously cluttering up service
   public fillProjectInStore(project: ProjectDTO) {
     wikiStore.projects.projectDTO = project;
   }
@@ -100,11 +35,13 @@ class RequestService {
   public fillgetProjectData(response: GetProjectResponseDTO) {
     this.fillUploadDataInStore(response);
     this.fillYamlContentInStore(response.yamlContent);
+    wikiStore.yaml.yamlError = response.yamlError;
   }
 
   public fillProjectAndLayers(response: ResponseWithLayersDTO) {
     this.fillProjectInStore(response.project);
     this.fillLayersInStore(response.layers);
+    wikiStore.yaml.yamlError = response.yamlError;
   }
 
   public fillCallWikifier(response: CallWikifierServiceDTO) {
@@ -128,6 +65,94 @@ class RequestService {
     // clear output window
     wikiStore.table.selectedCell = new Cell('', 0, '');
   }
+}
+
+class RequestService {
+  storeFiller = new StoreFiller();
+
+  public async createProject(folder: string) {
+    const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
+    this.storeFiller.fillProjectInStore(response.project); // not necessary
+    wikiStore.changeProject(folder);
+  }
+
+  public async uploadDataFile(folder: string, formData: any) {
+    const response = await backendPost(`/data?project_folder=${folder}`, formData) as UploadDataFileResponseDTO;
+    this.storeFiller.fillUploadDataInStore(response);
+  }
+
+  public async changeSheet(folder: string, sheetName: string) {
+    const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ChangeSheetResponseDTO;
+    this.storeFiller.fillgetProjectData(response);
+  }
+
+  public async changeDataFile(dataFileName: string, folder: string) {
+    const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ChangeDataFileResponseDTO;
+    this.storeFiller.fillgetProjectData(response);
+  }
+
+  public async uploadWikifierOutput(folder: string, formData: any) {
+    const response = await backendPost(`/wikifier?project_folder=${folder}`, formData) as UploadWikifierOutputResponseDTO;
+    this.storeFiller.fillProjectAndLayers(response);
+  }
+
+  public async uploadYaml(folder: string, formData: any) {
+    const response = await backendPost(`/yaml?project_folder=${folder}`, formData) as UploadYamlResponseDTO;
+    this.storeFiller.fillProjectAndLayers(response);
+  }
+
+  public async callWikifierService(folder: string, formData: any) {
+    const response = await backendPost(`/wikifier_service?project_folder=${folder}`, formData) as CallWikifierServiceDTO;
+    this.storeFiller.fillCallWikifier(response);
+  }
+
+  public async getProject(folder: string) {
+    const response = await backendGet(`/project?project_folder=${folder}`) as GetProjectResponseDTO;
+    this.storeFiller.fillgetProjectData(response);
+  }
+
+  public async renameProject(folder: string, formData: any) {
+    //returns project
+    const response = await backendPut(`/project?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
+    this.storeFiller.fillProjectInStore(response.project); // not necessary
+  }
+
+  public async getSettings(folder: string, formData: any) {
+    //returns endpoint, warnEmpty
+    const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
+    this.storeFiller.fillProjectInStore(response.project);
+  }
+
+  public async uploadEntities(folder: string, formData: any) {
+    const response = await backendPost(`/project/entity?project_folder=${folder}`, formData) as UploadEntitiesDTO;
+    this.storeFiller.fillEntitiesData(response);
+  }
+
+  public async downloadResults(folder: string, fileType: string) {
+    //returns "data" (the download), "error": None, and "internalErrors"
+    const response = await backendGet(`/project/download/${fileType}?project_folder=${folder}`);
+    return response;
+  }
+
+  public async loadToDatamart(folder: string) {
+    const response = await backendGet(`/project/datamart?project_folder=${folder}`);
+    return response;
+  }
+
+
+
+  public async call<IProp, IState extends IStateWithError, ReturnValue >(
+    component: React.Component<IProp, IState>,
+    func: () => Promise<ReturnValue>) {
+    component.setState({ errorMessage: {} as ErrorMessage });
+    try {
+      return await func();
+    } catch (error) {
+      component.setState({ errorMessage: error })
+      throw error
+    }
+  }
+
 }
 
 export default RequestService;

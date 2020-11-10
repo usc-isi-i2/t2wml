@@ -13,7 +13,7 @@ interface CallWikifierProperties {
     showCallWikifier: boolean;
 
     cancelCallWikifier: () => void;
-    handleDoCall: (region: string, flag: string, context: string) => void;
+    handleWikifyRegion: (region: string, flag: string, context: string) => void;
 }
 
 interface CallWikifierState {
@@ -54,7 +54,7 @@ class CallWikifier extends Component<CallWikifierProperties, CallWikifierState> 
     const region = (this.tempWikifyRegionRef as any).current.value.trim();
     const flag = (this.tempWikifyFlagRef as any).current.value;
     const context = (this.tempWikifyContextRef as any).current.value.trim();
-    this.props.handleDoCall(region, flag, context);
+    this.props.handleWikifyRegion(region, flag, context);
   }
 
   render() {

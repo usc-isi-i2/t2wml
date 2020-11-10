@@ -160,4 +160,25 @@ class TestLoadingProject(BaseClass):
 
         self.compare_jsons(data, 'load_from_path')
 
-    
+
+class TestCleaningAndMultiFile(BaseClass):
+    files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
+    def test_11_get_cleaned_data(self, client):
+        url= '/api/project?project_folder={path}'.format(path=self.files_dir)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        cleaned_entries = data['layers']['cleaned']['entries']
+        assert len(cleaned_entries)== 3
+        assert cleaned_entries[1] == {'cleaned': '200', 'indices': [[6,3]], 'original': '4'}
+
+    def test_12_change_file(self, client):
+        url= '/api/data/change_data_file?project_folder={path}&data_file={data_file}'.format(path=self.files_dir, data_file="csv/sheet-2.csv")
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data1 = json.loads(data)
+        url= '/api/data/change_data_file?project_folder={path}&data_file={data_file}'.format(path=self.files_dir, data_file="homicide_report_total_and_sex.xlsx")
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data2 = json.loads(data)
+        assert data1 != data2

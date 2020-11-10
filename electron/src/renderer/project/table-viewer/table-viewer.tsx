@@ -10,8 +10,8 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
-import RequestService from '../../common/service';
+import { LOG, gridApiInterface, ErrorMessage, Cell } from '../../common/general';
+import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react";
@@ -32,7 +32,7 @@ interface Column {
   width?: number;
 }
 
-interface TableState {
+interface TableState extends IStateWithError {
   showSpinner: boolean;
   showToast0: boolean;  // showing details of current cell
   showToast1: boolean;  // showing temperary messages
@@ -54,7 +54,6 @@ interface TableState {
   styledCellsType: Array<CellIndex>
   styledCellsClean: Array<CleanEntry>
 
-  errorMessage: ErrorMessage;
   showTable: boolean;  // Hide the table - used temporarily during long updates, to circumvent an AgGrid bug
 }
 
@@ -124,7 +123,7 @@ class TableViewer extends Component<{}, TableState> {
     }
   }
 
-  onGridReady(params: WikifierData) {
+  onGridReady(params: gridApiInterface) {
     // store the api
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
@@ -137,10 +136,7 @@ class TableViewer extends Component<{}, TableState> {
   }
 
   async handleOpenTableFile(event: any) {
-    this.setState({
-      errorMessage: {} as ErrorMessage,
-      showTable: false
-    });
+
     // remove current status
     wikiStore.table.isCellSelectable = false;
     this.updateSelectedCell(new Cell());
@@ -158,7 +154,7 @@ class TableViewer extends Component<{}, TableState> {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      await this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData);
+      await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData));
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
 
       // load yaml data
@@ -168,16 +164,10 @@ class TableViewer extends Component<{}, TableState> {
         wikiStore.table.isCellSelectable = false;
       }
 
-      // follow-ups (success)
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
 
-    } catch (error) {
-      console.log(error);
-      error.errorDescription += "\n\nCannot upload data file!";
-      this.setState({ errorMessage: error });
 
-      // follow-ups (failure)
+    } catch {
+    } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
@@ -186,7 +176,6 @@ class TableViewer extends Component<{}, TableState> {
 
   async handleSelectSheet(event: any) {
     this.setState({
-      errorMessage: {} as ErrorMessage,
       showTable: false
     });
     // remove current status
@@ -202,7 +191,7 @@ class TableViewer extends Component<{}, TableState> {
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
-      await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
+      await this.requestService.call(this, () => this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName));
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 
 
@@ -214,13 +203,12 @@ class TableViewer extends Component<{}, TableState> {
       }
 
 
-    } catch (error) {
-      console.log(error);
-      error.errorDescription += "\n\nCannot change sheet!";
-      this.setState({ errorMessage: error });
+    } catch {
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
     }
-    wikiStore.table.showSpinner = false;
-    wikiStore.wikifier.showSpinner = false;
+
   }
 
   styleSelectedCell(selectedCell: Cell, clear = false) {

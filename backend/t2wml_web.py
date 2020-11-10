@@ -1,11 +1,34 @@
+import os
 import json
 import numpy as np
-from t2wml.api import WikifierService, t2wml_settings
+from pathlib import Path
+from t2wml.api import add_entities_from_file as api_add_entities_from_file
+from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
+from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
+from t2wml.api import Project as apiProject
 from app_config import db, CACHE_FOLDER
-from wikidata_models import DatabaseProvider
-from utils import get_labels_and_descriptions
+from database_provider import DatabaseProvider
+from utils import get_empty_layers
+from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
+def add_entities_from_project(project):
+    for f in project.entity_files:
+        api_add_entities_from_file(Path(project.directory) / f)
+
+def add_entities_from_file(file_path):
+    return api_add_entities_from_file(file_path)
+
+def create_api_project(project_folder):
+    api_proj = apiProject(project_folder)
+    api_proj.title = Path(project_folder).stem
+    api_proj.save()
+    return api_proj
+
+def get_project_instance(project_folder):
+    project = apiProject.load(project_folder)
+    update_t2wml_settings(project)
+    return project
 
 def wikify(calc_params, region, context):
     ws = WikifierService()
@@ -17,15 +40,18 @@ def update_t2wml_settings(project):
     t2wml_settings.sparql_endpoint = project.sparql_endpoint
     t2wml_settings.wikidata_provider = DatabaseProvider(project)
     t2wml_settings.warn_for_empty_cells = project.warn_for_empty_cells
+    if not os.path.isdir(CACHE_FOLDER):
+        os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
 
 
 def get_kg(calc_params):
     if calc_params.cache:
-        kg = calc_params.cache.get_kg()
+        kg = calc_params.cache.load_kg()
         if kg:
             return kg
-    kg = calc_params.get_kg()
+    cell_mapper = YamlMapper(calc_params.yaml_path)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
     db.session.commit()  # save any queried properties
     return kg
 
@@ -37,47 +63,6 @@ def download(calc_params, filetype):
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
-
-def get_empty_layers():
-    errorLayer=dict(layerType="error", entries=[])
-    statementLayer=dict(layerType="statement", entries=[], qnodes={})
-    cleanedLayer=dict(layerType="cleaned", entries=[])
-    typeLayer=dict(layerType="type", entries=[])
-    qnodeLayer=dict(layerType="qnode", entries=[])
-
-    return dict(error= errorLayer, 
-            statement= statementLayer, 
-            cleaned= cleanedLayer, 
-            type = typeLayer,
-            qnode=qnodeLayer)
-
-def get_qnode_url(id):
-    url=""
-    first_letter=str(id).upper()[0]
-    try:
-        num=int(id[1:])
-        if first_letter=="P" and num<10000:
-            url="https://www.wikidata.org/wiki/Property:"+id
-        if first_letter=="Q" and num<1000000000:
-            url="https://www.wikidata.org/wiki/"+id
-    except: #conversion to int failed, is not Pnum or Qnum
-        pass
-    return url
-
-class QNode:
-    def __init__(self, id, value, context="", label="", description=""):
-        self.id = id
-        self.value = value
-        self.context = context
-        self.label = label
-        self.description = description
-        self.url=get_qnode_url(self.id)
-
-    def update(self, label="", description="", **kwargs):
-        self.label=label
-        self.description=description
-        
-
 
 
 
@@ -226,17 +211,11 @@ def get_yaml_layers(calc_params):
     return layers
 
 
-def get_yaml_content(calc_params):
-    yaml_path = calc_params.yaml_path
-    if yaml_path:
-        with open(yaml_path, "r", encoding="utf-8") as f:
-            yamlFileContent = f.read()
-        return yamlFileContent
-    return None
-
 
 def get_table(calc_params, first_index=0, num_rows=None):
     sheet = calc_params.sheet
+    if not sheet:
+        raise ValueError("Calc params does not have sheet loaded")
     df = sheet.data
     dims = list(df.shape)
     
@@ -244,7 +223,8 @@ def get_table(calc_params, first_index=0, num_rows=None):
         last_index=first_index+num_rows
     else:
         last_index=None
-    
+
+    #There's no need to check for overflow, as pandas handles that automatically
     cells = json.loads(df[first_index:last_index].to_json(orient="values"))
 
     return dict(dims=dims, firstRowIndex=first_index, cells=cells)
@@ -252,8 +232,13 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 def get_all_layers_and_table(response, calc_params):
     #convenience function for code that repeats three times
+    response["layers"]=get_empty_layers()
+
     response["table"] = get_table(calc_params)
-    response["layers"]=get_qnodes_layer(calc_params)
-    yaml_layers = get_yaml_layers(calc_params)
-    response["layers"].update(yaml_layers)
+    response["layers"].update(get_qnodes_layer(calc_params))
+
+    try:
+        response["layers"].update(get_yaml_layers(calc_params))
+    except Exception as e:
+        response["yamlError"] = str(e)
 

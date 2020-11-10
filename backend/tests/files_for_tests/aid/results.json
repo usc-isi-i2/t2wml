@@ -1811,16 +1811,16 @@
                     {
                         "indices": [
                             [
-                                8,
-                                2
+                                2,
+                                8
                             ],
                             [
-                                8,
-                                5
+                                5,
+                                8
                             ],
                             [
-                                8,
-                                7
+                                7,
+                                8
                             ]
                         ],
                         "id": "Q115",
@@ -1833,8 +1833,8 @@
                     {
                         "indices": [
                             [
-                                8,
-                                3
+                                3,
+                                8
                             ]
                         ],
                         "id": "Q21203",
@@ -1847,8 +1847,8 @@
                     {
                         "indices": [
                             [
-                                8,
-                                6
+                                6,
+                                8
                             ]
                         ],
                         "id": "Q82770",
@@ -1861,10 +1861,6 @@
                 ]
             }
         },
-        "wikifierError": {
-            "errorCode": 400,
-            "errorTitle": "Failed to wikify some cellsr",
-            "errorDescription": "Failed to wikify: I5"
-        }
+        "wikifierError": "Failed to wikify: I5"
     }
 }
