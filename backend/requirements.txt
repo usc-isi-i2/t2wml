@@ -7,3 +7,4 @@ pandas==1.1.0
 pytest==6.0.1
 pyinstaller==4.0
 semver==2.13.0
+openpyxl==3.0.5
