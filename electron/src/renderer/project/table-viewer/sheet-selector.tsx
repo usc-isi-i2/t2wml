@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 // App
 import { Button } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
+import { Event } from 'electron/main';
 
 
 interface SheetProperties  {
@@ -11,11 +12,25 @@ interface SheetProperties  {
     currSheetName: string | null,  // csv: null    excel: "sheet1"
 
     handleSelectSheet: (event: Event) => void;
+    handleDoubleClickItem?: (value: string, index: number) => void;
+}
+
+interface SheetState {
+  changeItemName: string | undefined;
+  index: number | undefined;
 }
 
 
 @observer
-class SheetSelector extends Component<SheetProperties, {}> {
+class SheetSelector extends Component<SheetProperties, SheetState> {
+  constructor(props: SheetProperties) {
+    super(props);
+
+    this.state = {
+      changeItemName: undefined,
+      index: undefined,
+    };
+  }
 
   render() {
     const { sheetNames, currSheetName } = this.props;
@@ -35,10 +50,36 @@ class SheetSelector extends Component<SheetProperties, {}> {
           size="sm"
           style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
           onClick={(event: any) => { this.props.handleSelectSheet(event) }}
+          onDoubleClick={() => {this.setState({changeItemName: sheetNames[i], index: i})}}
         >{sheetNames[i]}</Button>
       );
     }
-    return sheetSelectorHtml;
+
+    let renameItem = null;
+    
+    if (this.props.handleDoubleClickItem && this.state.changeItemName && this.state.index) {
+      renameItem = 
+      <div>
+        <label>{this.state.changeItemName}</label>
+        <input value={this.state.changeItemName} onChange={(e) => this.setState({changeItemName: e.target.value})}
+        onKeyPress={(event: any) => {
+          if (event.key === "Enter") {
+            // if press enter (13), then do create new project
+            event.preventDefault();
+            this.props.handleDoubleClickItem!(event.target.value, this.state.index!);
+            this.setState({changeItemName: undefined, index: undefined});
+          }
+        }}
+        />
+      </div>;
+    }
+
+    return (
+    <Fragment>
+      {renameItem}
+      {sheetSelectorHtml}
+    </Fragment>
+    );
   }
 }
 

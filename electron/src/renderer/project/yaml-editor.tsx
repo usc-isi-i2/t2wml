@@ -16,6 +16,8 @@ import { observer } from "mobx-react"
 import wikiStore from '../data/store';
 import { defaultYamlContent } from "./default-values";
 import { IReactionDisposer, reaction } from 'mobx';
+import SheetSelector from './table-viewer/sheet-selector';
+import { ProjectDTO } from '../common/dtos';
 
 
 interface yamlProperties {
@@ -29,6 +31,8 @@ interface yamlState extends IStateWithError {
   isValidYaml: boolean;
   yamlParseErrMsg: string | null;
   yamlParseErrFloatMessage: string;
+  yamlNames: Array<string>;
+  currentYaml: string;
 }
 
 @observer
@@ -52,6 +56,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       yamlParseErrMsg: "",
       yamlParseErrFloatMessage: "",
       errorMessage: {} as ErrorMessage,
+      yamlNames: [],
+      currentYaml: '',
     };
 
     // init functions
@@ -61,6 +67,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   componentDidMount() {
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
+    this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) {this.updateYamlFiles(project)}});
   }
 
   componentWillUnmount() {
@@ -127,6 +134,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const file = (event.target as any).files[0];
     if (!file) return;
     console.log("<YamlEditor> opened file: " + file.name);
+    this.setState({yamlNames: [...this.state.yamlNames, file.name], currentYaml: file.name});
 
     wikiStore.table.isCellSelectable = false;
 
@@ -188,6 +196,21 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
 
 
+  }
+
+  updateYamlFiles(project: ProjectDTO) {
+    this.setState({ yamlNames: [...project?.yaml_files, project._saved_state.current_sheet],
+      currentYaml: project?._saved_state.current_sheet });
+  }
+
+  handleChangeYamlFile(event: any) {
+    this.setState({currentYaml: event.target.innerHTML});
+  }
+
+  changeYamlName(val: string, index: number) {
+    const yamlNames = this.state.yamlNames;
+    yamlNames[index] = val;
+    this.setState({yamlNames});
   }
 
   render() {
@@ -320,6 +343,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             >
               Apply
             </Button>
+            <SheetSelector
+              sheetNames={this.state.yamlNames}
+              currSheetName={this.state.currentYaml}
+              handleSelectSheet={(event) => this.handleChangeYamlFile(event)}
+              handleDoubleClickItem={(val, index) => this.changeYamlName(val, index)}
+            />
           </Card.Footer>
         </Card>
       </Fragment>
