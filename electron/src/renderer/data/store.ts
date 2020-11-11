@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
+import { AnnotationEntry, CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
 import { Cell } from '../common/general';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
@@ -118,6 +118,7 @@ class LayerState {
     @observable public statement: StatementLayer;
     @observable public error: Layer<ErrorEntry>;
     @observable public cleaned: Layer<CleanEntry>;
+    @observable public annotation: Layer<AnnotationEntry>;
 
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
@@ -125,6 +126,7 @@ class LayerState {
         this.statement = new StatementLayer();
         this.error = new Layer<ErrorEntry>();
         this.cleaned = new Layer<CleanEntry>();
+        this.annotation = new Layer<AnnotationEntry>();
     }
 
     @action
@@ -144,6 +146,9 @@ class LayerState {
         }
         if (dto.cleaned) {
             this.cleaned = new Layer(dto.cleaned);
+        }
+        if (dto.annotation){
+            this.annotation = new Layer(dto.annotation)
         }
     }
 
