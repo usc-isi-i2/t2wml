@@ -158,7 +158,7 @@ def upload_data_file():
         ai = AnnotationIntegration(is_csv, calc_params.sheet_name,
                                    w_requests=request)
         if ai.is_annotated_spreadsheet(project.directory):
-            dataset_exists = ai.automate_integration(project, response, sheet)
+            dataset_exists = ai.automate_integration(project, calc_params.data_path, sheet)
             if not dataset_exists:
                 # report to user
                 error_dict = {
@@ -183,7 +183,7 @@ def upload_data_file():
 
                 # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
                 # TODO the users. There has to be a better way to handle it. For Future implementation
-                ai.automate_integration(project, response, sheet)
+                ai.automate_integration(project, calc_params.data_path, sheet)
 
     calc_params = get_calc_params(project)
     get_all_layers_and_table(response, calc_params)

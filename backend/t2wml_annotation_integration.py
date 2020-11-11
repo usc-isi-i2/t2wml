@@ -173,9 +173,9 @@ class AnnotationIntegration(object):
 
         return header_index, data_index
 
-    def automate_integration(self, project, response, sheet):
+    def automate_integration(self, project, data_path, sheet):
         try:
-            filename = response['tableData']['filename']
+            filename = Path(data_path).name
             dataset_exists = self.check_dataset_exists()
             if not dataset_exists:
                 return False
