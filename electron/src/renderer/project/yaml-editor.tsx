@@ -19,10 +19,6 @@ import { IReactionDisposer, reaction } from 'mobx';
 import SheetSelector from './table-viewer/sheet-selector';
 import { ProjectDTO } from '../common/dtos';
 
-import * as fs from 'fs';
-import * as os from 'os';
-
-
 
 interface yamlProperties {
   isShowing: boolean;
@@ -39,8 +35,6 @@ interface yamlState extends IStateWithError {
   currentYaml: string;
 }
 
-// Yaml content stored here 
-const file = `${os.homedir()}/.t2wml/yaml-content.json`;
 
 @observer
 class YamlEditor extends Component<yamlProperties, yamlState> {
@@ -74,7 +68,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   componentDidMount() {
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
-    this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) {this.updateYamlFiles(project)}});
+    this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) { this.updateYamlFiles(project); }});
+    this.disposeReaction = reaction(() => wikiStore.yaml.haveToSaveYaml, async(flag) => { if (flag) { await this.saveYaml(); }});
   }
 
   componentWillUnmount() {
@@ -112,14 +107,35 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   }
 
-  saveYaml () {
-    fs.writeFileSync(file, JSON.stringify(this.state.yamlJson));
+  async saveYaml() {
+    // TODO- check if yamlContent changed: id file or sheet changed or project leaves.
+    console.log("Save yaml");
+    // before sending request
+    wikiStore.table.showSpinner = true;
+
+    // send request
+    const formData = new FormData();
+    formData.append("yaml", this.state.yamlContent);
+    formData.append("title", this.state.yamlTitle);
+
+    try {
+      await this.requestService.call(this, () => this.requestService.saveYaml(wikiStore.projects.current!.folder, formData));
+
+      // follow-ups (success)
+      wikiStore.output.isDownloadDisabled = false;
+    } catch {
+      console.error("Save yaml failed.");
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.table.isCellSelectable = true;
+
+      wikiStore.yaml.haveToSaveYaml = false;
+    }
   }
 
   handleChangeYaml() {
     wikiStore.table.isCellSelectable = false;
 
-    // Talya: find out what's the right way to do this
     const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
     this.setState({ yamlContent: yamlContent });
     try {
@@ -130,8 +146,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         yamlParseErrMsg: null,
         yamlParseErrFloatMessage: '',
       });
-      // save yaml content to file
-      this.saveYaml();
     } catch (err) {
       this.setState({
         yamlJson: null,
@@ -154,7 +168,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // upload local yaml
     const reader = new FileReader();
     reader.readAsText(file);
-    reader.onloadend = (() => {
+    reader.onloadend = (async() => {
       const yamlContent = reader.result;
       this.setState({ yamlContent: yamlContent as string, yamlTitle: file.name });
       try {
@@ -165,6 +179,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           yamlParseErrMsg: null,
           yamlParseErrFloatMessage: ''
         });
+
+        // Save yaml when importing yaml
+        await this.saveYaml();
       } catch (err) {
         this.setState({
           yamlJson: null,
@@ -212,18 +229,47 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   updateYamlFiles(project: ProjectDTO) {
-    this.setState({ yamlNames: [...project?.yaml_files, project._saved_state.current_sheet],
-      currentYaml: project?._saved_state.current_sheet });
+    let yamlToCurrentSheet = project?._saved_state.current_sheet;
+    if (yamlToCurrentSheet.endsWith('.csv')) {
+      yamlToCurrentSheet.slice(0, 4);
+    } else if (!yamlToCurrentSheet.endsWith('.yaml')) {
+      yamlToCurrentSheet += '.yaml';
+    }
+    this.setState({ yamlNames: [...project?.yaml_files],
+      currentYaml: yamlToCurrentSheet });
+    // TODO- sheet name needed?
+    // this.setState({ yamlNames: [...project?.yaml_files, yamlToCurrentSheet],
+    //   currentYaml: yamlToCurrentSheet });
   }
 
   handleChangeYamlFile(event: any) {
     this.setState({currentYaml: event.target.innerHTML});
   }
 
-  changeYamlName(val: string, index: number) {
-    const yamlNames = this.state.yamlNames;
-    yamlNames[index] = val;
-    this.setState({yamlNames});
+  async renameYaml(val: string, index: number) {
+   // before sending request
+    wikiStore.table.showSpinner = true;
+    const oldName = this.state.yamlNames[index];
+
+    // Check if this yaml file exist, if not- save it before.
+    if (!wikiStore.projects.projectDTO?.yaml_files.includes(oldName)) {
+      await this.saveYaml();
+    }
+
+    // send request
+    const formData = new FormData();
+    formData.append("old_name", oldName);
+    formData.append("new_name", val);
+
+    try {
+      await this.requestService.call(this, () => this.requestService.renameYaml(wikiStore.projects.current!.folder, formData));
+      // update yaml files according to received project.
+      this.setState({ yamlNames: wikiStore.projects.projectDTO!.yaml_files });
+    } catch {
+      console.error("Rename yaml failed.");
+    } finally {
+      wikiStore.table.showSpinner = false;
+    }
   }
 
   render() {
@@ -361,7 +407,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               currSheetName={this.state.currentYaml}
               itemType="file"
               handleSelectSheet={(event) => this.handleChangeYamlFile(event)}
-              handleDoubleClickItem={(val, index) => this.changeYamlName(val, index)}
+              handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
             />
           </Card.Footer>
         </Card>

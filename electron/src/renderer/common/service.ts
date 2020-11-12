@@ -97,7 +97,7 @@ class RequestService {
   }
 
   public async uploadYaml(folder: string, formData: any) {
-    const response = await backendPost(`/yaml?project_folder=${folder}`, formData) as UploadYamlResponseDTO;
+    const response = await backendPost(`/yaml/apply?project_folder=${folder}`, formData) as UploadYamlResponseDTO;
     this.storeFiller.fillProjectAndLayers(response);
   }
 
@@ -139,6 +139,15 @@ class RequestService {
     return response;
   }
 
+  public async renameYaml(folder: string, formData: any) {
+    const respone = await backendPost(`/yaml/rename?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
+    this.storeFiller.fillProjectInStore(respone.project);
+  }
+
+  public async saveYaml(folder: string, formData: any) {
+    const respone = await backendPost(`/yaml/save?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
+    this.storeFiller.fillProjectInStore(respone.project);
+  }
 
 
   public async call<IProp, IState extends IStateWithError, ReturnValue >(

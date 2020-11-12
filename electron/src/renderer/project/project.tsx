@@ -90,6 +90,8 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   componentWillUnmount() {
     console.log("project- componentWillUnmount");
+    wikiStore.yaml.haveToSaveYaml = true;
+
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);

@@ -178,6 +178,10 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({
       showTable: false
     });
+    
+    // save prev yaml
+    wikiStore.yaml.haveToSaveYaml = true;
+
     // remove current status
     this.updateSelectedCell(new Cell());
     wikiStore.yaml.yamlContent = undefined;
@@ -191,6 +195,7 @@ class TableViewer extends Component<{}, TableState> {
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
+
       await this.requestService.call(this, () => this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName));
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 

@@ -119,10 +119,13 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     async changeDataFile(fileName: string) {
+        // save prev yaml
+        wikiStore.yaml.haveToSaveYaml = true;
+
         try {
             await this.requestService.changeDataFile(fileName, wikiStore.projects.current!.folder);
         } catch {
-            console.error("Error: changing datafile")
+            console.error("Change datafile failed");
         }
     }
     

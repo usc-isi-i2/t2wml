@@ -54,6 +54,7 @@ class OutputState {
 class YamlEditorState {
     @observable public yamlContent?: string;
     @observable public yamlError?: string | undefined;
+    @observable public haveToSaveYaml = false;
 }
 
 class Layer<T extends Entry> {
