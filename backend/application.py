@@ -306,6 +306,9 @@ def rename_yaml():
     if old_name not in project.yaml_files:
         raise web_exceptions.MissingYAMLFileException(
             "The yaml file you are trying to rename does not exist in project")
+    if new_name in project.yaml_files:
+        raise web_exceptions.MissingYAMLFileException(
+            "The new name you have provided already exists in the project as a yaml file")
     
     old_path=os.path.join(project.directory, old_name)
     new_path=os.path.join(project.directory, new_name)
