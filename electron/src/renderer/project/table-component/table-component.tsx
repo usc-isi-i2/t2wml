@@ -294,7 +294,7 @@ class TableComponent extends Component<{}, TableState> {
   handleOnMouseMove(event) {
     const element = event.target;
 
-    if ( this.selecting && element.nodeName === 'TD' ) {
+    if ( this.selecting && !event.shiftKey ) {
 
       // Make sure users are not able to select the cells in the index column
       if ( element.parentElement.firstChild !== event.target ) {
