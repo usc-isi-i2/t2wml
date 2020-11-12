@@ -19,6 +19,10 @@ import { IReactionDisposer, reaction } from 'mobx';
 import SheetSelector from './table-viewer/sheet-selector';
 import { ProjectDTO } from '../common/dtos';
 
+import * as fs from 'fs';
+import * as os from 'os';
+
+
 
 interface yamlProperties {
   isShowing: boolean;
@@ -34,6 +38,9 @@ interface yamlState extends IStateWithError {
   yamlNames: Array<string>;
   currentYaml: string;
 }
+
+// Yaml content stored here 
+const file = `${os.homedir()}/.t2wml/yaml-content.json`;
 
 @observer
 class YamlEditor extends Component<yamlProperties, yamlState> {
@@ -105,6 +112,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   }
 
+  saveYaml () {
+    fs.writeFileSync(file, JSON.stringify(this.state.yamlJson));
+  }
+
   handleChangeYaml() {
     wikiStore.table.isCellSelectable = false;
 
@@ -119,6 +130,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         yamlParseErrMsg: null,
         yamlParseErrFloatMessage: '',
       });
+      // save yaml content to file
+      this.saveYaml();
     } catch (err) {
       this.setState({
         yamlJson: null,
