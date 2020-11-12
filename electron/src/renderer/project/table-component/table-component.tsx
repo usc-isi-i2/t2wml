@@ -280,14 +280,45 @@ class TableComponent extends Component<{}, TableState> {
 
       // Update selection coordinates
       if ( !event.metaKey ) {
-        this.resetSelections();
-        this.selections = [{x1, x2, y1, y2}];
-      } else {
-        this.selections.push({x1, x2, y1, y2});
-      }
 
-      // Activate the element on click
-      this.selectCell(element, y1, x1, y1, x1, x1, y1);
+        // Extend the previous selection if user is holding down Shift key
+        if ( event.shiftKey && !!this.selections.length ) {
+          const prevSelection = this.selections[this.selections.length-1];
+
+          // Extend the previous selection left or right
+          if ( x1 !== prevSelection['x1'] ) {
+            if ( x1 < prevSelection['x1'] ) {
+              prevSelection['x1'] = x1;
+            } else {
+              prevSelection['x2'] = x1;
+            }
+          }
+
+          // Extend the previous selection up or down
+          if ( y1 !== prevSelection['y1'] ) {
+            if ( y1 < prevSelection['y1'] ) {
+              prevSelection['y1'] = y1;
+            } else {
+              prevSelection['y2'] = y1;
+            }
+          }
+
+          this.updateSelections();
+        } else {
+          this.resetSelections()
+          this.selections = [{x1, x2, y1, y2}];
+
+          // Activate the element on click
+          this.selectCell(element, y1, x1, y1, x1, x1, y1);
+        }
+      } else {
+
+        // Add a new selection separately
+        this.selections.push({x1, x2, y1, y2});
+
+        // Activate the element on click
+        this.selectCell(element, y1, x1, y1, x1, x1, y1);
+      }
     }
   }
 
