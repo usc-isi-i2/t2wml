@@ -291,10 +291,64 @@ def call_wikifier_service():
 
     return response, 200
 
+@app.route('/api/yaml/rename', methods=['POST'])
+@json_response
+def rename_yaml():
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    if not project.current_data_file:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Upload a data file before renaming yaml")
 
-@app.route('/api/yaml', methods=['POST'])
+    old_name = request.form["old_name"]
+    new_name = request.form["new_name"]
+
+    if old_name not in project.yaml_files:
+        raise web_exceptions.MissingYAMLFileException(
+            "The yaml file you are trying to rename does not exist in project")
+    if new_name in project.yaml_files:
+        raise web_exceptions.MissingYAMLFileException(
+            "The new name you have provided already exists in the project as a yaml file")
+    
+    old_path=os.path.join(project.directory, old_name)
+    new_path=os.path.join(project.directory, new_name)
+
+    os.rename(old_path, new_path)
+
+    old_name_index=project.yaml_files.index(old_name)
+    project.yaml_files[old_name_index]=new_name
+    for sheet_name, sheet_arr in project.yaml_sheet_associations.items():
+        if old_name in sheet_arr:
+            old_name_index=sheet_arr.index(old_name)
+            sheet_arr[old_name_index]=new_name
+    project.save()
+    
+    response=dict(project=project.__dict__)
+    return response, 200
+
+
+
+
+
+
+@app.route('/api/yaml/save', methods=['POST'])
 @json_response
 def upload_yaml():
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    if not project.current_data_file:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Upload a data file before editing or importing yaml")
+
+    yaml_data = request.form["yaml"]
+    yaml_title = request.form["title"]
+    save_yaml(project, yaml_data, yaml_title)
+    response=dict(project=project.__dict__)
+    return response, 200
+
+@app.route('/api/yaml/apply', methods=['POST'])
+@json_response
+def apply_yaml():
     """
     This function uploads and processes the yaml file
     :return:
@@ -309,16 +363,15 @@ def upload_yaml():
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
     
+    save_yaml(project, yaml_data, yaml_title)
+    
     response=dict(project=project.__dict__, layers=get_empty_layers())
-
     try:
         yaml.safe_load(yaml_data)
     except:
         response["yamlError"]="YAML file is either empty or not valid"
         return response
-    
 
-    save_yaml(project, yaml_data, yaml_title)
     calc_params = get_calc_params(project)
     try:
         response["layers"] = get_yaml_layers(calc_params)
