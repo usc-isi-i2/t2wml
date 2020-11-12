@@ -24,6 +24,7 @@
   z-index: 5;
   left: 0;
   top: 0;
+  pointer-events: none;
 }
 .table-wrapper table th:nth-child(1)::before {
   content: '';
@@ -35,6 +36,7 @@
   border-left: 1.25em solid transparent;
   border-right: 1.25em solid #ddd;
   border-top: 1.25em solid transparent;
+  pointer-events: none;
 }
 
 /* header row */
