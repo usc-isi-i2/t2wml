@@ -7,7 +7,7 @@ import { Button, Card, Spinner } from 'react-bootstrap';
 import Downloader from 'js-file-download';
 
 // console.log
-import { LOG, ErrorMessage } from '../../common/general';
+import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
 import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -181,7 +181,7 @@ class Output extends Component<{}, OutputComponentState> {
         <Card className="w-100 h-100 shadow-sm">
 
           {/* card header */}
-          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#990000" }}>
+          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.OUTPUT }}>
 
             {/* title */}
             <div

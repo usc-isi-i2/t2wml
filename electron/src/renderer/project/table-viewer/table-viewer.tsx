@@ -10,7 +10,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, gridApiInterface, ErrorMessage, Cell } from '../../common/general';
+import { LOG, gridApiInterface, ErrorMessage, Cell, t2wmlColors } from '../../common/general';
 import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -571,7 +571,7 @@ class TableViewer extends Component<{}, TableState> {
         <Card className="w-100 h-100 shadow-sm">
 
           {/* header */}
-          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#339966" }}>
+          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.TABLE }}>
 
             {/* title */}
             <div

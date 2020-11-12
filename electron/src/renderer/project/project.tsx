@@ -9,7 +9,7 @@ import Navbar from '../common/navbar/navbar';
 import SplitPane from 'react-split-pane';
 import Config from '@/shared/config';
 
-import { ErrorMessage } from '../common/general';
+import { ErrorMessage, t2wmlColors } from '../common/general';
 
 // components
 import Editors from './editor';
@@ -192,13 +192,13 @@ class Project extends Component<ProjectProps, ProjectState> {
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
-        <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+        <div style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
           <div>
             <Sidebar />
           </div>
 
           <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300} 
-            style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+            style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
             <TableViewer />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />

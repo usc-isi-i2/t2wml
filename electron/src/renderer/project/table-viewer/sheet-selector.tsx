@@ -5,11 +5,13 @@ import { Button } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
 import { Event } from 'electron/main';
+import { t2wmlColors } from '@/renderer/common/general';
 
 
 interface SheetProperties  {
     sheetNames: Array<string> | null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
     currSheetName: string | null,  // csv: null    excel: "sheet1"
+    itemType?: "sheet" | "file",
 
     handleSelectSheet: (event: Event) => void;
     handleDoubleClickItem?: (value: string, index: number) => void;
@@ -37,10 +39,15 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
 
     // if csv file, sheetNames === null && currSheetName === null
     if (sheetNames === null) return null;
-
+    
+    let color = t2wmlColors.TABLE;
+    if (this.props.itemType === "file") {
+      color = t2wmlColors.YAML;
+    }
     // else, excel file
-    const currSheetStyle = { borderColor: "#339966", background: "#339966", padding: "0rem 0.5rem", margin: "0rem 0.25rem" };
-    const otherSheetStyle = { borderColor: "#339966", background: "whitesmoke", color: "#339966", padding: "0rem 0.5rem", margin: "0rem 0.25rem" };
+    const currSheetStyle = { borderColor: color, background: color, padding: "0rem 0.5rem", margin: "0rem 0.25rem" };
+    const otherSheetStyle = { borderColor: color, background: "whitesmoke", color: color, padding: "0rem 0.5rem", margin: "0rem 0.25rem" };
+
     const sheetSelectorHtml = [];
     for (let i = 0, len = sheetNames.length; i < len; i++) {
       sheetSelectorHtml.push(

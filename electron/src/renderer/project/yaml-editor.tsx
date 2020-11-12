@@ -8,7 +8,7 @@ import yaml from 'js-yaml';
 import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG, ErrorMessage } from '../common/general';
+import { LOG, ErrorMessage, t2wmlColors } from '../common/general';
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
 
@@ -249,7 +249,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
           {/* header */}
           <Card.Header
-            style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
+            style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.YAML }}
             onClick={() => wikiStore.editors.nowShowing = "YamlEditor"}
           >
 
@@ -327,7 +327,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           {/* card footer */}
           <Card.Footer
             style={
-              (this.props.isShowing) ? { height: "40px", padding: "0.5rem 1rem", background: "whitesmoke" } : { display: "none" }
+              (this.props.isShowing) ? { background: "whitesmoke" } : { display: "none" }
             }
           >
 
@@ -337,8 +337,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               style={{
                 // fontFamily: "Menlo, Monaco, \"Courier New\", monospace",
                 fontSize: "14px",
-                color: "#990000",
-                width: "calc(100% - 60px)",
+                color: t2wmlColors.OUTPUT,
+                width: "calc(100% - 10px)",
                 cursor: "help"
               }}
               title={this.state.yamlParseErrFloatMessage}
@@ -350,7 +350,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             <Button
               className="d-inline-block float-right"
               size="sm"
-              style={{ borderColor: "#006699", background: "#006699", padding: "0rem 0.5rem" }}
+              style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
               onClick={() => this.handleApplyYaml()}
               disabled={!this.state.isValidYaml}
             >
@@ -359,6 +359,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             <SheetSelector
               sheetNames={this.state.yamlNames}
               currSheetName={this.state.currentYaml}
+              itemType="file"
               handleSelectSheet={(event) => this.handleChangeYamlFile(event)}
               handleDoubleClickItem={(val, index) => this.changeYamlName(val, index)}
             />
