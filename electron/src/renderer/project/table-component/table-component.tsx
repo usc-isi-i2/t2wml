@@ -120,10 +120,7 @@ class TableComponent extends Component<{}, TableState> {
     let selectedMainSubject;
     let selectedQualifiers;
 
-    const statement = wikiStore.layers.statement.find(
-      selectedCell.row,
-      selectedCell.col,
-    );
+    const statement = wikiStore.layers.statement.find(selectedCell);
     if ( !!statement.cell ) {
       const cell = statement.cell;
       selectedMainSubject = new Cell(cell[1], cell[0]);
