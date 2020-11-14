@@ -261,6 +261,13 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseUp(event) {
     this.selecting = false;
+    if ( this.selections.length === 1 ) {
+      const {x1, x2, y1, y2} = this.selections[0];;
+      if ( x1 === x2 && y1 === y2 ) {
+        const value = event.target.textContent;
+        this.updateSelectedCell(new Cell(x1-1, y1-1, value));
+      }
+    }
   }
 
   handleOnMouseDown(event) {
