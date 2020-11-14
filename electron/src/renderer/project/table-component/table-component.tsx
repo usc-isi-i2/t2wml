@@ -34,7 +34,7 @@ interface TableState {
   tableData: any; // Array<object>; // todo: add interface
 
   yamlRegions: any; // null,
-  selectedCell: Cell | null;
+  selectedCell: Cell;
 
   errorMessage: ErrorMessage;
 }
@@ -63,6 +63,8 @@ class TableComponent extends Component<{}, TableState> {
       sheetNames: null,
       currSheetName: null,
       multipleSheets: false,
+
+      selectedCell: new Cell(),
 
       errorMessage: {} as ErrorMessage,
     };
@@ -114,10 +116,40 @@ class TableComponent extends Component<{}, TableState> {
     this.setState({tableData});
   }
 
+  updateSelectedCell(selectedCell: Cell) {
+    let selectedMainSubject;
+    let selectedQualifiers;
+
+    const statement = wikiStore.layers.statement.find(
+      selectedCell.row,
+      selectedCell.col,
+    );
+    if ( !!statement.cell ) {
+      const cell = statement.cell;
+      selectedMainSubject = new Cell(cell[1], cell[0]);
+    }
+    const qualifier = statement.qualifier;
+    if ( !!statement.qualifier ) {
+      selectedQualifiers = statement.qualifier.map(qualifier => (
+        new Cell(qualifier.cell[1], qualifier.cell[0])
+      ));
+    }
+
+    this.setState({
+      selectedCell,
+      selectedQualifiers,
+      selectedMainSubject,
+    });
+
+    // Update selected cell in the data store
+    wikiStore.table.selectedCell = newSelectedCell;
+  }
+
   async handleSelectSheet(event: any) {
     this.resetTableData();
 
     // remove current status
+    this.updateSelectedCell(new Cell());
     wikiStore.yaml.yamlContent = undefined;
     wikiStore.output.isDownloadDisabled = true;
 
