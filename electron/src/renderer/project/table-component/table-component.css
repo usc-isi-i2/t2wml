@@ -105,6 +105,12 @@
 .table-wrapper table tr td.active {
   z-index: 5;
 }
+.table-wrapper table tr td.active-main-subject {
+  border: 1px solid black;
+}
+.table-wrapper table tr td.active-qualifier {
+  border: 1px solid red;
+}
 
 /* top border */
 .table-wrapper table tr td div.cell-border-top {
