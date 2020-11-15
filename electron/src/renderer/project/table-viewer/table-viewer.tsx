@@ -484,7 +484,7 @@ class TableViewer extends Component<{}, TableState> {
       const project = wikiStore.projects.projectDTO;
       const filename = project._saved_state.current_data_file
       let sheetNames;
-      sheetNames = project.data_files[filename]
+      sheetNames = project.data_files[filename].val_arr
       if (sheetNames == undefined) {
         sheetNames = null;
       }
