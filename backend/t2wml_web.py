@@ -37,12 +37,12 @@ def wikify(calc_params, region, context):
 
 
 def update_t2wml_settings(project):
-    t2wml_settings.sparql_endpoint = project.sparql_endpoint
-    t2wml_settings.wikidata_provider = DatabaseProvider(project)
-    t2wml_settings.warn_for_empty_cells = project.warn_for_empty_cells
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
+    t2wml_settings.wikidata_provider = DatabaseProvider(project)
+    t2wml_settings.update_from_dict(**project.__dict__)
+
 
 
 def get_kg(calc_params):
