@@ -31,7 +31,7 @@ interface TableState {
   sheetNames: Array<string> | null,
   currSheetName: string | null,
 
-  tableData: any; // Array<object>; // todo: add interface
+  tableData: any; // Array<object>;
 
   yamlRegions: any; // null,
   selectedCell: Cell;
@@ -139,7 +139,7 @@ class TableComponent extends Component<{}, TableState> {
     });
 
     // Update selected cell in the data store
-    wikiStore.table.selectedCell = newSelectedCell;
+    wikiStore.table.selectedCell = selectedCell;
   }
 
   async handleSelectSheet(event: any) {
