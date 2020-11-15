@@ -417,6 +417,35 @@ class TableComponent extends Component<{}, TableState> {
     )
   }
 
+  getClassName(item, row, col) {
+    const {
+      selectedCell,
+      selectedQualifiers,
+      selectedMainSubject,
+    } = this.state;
+    let className = !!item['type'] ? `type-${item['type']}` : '';
+    if ( !!selectedCell ) {
+      if ( selectedCell.row === row && selectedCell.col === col ) {
+        className += ' active';
+      }
+    }
+    if ( !!selectedMainSubject ) {
+      if ( selectedMainSubject.row === row &&
+        selectedMainSubject.col === col ) {
+        className += ' active-main-subject';
+      }
+    }
+    if ( !!selectedQualifiers ) {
+      selectedQualifiers.forEach(selectedQualifier => {
+        if ( selectedQualifier.row === row &&
+          selectedQualifier.col === col ) {
+          className += ' active-qualifier';
+        }
+      })
+    }
+    return className;
+  }
+
   renderTable() {
     const { tableData } = this.state;
     if ( !!tableData ) {
@@ -440,7 +469,7 @@ class TableComponent extends Component<{}, TableState> {
                     const item = tableData[i][j]
                     return (
                       <td key={`cell-${j}`}
-                        className={!!item['type'] ? `type-${item['type']}` : ''}>
+                        className={this.getClassName(item, i, j)}>
                         {item['data']}
                       </td>
                     )
