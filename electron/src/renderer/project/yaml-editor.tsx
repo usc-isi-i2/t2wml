@@ -5,7 +5,7 @@ import MonacoEditor from 'react-monaco-editor';
 import yaml from 'js-yaml';
 
 // App
-import { Button, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 // console.log
 import { LOG, ErrorMessage, t2wmlColors } from '../common/general';
@@ -112,6 +112,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     console.log("Save yaml");
     // before sending request
     wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
 
     // send request
     const formData = new FormData();
@@ -127,6 +128,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       console.error("Save yaml failed.");
     } finally {
       wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
       wikiStore.table.isCellSelectable = true;
 
       wikiStore.yaml.haveToSaveYaml = false;
@@ -331,6 +333,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             />
 
           </Card.Header>
+
+          {/* loading spinner */}
+          <div className="mySpinner" hidden={!wikiStore.yaml.showSpinner}>
+              <Spinner animation="border" />
+          </div>
 
           {/* yaml editor */}
           <Card.Body
