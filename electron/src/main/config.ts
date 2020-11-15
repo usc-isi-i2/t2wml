@@ -38,7 +38,7 @@ export class ConfigManager implements AppConfig {
         this.version = packageJson.version;
 
         if (this.mode === 'dev') {
-            this.version += ' (dev)';
+            this.version = '(dev)';
         }
         
         this.backend = 'http://localhost:13000/';

@@ -81,6 +81,20 @@ export default class MainMenuManager {
                   role: 'toggleDevTools',
                 }]
             },
+            // { //TODO:
+            //     label: 'Help',
+            //     submenu: [
+            //         {
+            //             label: 'Usage Guide'
+            //         }
+            //         {
+            //             label: 'YamlEditor T2WML syntax guide'
+            //         },
+            //         {
+            //             label: 'Report a bug'
+            //         }
+            //     ]
+            // }
         ]
 
         if (config.platform === 'mac') {
@@ -110,7 +124,8 @@ export default class MainMenuManager {
     }
 
     private fillProjectSubMenu() {
-        const enabled = uiState.displayMode === 'project';
+        //electron will not allow disabling/hiding top level menu item, so we can only disable within the sub menu when not in project
+        const enabled = uiState.displayMode === 'project'; 
         this.projectSubMenu = [{
             label: 'Refresh',
             accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',

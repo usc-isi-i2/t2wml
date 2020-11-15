@@ -148,16 +148,17 @@ def upload_data_file():
     calc_params = get_calc_params(project)
 
     response=dict(project=project.__dict__)
+    is_csv=Path(calc_params.data_path).suffix == ".csv"
     
 
     # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
     # and item definitions automatically
     if annotation_integration:
         sheet = project.current_sheet
-        ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
+        ai = AnnotationIntegration(is_csv, calc_params.sheet_name,
                                    w_requests=request)
         if ai.is_annotated_spreadsheet(project.directory):
-            dataset_exists = ai.automate_integration(project, response, sheet)
+            dataset_exists = ai.automate_integration(project, calc_params.data_path, sheet)
             if not dataset_exists:
                 # report to user
                 error_dict = {
@@ -173,16 +174,16 @@ def upload_data_file():
         else:  # not annotation file, check if annotation is available
             annotation_found, new_df = ai.is_annotation_available(project.directory)
             if annotation_found and new_df is not None:
-                create_datafile(project, new_df, response['tableData']['filename'],
-                                response['tableData']['currSheetName'])
+                create_datafile(project, new_df, calc_params.data_path,
+                                calc_params.sheet_name)
                 calc_params = get_calc_params(project)
                 sheet = project.current_sheet
-                ai = AnnotationIntegration(response['tableData']['isCSV'], response['tableData']['currSheetName'],
+                ai = AnnotationIntegration(is_csv, calc_params.sheet_name,
                                            df=new_df)
 
                 # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
                 # TODO the users. There has to be a better way to handle it. For Future implementation
-                ai.automate_integration(project, response, sheet)
+                ai.automate_integration(project, calc_params.data_path, sheet)
 
     calc_params = get_calc_params(project)
     get_all_layers_and_table(response, calc_params)

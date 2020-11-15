@@ -173,9 +173,9 @@ class AnnotationIntegration(object):
 
         return header_index, data_index
 
-    def automate_integration(self, project, response, sheet):
+    def automate_integration(self, project, data_path, sheet):
         try:
-            filename = response['tableData']['filename']
+            filename = Path(data_path).name
             dataset_exists = self.check_dataset_exists()
             if not dataset_exists:
                 return False
@@ -199,13 +199,13 @@ class AnnotationIntegration(object):
             return True
 
 
-def create_datafile(project, df, file_name, sheet_name):
+def create_datafile(project, df, filepath, sheet_name):
     folder = project.directory
 
-    filepath = f'{folder}/{file_name}'
-    if file_name.endswith('.csv'):
+    
+    if filepath.endswith('.csv'):
         df.to_csv(filepath, index=False, header=False)
-    elif file_name.endswith('.xlsx') or file_name.endswith('.xls'):
+    elif filepath.endswith('.xlsx') or filepath.endswith('.xls'):
         with pd.ExcelWriter(filepath, engine='openpyxl', mode='a') as writer:
             workBook = writer.book
             try:

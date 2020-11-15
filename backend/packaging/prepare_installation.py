@@ -58,24 +58,26 @@ def prepare_version(version):
     print(f"Updated version to {version}")
 
 
-# def build_frontend():
-#     global frontend_path
-#     print('Building frontend...')
-#     cwd = os.getcwd()
-#     try:
-#         os.chdir(frontend_path)
-#         shutil.rmtree('build', ignore_errors=True)
-#         os.system('yarn install')
-#         os.system('yarn build')
-#     finally:
-#         os.chdir(cwd)
+def build_help_docs():
+    t2wml_root= os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    docs_folder=os.path.join(t2wml_root, "t2wml-api", "docs")
+    if not os.path.isdir(docs_folder):
+        print("could not find docs folder")
+        return
+    try:
+        import markdown
+        grammar_file = os.path.join(docs_folder, "grammar.md")
+        temp_output_file = os.path.join(docs_folder, "grammar.html") #this really needs to be switched to something in the frontend
+        markdown.markdownFromFile(
+        input=grammar_file,
+        output=temp_output_file,
+        encoding='utf8',
+        extensions=['fenced_code', 'tables', 'attr_list', 'codehilite']
+        )
+    except Exception as e: #not being able to update the help docs should not break the build
+        print(e)
 
-# def copy_frontend_to_static():
-#     global backend_path, frontend_path
 
-#     print("Copying frontend files to backend's static folder...")
-#     shutil.rmtree(os.path.join(backend_path,'static'), ignore_errors=True)
-#     shutil.copytree(os.path.join(frontend_path, 'build'), os.path.join(backend_path, 'static'))
 
 def build_installer():
     print("Building installation...")
