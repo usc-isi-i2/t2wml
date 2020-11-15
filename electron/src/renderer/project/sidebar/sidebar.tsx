@@ -132,7 +132,7 @@ class Sidebar extends Component<{}, SidebarState> {
     getFilesData() {
         const dataFiles = [];
         if (wikiStore.projects.projectDTO && wikiStore.projects.projectDTO.data_files) {
-            for(const file of Object.keys(wikiStore.projects.projectDTO.data_files)) {
+            for(const file of Object.keys(wikiStore.projects.projectDTO.data_files).sort()) {
                 dataFiles.push({name: file});
             }
             const data = {
