@@ -1,15 +1,9 @@
-.table-legend button {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
 .legend-button {
   position: absolute;
-  bottom: 20px;
+  bottom: 70px;
   right: 20px;
   border: 0;
+  cursor: pointer;
   background: rgba(0, 0, 0, 0.5);
   z-index: 200;
 }
