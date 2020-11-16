@@ -33,6 +33,8 @@ interface yamlState extends IStateWithError {
   yamlParseErrFloatMessage: string;
   yamlNames: Array<string>;
   currentYaml: string;
+  isYamlContentChanged: boolean;
+  isImportFile: boolean;
 }
 
 
@@ -59,6 +61,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       errorMessage: {} as ErrorMessage,
       yamlNames: [],
       currentYaml: '',
+      isYamlContentChanged: false,
+      isImportFile: false,
     };
 
     // init functions
@@ -108,7 +112,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   async saveYaml() {
-    // TODO- check if yamlContent changed: id file or sheet changed or project leaves.
+    // Check if yamlContent changed (if file not inported)
+    if (!this.state.isYamlContentChanged && !this.state.isImportFile) {
+      return;
+    }
     console.log("Save yaml");
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -132,6 +139,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       wikiStore.table.isCellSelectable = true;
 
       wikiStore.yaml.haveToSaveYaml = false;
+      this.setState({
+        isYamlContentChanged: false,
+        isImportFile: false
+      });
     }
   }
 
@@ -139,7 +150,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.table.isCellSelectable = false;
 
     const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
-    this.setState({ yamlContent: yamlContent });
+    this.setState({ yamlContent: yamlContent, isYamlContentChanged: true });
     try {
       const yamlJson = (yaml.safeLoad(yamlContent) as JSON);
       this.setState({
@@ -179,7 +190,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           yamlJson: yamlJson,
           isValidYaml: true,
           yamlParseErrMsg: null,
-          yamlParseErrFloatMessage: ''
+          yamlParseErrFloatMessage: '',
+          isImportFile: true
         });
 
         // Save yaml when importing yaml
