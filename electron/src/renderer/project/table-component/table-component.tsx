@@ -566,8 +566,18 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
+  renderSheetSelector() {
+    const { currSheetName, sheetNames } = this.state;
+    return (
+      <SheetSelector
+        sheetNames={sheetNames}
+        currSheetName={currSheetName}
+        handleSelectSheet={(event) => this.handleSelectSheet(event)} />
+    )
+  }
+
   render() {
-    const { currSheetName, multipleSheets, sheetNames } = this.state;
+    const { multipleSheets } = this.state;
 
     return (
       <div className="w-100 h-100 p-1">
@@ -589,11 +599,9 @@ class TableComponent extends Component<{}, TableState> {
           </Card.Body>
 
           <Card.Footer hidden={!multipleSheets} className={'p-0'}>
-            <SheetSelector
-              sheetNames={sheetNames}
-              currSheetName={currSheetName}
-              handleSelectSheet={(event) => this.handleSelectSheet(event)} />
+            {this.renderSheetSelector()}
           </Card.Footer>
+
         </Card>
       </div>
     )
