@@ -8,7 +8,6 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import './table-legend.css';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { observer } from 'mobx-react';
 
 interface LegendProperties {
   multipleSheets: boolean;
@@ -39,7 +38,6 @@ const LEGEND = [{
 }];
 
 
-@observer
 class TableLegend extends Component<LegendProperties, {}> {
 
   renderLegend() {
