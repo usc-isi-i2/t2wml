@@ -31,6 +31,7 @@ interface ProjectState extends IStateWithError {
   showSettings: boolean;
   endpoint: string;
   warnEmpty: boolean;
+  calendar: string;
   name: string;
   showTreeFlag: boolean;
 }
@@ -60,6 +61,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       showSettings: false,
       endpoint: '',
       warnEmpty: false,
+      calendar: 'leave',
       name: '',
 
       errorMessage: {} as ErrorMessage,
@@ -147,6 +149,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({
       endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
+      calendar: wikiStore.projects.projectDTO?.handle_calendar || "leave",
       showSettings: true
     });
   }
@@ -155,7 +158,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     wikiStore.projects.showFileTree = checked;
   }
 
-  async handleSaveSettings(endpoint: string, warn: boolean) {
+  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string) {
     // update settings
     this.setState({ showSettings: false });
 
@@ -163,6 +166,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     const formData = new FormData();
     formData.append("endpoint", endpoint);
     formData.append("warnEmpty", warn.toString());
+    formData.append("handleCalendar", calendar);
 
     try {
       await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
@@ -188,7 +192,8 @@ class Project extends Component<ProjectProps, ProjectState> {
         <Settings showSettings={this.state.showSettings}
           endpoint={this.state.endpoint}
           warnEmpty={this.state.warnEmpty}
-          handleSaveSettings={(endpoint, warn) => this.handleSaveSettings(endpoint, warn)}
+          calendar={this.state.calendar}
+          handleSaveSettings={(endpoint, warn, calendar) => this.handleSaveSettings(endpoint, warn, calendar)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
