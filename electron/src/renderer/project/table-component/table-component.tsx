@@ -11,6 +11,8 @@ import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 import TableToast from './table-toast';
 
+import * as utils from './table-utils';
+
 import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
@@ -511,7 +513,7 @@ class TableComponent extends Component<{}, TableState> {
     const { selectedCell, showToast } = this.state;
     if ( showToast ) {
       const { row, col } = selectedCell;
-      const message = `selected [row: ${row + 1}, col: ${col + 1}]`;
+      const message = `Selected: ${utils.columnToLetter(col + 1)}${row + 1}`;
       return (
         <TableToast
           message={message}
