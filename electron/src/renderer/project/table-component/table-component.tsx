@@ -248,9 +248,12 @@ class TableComponent extends Component<{}, TableState> {
     });
   }
 
-  selectCell(cell, rowIndex, colIndex, topRow, leftCol, rightCol, bottomRow) {
+  selectCell(cell, rowIndex, colIndex, topRow, leftCol, rightCol, bottomRow, className) {
     // Activate the current cell
     cell.classList.add('active');
+    if ( !!className ) {
+      cell.classList.add(className);
+    }
 
     // Add a top border to the cells at the top of the selection
     if ( rowIndex === topRow ) {
