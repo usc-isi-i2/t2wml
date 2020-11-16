@@ -59,7 +59,7 @@ def prepare_version(version):
 
 
 def build_help_docs():
-    t2wml_root= os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    t2wml_root= os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     docs_folder=os.path.join(t2wml_root, "t2wml-api", "docs")
     if not os.path.isdir(docs_folder):
         print("could not find docs folder")
@@ -67,13 +67,14 @@ def build_help_docs():
     try:
         import markdown
         grammar_file = os.path.join(docs_folder, "grammar.md")
-        temp_output_file = os.path.join(docs_folder, "grammar.html") #this really needs to be switched to something in the frontend
+        output_file = os.path.join(electron_path, "public", "grammar.html")
         markdown.markdownFromFile(
         input=grammar_file,
-        output=temp_output_file,
+        output=output_file,
         encoding='utf8',
         extensions=['fenced_code', 'tables', 'attr_list', 'codehilite']
         )
+        print("built grammar.html in "+output_file)
     except Exception as e: #not being able to update the help docs should not break the build
         print(e)
 
@@ -120,6 +121,7 @@ def run():
     #if not args.skip_frontend:
     #    build_frontend()
     #copy_frontend_to_static()
+    build_help_docs()
     build_installer()
 
     if not args.skip_electron:
