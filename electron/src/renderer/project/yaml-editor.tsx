@@ -192,7 +192,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     reader.readAsText(file);
     reader.onloadend = (async() => {
       const yamlContent = reader.result;
-      this.setState({ yamlContent: yamlContent as string, yamlTitle: file.name });
+      this.setState({ yamlContent: yamlContent as string, yamlTitle: yamlName });
       try {
         const yamlJson = (yaml.safeLoad((yamlContent as string))) as JSON;
         this.setState({
@@ -256,17 +256,24 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       this.setState({disableYaml: false});
     }
 
-    let yamlToCurrentSheet = project?._saved_state.current_sheet;
-    if (yamlToCurrentSheet.endsWith('.csv')) {
-      yamlToCurrentSheet.slice(0, 4);
-    } else if (!yamlToCurrentSheet.endsWith('.yaml')) {
-      yamlToCurrentSheet += '.yaml';
+    const dataFile = project._saved_state.current_data_file;
+    const sheetName = project._saved_state.current_sheet;
+    if (dataFile) {
+      if (project!.yaml_sheet_associations[dataFile][sheetName]) {
+        this.setState({ yamlNames: project!.yaml_sheet_associations[dataFile][sheetName].val_arr,
+          currentYaml: project!.yaml_sheet_associations[dataFile][sheetName].selected });
+      } else {
+        let yamlToCurrentSheet = project?._saved_state.current_sheet;
+        if (yamlToCurrentSheet.endsWith('.csv')) {
+          yamlToCurrentSheet.slice(0, 4);
+        } else if (!yamlToCurrentSheet.endsWith('.yaml')) {
+          yamlToCurrentSheet += '.yaml';
+        }
+
+        this.setState({ yamlNames: [yamlToCurrentSheet],
+          currentYaml: yamlToCurrentSheet });
+      }
     }
-    this.setState({ yamlNames: [...project?.yaml_files],
-      currentYaml: yamlToCurrentSheet });
-    // TODO- sheet name needed?
-    // this.setState({ yamlNames: [...project?.yaml_files, yamlToCurrentSheet],
-    //   currentYaml: yamlToCurrentSheet });
   }
 
   handleChangeYamlFile(event: any) {
