@@ -312,6 +312,7 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseUp(event) {
     this.selecting = false;
+    this.setState({showToast: true});
   }
 
   handleOnMouseDown(event) {
@@ -378,6 +379,11 @@ class TableComponent extends Component<{}, TableState> {
     const element = event.target;
 
     if ( this.selecting && !event.shiftKey ) {
+
+      // Hide the toast while dragging
+      if ( this.state.showToast ) {
+        this.setState({showToast: false});
+      }
 
       // Make sure users are not able to select the cells in the index column
       if ( element.parentElement.firstChild !== event.target ) {
