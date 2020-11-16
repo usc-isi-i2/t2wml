@@ -35,6 +35,7 @@ interface yamlState extends IStateWithError {
   currentYaml: string;
   isYamlContentChanged: boolean;
   isImportFile: boolean;
+  disableYaml: boolean;
 }
 
 
@@ -63,6 +64,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       currentYaml: '',
       isYamlContentChanged: false,
       isImportFile: false,
+      disableYaml: false,
     };
 
     // init functions
@@ -70,6 +72,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   componentDidMount() {
+    if (!wikiStore.projects.projectDTO || !wikiStore.projects.projectDTO._saved_state.current_data_file) {
+      this.setState({disableYaml: true});
+    }
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
     this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) { this.updateYamlFiles(project); }});
@@ -243,6 +248,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   updateYamlFiles(project: ProjectDTO) {
+    if (wikiStore.projects.projectDTO && wikiStore.projects.projectDTO._saved_state.current_data_file) {
+      this.setState({disableYaml: false});
+    }
+
     let yamlToCurrentSheet = project?._saved_state.current_sheet;
     if (yamlToCurrentSheet.endsWith('.csv')) {
       yamlToCurrentSheet.slice(0, 4);
@@ -340,6 +349,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               id="file_yaml"
               accept=".yaml"
               style={{ display: "none" }}
+              disabled={this.state.disableYaml}
               onChange={this.handleOpenYamlFile}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
@@ -356,6 +366,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             className="w-100 h-100 p-0"
             style={(this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }}
           >
+            { ! this.state.disableYaml ?
             <MonacoEditor ref={this.monacoRef}
               width="100%"
               height="100%"
@@ -386,7 +397,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 // This is better done by catching the trigger event and calling editor.layout there,
                 // once we figure out how to catch the trigger event.
               }}
-            />
+            /> : null }
           </Card.Body>
 
           {/* card footer */}
@@ -417,7 +428,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               size="sm"
               style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
               onClick={() => this.handleApplyYaml()}
-              disabled={!this.state.isValidYaml}
+              disabled={!this.state.isValidYaml || this.state.disableYaml}
             >
               Apply
             </Button>

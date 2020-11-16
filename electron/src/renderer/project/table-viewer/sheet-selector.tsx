@@ -57,10 +57,11 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
           size="sm"
           style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
           onClick={(event: any) => { this.props.handleSelectSheet(event) }}
-          onDoubleClick={() => {this.setState({changeItemName: sheetNames[i], index: i})}}
         >{sheetNames[i]}</Button>
       );
     }
+    // Rename item (yaml), double click on button 
+    // onDoubleClick={() => {this.setState({changeItemName: sheetNames[i], index: i})}} 
 
     let renameItem = null;
     
