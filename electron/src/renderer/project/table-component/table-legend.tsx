@@ -15,23 +15,46 @@ interface LegendProperties {
 }
 
 
-const LEGEND = {
-
-}
+const LEGEND = [{
+  label: 'data',
+  className: 'type-data',
+}, {
+  label: 'item',
+  className: 'type-item',
+}, {
+  label: 'wikified',
+  className: 'type-wikified',
+}, {
+  label: 'qualifier',
+  className: 'type-qualifier',
+}, {
+  label: 'reference',
+  className: 'type-reference',
+}, {
+  label: 'minorError',
+  className: 'type-minorError',
+}, {
+  label: 'majorError',
+  className: 'type-majorError',
+}];
 
 
 @observer
 class TableLegend extends Component<LegendProperties, {}> {
 
   renderLegend() {
+    return LEGEND.map((item, index) => (
+      <span className={item.className} key={index}>
+        {item.label}
+      </span>
+    ))
+  }
+
+  renderLegendOverlay() {
     return (
       <Popover className="shadow legend-wrapper">
         <h6>Legend:</h6>
-        <span style={{ backgroundColor: 'white', color: 'hsl(200, 100%, 30%)', marginLeft: '0' }}>wikified</span>
-        <span style={{ backgroundColor: 'hsl(200, 50%, 90%)' }}>item</span>
-        <span style={{ backgroundColor: 'hsl(250, 50%, 90%)' }}>qualifier</span>
-        <span style={{ backgroundColor: 'hsl(150, 50%, 90%)' }}>data</span>
-        <span style={{ backgroundColor: 'hsl(0, 0%, 90%)' }}>data&nbsp;(skipped)</span>
+        {this.renderLegend()}
       </Popover>
     );
   }
@@ -41,7 +64,7 @@ class TableLegend extends Component<LegendProperties, {}> {
       <OverlayTrigger
         placement="left"
         trigger={['hover', 'focus']}
-        overlay={this.renderLegend()}>
+        overlay={this.renderLegendOverlay()}>
         <Button
           variant="secondary"
           className="legend-button shadow">

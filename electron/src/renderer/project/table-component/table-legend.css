@@ -33,3 +33,26 @@
   font-size: 12px;
   color: black;
 }
+
+/* different types of cells */
+.legend-wrapper span.type-data {
+  background: #D9F2E6;
+}
+.legend-wrapper span.type-item {
+  background: #D9EAF2;
+}
+.legend-wrapper span.type-wikified {
+  color: #006699;
+}
+.legend-wrapper span.type-qualifier {
+  background: #DDD9F2;
+}
+.legend-wrapper span.type-reference {
+  background: #D9F2E6;
+}
+.legend-wrapper span.type-minorError {
+  background: #FF8000;
+}
+.legend-wrapper span.type-majorError {
+  background: #FF3333;
+}
