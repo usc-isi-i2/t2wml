@@ -9,6 +9,7 @@ import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
+import TableToast from './table-toast';
 
 import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
@@ -25,6 +26,7 @@ interface Column {
 
 interface TableState {
   showSpinner: boolean;
+  showToast0: boolean;
 
   // table data
   filename: string | null,       // if null, show "Table Viewer"
@@ -57,6 +59,7 @@ class TableComponent extends Component<{}, TableState> {
     this.state = {
       // appearance
       showSpinner: wikiStore.table.showSpinner,
+      showToast0: false,
 
       // table data
       filename: null,
@@ -264,6 +267,7 @@ class TableComponent extends Component<{}, TableState> {
 
   selectRelatedCells(row, col) {
     const selectedCell = new Cell(col-1, row-1);
+    this.setState({selectedCell, showToast0: true});
 
     // Update selected cell in the data store
     wikiStore.table.selectedCell = selectedCell;
@@ -419,6 +423,10 @@ class TableComponent extends Component<{}, TableState> {
     return className;
   }
 
+  onCloseToast() {
+    this.setState({showToast0: false});
+  }
+
   renderErrorMessage() {
     const { errorMessage } = this.state;
     if ( errorMessage.errorDescription ) {
@@ -497,6 +505,17 @@ class TableComponent extends Component<{}, TableState> {
 
   renderLegend() {
     return <TableLegend />
+  }
+
+  renderToast() {
+    const { selectedCell, showToast0 } = this.state;
+    return (
+      <TableToast
+        selectedCell={selectedCell}
+        showToast0={showToast0}
+        onClose={() => this.onCloseToast()}
+      />
+    )
   }
 
   renderEmptyTable() {
@@ -595,6 +614,7 @@ class TableComponent extends Component<{}, TableState> {
           <Card.Body className="ag-theme-balham w-100 h-100 p-0 table-wrapper">
             {this.renderLoading()}
             {this.renderLegend()}
+            {this.renderToast()}
             {this.renderTable()}
           </Card.Body>
 
