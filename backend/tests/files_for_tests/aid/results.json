@@ -1,11 +1,49 @@
 {
     "add_data_file": {
+        "layers": {
+            "cleaned": {
+                "entries": [],
+                "layerType": "cleaned"
+            },
+            "error": {
+                "entries": [],
+                "layerType": "error"
+            },
+            "qnode": {
+                "entries": [],
+                "layerType": "qNode"
+            },
+            "statement": {
+                "entries": [],
+                "layerType": "statement"
+            },
+            "type": {
+                "entries": [
+                    {
+                        "indices": [],
+                        "type": "qualifier"
+                    },
+                    {
+                        "indices": [],
+                        "type": "item"
+                    },
+                    {
+                        "indices": [],
+                        "type": "data"
+                    },
+                    {
+                        "indices": [],
+                        "type": "majorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "minorError"
+                    }
+                ],
+                "layerType": "type"
+            }
+        },
         "table": {
-            "dims": [
-                8,
-                9
-            ],
-            "firstRowIndex": 0,
             "cells": [
                 [
                     "",
@@ -95,221 +133,12 @@
                     "3",
                     "Ethiopia"
                 ]
-            ]
-        },
-        "layers": {
-            "qnode": {
-                "layerType": "qNode",
-                "entries": []
-            },
-            "error": {
-                "layerType": "error",
-                "entries": []
-            },
-            "statement": {
-                "layerType": "statement",
-                "entries": []
-            },
-            "cleaned": {
-                "layerType": "cleaned",
-                "entries": []
-            },
-            "type": {
-                "layerType": "type",
-                "entries": [
-                    {
-                        "indices": [],
-                        "type": "qualifier"
-                    },
-                    {
-                        "indices": [],
-                        "type": "item"
-                    },
-                    {
-                        "indices": [],
-                        "type": "data"
-                    },
-                    {
-                        "indices": [],
-                        "type": "majorError"
-                    },
-                    {
-                        "indices": [],
-                        "type": "minorError"
-                    }
-                ]
-            }
-        }
-    },
-    "add_wikifier_file": {
-        "layers": {
-            "qnode": {
-                "layerType": "qNode",
-                "entries": [
-                    {
-                        "indices": [
-                            [
-                                2,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-22",
-                        "value": "22",
-                        "context": "main subject",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                3,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-47",
-                        "value": "47",
-                        "context": "main subject",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                4,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-73",
-                        "value": "73",
-                        "context": "main subject",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                5,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-103",
-                        "value": "103",
-                        "context": "main subject",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-475",
-                        "value": "475",
-                        "context": "main subject",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-782",
-                        "value": "782",
-                        "context": "main subject",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                0,
-                                5
-                            ],
-                            [
-                                0,
-                                6
-                            ],
-                            [
-                                0,
-                                7
-                            ]
-                        ],
-                        "id": "Qaid-security-U002",
-                        "value": "person",
-                        "context": "unit",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                1,
-                                5
-                            ]
-                        ],
-                        "id": "Paid-security-002",
-                        "value": "UN",
-                        "context": "property",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                1,
-                                6
-                            ]
-                        ],
-                        "id": "Paid-security-003",
-                        "value": "INGO",
-                        "context": "property",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                1,
-                                7
-                            ]
-                        ],
-                        "id": "Paid-security-004",
-                        "value": "LNGO/NRCS",
-                        "context": "property",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                3,
-                                8
-                            ]
-                        ],
-                        "id": "Q21203",
-                        "value": "Aruba",
-                        "context": "",
-                        "label": "Aruba",
-                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
-                        "url": "https://www.wikidata.org/wiki/Q21203"
-                    }
-                ]
-            }
+            ],
+            "dims": [
+                8,
+                9
+            ],
+            "firstRowIndex": 0
         }
     },
     "add_items": {
@@ -392,896 +221,1066 @@
                 "Paid-security-029",
                 "Paid-security-030"
             ],
-            "updated": [],
-            "failed": []
+            "failed": [],
+            "updated": []
         },
         "layers": {
             "qnode": {
-                "layerType": "qNode",
                 "entries": [
                     {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-22",
                         "indices": [
                             [
                                 2,
                                 1
                             ]
                         ],
-                        "id": "Qaid-security-22",
-                        "value": "22",
-                        "context": "main subject",
                         "label": "Incident ID 22",
-                        "description": "incident related to aid worker security",
-                        "url": ""
+                        "url": "",
+                        "value": "22"
                     },
                     {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-47",
                         "indices": [
                             [
                                 3,
                                 1
                             ]
                         ],
-                        "id": "Qaid-security-47",
-                        "value": "47",
-                        "context": "main subject",
                         "label": "Incident ID 47",
-                        "description": "incident related to aid worker security",
-                        "url": ""
+                        "url": "",
+                        "value": "47"
                     },
                     {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-73",
                         "indices": [
                             [
                                 4,
                                 1
                             ]
                         ],
-                        "id": "Qaid-security-73",
-                        "value": "73",
-                        "context": "main subject",
                         "label": "Incident ID 73",
-                        "description": "incident related to aid worker security",
-                        "url": ""
+                        "url": "",
+                        "value": "73"
                     },
                     {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-103",
                         "indices": [
                             [
                                 5,
                                 1
                             ]
                         ],
-                        "id": "Qaid-security-103",
-                        "value": "103",
-                        "context": "main subject",
                         "label": "Incident ID 103",
-                        "description": "incident related to aid worker security",
-                        "url": ""
+                        "url": "",
+                        "value": "103"
                     },
                     {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-475",
                         "indices": [
                             [
                                 6,
                                 1
                             ]
                         ],
-                        "id": "Qaid-security-475",
-                        "value": "475",
-                        "context": "main subject",
                         "label": "Incident ID 475",
-                        "description": "incident related to aid worker security",
-                        "url": ""
+                        "url": "",
+                        "value": "475"
                     },
                     {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-782",
                         "indices": [
                             [
                                 7,
                                 1
                             ]
                         ],
-                        "id": "Qaid-security-782",
-                        "value": "782",
-                        "context": "main subject",
                         "label": "Incident ID 782",
-                        "description": "incident related to aid worker security",
-                        "url": ""
+                        "url": "",
+                        "value": "782"
                     },
                     {
-                        "indices": [
-                            [
-                                0,
-                                5
-                            ],
-                            [
-                                0,
-                                6
-                            ],
-                            [
-                                0,
-                                7
-                            ]
-                        ],
-                        "id": "Qaid-security-U002",
-                        "value": "person",
                         "context": "unit",
-                        "label": "",
                         "description": "",
-                        "url": ""
+                        "id": "Qaid-security-U002",
+                        "indices": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                0,
+                                7
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "person"
                     },
                     {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-002",
                         "indices": [
                             [
                                 1,
                                 5
                             ]
                         ],
-                        "id": "Paid-security-002",
-                        "value": "UN",
-                        "context": "property",
                         "label": "UN",
-                        "description": "",
-                        "url": ""
+                        "url": "",
+                        "value": "UN"
                     },
                     {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-003",
                         "indices": [
                             [
                                 1,
                                 6
                             ]
                         ],
-                        "id": "Paid-security-003",
-                        "value": "INGO",
-                        "context": "property",
                         "label": "INGO",
-                        "description": "",
-                        "url": ""
+                        "url": "",
+                        "value": "INGO"
                     },
                     {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-004",
                         "indices": [
                             [
                                 1,
                                 7
                             ]
                         ],
-                        "id": "Paid-security-004",
-                        "value": "LNGO/NRCS",
-                        "context": "property",
                         "label": "LNGO/NRCS",
-                        "description": "",
-                        "url": ""
+                        "url": "",
+                        "value": "LNGO/NRCS"
                     },
                     {
+                        "context": "",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "id": "Q21203",
                         "indices": [
                             [
                                 3,
                                 8
                             ]
                         ],
-                        "id": "Q21203",
-                        "value": "Aruba",
-                        "context": "",
                         "label": "Aruba",
-                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
-                        "url": "https://www.wikidata.org/wiki/Q21203"
+                        "url": "https://www.wikidata.org/wiki/Q21203",
+                        "value": "Aruba"
                     }
-                ]
+                ],
+                "layerType": "qNode"
+            }
+        }
+    },
+    "add_wikifier_file": {
+        "layers": {
+            "qnode": {
+                "entries": [
+                    {
+                        "context": "main subject",
+                        "description": "",
+                        "id": "Qaid-security-22",
+                        "indices": [
+                            [
+                                2,
+                                1
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "22"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "",
+                        "id": "Qaid-security-47",
+                        "indices": [
+                            [
+                                3,
+                                1
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "47"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "",
+                        "id": "Qaid-security-73",
+                        "indices": [
+                            [
+                                4,
+                                1
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "73"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "",
+                        "id": "Qaid-security-103",
+                        "indices": [
+                            [
+                                5,
+                                1
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "103"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "",
+                        "id": "Qaid-security-475",
+                        "indices": [
+                            [
+                                6,
+                                1
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "475"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "",
+                        "id": "Qaid-security-782",
+                        "indices": [
+                            [
+                                7,
+                                1
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "782"
+                    },
+                    {
+                        "context": "unit",
+                        "description": "",
+                        "id": "Qaid-security-U002",
+                        "indices": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                0,
+                                7
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "person"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-002",
+                        "indices": [
+                            [
+                                1,
+                                5
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "UN"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-003",
+                        "indices": [
+                            [
+                                1,
+                                6
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "INGO"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-004",
+                        "indices": [
+                            [
+                                1,
+                                7
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "LNGO/NRCS"
+                    },
+                    {
+                        "context": "",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "id": "Q21203",
+                        "indices": [
+                            [
+                                3,
+                                8
+                            ]
+                        ],
+                        "label": "Aruba",
+                        "url": "https://www.wikidata.org/wiki/Q21203",
+                        "value": "Aruba"
+                    }
+                ],
+                "layerType": "qNode"
             }
         }
     },
     "add_yaml": {
         "layers": {
-            "error": {
-                "layerType": "error",
-                "entries": [
-                    {
-                        "indices": [
-                            [
-                                2,
-                                5
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                4,
-                                5
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                5,
-                                5
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                5
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                5
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                2,
-                                6
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                4,
-                                6
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                5,
-                                6
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                6
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                6
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                2,
-                                7
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                4,
-                                7
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                5,
-                                7
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                7
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                7
-                            ]
-                        ],
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
-                            }
-                        }
-                    }
-                ]
+            "cleaned": {
+                "entries": [],
+                "layerType": "cleaned"
             },
-            "statement": {
-                "layerType": "statement",
+            "error": {
                 "entries": [
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 2,
                                 5
                             ]
-                        ],
-                        "property": "Paid-security-002",
-                        "value": "2",
-                        "item": "22",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1997-09-24T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            }
-                        ],
-                        "cell": "B3"
+                        ]
                     },
                     {
-                        "indices": [
-                            [
-                                3,
-                                5
-                            ]
-                        ],
-                        "property": "Paid-security-002",
-                        "value": "0",
-                        "item": "47",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1998-06-25T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            },
-                            {
-                                "property": "P17",
-                                "value": "Q21203",
-                                "cell": "I4"
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
                             }
-                        ],
-                        "cell": "B4"
-                    },
-                    {
+                        },
                         "indices": [
                             [
                                 4,
                                 5
                             ]
-                        ],
-                        "property": "Paid-security-002",
-                        "value": "0",
-                        "item": "73",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1999-04-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 10,
-                                "time_zone": 0,
-                                "format": "%Y-%m"
-                            }
-                        ],
-                        "cell": "B5"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 5,
                                 5
                             ]
-                        ],
-                        "property": "Paid-security-002",
-                        "value": "0",
-                        "item": "103",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2000-02-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 10,
-                                "time_zone": 0,
-                                "format": "%Y-%m"
-                            }
-                        ],
-                        "cell": "B6"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 6,
                                 5
                             ]
-                        ],
-                        "property": "Paid-security-002",
-                        "value": "0",
-                        "item": "475",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2006-09-20T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            }
-                        ],
-                        "cell": "B7"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 7,
                                 5
                             ]
-                        ],
-                        "property": "Paid-security-002",
-                        "value": "0",
-                        "item": "782",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2008-01-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 9,
-                                "time_zone": 0,
-                                "format": "%Y"
-                            }
-                        ],
-                        "cell": "B8"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 2,
                                 6
                             ]
-                        ],
-                        "property": "Paid-security-003",
-                        "value": "0",
-                        "item": "22",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1997-09-24T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            }
-                        ],
-                        "cell": "B3"
+                        ]
                     },
                     {
-                        "indices": [
-                            [
-                                3,
-                                6
-                            ]
-                        ],
-                        "property": "Paid-security-003",
-                        "value": "0",
-                        "item": "47",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1998-06-25T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            },
-                            {
-                                "property": "P17",
-                                "value": "Q21203",
-                                "cell": "I4"
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
                             }
-                        ],
-                        "cell": "B4"
-                    },
-                    {
+                        },
                         "indices": [
                             [
                                 4,
                                 6
                             ]
-                        ],
-                        "property": "Paid-security-003",
-                        "value": "1",
-                        "item": "73",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1999-04-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 10,
-                                "time_zone": 0,
-                                "format": "%Y-%m"
-                            }
-                        ],
-                        "cell": "B5"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 5,
                                 6
                             ]
-                        ],
-                        "property": "Paid-security-003",
-                        "value": "2",
-                        "item": "103",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2000-02-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 10,
-                                "time_zone": 0,
-                                "format": "%Y-%m"
-                            }
-                        ],
-                        "cell": "B6"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 6,
                                 6
                             ]
-                        ],
-                        "property": "Paid-security-003",
-                        "value": "0",
-                        "item": "475",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2006-09-20T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            }
-                        ],
-                        "cell": "B7"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 7,
                                 6
                             ]
-                        ],
-                        "property": "Paid-security-003",
-                        "value": "0",
-                        "item": "782",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2008-01-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 9,
-                                "time_zone": 0,
-                                "format": "%Y"
-                            }
-                        ],
-                        "cell": "B8"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 2,
                                 7
                             ]
-                        ],
-                        "property": "Paid-security-004",
-                        "value": "0",
-                        "item": "22",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1997-09-24T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            }
-                        ],
-                        "cell": "B3"
+                        ]
                     },
                     {
-                        "indices": [
-                            [
-                                3,
-                                7
-                            ]
-                        ],
-                        "property": "Paid-security-004",
-                        "value": "0",
-                        "item": "47",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1998-06-25T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            },
-                            {
-                                "property": "P17",
-                                "value": "Q21203",
-                                "cell": "I4"
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
                             }
-                        ],
-                        "cell": "B4"
-                    },
-                    {
+                        },
                         "indices": [
                             [
                                 4,
                                 7
                             ]
-                        ],
-                        "property": "Paid-security-004",
-                        "value": "0",
-                        "item": "73",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "1999-04-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 10,
-                                "time_zone": 0,
-                                "format": "%Y-%m"
-                            }
-                        ],
-                        "cell": "B5"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 5,
                                 7
                             ]
-                        ],
-                        "property": "Paid-security-004",
-                        "value": "0",
-                        "item": "103",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2000-02-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 10,
-                                "time_zone": 0,
-                                "format": "%Y-%m"
-                            }
-                        ],
-                        "cell": "B6"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 6,
                                 7
                             ]
-                        ],
-                        "property": "Paid-security-004",
-                        "value": "0",
-                        "item": "475",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2006-09-20T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 11,
-                                "time_zone": 0,
-                                "format": "%Y-%m-%d"
-                            }
-                        ],
-                        "cell": "B7"
+                        ]
                     },
                     {
+                        "error": {
+                            "qualifier": {
+                                "1": {
+                                    "value": "Failed to resolve"
+                                }
+                            }
+                        },
                         "indices": [
                             [
                                 7,
                                 7
                             ]
-                        ],
-                        "property": "Paid-security-004",
-                        "value": "3",
-                        "item": "782",
-                        "unit": "Qaid-security-U002",
-                        "qualifier": [
-                            {
-                                "property": "P585",
-                                "value": "2008-01-01T00:00:00",
-                                "calendar": "Q1985727",
-                                "precision": 9,
-                                "time_zone": 0,
-                                "format": "%Y"
-                            }
-                        ],
-                        "cell": "B8"
+                        ]
                     }
                 ],
+                "layerType": "error"
+            },
+            "statement": {
+                "entries": [
+                    {
+                        "cell": "B3",
+                        "indices": [
+                            [
+                                2,
+                                5
+                            ]
+                        ],
+                        "item": "22",
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1997-09-24T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "2"
+                    },
+                    {
+                        "cell": "B4",
+                        "indices": [
+                            [
+                                3,
+                                5
+                            ]
+                        ],
+                        "item": "47",
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1998-06-25T00:00:00"
+                            },
+                            {
+                                "cell": "I4",
+                                "property": "P17",
+                                "value": "Q21203"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B5",
+                        "indices": [
+                            [
+                                4,
+                                5
+                            ]
+                        ],
+                        "item": "73",
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1999-04-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B6",
+                        "indices": [
+                            [
+                                5,
+                                5
+                            ]
+                        ],
+                        "item": "103",
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2000-02-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B7",
+                        "indices": [
+                            [
+                                6,
+                                5
+                            ]
+                        ],
+                        "item": "475",
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2006-09-20T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B8",
+                        "indices": [
+                            [
+                                7,
+                                5
+                            ]
+                        ],
+                        "item": "782",
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y",
+                                "precision": 9,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2008-01-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B3",
+                        "indices": [
+                            [
+                                2,
+                                6
+                            ]
+                        ],
+                        "item": "22",
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1997-09-24T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B4",
+                        "indices": [
+                            [
+                                3,
+                                6
+                            ]
+                        ],
+                        "item": "47",
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1998-06-25T00:00:00"
+                            },
+                            {
+                                "cell": "I4",
+                                "property": "P17",
+                                "value": "Q21203"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B5",
+                        "indices": [
+                            [
+                                4,
+                                6
+                            ]
+                        ],
+                        "item": "73",
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1999-04-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "1"
+                    },
+                    {
+                        "cell": "B6",
+                        "indices": [
+                            [
+                                5,
+                                6
+                            ]
+                        ],
+                        "item": "103",
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2000-02-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "2"
+                    },
+                    {
+                        "cell": "B7",
+                        "indices": [
+                            [
+                                6,
+                                6
+                            ]
+                        ],
+                        "item": "475",
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2006-09-20T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B8",
+                        "indices": [
+                            [
+                                7,
+                                6
+                            ]
+                        ],
+                        "item": "782",
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y",
+                                "precision": 9,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2008-01-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B3",
+                        "indices": [
+                            [
+                                2,
+                                7
+                            ]
+                        ],
+                        "item": "22",
+                        "property": "Paid-security-004",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1997-09-24T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B4",
+                        "indices": [
+                            [
+                                3,
+                                7
+                            ]
+                        ],
+                        "item": "47",
+                        "property": "Paid-security-004",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1998-06-25T00:00:00"
+                            },
+                            {
+                                "cell": "I4",
+                                "property": "P17",
+                                "value": "Q21203"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B5",
+                        "indices": [
+                            [
+                                4,
+                                7
+                            ]
+                        ],
+                        "item": "73",
+                        "property": "Paid-security-004",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1999-04-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B6",
+                        "indices": [
+                            [
+                                5,
+                                7
+                            ]
+                        ],
+                        "item": "103",
+                        "property": "Paid-security-004",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2000-02-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B7",
+                        "indices": [
+                            [
+                                6,
+                                7
+                            ]
+                        ],
+                        "item": "475",
+                        "property": "Paid-security-004",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2006-09-20T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cell": "B8",
+                        "indices": [
+                            [
+                                7,
+                                7
+                            ]
+                        ],
+                        "item": "782",
+                        "property": "Paid-security-004",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y",
+                                "precision": 9,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2008-01-01T00:00:00"
+                            }
+                        ],
+                        "unit": "Qaid-security-U002",
+                        "value": "3"
+                    }
+                ],
+                "layerType": "statement",
                 "qnodes": {
-                    "Paid-security-002": {
-                        "label": "UN",
-                        "description": "",
-                        "url": "",
-                        "id": "Paid-security-002"
-                    },
-                    "Qaid-security-U002": null,
-                    "P585": {
-                        "label": "point in time",
-                        "description": "time and date something took place, existed or a statement was true",
-                        "url": "https://www.wikidata.org/wiki/Property:P585",
-                        "id": "P585"
-                    },
-                    "Q1985727": {
-                        "label": "proleptic Gregorian calendar",
-                        "description": "extension of the Gregorian calendar before its introduction",
-                        "url": "https://www.wikidata.org/wiki/Q1985727",
-                        "id": "Q1985727"
-                    },
                     "P17": {
-                        "label": "country",
                         "description": "sovereign state of this item (not to be used for human beings)",
-                        "url": "https://www.wikidata.org/wiki/Property:P17",
-                        "id": "P17"
+                        "id": "P17",
+                        "label": "country",
+                        "url": "https://www.wikidata.org/wiki/Property:P17"
                     },
-                    "Q21203": {
-                        "label": "Aruba",
-                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
-                        "url": "https://www.wikidata.org/wiki/Q21203",
-                        "id": "Q21203"
+                    "P585": {
+                        "description": "time and date something took place, existed or a statement was true",
+                        "id": "P585",
+                        "label": "point in time",
+                        "url": "https://www.wikidata.org/wiki/Property:P585"
+                    },
+                    "Paid-security-002": {
+                        "description": "",
+                        "id": "Paid-security-002",
+                        "label": "UN",
+                        "url": ""
                     },
                     "Paid-security-003": {
-                        "label": "INGO",
                         "description": "",
-                        "url": "",
-                        "id": "Paid-security-003"
+                        "id": "Paid-security-003",
+                        "label": "INGO",
+                        "url": ""
                     },
                     "Paid-security-004": {
-                        "label": "LNGO/NRCS",
                         "description": "",
-                        "url": "",
-                        "id": "Paid-security-004"
-                    }
+                        "id": "Paid-security-004",
+                        "label": "LNGO/NRCS",
+                        "url": ""
+                    },
+                    "Q1985727": {
+                        "description": "extension of the Gregorian calendar before its introduction",
+                        "id": "Q1985727",
+                        "label": "proleptic Gregorian calendar",
+                        "url": "https://www.wikidata.org/wiki/Q1985727"
+                    },
+                    "Q21203": {
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "id": "Q21203",
+                        "label": "Aruba",
+                        "url": "https://www.wikidata.org/wiki/Q21203"
+                    },
+                    "Qaid-security-U002": null
                 }
             },
-            "cleaned": {
-                "layerType": "cleaned",
-                "entries": []
-            },
             "type": {
-                "layerType": "type",
                 "entries": [
                     {
                         "indices": [
@@ -1467,18 +1466,205 @@
                         ],
                         "type": "minorError"
                     }
-                ]
+                ],
+                "layerType": "type"
             }
         }
     },
     "change_sheet": {
-        "yamlContent": null,
+        "layers": {
+            "cleaned": {
+                "entries": [],
+                "layerType": "cleaned"
+            },
+            "error": {
+                "entries": [],
+                "layerType": "error"
+            },
+            "qnode": {
+                "entries": [
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-22",
+                        "indices": [
+                            [
+                                2,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 22",
+                        "url": "",
+                        "value": "22"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-73",
+                        "indices": [
+                            [
+                                4,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 73",
+                        "url": "",
+                        "value": "73"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-103",
+                        "indices": [
+                            [
+                                5,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 103",
+                        "url": "",
+                        "value": "103"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-475",
+                        "indices": [
+                            [
+                                6,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 475",
+                        "url": "",
+                        "value": "475"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-782",
+                        "indices": [
+                            [
+                                7,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 782",
+                        "url": "",
+                        "value": "782"
+                    },
+                    {
+                        "context": "unit",
+                        "description": "",
+                        "id": "Qaid-security-U002",
+                        "indices": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                0,
+                                7
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "person"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-002",
+                        "indices": [
+                            [
+                                1,
+                                5
+                            ]
+                        ],
+                        "label": "UN",
+                        "url": "",
+                        "value": "UN"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-003",
+                        "indices": [
+                            [
+                                1,
+                                6
+                            ]
+                        ],
+                        "label": "INGO",
+                        "url": "",
+                        "value": "INGO"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-004",
+                        "indices": [
+                            [
+                                1,
+                                7
+                            ]
+                        ],
+                        "label": "LNGO/NRCS",
+                        "url": "",
+                        "value": "LNGO/NRCS"
+                    },
+                    {
+                        "context": "",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "id": "Q21203",
+                        "indices": [
+                            [
+                                3,
+                                8
+                            ]
+                        ],
+                        "label": "Aruba",
+                        "url": "https://www.wikidata.org/wiki/Q21203",
+                        "value": "Aruba"
+                    }
+                ],
+                "layerType": "qNode"
+            },
+            "statement": {
+                "entries": [],
+                "layerType": "statement"
+            },
+            "type": {
+                "entries": [
+                    {
+                        "indices": [],
+                        "type": "qualifier"
+                    },
+                    {
+                        "indices": [],
+                        "type": "item"
+                    },
+                    {
+                        "indices": [],
+                        "type": "data"
+                    },
+                    {
+                        "indices": [],
+                        "type": "majorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "minorError"
+                    }
+                ],
+                "layerType": "type"
+            }
+        },
         "table": {
-            "dims": [
-                8,
-                14
-            ],
-            "firstRowIndex": 0,
             "cells": [
                 [
                     "",
@@ -1608,207 +1794,23 @@
                     "",
                     ""
                 ]
-            ]
+            ],
+            "dims": [
+                8,
+                14
+            ],
+            "firstRowIndex": 0
         },
-        "layers": {
-            "qnode": {
-                "layerType": "qNode",
-                "entries": [
-                    {
-                        "indices": [
-                            [
-                                2,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-22",
-                        "value": "22",
-                        "context": "main subject",
-                        "label": "Incident ID 22",
-                        "description": "incident related to aid worker security",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                4,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-73",
-                        "value": "73",
-                        "context": "main subject",
-                        "label": "Incident ID 73",
-                        "description": "incident related to aid worker security",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                5,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-103",
-                        "value": "103",
-                        "context": "main subject",
-                        "label": "Incident ID 103",
-                        "description": "incident related to aid worker security",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                6,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-475",
-                        "value": "475",
-                        "context": "main subject",
-                        "label": "Incident ID 475",
-                        "description": "incident related to aid worker security",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                7,
-                                1
-                            ]
-                        ],
-                        "id": "Qaid-security-782",
-                        "value": "782",
-                        "context": "main subject",
-                        "label": "Incident ID 782",
-                        "description": "incident related to aid worker security",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                0,
-                                5
-                            ],
-                            [
-                                0,
-                                6
-                            ],
-                            [
-                                0,
-                                7
-                            ]
-                        ],
-                        "id": "Qaid-security-U002",
-                        "value": "person",
-                        "context": "unit",
-                        "label": "",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                1,
-                                5
-                            ]
-                        ],
-                        "id": "Paid-security-002",
-                        "value": "UN",
-                        "context": "property",
-                        "label": "UN",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                1,
-                                6
-                            ]
-                        ],
-                        "id": "Paid-security-003",
-                        "value": "INGO",
-                        "context": "property",
-                        "label": "INGO",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                1,
-                                7
-                            ]
-                        ],
-                        "id": "Paid-security-004",
-                        "value": "LNGO/NRCS",
-                        "context": "property",
-                        "label": "LNGO/NRCS",
-                        "description": "",
-                        "url": ""
-                    },
-                    {
-                        "indices": [
-                            [
-                                3,
-                                8
-                            ]
-                        ],
-                        "id": "Q21203",
-                        "value": "Aruba",
-                        "context": "",
-                        "label": "Aruba",
-                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
-                        "url": "https://www.wikidata.org/wiki/Q21203"
-                    }
-                ]
-            },
-            "error": {
-                "layerType": "error",
-                "entries": []
-            },
-            "statement": {
-                "layerType": "statement",
-                "entries": []
-            },
-            "cleaned": {
-                "layerType": "cleaned",
-                "entries": []
-            },
-            "type": {
-                "layerType": "type",
-                "entries": [
-                    {
-                        "indices": [],
-                        "type": "qualifier"
-                    },
-                    {
-                        "indices": [],
-                        "type": "item"
-                    },
-                    {
-                        "indices": [],
-                        "type": "data"
-                    },
-                    {
-                        "indices": [],
-                        "type": "majorError"
-                    },
-                    {
-                        "indices": [],
-                        "type": "minorError"
-                    }
-                ]
-            }
-        }
+        "yamlContent": null
     },
     "wikify_region": {
         "layers": {
             "qnode": {
-                "layerType": "qNode",
                 "entries": [
                     {
+                        "context": "wikifier test",
+                        "description": "country in East Africa",
+                        "id": "Q115",
                         "indices": [
                             [
                                 2,
@@ -1823,42 +1825,40 @@
                                 8
                             ]
                         ],
-                        "id": "Q115",
-                        "value": "Ethiopia",
-                        "context": "wikifier test",
                         "label": "Ethiopia",
-                        "description": "Country in East Africa",
-                        "url": "https://www.wikidata.org/wiki/Q115"
+                        "url": "https://www.wikidata.org/wiki/Q115",
+                        "value": "Ethiopia"
                     },
                     {
+                        "context": "wikifier test",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "id": "Q21203",
                         "indices": [
                             [
                                 3,
                                 8
                             ]
                         ],
-                        "id": "Q21203",
-                        "value": "Aruba",
-                        "context": "wikifier test",
                         "label": "Aruba",
-                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
-                        "url": "https://www.wikidata.org/wiki/Q21203"
+                        "url": "https://www.wikidata.org/wiki/Q21203",
+                        "value": "Aruba"
                     },
                     {
+                        "context": "wikifier test",
+                        "description": "municipality in Germany",
+                        "id": "Q82770",
                         "indices": [
                             [
                                 6,
                                 8
                             ]
                         ],
-                        "id": "Q82770",
-                        "value": "bad qualifier",
-                        "context": "wikifier test",
                         "label": "Bad D\u00fcrrheim",
-                        "description": "municipality in Germany",
-                        "url": "https://www.wikidata.org/wiki/Q82770"
+                        "url": "https://www.wikidata.org/wiki/Q82770",
+                        "value": "bad qualifier"
                     }
-                ]
+                ],
+                "layerType": "qNode"
             }
         },
         "wikifierError": "Failed to wikify: I5"

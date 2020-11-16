@@ -139,7 +139,7 @@ class TestBasicWorkflow(BaseClass):
     def xtest_999_save(self):
         #used when overwriting all old results with new ones 
         with open(self.expected_results_path, 'w') as f:
-            json.dump(self.results_dict, f, sort_keys=False, indent=4)
+            json.dump(self.results_dict, f, sort_keys=True, indent=4)
 
 
 
