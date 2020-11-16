@@ -1,0 +1,350 @@
+<h1>The T2WML Grammar</h1>
+<ul>
+<li><a href="#overallstructure">Structure</a><ul>
+<li><a href="#overallstructure">Overall structure</a></li>
+<li><a href="#regionstructure">The region</a></li>
+<li><a href="#templatestructure">The template</a></li>
+<li><a href="#cleaningmapping">cleaningMapping</a></li>
+<li><a href="#yamlstandards">Conformance to Yaml Standards</a></li>
+</ul>
+</li>
+<li><a href="#language">The T2WML Language</a><ul>
+<li><a href="#reserved">Reserved keywords</a></li>
+<li><a href="#valueitem">Value and Item</a></li>
+<li><a href="#functions">T2WML Functions</a><ul>
+<li><a href="#boolean">Booleans</a><ul>
+<li><a href="#operator">Operators</a></li>
+<li><a href="#boolfunc">Functions</a></li>
+</ul>
+</li>
+<li><a href="#string">String modifiers</a></li>
+<li><a href="#other">Other</a></li>
+</ul>
+</li>
+<li><a href="#misc">Miscellaneous</a></li>
+</ul>
+</li>
+<li><a href="#cleaning">Cleaning Functions</a></li>
+</ul>
+<h2>Structure</h2>
+<p><span id="overallstructure"></span></p>
+<p>A valid T2WML file has a very specific structure it must conform to in order to work.</p>
+<h3>The overall structure</h3>
+<pre class="codehilite"><code>statementMapping:
+    region:
+         - keys...
+    template:
+         - keys...
+cleaningMapping:
+    - region:
+        - keys...
+      functions:
+        - func:
+            args1:...
+</code></pre>
+
+<p>It must contain the key <code>statementMapping</code>, opening a dictionary.</p>
+<p>The <code>statementMapping</code> must contain the keys <code>region</code> and <code>template</code>.</p>
+<p>The <code>region</code> and the <code>template</code> must each be a list of dictionaries (although we currently only support one entry in the list)</p>
+<p>It may optionally contain the key <code>cleaningMapping</code>, opening a list, discussed further in its section below.</p>
+<h3>The region</h3>
+<p><span id="regionstructure"></span></p>
+<p>The region is used to specify which cells of the data sheet are the data area.</p>
+<p>The <code>region</code> can be written in a variety of formats. </p>
+<p><strong>Step one</strong>: calculate the base rectangle.</p>
+<ol>
+<li>
+<p>The first option is to use the key <code>range</code> and specify a cell range, eg: <code>C4:E10</code>. </p>
+</li>
+<li>
+<p>The second option is to use the keys <code>left</code>, <code>right</code>, <code>top</code>, and <code>bottom</code>, to specify the left, right, top, and bottom edges of the area (inclusive). These arguments can be specified dynamically using the t2wml language. If left unspecified, left/right/top/bottom will default to the edges of the spreadsheet (ie the leftmost/rightmost columns and top/bottom rows)</p>
+</li>
+</ol>
+<p>The two options are mutually exclusive, if <code>range</code> is provided <code>top/bottom/left/right</code> will be ignored. If neither option is provided, the rectangle will default to the entire sheet.</p>
+<p><strong>Step two</strong>: Select/remove columns/rows/cells</p>
+<p>There are six further, optional arguments the user can provide.</p>
+<p>The arguments <code>columns</code>, <code>rows</code>, <code>cells</code> select specific columns, rows, and cells. These are not purely additive arguments-- another way of putting this is that selection arguments take priority over the base rectangle.</p>
+<p>So, if someone provides a base rectangle of A1:E7 and then provides columns [A, B, E, G], the code will <em>select</em> columns A, B, E and ignore columns C and D, and the rows will be 1-7. If someone provides columns and rows, then the range argument will end up being ignored entirely. </p>
+<p>The arguments <code>skip_columns</code>, <code>skip_rows</code>, and <code>skip_cells</code> subtract from the selected rectangle (or selected rows+columns). </p>
+<p><code>cells</code> takes precedence over any other arguments. For example, if in <code>cells</code> the user specifies A3, whose value is "dog", and in skip_cells the user says to skip all cells whose value is dog, A3 will <em>not</em> be skipped. </p>
+<p><strong>Dynamic definitions</strong>:</p>
+<p>All 6 arguments can be dynamically defined. <strong>IMPORTANT</strong>: When dynamically defined, the search for matches takes place exclusively within the base rectangle. So, going back to the example of A1:E7, if the columns argument was a dynamic definition that matched G, G would nonetheless not be included because the definition would not be searched for outside the rectangle. </p>
+<p>(This is especially important to be aware of for dynamically selecting cells, because a dynamic definition will NOT find cells outside of the rectangle. For cells outside of the rectangle you must specify them explicitly.)</p>
+<h4>Region example one</h4>
+<pre class="codehilite"><code>region: 
+     - left: A
+       right: D
+       top: 1
+       bottom: 5
+</code></pre>
+
+<h4>Region example two</h4>
+<pre class="codehilite"><code>region:
+     - range: D3:F12
+       skip_column:
+            - code here...
+            - more code...
+       skip_cell:
+            - more code...
+</code></pre>
+
+<h3>The template</h3>
+<p><span id="templatestructure"></span></p>
+<p>The template is used to build statements for each cell in the region.</p>
+<p>It must have the keys <code>item</code>, <code>property</code>, and <code>value</code>.</p>
+<p>It can also optionally have the attribute keys <code>qualifier</code> and <code>reference</code>, as well as the optional keys <code>calendar</code>, <code>precision</code>, <code>time_zone</code>, <code>format</code>, <code>lang</code>, <code>longitude</code>, <code>latitude</code>, <code>unit</code>.</p>
+<p><code>qualifier</code> and <code>reference</code> both must be lists of dictionaries. the allowed keys in their dictionaries are <code>item</code>, <code>property</code>, <code>value</code>, as well as the optional keys above.</p>
+<p>The values for the various keys can be defined in the T2WML language (<code>=value[$col, $row]</code> is a common occurence for the key <code>value</code>, for example).</p>
+<h4>Template example</h4>
+<pre class="codehilite"><code>template: 
+     value: =value[$col, $row]
+     item: Q1000
+     property: P123
+     qualifier:
+           - property: P585
+             value: 10
+             format: &quot;%Y&quot;
+           - property: P6001
+             value: =item[A, $row]
+     reference:
+           - property: P246 # stated in
+             value: Q11191 # The World Factbook
+</code></pre>
+
+<h3>cleaningMapping</h3>
+<p><span id="cleaningmapping"></span></p>
+<p>Providing a cleaningMapping section is optional, but if it is provided, it must conform to the following format:</p>
+<p>It must contain a list.</p>
+<p>Each entry of the list must be a dictionary, containing two keys, <code>region</code> and <code>functions</code>. The region is the same as the region in templateMapping and must follow the same format. <code>functions</code> is specific to cleaningMapping. It consists of a list of functions to be applied to the specified region (functions are describe in greater detail in the <a href="#cleaning">cleaning Functions</a> section).</p>
+<p>Some of the functions receive no arguments, some receive optional arguments, and some have required arguments. These are summarized below.</p>
+<pre class="codehilite"><code class="language-yaml">cleaningMapping:
+       - region: 
+            range: D6:K20
+         functions:
+            - ftfy
+            - strip_whitespace:
+                char: null # default all whitespace, can also be &quot; &quot; or  &quot;\t&quot;
+                where: start_and_end
+            - replace_regex:
+                to_replace: #required, no default
+                replacement: #required, no default
+            - remove_numbers:
+                where: everywhere
+            - remove_letters:
+                where: everywhere
+            - truncate:
+                length: #required, no default
+            - normalize_whitespace:
+                tab: False
+            - change_case:
+                case: sentence #can also be &quot;lower&quot;, &quot;upper&quot;, and &quot;title&quot;
+            - pad:
+                length: #required, no default
+                pad_text: #required, no default
+                where: start # or &quot;end&quot;. does not allow &quot;everywhere&quot; or &quot;start_and_end&quot;
+            - make_numeric:
+                decimal: &quot;.&quot;
+            - make_alphanumeric
+            - make_ascii:
+                translate: False
+</code></pre>
+
+<h3>Conformance to Yaml standards</h3>
+<p><span id="yamlstandards"></span></p>
+<p>The T2WML grammar is based on yaml files that can contain custom T2WML statements. </p>
+<p>Therefore T2WML files must conform to <a href="https://yaml.org/spec/1.1/">yaml 1.1 standards</a>. (The yaml standards most likely to trip up a T2WML user are those regarding <a href="http://blogs.perl.org/users/tinita/2018/03/strings-in-yaml---to-quote-or-not-to-quote.html">escaping strings</a>, if you want a shorter document to read)</p>
+<p>Note: It's not necessary to read this before writing T2WML yaml files. It's just something to be aware of if something goes wrong.</p>
+<h2>The T2WML Language</h2>
+<p><span id="language"></span></p>
+<p>By default, statements in the yaml document are parsed by the yaml parser (as ints, floats, strings, etc).</p>
+<p>To indicate that a statement is an instance of T2WML code, the statement must be prefixed with an = sign.</p>
+<p><code>value: value[$col, $row]</code> will return the string "value[$col, $row]"
+<code>value: =value[$col, $row]</code> will returned the evaluated value for the T2WML expression</p>
+<p><span id="reserved"></span></p>
+<p>The T2WML language contains some reserved variable names, indicated with a $ in front of the name</p>
+<ul>
+<li><code>$top</code>, <code>$bottom</code>, <code>$left</code>, <code>$right</code> : The top, bottom, left, and right of the data range. Currently supported only when defining the region (not in template). Using for recursive definitions (left: $left+1) or circular definitions (right: $left, left: $right) is not allowed.</li>
+<li><code>$end</code>: the last row of the sheet. Convenient for defining <code>bottom</code>.</li>
+<li><code>$col</code>, <code>$row</code>: the current column and current row in the data region. Supported only in the template (not the region).</li>
+<li><code>$n</code>: an iterator variable</li>
+<li><code>$sheet</code>: the name of the current sheet</li>
+</ul>
+<h3>Values and Items</h3>
+<p><span id="valueitem"></span></p>
+<p><code>value[col, row]</code> retrieves the cell contents for the cell/s indicated by col and row.</p>
+<p>Col and row could be single constants:<code>value[A, 3]</code>. </p>
+<p>Either or both could be a range: <code>value[A:D, 4]</code>, <code>value[A:D, 3:5]</code></p>
+<p>And they can use the reserved values $col, $row, and $n: <code>value[A:$col, $row+$n]</code></p>
+<p><code>item[col, row]</code> retrieves the wikidata item(s) based on the cell contents for the cell/s indicated by col, row</p>
+<p>If the data cell contains the string "Burundi", for example, then item will retrieve the qnode "Q1000".</p>
+<p>Be aware that when item[] values are being processed in boolean expressions, they are treated as the string representation of the qnode, ie, again "Q1000". Attempting to check whether item[col, row]=="Burundi" will fail, you need to check whether item[col, row]=="Q1000".</p>
+<p>In order for item to work the user must have uploaded a wikifier file.</p>
+<p>The valid col/row arguments are the same as for value. </p>
+<h3>Functions</h3>
+<p><span id="functions"></span></p>
+<p>The T2WML language implements a variety of functions. </p>
+<p>These can be broadly split into boolean functions, string modifiers, and other. </p>
+<p>Functions can be nested. It is possible, for example, to write <code>contains((upper(value[A:B, 2:3])),”TA”)</code>, a case-insensitive way to check if the string “ta”, “tA”, etc is present in each cell in the range.</p>
+<p>Not every nesting order makes sense.
+<code>upper(contains(value[A:B, 2:3], “TA”))</code> would return a string, “FALSE” or “TRUE” (even worse, the string “FALSE” evaluates to True in boolean checks…) </p>
+<h4>Boolean expressions and equations</h4>
+<p><span id="boolean"></span></p>
+<p>A boolean expression- created with a function or operator- returns a True/False value.</p>
+<p>A boolean equation is inidcated with the arrow (<code>-&gt;</code>) operator. It returns some value, based on when a boolean expression returns True. The left side argument is the boolean expression, and the right side argument is what is returned as soon as the expression is evaluated to True. (one therefore would normally have the boolean expression contain at least one of the iterables $row, $col, or $n)</p>
+<p><code>contains(value[A, $row], "human")</code> is a boolean expression. </p>
+<p><code>contains(value[A, $row], "human") -&gt; value[B, $row]</code> is a boolean equation.</p>
+<p><code>values[A, $row]=="human" -&gt; value[B, $row]</code> is also a boolean equation</p>
+<p>Note that <code>skip_col</code>, <code>skip_row</code>, and <code>skip_cell</code> in <code>region</code> expect to receive boolean <em>expressions</em>, not boolean equations. Where the return value of the function is True, the cell/row/column will be added to the list of cells/rows/columns to skip.</p>
+<p>Empty cells will always evaluate to False.</p>
+<h5>Operators</h5>
+<p><span id="operator"></span></p>
+<p>T2WML supports two boolean operators, <code>==</code> and <code>!=</code> for equal and not equal, respectively.</p>
+<p>It is important to note that when applied to a <em>range</em>, these operators use "and" logic.</p>
+<p><code>value[A:D, $row] == "Burundi"</code> will only return true when all of the columns A through D in the row equal "Burundi". Similarly, <code>value[A:D, $row] != "Burundi"</code> will only return true if none of them equal "Burundi".</p>
+<h5>Boolean functions</h5>
+<p><span id="boolfunc"></span></p>
+<p>There are currently four boolean functions.</p>
+<p>It is important to note that when applied to a range, unlike operators, boolean functions use "or" logic. That means they will return True if the condition is True for any cell in the range.</p>
+<ol>
+<li><code>contains(arg1, arg2)</code>: whether the string value of arg1 contains arg2 (as a substring) anywhere.</li>
+<li><code>starts_with(arg1, arg2)</code>: same as contains but must start with arg2.</li>
+<li><code>ends_with(arg1, arg2)</code>: same as contains but must end with arg2.</li>
+<li><code>instance_of(input, qnode)</code>: checks whether the input has an "instance of" relationship with the qnode. both must be items or qnode strings. As described in the <a href="https://www.wikidata.org/wiki/Wikidata:SPARQL_tutorial">Wikidata query tutorial</a>, the query uses “instance of” followed by any number of “subclass of”. ( wdt:P31/wdt:P279* )</li>
+<li><code>instance_of(“Q378619”, “Q146”)</code> would return True</li>
+<li><code>instance_of_qnode(item[A, 3], “Q146”)</code> would return True if the item for cell A3 was an instance of Q146, eg Q378619</li>
+<li><code>instance_of_qnode(value[B, 3], “Q146”)</code> would return True if the value for cell A3 was a string that happened to be a valid qnode string for a qnode that was an instance of Q146.</li>
+<li><code>instance_of_qnode(item[A, 3:6], “Q146”)</code> would return True if cells A3-A6 all were items that are instances of Q146</li>
+</ol>
+<h4>String modifiers</h4>
+<p><span id="string"></span>
+String modifier functions receive a value, value range, or string and perform various modifications on them.</p>
+<p>If the string modifier receives a value range, it will perform the string modification on every value in the range.</p>
+<p>It does not make sense to run string modifiers on items or item ranges, and attempting to do so will raise an error.</p>
+<p>For simplicity, the examples all use a string for the input, but they would apply equally to a value for a cell whose contents are the string in the example, or a value range.</p>
+<p>All of the <a href="#cleaning">cleaning functions</a> can be used within the template yaml as string modifiers.</p>
+<p><code>split_index(input, split_char, i)</code>: Splits the input on the split_char, and returns the ith item from the split, where i is 1-indexed. For example, <code>split_index(“yes,no,maybe”, “,”, 2)</code> returns “no”</p>
+<p><code>substring(input, start (,end))</code>: Returns a substring of the input, from start to end, inclusive. (end is optional, if not provided the end will be the end of the string). Negatives indices are counted from the end of the string.</p>
+<ul>
+<li><code>substring("platypus", 3)</code> returns “atypus”</li>
+<li><code>substring("platypus", 3, 5)</code> returns "aty"</li>
+<li><code>substring(“platypus”, 3, -2)</code> returns "atypu"</li>
+</ul>
+<p><code>extract_date(input, format_string)</code>: Attempts to extract a date from the input using etk, based on the format string.
+For example, <code>extract_date(“2000”, “%Y”)</code> returns  2000-01-01T00:00:00</p>
+<p><code>regex(input, pattern (,i))</code>: Returns the value of the ith group in the regex pattern provided if a match is found. Returns None if no regex match is found. i is optional, if i is not provided the first group is returned (if no groups are specified, the entire match is returned). If you instead want to return all the groups, set i=0.</p>
+<p>Example: 
+* <code>regex("Isaac Newton, physicist",  "(\w+) (\w+)")</code> returns “Isaac Newton”
+* <code>regex("Isaac Newton, physicist",  "(\w+) (\w+)", 1)</code> returns “Isaac”</p>
+<p>The regex function uses Python's <a href="https://docs.python.org/3/library/re.html">re.search() function</a> and hence Python's regex syntax. You can <a href="https://regex101.com/">test your regex</a> to check that it is returning the results you expect.</p>
+<p><strong>WARNING</strong>: Because of the need to <a href="#yamlstandards">conform to Yaml standards</a>, a regex containing a colon <em>followed by whitespace</em> <code>:</code>, or whitespace followed by an octothorpe <code>#</code>, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character <code>\s</code>, eg: <code>:\s</code>, <code>\s#</code>. You can also single-quote the entire line while double-quoting the regex string, eg: <code>item '=regex(value[B, 2], "profile: (.*) \d{4}", 1)'</code>.</p>
+<h4>Other</h4>
+<p><span id="other"></span></p>
+<p>Functions which do not behave like boolean functions or like string modifiers.</p>
+<p><code>get_item(input(, context))</code></p>
+<p>get_item receives an input which can be resolved to a string (for example, a value, the output of any string modifer, or just a string).</p>
+<p>It optionally receives a context-- if no context is provided, the default context (<code>"__NO_CONTEXT__"</code>) is used.</p>
+<p>It then looks up this string in the item table. If the string is not present in the item table it will return an error. Otherwise, it returns the item from the item table.</p>
+<p>Obviously the preferred way to get an item from a string is to use the wikifier. <code>get_item</code> was created for situations where simply grabbing the string from a cell was not sufficient, for example, if it is necessary to use a regex on the cell to get the needed string.</p>
+<p>example: <code>item: '=get_item(regex(value[B, 2], "profile: (.*) \d{4}", 1))'</code></p>
+<p><code>concat(*args)</code></p>
+<p>concat receives a variable number of arguments, <strong>the last of which must be the join character</strong></p>
+<p>For arguments that are ranges, rather than single values, concat will join everything in the range, in row-major order.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Males</td>
+<td>Yes</td>
+<td>Bird</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Female</td>
+<td>No</td>
+<td>Fire</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Males</td>
+<td>Maybe</td>
+<td>Water</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>concat(value[B:C, 2:3], “implies”,  item[A, 1:2], “-”)</code></li>
+</ul>
+<p>Would return the string “No-Fire-Maybe-Water-implies-Q6581072-Q6581097”</p>
+<p>Concat does not preserve row/column source information. This means that concat does not return information for highlighting in the spreadsheet, unlike string modifiers. (for example, if you define item in your template to be concat(something), you won’t get blue highlighting) </p>
+<h3>Miscellaneous</h3>
+<p><span id="misc"></span></p>
+<p>If for some reason you need a string value to start with "=" (and not have it be interepreted as T2WML code), you can escape it with a forward slash <code>/=</code>. If for some reason you need a string value to start with a forward slash followed by an equal sign, you can escape the initial forward slash with an additional forward slash <code>//=</code>. And so on. So <code>value: /=)</code> would return the string "=)"</p>
+<p>This is only necessary at the beginning of a statement, forward slashes and equal signs in the middle of a string require no special treatment, eg: <code>value: The smiley /= is = to =/</code></p>
+<h2>Cleaning Functions</h2>
+<p><span id="cleaning"></span></p>
+<p>Cleaning functions can be used to munge messy data.</p>
+<p>They can be used as string modifiers in the template yaml, and act like any string modifier. But they can also be used in a separate cleaning section of the yaml, to create a cleaned copy of the data (the template section does not touch the underlying data, only the output result)</p>
+<h3>Where</h3>
+<p>Several of the functions have a "where" argument. The valid values for where are "start", "end", "start_and_end", and "everywhere". Different functions have different defaults for where, indicated in the function signature.</p>
+<h3>The functions</h3>
+<p><code>strip_whitespace(input, char=None, where="start_and_end")</code>: Remove whitespace. By default will remove all whitespace, but if char argument (" " or "\t") is provided, will only remove that.</p>
+<p>example: <code>strip_whitespace("\t  \w Hel l o?\tworld \t  ", where="everywhere")</code> becomes "Hello?world"</p>
+<p><code>normalize_whitespace(input, tab=False)</code>: replaces multiple consecutive whitespace characters with one space (also replaces other whitespace characters with one space). if Tab is True, replaces with one tab, instead.</p>
+<p>example: <code>normalize_whitespace("Hello  you   hi\t this")</code> becomes "Hello you hi this"</p>
+<p><code>replace_regex(input, regex, replacement="", count=0)</code>: replace_regex uses underlying python <a href="https://docs.python.org/2/library/re.html#re.sub">re.sub</a> functionality, <code>re.sub(regex, replacement, input, count)</code>. You can test that your regex performs as expected on websites like <a href="https://regex101.com/">regex101.com</a> (make sure to select Python flavor and substitution). The default behavior for replacement is to replace with the empty string, ie remove. When count=0, it replaces everywhere. No <code>where</code> argument is provided, if you'd like to remove from the end, etc, you can arrange to do so with regex tokens like $ for end of string.</p>
+<p>examples:</p>
+<ul>
+<li><code>replace_regex("cats and dogs and cats", "cats", "turtles")</code> returns "turtles and dogs and turtles"</li>
+<li><code>replace_regex(" 30 456 e", "[^\d.-]", "")</code> returns "30456"</li>
+<li><code>replace_regex("123456790 ABC#%? .(朱惠英)", r'[^\x00-\x7f]', "")</code> returns "123456790 ABC#%? .()"</li>
+<li><code>replace_regex("dan dan dan", "dan", "bob", 1)</code> returns "bob dan dan"</li>
+</ul>
+<p><code>remove_numbers(input, where=everywhere)</code>: remove the digits 0-9</p>
+<p>examples: </p>
+<ul>
+<li><code>remove_numbers("123 hello1234hi 123")</code> returns " hellohi "</li>
+<li><code>remove_numbers("123 hello1234hi 123", where=start)</code> returns " hello1234hi 123"</li>
+</ul>
+<p><code>remove_letters(input, where=everywhere)</code>: inverse of remove_numbers, leaves only digits and removes everything else (alpha version, may be redefined)</p>
+<p><code>change_case(input, case="sentence")</code>: Changes the case to one of "sentence", "lower", "upper", "title".</p>
+<p>examples: </p>
+<p>case="tHe QUiCK brown fox"</p>
+<ul>
+<li><code>change_case(case)</code> returns "The quick brown fox"</li>
+<li><code>change_case(case, "lower")*</code>returns "the quick brown fox"</li>
+<li><code>change_case(case, "upper")</code> returns "THE QUICK BROWN FOX"</li>
+<li><code>change_case(case, "title")</code> returns "The Quick Brown Fox"</li>
+</ul>
+<p><code>truncate(input, length)</code>: if input is longer than length, return only first length number of characters from the string</p>
+<p>example: <code>truncate("QWERTYUIOPASDFGHJKL", 10)</code> returns "QWERTYUIOP"</p>
+<p><code>pad(input, length, text, where=start)</code>: where can only be start or end. the main argument is a length in number of characters, which strings shorter than that length will be padded to. text is the string to be used in the padding, eg "\t". if the number of characters does not divide exactly then the cut-off depends on where. if where is start, the end of the pad string will be cut off, if where is end, the start of the pad string will be cut off. </p>
+<p>examples: </p>
+<ul>
+<li><code>pad("12345678", 11, "xo", where=start)</code> returns "xox12345678"</li>
+<li><code>pad("12345678", 11, "xo", where=end)</code> returns "12345678oxo"</li>
+</ul>
+<p><code>ftfy(input)</code>:  Uses the <a href="https://ftfy.readthedocs.io/en/latest/">ftfy package</a> to clean the input</p>
+<p>example: <code>ftfy(schÃ¶n)</code> returns "schön"</p>
+<p><code>make_numeric(input, decimal=".")</code>: makes the value of a cell numeric by removing non-numeric characters (except for <code>-</code>, <code>e</code>, and <code>.</code>). The decimal argument allows numeric formats which use a different decimal characer than <code>.</code>. Support for LaTeX style numbers is not yet supported but may be added.</p>
+<p>examples:</p>
+<ul>
+<li><code>make_numeric("1.977$")</code> returns "1.977"</li>
+<li><code>make_numeric("1.554.677,88€", decimal=",")</code> returns "1554677.88"</li>
+<li><code>make_numeric("1.577E20")</code> returns "1.577e+20" (python scientific notation)</li>
+</ul>
+<p><code>make_alphanumeric</code>: for now, removes all characters that are not true for isalnum(). May be redefined (eg to not remove spaces and punctuation...?)</p>
+<p>example: <code>make_alphanumeric("Thanks 😊! (&lt;hello&gt;) חחחחⒶ -1.2e10")</code> would return "Thankshelloחחחח12e10"</p>
+<p><code>make_ascii</code>: either removes all non-ascii non-printable characters or, if translate=true,  uses <a href="https://pypi.org/project/text-unidecode/">text-unidecode</a> to translate to closest equivalent</p>
+<p>example: </p>
+<ul>
+<li><code>make_ascii("какой-то текст", translate=True)</code> returns "kakoi-to tekst", without translate the only ascii character there is the "-" so that's what would be returned</li>
+<li><code>make_ascii("Thanks 😊! (&lt;hello&gt;) חחחחⒶ")</code> would return <code>"Thanks ! (&lt;hello&gt;) "</code></li>
+</ul>

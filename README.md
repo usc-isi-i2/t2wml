@@ -146,13 +146,7 @@ Check out the [grammar guide](https://github.com/usc-isi-i2/t2wml-api/blob/maste
 
 > Note: All screenshots below are captured in GUI v1.3. Minor inconsistencies may appear.
 
-<span id="wikify_region"></span>⬇️ Wikify region
-![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_add.gif)
-
-<span id="modify_qnode"></span>⬇️ Modify qnode
-![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-wikifier_update.gif)
-
-<span id="preview_result"></span>⬇️ Preview result
+<span id="preview_result"></span>⬇️
 ![t2wml-gui-demo](docs/demo/t2wml-gui-v1.3-output.gif)
 
 

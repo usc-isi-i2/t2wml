@@ -1,5 +1,5 @@
 // Manage the main menu
-import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from 'electron';
+import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog, shell } from 'electron';
 
 import { config } from './config';
 import { settings } from './settings';
@@ -71,6 +71,22 @@ export default class MainMenuManager {
 
                 ]
             },
+            { 
+                label: 'Help',
+                submenu: [
+                    //{ //TODO:
+                    //    label: 'Usage Guide',   
+                    //},
+                    {
+                        label: 'YamlEditor T2WML syntax guide',
+                        click: () => this.loadGrammar()
+                    },
+                    {
+                        label: 'Report a bug',
+                        click: () => shell.openExternal("https://github.com/usc-isi-i2/t2wml/issues/new/choose")
+                    }
+                ]
+            },
             {
                 label: 'Debug',
                 submenu: [{
@@ -80,21 +96,7 @@ export default class MainMenuManager {
                 }, {
                   role: 'toggleDevTools',
                 }]
-            },
-            // { //TODO:
-            //     label: 'Help',
-            //     submenu: [
-            //         {
-            //             label: 'Usage Guide'
-            //         }
-            //         {
-            //             label: 'YamlEditor T2WML syntax guide'
-            //         },
-            //         {
-            //             label: 'Report a bug'
-            //         }
-            //     ]
-            // }
+            }
         ]
 
         if (config.platform === 'mac') {
@@ -103,6 +105,16 @@ export default class MainMenuManager {
 
         const menu = Menu.buildFromTemplate(mainMenuTemplate);
         return menu;
+    }
+
+    private loadGrammar(){
+        let child = new BrowserWindow({parent:this.mainWindow});
+        const link = require('url').format({
+            protocol: 'file',
+            pathname: require('path').join(__dirname, './grammar.html')
+          })
+        child.loadURL(link);
+        child.show();
     }
 
     private fillRecentlyUsed() {

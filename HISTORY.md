@@ -1,6 +1,15 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.3.10: 
+-----------------------
+* upgrade to t2wml-api version 0.0.17
+* added setting for handle calendar
+* remember selected sheet when switching files
+* newly added files are inserted into their correct position in file sidebar
+* to avoid confusion, in development mode, version number is just (dev)
+* added a help menu
+
 Changes in version 2.3.9: 
 -----------------------
 * upgrade to t2wml-api version 0.0.16
