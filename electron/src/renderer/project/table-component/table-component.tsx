@@ -116,37 +116,10 @@ class TableComponent extends Component<{}, TableState> {
     this.setState({tableData});
   }
 
-  updateSelectedCell(selectedCell: Cell) {
-    let selectedMainSubject;
-    let selectedQualifiers;
-
-    const statement = wikiStore.layers.statement.find(selectedCell);
-    if ( !!statement.cell ) {
-      const cell = statement.cell;
-      selectedMainSubject = new Cell(cell[1], cell[0]);
-    }
-    const qualifier = statement.qualifier;
-    if ( !!statement.qualifier ) {
-      selectedQualifiers = statement.qualifier.map(qualifier => (
-        new Cell(qualifier.cell[1], qualifier.cell[0])
-      ));
-    }
-
-    this.setState({
-      selectedCell,
-      selectedQualifiers,
-      selectedMainSubject,
-    });
-
-    // Update selected cell in the data store
-    wikiStore.table.selectedCell = selectedCell;
-  }
-
   async handleSelectSheet(event: any) {
     this.resetTableData();
 
     // remove current status
-    this.updateSelectedCell(new Cell());
     wikiStore.yaml.yamlContent = undefined;
     wikiStore.output.isDownloadDisabled = true;
 
@@ -284,6 +257,39 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
+  selectRelatedCells(row, col) {
+    const selectedCell = new Cell(col-1, row-1);
+
+    // Update selected cell in the data store
+    wikiStore.table.selectedCell = selectedCell;
+
+    const statement = wikiStore.layers.statement.find(selectedCell);
+    if ( !statement ) { return; }
+
+    // Get a reference to the table elements
+    const table = this.tableRef.current;
+    const rows = table.querySelectorAll('tr');
+
+    // Select qualifier cells
+    const qualifier = statement.qualifier;
+    if ( !!statement.qualifier ) {
+      statement.qualifier.forEach(qualifier => {
+        const y = qualifier.cell[0];
+        const x = qualifier.cell[1];
+        const cell = rows[y+1].children[x+1];
+        this.selectCell(cell, y, x, y, x, x, y, 'qualifier');
+      });
+    }
+
+    // Select the cell with the main-subject
+    if ( !!statement.cell ) {
+      const y = statement.cell[0];
+      const x = statement.cell[1];
+      const cell = rows[y+1].children[x+1];
+      this.selectCell(cell, y, x, y, x, x, y, 'main-subject');
+    }
+  }
+
   handleOnKeyDown(event) {
     if ( event.keyCode == 27 ) {
       this.selecting = false;
@@ -293,13 +299,6 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseUp(event) {
     this.selecting = false;
-    if ( this.selections.length === 1 ) {
-      const {x1, x2, y1, y2} = this.selections[0];;
-      if ( x1 === x2 && y1 === y2 ) {
-        const value = event.target.textContent;
-        this.updateSelectedCell(new Cell(x1-1, y1-1, value));
-      }
-    }
   }
 
   handleOnMouseDown(event) {
@@ -349,6 +348,7 @@ class TableComponent extends Component<{}, TableState> {
 
           // Activate the element on click
           this.selectCell(element, y1, x1, y1, x1, x1, y1);
+          this.selectRelatedCells(y1, x1);
         }
       } else {
 
