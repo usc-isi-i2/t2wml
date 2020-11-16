@@ -102,14 +102,26 @@
 }
 
 /* active cell */
-.table-wrapper table tr td.active {
+.table-wrapper table tr td.active div.cell-border-top,
+.table-wrapper table tr td.active div.cell-border-left,
+.table-wrapper table tr td.active div.cell-border-right,
+.table-wrapper table tr td.active div.cell-border-bottom {
+  background: #339966;
   z-index: 5;
 }
-.table-wrapper table tr td.active-main-subject {
-  border: 1px solid black;
+.table-wrapper table tr td.active.qualifier div.cell-border-top,
+.table-wrapper table tr td.active.qualifier div.cell-border-left,
+.table-wrapper table tr td.active.qualifier div.cell-border-right,
+.table-wrapper table tr td.active.qualifier div.cell-border-bottom {
+  background: #ff4500;
+  z-index: 10;
 }
-.table-wrapper table tr td.active-qualifier {
-  border: 1px solid red;
+.table-wrapper table tr td.active.main-subject div.cell-border-top,
+.table-wrapper table tr td.active.main-subject div.cell-border-left,
+.table-wrapper table tr td.active.main-subject div.cell-border-right,
+.table-wrapper table tr td.active.main-subject div.cell-border-bottom {
+  background: #111111;
+  z-index: 15;
 }
 
 /* top border */
@@ -120,7 +132,6 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: rgb(51, 153, 102);
   pointer-events: none;
 }
 
@@ -132,7 +143,6 @@
   left: 0;
   bottom: 0;
   width: 2px;
-  background: rgb(51, 153, 102);
   pointer-events: none;
 }
 
@@ -144,7 +154,6 @@
   right: 0;
   bottom: 0;
   width: 2px;
-  background: rgb(51, 153, 102);
   pointer-events: none;
 }
 
@@ -156,7 +165,6 @@
   right: 0;
   bottom: 0;
   height: 2px;
-  background: rgb(51, 153, 102);
   pointer-events: none;
 }
 
