@@ -8,6 +8,7 @@ import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
+import TableLegend from './table-legend';
 
 import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
@@ -553,6 +554,11 @@ class TableComponent extends Component<{}, TableState> {
     )
   }
 
+  renderLegend() {
+    const { multipleSheets } = this.state;
+    return <TableLegend multipleSheets={multipleSheets} />
+  }
+
   renderLoading() {
     return (
       <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
@@ -579,6 +585,7 @@ class TableComponent extends Component<{}, TableState> {
 
           <Card.Body className="ag-theme-balham w-100 h-100 p-0 table-wrapper">
             {this.renderLoading()}
+            {this.renderLegend()}
             {this.renderTable()}
           </Card.Body>
 
