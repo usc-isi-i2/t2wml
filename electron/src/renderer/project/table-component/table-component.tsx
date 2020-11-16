@@ -555,8 +555,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderLegend() {
-    const { multipleSheets } = this.state;
-    return <TableLegend multipleSheets={multipleSheets} />
+    return <TableLegend />
   }
 
   renderLoading() {

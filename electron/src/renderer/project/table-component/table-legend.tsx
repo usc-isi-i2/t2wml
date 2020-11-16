@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 // icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,11 +7,6 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 // App
 import './table-legend.css';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
-
-
-interface LegendProperties {
-  multipleSheets: boolean;
-}
 
 
 const LEGEND = [{
@@ -38,7 +33,7 @@ const LEGEND = [{
 }];
 
 
-class TableLegend extends Component<LegendProperties, {}> {
+class TableLegend extends React.Component {
 
   renderLegend() {
     return LEGEND.map((item, index) => (
