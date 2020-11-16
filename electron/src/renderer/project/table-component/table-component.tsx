@@ -303,8 +303,10 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnKeyDown(event) {
     if ( event.keyCode == 27 ) {
+      this.selections = [];
       this.selecting = false;
       this.resetSelections();
+      this.setState({showToast: false});
     }
   }
 
