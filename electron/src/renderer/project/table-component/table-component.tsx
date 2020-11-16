@@ -552,6 +552,7 @@ class TableComponent extends Component<{}, TableState> {
   renderTable() {
     const { tableData } = this.state;
     if ( !!tableData ) {
+      const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))]
       return (
         <div className="table-wrapper">
           <table ref={this.tableRef}
@@ -565,7 +566,7 @@ class TableComponent extends Component<{}, TableState> {
               </tr>
             </thead>
             <tbody>
-              {[...Array(Math.max(tableData.length, MIN_NUM_ROWS))].map((e, i) => (
+              {rows.map((e, i) => (
                 <tr key={`row-${i}`}>
                   <td>{i+1}</td>
                   {CHARACTERS.map((c, j) => {
