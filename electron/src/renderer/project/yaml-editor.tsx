@@ -178,8 +178,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // get file
     const file = (event.target as any).files[0];
     if (!file) return;
-    console.log("<YamlEditor> opened file: " + file.name);
-    this.setState({yamlNames: [...this.state.yamlNames, file.name], currentYaml: file.name});
+    let yamlName = file.name;
+    if (file.path.startsWith(wikiStore.projects.current!.folder)) {
+      yamlName = file.path.split(wikiStore.projects.current!.folder)[1].substring(1);
+    }
+    console.log("<YamlEditor> opened file: " + yamlName);
+    this.setState({yamlNames: [...this.state.yamlNames, yamlName], currentYaml: yamlName});
 
     wikiStore.table.isCellSelectable = false;
 
