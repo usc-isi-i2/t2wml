@@ -7,30 +7,34 @@ _saved_state:
 cache_id: 019af0e3-e959-4cd3-b656-6e96ed9ea290
 data_files:
   csv/sheet-2.csv:
-  - sheet-2.csv
+    selected: sheet-2.csv
+    val_arr:
+    - sheet-2.csv
   homicide_report_total_and_sex.xlsx:
-  - table-1a
-  - table-1b
-  - table-2a
-  - table-2b
-  - table-3a
-  - table-3b
-  - table-4a
-  - table-4b
-  - table-5a
-  - table-5b
-  - table-6
-  - table-7
-  - table-8
-  - table-9
-  - table-10a
-  - table-10e
-  - table-10b
-  - table-10c
-  - table-10d
-  - Total Count and Rate
-  - By Sex Count and Rate
-  - Sources Codes
+    selected: table-1a
+    val_arr:
+    - table-1a
+    - table-1b
+    - table-2a
+    - table-2b
+    - table-3a
+    - table-3b
+    - table-4a
+    - table-4b
+    - table-5a
+    - table-5b
+    - table-6
+    - table-7
+    - table-8
+    - table-9
+    - table-10a
+    - table-10e
+    - table-10b
+    - table-10c
+    - table-10d
+    - Total Count and Rate
+    - By Sex Count and Rate
+    - Sources Codes
 entity_files:
 - homicide_extra_edges.tsv
 - homicide_properties.tsv
@@ -46,9 +50,15 @@ yaml_files:
 yaml_sheet_associations:
   csv/sheet-2.csv:
     sheet-2.csv:
-    - t2wml/table-1b.yaml
+      selected: t2wml/table-1b.yaml
+      val_arr:
+      - t2wml/table-1b.yaml
   homicide_report_total_and_sex.xlsx:
     table-1a:
-    - t2wml/table-1a.yaml
+      selected: t2wml/table-1a.yaml
+      val_arr:
+      - t2wml/table-1a.yaml
     table-1b:
-    - t2wml/table-1b.yaml
+      selected: t2wml/table-1b.yaml
+      val_arr:
+      - t2wml/table-1b.yaml

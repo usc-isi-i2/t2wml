@@ -7,7 +7,9 @@ _saved_state:
 cache_id: 76e8cf28-665f-4851-82d9-00f8a69923c1
 data_files:
   fertilizer.xlsx:
-  - Sheet1
+    selected: Sheet1
+    val_arr:
+    - Sheet1
 entity_files:
 - item_definitions.tsv
 - properties_all.tsv
@@ -22,4 +24,8 @@ yaml_files:
 yaml_sheet_associations:
   fertilizer.xlsx:
     Sheet1:
-    - t2wml.yaml
+      selected: t2wml.yaml
+      val_arr:
+      - t2wml.yaml
+      - t2wml.yaml
+      - t2wml.yaml
