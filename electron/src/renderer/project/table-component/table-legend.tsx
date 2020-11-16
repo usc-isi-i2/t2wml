@@ -46,8 +46,10 @@ class TableLegend extends React.Component {
   renderLegendOverlay() {
     return (
       <Popover className="shadow legend-wrapper">
-        <h6>Legend:</h6>
-        {this.renderLegend()}
+        <Popover.Title as="h6">Legend</Popover.Title>
+        <Popover.Content>
+          {this.renderLegend()}
+        </Popover.Content>
       </Popover>
     );
   }
@@ -55,7 +57,7 @@ class TableLegend extends React.Component {
   render() {
     return (
       <OverlayTrigger
-        placement="left"
+        placement="top"
         trigger={['hover', 'focus']}
         overlay={this.renderLegendOverlay()}>
         <Button
