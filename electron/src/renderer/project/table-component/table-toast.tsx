@@ -1,7 +1,8 @@
 import React from 'react';
 
 // App
-import {  Toast } from 'react-bootstrap';
+import './table-toast.css';
+import { Toast } from 'react-bootstrap';
 
 import { Cell } from '../../common/general';
 
@@ -72,7 +73,7 @@ class TableToast extends React.Component<TableToastProperties, {}> {
     }
 
     return (
-      <div className="myToast">
+      <div className="table-toast">
 
         {/* toast 0: showing details of selected cell */}
         <Toast onClose={() => this.props.onCloseToast('showToast0')}

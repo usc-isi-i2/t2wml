@@ -1,0 +1,15 @@
+.table-toast {
+  position: absolute;
+  right: 20px;
+  top: 30px;
+  width: 30%;
+  min-width: 250px;
+  max-width: 350px;
+  z-index: 200;
+  cursor: default;
+  user-select: none;
+}
+
+.table-toast .toast-header {
+  background: whitesmoke;
+}
