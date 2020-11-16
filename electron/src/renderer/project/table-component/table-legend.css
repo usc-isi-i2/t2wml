@@ -1,0 +1,35 @@
+.table-legend button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.legend-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  border: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+
+.legend-wrapper {
+  background: rgba(255, 255, 255, 0.75);
+  padding: 10px 30px;
+}
+
+.legend-wrapper h6 {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.legend-wrapper span {
+  border: 1px solid #c7c7c7;
+  display: inline-block;
+  width: 100px;
+  margin: 0 5px;
+  text-align: center;
+  font-size: 12px;
+  color: black;
+}
