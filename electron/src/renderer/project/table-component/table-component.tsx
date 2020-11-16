@@ -385,22 +385,16 @@ class TableComponent extends Component<{}, TableState> {
         this.setState({showToast: false});
       }
 
-      // Make sure users are not able to select the cells in the index column
-      if ( element.parentElement.firstChild !== event.target ) {
+      // Update the last x coordinate of the selection
+      const x2 = element.cellIndex;
+      this.selections[this.selections.length-1]['x2'] = x2;
 
-        // Update the last x coordinate of the selection
-        const x2 = element.cellIndex;
-        this.selections[this.selections.length-1]['x2'] = x2;
+      // Update the last y coordinate of the selection
+      const y2 = element.parentElement.rowIndex;
+      this.selections[this.selections.length-1]['y2'] = y2;
 
-        // Update the last y coordinate of the selection
-        const y2 = element.parentElement.rowIndex;
-        this.selections[this.selections.length-1]['y2'] = y2;
-
-        // Update selections
-        this.updateSelections();
-      }
-    } else {
-      this.selecting = false;
+      // Update selections
+      this.updateSelections();
     }
   }
 
