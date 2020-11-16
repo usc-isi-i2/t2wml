@@ -176,6 +176,9 @@
 .table-wrapper table tr td.type-item {
   background: #D9EAF2;
 }
+.table-wrapper table tr td.type-wikified {
+  color: #006699;
+}
 .table-wrapper table tr td.type-qualifier {
   background: #DDD9F2;
 }
