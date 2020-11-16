@@ -390,41 +390,6 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  renderErrorMessage() {
-    const { errorMessage } = this.state;
-    if ( errorMessage.errorDescription ) {
-      return (
-        <ToastMessage message={this.state.errorMessage} />
-      )
-    }
-  }
-
-  renderPlaceholder() {
-    return (
-      <table ref={this.tableRef}
-        onMouseUp={this.handleOnMouseUp.bind(this)}
-        onMouseDown={this.handleOnMouseDown.bind(this)}
-        onMouseMove={this.handleOnMouseMove.bind(this)}>
-        <thead>
-          <tr>
-            <th></th>
-            {CHARACTERS.map(c => <th key={c}>{c}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {[...Array(MIN_NUM_ROWS)].map((e, i) => (
-            <tr key={`row-${i}`}>
-              <td>{i+1}</td>
-              {CHARACTERS.map((c, j) => (
-                <td key={`cell-${j}`}></td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )
-  }
-
   getClassName(item, row, col) {
     const {
       selectedCell,
@@ -454,44 +419,12 @@ class TableComponent extends Component<{}, TableState> {
     return className;
   }
 
-  renderTable() {
-    const { tableData } = this.state;
-    if ( !!tableData ) {
+  renderErrorMessage() {
+    const { errorMessage } = this.state;
+    if ( errorMessage.errorDescription ) {
       return (
-        <table ref={this.tableRef}
-          onMouseUp={this.handleOnMouseUp.bind(this)}
-          onMouseDown={this.handleOnMouseDown.bind(this)}
-          onMouseMove={this.handleOnMouseMove.bind(this)}>
-          <thead>
-            <tr>
-              <th></th>
-              {CHARACTERS.map(c => <th key={c}>{c}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(Math.max(tableData.length, MIN_NUM_ROWS))].map((e, i) => (
-              <tr key={`row-${i}`}>
-                <td>{i+1}</td>
-                {CHARACTERS.map((c, j) => {
-                  if ( i < tableData.length && j < tableData[i].length ) {
-                    const item = tableData[i][j]
-                    return (
-                      <td key={`cell-${j}`}
-                        className={this.getClassName(item, i, j)}>
-                        {item['data']}
-                      </td>
-                    )
-                  } else {
-                    return <td key={`cell-${j}`} />
-                  }
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ToastMessage message={this.state.errorMessage} />
       )
-    } else {
-      return this.renderPlaceholder();
     }
   }
 
@@ -554,16 +487,83 @@ class TableComponent extends Component<{}, TableState> {
     )
   }
 
-  renderLegend() {
-    return <TableLegend />
-  }
-
   renderLoading() {
     return (
       <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
         <Spinner animation="border" />
       </div>
     )
+  }
+
+  renderLegend() {
+    return <TableLegend />
+  }
+
+  renderEmptyTable() {
+    return (
+      <table ref={this.tableRef}
+        onMouseUp={this.handleOnMouseUp.bind(this)}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={this.handleOnMouseMove.bind(this)}>
+        <thead>
+          <tr>
+            <th></th>
+            {CHARACTERS.map(c => <th key={c}>{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {[...Array(MIN_NUM_ROWS)].map((e, i) => (
+            <tr key={`row-${i}`}>
+              <td>{i+1}</td>
+              {CHARACTERS.map((c, j) => (
+                <td key={`cell-${j}`}></td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
+  }
+
+  renderTable() {
+    const { tableData } = this.state;
+    if ( !!tableData ) {
+      return (
+        <table ref={this.tableRef}
+          onMouseUp={this.handleOnMouseUp.bind(this)}
+          onMouseDown={this.handleOnMouseDown.bind(this)}
+          onMouseMove={this.handleOnMouseMove.bind(this)}>
+          <thead>
+            <tr>
+              <th></th>
+              {CHARACTERS.map(c => <th key={c}>{c}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(Math.max(tableData.length, MIN_NUM_ROWS))].map((e, i) => (
+              <tr key={`row-${i}`}>
+                <td>{i+1}</td>
+                {CHARACTERS.map((c, j) => {
+                  if ( i < tableData.length && j < tableData[i].length ) {
+                    const item = tableData[i][j]
+                    return (
+                      <td key={`cell-${j}`}
+                        className={this.getClassName(item, i, j)}>
+                        {item['data']}
+                      </td>
+                    )
+                  } else {
+                    return <td key={`cell-${j}`} />
+                  }
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )
+    } else {
+      return this.renderEmptyTable();
+    }
   }
 
   render() {
