@@ -377,6 +377,7 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseMove(event) {
     const element = event.target;
+    if ( element === this.prevElement ) { return; }
 
     if ( this.selecting && !event.shiftKey ) {
 
@@ -395,6 +396,9 @@ class TableComponent extends Component<{}, TableState> {
 
       // Update selections
       this.updateSelections();
+
+      // Update reference to the previous element
+      this.prevElement = element;
     }
   }
 
