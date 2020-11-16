@@ -523,34 +523,7 @@ class TableComponent extends Component<{}, TableState> {
 
   renderEmptyTable() {
     return (
-      <table ref={this.tableRef}
-        onMouseUp={this.handleOnMouseUp.bind(this)}
-        onMouseDown={this.handleOnMouseDown.bind(this)}
-        onMouseMove={this.handleOnMouseMove.bind(this)}>
-        <thead>
-          <tr>
-            <th></th>
-            {CHARACTERS.map(c => <th key={c}>{c}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {[...Array(MIN_NUM_ROWS)].map((e, i) => (
-            <tr key={`row-${i}`}>
-              <td>{i+1}</td>
-              {CHARACTERS.map((c, j) => (
-                <td key={`cell-${j}`}></td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )
-  }
-
-  renderTable() {
-    const { tableData } = this.state;
-    if ( !!tableData ) {
-      return (
+      <div className="table-wrapper">
         <table ref={this.tableRef}
           onMouseUp={this.handleOnMouseUp.bind(this)}
           onMouseDown={this.handleOnMouseDown.bind(this)}
@@ -562,26 +535,57 @@ class TableComponent extends Component<{}, TableState> {
             </tr>
           </thead>
           <tbody>
-            {[...Array(Math.max(tableData.length, MIN_NUM_ROWS))].map((e, i) => (
+            {[...Array(MIN_NUM_ROWS)].map((e, i) => (
               <tr key={`row-${i}`}>
                 <td>{i+1}</td>
-                {CHARACTERS.map((c, j) => {
-                  if ( i < tableData.length && j < tableData[i].length ) {
-                    const item = tableData[i][j]
-                    return (
-                      <td key={`cell-${j}`}
-                        className={this.getClassName(item, i, j)}>
-                        {item['data']}
-                      </td>
-                    )
-                  } else {
-                    return <td key={`cell-${j}`} />
-                  }
-                })}
+                {CHARACTERS.map((c, j) => (
+                  <td key={`cell-${j}`}></td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+    )
+  }
+
+  renderTable() {
+    const { tableData } = this.state;
+    if ( !!tableData ) {
+      return (
+        <div className="table-wrapper">
+          <table ref={this.tableRef}
+            onMouseUp={this.handleOnMouseUp.bind(this)}
+            onMouseDown={this.handleOnMouseDown.bind(this)}
+            onMouseMove={this.handleOnMouseMove.bind(this)}>
+            <thead>
+              <tr>
+                <th></th>
+                {CHARACTERS.map(c => <th key={c}>{c}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {[...Array(Math.max(tableData.length, MIN_NUM_ROWS))].map((e, i) => (
+                <tr key={`row-${i}`}>
+                  <td>{i+1}</td>
+                  {CHARACTERS.map((c, j) => {
+                    if ( i < tableData.length && j < tableData[i].length ) {
+                      const item = tableData[i][j]
+                      return (
+                        <td key={`cell-${j}`}
+                          className={this.getClassName(item, i, j)}>
+                          {item['data']}
+                        </td>
+                      )
+                    } else {
+                      return <td key={`cell-${j}`} />
+                    }
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )
     } else {
       return this.renderEmptyTable();
@@ -614,7 +618,7 @@ class TableComponent extends Component<{}, TableState> {
             {this.renderUploadButton()}
           </Card.Header>
 
-          <Card.Body className="ag-theme-balham w-100 h-100 p-0 table-wrapper">
+          <Card.Body className="ag-theme-balham w-100 h-100 p-0">
             {this.renderLoading()}
             {this.renderLegend()}
             {this.renderToast()}
