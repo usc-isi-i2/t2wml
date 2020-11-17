@@ -388,7 +388,7 @@ class TableComponent extends Component<{}, TableState> {
     if ( this.selecting && !event.shiftKey ) {
 
       // Show the updated selection while moving
-      this.setState({showToast: true});
+      this.setState({showToast: element.nodeName === 'TD'});
 
       // Update the last x coordinate of the selection
       const x2 = element.cellIndex;
