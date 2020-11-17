@@ -119,6 +119,13 @@ class TableComponent extends Component<{}, TableState> {
         tableData[index[0]][index[1]] = {...item, type};
       }
     }
+    const qnodes = wikiStore.layers.qnode;
+    for (const entry of qnodes.entries) {
+      for (const index of entry.indices) {
+        let item = tableData[index[0]][index[1]];
+        tableData[index[0]][index[1]] = {...item, qnode: true};
+      }
+    }
     this.setState({tableData});
   }
 
