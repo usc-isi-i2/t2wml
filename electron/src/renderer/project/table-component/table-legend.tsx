@@ -16,8 +16,8 @@ const LEGEND = [{
   label: 'item',
   className: 'type-item',
 }, {
-  label: 'wikified',
-  className: 'type-wikified',
+  label: 'qnode',
+  className: 'type-qnode',
 }, {
   label: 'qualifier',
   className: 'type-qualifier',
