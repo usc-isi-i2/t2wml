@@ -330,14 +330,18 @@ def rename_yaml():
 
 @app.route('/api/yaml/change', methods=['GET'])
 @json_response
-def change_yaml(yaml_name):
+def change_yaml():
     """
     This route is used when switching the selected yaml
     :return:
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    project.update_saved_state(current_yaml=yaml_name)
+    try:
+        yaml_file = request.args['yaml_file'] 
+    except KeyError:
+        raise web_exceptions.InvalidRequestException("data file parameter not specified")
+    project.update_saved_state(current_yaml=yaml_file)
     project.save()
     response=dict(project=project.__dict__)
     calc_params = get_calc_params(project)
