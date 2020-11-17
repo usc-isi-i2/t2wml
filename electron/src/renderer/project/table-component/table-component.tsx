@@ -39,7 +39,9 @@ interface TableState {
   tableData: any; // Array<object>;
 
   yamlRegions: any; // null,
-  selectedCell: Cell;
+  selectedCell: Cell | null;
+  selectedQualifiers: Array<Cell> | null,
+  selectedMainSubject: Cell | null,
 
   errorMessage: ErrorMessage;
 }
@@ -71,6 +73,8 @@ class TableComponent extends Component<{}, TableState> {
       multipleSheets: false,
 
       selectedCell: new Cell(),
+      selectedQualifiers: [],
+      selectedMainSubject: new Cell(),
 
       errorMessage: {} as ErrorMessage,
     };
