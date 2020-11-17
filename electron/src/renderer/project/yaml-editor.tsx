@@ -278,7 +278,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  async אאhandleChangeFile(event: any) {
+  async handleChangeFile(event: any) {
     const yaml = event.target.innerHTML;
     this.setState({currentYaml: yaml});
     wikiStore.yaml.haveToSaveYaml = true;
