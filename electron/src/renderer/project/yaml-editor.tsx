@@ -97,7 +97,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
     const formData = new FormData();
     formData.append("yaml", this.state.yamlContent);
-    formData.append("title", this.state.yamlTitle);
+    formData.append("title", this.state.currentYaml);
 
     try {
       await this.requestService.call(this, () => this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData));
@@ -119,6 +119,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   async saveYaml() {
     // Check if yamlContent changed (if file not inported)
     if (!this.state.isYamlContentChanged && !this.state.isImportFile) {
+      wikiStore.yaml.haveToSaveYaml = false;
       return;
     }
     console.log("Save yaml");
@@ -129,7 +130,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // send request
     const formData = new FormData();
     formData.append("yaml", this.state.yamlContent);
-    formData.append("title", this.state.yamlTitle);
+    formData.append("title", this.state.currentYaml);
 
     try {
       await this.requestService.call(this, () => this.requestService.saveYaml(wikiStore.projects.current!.folder, formData));
@@ -259,14 +260,15 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const dataFile = project._saved_state.current_data_file;
     const sheetName = project._saved_state.current_sheet;
     if (dataFile) {
-      if (project!.yaml_sheet_associations[dataFile][sheetName]) {
+      if (project!.yaml_sheet_associations[dataFile] && project!.yaml_sheet_associations[dataFile][sheetName]) {
         this.setState({ yamlNames: project!.yaml_sheet_associations[dataFile][sheetName].val_arr,
           currentYaml: project!.yaml_sheet_associations[dataFile][sheetName].selected });
       } else {
         let yamlToCurrentSheet = project?._saved_state.current_sheet;
         if (yamlToCurrentSheet.endsWith('.csv')) {
-          yamlToCurrentSheet.slice(0, 4);
-        } else if (!yamlToCurrentSheet.endsWith('.yaml')) {
+          yamlToCurrentSheet = yamlToCurrentSheet.split('.csv')[0];
+        } 
+        if (!yamlToCurrentSheet.endsWith('.yaml')) {
           yamlToCurrentSheet += '.yaml';
         }
 
@@ -276,8 +278,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  handleChangeYamlFile(event: any) {
-    this.setState({currentYaml: event.target.innerHTML});
+  async אאhandleChangeFile(event: any) {
+    const yaml = event.target.innerHTML;
+    this.setState({currentYaml: yaml});
+    wikiStore.yaml.haveToSaveYaml = true;
+    await this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml);
   }
 
   async renameYaml(val: string, index: number) {
@@ -447,7 +452,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               sheetNames={this.state.yamlNames}
               currSheetName={this.state.currentYaml}
               itemType="file"
-              handleSelectSheet={(event) => this.handleChangeYamlFile(event)}
+              handleSelectSheet={(event) => this.handleChangeFile(event)}
               handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
             />
           </Card.Footer>

@@ -151,6 +151,11 @@ class RequestService {
     this.storeFiller.fillProjectInStore(response.project);
   }
 
+  public async changeYaml(folder: string, filename: string) {
+    const response = await backendGet(`yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithYamlContentDTO;
+    this.storeFiller.fillgetProjectData(response);
+  }
+
 
   public async call<IProp, IState extends IStateWithError, ReturnValue >(
     component: React.Component<IProp, IState>,
