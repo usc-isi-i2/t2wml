@@ -414,6 +414,9 @@ class TableComponent extends Component<{}, TableState> {
       selectedMainSubject,
     } = this.state;
     let className = !!item['type'] ? `type-${item['type']}` : '';
+    if ( !!item.qnode ) {
+        className += ' type-qnode';
+    }
     if ( !!selectedCell ) {
       if ( selectedCell.row === row && selectedCell.col === col ) {
         className += ' active';
