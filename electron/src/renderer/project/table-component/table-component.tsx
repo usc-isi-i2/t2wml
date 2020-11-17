@@ -380,6 +380,9 @@ class TableComponent extends Component<{}, TableState> {
         this.selectCell(element, y1, x1, y1, x1, x1, y1);
       }
     }
+
+    // Initialize the previous element with the one selected
+    this.prevElement = element;
   }
 
   handleOnMouseMove(event) {
