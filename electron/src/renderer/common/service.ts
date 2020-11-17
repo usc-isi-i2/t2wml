@@ -140,13 +140,13 @@ class RequestService {
   }
 
   public async renameYaml(folder: string, formData: any) {
-    const respone = await backendPost(`/yaml/rename?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.storeFiller.fillProjectInStore(respone.project);
+    const response = await backendPost(`/yaml/rename?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
+    this.storeFiller.fillProjectInStore(response.project);
   }
 
   public async saveYaml(folder: string, formData: any) {
-    const respone = await backendPost(`/yaml/save?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.storeFiller.fillProjectInStore(respone.project);
+    const response = await backendPost(`/yaml/save?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
+    this.storeFiller.fillProjectInStore(response.project);
   }
 
 
