@@ -39,20 +39,13 @@ export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     yamlError?: string;
 }
 
-export interface UploadDataFileResponseDTO extends ResponseWithLayersDTO {
+export interface ResponseWithTableDTO extends ResponseWithLayersDTO {
     table: TableDTO;
 }
 
-export interface UploadWikifierOutputResponseDTO extends ResponseWithLayersDTO { }
-
-export interface UploadYamlResponseDTO extends ResponseWithLayersDTO { }
-
-export interface GetProjectResponseDTO extends UploadDataFileResponseDTO {
+export interface ResponseWithYamlContentDTO extends ResponseWithTableDTO {
     yamlContent: string;    
 }
-export interface ChangeSheetResponseDTO extends GetProjectResponseDTO { }
-
-export interface ChangeDataFileResponseDTO extends GetProjectResponseDTO {}
 
 export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
     entitiesStats: EntitiesStatsDTO;
