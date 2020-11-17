@@ -325,60 +325,56 @@ class TableComponent extends Component<{}, TableState> {
   handleOnMouseDown(event) {
     const element = event.target;
 
-    // Make sure users can only select table cells
-    if ( element.nodeName === 'TD' ) {
+    // Activate the selection mode
+    this.selecting = true;
 
-      // Activate the selection mode
-      this.selecting = true;
+    // Set both coordinates to the same cell
+    const x1 = element.cellIndex;
+    const x2 = element.cellIndex;
+    const y1 = element.parentElement.rowIndex;
+    const y2 = element.parentElement.rowIndex;
 
-      // Set both coordinates to the same cell
-      const x1 = element.cellIndex;
-      const x2 = element.cellIndex;
-      const y1 = element.parentElement.rowIndex;
-      const y2 = element.parentElement.rowIndex;
+    // Update selection coordinates
+    if ( !event.metaKey ) {
 
-      // Update selection coordinates
-      if ( !event.metaKey ) {
+      // Extend the previous selection if user is holding down Shift key
+      if ( event.shiftKey && !!this.selections.length ) {
+        const prevSelection = this.selections[this.selections.length-1];
 
-        // Extend the previous selection if user is holding down Shift key
-        if ( event.shiftKey && !!this.selections.length ) {
-          const prevSelection = this.selections[this.selections.length-1];
-
-          // Extend the previous selection left or right
-          if ( x1 !== prevSelection['x1'] ) {
-            if ( x1 < prevSelection['x1'] ) {
-              prevSelection['x1'] = x1;
-            } else {
-              prevSelection['x2'] = x1;
-            }
+        // Extend the previous selection left or right
+        if ( x1 !== prevSelection['x1'] ) {
+          if ( x1 < prevSelection['x1'] ) {
+            prevSelection['x1'] = x1;
+          } else {
+            prevSelection['x2'] = x1;
           }
-
-          // Extend the previous selection up or down
-          if ( y1 !== prevSelection['y1'] ) {
-            if ( y1 < prevSelection['y1'] ) {
-              prevSelection['y1'] = y1;
-            } else {
-              prevSelection['y2'] = y1;
-            }
-          }
-
-          this.updateSelections();
-        } else {
-          this.resetSelections()
-          this.selections = [{x1, x2, y1, y2}];
-
-          // Activate the element on click
-          this.selectCell(element, y1, x1, y1, x1, x1, y1);
-          this.selectRelatedCells(y1, x1);
         }
-      } else {
 
-        // Add a new selection separately
-        this.selections.push({x1, x2, y1, y2});
+        // Extend the previous selection up or down
+        if ( y1 !== prevSelection['y1'] ) {
+          if ( y1 < prevSelection['y1'] ) {
+            prevSelection['y1'] = y1;
+          } else {
+            prevSelection['y2'] = y1;
+          }
+        }
+
+        this.updateSelections();
+      } else {
+        this.resetSelections()
+        this.selections = [{x1, x2, y1, y2}];
 
         // Activate the element on click
         this.selectCell(element, y1, x1, y1, x1, x1, y1);
+        this.selectRelatedCells(y1, x1);
       }
+    } else {
+
+      // Add a new selection separately
+      this.selections.push({x1, x2, y1, y2});
+
+      // Activate the element on click
+      this.selectCell(element, y1, x1, y1, x1, x1, y1);
     }
 
     // Initialize the previous element with the one selected
