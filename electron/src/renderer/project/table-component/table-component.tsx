@@ -108,8 +108,15 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   resetTableData() {
+    this.selecting = false;
+    this.selections = [];
+    this.resetSelections();
     this.setState({
       errorMessage: {} as ErrorMessage,
+      showToast: false,
+      selectedCell: null,
+      selectedQualifiers: null,
+      selectedMainSubject: null,
     });
   }
 
