@@ -328,6 +328,24 @@ def rename_yaml():
     return response, 200
 
 
+@app.route('/api/yaml/change', methods=['GET'])
+@json_response
+def change_yaml(yaml_name):
+    """
+    This route is used when switching the selected yaml
+    :return:
+    """
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    project.update_saved_state(current_yaml=yaml_name)
+    project.save()
+    response=dict(project=project.__dict__)
+    calc_params = get_calc_params(project)
+    if calc_params:
+        response["yamlContent"]=get_yaml_content(calc_params)
+        get_all_layers_and_table(response, calc_params)
+
+    return response, 200
 
 
 
