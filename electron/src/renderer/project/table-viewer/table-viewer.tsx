@@ -344,7 +344,6 @@ class TableViewer extends Component<{}, TableState> {
       rowData2[row]["styles"][col] = Object.assign({}, rowData2[row]["styles"][col], style); // combine old and new styles
     }
 
-    console.log("setting state from updateStyleByArray", rowData2);
     this.setState({
       rowData: rowData2
     });
@@ -422,7 +421,6 @@ class TableViewer extends Component<{}, TableState> {
     }
 
 
-    console.log("setting state from toggle data", rowData2)
     this.setState({
       rowData: rowData2
     });
