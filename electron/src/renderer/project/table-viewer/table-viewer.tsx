@@ -190,6 +190,7 @@ class TableViewer extends Component<{}, TableState> {
     // before sending request
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
 
     // send request
     const sheetName = event.target.innerHTML;
@@ -212,6 +213,7 @@ class TableViewer extends Component<{}, TableState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
     }
 
   }

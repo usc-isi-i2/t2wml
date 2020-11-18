@@ -92,6 +92,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // before sending request
     wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
 
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
@@ -111,6 +112,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     } catch {
     } finally {
       wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
       wikiStore.table.isCellSelectable = true;
     }
 
@@ -279,15 +281,21 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   async handleChangeFile(event: any) {
+    wikiStore.yaml.showSpinner = true;
     const yaml = event.target.innerHTML;
     this.setState({currentYaml: yaml});
     wikiStore.yaml.haveToSaveYaml = true;
-    await this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml);
+    try {
+      await this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml);
+    } finally {
+      wikiStore.yaml.showSpinner = false;
+    }
   }
 
   async renameYaml(val: string, index: number) {
    // before sending request
     wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
     const oldName = this.state.yamlNames[index];
 
     // Check if this yaml file exist, if not- save it before.
@@ -308,6 +316,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       console.error("Rename yaml failed.");
     } finally {
       wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
     }
   }
 

@@ -78,7 +78,7 @@ class Sidebar extends Component<{}, SidebarState> {
                     activeLink: {
                         background: '#DCDCDC',
                         fontWeight: 'bold'
-                }}}}
+                }}}};
 
         this.requestService = new RequestService();
         this.onToggle = this.onToggle.bind(this);
