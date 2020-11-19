@@ -9,7 +9,7 @@ import Navbar from '../common/navbar/navbar';
 import SplitPane from 'react-split-pane';
 import Config from '@/shared/config';
 
-import { ErrorMessage } from '../common/general';
+import { ErrorMessage, t2wmlColors } from '../common/general';
 
 // components
 import Editors from './editor';
@@ -92,6 +92,8 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   componentWillUnmount() {
     console.log("project- componentWillUnmount");
+    wikiStore.yaml.haveToSaveYaml = true;
+
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
@@ -111,6 +113,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     // before fetching project files
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
     wikiStore.output.isDownloadDisabled = true;
 
     // fetch project files
@@ -137,6 +140,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
     }
 
   }
@@ -197,13 +201,13 @@ class Project extends Component<ProjectProps, ProjectState> {
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
-        <div style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+        <div style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
           <div>
             <Sidebar />
           </div>
 
           <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300} 
-            style={{ height: "calc(100vh - 50px)", background: "#f8f9fa" }}>
+            style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
             <TableViewer />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />

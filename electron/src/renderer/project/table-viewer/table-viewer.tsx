@@ -10,7 +10,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { ChangeDetectionStrategyType } from 'ag-grid-react/lib/changeDetectionService';
 
 // console.log
-import { LOG, gridApiInterface, ErrorMessage, Cell } from '../../common/general';
+import { LOG, gridApiInterface, ErrorMessage, Cell, t2wmlColors } from '../../common/general';
 import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -178,6 +178,10 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({
       showTable: false
     });
+    
+    // save prev yaml
+    wikiStore.yaml.haveToSaveYaml = true;
+
     // remove current status
     this.updateSelectedCell(new Cell());
     wikiStore.yaml.yamlContent = undefined;
@@ -186,11 +190,13 @@ class TableViewer extends Component<{}, TableState> {
     // before sending request
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
 
     // send request
     const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
+
       await this.requestService.call(this, () => this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName));
       console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 
@@ -207,6 +213,7 @@ class TableViewer extends Component<{}, TableState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
     }
 
   }
@@ -355,17 +362,10 @@ class TableViewer extends Component<{}, TableState> {
 
     let allIndices = Array<CellIndex>();
     const types = wikiStore.layers.type;
-    const typeStyles = new Map<string, any>([
-      ["data", { backgroundColor: "hsl(150, 50%, 90%)" }],
-      ["subject", { backgroundColor: "hsl(200, 50%, 90%)" }],
-      ["qualifier", { backgroundColor: "hsl(250, 50%, 90%)" }],
-      ["reference", { backgroundColor: "hsl(150, 50%, 90%)" }],
-      ["minorError", { backgroundColor: '#FF8000' }],
-      ["majorError", { backgroundColor: '#FF3333' }]
-    ])
+
     for (const entry of types.entries) {
       allIndices = allIndices.concat(entry.indices)
-      const style = typeStyles.get(entry.type)
+      const style = utils.typeStyles.get(entry.type)
       if (style == undefined) {
         continue;
         //for now, pass. 
@@ -481,10 +481,12 @@ class TableViewer extends Component<{}, TableState> {
     if (wikiStore.projects.projectDTO) {
       const project = wikiStore.projects.projectDTO;
       const filename = project._saved_state.current_data_file
-      let sheetNames;
-      sheetNames = project.data_files[filename].val_arr
-      if (sheetNames == undefined) {
-        sheetNames = null;
+      let sheetNames = null;
+      if (filename) {
+        sheetNames = project.data_files[filename].val_arr;
+        if (sheetNames == undefined) {
+          sheetNames = null;
+        }
       }
 
       let multipleSheets = false;
@@ -569,7 +571,7 @@ class TableViewer extends Component<{}, TableState> {
         <Card className="w-100 h-100 shadow-sm">
 
           {/* header */}
-          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#339966" }}>
+          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.TABLE }}>
 
             {/* title */}
             <div

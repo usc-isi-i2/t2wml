@@ -4,7 +4,7 @@ import React, { Component, Fragment } from 'react';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG, ErrorMessage } from '../../common/general';
+import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
 import * as utils from '../../common/utils'
 
 import RequestService, { IStateWithError } from '../../common/service';
@@ -234,7 +234,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
           {/* header */}
           <Card.Header
-            style={{ height: "40px", padding: "0.5rem 1rem", background: "#006699" }}
+            style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.WIKIFIER }}
             onClick={() => wikiStore.editors.nowShowing = "Wikifier"}
           >
 

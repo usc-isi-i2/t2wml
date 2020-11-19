@@ -78,7 +78,7 @@ class Sidebar extends Component<{}, SidebarState> {
                     activeLink: {
                         background: '#DCDCDC',
                         fontWeight: 'bold'
-                }}}}
+                }}}};
 
         this.requestService = new RequestService();
         this.onToggle = this.onToggle.bind(this);
@@ -119,10 +119,13 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     async changeDataFile(fileName: string) {
+        // save prev yaml
+        wikiStore.yaml.haveToSaveYaml = true;
+
         try {
             await this.requestService.changeDataFile(fileName, wikiStore.projects.current!.folder);
         } catch {
-            console.error("Error: changing datafile")
+            console.error("Change datafile failed");
         }
     }
     
@@ -139,8 +142,10 @@ class Sidebar extends Component<{}, SidebarState> {
             }
             this.setState({data: data});
 
-            const currentNode = dataFiles.find(n => n.name === wikiStore.projects.projectDTO!._saved_state.current_data_file)
-            this.onToggle(currentNode);
+            if (dataFiles.length) {
+                const currentNode = dataFiles.find(n => n.name === wikiStore.projects.projectDTO!._saved_state.current_data_file)
+                this.onToggle(currentNode);
+            }
         }
     }
 

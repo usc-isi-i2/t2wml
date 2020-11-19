@@ -340,7 +340,6 @@
                         ],
                         "cells": {
                             "property": "F2",
-                            "value": "F3",
                             "subject": "B3",
                             "unit": "F1"
                         },
@@ -350,9 +349,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1997-09-24T00:00:00",
                                 "calendar": "Q1985727",
@@ -371,7 +368,6 @@
                         ],
                         "cells": {
                             "property": "F2",
-                            "value": "F4",
                             "subject": "B4",
                             "unit": "F1"
                         },
@@ -381,9 +377,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1998-06-25T00:00:00",
                                 "calendar": "Q1985727",
@@ -392,9 +386,7 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {
-                                    "value": "I4"
-                                },
+                                "cells": {},
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -409,7 +401,6 @@
                         ],
                         "cells": {
                             "property": "F2",
-                            "value": "F5",
                             "subject": "B5",
                             "unit": "F1"
                         },
@@ -419,9 +410,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1999-04-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -440,7 +429,6 @@
                         ],
                         "cells": {
                             "property": "F2",
-                            "value": "F6",
                             "subject": "B6",
                             "unit": "F1"
                         },
@@ -450,9 +438,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2000-02-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -471,7 +457,6 @@
                         ],
                         "cells": {
                             "property": "F2",
-                            "value": "F7",
                             "subject": "B7",
                             "unit": "F1"
                         },
@@ -481,9 +466,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2006-09-20T00:00:00",
                                 "calendar": "Q1985727",
@@ -502,7 +485,6 @@
                         ],
                         "cells": {
                             "property": "F2",
-                            "value": "F8",
                             "subject": "B8",
                             "unit": "F1"
                         },
@@ -512,9 +494,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2008-01-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -533,7 +513,6 @@
                         ],
                         "cells": {
                             "property": "G2",
-                            "value": "G3",
                             "subject": "B3",
                             "unit": "G1"
                         },
@@ -543,9 +522,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1997-09-24T00:00:00",
                                 "calendar": "Q1985727",
@@ -564,7 +541,6 @@
                         ],
                         "cells": {
                             "property": "G2",
-                            "value": "G4",
                             "subject": "B4",
                             "unit": "G1"
                         },
@@ -574,9 +550,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1998-06-25T00:00:00",
                                 "calendar": "Q1985727",
@@ -585,9 +559,7 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {
-                                    "value": "I4"
-                                },
+                                "cells": {},
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -602,7 +574,6 @@
                         ],
                         "cells": {
                             "property": "G2",
-                            "value": "G5",
                             "subject": "B5",
                             "unit": "G1"
                         },
@@ -612,9 +583,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1999-04-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -633,7 +602,6 @@
                         ],
                         "cells": {
                             "property": "G2",
-                            "value": "G6",
                             "subject": "B6",
                             "unit": "G1"
                         },
@@ -643,9 +611,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2000-02-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -664,7 +630,6 @@
                         ],
                         "cells": {
                             "property": "G2",
-                            "value": "G7",
                             "subject": "B7",
                             "unit": "G1"
                         },
@@ -674,9 +639,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2006-09-20T00:00:00",
                                 "calendar": "Q1985727",
@@ -695,7 +658,6 @@
                         ],
                         "cells": {
                             "property": "G2",
-                            "value": "G8",
                             "subject": "B8",
                             "unit": "G1"
                         },
@@ -705,9 +667,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2008-01-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -726,7 +686,6 @@
                         ],
                         "cells": {
                             "property": "H2",
-                            "value": "H3",
                             "subject": "B3",
                             "unit": "H1"
                         },
@@ -736,9 +695,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1997-09-24T00:00:00",
                                 "calendar": "Q1985727",
@@ -757,7 +714,6 @@
                         ],
                         "cells": {
                             "property": "H2",
-                            "value": "H4",
                             "subject": "B4",
                             "unit": "H1"
                         },
@@ -767,9 +723,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1998-06-25T00:00:00",
                                 "calendar": "Q1985727",
@@ -778,9 +732,7 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {
-                                    "value": "I4"
-                                },
+                                "cells": {},
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -795,7 +747,6 @@
                         ],
                         "cells": {
                             "property": "H2",
-                            "value": "H5",
                             "subject": "B5",
                             "unit": "H1"
                         },
@@ -805,9 +756,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "1999-04-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -826,7 +775,6 @@
                         ],
                         "cells": {
                             "property": "H2",
-                            "value": "H6",
                             "subject": "B6",
                             "unit": "H1"
                         },
@@ -836,9 +784,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2000-02-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -857,7 +803,6 @@
                         ],
                         "cells": {
                             "property": "H2",
-                            "value": "H7",
                             "subject": "B7",
                             "unit": "H1"
                         },
@@ -867,9 +812,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2006-09-20T00:00:00",
                                 "calendar": "Q1985727",
@@ -888,7 +831,6 @@
                         ],
                         "cells": {
                             "property": "H2",
-                            "value": "H8",
                             "subject": "B8",
                             "unit": "H1"
                         },
@@ -898,9 +840,7 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "property": "P585",
                                 "value": "2008-01-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -965,15 +905,16 @@
                 "layerType": "type",
                 "entries": [
                     {
+                        "type": "qualifier",
                         "indices": [
                             [
                                 3,
                                 8
                             ]
-                        ],
-                        "type": "qualifier"
+                        ]
                     },
                     {
+                        "type": "subject",
                         "indices": [
                             [
                                 2,
@@ -999,10 +940,10 @@
                                 7,
                                 1
                             ]
-                        ],
-                        "type": "subject"
+                        ]
                     },
                     {
+                        "type": "data",
                         "indices": [
                             [
                                 2,
@@ -1076,14 +1017,14 @@
                                 7,
                                 7
                             ]
-                        ],
-                        "type": "data"
+                        ]
                     },
                     {
-                        "indices": [],
-                        "type": "majorError"
+                        "type": "majorError",
+                        "indices": []
                     },
                     {
+                        "type": "minorError",
                         "indices": [
                             [
                                 2,
@@ -1145,8 +1086,41 @@
                                 7,
                                 7
                             ]
-                        ],
-                        "type": "minorError"
+                        ]
+                    },
+                    {
+                        "type": "property",
+                        "indices": [
+                            [
+                                1,
+                                5
+                            ],
+                            [
+                                1,
+                                6
+                            ],
+                            [
+                                1,
+                                7
+                            ]
+                        ]
+                    },
+                    {
+                        "type": "metadata",
+                        "indices": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                0,
+                                7
+                            ]
+                        ]
                     }
                 ]
             },
