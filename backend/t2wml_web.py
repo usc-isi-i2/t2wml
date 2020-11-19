@@ -137,7 +137,7 @@ def get_yaml_layers(calc_params):
             return layers
     
     qualifierEntry=dict(indices=[], type="qualifier")
-    itemEntry=dict(indices=[], type="item")
+    subjectEntry=dict(indices=[], type="subject")
     dataEntry=dict(indices=[], type="data")
     majorErrorEntry=dict(indices=[], type="majorError")
     minorErrorEntry=dict(indices=[], type="minorError")
@@ -160,33 +160,35 @@ def get_yaml_layers(calc_params):
             errorEntry=dict(indices=[cell_index], error=errors[cell])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "item", "fatal"]).intersection(errors[cell].keys())):	
+            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell].keys())):	
                 majorErrorEntry["indices"].append(cell_index)
             else:	
                 minorErrorEntry["indices"].append(cell_index)
 
         qualifier_indices={}
-        item_indices={}
+        subject_indices={}
         for cell in statements:
             dataEntry["indices"].append(indexer(cell))
 
             statement = statements[cell]
             get_cell_qnodes(statement, qnodes)
-            item_cell = statement.get("cell", None)
-            if item_cell:
-                item_indices[item_cell]=None
+            cells=statement["cells"]
+            subject_cell = cells.get("subject", None)
+            if subject_cell:
+                subject_indices[subject_cell]=None
             
             qualifiers = statement.get("qualifier", None)
             if qualifiers:
                 for qualifier in qualifiers:
-                    qual_cell = qualifier.get("cell", None)
+                    q_cells=qualifier["cells"]
+                    qual_cell = q_cells.get("value", None)
                     if qual_cell:
                         qualifier_indices[qual_cell]=None
             
             statementEntry=dict(indices=[indexer(cell)])#, qnodes=qnodes)
             statementEntry.update(**statements[cell])
             statementLayer["entries"].append(statementEntry)
-        itemEntry["indices"]=[indexer(key) for key in item_indices]
+        subjectEntry["indices"]=[indexer(key) for key in subject_indices]
         qualifierEntry["indices"]=[indexer(key) for key in qualifier_indices]
 
         cleanedLayer=get_cleaned(kg)
@@ -200,7 +202,7 @@ def get_yaml_layers(calc_params):
         
         statementLayer["qnodes"]=qnodes
 
-    typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
+    typeLayer=dict(layerType="type", entries=[qualifierEntry, subjectEntry, dataEntry, majorErrorEntry, minorErrorEntry])
 
     layers= dict(error= errorLayer, 
             statement= statementLayer, 

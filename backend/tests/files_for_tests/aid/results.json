@@ -25,7 +25,7 @@
                     },
                     {
                         "indices": [],
-                        "type": "item"
+                        "type": "subject"
                     },
                     {
                         "indices": [],
@@ -804,18 +804,25 @@
             "statement": {
                 "entries": [
                     {
-                        "cell": "B3",
+                        "cells": {
+                            "property": "F2",
+                            "subject": "B3",
+                            "unit": "F1",
+                            "value": "F3"
+                        },
                         "indices": [
                             [
                                 2,
                                 5
                             ]
                         ],
-                        "item": "22",
                         "property": "Paid-security-002",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -823,22 +830,30 @@
                                 "value": "1997-09-24T00:00:00"
                             }
                         ],
+                        "subject": "22",
                         "unit": "Qaid-security-U002",
                         "value": "2"
                     },
                     {
-                        "cell": "B4",
+                        "cells": {
+                            "property": "F2",
+                            "subject": "B4",
+                            "unit": "F1",
+                            "value": "F4"
+                        },
                         "indices": [
                             [
                                 3,
                                 5
                             ]
                         ],
-                        "item": "47",
                         "property": "Paid-security-002",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -846,27 +861,37 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cell": "I4",
+                                "cells": {
+                                    "value": "I4"
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
                         ],
+                        "subject": "47",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B5",
+                        "cells": {
+                            "property": "F2",
+                            "subject": "B5",
+                            "unit": "F1",
+                            "value": "F5"
+                        },
                         "indices": [
                             [
                                 4,
                                 5
                             ]
                         ],
-                        "item": "73",
                         "property": "Paid-security-002",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -874,22 +899,30 @@
                                 "value": "1999-04-01T00:00:00"
                             }
                         ],
+                        "subject": "73",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B6",
+                        "cells": {
+                            "property": "F2",
+                            "subject": "B6",
+                            "unit": "F1",
+                            "value": "F6"
+                        },
                         "indices": [
                             [
                                 5,
                                 5
                             ]
                         ],
-                        "item": "103",
                         "property": "Paid-security-002",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -897,22 +930,30 @@
                                 "value": "2000-02-01T00:00:00"
                             }
                         ],
+                        "subject": "103",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B7",
+                        "cells": {
+                            "property": "F2",
+                            "subject": "B7",
+                            "unit": "F1",
+                            "value": "F7"
+                        },
                         "indices": [
                             [
                                 6,
                                 5
                             ]
                         ],
-                        "item": "475",
                         "property": "Paid-security-002",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -920,22 +961,30 @@
                                 "value": "2006-09-20T00:00:00"
                             }
                         ],
+                        "subject": "475",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B8",
+                        "cells": {
+                            "property": "F2",
+                            "subject": "B8",
+                            "unit": "F1",
+                            "value": "F8"
+                        },
                         "indices": [
                             [
                                 7,
                                 5
                             ]
                         ],
-                        "item": "782",
                         "property": "Paid-security-002",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -943,22 +992,30 @@
                                 "value": "2008-01-01T00:00:00"
                             }
                         ],
+                        "subject": "782",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B3",
+                        "cells": {
+                            "property": "G2",
+                            "subject": "B3",
+                            "unit": "G1",
+                            "value": "G3"
+                        },
                         "indices": [
                             [
                                 2,
                                 6
                             ]
                         ],
-                        "item": "22",
                         "property": "Paid-security-003",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -966,22 +1023,30 @@
                                 "value": "1997-09-24T00:00:00"
                             }
                         ],
+                        "subject": "22",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B4",
+                        "cells": {
+                            "property": "G2",
+                            "subject": "B4",
+                            "unit": "G1",
+                            "value": "G4"
+                        },
                         "indices": [
                             [
                                 3,
                                 6
                             ]
                         ],
-                        "item": "47",
                         "property": "Paid-security-003",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -989,27 +1054,37 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cell": "I4",
+                                "cells": {
+                                    "value": "I4"
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
                         ],
+                        "subject": "47",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B5",
+                        "cells": {
+                            "property": "G2",
+                            "subject": "B5",
+                            "unit": "G1",
+                            "value": "G5"
+                        },
                         "indices": [
                             [
                                 4,
                                 6
                             ]
                         ],
-                        "item": "73",
                         "property": "Paid-security-003",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1017,22 +1092,30 @@
                                 "value": "1999-04-01T00:00:00"
                             }
                         ],
+                        "subject": "73",
                         "unit": "Qaid-security-U002",
                         "value": "1"
                     },
                     {
-                        "cell": "B6",
+                        "cells": {
+                            "property": "G2",
+                            "subject": "B6",
+                            "unit": "G1",
+                            "value": "G6"
+                        },
                         "indices": [
                             [
                                 5,
                                 6
                             ]
                         ],
-                        "item": "103",
                         "property": "Paid-security-003",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1040,22 +1123,30 @@
                                 "value": "2000-02-01T00:00:00"
                             }
                         ],
+                        "subject": "103",
                         "unit": "Qaid-security-U002",
                         "value": "2"
                     },
                     {
-                        "cell": "B7",
+                        "cells": {
+                            "property": "G2",
+                            "subject": "B7",
+                            "unit": "G1",
+                            "value": "G7"
+                        },
                         "indices": [
                             [
                                 6,
                                 6
                             ]
                         ],
-                        "item": "475",
                         "property": "Paid-security-003",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1063,22 +1154,30 @@
                                 "value": "2006-09-20T00:00:00"
                             }
                         ],
+                        "subject": "475",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B8",
+                        "cells": {
+                            "property": "G2",
+                            "subject": "B8",
+                            "unit": "G1",
+                            "value": "G8"
+                        },
                         "indices": [
                             [
                                 7,
                                 6
                             ]
                         ],
-                        "item": "782",
                         "property": "Paid-security-003",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -1086,22 +1185,30 @@
                                 "value": "2008-01-01T00:00:00"
                             }
                         ],
+                        "subject": "782",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B3",
+                        "cells": {
+                            "property": "H2",
+                            "subject": "B3",
+                            "unit": "H1",
+                            "value": "H3"
+                        },
                         "indices": [
                             [
                                 2,
                                 7
                             ]
                         ],
-                        "item": "22",
                         "property": "Paid-security-004",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1109,22 +1216,30 @@
                                 "value": "1997-09-24T00:00:00"
                             }
                         ],
+                        "subject": "22",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B4",
+                        "cells": {
+                            "property": "H2",
+                            "subject": "B4",
+                            "unit": "H1",
+                            "value": "H4"
+                        },
                         "indices": [
                             [
                                 3,
                                 7
                             ]
                         ],
-                        "item": "47",
                         "property": "Paid-security-004",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1132,27 +1247,37 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cell": "I4",
+                                "cells": {
+                                    "value": "I4"
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
                         ],
+                        "subject": "47",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B5",
+                        "cells": {
+                            "property": "H2",
+                            "subject": "B5",
+                            "unit": "H1",
+                            "value": "H5"
+                        },
                         "indices": [
                             [
                                 4,
                                 7
                             ]
                         ],
-                        "item": "73",
                         "property": "Paid-security-004",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1160,22 +1285,30 @@
                                 "value": "1999-04-01T00:00:00"
                             }
                         ],
+                        "subject": "73",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B6",
+                        "cells": {
+                            "property": "H2",
+                            "subject": "B6",
+                            "unit": "H1",
+                            "value": "H6"
+                        },
                         "indices": [
                             [
                                 5,
                                 7
                             ]
                         ],
-                        "item": "103",
                         "property": "Paid-security-004",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1183,22 +1316,30 @@
                                 "value": "2000-02-01T00:00:00"
                             }
                         ],
+                        "subject": "103",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B7",
+                        "cells": {
+                            "property": "H2",
+                            "subject": "B7",
+                            "unit": "H1",
+                            "value": "H7"
+                        },
                         "indices": [
                             [
                                 6,
                                 7
                             ]
                         ],
-                        "item": "475",
                         "property": "Paid-security-004",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1206,22 +1347,30 @@
                                 "value": "2006-09-20T00:00:00"
                             }
                         ],
+                        "subject": "475",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
                     {
-                        "cell": "B8",
+                        "cells": {
+                            "property": "H2",
+                            "subject": "B8",
+                            "unit": "H1",
+                            "value": "H8"
+                        },
                         "indices": [
                             [
                                 7,
                                 7
                             ]
                         ],
-                        "item": "782",
                         "property": "Paid-security-004",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
+                                "cells": {
+                                    "value": null
+                                },
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -1229,6 +1378,7 @@
                                 "value": "2008-01-01T00:00:00"
                             }
                         ],
+                        "subject": "782",
                         "unit": "Qaid-security-U002",
                         "value": "3"
                     }
@@ -1318,7 +1468,7 @@
                                 1
                             ]
                         ],
-                        "type": "item"
+                        "type": "subject"
                     },
                     {
                         "indices": [
@@ -1646,7 +1796,7 @@
                     },
                     {
                         "indices": [],
-                        "type": "item"
+                        "type": "subject"
                     },
                     {
                         "indices": [],

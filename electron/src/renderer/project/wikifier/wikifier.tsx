@@ -48,7 +48,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       showSpinner: wikiStore.wikifier.showSpinner, //false,
 
       // wikifier data (from backend)
-      rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "item": "Q967", "label": "Burundi", "description": "country in Africa" }]
+      rowData: [], // e.g. [{ "context": "country", "col": "A", "row": "1", "value": "Burundi", "subject": "Q967", "label": "Burundi", "description": "country in Africa" }]
 
       // call wikifier service
       showCallWikifier: false,

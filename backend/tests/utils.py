@@ -47,7 +47,7 @@ class BaseClass:
                 
         elif isinstance(input1, list):
             assert len(input1)==len(input2)
-            for index, item in enumerate(input1):
+            for index, thing in enumerate(input1):
                 self.recurse_lists_and_dicts(input1[index], input2[index])
 
         assert input1==input2

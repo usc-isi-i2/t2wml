@@ -357,7 +357,7 @@ class TableViewer extends Component<{}, TableState> {
     const types = wikiStore.layers.type;
     const typeStyles = new Map<string, any>([
       ["data", { backgroundColor: "hsl(150, 50%, 90%)" }],
-      ["item", { backgroundColor: "hsl(200, 50%, 90%)" }],
+      ["subject", { backgroundColor: "hsl(200, 50%, 90%)" }],
       ["qualifier", { backgroundColor: "hsl(250, 50%, 90%)" }],
       ["reference", { backgroundColor: "hsl(150, 50%, 90%)" }],
       ["minorError", { backgroundColor: '#FF8000' }],

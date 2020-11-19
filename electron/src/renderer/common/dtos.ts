@@ -114,7 +114,7 @@ export interface ErrorEntry extends Entry {
 }
 
 export interface StatementEntry extends Entry{
-    item: string
+    subject: string
     property: string
     cell: string
     value: string

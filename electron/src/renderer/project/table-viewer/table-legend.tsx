@@ -22,7 +22,7 @@ class TableLegend extends Component<LegendProperties, {}> {
         <div style={{ margin: "10px 30px" }}>
           <span><strong>Legend</strong>:&nbsp;</span>
           <span className="legend" style={{ backgroundColor: "white", color: "hsl(200, 100%, 30%)", marginLeft: "0" }}>wikified</span>
-          <span className="legend" style={{ backgroundColor: "hsl(200, 50%, 90%)" }}>item</span>
+          <span className="legend" style={{ backgroundColor: "hsl(200, 50%, 90%)" }}>subject</span>
           <span className="legend" style={{ backgroundColor: "hsl(250, 50%, 90%)" }}>qualifier</span>
           <span className="legend" style={{ backgroundColor: "hsl(150, 50%, 90%)" }}>data</span>
           <span className="legend" style={{ backgroundColor: "hsl(0, 0%, 90%)" }}>data&nbsp;(skipped)</span>
