@@ -341,11 +341,12 @@
                         "cells": {
                             "property": "F2",
                             "value": "F3",
-                            "unit": "F1",
-                            "subject": "B3"
+                            "subject": "B3",
+                            "unit": "F1"
                         },
                         "property": "Paid-security-002",
                         "value": "2",
+                        "subject": "22",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -359,8 +360,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m-%d"
                             }
-                        ],
-                        "subject": "22"
+                        ]
                     },
                     {
                         "indices": [
@@ -372,11 +372,12 @@
                         "cells": {
                             "property": "F2",
                             "value": "F4",
-                            "unit": "F1",
-                            "subject": "B4"
+                            "subject": "B4",
+                            "unit": "F1"
                         },
                         "property": "Paid-security-002",
                         "value": "0",
+                        "subject": "47",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -397,8 +398,7 @@
                                 "property": "P17",
                                 "value": "Q21203"
                             }
-                        ],
-                        "subject": "47"
+                        ]
                     },
                     {
                         "indices": [
@@ -410,11 +410,12 @@
                         "cells": {
                             "property": "F2",
                             "value": "F5",
-                            "unit": "F1",
-                            "subject": "B5"
+                            "subject": "B5",
+                            "unit": "F1"
                         },
                         "property": "Paid-security-002",
                         "value": "0",
+                        "subject": "73",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -428,8 +429,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m"
                             }
-                        ],
-                        "subject": "73"
+                        ]
                     },
                     {
                         "indices": [
@@ -441,11 +441,12 @@
                         "cells": {
                             "property": "F2",
                             "value": "F6",
-                            "unit": "F1",
-                            "subject": "B6"
+                            "subject": "B6",
+                            "unit": "F1"
                         },
                         "property": "Paid-security-002",
                         "value": "0",
+                        "subject": "103",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -459,8 +460,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m"
                             }
-                        ],
-                        "subject": "103"
+                        ]
                     },
                     {
                         "indices": [
@@ -472,11 +472,12 @@
                         "cells": {
                             "property": "F2",
                             "value": "F7",
-                            "unit": "F1",
-                            "subject": "B7"
+                            "subject": "B7",
+                            "unit": "F1"
                         },
                         "property": "Paid-security-002",
                         "value": "0",
+                        "subject": "475",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -490,8 +491,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m-%d"
                             }
-                        ],
-                        "subject": "475"
+                        ]
                     },
                     {
                         "indices": [
@@ -503,11 +503,12 @@
                         "cells": {
                             "property": "F2",
                             "value": "F8",
-                            "unit": "F1",
-                            "subject": "B8"
+                            "subject": "B8",
+                            "unit": "F1"
                         },
                         "property": "Paid-security-002",
                         "value": "0",
+                        "subject": "782",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -521,8 +522,7 @@
                                 "time_zone": 0,
                                 "format": "%Y"
                             }
-                        ],
-                        "subject": "782"
+                        ]
                     },
                     {
                         "indices": [
@@ -534,11 +534,12 @@
                         "cells": {
                             "property": "G2",
                             "value": "G3",
-                            "unit": "G1",
-                            "subject": "B3"
+                            "subject": "B3",
+                            "unit": "G1"
                         },
                         "property": "Paid-security-003",
                         "value": "0",
+                        "subject": "22",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -552,8 +553,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m-%d"
                             }
-                        ],
-                        "subject": "22"
+                        ]
                     },
                     {
                         "indices": [
@@ -565,11 +565,12 @@
                         "cells": {
                             "property": "G2",
                             "value": "G4",
-                            "unit": "G1",
-                            "subject": "B4"
+                            "subject": "B4",
+                            "unit": "G1"
                         },
                         "property": "Paid-security-003",
                         "value": "0",
+                        "subject": "47",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -590,8 +591,7 @@
                                 "property": "P17",
                                 "value": "Q21203"
                             }
-                        ],
-                        "subject": "47"
+                        ]
                     },
                     {
                         "indices": [
@@ -603,11 +603,12 @@
                         "cells": {
                             "property": "G2",
                             "value": "G5",
-                            "unit": "G1",
-                            "subject": "B5"
+                            "subject": "B5",
+                            "unit": "G1"
                         },
                         "property": "Paid-security-003",
                         "value": "1",
+                        "subject": "73",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -621,8 +622,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m"
                             }
-                        ],
-                        "subject": "73"
+                        ]
                     },
                     {
                         "indices": [
@@ -634,11 +634,12 @@
                         "cells": {
                             "property": "G2",
                             "value": "G6",
-                            "unit": "G1",
-                            "subject": "B6"
+                            "subject": "B6",
+                            "unit": "G1"
                         },
                         "property": "Paid-security-003",
                         "value": "2",
+                        "subject": "103",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -652,8 +653,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m"
                             }
-                        ],
-                        "subject": "103"
+                        ]
                     },
                     {
                         "indices": [
@@ -665,11 +665,12 @@
                         "cells": {
                             "property": "G2",
                             "value": "G7",
-                            "unit": "G1",
-                            "subject": "B7"
+                            "subject": "B7",
+                            "unit": "G1"
                         },
                         "property": "Paid-security-003",
                         "value": "0",
+                        "subject": "475",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -683,8 +684,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m-%d"
                             }
-                        ],
-                        "subject": "475"
+                        ]
                     },
                     {
                         "indices": [
@@ -696,11 +696,12 @@
                         "cells": {
                             "property": "G2",
                             "value": "G8",
-                            "unit": "G1",
-                            "subject": "B8"
+                            "subject": "B8",
+                            "unit": "G1"
                         },
                         "property": "Paid-security-003",
                         "value": "0",
+                        "subject": "782",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -714,8 +715,7 @@
                                 "time_zone": 0,
                                 "format": "%Y"
                             }
-                        ],
-                        "subject": "782"
+                        ]
                     },
                     {
                         "indices": [
@@ -727,11 +727,12 @@
                         "cells": {
                             "property": "H2",
                             "value": "H3",
-                            "unit": "H1",
-                            "subject": "B3"
+                            "subject": "B3",
+                            "unit": "H1"
                         },
                         "property": "Paid-security-004",
                         "value": "0",
+                        "subject": "22",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -745,8 +746,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m-%d"
                             }
-                        ],
-                        "subject": "22"
+                        ]
                     },
                     {
                         "indices": [
@@ -758,11 +758,12 @@
                         "cells": {
                             "property": "H2",
                             "value": "H4",
-                            "unit": "H1",
-                            "subject": "B4"
+                            "subject": "B4",
+                            "unit": "H1"
                         },
                         "property": "Paid-security-004",
                         "value": "0",
+                        "subject": "47",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -783,8 +784,7 @@
                                 "property": "P17",
                                 "value": "Q21203"
                             }
-                        ],
-                        "subject": "47"
+                        ]
                     },
                     {
                         "indices": [
@@ -796,11 +796,12 @@
                         "cells": {
                             "property": "H2",
                             "value": "H5",
-                            "unit": "H1",
-                            "subject": "B5"
+                            "subject": "B5",
+                            "unit": "H1"
                         },
                         "property": "Paid-security-004",
                         "value": "0",
+                        "subject": "73",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -814,8 +815,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m"
                             }
-                        ],
-                        "subject": "73"
+                        ]
                     },
                     {
                         "indices": [
@@ -827,11 +827,12 @@
                         "cells": {
                             "property": "H2",
                             "value": "H6",
-                            "unit": "H1",
-                            "subject": "B6"
+                            "subject": "B6",
+                            "unit": "H1"
                         },
                         "property": "Paid-security-004",
                         "value": "0",
+                        "subject": "103",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -845,8 +846,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m"
                             }
-                        ],
-                        "subject": "103"
+                        ]
                     },
                     {
                         "indices": [
@@ -858,11 +858,12 @@
                         "cells": {
                             "property": "H2",
                             "value": "H7",
-                            "unit": "H1",
-                            "subject": "B7"
+                            "subject": "B7",
+                            "unit": "H1"
                         },
                         "property": "Paid-security-004",
                         "value": "0",
+                        "subject": "475",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -876,8 +877,7 @@
                                 "time_zone": 0,
                                 "format": "%Y-%m-%d"
                             }
-                        ],
-                        "subject": "475"
+                        ]
                     },
                     {
                         "indices": [
@@ -889,11 +889,12 @@
                         "cells": {
                             "property": "H2",
                             "value": "H8",
-                            "unit": "H1",
-                            "subject": "B8"
+                            "subject": "B8",
+                            "unit": "H1"
                         },
                         "property": "Paid-security-004",
                         "value": "3",
+                        "subject": "782",
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
@@ -907,8 +908,7 @@
                                 "time_zone": 0,
                                 "format": "%Y"
                             }
-                        ],
-                        "subject": "782"
+                        ]
                     }
                 ],
                 "qnodes": {
@@ -1318,6 +1318,6 @@
                 ]
             }
         },
-        "yamlContent": "statementMapping:\n  region:\n    - left: F\n      right: H\n      top: 3\n      bottom: 8\n  template:\n    item: =value[B, $row, \"main subject\"]\n    property: =item[$col, 2, \"property\"]\n    value: =value[$col, $row]\n    unit: =item[$col,1,\"unit\"]\n    qualifier:\n      - property: P585  # point in time\n        value: '=concat(value[C:E,$row],\"-\")'\n        calendar: Q1985727\n        precision: [day, month, year]\n        time_zone: 0\n        format: [\"%Y-%m-%d\", \"%Y-%m\", \"%Y\"]\n      - property: P17  # country\n        value: =item[I,$row]\n"
+        "yamlContent": "statementMapping:\n  region:\n    - left: F\n      right: H\n      top: 3\n      bottom: 8\n  template:\n    subject: =value[B, $row, \"main subject\"]\n    property: =item[$col, 2, \"property\"]\n    value: =value[$col, $row]\n    unit: =item[$col,1,\"unit\"]\n    qualifier:\n      - property: P585  # point in time\n        value: '=concat(value[C:E,$row],\"-\")'\n        calendar: Q1985727\n        precision: [day, month, year]\n        time_zone: 0\n        format: [\"%Y-%m-%d\", \"%Y-%m\", \"%Y\"]\n      - property: P17  # country\n        value: =item[I,$row]\n"
     }
 }
