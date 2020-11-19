@@ -7,7 +7,7 @@ statementMapping:
       skip_columns:
         - =value[$col, 5] == "Source"
   template:
-    item: =item[$col-1, 4]
+    subject: =item[$col-1, 4]
     property: C3002 # murder count
     value: =value[$col, $row]
     qualifier:

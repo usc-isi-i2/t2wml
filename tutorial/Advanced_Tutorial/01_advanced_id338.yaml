@@ -5,7 +5,7 @@ statementMapping:
   region:
     - range: D8:D11
   template:
-    item: =item[B, $row-$n, "main subject"]
+    subject: =item[B, $row-$n, "main subject"]
     property: =item[D, 7, "property"]
     value: =value[$col, $row]
     qualifier:

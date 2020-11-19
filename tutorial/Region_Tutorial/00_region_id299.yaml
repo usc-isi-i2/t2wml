@@ -9,7 +9,7 @@ statementMapping:
   template:
     # Variable statement consists of three parts: item, propety and value
     # The item attribute defines the main subjects of the variables
-    item: =item[B, $row, "main subject"]
+    subject: =item[B, $row, "main subject"]
     # The property attribute defines the variable name
     property: PProduction
     # The value attribute defines the variable values

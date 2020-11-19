@@ -7,7 +7,7 @@ statementMapping:
         - ### fill in value to skip all cells with value "--" ###
         - ### fill in value to skip all cells with value "*" ###
   template:
-    item: =item[B, $row, "main subject"]
+    subject: =item[B, $row, "main subject"]
     property: =item[$col, 7, "property"]
     value: =value[$col, $row]
     qualifier:

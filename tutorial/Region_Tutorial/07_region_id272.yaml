@@ -6,7 +6,7 @@ statementMapping:
       skip_rows:
         - =value[B,$row]=="Total"
   template:
-    item: =item[B, $row, "main subject"]
+    subject: =item[B, $row, "main subject"]
     property: =item[$col, 9, "property"]
     value: =value[$col, $row]
     qualifier:

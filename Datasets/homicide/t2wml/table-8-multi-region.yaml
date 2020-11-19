@@ -11,7 +11,7 @@ statementMapping:
       # we have the item lookup table
       # top: item[A, $row].instance_of Q6256
   template:
-    item: =item[A, $top]
+    subject: =item[A, $top]
     property: P100024 # murder
     value: =value[$col, $row]
     qualifier:

@@ -9,7 +9,7 @@ statementMapping:
       skip_cells:
         - =value[$col, $row] == "n/a"
   template:
-    item: =item[A, $row]
+    subject: =item[A, $row]
     property: P100024 # murder
     value: =value[$col, $row]
     qualifier:

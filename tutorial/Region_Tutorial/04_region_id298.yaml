@@ -8,7 +8,7 @@ statementMapping:
         - 18
         - 19
   template:
-    item: =item[B, $row, "main subject"]
+    subject: =item[B, $row, "main subject"]
     property: =item[$col, 9, "property"]
     value: =value[$col, $row]
     qualifier:

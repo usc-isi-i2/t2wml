@@ -5,7 +5,7 @@ statementMapping:
       top: 5
       bottom: 22
   template:
-    item: =item[A, $row]
+    subject: =item[A, $row]
     property: P100024 # murder [a new property]
     value: =value[$col, $row]
     unit: D1002

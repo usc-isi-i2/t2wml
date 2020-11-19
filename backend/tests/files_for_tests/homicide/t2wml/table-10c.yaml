@@ -7,7 +7,7 @@ statementMapping:
       skip_rows:
         - =value[A:D, $row] == ""
   template:
-    item: =item[B, $row-$n]
+    subject: =item[B, $row-$n]
     property: P100024 # murder
     value: =value[$col, $row]
     qualifier:

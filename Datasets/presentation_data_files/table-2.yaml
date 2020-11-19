@@ -12,7 +12,7 @@ statementMapping:
       skip_columns:
         - =value[$col, 3] = "2001"
   template:
-    item: =item[A,$row]
+    subject: =item[A,$row]
     property: P1082 # murder
     value: =value[$col, $row]
     qualifier:

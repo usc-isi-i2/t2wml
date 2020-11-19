@@ -2,7 +2,7 @@ statementMapping:
   region:
     - range: E5:E22
   template:
-    item: =item[A, $row]
+    subject: =item[A, $row]
     property: P100024 # murder [a new property]
     value: =value[$col, $row]
     unit: Qnumber_incidents
