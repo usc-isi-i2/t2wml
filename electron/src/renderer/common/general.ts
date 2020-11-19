@@ -58,3 +58,11 @@ export class Cell {
     }
 
 }
+
+export enum t2wmlColors {
+    PROJECT = "#f8f9fa",
+    TABLE = "#339966",
+    WIKIFIER = "#006699",
+    YAML = "#006699",
+    OUTPUT = "#990000"
+}

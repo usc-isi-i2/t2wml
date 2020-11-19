@@ -101,7 +101,7 @@ def load_data_file(client, pid, filename):
     return response
 
 def load_yaml_file(client, pid, filename):
-    url='/api/yaml?project_folder={pid}'.format(pid=pid)
+    url='/api/yaml/apply?project_folder={pid}'.format(pid=pid)
     title=Path(filename).name
     with open(filename, 'r', encoding="utf-8") as f:
         response=client.post(url,
