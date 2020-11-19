@@ -113,6 +113,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     // before fetching project files
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
     wikiStore.output.isDownloadDisabled = true;
 
     // fetch project files
@@ -139,6 +140,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
     }
 
   }
