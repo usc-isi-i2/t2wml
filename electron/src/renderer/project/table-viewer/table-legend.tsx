@@ -8,6 +8,7 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons'
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
+import { typeStyles } from '@/renderer/common/utils';
 
 interface LegendProperties {
     multipleSheets: boolean;
@@ -22,9 +23,11 @@ class TableLegend extends Component<LegendProperties, {}> {
         <div style={{ margin: "10px 30px" }}>
           <span><strong>Legend</strong>:&nbsp;</span>
           <span className="legend" style={{ backgroundColor: "white", color: "hsl(200, 100%, 30%)", marginLeft: "0" }}>wikified</span>
-          <span className="legend" style={{ backgroundColor: "hsl(200, 50%, 90%)" }}>subject</span>
-          <span className="legend" style={{ backgroundColor: "hsl(250, 50%, 90%)" }}>qualifier</span>
-          <span className="legend" style={{ backgroundColor: "hsl(150, 50%, 90%)" }}>data</span>
+          <span className="legend" style={typeStyles.get("subject")}>subject</span>
+          <span className="legend" style={typeStyles.get("qualifier")}>qualifier</span>
+          <span className="legend" style={typeStyles.get("data")}>data</span>
+          <span className="legend" style={typeStyles.get("property")}>property</span>
+          <span className="legend" style={typeStyles.get("metadata")}>metadata</span>
           <span className="legend" style={{ backgroundColor: "hsl(0, 0%, 90%)" }}>data&nbsp;(skipped)</span>
         </div>
       </Popover>

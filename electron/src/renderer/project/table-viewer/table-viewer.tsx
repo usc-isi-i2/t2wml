@@ -362,17 +362,10 @@ class TableViewer extends Component<{}, TableState> {
 
     let allIndices = Array<CellIndex>();
     const types = wikiStore.layers.type;
-    const typeStyles = new Map<string, any>([
-      ["data", { backgroundColor: "hsl(150, 50%, 90%)" }],
-      ["subject", { backgroundColor: "hsl(200, 50%, 90%)" }],
-      ["qualifier", { backgroundColor: "hsl(250, 50%, 90%)" }],
-      ["reference", { backgroundColor: "hsl(150, 50%, 90%)" }],
-      ["minorError", { backgroundColor: '#FF8000' }],
-      ["majorError", { backgroundColor: '#FF3333' }]
-    ])
+
     for (const entry of types.entries) {
       allIndices = allIndices.concat(entry.indices)
-      const style = typeStyles.get(entry.type)
+      const style = utils.typeStyles.get(entry.type)
       if (style == undefined) {
         continue;
         //for now, pass. 
