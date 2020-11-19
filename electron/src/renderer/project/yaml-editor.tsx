@@ -374,7 +374,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               id="file_yaml"
               accept=".yaml"
               style={{ display: "none" }}
-              disabled={this.state.disableYaml}
+              disabled={this.state.disableYaml || wikiStore.yaml.showSpinner}
               onChange={this.handleOpenYamlFile}
               onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
             />
@@ -453,7 +453,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               size="sm"
               style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
               onClick={() => this.handleApplyYaml()}
-              disabled={!this.state.isValidYaml || this.state.disableYaml}
+              disabled={!this.state.isValidYaml || this.state.disableYaml || wikiStore.yaml.showSpinner}
             >
               Apply
             </Button>

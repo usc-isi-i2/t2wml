@@ -6,6 +6,7 @@ import { Button } from 'react-bootstrap';
 import { observer } from "mobx-react";
 import { Event } from 'electron/main';
 import { t2wmlColors } from '@/renderer/common/general';
+import wikiStore from '@/renderer/data/store';
 
 
 interface SheetProperties  {
@@ -56,6 +57,7 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
           variant="success"
           size="sm"
           style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
+          disabled={wikiStore.yaml.showSpinner}
           onClick={(event: any) => { this.props.handleSelectSheet(event) }}
         >{sheetNames[i]}</Button>
       );
