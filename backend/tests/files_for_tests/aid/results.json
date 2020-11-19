@@ -38,6 +38,14 @@
                     {
                         "indices": [],
                         "type": "minorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "property"
+                    },
+                    {
+                        "indices": [],
+                        "type": "metadata"
                     }
                 ],
                 "layerType": "type"
@@ -807,8 +815,7 @@
                         "cells": {
                             "property": "F2",
                             "subject": "B3",
-                            "unit": "F1",
-                            "value": "F3"
+                            "unit": "F1"
                         },
                         "indices": [
                             [
@@ -820,9 +827,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -838,8 +843,7 @@
                         "cells": {
                             "property": "F2",
                             "subject": "B4",
-                            "unit": "F1",
-                            "value": "F4"
+                            "unit": "F1"
                         },
                         "indices": [
                             [
@@ -851,9 +855,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -861,9 +863,7 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {
-                                    "value": "I4"
-                                },
+                                "cells": {},
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -876,8 +876,7 @@
                         "cells": {
                             "property": "F2",
                             "subject": "B5",
-                            "unit": "F1",
-                            "value": "F5"
+                            "unit": "F1"
                         },
                         "indices": [
                             [
@@ -889,9 +888,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -907,8 +904,7 @@
                         "cells": {
                             "property": "F2",
                             "subject": "B6",
-                            "unit": "F1",
-                            "value": "F6"
+                            "unit": "F1"
                         },
                         "indices": [
                             [
@@ -920,9 +916,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -938,8 +932,7 @@
                         "cells": {
                             "property": "F2",
                             "subject": "B7",
-                            "unit": "F1",
-                            "value": "F7"
+                            "unit": "F1"
                         },
                         "indices": [
                             [
@@ -951,9 +944,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -969,8 +960,7 @@
                         "cells": {
                             "property": "F2",
                             "subject": "B8",
-                            "unit": "F1",
-                            "value": "F8"
+                            "unit": "F1"
                         },
                         "indices": [
                             [
@@ -982,9 +972,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -1000,8 +988,7 @@
                         "cells": {
                             "property": "G2",
                             "subject": "B3",
-                            "unit": "G1",
-                            "value": "G3"
+                            "unit": "G1"
                         },
                         "indices": [
                             [
@@ -1013,9 +1000,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1031,8 +1016,7 @@
                         "cells": {
                             "property": "G2",
                             "subject": "B4",
-                            "unit": "G1",
-                            "value": "G4"
+                            "unit": "G1"
                         },
                         "indices": [
                             [
@@ -1044,9 +1028,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1054,9 +1036,7 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {
-                                    "value": "I4"
-                                },
+                                "cells": {},
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1069,8 +1049,7 @@
                         "cells": {
                             "property": "G2",
                             "subject": "B5",
-                            "unit": "G1",
-                            "value": "G5"
+                            "unit": "G1"
                         },
                         "indices": [
                             [
@@ -1082,9 +1061,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1100,8 +1077,7 @@
                         "cells": {
                             "property": "G2",
                             "subject": "B6",
-                            "unit": "G1",
-                            "value": "G6"
+                            "unit": "G1"
                         },
                         "indices": [
                             [
@@ -1113,9 +1089,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1131,8 +1105,7 @@
                         "cells": {
                             "property": "G2",
                             "subject": "B7",
-                            "unit": "G1",
-                            "value": "G7"
+                            "unit": "G1"
                         },
                         "indices": [
                             [
@@ -1144,9 +1117,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1162,8 +1133,7 @@
                         "cells": {
                             "property": "G2",
                             "subject": "B8",
-                            "unit": "G1",
-                            "value": "G8"
+                            "unit": "G1"
                         },
                         "indices": [
                             [
@@ -1175,9 +1145,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -1193,8 +1161,7 @@
                         "cells": {
                             "property": "H2",
                             "subject": "B3",
-                            "unit": "H1",
-                            "value": "H3"
+                            "unit": "H1"
                         },
                         "indices": [
                             [
@@ -1206,9 +1173,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1224,8 +1189,7 @@
                         "cells": {
                             "property": "H2",
                             "subject": "B4",
-                            "unit": "H1",
-                            "value": "H4"
+                            "unit": "H1"
                         },
                         "indices": [
                             [
@@ -1237,9 +1201,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1247,9 +1209,7 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {
-                                    "value": "I4"
-                                },
+                                "cells": {},
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1262,8 +1222,7 @@
                         "cells": {
                             "property": "H2",
                             "subject": "B5",
-                            "unit": "H1",
-                            "value": "H5"
+                            "unit": "H1"
                         },
                         "indices": [
                             [
@@ -1275,9 +1234,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1293,8 +1250,7 @@
                         "cells": {
                             "property": "H2",
                             "subject": "B6",
-                            "unit": "H1",
-                            "value": "H6"
+                            "unit": "H1"
                         },
                         "indices": [
                             [
@@ -1306,9 +1262,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1324,8 +1278,7 @@
                         "cells": {
                             "property": "H2",
                             "subject": "B7",
-                            "unit": "H1",
-                            "value": "H7"
+                            "unit": "H1"
                         },
                         "indices": [
                             [
@@ -1337,9 +1290,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1355,8 +1306,7 @@
                         "cells": {
                             "property": "H2",
                             "subject": "B8",
-                            "unit": "H1",
-                            "value": "H8"
+                            "unit": "H1"
                         },
                         "indices": [
                             [
@@ -1368,9 +1318,7 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {
-                                    "value": null
-                                },
+                                "cells": {},
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -1615,6 +1563,40 @@
                             ]
                         ],
                         "type": "minorError"
+                    },
+                    {
+                        "indices": [
+                            [
+                                1,
+                                5
+                            ],
+                            [
+                                1,
+                                6
+                            ],
+                            [
+                                1,
+                                7
+                            ]
+                        ],
+                        "type": "property"
+                    },
+                    {
+                        "indices": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                0,
+                                7
+                            ]
+                        ],
+                        "type": "metadata"
                     }
                 ],
                 "layerType": "type"
@@ -1809,6 +1791,14 @@
                     {
                         "indices": [],
                         "type": "minorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "property"
+                    },
+                    {
+                        "indices": [],
+                        "type": "metadata"
                     }
                 ],
                 "layerType": "type"
