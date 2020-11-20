@@ -1,10 +1,12 @@
 .annotation-menu {
   position: absolute;
-  z-index: 150;
+  min-width: 300px;
+  z-index: 250;
   left: 50px;
   top: 70px;
 }
 
 .annotation-menu .handle {
+  background: whitesmoke;
   cursor: pointer;
 }
