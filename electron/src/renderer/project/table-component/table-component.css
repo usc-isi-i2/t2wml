@@ -1,3 +1,18 @@
+/* Annotation Mode Toggle */
+.annotation-mode-toggle {
+  margin-right: 15px;
+  user-select: none;
+  cursor: pointer;
+  color: white;
+  float: right;
+}
+.annotation-mode-toggle svg {
+  margin-right: 5px;
+}
+.annotation-mode-toggle p {
+  display: inline-block;
+}
+
 .table-wrapper {
   position: relative;
   overflow: scroll;

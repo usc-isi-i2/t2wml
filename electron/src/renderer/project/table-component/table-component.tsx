@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import './table-component.css';
 import { TableDTO } from '../../common/dtos';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
+import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
 import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
 import RequestService from '../../common/service';
@@ -45,6 +48,7 @@ interface TableState {
   selectedQualifiers: Array<Cell> | null,
   selectedMainSubject: Cell | null,
 
+  annotationMode: boolean,
   showAnnotationMenu: boolean,
   annotationMenuPosition: Array<int> | null,
 
@@ -81,6 +85,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedQualifiers: [],
       selectedMainSubject: new Cell(),
 
+      annotationMode: false,
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
 
@@ -467,6 +472,11 @@ class TableComponent extends Component<{}, TableState> {
     this.setState({showToast: false});
   }
 
+  toggleAnnotationMode() {
+    const { annotationMode } = this.state;
+    this.setState({annotationMode: !annotationMode});
+  }
+
   renderErrorMessage() {
     const { errorMessage } = this.state;
     if ( errorMessage.errorDescription ) {
@@ -479,7 +489,7 @@ class TableComponent extends Component<{}, TableState> {
   renderTitle() {
     const { filename } = this.state;
     return (
-      <div style={{ width: "calc(100% - 250px)", cursor: "default" }}
+      <div style={{ width: "calc(100% - 350px)", cursor: "default" }}
         className="text-white font-weight-bold d-inline-block text-truncate">
         {!!filename ? (
           <span>
@@ -491,6 +501,21 @@ class TableComponent extends Component<{}, TableState> {
         ) : (
           <span>Table&nbsp;Viewer</span>
         )}
+      </div>
+    )
+  }
+
+  renderAnnotationToggle() {
+    const { annotationMode } = this.state;
+    return (
+      <div className="annotation-mode-toggle"
+        onClick={() => this.toggleAnnotationMode()}>
+        {annotationMode ? (
+          <FontAwesomeIcon icon={faCheckSquare} />
+        ) : (
+          <FontAwesomeIcon icon={faSquare} />
+        )}
+        <p>Annotation Mode</p>
       </div>
     )
   }
@@ -679,6 +704,7 @@ class TableComponent extends Component<{}, TableState> {
             style={{ height: "40px", background: "#339966" }}>
             {this.renderTitle()}
             {this.renderUploadButton()}
+            {this.renderAnnotationToggle()}
           </Card.Header>
 
           <Card.Body className="ag-theme-balham w-100 h-100 p-0">
