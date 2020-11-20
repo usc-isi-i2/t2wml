@@ -9,6 +9,7 @@ import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
+import AnnotationMenu from './annotation-menu';
 import TableToast from './table-toast';
 
 import * as utils from './table-utils';
@@ -540,6 +541,22 @@ class TableComponent extends Component<{}, TableState> {
     return <TableLegend />
   }
 
+  closeAnnotation() {
+    this.setState({
+      showAnnotationMenu: false,
+    });
+  }
+
+  renderAnnotationMenu() {
+    const { showAnnotationMenu } = this.state;
+    if ( showAnnotationMenu ) {
+      return (
+        <AnnotationMenu
+         onClose={() => this.closeAnnotation()} />
+      )
+    }
+  }
+
   renderToast() {
     const { selectedCell, showToast } = this.state;
     if ( showToast ) {
@@ -672,6 +689,7 @@ class TableComponent extends Component<{}, TableState> {
             {this.renderLegend()}
             {this.renderToast()}
             {this.renderTable()}
+            {this.renderAnnotationMenu()}
           </Card.Body>
 
           <Card.Footer hidden={!multipleSheets} className={'p-0'}>
