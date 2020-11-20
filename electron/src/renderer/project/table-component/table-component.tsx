@@ -46,6 +46,7 @@ interface TableState {
   selectedMainSubject: Cell | null,
 
   showAnnotationMenu: boolean,
+  annotationMenuPosition: Array<int> | null,
 
   errorMessage: ErrorMessage;
 }
@@ -81,6 +82,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedMainSubject: new Cell(),
 
       showAnnotationMenu: false,
+      annotationMenuPosition: [50, 70],
 
       errorMessage: {} as ErrorMessage,
     };
@@ -335,8 +337,10 @@ class TableComponent extends Component<{}, TableState> {
   handleOnMouseUp(event) {
     this.selecting = false;
     if ( !!this.selections ) {
+      const { pageX, pageY } = event;
       this.setState({
         showAnnotationMenu: true,
+        annotationMenuPosition: [pageX, pageY],
       });
     }
   }
@@ -548,10 +552,11 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderAnnotationMenu() {
-    const { showAnnotationMenu } = this.state;
+    const { showAnnotationMenu, annotationMenuPosition } = this.state;
     if ( showAnnotationMenu ) {
       return (
         <AnnotationMenu
+         position={annotationMenuPosition}
          onClose={() => this.closeAnnotation()} />
       )
     }
