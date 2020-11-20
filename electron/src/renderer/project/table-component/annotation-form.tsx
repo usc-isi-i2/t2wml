@@ -67,17 +67,27 @@ class AnnotationForm extends React.Component {
         <Form.Group as={Row}
           onChange={(event) => this.handleOnChange(event, 'role')}>
           <Col sm="12" md="12">
-            <Form.Control
-              type="text" size="sm"
-              placeholder="role" />
+            <Form.Control size="sm" as="select">
+              <option value="" disabled selected>Role</option>
+              {ROLES.map((role, i) => (
+                <option key={i} value={role.value}>
+                  {role.label}
+                </option>
+              ))}
+            </Form.Control>
           </Col>
         </Form.Group>
         <Form.Group as={Row}
           onChange={(event) => this.handleOnChange(event, 'type')}>
           <Col sm="12" md="12">
-            <Form.Control
-              type="text" size="sm"
-              placeholder="type" />
+            <Form.Control size="sm" as="select">
+              <option value="" disabled selected>Type</option>
+              {TYPES.map((type, i) => (
+                <option key={i} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </Form.Control>
           </Col>
         </Form.Group>
         <Form.Group as={Row}
