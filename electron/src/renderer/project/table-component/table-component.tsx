@@ -337,7 +337,9 @@ class TableComponent extends Component<{}, TableState> {
   handleOnMouseUp(event) {
     this.selecting = false;
     if ( !!this.selections ) {
-      const { pageX, pageY } = event;
+      let { pageX, pageY } = event;
+      pageX = pageX < 50 ? 50 : pageX;
+      pageY = pageY - 50;
       this.setState({
         showAnnotationMenu: true,
         annotationMenuPosition: [pageX, pageY],
