@@ -39,9 +39,12 @@ interface TableState {
   tableData: any; // Array<object>;
 
   yamlRegions: any; // null,
+
   selectedCell: Cell | null;
   selectedQualifiers: Array<Cell> | null,
   selectedMainSubject: Cell | null,
+
+  showAnnotationMenu: boolean,
 
   errorMessage: ErrorMessage;
 }
@@ -75,6 +78,8 @@ class TableComponent extends Component<{}, TableState> {
       selectedCell: new Cell(),
       selectedQualifiers: [],
       selectedMainSubject: new Cell(),
+
+      showAnnotationMenu: false,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -117,6 +122,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedCell: null,
       selectedQualifiers: null,
       selectedMainSubject: null,
+      showAnnotationMenu: false,
     });
   }
 
@@ -327,7 +333,11 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseUp(event) {
     this.selecting = false;
-    this.setState({showToast: true});
+    if ( !!this.selections ) {
+      this.setState({
+        showAnnotationMenu: true,
+      });
+    }
   }
 
   handleOnMouseDown(event) {
