@@ -10,7 +10,11 @@ import { Toast } from 'react-bootstrap';
 class AnnotationMenu extends React.Component {
 
   handleOnChange(selection, input, value) {
-    console.log(selection, input, value)
+    console.log(selection, input, value);
+  }
+
+  handleOnSubmit(selection) {
+    console.log('submitting selection', selection);
   }
 
   renderAnnotationForms() {
@@ -19,7 +23,8 @@ class AnnotationMenu extends React.Component {
       <AnnotationForm
         key={index}
         selection={selection}
-        onChange={this.handleOnChange.bind(this)} />
+        onChange={this.handleOnChange.bind(this)}
+        onSubmit={this.handleOnSubmit.bind(this)} />
     ));
   }
 

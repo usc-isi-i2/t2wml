@@ -16,10 +16,17 @@ class AnnotationForm extends React.Component {
     onChange(selection, input, value);
   }
 
+  handleOnSubmit(event) {
+    event.preventDefault();
+    const { selection, onSubmit } = this.props;
+    onSubmit(selection);
+  }
+
   render() {
-    const { selection } = this.props;
+    const { selection, onSubmit } = this.props;
     return (
-      <Form className="container annotation-form">
+      <Form className="container annotation-form"
+        onSubmit={this.handleOnSubmit.bind(this)}>
         <h7>{utils.humanReadableSelection(selection)}</h7>
         <Form.Group as={Row}
           onChange={(event) => this.handleOnChange(event, 'role')}>
