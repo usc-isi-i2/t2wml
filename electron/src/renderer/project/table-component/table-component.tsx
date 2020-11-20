@@ -342,13 +342,7 @@ class TableComponent extends Component<{}, TableState> {
   handleOnMouseUp(event) {
     this.selecting = false;
     if ( !!this.selections ) {
-      let { pageX, pageY } = event;
-      pageX = pageX < 50 ? 50 : pageX;
-      pageY = pageY - 50;
-      this.setState({
-        showAnnotationMenu: true,
-        annotationMenuPosition: [pageX, pageY],
-      });
+      this.openAnnotationMenu(event);
     }
   }
 
@@ -570,6 +564,16 @@ class TableComponent extends Component<{}, TableState> {
 
   renderLegend() {
     return <TableLegend />
+  }
+
+  openAnnotationMenu(event) {
+    let { pageX, pageY } = event;
+    pageX = pageX < 50 ? 50 : pageX;
+    pageY = pageY - 50;
+    this.setState({
+      showAnnotationMenu: true,
+      annotationMenuPosition: [pageX, pageY],
+    });
   }
 
   closeAnnotationMenu() {
