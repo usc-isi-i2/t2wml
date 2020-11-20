@@ -8,6 +8,42 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 const INPUTS = ['role', 'type', 'annotation'];
 
 
+const ROLES = [{
+  'label': 'main subject',
+  'value': 'mainSubject',
+}, {
+  'label': 'property',
+  'value': 'property',
+}, {
+  'label': 'qualifier',
+  'value': 'qualifier',
+}, {
+  'label': 'dependent variable',
+  'value': 'dependentVar',
+}, {
+  'label': 'metadata',
+  'value': 'metadata',
+}];
+
+
+const TYPES = [{
+  'label': 'string',
+  'value': 'string',
+}, {
+  'label': 'monolingual string',
+  'value': 'monolingualString',
+}, {
+  'label': 'quantity',
+  'value': 'quantity',
+}, {
+  'label': 'time',
+  'value': 'time',
+}, {
+  'label': 'q-node',
+  'value': 'qNode',
+}];
+
+
 class AnnotationForm extends React.Component {
 
   handleOnChange(event, input) {
