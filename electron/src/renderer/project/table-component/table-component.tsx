@@ -579,8 +579,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderAnnotationMenu() {
-    const { showAnnotationMenu, annotationMenuPosition } = this.state;
-    if ( showAnnotationMenu ) {
+    const { annotationMode, showAnnotationMenu, annotationMenuPosition } = this.state;
+    if ( annotationMode && showAnnotationMenu ) {
       return (
         <AnnotationMenu
           selections={this.selections}
