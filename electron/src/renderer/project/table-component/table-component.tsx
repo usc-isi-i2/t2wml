@@ -572,7 +572,7 @@ class TableComponent extends Component<{}, TableState> {
     return <TableLegend />
   }
 
-  closeAnnotation() {
+  closeAnnotationMenu() {
     this.setState({
       showAnnotationMenu: false,
     });
@@ -585,7 +585,7 @@ class TableComponent extends Component<{}, TableState> {
         <AnnotationMenu
           selections={this.selections}
           position={annotationMenuPosition}
-          onClose={() => this.closeAnnotation()} />
+          onClose={() => this.closeAnnotationMenu()} />
       )
     }
   }
