@@ -1,32 +1,25 @@
 import React from 'react';
 
 import './annotation-menu.css';
-import * as utils from './table-utils';
+import AnnotationForm from './annotation-form';
 
 import Draggable from 'react-draggable';
-import { Col, Form, Row, Toast } from 'react-bootstrap';
+import { Toast } from 'react-bootstrap';
 
 
 class AnnotationMenu extends React.Component {
 
+  handleOnChange(selection, input, value) {
+    console.log(selection, input, value)
+  }
+
   renderAnnotationForms() {
     const { selections } = this.props;
     return selections.map((selection, index) => (
-      <Form className="container" key={index}>
-        <h7>{utils.humanReadableSelection(selection)}</h7>
-        <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event: Event) => {
-          this.setState({
-            annotation: (event.target as HTMLInputElement).value,
-          })
-        }}>
-          <Col sm="12" md="12">
-            <Form.Control
-              type="text"
-              placeholder="annotation"
-              autoFocus={true} />
-          </Col>
-        </Form.Group>
-      </Form>
+      <AnnotationForm
+        key={index}
+        selection={selection}
+        onChange={this.handleOnChange.bind(this)} />
     ));
   }
 
