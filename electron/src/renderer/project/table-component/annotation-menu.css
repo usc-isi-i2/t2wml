@@ -1,6 +1,8 @@
 .annotation-menu {
   position: absolute;
   z-index: 150;
+  left: 50px;
+  top: 70px;
 }
 
 .annotation-menu .handle {
