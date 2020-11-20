@@ -27,7 +27,7 @@ class AnnotationForm extends React.Component {
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
-        <h7>{utils.humanReadableSelection(selection)}</h7>
+        <p className="area">{utils.humanReadableSelection(selection)}</p>
         <Form.Group as={Row}
           onChange={(event) => this.handleOnChange(event, 'role')}>
           <Col sm="12" md="12">
