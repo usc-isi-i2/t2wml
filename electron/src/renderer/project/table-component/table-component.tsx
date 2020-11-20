@@ -570,18 +570,7 @@ class TableComponent extends Component<{}, TableState> {
       let message = 'Selected:';
       if ( !!this.selections ) {
         this.selections.forEach(selection => {
-          const { x1, y1, x2, y2 } = selection
-          if ( x1 === x2 && y1 === y2 ) {
-            message += ` ${utils.columnToLetter(x1)}${y1}`;
-          } else {
-            if ( x1 <= x2 ) {
-              message += ` ${utils.columnToLetter(x1)}${y1 <= y2 ? y1 : y2}`;
-              message += `:${utils.columnToLetter(x2)}${y1 <= y2 ? y2 : y1}`;
-            } else {
-              message += ` ${utils.columnToLetter(x2)}${y2 <= y1 ? y2 : y1}`;
-              message += `:${utils.columnToLetter(x1)}${y2 <= y1 ? y1 : y2}`;
-            }
-          }
+          message += ` ${utils.humanReadableSelection(selection)}`
         });
       }
       return (
