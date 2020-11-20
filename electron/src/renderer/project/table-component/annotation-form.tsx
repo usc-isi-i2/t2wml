@@ -2,7 +2,7 @@ import React from 'react';
 
 import * as utils from './table-utils';
 
-import { Col, Form, Row } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
 const INPUTS = ['role', 'type', 'annotation'];
@@ -43,6 +43,16 @@ class AnnotationForm extends React.Component {
             <Form.Control
               type="text" size="sm"
               placeholder="annotation" />
+          </Col>
+        </Form.Group>
+        <Form.Group as={Row}>
+          <Col sm="12" md="12">
+            <Button
+              size="sm"
+              type="submit"
+              variant="outline-dark">
+              Submit
+            </Button>
           </Col>
         </Form.Group>
       </Form>
