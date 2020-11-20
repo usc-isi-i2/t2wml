@@ -558,8 +558,9 @@ class TableComponent extends Component<{}, TableState> {
     if ( showAnnotationMenu ) {
       return (
         <AnnotationMenu
-         position={annotationMenuPosition}
-         onClose={() => this.closeAnnotation()} />
+          selections={this.selections}
+          position={annotationMenuPosition}
+          onClose={() => this.closeAnnotation()} />
       )
     }
   }
