@@ -9,9 +9,13 @@ import { Col, Form, Row, Toast } from 'react-bootstrap';
 class AnnotationMenu extends React.Component {
 
   render() {
-    const { onClose } = this.props;
+    const { position, onClose } = this.props;
+    const style = {
+      'left': position[0],
+      'top': position[1],
+    };
     return (
-      <div className="annotation-menu">
+      <div className="annotation-menu" style={style}>
         <Draggable handle=".handle">
           <Toast onClose={onClose}>
             <Toast.Header className="handle">
