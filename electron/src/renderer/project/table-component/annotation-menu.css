@@ -10,3 +10,9 @@
   background: whitesmoke;
   cursor: pointer;
 }
+
+.annotation-menu form.annotation-form > h7 {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}

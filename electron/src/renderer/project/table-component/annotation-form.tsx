@@ -19,7 +19,7 @@ class AnnotationForm extends React.Component {
   render() {
     const { selection } = this.props;
     return (
-      <Form className="container">
+      <Form className="container annotation-form">
         <h7>{utils.humanReadableSelection(selection)}</h7>
         <Form.Group as={Row}
           onChange={(event) => this.handleOnChange(event, 'role')}>
