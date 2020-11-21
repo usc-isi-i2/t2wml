@@ -19,13 +19,12 @@ class AnnotationMenu extends React.Component {
 
   renderAnnotationForms() {
     const { selections } = this.props;
-    return selections.map((selection, index) => (
+    return (
       <AnnotationForm
-        key={index}
-        selection={selection}
+        selections={selections}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
-    ));
+    )
   }
 
   render() {

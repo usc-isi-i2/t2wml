@@ -58,12 +58,21 @@ class AnnotationForm extends React.Component {
     onSubmit(selection);
   }
 
+  renderSelectionAreas() {
+    const { selections } = this.props;
+    return selections.map((selection, index) => (
+      <p className="area" key={index}>
+        {utils.humanReadableSelection(selection)}
+      </p>
+    ));
+  }
+
   render() {
-    const { selection, onSubmit } = this.props;
+    const { onSubmit } = this.props;
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
-        <p className="area">{utils.humanReadableSelection(selection)}</p>
+        {this.renderSelectionAreas()}
         <Form.Group as={Row}
           onChange={(event) => this.handleOnChange(event, 'role')}>
           <Col sm="12" md="12">
