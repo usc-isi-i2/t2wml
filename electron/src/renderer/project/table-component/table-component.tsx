@@ -333,6 +333,41 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
+  checkSelectionOverlaps() {
+    this.selections.map((selection, index) => {
+      const { x1, y1, x2, y2 } = selection;
+      for ( let j = 0; j < this.selections.length; j++ ) {
+        if ( j !== index ) {
+          const otherSelection = this.selections[j];
+
+          // (x1, y1) is top left, (x2, y2) is bottom right
+          if ( otherSelection.x1 <= otherSelection.x2 &&
+               otherSelection.y1 <= otherSelection.y2 ) {
+            if ( otherSelection.x1 <= x1 &&
+                 otherSelection.y1 <= y1 &&
+                 otherSelection.x2 >= x2 &&
+                 otherSelection.y2 >= y2 ) {
+              this.selections.splice(index, 1);
+              this.updateSelections();
+              break;
+            }
+
+          // (x2, y2) is top left, (x1, y1) is bottom right
+          } else {
+            if ( otherSelection.x2 <= x1 &&
+                 otherSelection.y2 <= y1 &&
+                 otherSelection.x1 >= x2 &&
+                 otherSelection.y1 >= y2 ) {
+              this.selections.splice(index, 1);
+              this.updateSelections();
+              break;
+            }
+          }
+        }
+      }
+    });
+  }
+
   handleOnKeyDown(event) {
     if ( event.keyCode == 27 ) {
       this.resetTableData();
@@ -342,6 +377,7 @@ class TableComponent extends Component<{}, TableState> {
   handleOnMouseUp(event) {
     this.selecting = false;
     if ( !!this.selections ) {
+      this.checkSelectionOverlaps();
       this.openAnnotationMenu(event);
     }
   }
