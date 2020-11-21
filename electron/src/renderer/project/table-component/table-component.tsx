@@ -336,33 +336,41 @@ class TableComponent extends Component<{}, TableState> {
   checkSelectionOverlaps() {
     this.selections.map((selection, index) => {
       const { x1, y1, x2, y2 } = selection;
+
+      // Get the coordinates of the sides
+      const aTop = y1 <= y2 ? y1 : y2;
+      const aLeft = x1 <= x2 ? x1 : x2;
+      const aRight = x2 >= x1 ? x2 : x1;
+      const aBottom = y2 >= y1 ? y2 : y1;
+
       for ( let j = 0; j < this.selections.length; j++ ) {
         if ( j !== index ) {
-          const otherSelection = this.selections[j];
+          const area = this.selections[j];
 
-          // (x1, y1) is top left, (x2, y2) is bottom right
-          if ( otherSelection.x1 <= otherSelection.x2 &&
-               otherSelection.y1 <= otherSelection.y2 ) {
-            if ( otherSelection.x1 <= x1 &&
-                 otherSelection.y1 <= y1 &&
-                 otherSelection.x2 >= x2 &&
-                 otherSelection.y2 >= y2 ) {
-              this.selections.splice(index, 1);
-              this.updateSelections();
-              break;
-            }
+          // Get the coordinates of the sides
+          const bTop = area.y1 <= area.y2 ? area.y1 : area.y2;
+          const bLeft = area.x1 <= area.x2 ? area.x1 : area.x2;
+          const bRight = area.x2 >= area.x1 ? area.x2 : area.x1;
+          const bBottom = area.y2 >= area.y1 ? area.y2 : area.y1;
 
-          // (x2, y2) is top left, (x1, y1) is bottom right
-          } else {
-            if ( otherSelection.x2 <= x1 &&
-                 otherSelection.y2 <= y1 &&
-                 otherSelection.x1 >= x2 &&
-                 otherSelection.y1 >= y2 ) {
-              this.selections.splice(index, 1);
-              this.updateSelections();
-              break;
-            }
+          // check for no-collisions between area A and B
+          if ( aTop > bBottom ) {
+            continue;
           }
+          if ( aBottom < bTop ) {
+            continue;
+          }
+          if ( aLeft > bRight ) {
+            continue;
+          }
+          if ( aRight < bLeft ) {
+            continue;
+          }
+
+          // collision detected, remove area B
+          this.selections.splice(j, 1);
+          this.updateSelections();
+          break;
         }
       }
     });
