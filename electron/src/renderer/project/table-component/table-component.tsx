@@ -334,7 +334,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   checkSelectionOverlaps() {
-    this.selections.map((selection, index) => {
+    this.selections.map((selection, i) => {
       const { x1, y1, x2, y2 } = selection;
 
       // Get the coordinates of the sides
@@ -344,7 +344,7 @@ class TableComponent extends Component<{}, TableState> {
       const aBottom = y2 >= y1 ? y2 : y1;
 
       for ( let j = 0; j < this.selections.length; j++ ) {
-        if ( j !== index ) {
+        if ( j !== i ) {
           const area = this.selections[j];
 
           // Get the coordinates of the sides
@@ -367,8 +367,14 @@ class TableComponent extends Component<{}, TableState> {
             continue;
           }
 
-          // collision detected, remove area B
-          this.selections.splice(j, 1);
+          if ( bTop <= aTop &&
+               bLeft <= aLeft &&
+               bRight >= aRight &&
+               bBottom >= aBottom ) {
+            this.selections.splice(i, 1);
+          } else {
+            this.selections.splice(j, 1);
+          }
           this.updateSelections();
           break;
         }
