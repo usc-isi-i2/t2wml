@@ -23,7 +23,7 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
     let errorsDiv;
     if (this.props.errors) {
-      errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
+      errorsDiv = <div key="errors" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
         Errors: {this.props.errors}
       </div>
     }

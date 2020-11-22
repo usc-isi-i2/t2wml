@@ -79,7 +79,8 @@ class Layer<T extends Entry> {
     }
 
     public find(row: number | null, col: number | null): T | undefined {
-        if (row && col) {
+
+        if (row!=null && col!=null) {
             const index = `${row},${col}`;
             // In case a map doesn't support an array as an index, use `${row},${col}`
             return this.entryMap.get(index);
