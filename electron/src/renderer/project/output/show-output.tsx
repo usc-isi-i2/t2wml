@@ -122,9 +122,33 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
             qualifierValueDiv = qualifierValueQNode.label;
           }
 
+          // qualifier unit
+
+          let qualifierUnitDiv;
+          if (qualifier.unit){
+          const qualifierUnitQNode = wikiStore.layers.statement.getQNode(qualifier["unit"]);
+
+          if (qualifierUnitQNode.url != "") {
+
+            qualifierUnitDiv =
+              "("+ <a
+                href={qualifierUnitQNode.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ "color": "hsl(200, 100%, 30%)" }}
+                key="qualifierValue"
+              >{qualifierUnitQNode.label}</a> +")"
+              ;
+          } else {
+            qualifierUnitDiv = "("+ qualifierUnitQNode.label +")";
+          }
+        }else{
+          qualifierUnitDiv=""
+        }
+
           // append to qualifiersDiv
           qualifiersDiv.push(
-            <div key={i}>- {qualifierPropertyDiv}: {qualifierValueDiv}</div>
+            <div key={i}>- {qualifierPropertyDiv}: {qualifierValueDiv} {qualifierUnitDiv}</div>
           );
         }
       }
