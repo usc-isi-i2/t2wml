@@ -330,13 +330,17 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       isAddedYaml: true,
     });
     let i = 1;
-    let yamlName = wikiStore.projects.projectDTO?._saved_state.current_sheet + "-" + i + ".yaml";  
+    let sheetName = wikiStore.projects.projectDTO!._saved_state.current_sheet;
+    // remove .csv from sheet name
+    if (sheetName.endsWith('.csv')) {
+      sheetName = sheetName.split('.csv')[0];
+    }
+    let yamlName = sheetName + "-" + i + ".yaml";  
     while (wikiStore.projects.projectDTO!.yaml_files.includes(yamlName)) {
       i++;
-      yamlName = wikiStore.projects.projectDTO?._saved_state.current_sheet + "-" + i + ".yaml"; 
+      yamlName = sheetName + "-" + i + ".yaml"; 
     }
     
-    // remove /csv if there is
     const yamls = this.state.yamlNames;
     yamls.push(yamlName);
     
