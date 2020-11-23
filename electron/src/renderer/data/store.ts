@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { AnnotationEntry, CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
+import { AnnotationEntry, CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, ProjectDTO, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
 import { Cell } from '../common/general';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
@@ -27,6 +27,14 @@ class TableState {
 
     }
 
+}
+
+class ProjectState {
+    @observable public project: projectDTO;
+
+    constructor() {
+        this.project = {} as ProjectDTO;
+    }
 }
 
 class WikifierState {
@@ -157,6 +165,7 @@ class LayerState {
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
+    @observable public project = new ProjectState();
     @observable public wikifier = new WikifierState();
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
