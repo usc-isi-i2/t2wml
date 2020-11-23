@@ -15,6 +15,7 @@ interface SheetProperties  {
     itemType?: "sheet" | "file",
 
     handleSelectSheet: (event: Event) => void;
+    handleAddItem?: () => void;
     handleDoubleClickItem?: (value: string, index: number) => void;
 }
 
@@ -60,6 +61,18 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
           disabled={wikiStore.yaml.showSpinner}
           onClick={(event: any) => { this.props.handleSelectSheet(event) }}
         >{sheetNames[i]}</Button>
+      );
+    }
+    if (this.props.handleAddItem) {
+      sheetSelectorHtml.push(
+        <Button
+          key="plus"
+          variant="success"
+          size="sm"
+          style={currSheetName === currSheetName ? currSheetStyle : otherSheetStyle}
+          disabled={wikiStore.yaml.showSpinner}
+          onClick={() => this.props.handleAddItem!()}
+        >+</Button>
       );
     }
     // Rename item (yaml), double click on button 

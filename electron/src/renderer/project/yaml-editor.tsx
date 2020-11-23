@@ -36,6 +36,7 @@ interface yamlState extends IStateWithError {
   isYamlContentChanged: boolean;
   isImportFile: boolean;
   disableYaml: boolean;
+  isAddedYaml: boolean;
 }
 
 
@@ -65,6 +66,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       isYamlContentChanged: false,
       isImportFile: false,
       disableYaml: false,
+      isAddedYaml: false,
     };
 
     // init functions
@@ -120,7 +122,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   async saveYaml() {
     // Check if yamlContent changed (if file not inported)
-    if (!this.state.isYamlContentChanged && !this.state.isImportFile) {
+    if (!this.state.isYamlContentChanged && !this.state.isImportFile && !this.state.isAddedYaml) {
       wikiStore.yaml.haveToSaveYaml = false;
       return;
     }
@@ -149,7 +151,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       wikiStore.yaml.haveToSaveYaml = false;
       this.setState({
         isYamlContentChanged: false,
-        isImportFile: false
+        isImportFile: false,
+        isAddedYaml: false,
       });
     }
   }
@@ -320,6 +323,33 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
+  async addYaml() {
+    wikiStore.yaml.haveToSaveYaml = true;
+
+    this.setState({
+      isAddedYaml: true,
+    });
+    let i = 1;
+    let yamlName = wikiStore.projects.projectDTO?._saved_state.current_sheet + "-" + i + ".yaml";  
+    while (wikiStore.projects.projectDTO!.yaml_files.includes(yamlName)) {
+      i++;
+      yamlName = wikiStore.projects.projectDTO?._saved_state.current_sheet + "-" + i + ".yaml"; 
+    }
+    
+    // remove /csv if there is
+    const yamls = this.state.yamlNames;
+    yamls.push(yamlName);
+    
+    this.setState({
+      currentYaml: yamlName,
+      yamlNames: yamls,
+      
+      yamlContent: defaultYamlContent
+    });
+    // await this.saveYaml();
+    wikiStore.yaml.haveToSaveYaml = true;
+  }
+
   render() {
     const { yamlContent } = this.state;
 
@@ -462,6 +492,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               currSheetName={this.state.currentYaml}
               itemType="file"
               handleSelectSheet={(event) => this.handleChangeFile(event)}
+              handleAddItem={() => this.addYaml()}
               handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
             />
           </Card.Footer>
