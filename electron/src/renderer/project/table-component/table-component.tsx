@@ -167,10 +167,10 @@ class TableComponent extends Component<{}, TableState> {
 
     // send request
     const sheetName = event.target.innerHTML;
-    console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
+    console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
       await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
-      console.log("<TableViewer> <- %c/change_sheet%c with:", LOG.link, LOG.default);
+      console.log("<TableComponent> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 
       if (wikiStore.yaml.yamlContent) {
         wikiStore.table.isCellSelectable = true;
