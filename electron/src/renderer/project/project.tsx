@@ -14,7 +14,7 @@ import { ErrorMessage, t2wmlColors } from '../common/general';
 // components
 import Editors from './editor';
 import Output from './output/output';
-import TableViewer from './table-viewer/table-viewer';
+import TableComponent from './table-component/table-component';
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
 
@@ -206,9 +206,9 @@ class Project extends Component<ProjectProps, ProjectState> {
             <Sidebar />
           </div>
 
-          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300} 
+          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
-            <TableViewer />
+            <TableComponent />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />
               <Output />
