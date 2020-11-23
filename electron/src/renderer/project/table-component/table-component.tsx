@@ -117,7 +117,36 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   async handleOpenTableFile(event: any) {
-    console.log('handleOpenTableFile called');
+    this.resetTableData();
+
+    // get table file
+    const file = event.target.files[0];
+    if ( !file ) { return; }
+
+    // before sending request
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+
+    // send request
+    console.log("<TableComponent> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData));
+      console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
+
+      // load yaml data
+      if ( wikiStore.yaml.yamlContent ) {
+        wikiStore.table.isCellSelectable = true;
+      } else {
+        wikiStore.table.isCellSelectable = false;
+      }
+    } catch(err) {
+      console.log('err in file upload: ', err);
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
+    }
   }
 
   resetTableData() {
