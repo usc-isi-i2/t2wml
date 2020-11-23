@@ -13,7 +13,7 @@ import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react"
-import wikiStore from '../data/store';
+import wikiStore, { LayerState } from '../data/store';
 import { defaultYamlContent } from "./default-values";
 import { IReactionDisposer, reaction } from 'mobx';
 import SheetSelector from './table-viewer/sheet-selector';
@@ -178,6 +178,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         yamlParseErrFloatMessage: err.stack,
       });
     }
+    if (yamlContent === defaultYamlContent) {
+      this.setState({ yamlParseErrMsg: '' });
+    }
   }
 
   handleOpenYamlFile(event: any) {
@@ -219,6 +222,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           yamlParseErrFloatMessage: err.stack
         });
       }
+      if (yamlContent === defaultYamlContent) {
+        this.setState({ yamlParseErrMsg: '' });
+      }
     });
   }
 
@@ -241,20 +247,23 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         yamlParseErrFloatMessage: err.stack
       });
     }
+    if (yamlContent === defaultYamlContent) {
+      this.setState({ yamlParseErrMsg: '' });
+    }
   }
 
   updateErrorFromStore(){
     const yamlError = wikiStore.yaml.yamlError;
-    if (yamlError && yamlError!=""){
+    if (yamlError && yamlError!="") {
       console.log("Errors while applying yaml:")
       console.log(yamlError);
       console.log(wikiStore.layers.error);
-      this.setState({
-        yamlParseErrMsg: "⚠️ " + yamlError
-      });
+      if (this.state.yamlContent !== defaultYamlContent) {
+        this.setState({
+          yamlParseErrMsg: "⚠️ " + yamlError
+        });
+      }
     }
-
-
   }
 
   updateYamlFiles(project: ProjectDTO) {
@@ -269,6 +278,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         this.setState({ yamlNames: project!.yaml_sheet_associations[dataFile][sheetName].val_arr,
           currentYaml: project!.yaml_sheet_associations[dataFile][sheetName].selected });
       } else {
+        // this.setState({isAddedYaml: true});
         let yamlToCurrentSheet = project?._saved_state.current_sheet;
         if (yamlToCurrentSheet.endsWith('.csv')) {
           yamlToCurrentSheet = yamlToCurrentSheet.split('.csv')[0];
@@ -280,6 +290,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         this.setState({ yamlNames: [yamlToCurrentSheet],
           currentYaml: yamlToCurrentSheet });
       }
+    } else {
+      this.setState({ yamlNames:[], currentYaml: '' });
     }
   }
 
@@ -324,6 +336,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   async addYaml() {
+    debugger
     wikiStore.yaml.haveToSaveYaml = true;
 
     this.setState({
@@ -347,9 +360,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.setState({
       currentYaml: yamlName,
       yamlNames: yamls,
-      
       yamlContent: defaultYamlContent
     });
+
+    wikiStore.layers = new LayerState();
     // await this.saveYaml();
     wikiStore.yaml.haveToSaveYaml = true;
   }
@@ -491,14 +505,28 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             >
               Apply
             </Button>
-            <SheetSelector
-              sheetNames={this.state.yamlNames}
-              currSheetName={this.state.currentYaml}
-              itemType="file"
-              handleSelectSheet={(event) => this.handleChangeFile(event)}
-              handleAddItem={() => this.addYaml()}
-              handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
-            />
+            
+            <div
+              id="yamlSelector" // apply custom scroll bar
+              style={{
+                height: "55px",
+                padding: "0.5rem 0.75rem",
+                background: "whitesmoke",
+                // overflow: "scroll hidden", // safari does not support this
+                overflowX: "scroll",
+                overflowY: "hidden",
+                whiteSpace: "nowrap"
+              }}
+            >
+              <SheetSelector
+                sheetNames={this.state.yamlNames}
+                currSheetName={this.state.currentYaml}
+                itemType="file"
+                handleSelectSheet={(event) => this.handleChangeFile(event)}
+                handleAddItem={() => this.addYaml()}
+                handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
+              />
+            </div>
           </Card.Footer>
         </Card>
       </Fragment>

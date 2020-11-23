@@ -112,7 +112,7 @@ class StatementLayer extends Layer<StatementEntry>{
 }
 
 
-class LayerState {
+export class LayerState {
     @observable public qnode: Layer<QNodeEntry>;
     @observable public type: Layer<TypeEntry>;
     @observable public statement: StatementLayer;
