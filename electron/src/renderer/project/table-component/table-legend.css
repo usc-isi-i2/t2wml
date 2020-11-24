@@ -1,11 +1,14 @@
 .legend-button {
   position: absolute;
-  bottom: 70px;
+  bottom: 20px;
   right: 20px;
   border: 0;
   cursor: pointer;
   background: rgba(0, 0, 0, 0.5);
   z-index: 200;
+}
+.legend-button.offset {
+  bottom: 70px;
 }
 
 .legend-wrapper {

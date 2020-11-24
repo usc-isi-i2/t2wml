@@ -45,7 +45,7 @@ class TableLegend extends React.Component {
 
   renderLegendOverlay() {
     return (
-      <Popover className="shadow legend-wrapper">
+      <Popover className="legend-wrapper shadow">
         <Popover.Title as="h6">Legend</Popover.Title>
         <Popover.Content>
           {this.renderLegend()}
@@ -55,6 +55,7 @@ class TableLegend extends React.Component {
   }
 
   render() {
+    const { offset } = this.props;
     return (
       <OverlayTrigger
         placement="top"
@@ -62,7 +63,7 @@ class TableLegend extends React.Component {
         overlay={this.renderLegendOverlay()}>
         <Button
           variant="secondary"
-          className="legend-button shadow">
+          className={`legend-button shadow ${!!offset ? 'offset' : ''}`}>
           <FontAwesomeIcon icon={faQuestion} />
         </Button>
       </OverlayTrigger>
