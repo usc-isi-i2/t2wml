@@ -142,7 +142,8 @@ class TableComponent extends Component<{}, TableState> {
         wikiStore.table.isCellSelectable = false;
       }
     } catch(err) {
-      console.log('err in file upload: ', err);
+      error.errorDescription += "\n\nCannot open file!";
+      this.setState({ errorMessage: error });
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -207,9 +208,7 @@ class TableComponent extends Component<{}, TableState> {
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-
     } catch (error) {
-      console.log(error);
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
     }
@@ -218,7 +217,6 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateQnodeCellsFromStore() {
-    console.log('updateQnodeCellsFromStore called');
   }
 
   updateProjectInfo() {
@@ -643,7 +641,6 @@ class TableComponent extends Component<{}, TableState> {
 
   renderLegend() {
     const { multipleSheets } = this.state;
-    console.log(multipleSheets)
     return (
       <TableLegend offset={multipleSheets} />
     )
