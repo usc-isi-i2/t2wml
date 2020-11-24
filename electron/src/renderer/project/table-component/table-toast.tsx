@@ -14,13 +14,13 @@ interface TableToastProperties {
 class TableToast extends React.Component<TableToastProperties, {}> {
 
   render() {
-    const { message, onClose } = this.props;
+    const { text, onClose } = this.props;
     return (
       <div className="table-toast">
         <Toast onClose={() => onClose()}>
           <Toast.Header>
             <span className="mr-auto font-weight-bold">
-              {message}
+              {text}
             </span>
           </Toast.Header>
         </Toast>

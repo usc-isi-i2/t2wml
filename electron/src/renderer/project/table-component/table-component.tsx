@@ -671,15 +671,15 @@ class TableComponent extends Component<{}, TableState> {
   renderToast() {
     const { selectedCell, showToast } = this.state;
     if ( showToast ) {
-      let message = 'Selected:';
+      let text = 'Selected:';
       if ( !!this.selections ) {
         this.selections.forEach(selection => {
-          message += ` ${utils.humanReadableSelection(selection)}`
+          text += ` ${utils.humanReadableSelection(selection)}`;
         });
       }
       return (
         <TableToast
-          message={message}
+          text={text}
           onClose={() => this.onCloseToast()}
         />
       )
