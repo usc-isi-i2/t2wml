@@ -65,7 +65,12 @@ def json_response(func):
             return json.dumps(data, indent=3, default=numpy_converter), e.code
         except Exception as e:
             data = {"error": make_frontend_err_dict(e)}
-            return json.dumps(data, indent=3, default=numpy_converter), 500
+            try:
+                code=e.code
+                data["error"]["code"]=code
+            except AttributeError:
+                code=500
+            return json.dumps(data, indent=3, default=numpy_converter), code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
