@@ -22,13 +22,19 @@ interface SheetProperties  {
 class SheetSelector extends Component<SheetProperties, {}> {
 
   renderSheets() {
-    const { currSheetName, handleSelectSheet, sheetNames } = this.props;
+    const {
+      currSheetName,
+      disabled,
+      handleSelectSheet,
+      sheetNames,
+    } = this.props;
     if ( !sheetNames ) { return null; }
     return sheetNames.map((sheet, i) => (
       <Button
         key={i}
         size="sm"
         variant="success"
+        disabled={disabled}
         className={sheet === currSheetName ? 'active' : '' }
         onClick={(event: any) => { handleSelectSheet(event) }}>
         {sheet}

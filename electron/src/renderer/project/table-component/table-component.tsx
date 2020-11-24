@@ -769,6 +769,7 @@ class TableComponent extends Component<{}, TableState> {
       <SheetSelector
         sheetNames={sheetNames}
         currSheetName={currSheetName}
+        disabled={wikiStore.yaml.showSpinner}
         handleSelectSheet={(event) => this.handleSelectSheet(event)} />
     )
   }
