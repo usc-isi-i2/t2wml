@@ -15,8 +15,9 @@ interface SettingsProperties {
     showSettings: boolean;
     endpoint: string;
     warnEmpty: boolean;
+    calendar: string;
 
-    handleSaveSettings: (endpoint: string, warn: boolean) => void;
+    handleSaveSettings: (endpoint: string, warn: boolean, calendar:string) => void;
     cancelSaveSettings: () => void;
 }
 
@@ -24,13 +25,21 @@ interface SettingsState {
   tmpWarnEmpty: boolean;
 }
 
+const calendarOptions = {
+  "leave (Leave Untouched)": "leave",
+  "replace (Replace with Gregorian)": "replace",
+  "add (Add Gregorian)": "add"
+};
+
 @observer
 class Settings extends Component<SettingsProperties, SettingsState> {
   private tempSparqlEndpointRef: React.RefObject<HTMLInputElement>;
+  private tempCalendarRef: React.RefObject<HTMLInputElement>;
 
   constructor(props: SettingsProperties) {
     super(props);
     this.tempSparqlEndpointRef = React.createRef();
+    this.tempCalendarRef = React.createRef();
 
     this.state = {
       tmpWarnEmpty: this.props.warnEmpty,
@@ -40,7 +49,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
   handleSaveSettings() {
     const endpoint = (this.tempSparqlEndpointRef as any).current.value;
     const warn = this.state.tmpWarnEmpty;
-    this.props.handleSaveSettings(endpoint, warn);
+    const calendar = (calendarOptions as any)[(this.tempCalendarRef as any).current.value];
+    this.props.handleSaveSettings(endpoint, warn, calendar);
   }
 
 
@@ -49,6 +59,9 @@ class Settings extends Component<SettingsProperties, SettingsState> {
       Config.defaultSparqlEndpoint,
       "https://query.wikidata.org/sparql"
     ];
+    const calendarItems = Object.keys(calendarOptions).map((item) =>
+    <Dropdown.Item key="item.name" onClick={() => (this.tempCalendarRef as any).current.value = item}>{item}</Dropdown.Item>
+  );
     return (
       <Modal show={this.props.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
 
@@ -81,6 +94,10 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
+              </Form.Group>
+
+
+              <Form.Group as={Row} style={{ marginTop: "1rem" }}>
 
               <Form.Label column sm="12" md="3" className="text-right">
                 Warn for empty cells
@@ -93,7 +110,25 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   onChange={(event) => this.setState({ tmpWarnEmpty: event?.target.checked })}/>
               </Col>
             </Form.Group>
-
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+              Non-Gregorian Calendar
+              </Form.Label>
+              <Col sm="12" md="9">
+                <Dropdown as={InputGroup} alignRight>
+                  <Form.Control
+                    type="text"
+                    defaultValue={Object.keys(calendarOptions).find(key => (calendarOptions as any)[key] === this.props.calendar)}
+                    ref={this.tempCalendarRef}
+                    onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
+                  />
+                  <Dropdown.Toggle split variant="outline-dark" id="calendar"/>
+                  <Dropdown.Menu style={{ width: "100%" }}>
+                    {calendarItems}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Col>
+            </Form.Group>
           </Form>
         </Modal.Body>
 

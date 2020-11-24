@@ -9,14 +9,20 @@ interface SavedStateDTO {
     current_yaml: string;
  }
 
+ interface CurrentAndArrayDTO{
+     selected: string,
+     val_arr: string[]
+ }
+
+
 export interface ProjectDTO {
     directory: string;
     title: string;
-    data_files: { [key: string]: string[] };
+    data_files: { [key: string]: CurrentAndArrayDTO };
     yaml_files: string[];
     wikifier_files: string[];
     entity_files: string[];
-    yaml_sheet_associations: { [key: string]: { [key: string] : string[] } };
+    yaml_sheet_associations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
     handle_calendar: string;
