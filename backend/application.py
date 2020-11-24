@@ -370,7 +370,8 @@ def upload_yaml():
 
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
-    save_yaml(project, yaml_data, yaml_title)
+    sheet_name = request.form["sheetName"]
+    save_yaml(project, yaml_data, yaml_title, sheet_name)
     response=dict(project=project.__dict__)
     return response, 200
 
@@ -390,8 +391,9 @@ def apply_yaml():
 
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
+    sheet_name = request.form["sheetName"]
     
-    save_yaml(project, yaml_data, yaml_title)
+    save_yaml(project, yaml_data, yaml_title, sheet_name)
     
     response=dict(project=project.__dict__, layers=get_empty_layers())
     try:

@@ -101,6 +101,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const formData = new FormData();
     formData.append("yaml", this.state.yamlContent);
     formData.append("title", this.state.currentYaml);
+    formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
+
 
     try {
       await this.requestService.call(this, () => this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData));
@@ -135,6 +137,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const formData = new FormData();
     formData.append("yaml", this.state.yamlContent);
     formData.append("title", this.state.currentYaml);
+    formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
 
     try {
       await this.requestService.call(this, () => this.requestService.saveYaml(wikiStore.projects.current!.folder, formData));
