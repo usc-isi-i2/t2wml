@@ -122,10 +122,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   async saveYaml() {
     // Check if yamlContent changed (if file not inported)
-    if (!this.state.isYamlContentChanged && !this.state.isImportFile && !this.state.isAddedYaml) {
-      wikiStore.yaml.haveToSaveYaml = false;
-      return;
-    }
+    // if (!this.state.isYamlContentChanged && !this.state.isImportFile && !this.state.isAddedYaml) {
+    //   wikiStore.yaml.haveToSaveYaml = false;
+    //   return;
+    // }
     console.log("Save yaml");
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -337,7 +337,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   async addYaml() {
     debugger
-    wikiStore.yaml.haveToSaveYaml = true;
+    // wikiStore.yaml.haveToSaveYaml = true;
+    await this.saveYaml();
 
     this.setState({
       isAddedYaml: true,
@@ -365,7 +366,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     wikiStore.layers = new LayerState();
     // await this.saveYaml();
-    wikiStore.yaml.haveToSaveYaml = true;
+    // wikiStore.yaml.haveToSaveYaml = true;
   }
 
   render() {
@@ -524,6 +525,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 itemType="file"
                 handleSelectSheet={(event) => this.handleChangeFile(event)}
                 handleAddItem={() => this.addYaml()}
+                disableAdd={this.state.yamlContent === defaultYamlContent}
                 handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
               />
             </div>

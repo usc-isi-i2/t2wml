@@ -13,6 +13,7 @@ interface SheetProperties  {
     sheetNames: Array<string> | null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
     currSheetName: string | null,  // csv: null    excel: "sheet1"
     itemType?: "sheet" | "file",
+    disableAdd?: boolean,
 
     handleSelectSheet: (event: Event) => void;
     handleAddItem?: () => void;
@@ -70,7 +71,7 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
           variant="success"
           size="sm"
           style={currSheetName === currSheetName ? currSheetStyle : otherSheetStyle}
-          disabled={wikiStore.yaml.showSpinner}
+          disabled={this.props.disableAdd || wikiStore.yaml.showSpinner}
           onClick={() => this.props.handleAddItem!()}
         >+</Button>
       );
