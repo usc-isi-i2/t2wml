@@ -13,3 +13,6 @@
 .table-toast .toast-header {
   background: whitesmoke;
 }
+.table-toast a.type-qnode {
+  color: #006699;
+}
