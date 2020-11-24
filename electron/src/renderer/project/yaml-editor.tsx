@@ -507,7 +507,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               Apply
             </Button>
             
-            <div
+            {/* <div
               id="yamlSelector" // apply custom scroll bar
               style={{
                 height: "55px",
@@ -518,7 +518,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 overflowY: "hidden",
                 whiteSpace: "nowrap"
               }}
-            >
+            > */}
               <SheetSelector
                 sheetNames={this.state.yamlNames}
                 currSheetName={this.state.currentYaml}
@@ -528,7 +528,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 disableAdd={this.state.yamlContent === defaultYamlContent}
                 handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
               />
-            </div>
+            {/* </div> */}
           </Card.Footer>
         </Card>
       </Fragment>
