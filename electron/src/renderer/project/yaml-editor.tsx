@@ -296,10 +296,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   async handleChangeFile(event: any) {
-    wikiStore.yaml.showSpinner = true;
     const yaml = event.target.innerHTML;
+    wikiStore.yaml.showSpinner = true;
+    // wikiStore.yaml.haveToSaveYaml = true;
+    await this.saveYaml();
     this.setState({currentYaml: yaml});
-    wikiStore.yaml.haveToSaveYaml = true;
     try {
       await this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml);
     } finally {
