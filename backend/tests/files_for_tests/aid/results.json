@@ -821,9 +821,6 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 2,
                                 1
@@ -860,15 +857,6 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [
-                                {},
-                                {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                }
-                            ],
                             "subject": [
                                 3,
                                 1
@@ -895,6 +883,12 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -908,9 +902,6 @@
                             "property": [
                                 1,
                                 5
-                            ],
-                            "qualifiers": [
-                                {}
                             ],
                             "subject": [
                                 4,
@@ -948,9 +939,6 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 5,
                                 1
@@ -986,9 +974,6 @@
                             "property": [
                                 1,
                                 5
-                            ],
-                            "qualifiers": [
-                                {}
                             ],
                             "subject": [
                                 6,
@@ -1026,9 +1011,6 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 7,
                                 1
@@ -1064,9 +1046,6 @@
                             "property": [
                                 1,
                                 6
-                            ],
-                            "qualifiers": [
-                                {}
                             ],
                             "subject": [
                                 2,
@@ -1104,15 +1083,6 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [
-                                {},
-                                {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                }
-                            ],
                             "subject": [
                                 3,
                                 1
@@ -1139,6 +1109,12 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1152,9 +1128,6 @@
                             "property": [
                                 1,
                                 6
-                            ],
-                            "qualifiers": [
-                                {}
                             ],
                             "subject": [
                                 4,
@@ -1192,9 +1165,6 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 5,
                                 1
@@ -1231,9 +1201,6 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 6,
                                 1
@@ -1269,9 +1236,6 @@
                             "property": [
                                 1,
                                 6
-                            ],
-                            "qualifiers": [
-                                {}
                             ],
                             "subject": [
                                 7,
@@ -1309,9 +1273,6 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 2,
                                 1
@@ -1348,15 +1309,6 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [
-                                {},
-                                {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                }
-                            ],
                             "subject": [
                                 3,
                                 1
@@ -1383,6 +1335,12 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1396,9 +1354,6 @@
                             "property": [
                                 1,
                                 7
-                            ],
-                            "qualifiers": [
-                                {}
                             ],
                             "subject": [
                                 4,
@@ -1436,9 +1391,6 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 5,
                                 1
@@ -1475,9 +1427,6 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [
-                                {}
-                            ],
                             "subject": [
                                 6,
                                 1
@@ -1513,9 +1462,6 @@
                             "property": [
                                 1,
                                 7
-                            ],
-                            "qualifiers": [
-                                {}
                             ],
                             "subject": [
                                 7,
