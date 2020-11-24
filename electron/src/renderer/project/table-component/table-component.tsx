@@ -677,9 +677,11 @@ class TableComponent extends Component<{}, TableState> {
           text += ` ${utils.humanReadableSelection(selection)}`;
         });
       }
+      const qnode = wikiStore.layers.qnode.find(selectedCell);
       return (
         <TableToast
           text={text}
+          qnode={qnode}
           onClose={() => this.onCloseToast()}
         />
       )
