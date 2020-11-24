@@ -4,6 +4,8 @@ import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
 import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
 import { Cell } from '../common/general';
+import RequestService from '../common/service';
+import { defaultYamlContent } from '../project/default-values';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
 class EditorsState {
@@ -52,10 +54,49 @@ class OutputState {
 }
 
 class YamlEditorState {
+    public requestService = new RequestService();
+    @observable public yamlName = '';
+    @observable public yamlList: string[] = [];
     @observable public showSpinner = false;
-    @observable public yamlContent?: string;
+    @observable public yamlContent: string = defaultYamlContent;
     @observable public yamlError?: string | undefined;
-    @observable public haveToSaveYaml = false;
+
+    @observable public async saveYaml() {
+        // Check if yamlContent changed (if file not inported)
+    // if (!this.state.isYamlContentChanged && !this.state.isImportFile && !this.state.isAddedYaml) {
+    //   return;
+    // }
+    console.log("Save yaml");
+    // before sending request
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+
+    // send request
+    const formData = new FormData();
+    formData.append("yaml", this.yamlContent!);
+    formData.append("title", this.yamlName!);
+    formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
+
+    try {
+      await this.requestService.call(this, () => this.requestService.saveYaml(wikiStore.projects.current!.folder, formData));
+
+      // follow-ups (success)
+      wikiStore.output.isDownloadDisabled = false;
+
+    } catch {
+      console.error("Save yaml failed.");
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+      wikiStore.table.isCellSelectable = true;
+
+    //   this.setState({
+    //     isYamlContentChanged: false,
+    //     isImportFile: false,
+    //     isAddedYaml: false,
+    //   });
+        }
+    }
 }
 
 class Layer<T extends Entry> {

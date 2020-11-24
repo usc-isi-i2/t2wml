@@ -180,11 +180,11 @@ class TableViewer extends Component<{}, TableState> {
     });
     
     // save prev yaml
-    wikiStore.yaml.haveToSaveYaml = true;
+    await wikiStore.yaml.saveYaml();
 
     // remove current status
     this.updateSelectedCell(new Cell());
-    wikiStore.yaml.yamlContent = undefined;
+    wikiStore.yaml.yamlContent = '';
     wikiStore.output.isDownloadDisabled = true;
 
     // before sending request
