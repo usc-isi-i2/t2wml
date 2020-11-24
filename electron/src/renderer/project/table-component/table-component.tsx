@@ -642,7 +642,11 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderLegend() {
-    return <TableLegend />
+    const { multipleSheets } = this.state;
+    console.log(multipleSheets)
+    return (
+      <TableLegend offset={multipleSheets} />
+    )
   }
 
   openAnnotationMenu(event) {
