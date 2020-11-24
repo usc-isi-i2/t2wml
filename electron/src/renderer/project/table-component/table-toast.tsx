@@ -13,16 +13,23 @@ interface TableToastProperties {
 
 class TableToast extends React.Component<TableToastProperties, {}> {
 
+  renderToastHeader() {
+    const { text } = this.props;
+    return (
+      <Toast.Header>
+        <span className="mr-auto font-weight-bold">
+          {text}
+        </span>
+      </Toast.Header>
+    )
+  }
+
   render() {
     const { text, onClose } = this.props;
     return (
       <div className="table-toast">
         <Toast onClose={() => onClose()}>
-          <Toast.Header>
-            <span className="mr-auto font-weight-bold">
-              {text}
-            </span>
-          </Toast.Header>
+          {this.renderToastHeader()}
         </Toast>
       </div>
     );
