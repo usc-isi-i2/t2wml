@@ -62,11 +62,9 @@ class YamlEditorState {
     @observable public yamlError?: string | undefined;
 
     @observable public async saveYaml() {
-        // Check if yamlContent changed (if file not inported)
-    // if (!this.state.isYamlContentChanged && !this.state.isImportFile && !this.state.isAddedYaml) {
-    //   return;
-    // }
-    console.log("Save yaml");
+    console.log("Save yaml: ", this.yamlName);
+    console.log(this.yamlContent);
+
     // before sending request
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
@@ -78,7 +76,7 @@ class YamlEditorState {
     formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
 
     try {
-      await this.requestService.call(this, () => this.requestService.saveYaml(wikiStore.projects.current!.folder, formData));
+      await this.requestService.saveYaml(wikiStore.projects.current!.folder, formData);
 
       // follow-ups (success)
       wikiStore.output.isDownloadDisabled = false;
@@ -89,12 +87,6 @@ class YamlEditorState {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
       wikiStore.table.isCellSelectable = true;
-
-    //   this.setState({
-    //     isYamlContentChanged: false,
-    //     isImportFile: false,
-    //     isAddedYaml: false,
-    //   });
         }
     }
 }
