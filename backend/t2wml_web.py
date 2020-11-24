@@ -160,22 +160,21 @@ def get_yaml_layers(calc_params):
         
 
         
-        for cell in errors:
-            #todo: convert cell to indices
-            cell_index=indexer(cell)
-            errorEntry=dict(indices=[cell_index], error=errors[cell])
+        for cell_name in errors:
+            cell_index=indexer(cell_name)
+            errorEntry=dict(indices=[cell_index], error=errors[cell_name])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell].keys())):	
-                cell_type_indices["majorError"][cell]=True
+            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell_name].keys())):	
+                cell_type_indices["majorError"][cell_name]=True
             else:	
-                cell_type_indices["minorError"][cell]=True
+                cell_type_indices["minorError"][cell_name]=True
 
 
-        for cell in statements:
-            cell_type_indices["data"][cell]=True
+        for cell_name in statements:
+            cell_type_indices["data"][cell_name]=True
 
-            statement = statements[cell]
+            statement = statements[cell_name]
             get_cell_qnodes(statement, qnodes)
             cells=statement["cells"]
             cells.pop("value")
@@ -184,6 +183,8 @@ def get_yaml_layers(calc_params):
                     cell_type_indices[key][cells[key]]=True
                 else:
                     cell_type_indices["metadata"][cells[key]]=True
+                #convert to frontend format
+                cells[key]=indexer(cells[key])
 
             qualifiers = statement.get("qualifier", None)
             if qualifiers:
@@ -191,16 +192,21 @@ def get_yaml_layers(calc_params):
                     q_cells=qualifier["cells"]
                     qual_cell = q_cells.pop("value", None)
                     if qual_cell:
-                        cell_type_indices["qualifier"][qual_cell]=True
+                        q_cells["qualifier"]=qual_cell
+                        
                     for key in q_cells:
                         if key=="property":
                             cell_type_indices[key][q_cells[key]]=True
                         else:
                             cell_type_indices["metadata"][q_cells[key]]=True
+                        #convert to frontend format
+                        q_cells[key]=indexer(q_cells[key])
+                        
+
 
             
-            statementEntry=dict(indices=[indexer(cell)])#, qnodes=qnodes)
-            statementEntry.update(**statements[cell])
+            statementEntry=dict(indices=[indexer(cell_name)])#, qnodes=qnodes)
+            statementEntry.update(**statements[cell_name])
             statementLayer["entries"].append(statementEntry)
         
 
@@ -218,7 +224,7 @@ def get_yaml_layers(calc_params):
 
     type_entries=[]
     for key in cell_type_indices:
-        indices = [indexer(cell) for cell in cell_type_indices[key]]
+        indices = [indexer(cell_name) for cell_name in cell_type_indices[key]]
         type_entries.append(dict(type=key, indices=indices))
     typeLayer=dict(layerType="type", entries=type_entries)
 
