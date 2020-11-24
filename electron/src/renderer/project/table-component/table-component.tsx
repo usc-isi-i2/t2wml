@@ -102,9 +102,6 @@ class TableComponent extends Component<{}, TableState> {
   componentDidMount() {
     document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
 
-    this.disposers.push(reaction(() => wikiStore.table.qnodes, () => this.updateQnodeCellsFromStore()));
-    this.disposers.push(reaction(() => wikiStore.table.rowData, () => this.updateQnodeCellsFromStore()));
-
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.layers.type, () => this.styleCellTypeColors()));
   }
@@ -214,9 +211,6 @@ class TableComponent extends Component<{}, TableState> {
     }
     wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = false;
-  }
-
-  updateQnodeCellsFromStore() {
   }
 
   updateProjectInfo() {
