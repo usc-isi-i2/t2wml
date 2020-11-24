@@ -30,7 +30,7 @@ class TableState {
 }
 
 class ProjectState {
-    @observable public project: projectDTO;
+    @observable public project: ProjectDTO;
 
     constructor() {
         this.project = {} as ProjectDTO;
@@ -87,7 +87,7 @@ class Layer<T extends Entry> {
     }
 
     public find(cell: Cell | null): T | undefined {
-        if (cell.row && cell.col) {
+        if (cell!=null) {
             const index = `${cell.row},${cell.col}`;
             return this.entryMap.get(index);
         }
