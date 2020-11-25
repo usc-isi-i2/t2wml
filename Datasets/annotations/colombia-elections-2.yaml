@@ -1,0 +1,21 @@
+### A simplest sample of T2WML.
+### Replace all #PLACEHOLDER below to start.
+statementMapping:
+  region:
+    - range: A20:A22
+  template:
+    subject: =value[A, 17]
+    property: =item[A, 18]
+    value: =value[$col, $row]
+    qualifier:
+      - region:
+            left: C
+            right: F
+            top: =$row
+            bottom: =$row
+        property: =item[$qcol, 19]
+        value: =value[$qcol, $qrow]
+        unit: =value[$qcol-$n, 18]
+    reference:
+        - property: P585
+          value: test

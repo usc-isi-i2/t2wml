@@ -1,0 +1,67 @@
+_saved_state:
+  current_data_file: Challenge Datasets.xlsx
+  current_sheet: canonical
+  current_wikifiers:
+  - wikify_region_output.csv
+  current_yaml: canonical.yaml
+cache_id: 3491203f-3a48-4346-87db-6abb86bcb624
+data_files:
+  Challenge Datasets.xlsx:
+    selected: canonical
+    val_arr:
+    - canonical
+    - relational
+    - year-row
+    - product-row
+    - multi-header
+    - country-main-subject
+    - colombia-elections
+entity_files: []
+handle_calendar: leave
+sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
+title: annotations
+warn_for_empty_cells: false
+wikifier_files:
+- wikify_region_output.csv
+yaml_files:
+- canonical.yaml
+- relational.yaml
+- year-row.yaml
+- product-row.yaml
+- multi-header.yaml
+- country-main-subject.yaml
+- colombia-elections-1.yaml
+- colombia-elections-2.yaml
+- colombia-elections-3.yaml
+yaml_sheet_associations:
+  Challenge Datasets.xlsx:
+    canonical:
+      selected: canonical.yaml
+      val_arr:
+      - canonical.yaml
+    colombia-elections:
+      selected: colombia-elections-1.yaml
+      val_arr:
+      - colombia-elections-1.yaml
+      - colombia-elections-2.yaml
+      - colombia-elections-3.yaml
+    country-main-subject:
+      selected: country-main-subject.yaml
+      val_arr:
+      - country-main-subject.yaml
+    multi-header:
+      selected: multi-header.yaml
+      val_arr:
+      - multi-header.yaml
+    product-row:
+      selected: product-row.yaml
+      val_arr:
+      - product-row.yaml
+    relational:
+      selected: relational.yaml
+      val_arr:
+      - relational.yaml
+    year-row:
+      selected: year-row.yaml
+      val_arr:
+      - year-row.yaml

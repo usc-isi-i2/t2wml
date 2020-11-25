@@ -1,0 +1,14 @@
+### A simplest sample of T2WML.
+### Replace all #PLACEHOLDER below to start.
+statementMapping:
+  region:
+    - range: C4:D11
+  template:
+    subject: =item[$col, 3]
+    property: =item[B, $row]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[A, 3]
+        value: =item[A, $row]
+      - property: =item[E, 3]
+        value: =value[E, $row]
