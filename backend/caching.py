@@ -28,7 +28,6 @@ class CacheHolder:
         m_time_str = str(os.path.getmtime(self.data_file_path))
         cache_hash.update(m_time_str.encode('utf-8'))
         file_name = self.sheet_name +"yaml_"+yaml_hash.hexdigest()+ "_" + cache_hash.hexdigest() + ".json"
-        print(yaml_hash.hexdigest())
         file_path = os.path.join(CACHE_FOLDER, "calc_cache_v"+__cache_version__)
         if not os.path.isdir(file_path):
             os.makedirs(file_path)

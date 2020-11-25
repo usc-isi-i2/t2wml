@@ -35,7 +35,7 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
 
 def get_labels_and_descriptions(items, sparql_endpoint):
     response = dict()
-    missing_items = []
+    missing_items = {}
     for item in items:
         wp = WikidataEntity.query.filter_by(wd_id=item).first()
         if wp:
@@ -47,15 +47,14 @@ def get_labels_and_descriptions(items, sparql_endpoint):
                 response[item] = dict(label=label, description=desc)
             else:
                 if item not in wikidata_label_query_cache:
-                    missing_items.append(item)
+                    missing_items[item]=True
         else:
             if item not in wikidata_label_query_cache:
-                missing_items.append(item)
+                missing_items[item]=True
     try:
         if missing_items:
             wikidata_label_query_cache.update(missing_items)
-            print("missing entry/description for {num} items".format(num=len(missing_items)))
-            print(missing_items)
+            missing_items=list(missing_items.keys())
             additional_items = query_wikidata_for_label_and_description(
                 missing_items, sparql_endpoint)
             response.update(additional_items)
