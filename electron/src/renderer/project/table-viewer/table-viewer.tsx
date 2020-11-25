@@ -175,6 +175,7 @@ class TableViewer extends Component<{}, TableState> {
 
 
   async handleSelectSheet(event: any) {
+    const sheetName = event.target.innerHTML;
     this.setState({
       showTable: false
     });
@@ -193,7 +194,6 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.yaml.showSpinner = true;
 
     // send request
-    const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
 
