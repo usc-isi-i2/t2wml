@@ -119,6 +119,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
     wikiStore.yaml.yamlContent = yamlContent;
+    wikiStore.yaml.yamlhasChanged = true;
     // this.setState({ isYamlContentChanged: true });
     try {
       const yamlJson = (yaml.safeLoad(yamlContent) as JSON);
@@ -162,6 +163,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       const yamlContent = reader.result as string;
       wikiStore.yaml.yamlContent = yamlContent;
       wikiStore.yaml.yamlName = yamlName;
+      wikiStore.yaml.yamlhasChanged = true;
       try {
         const yamlJson = (yaml.safeLoad((yamlContent as string))) as JSON;
         this.setState({
@@ -340,7 +342,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     wikiStore.yaml.yamlList.push(yamlName);
 
     wikiStore.layers = new LayerState();
-    // await wikiStore.yaml.saveYaml();
   }
 
   render() {

@@ -60,33 +60,39 @@ class YamlEditorState {
     @observable public showSpinner = false;
     @observable public yamlContent: string = defaultYamlContent;
     @observable public yamlError?: string | undefined;
-
+    @observable public yamlhasChanged = false;
+    
     @observable public async saveYaml() {
-    console.log("Save yaml: ", this.yamlName);
-    console.log(this.yamlContent);
+        if (!this.yamlhasChanged) {
+            return;
+        }
 
-    // before sending request
-    wikiStore.table.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
+        console.log("Save yaml: ", this.yamlName);
+        console.log(this.yamlContent);
 
-    // send request
-    const formData = new FormData();
-    formData.append("yaml", this.yamlContent!);
-    formData.append("title", this.yamlName!);
-    formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
+        // before sending request
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
 
-    try {
-      await this.requestService.saveYaml(wikiStore.projects.current!.folder, formData);
+        // send request
+        const formData = new FormData();
+        formData.append("yaml", this.yamlContent!);
+        formData.append("title", this.yamlName!);
+        formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
 
-      // follow-ups (success)
-      wikiStore.output.isDownloadDisabled = false;
+        try {
+            await this.requestService.saveYaml(wikiStore.projects.current!.folder, formData);
 
-    } catch {
-      console.error("Save yaml failed.");
-    } finally {
-      wikiStore.table.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-      wikiStore.table.isCellSelectable = true;
+            // follow-ups (success)
+            wikiStore.output.isDownloadDisabled = false;
+
+        } catch {
+            console.error("Save yaml failed.");
+        } finally {
+            wikiStore.table.showSpinner = false;
+            wikiStore.yaml.showSpinner = false;
+            wikiStore.table.isCellSelectable = true;
+            this.yamlhasChanged = false;
         }
     }
 }
