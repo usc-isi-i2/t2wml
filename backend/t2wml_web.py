@@ -185,15 +185,15 @@ def get_yaml_layers(calc_params):
                     cell_type_indices["metadata"][cells[key]]=True
                 #convert to frontend format
                 cells[key]=indexer(cells[key])
+            cells["qualifiers"]=[]
 
             qualifiers = statement.get("qualifier", None)
             if qualifiers:
                 for qualifier in qualifiers:
-                    q_cells=qualifier["cells"]
+                    q_cells=qualifier.pop("cells", {})
                     qual_cell = q_cells.pop("value", None)
                     if qual_cell:
                         q_cells["qualifier"]=qual_cell
-                        
                     for key in q_cells:
                         if key=="property":
                             cell_type_indices[key][q_cells[key]]=True
@@ -201,6 +201,7 @@ def get_yaml_layers(calc_params):
                             cell_type_indices["metadata"][q_cells[key]]=True
                         #convert to frontend format
                         q_cells[key]=indexer(q_cells[key])
+                    cells["qualifiers"].append(q_cells)
                         
 
 
