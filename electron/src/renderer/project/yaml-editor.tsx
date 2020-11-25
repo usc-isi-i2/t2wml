@@ -264,7 +264,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     wikiStore.yaml.yamlName = yaml;
 
-    wikiStore.yaml.yamlContent = '';
     wikiStore.output.isDownloadDisabled = true;
 
     // before sending request
