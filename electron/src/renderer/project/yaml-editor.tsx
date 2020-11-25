@@ -63,6 +63,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // init functions
     this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
+    this.handleChangeFile = this.handleChangeFile.bind(this);
   }
 
   componentDidMount() {
@@ -113,7 +114,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   }
 
-  handleChangeYaml() {
+  handleEditYaml() {
     wikiStore.table.isCellSelectable = false;
 
     const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
@@ -257,12 +258,34 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   async handleChangeFile(event: any) {
     const yaml = event.target.innerHTML;
-    wikiStore.yaml.showSpinner = true;
+    
+    // save prev yaml
     await wikiStore.yaml.saveYaml();
+
     wikiStore.yaml.yamlName = yaml;
+
+    wikiStore.yaml.yamlContent = '';
+    wikiStore.output.isDownloadDisabled = true;
+
+    // before sending request
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+
+    // send request
     try {
-      await this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml);
+      await this.requestService.call(this, () => this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml));
+
+      if (wikiStore.yaml.yamlContent) {
+        wikiStore.table.isCellSelectable = true;
+        wikiStore.output.isDownloadDisabled = false;
+      } else {
+        wikiStore.table.isCellSelectable = false;
+      }
+    } catch {
     } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
   }
@@ -416,7 +439,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 },
                 showFoldingControls: 'always',
               }}
-              onChange={() => this.handleChangeYaml()}
+              onChange={() => this.handleEditYaml()}
               editorDidMount={(editor) => {
                 editor.getModel()?.updateOptions({ tabSize: 2 });
                 setInterval(() => { editor.layout(); }, 200);  // automaticLayout above misses trigger opening, so we've replaced it

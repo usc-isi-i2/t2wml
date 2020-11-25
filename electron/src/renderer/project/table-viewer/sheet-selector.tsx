@@ -60,7 +60,7 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
           size="sm"
           style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
           disabled={wikiStore.yaml.showSpinner}
-          onClick={(event: any) => { this.props.handleSelectSheet(event) }}
+          onClick={(event: any) => { wikiStore.yaml.showSpinner = true; this.props.handleSelectSheet(event) }}
         >{sheetNames[i]}</Button>
       );
     }
