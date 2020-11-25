@@ -40,7 +40,7 @@ yaml_sheet_associations:
       val_arr:
       - canonical.yaml
     colombia-elections:
-      selected: colombia-elections-1.yaml
+      selected: colombia-elections-3.yaml
       val_arr:
       - colombia-elections-1.yaml
       - colombia-elections-2.yaml

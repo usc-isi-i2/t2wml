@@ -8,7 +8,7 @@ statementMapping:
     property: =item[B, $row]
     value: =value[$col, $row]
     qualifier:
-      - property: P2561 #placeholder
+      - property: P225
         value: =item[$col, 3]
       - unit: =value[E, 3]
         value: =value[E, $row]
