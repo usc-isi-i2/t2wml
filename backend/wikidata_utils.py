@@ -1,7 +1,7 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 from wikidata_models import WikidataEntity
 
-wikidata_label_query_cache = {}
+wikidata_label_query_cache = {} 
 
 def query_wikidata_for_label_and_description(items, sparql_endpoint):
     items = ' wd:'.join(items)
@@ -46,11 +46,16 @@ def get_labels_and_descriptions(items, sparql_endpoint):
                     desc = wp.description
                 response[item] = dict(label=label, description=desc)
             else:
-                missing_items.append(item)
+                if item not in wikidata_label_query_cache:
+                    missing_items.append(item)
         else:
-            missing_items.append(item)
+            if item not in wikidata_label_query_cache:
+                missing_items.append(item)
     try:
         if missing_items:
+            wikidata_label_query_cache.update(missing_items)
+            print("missing entry/description for {num} items".format(num=len(missing_items)))
+            print(missing_items)
             additional_items = query_wikidata_for_label_and_description(
                 missing_items, sparql_endpoint)
             response.update(additional_items)
