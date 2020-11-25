@@ -512,14 +512,15 @@ if __name__ == "__main__":
             print('Debug mode is on!')
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
-            from app_config import UPLOAD_FOLDER
+            from app_config import DATADIR
 
             app.config['PROFILE'] = True
-            profiles_dir = os.path.join(UPLOAD_FOLDER, "profiles")
+            profiles_dir = os.path.join(DATADIR, "profiles")
             if not os.path.isdir(profiles_dir):
                 os.mkdir(profiles_dir)
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[
-                100], profile_dir=profiles_dir)
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, 
+            restrictions=[100], 
+            profile_dir=profiles_dir)
         app.run(debug=True, port=13000)
     else:
         app.run(threaded=True, port=13000)
