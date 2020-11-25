@@ -514,7 +514,9 @@ class TableViewer extends Component<{}, TableState> {
         columnDefs: columns,
         rowData: rows,
         showTable: true,
-
+        styledCellsQnode: new Array<CellIndex>(),
+        styledCellsType: new Array<CellIndex>(),
+        styledCellsClean: new Array<CleanEntry>(),
       });
     }
     else {
@@ -526,6 +528,9 @@ class TableViewer extends Component<{}, TableState> {
         columnDefs: defaultColumns,
         rowData: defaultRows,
         showTable: true,
+        styledCellsQnode: new Array<CellIndex>(),
+        styledCellsType: new Array<CellIndex>(),
+        styledCellsClean: new Array<CleanEntry>(),
 
       });
     }
