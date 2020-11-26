@@ -39,19 +39,19 @@ export class Cell {
     }
 
     get rowIndex(): number | null {
-        if (this.row) { return this.row - 1; }
+        if (this.row != null) { return this.row - 1; }
         return null;
     }
 
     get colIndex(): number | null {
-        if (this.col) {
+        if (this.col!=null) {
             return colName2colIdx(this.col) - 1;
         }
         return null;
     }
 
     get isCell(): boolean{
-        if (this.col && this.row){
+        if (this.col!=null && this.row!=null){
             return true;
         }
         return false;
