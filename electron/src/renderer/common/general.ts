@@ -26,7 +26,7 @@ export class Cell {
     value: string | null = null;
 
     constructor(col?: string | null, row?: number | null, value?: string | null) {
-        if (col && row) {
+        if (col!=null && row!=null) {
             this.col = col;
             this.row = row;
         }
