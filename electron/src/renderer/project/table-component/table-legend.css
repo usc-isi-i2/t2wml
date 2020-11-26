@@ -36,11 +36,11 @@
 .legend-wrapper span.type-data {
   background: #D9F2E6;
 }
-.legend-wrapper span.type-item {
-  background: #D9EAF2;
-}
 .legend-wrapper span.type-qnode {
   color: #006699;
+}
+.legend-wrapper span.type-subject {
+  background: #D9EAF2;
 }
 .legend-wrapper span.type-metadata {
   background: #FFF2CE;
@@ -50,9 +50,6 @@
 }
 .legend-wrapper span.type-qualifier {
   background: #DDD9F2;
-}
-.legend-wrapper span.type-reference {
-  background: #D9F2E6;
 }
 .legend-wrapper span.type-minorError {
   background: #FF8000;
