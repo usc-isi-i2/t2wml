@@ -132,6 +132,13 @@
   background: #339966;
   z-index: 5;
 }
+.table-wrapper table tr td.active.property div.cell-border-top,
+.table-wrapper table tr td.active.property div.cell-border-left,
+.table-wrapper table tr td.active.property div.cell-border-right,
+.table-wrapper table tr td.active.property div.cell-border-bottom {
+  background: #ff0000;
+  z-index: 10;
+}
 .table-wrapper table tr td.active.qualifier div.cell-border-top,
 .table-wrapper table tr td.active.qualifier div.cell-border-left,
 .table-wrapper table tr td.active.qualifier div.cell-border-right,

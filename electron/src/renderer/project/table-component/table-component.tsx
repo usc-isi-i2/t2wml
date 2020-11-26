@@ -47,6 +47,7 @@ interface TableState {
   selectedCell: Cell | null;
   selectedQualifiers: Array<Cell> | null,
   selectedMainSubject: Cell | null,
+  selectedProperty: Cell | null,
 
   annotationMode: boolean,
   showAnnotationMenu: boolean,
@@ -84,6 +85,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedCell: new Cell(),
       selectedQualifiers: [],
       selectedMainSubject: new Cell(),
+      selectedProperty: new Cell(),
 
       annotationMode: false,
       showAnnotationMenu: false,
@@ -155,6 +157,7 @@ class TableComponent extends Component<{}, TableState> {
       errorMessage: {} as ErrorMessage,
       showToast: false,
       selectedCell: null,
+      selectedProperty: null,
       selectedQualifiers: null,
       selectedMainSubject: null,
       showAnnotationMenu: false,
@@ -242,6 +245,7 @@ class TableComponent extends Component<{}, TableState> {
     const table = this.tableRef.current;
     table.querySelectorAll('.active').forEach(e => {
       e.classList.remove('active');
+      e.classList.remove('property');
       e.classList.remove('qualifier');
       e.classList.remove('main-subject');
     });
@@ -352,6 +356,14 @@ class TableComponent extends Component<{}, TableState> {
       const x = statement.cells.subject[1];
       const cell = rows[y+1].children[x+1];
       this.selectCell(cell, y, x, y, x, x, y, 'main-subject');
+    }
+
+    // Select the cell with the property
+    if ( 'property' in statement.cells ) {
+      const y = statement.cells.property[0];
+      const x = statement.cells.property[1];
+      const cell = rows[y+1].children[x+1];
+      this.selectCell(cell, y, x, y, x, x, y, 'property');
     }
   }
 
@@ -505,6 +517,7 @@ class TableComponent extends Component<{}, TableState> {
   getClassName(item, row, col) {
     const {
       selectedCell,
+      selectedProperty,
       selectedQualifiers,
       selectedMainSubject,
     } = this.state;
@@ -521,6 +534,12 @@ class TableComponent extends Component<{}, TableState> {
       if ( selectedMainSubject.row === row &&
         selectedMainSubject.col === col ) {
         className += ' active-main-subject';
+      }
+    }
+    if ( !!selectedProperty ) {
+      if ( selectedProperty.row === row &&
+        selectedProperty.col === col ) {
+        className += ' active-property';
       }
     }
     if ( !!selectedQualifiers ) {
