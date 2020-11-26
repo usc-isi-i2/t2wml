@@ -7,7 +7,14 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 
 
-class AnnotationMenu extends React.Component {
+interface AnnotationMenuProperties {
+  selections: Array<any> | null,
+  position: Array<number> | null,
+  onClose: any | null,
+}
+
+
+class AnnotationMenu extends React.Component<AnnotationMenuProperties, {}> {
 
   handleOnChange(selection, input, value) {
     console.log(selection, input, value);

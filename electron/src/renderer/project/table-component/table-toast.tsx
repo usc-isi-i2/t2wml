@@ -18,7 +18,7 @@ class TableToast extends React.Component<TableToastProperties, {}> {
     if ( !qnode ) { return; }
     return (
       <Toast.Body>
-        <strong>{qnode.label}</strong> ({!!qnode.url ? (
+        <strong>{qnode.label}</strong> ({qnode.url ? (
           <a target="_blank"
             rel="noopener noreferrer"
             className="type-qnode"
@@ -47,7 +47,7 @@ class TableToast extends React.Component<TableToastProperties, {}> {
   }
 
   render() {
-    const { text, onClose } = this.props;
+    const { onClose } = this.props;
     return (
       <div className="table-toast">
         <Toast onClose={() => onClose()}>

@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { LOG, WikifierData, ErrorMessage, Cell } from '../../common/general';
+import { LOG, ErrorMessage, Cell } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
@@ -178,14 +178,14 @@ class TableComponent extends Component<{}, TableState> {
     for (const entry of types.entries) {
       const type = entry.type;
       for (const index of entry.indices) {
-        let stuff = tableData[index[0]][index[1]];
+        const stuff = tableData[index[0]][index[1]];
         tableData[index[0]][index[1]] = {...stuff, type};
       }
     }
     const qnodes = wikiStore.layers.qnode;
     for (const entry of qnodes.entries) {
       for (const index of entry.indices) {
-        let stuff = tableData[index[0]][index[1]];
+        const stuff = tableData[index[0]][index[1]];
         tableData[index[0]][index[1]] = {...stuff, qnode: true};
       }
     }
@@ -193,7 +193,7 @@ class TableComponent extends Component<{}, TableState> {
     for (const entry of cleaned.entries) {
       const { cleaned, original } = entry;
       for (const index of entry.indices) {
-        let stuff = tableData[index[0]][index[1]];
+        const stuff = tableData[index[0]][index[1]];
         tableData[index[0]][index[1]] = {...stuff, cleaned, original};
       }
     }
@@ -245,10 +245,12 @@ class TableComponent extends Component<{}, TableState> {
 
   updateTableData(table?: TableDTO) {
     if ( !table ) { return; }
-    let tableData = [];
+    const tableData = [];
     for ( const [rowIndex, row] of table.cells.entries() ) {
-      let rowData = [];
+      const rowData = [];
+      console.log(rowIndex);
       for ( const [colIndex, cellContent] of row.entries() ) {
+        console.log(colIndex);
         rowData.push({data: cellContent});
       }
       tableData.push(rowData);
@@ -307,7 +309,7 @@ class TableComponent extends Component<{}, TableState> {
   selectCell(cell, rowIndex, colIndex, topRow, leftCol, rightCol, bottomRow, className) {
     // Activate the current cell
     cell.classList.add('active');
-    if ( !!className ) {
+    if ( className ) {
       cell.classList.add(className);
     }
 
@@ -357,7 +359,7 @@ class TableComponent extends Component<{}, TableState> {
     // Select qualifier cells
     if ( 'qualifiers' in statement.cells ) {
       statement.cells.qualifiers.forEach(cell => {
-        if ( !!cell.qualifier ) {
+        if ( cell.qualifier ) {
           const y = cell.qualifier[0];
           const x = cell.qualifier[1];
           const tableCell = rows[y+1].children[x+1];
@@ -440,7 +442,7 @@ class TableComponent extends Component<{}, TableState> {
 
   handleOnMouseUp(event) {
     this.selecting = false;
-    if ( !!this.selections ) {
+    if ( this.selections ) {
       this.checkSelectionOverlaps();
       this.openAnnotationMenu(event);
     }
@@ -537,31 +539,31 @@ class TableComponent extends Component<{}, TableState> {
       selectedQualifiers,
       selectedMainSubject,
     } = this.state;
-    let className = !!stuff['type'] ? `type-${stuff['type']}` : '';
-    if ( !!stuff.cleaned ) {
+    let className = stuff['type'] ? `type-${stuff['type']}` : '';
+    if ( stuff.cleaned ) {
         className += ' type-cleaned';
     }
-    if ( !!stuff.qnode ) {
+    if ( stuff.qnode ) {
         className += ' type-qnode';
     }
-    if ( !!selectedCell ) {
+    if ( selectedCell ) {
       if ( selectedCell.row === row && selectedCell.col === col ) {
         className += ' active';
       }
     }
-    if ( !!selectedMainSubject ) {
+    if ( selectedMainSubject ) {
       if ( selectedMainSubject.row === row &&
         selectedMainSubject.col === col ) {
         className += ' active-main-subject';
       }
     }
-    if ( !!selectedProperty ) {
+    if ( selectedProperty ) {
       if ( selectedProperty.row === row &&
         selectedProperty.col === col ) {
         className += ' active-property';
       }
     }
-    if ( !!selectedQualifiers ) {
+    if ( selectedQualifiers ) {
       selectedQualifiers.forEach(selectedQualifier => {
         if ( selectedQualifier.row === row &&
           selectedQualifier.col === col ) {
@@ -595,7 +597,7 @@ class TableComponent extends Component<{}, TableState> {
     return (
       <div style={{ width: "calc(100% - 350px)", cursor: "default" }}
         className="text-white font-weight-bold d-inline-block text-truncate">
-        {!!filename ? (
+        {filename ? (
           <span>
             {filename}
             <span style={{ opacity: "0.5", paddingLeft: "5px" }}>
@@ -711,7 +713,7 @@ class TableComponent extends Component<{}, TableState> {
     const { selectedCell, showToast } = this.state;
     if ( showToast ) {
       let text = 'Selected:';
-      if ( !!this.selections ) {
+      if ( this.selections ) {
         this.selections.forEach(selection => {
           text += ` ${utils.humanReadableSelection(selection)}`;
         });
@@ -757,7 +759,7 @@ class TableComponent extends Component<{}, TableState> {
 
   renderTable() {
     const { showCleanedData, tableData } = this.state;
-    if ( !!tableData ) {
+    if ( tableData ) {
       const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
       const cols = [...Array(Math.max(tableData[0].length, 26))];
       return (

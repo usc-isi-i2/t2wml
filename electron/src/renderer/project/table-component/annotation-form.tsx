@@ -5,9 +5,6 @@ import * as utils from './table-utils';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
-const INPUTS = ['role', 'type', 'annotation'];
-
-
 const ROLES = [{
   'label': 'main subject',
   'value': 'mainSubject',
@@ -44,7 +41,12 @@ const TYPES = [{
 }];
 
 
-class AnnotationForm extends React.Component {
+interface AnnotationFormProperties {
+  onChange: any | null,
+}
+
+
+class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
 
   handleOnChange(event, input) {
     const { onChange } = this.props;
@@ -68,7 +70,6 @@ class AnnotationForm extends React.Component {
   }
 
   render() {
-    const { onSubmit } = this.props;
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>

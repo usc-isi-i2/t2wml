@@ -36,7 +36,12 @@ const LEGEND = [{
 }];
 
 
-class TableLegend extends React.Component {
+interface LegendProperties {
+  offset: boolean;
+}
+
+
+class TableLegend extends React.Component<LegendProperties, {}> {
 
   renderLegend() {
     return LEGEND.map((item, index) => (
@@ -66,7 +71,7 @@ class TableLegend extends React.Component {
         overlay={this.renderLegendOverlay()}>
         <Button
           variant="secondary"
-          className={`legend-button shadow ${!!offset ? 'offset' : ''}`}>
+          className={`legend-button shadow ${offset ? 'offset' : ''}`}>
           <FontAwesomeIcon icon={faQuestion} />
         </Button>
       </OverlayTrigger>
