@@ -61,14 +61,12 @@
   padding: 0.15em 0.5em;
   white-space: nowrap;
   min-width: 75px;
-  width: 1%;
   text-align: center;
   background: #f9f9f9;
   position: sticky;
   color: #777;
   z-index: 3;
   top: 0;
-  pointer-events: none;
 }
 .table-wrapper table thead tr th::after {
   content: "";
@@ -79,7 +77,13 @@
   height: 1px;
   position: absolute;
   background: #c7c7c7;
-  pointer-events: none;
+}
+.table-wrapper table thead tr th > div {
+  width: 75px;
+  min-width: 75px;
+  resize: horizontal;
+  overflow: hidden;
+  display: block;
 }
 
 /* left column */
@@ -110,10 +114,13 @@
   border: 1px solid #c7c7c7;
   padding: 0.15em 0.5em;
   line-height: 1.25em;
+  overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
   position: relative;
   min-width: 75px;
-  width: 1%;
+  max-width: 75px;
+  width: 75px;
   z-index: 1;
 }
 
