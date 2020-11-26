@@ -698,7 +698,7 @@ class TableComponent extends Component<{}, TableState> {
           <thead>
             <tr>
               <th></th>
-              {CHARACTERS.map(c => <th key={c}>{c}</th>)}
+              {CHARACTERS.map(c => <th key={c}><div>{c}</div></th>)}
             </tr>
           </thead>
           <tbody>
@@ -731,7 +731,9 @@ class TableComponent extends Component<{}, TableState> {
               <tr>
                 <th></th>
                 {cols.map((r, i) => (
-                  <th key={i}>{utils.columnToLetter(i + 1)}</th>
+                  <th key={i}>
+                    <div>{utils.columnToLetter(i + 1)}</div>
+                  </th>
                 ))}
               </tr>
             </thead>
