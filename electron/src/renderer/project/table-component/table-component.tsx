@@ -178,23 +178,23 @@ class TableComponent extends Component<{}, TableState> {
     for (const entry of types.entries) {
       const type = entry.type;
       for (const index of entry.indices) {
-        let item = tableData[index[0]][index[1]];
-        tableData[index[0]][index[1]] = {...item, type};
+        let stuff = tableData[index[0]][index[1]];
+        tableData[index[0]][index[1]] = {...stuff, type};
       }
     }
     const qnodes = wikiStore.layers.qnode;
     for (const entry of qnodes.entries) {
       for (const index of entry.indices) {
-        let item = tableData[index[0]][index[1]];
-        tableData[index[0]][index[1]] = {...item, qnode: true};
+        let stuff = tableData[index[0]][index[1]];
+        tableData[index[0]][index[1]] = {...stuff, qnode: true};
       }
     }
     const cleaned = wikiStore.layers.cleaned;
     for (const entry of cleaned.entries) {
       const { cleaned, original } = entry;
       for (const index of entry.indices) {
-        let item = tableData[index[0]][index[1]];
-        tableData[index[0]][index[1]] = {...item, cleaned, original};
+        let stuff = tableData[index[0]][index[1]];
+        tableData[index[0]][index[1]] = {...stuff, cleaned, original};
       }
     }
     this.setState({tableData});
@@ -530,18 +530,18 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  getClassName(item, row, col) {
+  getClassName(stuff, row, col) {
     const {
       selectedCell,
       selectedProperty,
       selectedQualifiers,
       selectedMainSubject,
     } = this.state;
-    let className = !!item['type'] ? `type-${item['type']}` : '';
-    if ( !!item.cleaned ) {
+    let className = !!stuff['type'] ? `type-${stuff['type']}` : '';
+    if ( !!stuff.cleaned ) {
         className += ' type-cleaned';
     }
-    if ( !!item.qnode ) {
+    if ( !!stuff.qnode ) {
         className += ' type-qnode';
     }
     if ( !!selectedCell ) {
@@ -782,11 +782,11 @@ class TableComponent extends Component<{}, TableState> {
                   <td>{i+1}</td>
                   {cols.map((r, j) => {
                     if ( i < tableData.length && j < tableData[i].length ) {
-                      const item = tableData[i][j];
-                      const { data, cleaned } = item;
+                      const stuff = tableData[i][j];
+                      const { data, cleaned } = stuff;
                       return (
                         <td key={`cell-${j}`}
-                          className={this.getClassName(item, i, j)}>
+                          className={this.getClassName(stuff, i, j)}>
                           { showCleanedData && !!cleaned ? cleaned : data }
                         </td>
                       )
