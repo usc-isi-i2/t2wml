@@ -108,7 +108,7 @@ export default class MainMenuManager {
     }
 
     private loadGrammar(){
-        let child = new BrowserWindow({parent:this.mainWindow});
+        const child = new BrowserWindow({parent:this.mainWindow});
         const link = require('url').format({
             protocol: 'file',
             pathname: require('path').join(__dirname, './grammar.html')

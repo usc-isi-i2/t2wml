@@ -59,9 +59,9 @@ class Settings extends Component<SettingsProperties, SettingsState> {
       Config.defaultSparqlEndpoint,
       "https://query.wikidata.org/sparql"
     ];
-    const calendarChoices = Object.keys(calendarOptions).map((choice) =>
-    <Dropdown.Item key="choice.name" onClick={() => (this.tempCalendarRef as any).current.value = choice}>{choice}</Dropdown.Item>
-  );
+    const calendarChoices = Object.keys(calendarOptions).map((choice) => (
+      <Dropdown.Item key="choice.name" onClick={() => (this.tempCalendarRef as any).current.value = choice}>{choice}</Dropdown.Item>
+    ));
     return (
       <Modal show={this.props.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
 

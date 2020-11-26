@@ -1,6 +1,3 @@
-import { colName2colIdx } from "./utils";
-
-
 // console.log
 export const LOG = {
     default: "background: ; color: ",
