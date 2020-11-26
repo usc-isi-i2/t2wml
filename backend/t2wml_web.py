@@ -185,6 +185,7 @@ def get_yaml_layers(calc_params):
                     cell_type_indices["metadata"][cells[key]]=True
                 #convert to frontend format
                 cells[key]=indexer(cells[key])
+            cells["qualifiers"]=[]
 
             qualifiers = statement.get("qualifier", None)
             if qualifiers:
