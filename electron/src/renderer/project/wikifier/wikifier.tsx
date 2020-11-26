@@ -122,7 +122,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     const newRowData = [];
     if (wikiStore.layers.qnode) {
       for (const entry of wikiStore.layers.qnode.entries) {
-        const { indices, url, ...row } = entry;
+        const { indices, ...row } = entry;
         for (const index_pair of indices) {
           const row_number = index_pair[0] + 1;
           const column_letter = getColumnTitleFromIndex(index_pair[1]);
