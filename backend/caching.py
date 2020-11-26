@@ -6,7 +6,7 @@ from app_config import CACHE_FOLDER, app
 from utils import numpy_converter
 
 #cache version must be changed every time a breaking change is introduced to results format
-__cache_version__ = "18.1" #format: [earliest compatible t2wml-api version].[any changes in web on top of that]
+__cache_version__ = "18.2" #format: [earliest compatible t2wml-api version].[any changes in web on top of that]
 
 def use_cache():
     return app.config['USE_CACHE']
