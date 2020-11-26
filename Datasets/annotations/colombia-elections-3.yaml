@@ -9,7 +9,7 @@ statementMapping:
     value: =value[$col, $row]
 cleaningMapping: 
     - region: 
-          range: B6:B8
+          range: B35:B37
       functions:
           - change_case:
              case: upper
