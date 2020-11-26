@@ -6,6 +6,7 @@ import { settings } from './settings';
 import { uiState } from './ui-state';
 import { rendererNotifier } from './renderer-notifier';
 import * as path from 'path';
+import * as url from 'url';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -109,9 +110,9 @@ export default class MainMenuManager {
 
     private loadGrammar(){
         const child = new BrowserWindow({parent:this.mainWindow});
-        const link = require('url').format({
+        const link = url.format({
             protocol: 'file',
-            pathname: require('path').join(__dirname, './grammar.html')
+            pathname: path.join(__dirname, './grammar.html')
           })
         child.loadURL(link);
         child.show();
