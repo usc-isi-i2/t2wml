@@ -59,7 +59,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
       Config.defaultSparqlEndpoint,
       "https://query.wikidata.org/sparql"
     ];
-    const calendarChoices = Object.keys(calendarOptions).map((choice) => (
+    Object.keys(calendarOptions).map((choice) => (
       <Dropdown.Item key="choice.name" onClick={() => (this.tempCalendarRef as any).current.value = choice}>{choice}</Dropdown.Item>
     ));
     return (
