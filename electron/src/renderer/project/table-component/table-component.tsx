@@ -328,27 +328,28 @@ class TableComponent extends Component<{}, TableState> {
     wikiStore.table.selectedCell = selectedCell;
 
     const statement = wikiStore.layers.statement.find(selectedCell);
-    if ( !statement ) { return; }
+    if ( !statement || !statement.cells ) { return; }
 
     // Get a reference to the table elements
     const table = this.tableRef.current;
     const rows = table.querySelectorAll('tr');
 
     // Select qualifier cells
-    const qualifier = statement.qualifier;
-    if ( !!statement.qualifier ) {
-      statement.qualifier.forEach(qualifier => {
-        const y = qualifier.cell[0];
-        const x = qualifier.cell[1];
-        const cell = rows[y+1].children[x+1];
-        this.selectCell(cell, y, x, y, x, x, y, 'qualifier');
+    if ( 'qualifiers' in statement.cells ) {
+      statement.cells.qualifiers.forEach(cell => {
+        if ( !!cell.qualifier ) {
+          const y = cell.qualifier[0];
+          const x = cell.qualifier[1];
+          const tableCell = rows[y+1].children[x+1];
+          this.selectCell(tableCell, y, x, y, x, x, y, 'qualifier');
+        }
       });
     }
 
     // Select the cell with the main-subject
-    if ( !!statement.cell ) {
-      const y = statement.cell[0];
-      const x = statement.cell[1];
+    if ( 'subject' in statement.cells ) {
+      const y = statement.cells.subject[0];
+      const x = statement.cells.subject[1];
       const cell = rows[y+1].children[x+1];
       this.selectCell(cell, y, x, y, x, x, y, 'main-subject');
     }
