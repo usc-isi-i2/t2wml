@@ -50,6 +50,7 @@ interface TableState {
   selectedProperty: Cell | null,
 
   annotationMode: boolean,
+  showCleanedData: boolean,
   showAnnotationMenu: boolean,
   annotationMenuPosition: Array<int> | null,
 
@@ -88,6 +89,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedProperty: new Cell(),
 
       annotationMode: false,
+      showCleanedData: false,
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
 
@@ -106,6 +108,7 @@ class TableComponent extends Component<{}, TableState> {
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.layers.type, () => this.styleCellTypeColors()));
+    this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.showCleanedData()));
   }
 
   componentWillUnmount() {
@@ -113,6 +116,11 @@ class TableComponent extends Component<{}, TableState> {
     for ( const disposer of this.disposers ) {
       disposer();
     }
+  }
+
+  showCleanedData() {
+    const { showCleanedData } = this.state;
+    this.setState({showCleanedData: !showCleanedData});
   }
 
   async handleOpenTableFile(event: any) {
@@ -179,6 +187,14 @@ class TableComponent extends Component<{}, TableState> {
       for (const index of entry.indices) {
         let item = tableData[index[0]][index[1]];
         tableData[index[0]][index[1]] = {...item, qnode: true};
+      }
+    }
+    const cleaned = wikiStore.layers.cleaned;
+    for (const entry of cleaned.entries) {
+      const { cleaned, original } = entry;
+      for (const index of entry.indices) {
+        let item = tableData[index[0]][index[1]];
+        tableData[index[0]][index[1]] = {...item, cleaned, original};
       }
     }
     this.setState({tableData});
@@ -522,6 +538,9 @@ class TableComponent extends Component<{}, TableState> {
       selectedMainSubject,
     } = this.state;
     let className = !!item['type'] ? `type-${item['type']}` : '';
+    if ( !!item.cleaned ) {
+        className += ' type-cleaned';
+    }
     if ( !!item.qnode ) {
         className += ' type-qnode';
     }
@@ -737,7 +756,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderTable() {
-    const { tableData } = this.state;
+    const { showCleanedData, tableData } = this.state;
     if ( !!tableData ) {
       const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
       const cols = [...Array(Math.max(tableData[0].length, 26))];
@@ -763,11 +782,12 @@ class TableComponent extends Component<{}, TableState> {
                   <td>{i+1}</td>
                   {cols.map((r, j) => {
                     if ( i < tableData.length && j < tableData[i].length ) {
-                      const item = tableData[i][j]
+                      const item = tableData[i][j];
+                      const { data, cleaned } = item;
                       return (
                         <td key={`cell-${j}`}
                           className={this.getClassName(item, i, j)}>
-                          {item['data']}
+                          { showCleanedData && !!cleaned ? cleaned : data }
                         </td>
                       )
                     } else {

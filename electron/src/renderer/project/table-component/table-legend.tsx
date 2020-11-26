@@ -10,11 +10,11 @@ import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 
 const LEGEND = [{
-  label: 'data',
-  className: 'type-data',
-}, {
   label: 'qnode',
   className: 'type-qnode',
+}, {
+  label: 'data',
+  className: 'type-data',
 }, {
   label: 'subject',
   className: 'type-subject',
