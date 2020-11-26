@@ -105,7 +105,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       wikiStore.output.isDownloadDisabled = false;
 
 
-    } catch {
+    } catch(error) {
+      console.log(error);
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
@@ -129,12 +130,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         yamlParseErrMsg: null,
         yamlParseErrFloatMessage: '',
       });
-    } catch (err) {
+    } catch (error) {
       this.setState({
         yamlJson: null,
         isValidYaml: false,
-        yamlParseErrMsg: "⚠️ " + err.message.match(/[^:]*(?=:)/)[0],
-        yamlParseErrFloatMessage: err.stack,
+        yamlParseErrMsg: "⚠️ " + error.message.match(/[^:]*(?=:)/)[0],
+        yamlParseErrFloatMessage: error.stack,
       });
     }
     if (yamlContent === defaultYamlContent) {
@@ -176,12 +177,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
         // Save yaml when importing yaml
         await wikiStore.yaml.saveYaml();
-      } catch (err) {
+      } catch (error) {
         this.setState({
           yamlJson: null,
           isValidYaml: false,
-          yamlParseErrMsg: "⚠️ " + err.message.match(/[^:]*(?=:)/)[0],
-          yamlParseErrFloatMessage: err.stack
+          yamlParseErrMsg: "⚠️ " + error.message.match(/[^:]*(?=:)/)[0],
+          yamlParseErrFloatMessage: error.stack
         });
       }
       if (yamlContent === defaultYamlContent) {
@@ -201,12 +202,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         yamlParseErrMsg: null,
         yamlParseErrFloatMessage: ''
       });
-    } catch (err) {
+    } catch (error) {
       this.setState({
         yamlJson: null,
         isValidYaml: false,
-        yamlParseErrMsg: "⚠️ " + err.message.match(/[^:]*(?=:)/)[0],
-        yamlParseErrFloatMessage: err.stack
+        yamlParseErrMsg: "⚠️ " + error.message.match(/[^:]*(?=:)/)[0],
+        yamlParseErrFloatMessage: error.stack
       });
     }
     if (yamlContent === defaultYamlContent) {
@@ -283,7 +284,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-    } catch {
+    } catch(error) {
+      console.log(error);
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -311,8 +313,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       await this.requestService.call(this, () => this.requestService.renameYaml(wikiStore.projects.current!.folder, formData));
       // update yaml files according to received project.
       wikiStore.yaml.yamlList = wikiStore.projects.projectDTO!.yaml_files;
-    } catch {
-      console.error("Rename yaml failed.");
+    } catch(error) {
+      console.error("Rename yaml failed.", error);
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;

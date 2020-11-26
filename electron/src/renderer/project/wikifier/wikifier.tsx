@@ -106,6 +106,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       }
 
     } catch (error) {
+      console.log(error);
     } finally {
       wikiStore.wikifier.showSpinner = false;
     }
@@ -161,7 +162,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       });
 
 
-    } catch { } finally {
+    } catch(error) {
+      console.log(error);
+    } finally {
       wikiStore.wikifier.showSpinner = false;
     }
   }
@@ -187,7 +190,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
         propertiesMessage: "✅ Wikifier file loaded"
       });
 
-    } catch { } finally {
+    } catch(error) {
+      console.log(error);
+    } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
     }
