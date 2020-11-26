@@ -756,7 +756,7 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderTable() {
-    const { tableData } = this.state;
+    const { showCleanedData, tableData } = this.state;
     if ( !!tableData ) {
       const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
       const cols = [...Array(Math.max(tableData[0].length, 26))];
@@ -782,11 +782,12 @@ class TableComponent extends Component<{}, TableState> {
                   <td>{i+1}</td>
                   {cols.map((r, j) => {
                     if ( i < tableData.length && j < tableData[i].length ) {
-                      const item = tableData[i][j]
+                      const item = tableData[i][j];
+                      const { data, cleaned } = item;
                       return (
                         <td key={`cell-${j}`}
                           className={this.getClassName(item, i, j)}>
-                          {item['data']}
+                          { showCleanedData && !!cleaned ? cleaned : data }
                         </td>
                       )
                     } else {
