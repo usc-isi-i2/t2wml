@@ -42,6 +42,12 @@
 .legend-wrapper span.type-qnode {
   color: #006699;
 }
+.legend-wrapper span.type-property {
+  background: #FBE5CE;
+}
+.legend-wrapper span.type-metadata {
+  background: #FFF2CE;
+}
 .legend-wrapper span.type-qualifier {
   background: #DDD9F2;
 }

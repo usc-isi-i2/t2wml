@@ -201,6 +201,12 @@
 .table-wrapper table tr td.type-qnode {
   color: #006699;
 }
+.table-wrapper table tr td.type-property {
+  background: #FBE5CE;
+}
+.table-wrapper table tr td.type-metadata {
+  background: #FFF2CE;
+}
 .table-wrapper table tr td.type-qualifier {
   background: #DDD9F2;
 }
