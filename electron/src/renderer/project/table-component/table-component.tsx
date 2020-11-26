@@ -530,6 +530,9 @@ class TableComponent extends Component<{}, TableState> {
       selectedMainSubject,
     } = this.state;
     let className = !!item['type'] ? `type-${item['type']}` : '';
+    if ( !!item.cleaned ) {
+        className += ' type-cleaned';
+    }
     if ( !!item.qnode ) {
         className += ' type-qnode';
     }
