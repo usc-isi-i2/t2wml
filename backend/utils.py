@@ -59,8 +59,9 @@ def save_dataframe(project, df, file_name, kgtk=False):
     return filepath
 
 
-def save_yaml(project, yaml_data, yaml_title=None):
-    sheet_name = project.current_sheet  # TODO: FIX
+def save_yaml(project, yaml_data, yaml_title=None, sheet_name=None):
+    if not sheet_name:
+        sheet_name = project.current_sheet  # TODO: FIX
     if not yaml_title:
         yaml_title = sheet_name + ".yaml"
 

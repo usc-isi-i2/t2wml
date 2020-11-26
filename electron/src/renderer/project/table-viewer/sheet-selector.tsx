@@ -13,8 +13,10 @@ interface SheetProperties  {
     sheetNames: Array<string> | null,     // csv: null    excel: [ "sheet1", "sheet2", ... ]
     currSheetName: string | null,  // csv: null    excel: "sheet1"
     itemType?: "sheet" | "file",
+    disableAdd?: boolean,
 
     handleSelectSheet: (event: Event) => void;
+    handleAddItem?: () => void;
     handleDoubleClickItem?: (value: string, index: number) => void;
 }
 
@@ -58,8 +60,20 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
           size="sm"
           style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
           disabled={wikiStore.yaml.showSpinner}
-          onClick={(event: any) => { this.props.handleSelectSheet(event) }}
+          onClick={(event: any) => { wikiStore.yaml.showSpinner = true; this.props.handleSelectSheet(event) }}
         >{sheetNames[i]}</Button>
+      );
+    }
+    if (this.props.handleAddItem) {
+      sheetSelectorHtml.push(
+        <Button
+          key="plus"
+          variant="success"
+          size="sm"
+          style={currSheetName === currSheetName ? currSheetStyle : otherSheetStyle}
+          disabled={this.props.disableAdd || wikiStore.yaml.showSpinner}
+          onClick={() => this.props.handleAddItem!()}
+        >+</Button>
       );
     }
     // Rename item (yaml), double click on button 

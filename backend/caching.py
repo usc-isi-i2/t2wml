@@ -9,7 +9,6 @@ from utils import numpy_converter
 __cache_version__ = "18.1" #format: [earliest compatible t2wml-api version].[any changes in web on top of that]
 
 def use_cache():
-    #return True
     return app.config['USE_CACHE']
 
 class CacheHolder:
@@ -23,9 +22,12 @@ class CacheHolder:
     def cache_path(self):
         api_project_str = str(self.project.__dict__)
         cache_hash = sha256(api_project_str.encode('utf-8'))
-        m_time_str = str(os.path.getmtime(self.yaml_file_path)) + str(os.path.getmtime(self.data_file_path))
+        with open(self.yaml_file_path, 'r') as f:
+            yaml=f.read()
+            yaml_hash=sha256(yaml.encode('utf-8'))
+        m_time_str = str(os.path.getmtime(self.data_file_path))
         cache_hash.update(m_time_str.encode('utf-8'))
-        file_name = self.sheet_name + "_" + cache_hash.hexdigest() + ".json"
+        file_name = self.sheet_name +"yaml_"+yaml_hash.hexdigest()+ "_" + cache_hash.hexdigest() + ".json"
         file_path = os.path.join(CACHE_FOLDER, "calc_cache_v"+__cache_version__)
         if not os.path.isdir(file_path):
             os.makedirs(file_path)

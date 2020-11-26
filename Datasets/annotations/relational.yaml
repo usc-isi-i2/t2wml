@@ -1,0 +1,30 @@
+statementMapping:
+            region:
+                - range: B4:C11
+            template:
+                subject: =item[D, $row]
+                property: =item[$col, 3]
+                value: =value[$col, $row]
+                unit: units
+                qualifier:
+
+                    - property: =item[A, 3]
+                      value: =item[A, $row]
+
+                    - property: =item[E, 3]
+                      value: =value[E, $row]
+                      precision: year
+
+# q1=ExpandedNode(value_args=ValueArgs(range="A4:A11", item=True), 
+#                 property=Node(value_args=ValueArgs(cell="A3", item=True)))
+# q2=ExpandedNode(value_args=ValueArgs(range="E4:E11", item=False), 
+#                 property=Node(value_args=ValueArgs(cell="E3", item=True)),
+#                 optionals={"precision": Node(value_args=ValueArgs(string="year"))})
+
+# annotatedGraph=MainNode(
+#     value_args=ValueArgs(range="B4:C11", item=False),
+#     property=Node(value_args=ValueArgs(range="B3:C3", item=True)),
+#     mainSubject=Node(value_args=ValueArgs(range="D4:D11", item=True)),
+#     qualifiers=[q1, q2],
+#     optionals= {"unit": Node(value_args=ValueArgs(string="units"))}
+# )

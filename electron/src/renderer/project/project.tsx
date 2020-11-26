@@ -90,9 +90,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     console.log("project- componentWillUnmount");
-    wikiStore.yaml.haveToSaveYaml = true;
+    await wikiStore.yaml.saveYaml();
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);

@@ -26,7 +26,7 @@ def test_empty_cells(client):
         )) 
     
     #reapply yaml:
-    response=load_yaml_file(client, files_dir, filename=os.path.join(files_dir, "t2wml.yaml"))
+    response=load_yaml_file(client, files_dir, filename=os.path.join(files_dir, "t2wml.yaml"), sheet_name="Sheet1")
     data2 = response.data.decode("utf-8")
     data2 = json.loads(data2)
 

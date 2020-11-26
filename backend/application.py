@@ -65,7 +65,12 @@ def json_response(func):
             return json.dumps(data, indent=3, default=numpy_converter), e.code
         except Exception as e:
             data = {"error": make_frontend_err_dict(e)}
-            return json.dumps(data, indent=3, default=numpy_converter), 500
+            try:
+                code=e.code
+                data["error"]["code"]=code
+            except AttributeError:
+                code=500
+            return json.dumps(data, indent=3, default=numpy_converter), code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
@@ -365,7 +370,8 @@ def upload_yaml():
 
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
-    save_yaml(project, yaml_data, yaml_title)
+    sheet_name = request.form["sheetName"]
+    save_yaml(project, yaml_data, yaml_title, sheet_name)
     response=dict(project=project.__dict__)
     return response, 200
 
@@ -385,8 +391,9 @@ def apply_yaml():
 
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
+    sheet_name = request.form["sheetName"]
     
-    save_yaml(project, yaml_data, yaml_title)
+    save_yaml(project, yaml_data, yaml_title, sheet_name)
     
     response=dict(project=project.__dict__, layers=get_empty_layers())
     try:
@@ -515,14 +522,15 @@ if __name__ == "__main__":
             print('Debug mode is on!')
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
-            from app_config import UPLOAD_FOLDER
+            from app_config import DATADIR
 
             app.config['PROFILE'] = True
-            profiles_dir = os.path.join(UPLOAD_FOLDER, "profiles")
+            profiles_dir = os.path.join(DATADIR, "profiles")
             if not os.path.isdir(profiles_dir):
                 os.mkdir(profiles_dir)
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[
-                100], profile_dir=profiles_dir)
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, 
+            restrictions=[100], 
+            profile_dir=profiles_dir)
         app.run(debug=True, port=13000)
     else:
         app.run(threaded=True, port=13000)

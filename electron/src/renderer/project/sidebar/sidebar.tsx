@@ -120,7 +120,7 @@ class Sidebar extends Component<{}, SidebarState> {
 
     async changeDataFile(fileName: string) {
         // save prev yaml
-        wikiStore.yaml.haveToSaveYaml = true;
+        await wikiStore.yaml.saveYaml();
 
         try {
             await this.requestService.changeDataFile(fileName, wikiStore.projects.current!.folder);

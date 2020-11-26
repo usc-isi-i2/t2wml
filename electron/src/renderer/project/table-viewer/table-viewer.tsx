@@ -175,16 +175,17 @@ class TableViewer extends Component<{}, TableState> {
 
 
   async handleSelectSheet(event: any) {
+    const sheetName = event.target.innerHTML;
     this.setState({
       showTable: false
     });
     
     // save prev yaml
-    wikiStore.yaml.haveToSaveYaml = true;
+    await wikiStore.yaml.saveYaml();
 
     // remove current status
     this.updateSelectedCell(new Cell());
-    wikiStore.yaml.yamlContent = undefined;
+    wikiStore.yaml.yamlContent = '';
     wikiStore.output.isDownloadDisabled = true;
 
     // before sending request
@@ -193,7 +194,6 @@ class TableViewer extends Component<{}, TableState> {
     wikiStore.yaml.showSpinner = true;
 
     // send request
-    const sheetName = event.target.innerHTML;
     console.log("<TableViewer> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
 
@@ -514,7 +514,9 @@ class TableViewer extends Component<{}, TableState> {
         columnDefs: columns,
         rowData: rows,
         showTable: true,
-
+        styledCellsQnode: new Array<CellIndex>(),
+        styledCellsType: new Array<CellIndex>(),
+        styledCellsClean: new Array<CleanEntry>(),
       });
     }
     else {
@@ -526,6 +528,9 @@ class TableViewer extends Component<{}, TableState> {
         columnDefs: defaultColumns,
         rowData: defaultRows,
         showTable: true,
+        styledCellsQnode: new Array<CellIndex>(),
+        styledCellsType: new Array<CellIndex>(),
+        styledCellsClean: new Array<CleanEntry>(),
 
       });
     }
