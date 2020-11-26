@@ -181,6 +181,14 @@ class TableComponent extends Component<{}, TableState> {
         tableData[index[0]][index[1]] = {...item, qnode: true};
       }
     }
+    const cleaned = wikiStore.layers.cleaned;
+    for (const entry of cleaned.entries) {
+      const { cleaned, original } = entry;
+      for (const index of entry.indices) {
+        let item = tableData[index[0]][index[1]];
+        tableData[index[0]][index[1]] = {...item, cleaned, original};
+      }
+    }
     this.setState({tableData});
   }
 
