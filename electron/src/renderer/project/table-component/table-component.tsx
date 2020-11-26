@@ -50,6 +50,7 @@ interface TableState {
   selectedProperty: Cell | null,
 
   annotationMode: boolean,
+  showCleanedData: boolean,
   showAnnotationMenu: boolean,
   annotationMenuPosition: Array<int> | null,
 
@@ -88,6 +89,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedProperty: new Cell(),
 
       annotationMode: false,
+      showCleanedData: false,
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
 
@@ -106,6 +108,7 @@ class TableComponent extends Component<{}, TableState> {
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.layers.type, () => this.styleCellTypeColors()));
+    this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.showCleanedData()));
   }
 
   componentWillUnmount() {
@@ -113,6 +116,11 @@ class TableComponent extends Component<{}, TableState> {
     for ( const disposer of this.disposers ) {
       disposer();
     }
+  }
+
+  showCleanedData() {
+    const { showCleanedData } = this.state;
+    this.setState({showCleanedData: !showCleanedData});
   }
 
   async handleOpenTableFile(event: any) {
