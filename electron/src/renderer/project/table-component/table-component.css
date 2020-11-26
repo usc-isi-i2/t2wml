@@ -202,11 +202,11 @@
 .table-wrapper table tr td.type-data {
   background: #D9F2E6;
 }
-.table-wrapper table tr td.type-item {
-  background: #D9EAF2;
-}
 .table-wrapper table tr td.type-qnode {
   color: #006699;
+}
+.table-wrapper table tr td.type-subject {
+  background: #D9EAF2;
 }
 .table-wrapper table tr td.type-metadata {
   background: #FFF2CE;
@@ -216,9 +216,6 @@
 }
 .table-wrapper table tr td.type-qualifier {
   background: #DDD9F2;
-}
-.table-wrapper table tr td.type-reference {
-  background: #D9F2E6;
 }
 .table-wrapper table tr td.type-minorError {
   background: #FF8000;

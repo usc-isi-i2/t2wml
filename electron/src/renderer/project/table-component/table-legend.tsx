@@ -13,17 +13,14 @@ const LEGEND = [{
   label: 'data',
   className: 'type-data',
 }, {
-  label: 'item',
-  className: 'type-item',
-}, {
   label: 'qnode',
   className: 'type-qnode',
 }, {
+  label: 'subject',
+  className: 'type-subject',
+}, {
   label: 'qualifier',
   className: 'type-qualifier',
-}, {
-  label: 'reference',
-  className: 'type-reference',
 }, {
   label: 'metadata',
   className: 'type-metadata',
