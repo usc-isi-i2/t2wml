@@ -25,6 +25,12 @@ const LEGEND = [{
   label: 'reference',
   className: 'type-reference',
 }, {
+  label: 'property',
+  className: 'type-property',
+}, {
+  label: 'metadata',
+  className: 'type-metadata',
+}, {
   label: 'minorError',
   className: 'type-minorError',
 }, {
