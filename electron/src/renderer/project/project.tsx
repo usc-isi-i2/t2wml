@@ -135,7 +135,8 @@ class Project extends Component<ProjectProps, ProjectState> {
         wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
       }
 
-    } catch {
+    } catch (error) {
+      console.log(error);
 
     } finally {
       wikiStore.table.showSpinner = false;
@@ -174,7 +175,8 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     try {
       await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
-    } catch {
+    } catch (error) {
+      console.log(error);
     }
   }
 

@@ -108,6 +108,7 @@ class Output extends Component<{}, OutputComponentState> {
       Downloader(data, filename);
 
     } catch (error) {
+      console.log(error);
     } finally {
       this.setState({ isDownloading: false });
     }
