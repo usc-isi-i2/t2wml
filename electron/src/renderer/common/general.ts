@@ -21,11 +21,11 @@ export interface ErrorMessage {
 
 
 export class Cell {
-    col: string | null = null;
+    col: number | null = null;
     row: number | null = null;
     value: string | null = null;
 
-    constructor(col?: string | null, row?: number | null, value?: string | null) {
+    constructor(col?: number | null, row?: number | null, value?: string | null) {
         if (col!=null && row!=null) {
             this.col = col;
             this.row = row;
@@ -36,18 +36,6 @@ export class Cell {
         else {
             this.value = value
         }
-    }
-
-    get rowIndex(): number | null {
-        if (this.row != null) { return this.row - 1; }
-        return null;
-    }
-
-    get colIndex(): number | null {
-        if (this.col!=null) {
-            return colName2colIdx(this.col) - 1;
-        }
-        return null;
     }
 
     get isCell(): boolean{
