@@ -1,0 +1,8 @@
+#AUTO-GENERATED YAML
+statementMapping:
+        region:
+            range: G3:G12
+        template:
+            subject: =value[B, $row-$n]
+            property:  P2561  # item table not working =value[G, 1]
+            value: =value[$col, $row]

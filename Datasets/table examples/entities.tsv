@@ -1,0 +1,689 @@
+node1	label	node2	id
+Candidate	label	Candidate	Candidate-label
+Candidate	data_type	String	Candidate-data_type
+Party/alliance	label	Party/alliance	Party/alliance-label
+Party/alliance	data_type	String	Party/alliance-data_type
+First round	label	First round	First round-label
+First round	data_type	String	First round-data_type
+Second round	label	Second round	Second round-label
+Second round	data_type	String	Second round-data_type
+Votes	label	Votes	Votes-label
+Votes	data_type	String	Votes-data_type
+%	label	%	%-label
+%	data_type	String	%-data_type
+Iván Duque Márquez	label	Iván Duque Márquez	Iván Duque Márquez-label
+Iván Duque Márquez	data_type	String	Iván Duque Márquez-data_type
+Grand Alliance for Colombia	label	Grand Alliance for Colombia	Grand Alliance for Colombia-label
+Grand Alliance for Colombia	data_type	String	Grand Alliance for Colombia-data_type
+Gustavo Petro	label	Gustavo Petro	Gustavo Petro-label
+Gustavo Petro	data_type	String	Gustavo Petro-data_type
+List of Decency	label	List of Decency	List of Decency-label
+List of Decency	data_type	String	List of Decency-data_type
+Sergio Fajardo	label	Sergio Fajardo	Sergio Fajardo-label
+Sergio Fajardo	data_type	String	Sergio Fajardo-data_type
+Colombia Coalition	label	Colombia Coalition	Colombia Coalition-label
+Colombia Coalition	data_type	String	Colombia Coalition-data_type
+Germán Vargas Lleras	label	Germán Vargas Lleras	Germán Vargas Lleras-label
+Germán Vargas Lleras	data_type	String	Germán Vargas Lleras-data_type
+Mejor Vargas Lleras	label	Mejor Vargas Lleras	Mejor Vargas Lleras-label
+Mejor Vargas Lleras	data_type	String	Mejor Vargas Lleras-data_type
+Humberto De la Calle	label	Humberto De la Calle	Humberto De la Calle-label
+Humberto De la Calle	data_type	String	Humberto De la Calle-data_type
+PLC–ASI	label	PLC–ASI	PLC–ASI-label
+PLC–ASI	data_type	String	PLC–ASI-data_type
+Jorge Antonio Trujillo	label	Jorge Antonio Trujillo	Jorge Antonio Trujillo-label
+Jorge Antonio Trujillo	data_type	String	Jorge Antonio Trujillo-data_type
+We Are All Colombia	label	We Are All Colombia	We Are All Colombia-label
+We Are All Colombia	data_type	String	We Are All Colombia-data_type
+Promotores Voto En Blanco	label	Promotores Voto En Blanco	Promotores Voto En Blanco-label
+Promotores Voto En Blanco	data_type	String	Promotores Voto En Blanco-data_type
+"Party of Ethnic Reclamation ""PRE"""	label	"Party of Ethnic Reclamation ""PRE"""	"Party of Ethnic Reclamation ""PRE""-label"
+"Party of Ethnic Reclamation ""PRE"""	data_type	String	"Party of Ethnic Reclamation ""PRE""-data_type"
+Viviane Morales Hoyos	label	Viviane Morales Hoyos	Viviane Morales Hoyos-label
+Viviane Morales Hoyos	data_type	String	Viviane Morales Hoyos-data_type
+Somos Región Colombia	label	Somos Región Colombia	Somos Región Colombia-label
+Somos Región Colombia	data_type	String	Somos Región Colombia-data_type
+Blank votes	label	Blank votes	Blank votes-label
+Blank votes	data_type	String	Blank votes-data_type
+Invalid votes	label	Invalid votes	Invalid votes-label
+Invalid votes	data_type	String	Invalid votes-data_type
+–	label	–	–-label
+–	data_type	String	–-data_type
+Total	label	Total	Total-label
+Total	data_type	String	Total-data_type
+Registered voters/turnout	label	Registered voters/turnout	Registered voters/turnout-label
+Registered voters/turnout	data_type	String	Registered voters/turnout-data_type
+Source: El Tiempo Government	label	Source: El Tiempo Government	Source: El Tiempo Government-label
+Source: El Tiempo Government	data_type	String	Source: El Tiempo Government-data_type
+No.	label	No.	No.-label
+No.	data_type	String	No.-data_type
+Pos.	label	Pos.	Pos.-label
+Pos.	data_type	String	Pos.-data_type
+Nation	label	Nation	Nation-label
+Nation	data_type	String	Nation-data_type
+Player	label	Player	Player-label
+Player	data_type	String	Player-data_type
+GK	label	GK	GK-label
+GK	data_type	String	GK-data_type
+GER	label	GER	GER-label
+GER	data_type	String	GER-data_type
+Marc-André ter Stegen	label	Marc-André ter Stegen	Marc-André ter Stegen-label
+Marc-André ter Stegen	data_type	String	Marc-André ter Stegen-data_type
+DF	label	DF	DF-label
+DF	data_type	String	DF-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Sergiño Dest	label	Sergiño Dest	Sergiño Dest-label
+Sergiño Dest	data_type	String	Sergiño Dest-data_type
+DF	label	DF	DF-label
+DF	data_type	String	DF-data_type
+ESP	label	ESP	ESP-label
+ESP	data_type	String	ESP-data_type
+Gerard Piqué (3rd captain)	label	Gerard Piqué (3rd captain)	Gerard Piqué (3rd captain)-label
+Gerard Piqué (3rd captain)	data_type	String	Gerard Piqué (3rd captain)-data_type
+DF	label	DF	DF-label
+DF	data_type	String	DF-data_type
+URU	label	URU	URU-label
+URU	data_type	String	URU-data_type
+Ronald Araújo	label	Ronald Araújo	Ronald Araújo-label
+Ronald Araújo	data_type	String	Ronald Araújo-data_type
+MF	label	MF	MF-label
+MF	data_type	String	MF-data_type
+ESP	label	ESP	ESP-label
+ESP	data_type	String	ESP-data_type
+Sergio Busquets (vice-captain)	label	Sergio Busquets (vice-captain)	Sergio Busquets (vice-captain)-label
+Sergio Busquets (vice-captain)	data_type	String	Sergio Busquets (vice-captain)-data_type
+MF	label	MF	MF-label
+MF	data_type	String	MF-data_type
+ESP	label	ESP	ESP-label
+ESP	data_type	String	ESP-data_type
+Carles Aleñá	label	Carles Aleñá	Carles Aleñá-label
+Carles Aleñá	data_type	String	Carles Aleñá-data_type
+FW	label	FW	FW-label
+FW	data_type	String	FW-data_type
+FRA	label	FRA	FRA-label
+FRA	data_type	String	FRA-data_type
+Antoine Griezmann	label	Antoine Griezmann	Antoine Griezmann-label
+Antoine Griezmann	data_type	String	Antoine Griezmann-data_type
+MF	label	MF	MF-label
+MF	data_type	String	MF-data_type
+BIH	label	BIH	BIH-label
+BIH	data_type	String	BIH-data_type
+Miralem Pjanić	label	Miralem Pjanić	Miralem Pjanić-label
+Miralem Pjanić	data_type	String	Miralem Pjanić-data_type
+FW	label	FW	FW-label
+FW	data_type	String	FW-data_type
+DEN	label	DEN	DEN-label
+DEN	data_type	String	DEN-data_type
+Martin Braithwaite	label	Martin Braithwaite	Martin Braithwaite-label
+Martin Braithwaite	data_type	String	Martin Braithwaite-data_type
+FW	label	FW	FW-label
+FW	data_type	String	FW-data_type
+ARG	label	ARG	ARG-label
+ARG	data_type	String	ARG-data_type
+Lionel Messi (captain)	label	Lionel Messi (captain)	Lionel Messi (captain)-label
+Lionel Messi (captain)	data_type	String	Lionel Messi (captain)-data_type
+FW	label	FW	FW-label
+FW	data_type	String	FW-data_type
+FRA	label	FRA	FRA-label
+FRA	data_type	String	FRA-data_type
+Ousmane Dembélé	label	Ousmane Dembélé	Ousmane Dembélé-label
+Ousmane Dembélé	data_type	String	Ousmane Dembélé-data_type
+MF	label	MF	MF-label
+MF	data_type	String	MF-data_type
+ESP	label	ESP	ESP-label
+ESP	data_type	String	ESP-data_type
+Riqui Puig	label	Riqui Puig	Riqui Puig-label
+Riqui Puig	data_type	String	Riqui Puig-data_type
+Nutrient	label	Nutrient	Nutrient-label
+Nutrient	data_type	String	Nutrient-data_type
+Maize (corn)[A]	label	Maize (corn)[A]	Maize (corn)[A]-label
+Maize (corn)[A]	data_type	String	Maize (corn)[A]-data_type
+Rice	label	Rice	Rice-label
+Rice	data_type	String	Rice-data_type
+Wheat[C]	label	Wheat[C]	Wheat[C]-label
+Wheat[C]	data_type	String	Wheat[C]-data_type
+Potatoes[D]	label	Potatoes[D]	Potatoes[D]-label
+Potatoes[D]	data_type	String	Potatoes[D]-data_type
+Cassava[E]	label	Cassava[E]	Cassava[E]-label
+Cassava[E]	data_type	String	Cassava[E]-data_type
+Soybeans	label	Soybeans	Soybeans-label
+Soybeans	data_type	String	Soybeans-data_type
+Sweet potatoes[G]	label	Sweet potatoes[G]	Sweet potatoes[G]-label
+Sweet potatoes[G]	data_type	String	Sweet potatoes[G]-data_type
+Yams[Y]	label	Yams[Y]	Yams[Y]-label
+Yams[Y]	data_type	String	Yams[Y]-data_type
+Sorghum[H]	label	Sorghum[H]	Sorghum[H]-label
+Sorghum[H]	data_type	String	Sorghum[H]-data_type
+Plantain[Z]	label	Plantain[Z]	Plantain[Z]-label
+Plantain[Z]	data_type	String	Plantain[Z]-data_type
+RDA	label	RDA	RDA-label
+RDA	data_type	String	RDA-data_type
+Water (g)	label	Water (g)	Water (g)-label
+Water (g)	data_type	String	Water (g)-data_type
+Energy (kJ)	label	Energy (kJ)	Energy (kJ)-label
+Energy (kJ)	data_type	String	Energy (kJ)-data_type
+8	label	8	8-label
+8	data_type	String	8-data_type
+Protein (g)	label	Protein (g)	Protein (g)-label
+Protein (g)	data_type	String	Protein (g)-data_type
+Fat (g)	label	Fat (g)	Fat (g)-label
+Fat (g)	data_type	String	Fat (g)-data_type
+44–77	label	44–77	44–77-label
+44–77	data_type	String	44–77-data_type
+Carbohydrates (g)	label	Carbohydrates (g)	Carbohydrates (g)-label
+Carbohydrates (g)	data_type	String	Carbohydrates (g)-data_type
+Fiber (g)	label	Fiber (g)	Fiber (g)-label
+Fiber (g)	data_type	String	Fiber (g)-data_type
+Sugar (g)	label	Sugar (g)	Sugar (g)-label
+Sugar (g)	data_type	String	Sugar (g)-data_type
+minimal	label	minimal	minimal-label
+minimal	data_type	String	minimal-data_type
+World production	label	World production	World production-label
+World production	data_type	String	World production-data_type
+Average world yield	label	Average world yield	Average world yield-label
+Average world yield	data_type	String	Average world yield-data_type
+World's most productive countries	label	World's most productive countries	World's most productive countries-label
+World's most productive countries	data_type	String	World's most productive countries-data_type
+World's largest producing countries	label	World's largest producing countries	World's largest producing countries-label
+World's largest producing countries	data_type	String	World's largest producing countries-data_type
+Rank	label	Rank	Rank-label
+Rank	data_type	String	Rank-data_type
+Crop	label	Crop	Crop-label
+Crop	data_type	String	Crop-data_type
+(metric tons)	label	(metric tons)	(metric tons)-label
+(metric tons)	data_type	String	(metric tons)-data_type
+(tons per hectare)	label	(tons per hectare)	(tons per hectare)-label
+(tons per hectare)	data_type	String	(tons per hectare)-data_type
+(tons per hectare)	label	(tons per hectare)	(tons per hectare)-label
+(tons per hectare)	data_type	String	(tons per hectare)-data_type
+Country	label	Country	Country-label
+Country	data_type	String	Country-data_type
+(metric tons)	label	(metric tons)	(metric tons)-label
+(metric tons)	data_type	String	(metric tons)-data_type
+Country	label	Country	Country-label
+Country	data_type	String	Country-data_type
+Maize (Corn)	label	Maize (Corn)	Maize (Corn)-label
+Maize (Corn)	data_type	String	Maize (Corn)-data_type
+873 million	label	873 million	873 million-label
+873 million	data_type	String	873 million-data_type
+United States	label	United States	United States-label
+United States	data_type	String	United States-data_type
+354 million	label	354 million	354 million-label
+354 million	data_type	String	354 million-data_type
+United States	label	United States	United States-label
+United States	data_type	String	United States-data_type
+Rice	label	Rice	Rice-label
+Rice	data_type	String	Rice-data_type
+738 million	label	738 million	738 million-label
+738 million	data_type	String	738 million-data_type
+Egypt	label	Egypt	Egypt-label
+Egypt	data_type	String	Egypt-data_type
+204 million	label	204 million	204 million-label
+204 million	data_type	String	204 million-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+Wheat	label	Wheat	Wheat-label
+Wheat	data_type	String	Wheat-data_type
+671 million	label	671 million	671 million-label
+671 million	data_type	String	671 million-data_type
+New Zealand	label	New Zealand	New Zealand-label
+New Zealand	data_type	String	New Zealand-data_type
+122 million	label	122 million	122 million-label
+122 million	data_type	String	122 million-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+Potatoes	label	Potatoes	Potatoes-label
+Potatoes	data_type	String	Potatoes-data_type
+365 million	label	365 million	365 million-label
+365 million	data_type	String	365 million-data_type
+Netherlands	label	Netherlands	Netherlands-label
+Netherlands	data_type	String	Netherlands-data_type
+96 million	label	96 million	96 million-label
+96 million	data_type	String	96 million-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+Cassava	label	Cassava	Cassava-label
+Cassava	data_type	String	Cassava-data_type
+269 million	label	269 million	269 million-label
+269 million	data_type	String	269 million-data_type
+Indonesia	label	Indonesia	Indonesia-label
+Indonesia	data_type	String	Indonesia-data_type
+47 million	label	47 million	47 million-label
+47 million	data_type	String	47 million-data_type
+Nigeria	label	Nigeria	Nigeria-label
+Nigeria	data_type	String	Nigeria-data_type
+Soybeans	label	Soybeans	Soybeans-label
+Soybeans	data_type	String	Soybeans-data_type
+241 million	label	241 million	241 million-label
+241 million	data_type	String	241 million-data_type
+Egypt	label	Egypt	Egypt-label
+Egypt	data_type	String	Egypt-data_type
+91 million	label	91 million	91 million-label
+91 million	data_type	String	91 million-data_type
+United States	label	United States	United States-label
+United States	data_type	String	United States-data_type
+Sweet potatoes	label	Sweet potatoes	Sweet potatoes-label
+Sweet potatoes	data_type	String	Sweet potatoes-data_type
+108 million	label	108 million	108 million-label
+108 million	data_type	String	108 million-data_type
+Senegal	label	Senegal	Senegal-label
+Senegal	data_type	String	Senegal-data_type
+71 million	label	71 million	71 million-label
+71 million	data_type	String	71 million-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+Yams	label	Yams	Yams-label
+Yams	data_type	String	Yams-data_type
+59.5 million	label	59.5 million	59.5 million-label
+59.5 million	data_type	String	59.5 million-data_type
+Colombia	label	Colombia	Colombia-label
+Colombia	data_type	String	Colombia-data_type
+36 million	label	36 million	36 million-label
+36 million	data_type	String	36 million-data_type
+Nigeria	label	Nigeria	Nigeria-label
+Nigeria	data_type	String	Nigeria-data_type
+Sorghum	label	Sorghum	Sorghum-label
+Sorghum	data_type	String	Sorghum-data_type
+57.0 million	label	57.0 million	57.0 million-label
+57.0 million	data_type	String	57.0 million-data_type
+United States	label	United States	United States-label
+United States	data_type	String	United States-data_type
+10 million	label	10 million	10 million-label
+10 million	data_type	String	10 million-data_type
+United States	label	United States	United States-label
+United States	data_type	String	United States-data_type
+Plantain	label	Plantain	Plantain-label
+Plantain	data_type	String	Plantain-data_type
+37.2 million	label	37.2 million	37.2 million-label
+37.2 million	data_type	String	37.2 million-data_type
+El Salvador	label	El Salvador	El Salvador-label
+El Salvador	data_type	String	El Salvador-data_type
+9 million	label	9 million	9 million-label
+9 million	data_type	String	9 million-data_type
+Uganda	label	Uganda	Uganda-label
+Uganda	data_type	String	Uganda-data_type
+Name	label	Name	Name-label
+Name	data_type	String	Name-data_type
+Country and territory	label	Country and territory	Country and territory-label
+Country and territory	data_type	String	Country and territory-data_type
+Place	label	Place	Place-label
+Place	data_type	String	Place-data_type
+Footprint	label	Footprint	Footprint-label
+Footprint	data_type	String	Footprint-data_type
+Length × width	label	Length × width	Length × width-label
+Length × width	data_type	String	Length × width-data_type
+Description	label	Description	Description-label
+Description	data_type	String	Description-data_type
+Map/Source	label	Map/Source	Map/Source-label
+Map/Source	data_type	String	Map/Source-data_type
+AvtoVAZ main assembly building	label	AvtoVAZ main assembly building	AvtoVAZ main assembly building-label
+AvtoVAZ main assembly building	data_type	String	AvtoVAZ main assembly building-data_type
+Russia	label	Russia	Russia-label
+Russia	data_type	String	Russia-data_type
+Tolyatti	label	Tolyatti	Tolyatti-label
+Tolyatti	data_type	String	Tolyatti-data_type
+887	label	887	887-label
+887	data_type	String	887-data_type
+1930 m[dubious – discuss] x 460 m	label	1930 m[dubious – discuss] x 460 m	1930 m[dubious – discuss] x 460 m-label
+1930 m[dubious – discuss] x 460 m	data_type	String	1930 m[dubious – discuss] x 460 m-data_type
+Lada car factory	label	Lada car factory	Lada car factory-label
+Lada car factory	data_type	String	Lada car factory-data_type
+[22]	label	[22]	[22]-label
+[22]	data_type	String	[22]-data_type
+Beijing Daxing International Airport terminal building	label	Beijing Daxing International Airport terminal building	Beijing Daxing International Airport terminal building-label
+Beijing Daxing International Airport terminal building	data_type	String	Beijing Daxing International Airport terminal building-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+Beijing	label	Beijing	Beijing-label
+Beijing	data_type	String	Beijing-data_type
+700	label	700	700-label
+700	data_type	String	700-data_type
+Terminal building of Beijing Daxing International Airport	label	Terminal building of Beijing Daxing International Airport	Terminal building of Beijing Daxing International Airport-label
+Terminal building of Beijing Daxing International Airport	data_type	String	Terminal building of Beijing Daxing International Airport-data_type
+[23]	label	[23]	[23]-label
+[23]	data_type	String	[23]-data_type
+Jaguar Land Rover Solihull plant	label	Jaguar Land Rover Solihull plant	Jaguar Land Rover Solihull plant-label
+Jaguar Land Rover Solihull plant	data_type	String	Jaguar Land Rover Solihull plant-data_type
+United Kingdom	label	United Kingdom	United Kingdom-label
+United Kingdom	data_type	String	United Kingdom-data_type
+Solihull	label	Solihull	Solihull-label
+Solihull	data_type	String	Solihull-data_type
+526	label	526	526-label
+526	data_type	String	526-data_type
+1700 m x 980 m	label	1700 m x 980 m	1700 m x 980 m-label
+1700 m x 980 m	data_type	String	1700 m x 980 m-data_type
+Jaguar Land Rover car factory	label	Jaguar Land Rover car factory	Jaguar Land Rover car factory-label
+Jaguar Land Rover car factory	data_type	String	Jaguar Land Rover car factory-data_type
+[24]	label	[24]	[24]-label
+[24]	data_type	String	[24]-data_type
+Aalsmeer Flower Auction Building	label	Aalsmeer Flower Auction Building	Aalsmeer Flower Auction Building-label
+Aalsmeer Flower Auction Building	data_type	String	Aalsmeer Flower Auction Building-data_type
+Netherlands	label	Netherlands	Netherlands-label
+Netherlands	data_type	String	Netherlands-data_type
+Aalsmeer	label	Aalsmeer	Aalsmeer-label
+Aalsmeer	data_type	String	Aalsmeer-data_type
+518	label	518	518-label
+518	data_type	String	518-data_type
+740 m x 700 m	label	740 m x 700 m	740 m x 700 m-label
+740 m x 700 m	data_type	String	740 m x 700 m-data_type
+[25]	label	[25]	[25]-label
+[25]	data_type	String	[25]-data_type
+Title	label	Title	Title-label
+Title	data_type	String	Title-data_type
+Year	label	Year	Year-label
+Year	data_type	String	Year-data_type
+Peak chart positions	label	Peak chart positions	Peak chart positions-label
+Peak chart positions	data_type	String	Peak chart positions-data_type
+Certifications	label	Certifications	Certifications-label
+Certifications	data_type	String	Certifications-data_type
+Album	label	Album	Album-label
+Album	data_type	String	Album-data_type
+UK	label	UK	UK-label
+UK	data_type	String	UK-data_type
+AUS	label	AUS	AUS-label
+AUS	data_type	String	AUS-data_type
+AUT	label	AUT	AUT-label
+AUT	data_type	String	AUT-data_type
+BEL	label	BEL	BEL-label
+BEL	data_type	String	BEL-data_type
+CAN	label	CAN	CAN-label
+CAN	data_type	String	CAN-data_type
+FRA	label	FRA	FRA-label
+FRA	data_type	String	FRA-data_type
+GER	label	GER	GER-label
+GER	data_type	String	GER-data_type
+IRE	label	IRE	IRE-label
+IRE	data_type	String	IRE-data_type
+NLD	label	NLD	NLD-label
+NLD	data_type	String	NLD-data_type
+NZL	label	NZL	NZL-label
+NZL	data_type	String	NZL-data_type
+SWI	label	SWI	SWI-label
+SWI	data_type	String	SWI-data_type
+US	label	US	US-label
+US	data_type	String	US-data_type
+US Cash Box	label	US Cash Box	US Cash Box-label
+US Cash Box	data_type	String	US Cash Box-data_type
+Save Me	label	Save Me	Save Me-label
+Save Me	data_type	String	Save Me-data_type
+—	label	—	—-label
+—	data_type	String	—-data_type
+The Game	label	The Game	The Game-label
+The Game	data_type	String	The Game-data_type
+Play the Game	label	Play the Game	Play the Game-label
+Play the Game	data_type	String	Play the Game-data_type
+Another One Bites the Dust	label	Another One Bites the Dust	Another One Bites the Dust-label
+Another One Bites the Dust	data_type	String	Another One Bites the Dust-data_type
+UK: Platinum[21]	label	UK: Platinum[21]	UK: Platinum[21]-label
+UK: Platinum[21]	data_type	String	UK: Platinum[21]-data_type
+ITA: 2× Platinum[53]	label	ITA: 2× Platinum[53]	ITA: 2× Platinum[53]-label
+ITA: 2× Platinum[53]	data_type	String	ITA: 2× Platinum[53]-data_type
+US: 4× Platinum[22]	label	US: 4× Platinum[22]	US: 4× Platinum[22]-label
+US: 4× Platinum[22]	data_type	String	US: 4× Platinum[22]-data_type
+Need Your Loving Tonight	label	Need Your Loving Tonight	Need Your Loving Tonight-label
+Need Your Loving Tonight	data_type	String	Need Your Loving Tonight-data_type
+Flash	label	Flash	Flash-label
+Flash	data_type	String	Flash-data_type
+UK: Silver[21]	label	UK: Silver[21]	UK: Silver[21]-label
+UK: Silver[21]	data_type	String	UK: Silver[21]-data_type
+Flash Gordon OST	label	Flash Gordon OST	Flash Gordon OST-label
+Flash Gordon OST	data_type	String	Flash Gordon OST-data_type
+Rank	label	Rank	Rank-label
+Rank	data_type	String	Rank-data_type
+Building	label	Building	Building-label
+Building	data_type	String	Building-data_type
+City	label	City	City-label
+City	data_type	String	City-data_type
+Country	label	Country	Country-label
+Country	data_type	String	Country-data_type
+Height	label	Height	Height-label
+Height	data_type	String	Height-data_type
+Floors	label	Floors	Floors-label
+Floors	data_type	String	Floors-data_type
+Built	label	Built	Built-label
+Built	data_type	String	Built-data_type
+Burj Khalifa	label	Burj Khalifa	Burj Khalifa-label
+Burj Khalifa	data_type	String	Burj Khalifa-data_type
+Dubai	label	Dubai	Dubai-label
+Dubai	data_type	String	Dubai-data_type
+United Arab Emirates	label	United Arab Emirates	United Arab Emirates-label
+United Arab Emirates	data_type	String	United Arab Emirates-data_type
+584.5 m (1	label	584.5 m (1	584.5 m (1-label
+584.5 m (1	data_type	String	584.5 m (1-data_type
+Shanghai Tower	label	Shanghai Tower	Shanghai Tower-label
+Shanghai Tower	data_type	String	Shanghai Tower-data_type
+Shanghai	label	Shanghai	Shanghai-label
+Shanghai	data_type	String	Shanghai-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+583.4 m (1	label	583.4 m (1	583.4 m (1-label
+583.4 m (1	data_type	String	583.4 m (1-data_type
+Ping An Finance Center	label	Ping An Finance Center	Ping An Finance Center-label
+Ping An Finance Center	data_type	String	Ping An Finance Center-data_type
+Shenzhen	label	Shenzhen	Shenzhen-label
+Shenzhen	data_type	String	Shenzhen-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+562.2 m (1	label	562.2 m (1	562.2 m (1-label
+562.2 m (1	data_type	String	562.2 m (1-data_type
+China Zun	label	China Zun	China Zun-label
+China Zun	data_type	String	China Zun-data_type
+Beijing	label	Beijing	Beijing-label
+Beijing	data_type	String	Beijing-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+515 m (1	label	515 m (1	515 m (1-label
+515 m (1	data_type	String	515 m (1-data_type
+Lotte World Tower	label	Lotte World Tower	Lotte World Tower-label
+Lotte World Tower	data_type	String	Lotte World Tower-data_type
+Seoul	label	Seoul	Seoul-label
+Seoul	data_type	String	Seoul-data_type
+South Korea	label	South Korea	South Korea-label
+South Korea	data_type	String	South Korea-data_type
+497.6 m (1	label	497.6 m (1	497.6 m (1-label
+497.6 m (1	data_type	String	497.6 m (1-data_type
+Guangzhou CTF Finance Centre	label	Guangzhou CTF Finance Centre	Guangzhou CTF Finance Centre-label
+Guangzhou CTF Finance Centre	data_type	String	Guangzhou CTF Finance Centre-data_type
+Guangzhou	label	Guangzhou	Guangzhou-label
+Guangzhou	data_type	String	Guangzhou-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+495.5 m (1	label	495.5 m (1	495.5 m (1-label
+495.5 m (1	data_type	String	495.5 m (1-data_type
+Abraj Al-Bait Towers	label	Abraj Al-Bait Towers	Abraj Al-Bait Towers-label
+Abraj Al-Bait Towers	data_type	String	Abraj Al-Bait Towers-data_type
+Mecca	label	Mecca	Mecca-label
+Mecca	data_type	String	Mecca-data_type
+Saudi Arabia	label	Saudi Arabia	Saudi Arabia-label
+Saudi Arabia	data_type	String	Saudi Arabia-data_type
+494.4 m (1	label	494.4 m (1	494.4 m (1-label
+494.4 m (1	data_type	String	494.4 m (1-data_type
+Shanghai World Financial Center	label	Shanghai World Financial Center	Shanghai World Financial Center-label
+Shanghai World Financial Center	data_type	String	Shanghai World Financial Center-data_type
+Shanghai	label	Shanghai	Shanghai-label
+Shanghai	data_type	String	Shanghai-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+474 m (1	label	474 m (1	474 m (1-label
+474 m (1	data_type	String	474 m (1-data_type
+International Commerce Centre	label	International Commerce Centre	International Commerce Centre-label
+International Commerce Centre	data_type	String	International Commerce Centre-data_type
+Hong Kong	label	Hong Kong	Hong Kong-label
+Hong Kong	data_type	String	Hong Kong-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+468.8 m (1	label	468.8 m (1	468.8 m (1-label
+468.8 m (1	data_type	String	468.8 m (1-data_type
+Central Park Tower	label	Central Park Tower	Central Park Tower-label
+Central Park Tower	data_type	String	Central Park Tower-data_type
+New York City	label	New York City	New York City-label
+New York City	data_type	String	New York City-data_type
+United States	label	United States	United States-label
+United States	data_type	String	United States-data_type
+442 m (1	label	442 m (1	442 m (1-label
+442 m (1	data_type	String	442 m (1-data_type
+Tianjin CTF Finance Centre	label	Tianjin CTF Finance Centre	Tianjin CTF Finance Centre-label
+Tianjin CTF Finance Centre	data_type	String	Tianjin CTF Finance Centre-data_type
+Tianjin	label	Tianjin	Tianjin-label
+Tianjin	data_type	String	Tianjin-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+439.4 m (1	label	439.4 m (1	439.4 m (1-label
+439.4 m (1	data_type	String	439.4 m (1-data_type
+Taipei 101	label	Taipei 101	Taipei 101-label
+Taipei 101	data_type	String	Taipei 101-data_type
+Taipei	label	Taipei	Taipei-label
+Taipei	data_type	String	Taipei-data_type
+Taiwan	label	Taiwan	Taiwan-label
+Taiwan	data_type	String	Taiwan-data_type
+438 m (1	label	438 m (1	438 m (1-label
+438 m (1	data_type	String	438 m (1-data_type
+Changsha IFS Tower T1	label	Changsha IFS Tower T1	Changsha IFS Tower T1-label
+Changsha IFS Tower T1	data_type	String	Changsha IFS Tower T1-data_type
+Changsha	label	Changsha	Changsha-label
+Changsha	data_type	String	Changsha-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+437.1 m (1	label	437.1 m (1	437.1 m (1-label
+437.1 m (1	data_type	String	437.1 m (1-data_type
+KK100	label	KK100	KK100-label
+KK100	data_type	String	KK100-data_type
+Shenzhen	label	Shenzhen	Shenzhen-label
+Shenzhen	data_type	String	Shenzhen-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+427.1 m (1	label	427.1 m (1	427.1 m (1-label
+427.1 m (1	data_type	String	427.1 m (1-data_type
+Guangzhou International Finance Center	label	Guangzhou International Finance Center	Guangzhou International Finance Center-label
+Guangzhou International Finance Center	data_type	String	Guangzhou International Finance Center-data_type
+Guangzhou	label	Guangzhou	Guangzhou-label
+Guangzhou	data_type	String	Guangzhou-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+415.1 m (1	label	415.1 m (1	415.1 m (1-label
+415.1 m (1	data_type	String	415.1 m (1-data_type
+Willis Tower	label	Willis Tower	Willis Tower-label
+Willis Tower	data_type	String	Willis Tower-data_type
+Chicago	label	Chicago	Chicago-label
+Chicago	data_type	String	Chicago-data_type
+United States	label	United States	United States-label
+United States	data_type	String	United States-data_type
+412.7 m (1	label	412.7 m (1	412.7 m (1-label
+412.7 m (1	data_type	String	412.7 m (1-data_type
+Suzhou IFS	label	Suzhou IFS	Suzhou IFS-label
+Suzhou IFS	data_type	String	Suzhou IFS-data_type
+Suzhou	label	Suzhou	Suzhou-label
+Suzhou	data_type	String	Suzhou-data_type
+China	label	China	China-label
+China	data_type	String	China-data_type
+406.4 m (1	label	406.4 m (1	406.4 m (1-label
+406.4 m (1	data_type	String	406.4 m (1-data_type
+New	label	New	New-label
+New	data_type	String	New-data_type
+No. 1	label	No. 1	No. 1-label
+No. 1	data_type	String	No. 1-data_type
+Country	label	Country	Country-label
+Country	data_type	String	Country-data_type
+Player	label	Player	Player-label
+Player	data_type	String	Player-data_type
+Start date	label	Start date	Start date-label
+Start date	data_type	String	Start date-data_type
+End date	label	End date	End date-label
+End date	data_type	String	End date-data_type
+Weeks	label	Weeks	Weeks-label
+Weeks	data_type	String	Weeks-data_type
+series	label	series	series-label
+series	data_type	String	series-data_type
+total	label	total	total-label
+total	data_type	String	total-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Chris Evert	label	Chris Evert	Chris Evert-label
+Chris Evert	data_type	String	Chris Evert-data_type
+AUS	label	AUS	AUS-label
+AUS	data_type	String	AUS-data_type
+Evonne Goolagong Cawley	label	Evonne Goolagong Cawley	Evonne Goolagong Cawley-label
+Evonne Goolagong Cawley	data_type	String	Evonne Goolagong Cawley-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Chris Evert (2)	label	Chris Evert (2)	Chris Evert (2)-label
+Chris Evert (2)	data_type	String	Chris Evert (2)-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Martina Navratilova	label	Martina Navratilova	Martina Navratilova-label
+Martina Navratilova	data_type	String	Martina Navratilova-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Chris Evert (3)	label	Chris Evert (3)	Chris Evert (3)-label
+Chris Evert (3)	data_type	String	Chris Evert (3)-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Martina Navratilova (2)	label	Martina Navratilova (2)	Martina Navratilova (2)-label
+Martina Navratilova (2)	data_type	String	Martina Navratilova (2)-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Chris Evert (4)	label	Chris Evert (4)	Chris Evert (4)-label
+Chris Evert (4)	data_type	String	Chris Evert (4)-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Martina Navratilova (3)	label	Martina Navratilova (3)	Martina Navratilova (3)-label
+Martina Navratilova (3)	data_type	String	Martina Navratilova (3)-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Chris Evert (5)	label	Chris Evert (5)	Chris Evert (5)-label
+Chris Evert (5)	data_type	String	Chris Evert (5)-data_type
+USA	label	USA	USA-label
+USA	data_type	String	USA-data_type
+Martina Navratilova (4)	label	Martina Navratilova (4)	Martina Navratilova (4)-label
+Martina Navratilova (4)	data_type	String	Martina Navratilova (4)-data_type
+Rank[N 1]	label	Rank[N 1]	Rank[N 1]-label
+Rank[N 1]	data_type	String	Rank[N 1]-data_type
+Company	label	Company	Company-label
+Company	data_type	String	Company-data_type
+Largest Market Cap (USD billions)	label	Largest Market Cap (USD billions)	Largest Market Cap (USD billions)-label
+Largest Market Cap (USD billions)	data_type	String	Largest Market Cap (USD billions)-data_type
+Market Cap in 2019 (USD billions)	label	Market Cap in 2019 (USD billions)	Market Cap in 2019 (USD billions)-label
+Market Cap in 2019 (USD billions)	data_type	String	Market Cap in 2019 (USD billions)-data_type
+Market Cap in 2018 (USD billions)	label	Market Cap in 2018 (USD billions)	Market Cap in 2018 (USD billions)-label
+Market Cap in 2018 (USD billions)	data_type	String	Market Cap in 2018 (USD billions)-data_type
+Market Cap in 2017 (USD billions)	label	Market Cap in 2017 (USD billions)	Market Cap in 2017 (USD billions)-label
+Market Cap in 2017 (USD billions)	data_type	String	Market Cap in 2017 (USD billions)-data_type
+Market Cap in 2016 (USD billions)[1][2]	label	Market Cap in 2016 (USD billions)[1][2]	Market Cap in 2016 (USD billions)[1][2]-label
+Market Cap in 2016 (USD billions)[1][2]	data_type	String	Market Cap in 2016 (USD billions)[1][2]-data_type
+Market Cap in 2015 (USD billions)[3]	label	Market Cap in 2015 (USD billions)[3]	Market Cap in 2015 (USD billions)[3]-label
+Market Cap in 2015 (USD billions)[3]	data_type	String	Market Cap in 2015 (USD billions)[3]-data_type
+Market Cap in 2014 (USD billions)[4]	label	Market Cap in 2014 (USD billions)[4]	Market Cap in 2014 (USD billions)[4]-label
+Market Cap in 2014 (USD billions)[4]	data_type	String	Market Cap in 2014 (USD billions)[4]-data_type
+Market Cap in 2013 (USD billions)	label	Market Cap in 2013 (USD billions)	Market Cap in 2013 (USD billions)-label
+Market Cap in 2013 (USD billions)	data_type	String	Market Cap in 2013 (USD billions)-data_type
+Johnson & Johnson[P]	label	Johnson & Johnson[P]	Johnson & Johnson[P]-label
+Johnson & Johnson[P]	data_type	String	Johnson & Johnson[P]-data_type
+NYSE: JNJ	label	NYSE: JNJ	NYSE: JNJ-label
+NYSE: JNJ	data_type	String	NYSE: JNJ-data_type
+397.4 (Jan 2018)	label	397.4 (Jan 2018)	397.4 (Jan 2018)-label
+397.4 (Jan 2018)	data_type	String	397.4 (Jan 2018)-data_type
+Roche[P]	label	Roche[P]	Roche[P]-label
+Roche[P]	data_type	String	Roche[P]-data_type
+SIX: ROG	label	SIX: ROG	SIX: ROG-label
+SIX: ROG	data_type	String	SIX: ROG-data_type
+281.1 (Dec 2019)	label	281.1 (Dec 2019)	281.1 (Dec 2019)-label
+281.1 (Dec 2019)	data_type	String	281.1 (Dec 2019)-data_type
+Novartis[P]	label	Novartis[P]	Novartis[P]-label
+Novartis[P]	data_type	String	Novartis[P]-data_type
+NYSE: NVS	label	NYSE: NVS	NYSE: NVS-label
+NYSE: NVS	data_type	String	NYSE: NVS-data_type
+275.2 (Jul 2015)	label	275.2 (Jul 2015)	275.2 (Jul 2015)-label
+275.2 (Jul 2015)	data_type	String	275.2 (Jul 2015)-data_type
+Merck & Co.[P]	label	Merck & Co.[P]	Merck & Co.[P]-label
+Merck & Co.[P]	data_type	String	Merck & Co.[P]-data_type
+NYSE: MRK	label	NYSE: MRK	NYSE: MRK-label
+NYSE: MRK	data_type	String	NYSE: MRK-data_type
+232.9 (Dec 2019)	label	232.9 (Dec 2019)	232.9 (Dec 2019)-label
+232.9 (Dec 2019)	data_type	String	232.9 (Dec 2019)-data_type
+Pfizer[P]	label	Pfizer[P]	Pfizer[P]-label
+Pfizer[P]	data_type	String	Pfizer[P]-data_type
+NYSE: PFE	label	NYSE: PFE	NYSE: PFE-label
+NYSE: PFE	data_type	String	NYSE: PFE-data_type
+310.5 (Jul 2000)	label	310.5 (Jul 2000)	310.5 (Jul 2000)-label
+310.5 (Jul 2000)	data_type	String	310.5 (Jul 2000)-data_type

@@ -1,0 +1,12 @@
+#AUTO-GENERATED YAML
+statementMapping:
+        region:
+            range: C3:F10
+        template:
+            subject: =value[A, $row-$n]
+            property: =item[$col-$n, 2]
+            value: =value[$col, $row]
+
+            qualifier:
+                - property: P2561  #??? #TODO-- no property alignment found
+                  value: =value[$col-$n, 1]

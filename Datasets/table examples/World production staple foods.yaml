@@ -1,0 +1,9 @@
+# some kind of issue with property-fication of row 1
+#AUTO-GENERATED YAML
+statementMapping:
+        region:
+            range: C3:E12
+        template:
+            subject: =value[B, $row-$n]
+            property: P2561 #item table not working =value[$col-$n, 1]
+            value: =value[$col, $row]
