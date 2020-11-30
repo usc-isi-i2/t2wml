@@ -821,7 +821,9 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 2,
                                 1
@@ -841,7 +843,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -859,7 +860,15 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ],
                             "subject": [
                                 3,
                                 1
@@ -879,7 +888,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -887,12 +895,6 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -907,7 +909,9 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 4,
                                 1
@@ -927,7 +931,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -945,7 +948,9 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 5,
                                 1
@@ -965,7 +970,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -983,7 +987,9 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 6,
                                 1
@@ -1003,7 +1009,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1021,7 +1026,9 @@
                                 1,
                                 5
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 7,
                                 1
@@ -1041,7 +1048,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -1059,7 +1065,9 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 2,
                                 1
@@ -1079,7 +1087,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1097,7 +1104,15 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ],
                             "subject": [
                                 3,
                                 1
@@ -1117,7 +1132,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1125,12 +1139,6 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1145,7 +1153,9 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 4,
                                 1
@@ -1165,7 +1175,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1183,7 +1192,9 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 5,
                                 1
@@ -1203,7 +1214,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1221,7 +1231,9 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 6,
                                 1
@@ -1241,7 +1253,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1259,7 +1270,9 @@
                                 1,
                                 6
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 7,
                                 1
@@ -1279,7 +1292,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",
@@ -1297,7 +1309,9 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 2,
                                 1
@@ -1317,7 +1331,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1335,7 +1348,15 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ],
                             "subject": [
                                 3,
                                 1
@@ -1355,7 +1376,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1363,12 +1383,6 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1383,7 +1397,9 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 4,
                                 1
@@ -1403,7 +1419,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1421,7 +1436,9 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 5,
                                 1
@@ -1441,7 +1458,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m",
                                 "precision": 10,
                                 "property": "P585",
@@ -1459,7 +1475,9 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 6,
                                 1
@@ -1479,7 +1497,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y-%m-%d",
                                 "precision": 11,
                                 "property": "P585",
@@ -1497,7 +1514,9 @@
                                 1,
                                 7
                             ],
-                            "qualifiers": [],
+                            "qualifiers": [
+                                {}
+                            ],
                             "subject": [
                                 7,
                                 1
@@ -1517,7 +1536,6 @@
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
-                                "cells": {},
                                 "format": "%Y",
                                 "precision": 9,
                                 "property": "P585",

@@ -351,7 +351,9 @@
                                 0,
                                 5
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-002",
                         "value": "2",
@@ -359,7 +361,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1997-09-24T00:00:00",
                                 "calendar": "Q1985727",
@@ -389,7 +390,15 @@
                                 0,
                                 5
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ]
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -397,7 +406,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1998-06-25T00:00:00",
                                 "calendar": "Q1985727",
@@ -406,12 +414,6 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -437,7 +439,9 @@
                                 0,
                                 5
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -445,7 +449,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1999-04-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -475,7 +478,9 @@
                                 0,
                                 5
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -483,7 +488,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2000-02-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -513,7 +517,9 @@
                                 0,
                                 5
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -521,7 +527,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2006-09-20T00:00:00",
                                 "calendar": "Q1985727",
@@ -551,7 +556,9 @@
                                 0,
                                 5
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -559,7 +566,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2008-01-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -589,7 +595,9 @@
                                 0,
                                 6
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -597,7 +605,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1997-09-24T00:00:00",
                                 "calendar": "Q1985727",
@@ -627,7 +634,15 @@
                                 0,
                                 6
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ]
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -635,7 +650,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1998-06-25T00:00:00",
                                 "calendar": "Q1985727",
@@ -644,12 +658,6 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -675,7 +683,9 @@
                                 0,
                                 6
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-003",
                         "value": "1",
@@ -683,7 +693,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1999-04-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -713,7 +722,9 @@
                                 0,
                                 6
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-003",
                         "value": "2",
@@ -721,7 +732,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2000-02-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -751,7 +761,9 @@
                                 0,
                                 6
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -759,7 +771,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2006-09-20T00:00:00",
                                 "calendar": "Q1985727",
@@ -789,7 +800,9 @@
                                 0,
                                 6
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -797,7 +810,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2008-01-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -827,7 +839,9 @@
                                 0,
                                 7
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -835,7 +849,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1997-09-24T00:00:00",
                                 "calendar": "Q1985727",
@@ -865,7 +878,15 @@
                                 0,
                                 7
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ]
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -873,7 +894,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1998-06-25T00:00:00",
                                 "calendar": "Q1985727",
@@ -882,12 +902,6 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -913,7 +927,9 @@
                                 0,
                                 7
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -921,7 +937,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "1999-04-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -951,7 +966,9 @@
                                 0,
                                 7
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -959,7 +976,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2000-02-01T00:00:00",
                                 "calendar": "Q1985727",
@@ -989,7 +1005,9 @@
                                 0,
                                 7
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -997,7 +1015,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2006-09-20T00:00:00",
                                 "calendar": "Q1985727",
@@ -1027,7 +1044,9 @@
                                 0,
                                 7
                             ],
-                            "qualifiers": []
+                            "qualifiers": [
+                                {}
+                            ]
                         },
                         "property": "Paid-security-004",
                         "value": "3",
@@ -1035,7 +1054,6 @@
                         "unit": "Qaid-security-U002",
                         "qualifier": [
                             {
-                                "cells": {},
                                 "property": "P585",
                                 "value": "2008-01-01T00:00:00",
                                 "calendar": "Q1985727",
