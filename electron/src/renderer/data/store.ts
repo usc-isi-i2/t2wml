@@ -31,13 +31,6 @@ class TableState {
 
 }
 
-class ProjectState {
-    @observable public project: ProjectDTO;
-
-    constructor() {
-        this.project = {} as ProjectDTO;
-    }
-}
 
 class WikifierState {
     @observable public showSpinner: boolean;
@@ -204,7 +197,6 @@ export class LayerState {
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
-    @observable public project = new ProjectState();
     @observable public wikifier = new WikifierState();
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();

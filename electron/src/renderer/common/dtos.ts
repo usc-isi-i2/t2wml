@@ -126,7 +126,7 @@ export interface ErrorEntry extends Entry {
 export interface StatementEntry extends Entry{
     subject: string
     property: string
-    cell: string
+    cells: any
     value: string
     qnodes: any
     qualifier?: any

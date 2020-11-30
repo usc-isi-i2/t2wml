@@ -52,7 +52,7 @@ interface TableState {
   annotationMode: boolean,
   showCleanedData: boolean,
   showAnnotationMenu: boolean,
-  annotationMenuPosition: Array<int> | null,
+  annotationMenuPosition: Array<Number> | null,
 
   errorMessage: ErrorMessage;
 }
@@ -148,7 +148,7 @@ class TableComponent extends Component<{}, TableState> {
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-    } catch(err) {
+    } catch(error) {
       error.errorDescription += "\n\nCannot open file!";
       this.setState({ errorMessage: error });
     } finally {
