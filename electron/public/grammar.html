@@ -91,14 +91,14 @@ cleaningMapping:
 <h3>The template</h3>
 <p><span id="templatestructure"></span></p>
 <p>The template is used to build statements for each cell in the region.</p>
-<p>It must have the keys <code>item</code>, <code>property</code>, and <code>value</code>.</p>
+<p>It must have the keys <code>subject</code>, <code>property</code>, and <code>value</code>.</p>
 <p>It can also optionally have the attribute keys <code>qualifier</code> and <code>reference</code>, as well as the optional keys <code>calendar</code>, <code>precision</code>, <code>time_zone</code>, <code>format</code>, <code>lang</code>, <code>longitude</code>, <code>latitude</code>, <code>unit</code>.</p>
-<p><code>qualifier</code> and <code>reference</code> both must be lists of dictionaries. the allowed keys in their dictionaries are <code>item</code>, <code>property</code>, <code>value</code>, as well as the optional keys above.</p>
+<p><code>qualifier</code>  must be a list of dictionaries. the required keys in their dictionaries are  <code>property</code> and <code>value</code>, and the same optional keys as above are allowed.</p>
 <p>The values for the various keys can be defined in the T2WML language (<code>=value[$col, $row]</code> is a common occurence for the key <code>value</code>, for example).</p>
 <h4>Template example</h4>
 <pre class="codehilite"><code>template: 
      value: =value[$col, $row]
-     item: Q1000
+     subject: Q1000
      property: P123
      qualifier:
            - property: P585
@@ -147,6 +147,8 @@ cleaningMapping:
             - make_alphanumeric
             - make_ascii:
                 translate: False
+            - replace_empty:
+                replacement: #required, no default
 </code></pre>
 
 <h3>Conformance to Yaml standards</h3>
@@ -236,7 +238,7 @@ For example, <code>extract_date(“2000”, “%Y”)</code> returns  2000-01-01
 * <code>regex("Isaac Newton, physicist",  "(\w+) (\w+)")</code> returns “Isaac Newton”
 * <code>regex("Isaac Newton, physicist",  "(\w+) (\w+)", 1)</code> returns “Isaac”</p>
 <p>The regex function uses Python's <a href="https://docs.python.org/3/library/re.html">re.search() function</a> and hence Python's regex syntax. You can <a href="https://regex101.com/">test your regex</a> to check that it is returning the results you expect.</p>
-<p><strong>WARNING</strong>: Because of the need to <a href="#yamlstandards">conform to Yaml standards</a>, a regex containing a colon <em>followed by whitespace</em> <code>:</code>, or whitespace followed by an octothorpe <code>#</code>, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character <code>\s</code>, eg: <code>:\s</code>, <code>\s#</code>. You can also single-quote the entire line while double-quoting the regex string, eg: <code>item '=regex(value[B, 2], "profile: (.*) \d{4}", 1)'</code>.</p>
+<p><strong>WARNING</strong>: Because of the need to <a href="#yamlstandards">conform to Yaml standards</a>, a regex containing a colon <em>followed by whitespace</em> <code>:</code>, or whitespace followed by an octothorpe <code>#</code>, requires special handling. The recommended solution is to not use actual whitespace, but rather the whitespace character <code>\s</code>, eg: <code>:\s</code>, <code>\s#</code>. You can also single-quote the entire line while double-quoting the regex string, eg: <code>value: '=regex(value[B, 2], "profile: (.*) \d{4}", 1)'</code>.</p>
 <h4>Other</h4>
 <p><span id="other"></span></p>
 <p>Functions which do not behave like boolean functions or like string modifiers.</p>
@@ -245,7 +247,7 @@ For example, <code>extract_date(“2000”, “%Y”)</code> returns  2000-01-01
 <p>It optionally receives a context-- if no context is provided, the default context (<code>"__NO_CONTEXT__"</code>) is used.</p>
 <p>It then looks up this string in the item table. If the string is not present in the item table it will return an error. Otherwise, it returns the item from the item table.</p>
 <p>Obviously the preferred way to get an item from a string is to use the wikifier. <code>get_item</code> was created for situations where simply grabbing the string from a cell was not sufficient, for example, if it is necessary to use a regex on the cell to get the needed string.</p>
-<p>example: <code>item: '=get_item(regex(value[B, 2], "profile: (.*) \d{4}", 1))'</code></p>
+<p>example: <code>subject: '=get_item(regex(value[B, 2], "profile: (.*) \d{4}", 1))'</code></p>
 <p><code>concat(*args)</code></p>
 <p>concat receives a variable number of arguments, <strong>the last of which must be the join character</strong></p>
 <p>For arguments that are ranges, rather than single values, concat will join everything in the range, in row-major order.</p>
@@ -283,7 +285,7 @@ For example, <code>extract_date(“2000”, “%Y”)</code> returns  2000-01-01
 <li><code>concat(value[B:C, 2:3], “implies”,  item[A, 1:2], “-”)</code></li>
 </ul>
 <p>Would return the string “No-Fire-Maybe-Water-implies-Q6581072-Q6581097”</p>
-<p>Concat does not preserve row/column source information. This means that concat does not return information for highlighting in the spreadsheet, unlike string modifiers. (for example, if you define item in your template to be concat(something), you won’t get blue highlighting) </p>
+<p>Concat does not preserve row/column source information. This means that concat does not return information for highlighting in the spreadsheet, unlike string modifiers. (for example, if you define subject in your template to be concat(something), you won’t get blue highlighting) </p>
 <h3>Miscellaneous</h3>
 <p><span id="misc"></span></p>
 <p>If for some reason you need a string value to start with "=" (and not have it be interepreted as T2WML code), you can escape it with a forward slash <code>/=</code>. If for some reason you need a string value to start with a forward slash followed by an equal sign, you can escape the initial forward slash with an additional forward slash <code>//=</code>. And so on. So <code>value: /=)</code> would return the string "=)"</p>
@@ -348,3 +350,5 @@ For example, <code>extract_date(“2000”, “%Y”)</code> returns  2000-01-01
 <li><code>make_ascii("какой-то текст", translate=True)</code> returns "kakoi-to tekst", without translate the only ascii character there is the "-" so that's what would be returned</li>
 <li><code>make_ascii("Thanks 😊! (&lt;hello&gt;) חחחחⒶ")</code> would return <code>"Thanks ! (&lt;hello&gt;) "</code></li>
 </ul>
+<p><code>fill_empty(input, replacement)</code>: if a cell is empty (contains only whitespace characters or an empty string), fill it with <code>replacement</code>. </p>
+<p>example: <code>fill_empty("", "0")</code> fills empty cells with string 0</p>
