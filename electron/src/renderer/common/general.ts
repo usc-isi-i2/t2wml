@@ -1,6 +1,3 @@
-import { colName2colIdx } from "./utils";
-
-
 // console.log
 export const LOG = {
     default: "background: ; color: ",
@@ -21,12 +18,12 @@ export interface ErrorMessage {
 
 
 export class Cell {
-    col: string | null = null;
+    col: number | null = null;
     row: number | null = null;
     value: string | null = null;
 
-    constructor(col?: string | null, row?: number | null, value?: string | null) {
-        if (col && row) {
+    constructor(col?: number | null, row?: number | null, value?: string | null) {
+        if (col!=null && row!=null) {
             this.col = col;
             this.row = row;
         }
@@ -38,20 +35,8 @@ export class Cell {
         }
     }
 
-    get rowIndex(): number | null {
-        if (this.row) { return this.row - 1; }
-        return null;
-    }
-
-    get colIndex(): number | null {
-        if (this.col) {
-            return colName2colIdx(this.col) - 1;
-        }
-        return null;
-    }
-
     get isCell(): boolean{
-        if (this.col && this.row){
+        if (this.col!=null && this.row!=null){
             return true;
         }
         return false;

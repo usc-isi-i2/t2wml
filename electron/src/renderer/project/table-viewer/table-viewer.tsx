@@ -166,7 +166,8 @@ class TableViewer extends Component<{}, TableState> {
 
 
 
-    } catch {
+    } catch(error) {
+      console.log(error);
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -209,7 +210,8 @@ class TableViewer extends Component<{}, TableState> {
       }
 
 
-    } catch {
+    } catch(error) {
+      console.log(error);
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;

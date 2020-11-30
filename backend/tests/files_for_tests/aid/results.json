@@ -1,6 +1,10 @@
 {
     "add_data_file": {
         "layers": {
+            "annotation": {
+                "entries": [],
+                "layerType": "annotation"
+            },
             "cleaned": {
                 "entries": [],
                 "layerType": "cleaned"
@@ -813,9 +817,19 @@
                 "entries": [
                     {
                         "cells": {
-                            "property": "F2",
-                            "subject": "B3",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                2,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
                         },
                         "indices": [
                             [
@@ -841,9 +855,19 @@
                     },
                     {
                         "cells": {
-                            "property": "F2",
-                            "subject": "B4",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                3,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
                         },
                         "indices": [
                             [
@@ -863,7 +887,12 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {},
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -874,9 +903,19 @@
                     },
                     {
                         "cells": {
-                            "property": "F2",
-                            "subject": "B5",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                4,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
                         },
                         "indices": [
                             [
@@ -902,9 +941,19 @@
                     },
                     {
                         "cells": {
-                            "property": "F2",
-                            "subject": "B6",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                5,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
                         },
                         "indices": [
                             [
@@ -930,9 +979,19 @@
                     },
                     {
                         "cells": {
-                            "property": "F2",
-                            "subject": "B7",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                6,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
                         },
                         "indices": [
                             [
@@ -958,9 +1017,19 @@
                     },
                     {
                         "cells": {
-                            "property": "F2",
-                            "subject": "B8",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                7,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
                         },
                         "indices": [
                             [
@@ -986,9 +1055,19 @@
                     },
                     {
                         "cells": {
-                            "property": "G2",
-                            "subject": "B3",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                2,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
                         },
                         "indices": [
                             [
@@ -1014,9 +1093,19 @@
                     },
                     {
                         "cells": {
-                            "property": "G2",
-                            "subject": "B4",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                3,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
                         },
                         "indices": [
                             [
@@ -1036,7 +1125,12 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {},
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1047,9 +1141,19 @@
                     },
                     {
                         "cells": {
-                            "property": "G2",
-                            "subject": "B5",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                4,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
                         },
                         "indices": [
                             [
@@ -1075,9 +1179,19 @@
                     },
                     {
                         "cells": {
-                            "property": "G2",
-                            "subject": "B6",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                5,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
                         },
                         "indices": [
                             [
@@ -1103,9 +1217,19 @@
                     },
                     {
                         "cells": {
-                            "property": "G2",
-                            "subject": "B7",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                6,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
                         },
                         "indices": [
                             [
@@ -1131,9 +1255,19 @@
                     },
                     {
                         "cells": {
-                            "property": "G2",
-                            "subject": "B8",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                7,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
                         },
                         "indices": [
                             [
@@ -1159,9 +1293,19 @@
                     },
                     {
                         "cells": {
-                            "property": "H2",
-                            "subject": "B3",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                2,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
                         },
                         "indices": [
                             [
@@ -1187,9 +1331,19 @@
                     },
                     {
                         "cells": {
-                            "property": "H2",
-                            "subject": "B4",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                3,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
                         },
                         "indices": [
                             [
@@ -1209,7 +1363,12 @@
                                 "value": "1998-06-25T00:00:00"
                             },
                             {
-                                "cells": {},
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -1220,9 +1379,19 @@
                     },
                     {
                         "cells": {
-                            "property": "H2",
-                            "subject": "B5",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                4,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
                         },
                         "indices": [
                             [
@@ -1248,9 +1417,19 @@
                     },
                     {
                         "cells": {
-                            "property": "H2",
-                            "subject": "B6",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                5,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
                         },
                         "indices": [
                             [
@@ -1276,9 +1455,19 @@
                     },
                     {
                         "cells": {
-                            "property": "H2",
-                            "subject": "B7",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                6,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
                         },
                         "indices": [
                             [
@@ -1304,9 +1493,19 @@
                     },
                     {
                         "cells": {
-                            "property": "H2",
-                            "subject": "B8",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [],
+                            "subject": [
+                                7,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
                         },
                         "indices": [
                             [
@@ -1605,6 +1804,10 @@
     },
     "change_sheet": {
         "layers": {
+            "annotation": {
+                "entries": [],
+                "layerType": "annotation"
+            },
             "cleaned": {
                 "entries": [],
                 "layerType": "cleaned"

@@ -339,9 +339,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "F2",
-                            "subject": "B3",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "subject": [
+                                2,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-002",
                         "value": "2",
@@ -367,9 +377,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "F2",
-                            "subject": "B4",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "subject": [
+                                3,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -386,7 +406,12 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {},
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -400,9 +425,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "F2",
-                            "subject": "B5",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "subject": [
+                                4,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -428,9 +463,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "F2",
-                            "subject": "B6",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "subject": [
+                                5,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -456,9 +501,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "F2",
-                            "subject": "B7",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "subject": [
+                                6,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -484,9 +539,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "F2",
-                            "subject": "B8",
-                            "unit": "F1"
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "subject": [
+                                7,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-002",
                         "value": "0",
@@ -512,9 +577,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "G2",
-                            "subject": "B3",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "subject": [
+                                2,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -540,9 +615,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "G2",
-                            "subject": "B4",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "subject": [
+                                3,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -559,7 +644,12 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {},
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -573,9 +663,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "G2",
-                            "subject": "B5",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "subject": [
+                                4,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-003",
                         "value": "1",
@@ -601,9 +701,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "G2",
-                            "subject": "B6",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "subject": [
+                                5,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-003",
                         "value": "2",
@@ -629,9 +739,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "G2",
-                            "subject": "B7",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "subject": [
+                                6,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -657,9 +777,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "G2",
-                            "subject": "B8",
-                            "unit": "G1"
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "subject": [
+                                7,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-003",
                         "value": "0",
@@ -685,9 +815,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "H2",
-                            "subject": "B3",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "subject": [
+                                2,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -713,9 +853,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "H2",
-                            "subject": "B4",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "subject": [
+                                3,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -732,7 +882,12 @@
                                 "format": "%Y-%m-%d"
                             },
                             {
-                                "cells": {},
+                                "cells": {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                },
                                 "property": "P17",
                                 "value": "Q21203"
                             }
@@ -746,9 +901,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "H2",
-                            "subject": "B5",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "subject": [
+                                4,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -774,9 +939,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "H2",
-                            "subject": "B6",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "subject": [
+                                5,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -802,9 +977,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "H2",
-                            "subject": "B7",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "subject": [
+                                6,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-004",
                         "value": "0",
@@ -830,9 +1015,19 @@
                             ]
                         ],
                         "cells": {
-                            "property": "H2",
-                            "subject": "B8",
-                            "unit": "H1"
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "subject": [
+                                7,
+                                1
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ],
+                            "qualifiers": []
                         },
                         "property": "Paid-security-004",
                         "value": "3",
@@ -1290,6 +1485,10 @@
                         "url": "https://www.wikidata.org/wiki/Q21203"
                     }
                 ]
+            },
+            "annotation": {
+                "layerType": "annotation",
+                "entries": []
             }
         },
         "yamlContent": "statementMapping:\n  region:\n    - left: F\n      right: H\n      top: 3\n      bottom: 8\n  template:\n    subject: =value[B, $row, \"main subject\"]\n    property: =item[$col, 2, \"property\"]\n    value: =value[$col, $row]\n    unit: =item[$col,1,\"unit\"]\n    qualifier:\n      - property: P585  # point in time\n        value: '=concat(value[C:E,$row],\"-\")'\n        calendar: Q1985727\n        precision: [day, month, year]\n        time_zone: 0\n        format: [\"%Y-%m-%d\", \"%Y-%m\", \"%Y\"]\n      - property: P17  # country\n        value: =item[I,$row]\n"

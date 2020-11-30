@@ -65,8 +65,8 @@ class App extends Component<{}, AppState> {
     try {
       await this.requestService.call(this, () => this.requestService.createProject(folder));
       console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
-    } catch {
-
+    } catch (error) {
+      console.log(error);
     } finally {
       //after request
       this.setState({ showSpinner: false });
@@ -84,8 +84,8 @@ class App extends Component<{}, AppState> {
     try {
       await this.requestService.call(this, () => this.requestService.getProject(folder));
       wikiStore.changeProject(folder);
-    } catch {
-
+    } catch (error) {
+      console.log(error);
     } finally {
       //after request
       this.setState({ showSpinner: false });

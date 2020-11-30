@@ -409,6 +409,16 @@ def apply_yaml():
         response["yamlError"] = str(e)
     return response, 200
 
+@app.route('/api/annotation', methods=['POST'])
+@json_response
+def upload_annotations():
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    annotations = request.form["annotations"]
+    annotations_path=os.path.join(project_folder, "annotations.json")
+    with open(annotations_path, 'w') as f:
+        f.write(annotations)
+    return {}, 200
 
 @app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response

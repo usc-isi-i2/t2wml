@@ -109,7 +109,9 @@ class ProjectList extends Component<{}, ProjectListState> {
     try {
       await this.requestService.call(this, () => this.requestService.renameProject(path, formData));
       wikiStore.projects.refreshList();
-    } catch { } finally {
+    } catch (error) {
+      console.log(error);
+    } finally {
       this.setState({ showRenameProject: false, showSpinner: false });
     }
   }
@@ -385,7 +387,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   render() {
     return (
-      <div>
+      <div className="project-list">
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!this.state.showSpinner}>
