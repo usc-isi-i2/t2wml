@@ -57,4 +57,4 @@ export interface Selection{
     x2: number;
     y1: number;
     y2: number;
-  }
+}

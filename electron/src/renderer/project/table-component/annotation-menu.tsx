@@ -5,6 +5,7 @@ import AnnotationForm from './annotation-form';
 
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
+import { Selection } from '../../common/general';
 
 
 interface AnnotationMenuProperties {
@@ -16,11 +17,11 @@ interface AnnotationMenuProperties {
 
 class AnnotationMenu extends React.Component<AnnotationMenuProperties, {}> {
 
-  handleOnChange(selection, input, value) {
+  handleOnChange(selection: Selection, input: string, value: string) {
     console.log(selection, input, value);
   }
 
-  handleOnSubmit(selection) {
+  handleOnSubmit(selection: Selection) {
     console.log('submitting selection', selection);
   }
 
@@ -36,10 +37,13 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, {}> {
 
   render() {
     const { position, onClose } = this.props;
-    const style = {
-      'left': position[0],
-      'top': position[1],
-    };
+    let style = {};
+    if (position) {
+      style = {
+        'left': position[0],
+        'top': position[1],
+      };
+    }
     return (
       <div className="annotation-menu" style={style}>
         <Draggable handle=".handle">

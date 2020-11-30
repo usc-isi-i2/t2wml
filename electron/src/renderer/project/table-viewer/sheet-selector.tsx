@@ -4,7 +4,6 @@ import React, { Component, Fragment } from 'react';
 import { Button } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
-import { Event } from 'electron/main';
 import { t2wmlColors } from '@/renderer/common/general';
 import wikiStore from '@/renderer/data/store';
 
@@ -15,7 +14,7 @@ interface SheetProperties  {
     itemType?: "sheet" | "file",
     disableAdd?: boolean,
 
-    handleSelectSheet: (event: Event) => void;
+    handleSelectSheet: (event: React.MouseEvent) => void;
     handleAddItem?: () => void;
     handleDoubleClickItem?: (value: string, index: number) => void;
 }
@@ -60,7 +59,7 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
           size="sm"
           style={sheetNames[i] === currSheetName ? currSheetStyle : otherSheetStyle}
           disabled={wikiStore.yaml.showSpinner}
-          onClick={(event: any) => { wikiStore.yaml.showSpinner = true; this.props.handleSelectSheet(event) }}
+          onClick={(event: React.MouseEvent) => { wikiStore.yaml.showSpinner = true; this.props.handleSelectSheet(event) }}
         >{sheetNames[i]}</Button>
       );
     }
@@ -86,11 +85,11 @@ class SheetSelector extends Component<SheetProperties, SheetState> {
       <div>
         <label>{this.state.changeItemName}</label>
         <input value={this.state.changeItemName} onChange={(e) => this.setState({changeItemName: e.target.value})}
-        onKeyPress={(event: any) => {
+        onKeyPress={(event: React.KeyboardEvent) => {
           if (event.key === "Enter") {
             // if press enter (13), then do create new project
             event.preventDefault();
-            this.props.handleDoubleClickItem!(event.target.value, this.state.index!);
+            this.props.handleDoubleClickItem!((event.target as HTMLInputElement).value, this.state.index!);
             this.setState({changeItemName: undefined, index: undefined});
           }
         }}

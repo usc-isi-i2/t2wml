@@ -3,11 +3,14 @@ import React from 'react';
 // App
 import './table-toast.css';
 import { Toast } from 'react-bootstrap';
+import { QNode } from '@/renderer/common/dtos';
 
 
 interface TableToastProperties {
-  message: string,
-  onClose: (toastNum:string) => void;
+  message?: string,
+  qnode: QNode,
+  text: string,
+  onClose: () => void;
 }
 
 
@@ -47,10 +50,9 @@ class TableToast extends React.Component<TableToastProperties, {}> {
   }
 
   render() {
-    const { onClose } = this.props;
     return (
       <div className="table-toast">
-        <Toast onClose={() => onClose()}>
+        <Toast onClose={() => this.props.onClose()}>
           {this.renderToastHeader()}
           {this.renderToastBody()}
         </Toast>

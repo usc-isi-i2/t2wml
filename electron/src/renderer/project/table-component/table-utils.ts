@@ -1,3 +1,5 @@
+import { Selection } from '../../common/general';
+
 export function columnToLetter(column: number) {
   let temp, letter = '';
   while ( column > 0 ) {
@@ -9,14 +11,15 @@ export function columnToLetter(column: number) {
 }
 
 export function letterToColumn(letter: String) {
-  const column = 0, length = letter.length;
+  let column = 0;
+  const length = letter.length;
   for ( let i = 0; i < length; i++ ) {
     column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
   }
   return column;
 }
 
-export function humanReadableSelection(selection) {
+export function humanReadableSelection(selection: Selection) {
   const { x1, y1, x2, y2 } = selection;
   let text = '';
   if ( x1 === x2 && y1 === y2 ) {
