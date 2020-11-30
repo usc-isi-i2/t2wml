@@ -3,6 +3,7 @@ import React from 'react';
 import * as utils from './table-utils';
 
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Selection } from '../../common/general';
 
 
 const ROLES = [{
@@ -43,18 +44,19 @@ const TYPES = [{
 
 interface AnnotationFormProperties {
   onChange: any | null,
+  selections: Selection[],
 }
 
 
 class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
 
-  handleOnChange(event, input) {
+  handleOnChange(event: any, input: string) {
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
     onChange(selection, input, value);
   }
 
-  handleOnSubmit(event) {
+  handleOnSubmit(event: any) {
     event.preventDefault();
     const { selection, onSubmit } = this.props;
     onSubmit(selection);

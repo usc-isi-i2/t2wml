@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
+import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
-import { TableDTO } from '../../common/dtos';
+
+import { QNode, TableDTO } from '../../common/dtos';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { LOG, ErrorMessage, Cell } from '../../common/general';
+import { LOG, ErrorMessage, Cell, Selection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
@@ -20,14 +21,8 @@ import * as utils from './table-utils';
 import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
+import { LayersDTO } from '../../common/dtos';
 
-
-interface Column {
-  headerName: string;
-  field: string;
-  pinned?: string; // "left" | "right";
-  width?: number;
-}
 
 
 interface TableState {
@@ -36,13 +31,11 @@ interface TableState {
 
   // table data
   filename: string | null,       // if null, show "Table Viewer"
-  multipleSheets: false,
+  multipleSheets: boolean,
   sheetNames: Array<string> | null,
   currSheetName: string | null,
 
-  tableData: any; // Array<object>;
-
-  yamlRegions: any; // null,
+  tableData: any;// TODO- add the type // LayersDTO[][];
 
   selectedCell: Cell | null;
   selectedQualifiers: Array<Cell> | null,
@@ -52,9 +45,10 @@ interface TableState {
   annotationMode: boolean,
   showCleanedData: boolean,
   showAnnotationMenu: boolean,
-  annotationMenuPosition: Array<Number> | null,
+  annotationMenuPosition: Array<number> | null,
 
   errorMessage: ErrorMessage;
+  selections: Selection[];
 }
 
 const MIN_NUM_ROWS = 100; // how many rows do we want?
@@ -62,6 +56,10 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUppe
 
 @observer
 class TableComponent extends Component<{}, TableState> {
+  tableRef = React.createRef<HTMLTableElement>();
+  selecting = false;
+  selections = Array<Selection>();
+  private prevElement: EventTarget | undefined = undefined;
 
   private requestService: RequestService;
 
@@ -94,11 +92,8 @@ class TableComponent extends Component<{}, TableState> {
       annotationMenuPosition: [50, 70],
 
       errorMessage: {} as ErrorMessage,
+      selections: Array<Selection>(),
     };
-
-    this.tableRef = React.createRef();
-    this.selecting = false;
-    this.selections = [];
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -123,11 +118,11 @@ class TableComponent extends Component<{}, TableState> {
     this.setState({showCleanedData: !showCleanedData});
   }
 
-  async handleOpenTableFile(event: any) {
+  async handleOpenTableFile(event: ChangeEvent) {
     this.resetTableData();
 
     // get table file
-    const file = event.target.files[0];
+    const file = (event.target as HTMLInputElement).files![0];
     if ( !file ) { return; }
 
     // before sending request
@@ -200,11 +195,11 @@ class TableComponent extends Component<{}, TableState> {
     this.setState({tableData});
   }
 
-  async handleSelectSheet(event: any) {
+  async handleSelectSheet(event: React.MouseEvent) {
     this.resetTableData();
 
     // remove current status
-    wikiStore.yaml.yamlContent = undefined;
+    wikiStore.yaml.yamlContent = '';
     wikiStore.output.isDownloadDisabled = true;
 
     // before sending request
@@ -212,7 +207,7 @@ class TableComponent extends Component<{}, TableState> {
     wikiStore.wikifier.showSpinner = true;
 
     // send request
-    const sheetName = event.target.innerHTML;
+    const sheetName = (event.target as HTMLInputElement).innerHTML;
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
       await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
@@ -248,9 +243,9 @@ class TableComponent extends Component<{}, TableState> {
     const tableData = [];
     for ( const [rowIndex, row] of table.cells.entries() ) {
       const rowData = [];
-      console.log(rowIndex);
+      // console.log(rowIndex);
       for ( const [colIndex, cellContent] of row.entries() ) {
-        console.log(colIndex);
+        // console.log(colIndex);
         rowData.push({data: cellContent});
       }
       tableData.push(rowData);
@@ -261,6 +256,7 @@ class TableComponent extends Component<{}, TableState> {
 
   resetSelections() {
     const table = this.tableRef.current;
+    if (table){
     table.querySelectorAll('.active').forEach(e => {
       e.classList.remove('active');
       e.classList.remove('property');
@@ -272,9 +268,13 @@ class TableComponent extends Component<{}, TableState> {
     table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
     table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
   }
+  }
 
   updateSelections() {
     const table = this.tableRef.current;
+    if (!table) {
+      return;
+    }
 
     // Reset selections before update
     this.resetSelections();
@@ -297,7 +297,7 @@ class TableComponent extends Component<{}, TableState> {
             topRow,
             leftCol,
             rightCol,
-            bottomRow,
+            bottomRow
           );
           colIndex += 1;
         }
@@ -306,7 +306,7 @@ class TableComponent extends Component<{}, TableState> {
     });
   }
 
-  selectCell(cell, rowIndex, colIndex, topRow, leftCol, rightCol, bottomRow, className) {
+  selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, className?: string) {
     // Activate the current cell
     cell.classList.add('active');
     if ( className ) {
@@ -342,7 +342,7 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  selectRelatedCells(row, col) {
+  selectRelatedCells(row: number, col: number) {
     const selectedCell = new Cell(col-1, row-1);
     this.setState({selectedCell, showToast: true});
 
@@ -354,11 +354,11 @@ class TableComponent extends Component<{}, TableState> {
 
     // Get a reference to the table elements
     const table = this.tableRef.current;
-    const rows = table.querySelectorAll('tr');
+    const rows = table!.querySelectorAll('tr');
 
     // Select qualifier cells
     if ( 'qualifiers' in statement.cells ) {
-      statement.cells.qualifiers.forEach(cell => {
+      statement.cells.qualifiers.forEach((cell: any) => {
         if ( cell.qualifier ) {
           const y = cell.qualifier[0];
           const x = cell.qualifier[1];
@@ -434,13 +434,13 @@ class TableComponent extends Component<{}, TableState> {
     });
   }
 
-  handleOnKeyDown(event) {
+  handleOnKeyDown(event: KeyboardEvent) {
     if ( event.keyCode == 27 ) {
       this.resetTableData();
     }
   }
 
-  handleOnMouseUp(event) {
+  handleOnMouseUp(event: React.MouseEvent) {
     this.selecting = false;
     if ( this.selections ) {
       this.checkSelectionOverlaps();
@@ -448,8 +448,8 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  handleOnMouseDown(event) {
-    const element = event.target;
+  handleOnMouseDown(event: React.MouseEvent) {
+    const element = event.target as any;
 
     // Activate the selection mode
     this.selecting = true;
@@ -507,8 +507,8 @@ class TableComponent extends Component<{}, TableState> {
     this.prevElement = element;
   }
 
-  handleOnMouseMove(event) {
-    const element = event.target;
+  handleOnMouseMove(event: React.MouseEvent) {
+    const element = event.target as any;
     if ( element === this.prevElement ) { return; }
 
     if ( this.selecting && !event.shiftKey ) {
@@ -532,7 +532,7 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  getClassName(stuff, row, col) {
+  getClassName(stuff: LayersDTO, row: number, col: number) {
     const {
       selectedCell,
       selectedProperty,
@@ -681,7 +681,7 @@ class TableComponent extends Component<{}, TableState> {
     )
   }
 
-  openAnnotationMenu(event) {
+  openAnnotationMenu(event: React.MouseEvent) {
     let { pageX, pageY } = event;
     pageX = pageX < 50 ? 50 : pageX;
     pageY = pageY - 50;
@@ -722,7 +722,7 @@ class TableComponent extends Component<{}, TableState> {
       return (
         <TableToast
           text={text}
-          qnode={qnode}
+          qnode={qnode as QNode}
           onClose={() => this.onCloseToast()}
         />
       )

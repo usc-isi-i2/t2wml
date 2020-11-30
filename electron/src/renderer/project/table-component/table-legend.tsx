@@ -53,7 +53,7 @@ class TableLegend extends React.Component<LegendProperties, {}> {
 
   renderLegendOverlay() {
     return (
-      <Popover className="legend-wrapper shadow">
+      <Popover id="legend" className="legend-wrapper shadow">
         <Popover.Title as="h6">Legend</Popover.Title>
         <Popover.Content>
           {this.renderLegend()}

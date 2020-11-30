@@ -65,7 +65,7 @@ class StoreFiller {
     this.fillYamlContentInStore(response.yamlContent);
     
     // clear output window
-    wikiStore.table.selectedCell = new Cell('', 0, '');
+    wikiStore.table.selectedCell = new Cell();
   }
 }
 

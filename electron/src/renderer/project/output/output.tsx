@@ -158,7 +158,7 @@ class Output extends Component<{}, OutputComponentState> {
       } else {
         alert("Failed to load to Datamart\nError: " + description)
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
       const { errorTitle, errorDescription } = error;
       if (errorTitle !== undefined) {

@@ -14,7 +14,9 @@ interface SheetProperties  {
   // csv: null    excel: "sheet1"
   currSheetName: string | null,
 
-  handleSelectSheet: (event: Event) => void;
+  handleSelectSheet: (event: React.MouseEvent) => void;
+
+  disabled: boolean;
 }
 
 
@@ -36,7 +38,7 @@ class SheetSelector extends Component<SheetProperties, {}> {
         variant="success"
         disabled={disabled}
         className={sheet === currSheetName ? 'active' : '' }
-        onClick={(event: any) => { handleSelectSheet(event) }}>
+        onClick={(event: React.MouseEvent) => { handleSelectSheet(event) }}>
         {sheet}
       </Button>
     ));

@@ -1,4 +1,6 @@
-export function columnToLetter(column) {
+import { Selection } from '../../common/general';
+
+export function columnToLetter(column: number) {
   let temp, letter = '';
   while ( column > 0 ) {
     temp = (column - 1) % 26;
@@ -8,15 +10,16 @@ export function columnToLetter(column) {
   return letter;
 }
 
-export function letterToColumn(letter) {
-  const column = 0, length = letter.length;
+export function letterToColumn(letter: String) {
+  let column = 0;
+  const length = letter.length;
   for ( let i = 0; i < length; i++ ) {
     column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
   }
   return column;
 }
 
-export function humanReadableSelection(selection) {
+export function humanReadableSelection(selection: Selection) {
   const { x1, y1, x2, y2 } = selection;
   let text = '';
   if ( x1 === x2 && y1 === y2 ) {
