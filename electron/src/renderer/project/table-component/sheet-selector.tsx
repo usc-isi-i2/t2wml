@@ -15,6 +15,8 @@ interface SheetProperties  {
   currSheetName: string | null,
 
   handleSelectSheet: (event: Event) => void;
+
+  disabled: boolean;
 }
 
 

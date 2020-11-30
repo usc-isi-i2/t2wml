@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { LOG, ErrorMessage, Cell } from '../../common/general';
+import { LOG, ErrorMessage, Cell, Selection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
@@ -22,12 +22,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 
 
-interface Column {
-  headerName: string;
-  field: string;
-  pinned?: string; // "left" | "right";
-  width?: number;
-}
+
 
 
 interface TableState {
@@ -52,9 +47,11 @@ interface TableState {
   annotationMode: boolean,
   showCleanedData: boolean,
   showAnnotationMenu: boolean,
-  annotationMenuPosition: Array<Number> | null,
+  annotationMenuPosition: Array<number> | null,
 
   errorMessage: ErrorMessage;
+
+
 }
 
 const MIN_NUM_ROWS = 100; // how many rows do we want?
@@ -62,6 +59,9 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUppe
 
 @observer
 class TableComponent extends Component<{}, TableState> {
+  tableRef = React.createRef<HTMLTableElement>();
+  selecting = false;
+  selections = Array<Selection>();
 
   private requestService: RequestService;
 
@@ -94,11 +94,13 @@ class TableComponent extends Component<{}, TableState> {
       annotationMenuPosition: [50, 70],
 
       errorMessage: {} as ErrorMessage,
+
+      yamlRegions: null,
+      selections: Array<Selection>(),
     };
 
-    this.tableRef = React.createRef();
-    this.selecting = false;
-    this.selections = [];
+
+
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -261,6 +263,7 @@ class TableComponent extends Component<{}, TableState> {
 
   resetSelections() {
     const table = this.tableRef.current;
+    if (table){
     table.querySelectorAll('.active').forEach(e => {
       e.classList.remove('active');
       e.classList.remove('property');
@@ -271,6 +274,7 @@ class TableComponent extends Component<{}, TableState> {
     table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
     table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
     table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
+  }
   }
 
   updateSelections() {

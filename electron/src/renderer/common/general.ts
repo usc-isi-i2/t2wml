@@ -51,3 +51,10 @@ export enum t2wmlColors {
     YAML = "#006699",
     OUTPUT = "#990000"
 }
+
+export interface Selection{
+    x1: number; 
+    x2: number;
+    y1: number;
+    y2: number;
+  }

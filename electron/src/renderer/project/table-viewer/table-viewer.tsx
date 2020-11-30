@@ -232,11 +232,11 @@ class TableViewer extends Component<{}, TableState> {
       return;
     }
 
-    const statement = wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
+    const statement = wikiStore.layers.statement.find(selectedCell)
     if (!statement) { return; }
 
-    if (statement.cell) {
-      const [col, row] = statement.cell.match(/[a-z]+|[^a-z]+/gi) as any;
+    if (statement.cells.subject) {
+      const [col, row] = statement.cells.subject;
       if (!clear) {
         style = { "border": "1px solid black !important" };
       }
@@ -270,17 +270,16 @@ class TableViewer extends Component<{}, TableState> {
     this.setState({ errorMessage: {} as ErrorMessage });
 
     // get selected cell index
-    const colName = String(params.colDef["headerName"]);
-    const rowName = params.rowIndex + 1;
     const value = String(params.value);
 
     // check if row header, if so, ignore click
+    const colName = String(params.colDef["headerName"]);
     if (colName === "") {
       return;
     }
 
     // else, normal cell
-    this.updateSelectedCell(new Cell(colName, rowName, value));
+    this.updateSelectedCell(new Cell(params.colIndex, params.rowIndex, value));
 
   }
 
