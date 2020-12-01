@@ -1,0 +1,53 @@
+_saved_state:
+  current_data_file: cleaning.xlsx
+  current_sheet: 03_cleaning_solution
+  current_wikifiers:
+  - wikifier.csv
+  current_yaml: 03_cleaning_solution_id342.yaml
+cache_id: 410df160-96c8-4722-bcb4-27b0dd67e12f
+data_files:
+  cleaning.xlsx:
+    selected: 03_cleaning_solution
+    val_arr:
+    - 00_cleaning
+    - 01_cleaning
+    - 02_cleaning
+    - 03_cleaning_exercise
+    - 03_cleaning_solution
+entity_files:
+- properties.tsv
+handle_calendar: leave
+sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
+title: Cleaning_Tutorial
+warn_for_empty_cells: false
+wikifier_files:
+- wikifier.csv
+- wikify_region_output.csv
+yaml_files:
+- 00_cleaning_id339.yaml
+- 01_cleaning_id338.yaml
+- 02_cleaning_id340.yaml
+- 03_cleaning_exercise_id341.yaml
+- 03_cleaning_solution_id342.yaml
+yaml_sheet_associations:
+  cleaning.xlsx:
+    00_cleaning:
+      selected: 00_cleaning_id339.yaml
+      val_arr:
+      - 00_cleaning_id339.yaml
+    01_cleaning:
+      selected: 01_cleaning_id338.yaml
+      val_arr:
+      - 01_cleaning_id338.yaml
+    02_cleaning:
+      selected: 02_cleaning_id340.yaml
+      val_arr:
+      - 02_cleaning_id340.yaml
+    03_cleaning_exercise:
+      selected: 03_cleaning_exercise_id341.yaml
+      val_arr:
+      - 03_cleaning_exercise_id341.yaml
+    03_cleaning_solution:
+      selected: 03_cleaning_solution_id342.yaml
+      val_arr:
+      - 03_cleaning_solution_id342.yaml

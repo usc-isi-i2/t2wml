@@ -1,0 +1,26 @@
+# 02_cleaning
+# This tutorial shows how to remove undesired string from text fields. In this case the word "code"
+statementMapping:
+  region:
+    - range: E9:E16
+  template:
+    subject: =item[B, $row-$n, "main subject"]
+    property: =item[E, 8, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 8, "property"]
+        value: =value[C, $row-$n]
+      - calendar: Q1985727
+        precision: year
+        property: P585
+        time_zone: 0
+        value: =value[D, $row]
+      - property: =item[F, 8, "property"]
+        value: =value[F, $row]
+cleaningMapping:
+  - region:
+      range: F9:F16
+    functions:
+      - replace_regex:
+          to_replace: "code-"
+          replacement: ""
