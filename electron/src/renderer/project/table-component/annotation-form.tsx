@@ -3,7 +3,7 @@ import React from 'react';
 import * as utils from './table-utils';
 
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { Selection } from '../../common/general';
+import { CellSelection } from '../../common/general';
 
 
 const ROLES = [{
@@ -44,7 +44,7 @@ const TYPES = [{
 
 interface AnnotationFormProperties {
   onChange: any | null,
-  selections: Selection[],
+  selections: CellSelection[],
 }
 
 

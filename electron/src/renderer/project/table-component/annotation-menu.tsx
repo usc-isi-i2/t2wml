@@ -5,7 +5,7 @@ import AnnotationForm from './annotation-form';
 
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
-import { Selection } from '../../common/general';
+import { CellSelection } from '../../common/general';
 
 
 interface AnnotationMenuProperties {
@@ -17,11 +17,11 @@ interface AnnotationMenuProperties {
 
 class AnnotationMenu extends React.Component<AnnotationMenuProperties, {}> {
 
-  handleOnChange(selection: Selection, input: string, value: string) {
+  handleOnChange(selection: CellSelection, input: string, value: string) {
     console.log(selection, input, value);
   }
 
-  handleOnSubmit(selection: Selection) {
+  handleOnSubmit(selection: CellSelection) {
     console.log('submitting selection', selection);
   }
 

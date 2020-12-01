@@ -52,7 +52,7 @@ export enum t2wmlColors {
     OUTPUT = "#990000"
 }
 
-export interface Selection{
+export interface CellSelection{
     x1: number; 
     x2: number;
     y1: number;

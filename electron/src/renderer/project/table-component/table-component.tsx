@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { LOG, ErrorMessage, Cell, Selection } from '../../common/general';
+import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
@@ -35,7 +35,7 @@ interface TableState {
   sheetNames: Array<string> | null,
   currSheetName: string | null,
 
-  tableData: any;// TODO- add the type // LayersDTO[][];
+  tableData: any;// TODO- add the type
 
   selectedCell: Cell | null;
   selectedQualifiers: Array<Cell> | null,
@@ -48,7 +48,6 @@ interface TableState {
   annotationMenuPosition: Array<number> | null,
 
   errorMessage: ErrorMessage;
-  selections: Selection[];
 }
 
 const MIN_NUM_ROWS = 100; // how many rows do we want?
@@ -56,9 +55,9 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUppe
 
 @observer
 class TableComponent extends Component<{}, TableState> {
-  tableRef = React.createRef<HTMLTableElement>();
-  selecting = false;
-  selections = Array<Selection>();
+  private tableRef = React.createRef<HTMLTableElement>();
+  private selecting = false;
+  private selections: CellSelection[] = [];
   private prevElement: EventTarget | undefined = undefined;
 
   private requestService: RequestService;
@@ -92,7 +91,6 @@ class TableComponent extends Component<{}, TableState> {
       annotationMenuPosition: [50, 70],
 
       errorMessage: {} as ErrorMessage,
-      selections: Array<Selection>(),
     };
   }
 
