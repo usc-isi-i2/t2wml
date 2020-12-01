@@ -5,7 +5,7 @@ import Project from './project/project';
 import { observer } from 'mobx-react';
 import wikiStore from './data/store';
 import RequestService, { IStateWithError } from './common/service';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import { ErrorMessage, LOG } from './common/general';
 import ToastMessage from './common/toast';
 import { Spinner } from 'react-bootstrap';
@@ -40,7 +40,34 @@ class App extends Component<{}, AppState> {
       this.onToggleCleaned(checked);
     });
 
-    wikiStore.changeProject();
+    this.checkCommandLineArgs();
+
+  }
+
+  checkCommandLineArgs() {
+    var fs = require('fs');
+    const commandArgs = remote.getGlobal('sharedObj').prop1;
+    const lastArg = commandArgs[commandArgs.length - 1];
+    let projectDir = null;
+    if (lastArg == ".") {
+      projectDir = process.cwd();
+    }
+    else if (fs.existsSync(lastArg) && fs.lstatSync(lastArg).isDirectory()) {
+      projectDir = lastArg;
+    }
+
+    if (projectDir) {
+      const projectFile = projectDir + "project.t2wml";
+      if (fs.existsSync(projectFile)) { //existing project
+        this.onOpenProject(projectDir)
+      }
+      else {
+        this.onNewProject(projectDir)
+      }
+
+    } else {
+      wikiStore.changeProject();
+    }
   }
 
   onToggleCleaned(checked: boolean) {
