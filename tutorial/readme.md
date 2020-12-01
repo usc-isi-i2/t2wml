@@ -13,5 +13,6 @@ project:
 | Tutorial                 | Description |
 |--------------------------|-------------|
 | Region_Tutorial          | Tutorial on how to use the `region` attribute to define variable values |
-| Time_Qualifier_Tutorial  | Tutorial on how to use `qualifiers` to describe/refine the variable values |
+| Qualifier_Tutorial       | Tutorial on how to use `qualifiers` to describe/refine variable values |
 | Advanced_Tutorial        | Tutorial on how to use `iterator variable` to fill in omitted values |
+| Data_Cleaning_Tutorial   | Tutorial on how to use different functions for data cleaning included in T2WML |

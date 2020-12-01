@@ -2,13 +2,13 @@
 # This example shows how to skip an undesired column. 
 statementMapping:
   region:
-    - range: D8:F15
+    - range: D9:F16
       skip_columns:
         - E
   template:
     subject: =item[B, $row, "main subject"]
-    property: =item[$col, 7, "property"]
+    property: =item[$col, 8, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 7, "property"]
+      - property: =item[C, 8, "property"]
         value: =value[C, $row]
