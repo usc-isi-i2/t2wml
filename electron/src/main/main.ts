@@ -1,7 +1,7 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import treeKill from 'tree-kill';
@@ -58,6 +58,7 @@ function createMainWindow(): void {
         width: settings.window.width,
         show: false,
         webPreferences: {
+            enableRemoteModule: true,
             nodeIntegration: true,
             worldSafeExecuteJavaScript: true,
         }
@@ -152,7 +153,6 @@ function initBackend() {
     }
 
     config.backend = `http://localhost:${port}/`;
-
     console.log(`Spawning backend from ${backendPath}, on port ${port}`);
     try {
         backendProcess = spawn(backendPath, [port.toString()]);
@@ -163,7 +163,11 @@ function initBackend() {
 }
 
 async function waitForBackend() {
+    
     const url = `${config.backend}api/is-alive`;
+
+    //save command line arguments for renderer
+    (global as any).sharedObj = {prop1: process.argv};
 
     console.log(`Waiting for backend at ${url}...`);
     for(let retryCount=0; retryCount < 120; retryCount++) {
