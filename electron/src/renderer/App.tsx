@@ -10,6 +10,7 @@ import { ErrorMessage, LOG } from './common/general';
 import ToastMessage from './common/toast';
 import { Spinner } from 'react-bootstrap';
 import { IpcRendererEvent } from 'electron/renderer';
+import * as fs from 'fs';
 
 
 interface AppState extends IStateWithError {
@@ -45,7 +46,6 @@ class App extends Component<{}, AppState> {
   }
 
   checkCommandLineArgs() {
-    var fs = require('fs');
     const commandArgs = remote.getGlobal('sharedObj').prop1;
     const lastArg = commandArgs[commandArgs.length - 1];
     let projectDir = null;
