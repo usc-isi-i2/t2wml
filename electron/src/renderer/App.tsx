@@ -46,17 +46,20 @@ class App extends Component<{}, AppState> {
 
   checkCommandLineArgs() {
     var fs = require('fs');
+    const path = require('path');
+
     const commandArgs = remote.getGlobal('sharedObj').prop1;
-    const lastArg = commandArgs[commandArgs.length - 1];
-    let projectDir = null;
-    if (lastArg == ".") {
-      projectDir = process.cwd();
-    }
-    else if (fs.existsSync(lastArg) && fs.lstatSync(lastArg).isDirectory()) {
-      projectDir = lastArg;
+    console.log("command args", commandArgs);
+
+    let lastArg = commandArgs[commandArgs.length - 1];
+    if (lastArg.endsWith(".js") || lastArg.endsWith(".exe")){ //default args
+      wikiStore.changeProject();
+      return;
     }
 
-    if (projectDir) {
+    let projectDir=path.resolve(lastArg);
+    console.log("ProjectDir:", projectDir)
+    if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
       const projectFile = projectDir + "project.t2wml";
       if (fs.existsSync(projectFile)) { //existing project
         this.onOpenProject(projectDir)
@@ -65,9 +68,7 @@ class App extends Component<{}, AppState> {
         this.onNewProject(projectDir)
       }
 
-    } else {
-      wikiStore.changeProject();
-    }
+    } 
   }
 
   onToggleCleaned(checked: boolean) {
