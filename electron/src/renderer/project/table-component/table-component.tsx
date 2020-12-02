@@ -239,12 +239,13 @@ class TableComponent extends Component<{}, TableState> {
   updateTableData(table?: TableDTO) {
     if ( !table ) { return; }
     const tableData = [];
-    for ( const [rowIndex, row] of table.cells.entries() ) {
+    const entries = table.cells.entries();
+    for ( let i = 0; i < entries.length; i++ ) {
       const rowData = [];
-      // console.log(rowIndex);
-      for ( const [colIndex, cellContent] of row.entries() ) {
-        // console.log(colIndex);
-        rowData.push({data: cellContent});
+      const cells = entries[i]['row'].entries();
+      for ( let j = 0; j < cells.length; j++ ) {
+        const data = cells[j]['cellContent'];
+        rowData.push({data});
       }
       tableData.push(rowData);
     }
