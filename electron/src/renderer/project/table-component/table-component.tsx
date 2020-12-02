@@ -708,8 +708,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderToast() {
-    const { selectedCell, showToast } = this.state;
-    if ( showToast ) {
+    const { annotationMode, selectedCell, showToast } = this.state;
+    if ( showToast && !annotationMode ) {
       let text = 'Selected:';
       if ( this.selections ) {
         this.selections.forEach(selection => {
