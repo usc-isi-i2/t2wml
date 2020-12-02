@@ -31,7 +31,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
-    "sourceMap": true,
+    "sourceMap": true
   },
   "exclude": ["node_modules"]
 }
