@@ -52,7 +52,9 @@ class App extends Component<{}, AppState> {
     console.log("command args", commandArgs);
 
     let lastArg = commandArgs[commandArgs.length - 1];
-    if (lastArg.endsWith(".js") || lastArg.endsWith(".exe")){ //default args
+    if (lastArg.endsWith(".js") || //default args
+       lastArg.endsWith(".exe")|| 
+       lastArg.includes("dist/electron")){ 
       wikiStore.changeProject();
       return;
     }
@@ -61,14 +63,15 @@ class App extends Component<{}, AppState> {
     console.log("ProjectDir:", projectDir)
     if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
       const projectFile = projectDir + "project.t2wml";
-      if (fs.existsSync(projectFile)) { //existing project
-        this.onOpenProject(projectDir)
-      }
-      else {
-        this.onNewProject(projectDir)
-      }
-
-    } 
+          if (fs.existsSync(projectFile)) { //existing project
+            this.onOpenProject(projectDir)
+          }
+          else {
+            this.onNewProject(projectDir)
+          }
+    }else{
+      wikiStore.changeProject();
+    }
   }
 
   onToggleCleaned(checked: boolean) {
