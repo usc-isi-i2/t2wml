@@ -2,13 +2,13 @@
 # This example shows how to skip columns. In particular, those columns which have "Comment" as its header
 statementMapping:
   region:
-    - range: D8:F15
+    - range: D9:F16
       skip_columns:
-        - =value[$col,7]=="Comment"
+        - =value[$col,8]=="Comment"
   template:
-    item: =item[B, $row, "main subject"]
-    property: =item[$col, 7, "property"]
+    subject: =item[B, $row, "main subject"]
+    property: =item[$col, 8, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 7, "property"]
+      - property: =item[C, 8, "property"]
         value: =value[C, $row]

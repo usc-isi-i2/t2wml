@@ -5,7 +5,7 @@ statementMapping:
       top: 5
       bottom: 7
   template:
-    item: =item[A, $row]
+    subject: =item[A, $row]
     property: P1000001 # homicide
     value: =value[$col, $row]
     qualifier:

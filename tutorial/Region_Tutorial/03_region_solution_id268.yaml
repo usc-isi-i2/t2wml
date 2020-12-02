@@ -2,11 +2,11 @@
 # Solution to exercise 03_region_exercise
 statementMapping:
   region:
-    - range: D10:E17
+    - range: D11:E18
   template:
-    item: =item[B, $row, "main subject"]
-    property: =item[$col, 9, "property"]
+    subject: =item[B, $row, "main subject"]
+    property: =item[$col, 10, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 9, "property"]
+      - property: =item[C, 10, "property"]
         value: =value[C, $row]

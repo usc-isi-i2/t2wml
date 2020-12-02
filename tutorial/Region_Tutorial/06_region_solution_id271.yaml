@@ -2,14 +2,14 @@
 # Solution to the exercise to skip cells with undesired data.
 statementMapping:
   region:
-    - range: D8:E15
+    - range: D9:E16
       # Since there was only one cell, we can list it. If there are multiple cells to skip, we can use an expression (example 07)
       skip_cells:
-        - D12
+        - D13
   template:
-    item: =item[B, $row, "main subject"]
-    property: =item[$col, 7, "property"]
+    subject: =item[B, $row, "main subject"]
+    property: =item[$col, 8, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 7, "property"]
+      - property: =item[C, 8, "property"]
         value: =value[C, $row]

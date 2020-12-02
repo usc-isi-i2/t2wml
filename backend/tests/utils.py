@@ -47,7 +47,7 @@ class BaseClass:
                 
         elif isinstance(input1, list):
             assert len(input1)==len(input2)
-            for index, item in enumerate(input1):
+            for index, thing in enumerate(input1):
                 self.recurse_lists_and_dicts(input1[index], input2[index])
 
         assert input1==input2
@@ -100,14 +100,15 @@ def load_data_file(client, pid, filename):
         )
     return response
 
-def load_yaml_file(client, pid, filename):
-    url='/api/yaml?project_folder={pid}'.format(pid=pid)
+def load_yaml_file(client, pid, filename, sheet_name):
+    url='/api/yaml/apply?project_folder={pid}'.format(pid=pid)
     title=Path(filename).name
     with open(filename, 'r', encoding="utf-8") as f:
         response=client.post(url,
             data=dict(
             yaml=f.read(),
-            title=title
+            title=title,
+            sheetName=sheet_name
             )
         )
     return response

@@ -23,7 +23,7 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
     let errorsDiv;
     if (this.props.errors) {
-      errorsDiv = <div key="erros" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
+      errorsDiv = <div key="errors" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
         Errors: {this.props.errors}
       </div>
     }
@@ -31,21 +31,21 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
     const statement = this.props.statement
     if (statement) {
 
-      const itemQNode = wikiStore.layers.statement.getQNode(statement.item);
+      const subjectQNode = wikiStore.layers.statement.getQNode(statement.subject);
 
-      let itemIDDiv;
-      if (itemQNode.url != "") {
-        itemIDDiv = (
+      let subjectIDDiv;
+      if (subjectQNode.url != "") {
+        subjectIDDiv = (
           <a
-            href={itemQNode.url}
+            href={subjectQNode.url}
             target="_blank"
             rel="noopener noreferrer"
             style={{ "color": "hsl(200, 100%, 30%)" }}
-          >{itemQNode.id}</a>
+          >{subjectQNode.id}</a>
         );
       }
       else{
-        itemIDDiv = <span>{statement.item}</span>;
+        subjectIDDiv = <span>{statement.subject}</span>;
       }
 
       const propertyQNode = wikiStore.layers.statement.getQNode(statement.property);
@@ -122,22 +122,46 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
             qualifierValueDiv = qualifierValueQNode.label;
           }
 
+          // qualifier unit
+
+          let qualifierUnitDiv;
+          if (qualifier.unit){
+          const qualifierUnitQNode = wikiStore.layers.statement.getQNode(qualifier["unit"]);
+
+          if (qualifierUnitQNode.url != "") {
+
+            qualifierUnitDiv =
+              "("+ <a
+                href={qualifierUnitQNode.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ "color": "hsl(200, 100%, 30%)" }}
+                key="qualifierValue"
+              >{qualifierUnitQNode.label}</a> +")"
+              ;
+          } else {
+            qualifierUnitDiv = "("+ qualifierUnitQNode.label +")";
+          }
+        }else{
+          qualifierUnitDiv=""
+        }
+
           // append to qualifiersDiv
           qualifiersDiv.push(
-            <div key={i}>- {qualifierPropertyDiv}: {qualifierValueDiv}</div>
+            <div key={i}>- {qualifierPropertyDiv}: {qualifierValueDiv} {qualifierUnitDiv}</div>
           );
         }
       }
 
       // final output
       outputDiv.push(
-        <Card.Title key="item">
+        <Card.Title key="subject">
           <span style={{ fontSize: "24px", fontWeight: "bolder" }}>
-            {itemQNode.label}
+            {subjectQNode.label}
           </span>
           &nbsp;
           <span style={{ fontSize: "20px" }}>
-            ({itemIDDiv})
+            ({subjectIDDiv})
           </span>
         </Card.Title>
       );

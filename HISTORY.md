@@ -1,6 +1,18 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.4.0: 
+-----------------------
+* upgrade to t2wml-api version 0.0.18
+* add support for multiple yaml files per sheet
+* add support for saving yamls, when switching between yamls, sheets, data files or projects
+* add colors for properties and metadata
+* display units for qualifiers in preview window
+* bug fixes: 
+   - no display for cells with row/col == 0
+   - don't resend a query to wikidata multiple times
+   - cleaned data was being copied into other sheets in display 
+
 Changes in version 2.3.10: 
 -----------------------
 * upgrade to t2wml-api version 0.0.17

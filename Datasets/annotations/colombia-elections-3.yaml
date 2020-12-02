@@ -1,0 +1,15 @@
+### A simplest sample of T2WML.
+### Replace all #PLACEHOLDER below to start.
+statementMapping:
+  region:
+    - range: B35:B37
+  template:
+    subject: =value[A, $row]
+    property: =item[B, 33]
+    value: =value[$col, $row]
+cleaningMapping: 
+    - region: 
+          range: B6:B8
+      functions:
+          - change_case:
+             case: upper

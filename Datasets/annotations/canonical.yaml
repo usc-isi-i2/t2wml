@@ -1,0 +1,13 @@
+statementMapping:
+            region:
+                - range: E4:E19
+            template:
+                subject: =item[C, $row]
+                property: =item[B, $row]
+                value: =value[$col, $row]
+                qualifier:
+                    - property: =item[$qcol, 3]
+                      value: =item[A, $row]
+                    - property: =item[D, 3]
+                      value: =value[D, $row]
+                      precision: year

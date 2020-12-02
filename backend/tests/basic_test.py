@@ -68,7 +68,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_08_add_yaml_file(self, client):
         filename=os.path.join(self.files_dir, "test.yaml")
-        response=load_yaml_file(client, project_folder, filename)
+        response=load_yaml_file(client, project_folder, filename, "Sheet3")
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data.pop('project')

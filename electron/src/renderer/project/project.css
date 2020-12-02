@@ -104,6 +104,17 @@ body {
   background: #266444; 
 }
 
+#yamlSelector::-webkit-scrollbar {
+  height: 10px;
+}
+#yamlSelector::-webkit-scrollbar-thumb {
+  background: #006699;
+}
+/* Handle on hover */
+#yamlSelector::-webkit-scrollbar-thumb:hover {
+  background: #00324b; 
+}
+
 .cell {
   padding: 0px;
 }

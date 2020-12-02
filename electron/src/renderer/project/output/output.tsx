@@ -7,7 +7,7 @@ import { Button, Card, Spinner } from 'react-bootstrap';
 import Downloader from 'js-file-download';
 
 // console.log
-import { LOG, ErrorMessage } from '../../common/general';
+import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
 import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
@@ -162,12 +162,12 @@ class Output extends Component<{}, OutputComponentState> {
       const { errorTitle, errorDescription } = error;
       if (errorTitle !== undefined) {
         alert("Failed to load to Datamart\nError: " + errorTitle + "\nDescription: " + errorDescription);
-        wikiStore.table.showSpinner = false;
       }
+    } finally {
+      this.setState({ isLoadDatamart: false });
+      wikiStore.output.showSpinner = false;
+      wikiStore.table.showSpinner = false;
     }
-    this.setState({ isLoadDatamart: false });
-    wikiStore.output.showSpinner = false;
-    wikiStore.table.showSpinner = true;
   }
 
   render() {
@@ -181,7 +181,7 @@ class Output extends Component<{}, OutputComponentState> {
         <Card className="w-100 h-100 shadow-sm">
 
           {/* card header */}
-          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: "#990000" }}>
+          <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.OUTPUT }}>
 
             {/* title */}
             <div

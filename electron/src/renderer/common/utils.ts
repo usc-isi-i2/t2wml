@@ -212,3 +212,14 @@ export function isValidTitle(title: string) {
   if (title.length > 255) return false;
   return /^[^\\/:*?"<>|]*$/.test(title) && ! /^ +$/.test(title);
 }
+
+export const typeStyles = new Map<string, any>([
+  ["data", { backgroundColor: "hsl(150, 50%, 90%)" }],
+  ["subject", { backgroundColor: "hsl(200, 50%, 90%)" }],
+  ["qualifier", { backgroundColor: "hsl(250, 50%, 90%)" }],
+  ["reference", { backgroundColor: "hsl(150, 50%, 90%)" }],
+  ["minorError", { backgroundColor: '#FF8000' }],
+  ["majorError", { backgroundColor: '#FF3333' }],
+  ["property", { backgroundColor: "#fbe5ce" }],
+  ["metadata", { backgroundColor: "#fff2ce" }],
+])

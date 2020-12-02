@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import json
 import numpy as np
@@ -136,11 +137,16 @@ def get_yaml_layers(calc_params):
         if layers:
             return layers
     
-    qualifierEntry=dict(indices=[], type="qualifier")
-    itemEntry=dict(indices=[], type="item")
-    dataEntry=dict(indices=[], type="data")
-    majorErrorEntry=dict(indices=[], type="majorError")
-    minorErrorEntry=dict(indices=[], type="minorError")
+
+    cell_type_indices={
+        "qualifier":{},
+        "subject":{},
+        "data":{},
+        "majorError":{},
+        "minorError":{},
+        "property":{},
+        "metadata":{}
+    }
 
     errorLayer=dict(layerType="error", entries=[])
     statementLayer=dict(layerType="statement", entries=[])
@@ -160,34 +166,44 @@ def get_yaml_layers(calc_params):
             errorEntry=dict(indices=[cell_index], error=errors[cell])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "item", "fatal"]).intersection(errors[cell].keys())):	
-                majorErrorEntry["indices"].append(cell_index)
+            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell].keys())):	
+                cell_type_indices["majorError"][cell]=True
             else:	
-                minorErrorEntry["indices"].append(cell_index)
+                cell_type_indices["minorError"][cell]=True
 
-        qualifier_indices={}
-        item_indices={}
+
         for cell in statements:
-            dataEntry["indices"].append(indexer(cell))
+            cell_type_indices["data"][cell]=True
 
             statement = statements[cell]
             get_cell_qnodes(statement, qnodes)
-            item_cell = statement.get("cell", None)
-            if item_cell:
-                item_indices[item_cell]=None
-            
+            cells=statement["cells"]
+            cells.pop("value")
+            for key in cells:
+                if key in ["subject", "property"]:
+                    cell_type_indices[key][cells[key]]=True
+                else:
+                    cell_type_indices["metadata"][cells[key]]=True
+
             qualifiers = statement.get("qualifier", None)
             if qualifiers:
                 for qualifier in qualifiers:
-                    qual_cell = qualifier.get("cell", None)
+                    q_cells=qualifier["cells"]
+                    qual_cell = q_cells.pop("value", None)
                     if qual_cell:
-                        qualifier_indices[qual_cell]=None
+                        cell_type_indices["qualifier"][qual_cell]=True
+                    for key in q_cells:
+                        if key=="property":
+                            cell_type_indices[key][q_cells[key]]=True
+                        else:
+                            cell_type_indices["metadata"][q_cells[key]]=True
+
             
             statementEntry=dict(indices=[indexer(cell)])#, qnodes=qnodes)
             statementEntry.update(**statements[cell])
             statementLayer["entries"].append(statementEntry)
-        itemEntry["indices"]=[indexer(key) for key in item_indices]
-        qualifierEntry["indices"]=[indexer(key) for key in qualifier_indices]
+        
+
 
         cleanedLayer=get_cleaned(kg)
 
@@ -200,7 +216,11 @@ def get_yaml_layers(calc_params):
         
         statementLayer["qnodes"]=qnodes
 
-    typeLayer=dict(layerType="type", entries=[qualifierEntry, itemEntry, dataEntry, majorErrorEntry, minorErrorEntry])
+    type_entries=[]
+    for key in cell_type_indices:
+        indices = [indexer(cell) for cell in cell_type_indices[key]]
+        type_entries.append(dict(type=key, indices=indices))
+    typeLayer=dict(layerType="type", entries=type_entries)
 
     layers= dict(error= errorLayer, 
             statement= statementLayer, 

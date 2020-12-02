@@ -61,7 +61,12 @@ def json_response(func):
             return json.dumps(data, indent=3, default=numpy_converter), e.code
         except Exception as e:
             data = {"error": make_frontend_err_dict(e)}
-            return json.dumps(data, indent=3, default=numpy_converter), 500
+            try:
+                code = e.code
+                data["error"]["code"] = code
+            except AttributeError:
+                code = 500
+            return json.dumps(data, indent=3, default=numpy_converter), code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
@@ -289,9 +294,86 @@ def call_wikifier_service():
     return response, 200
 
 
-@app.route('/api/yaml', methods=['POST'])
+@app.route('/api/yaml/rename', methods=['POST'])
+@json_response
+def rename_yaml():
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    if not project.current_data_file:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Upload a data file before renaming yaml")
+
+    old_name = request.form["old_name"]
+    new_name = request.form["new_name"]
+
+    if old_name not in project.yaml_files:
+        raise web_exceptions.MissingYAMLFileException(
+            "The yaml file you are trying to rename does not exist in project")
+    if new_name in project.yaml_files:
+        raise web_exceptions.MissingYAMLFileException(
+            "The new name you have provided already exists in the project as a yaml file")
+
+    old_path = os.path.join(project.directory, old_name)
+    new_path = os.path.join(project.directory, new_name)
+
+    os.rename(old_path, new_path)
+
+    old_name_index = project.yaml_files.index(old_name)
+    project.yaml_files[old_name_index] = new_name
+    for sheet_name, sheet_arr in project.yaml_sheet_associations.items():
+        if old_name in sheet_arr:
+            old_name_index = sheet_arr.index(old_name)
+            sheet_arr[old_name_index] = new_name
+    project.save()
+
+    response = dict(project=project.__dict__)
+    return response, 200
+
+
+@app.route('/api/yaml/change', methods=['GET'])
+@json_response
+def change_yaml():
+    """
+    This route is used when switching the selected yaml
+    :return:
+    """
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    try:
+        yaml_file = request.args['yaml_file']
+    except KeyError:
+        raise web_exceptions.InvalidRequestException("data file parameter not specified")
+    project.update_saved_state(current_yaml=yaml_file)
+    project.save()
+    response = dict(project=project.__dict__)
+    calc_params = get_calc_params(project)
+    if calc_params:
+        response["yamlContent"] = get_yaml_content(calc_params)
+        get_all_layers_and_table(response, calc_params)
+
+    return response, 200
+
+
+@app.route('/api/yaml/save', methods=['POST'])
 @json_response
 def upload_yaml():
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    if not project.current_data_file:
+        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+            "Upload a data file before editing or importing yaml")
+
+    yaml_data = request.form["yaml"]
+    yaml_title = request.form["title"]
+    sheet_name = request.form["sheetName"]
+    save_yaml(project, yaml_data, yaml_title, sheet_name)
+    response = dict(project=project.__dict__)
+    return response, 200
+
+
+@app.route('/api/yaml/apply', methods=['POST'])
+@json_response
+def apply_yaml():
     """
     This function uploads and processes the yaml file
     :return:
@@ -305,6 +387,9 @@ def upload_yaml():
 
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
+    sheet_name = request.form["sheetName"]
+
+    save_yaml(project, yaml_data, yaml_title, sheet_name)
 
     response = dict(project=project.__dict__, layers=get_empty_layers())
 
@@ -314,7 +399,6 @@ def upload_yaml():
         response["yamlError"] = "YAML file is either empty or not valid"
         return response
 
-    save_yaml(project, yaml_data, yaml_title)
     calc_params = get_calc_params(project)
     try:
         response["layers"] = get_yaml_layers(calc_params)
@@ -425,14 +509,15 @@ if __name__ == "__main__":
             print('Debug mode is on!')
         if sys.argv[1] == "--profile":
             from werkzeug.middleware.profiler import ProfilerMiddleware
-            from app_config import UPLOAD_FOLDER
+            from app_config import DATADIR
 
             app.config['PROFILE'] = True
-            profiles_dir = os.path.join(UPLOAD_FOLDER, "profiles")
+            profiles_dir = os.path.join(DATADIR, "profiles")
             if not os.path.isdir(profiles_dir):
                 os.mkdir(profiles_dir)
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[
-                100], profile_dir=profiles_dir)
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
+                                              restrictions=[100],
+                                              profile_dir=profiles_dir)
         app.run(debug=True, port=13000)
     else:
         app.run(threaded=True, port=13000)

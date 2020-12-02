@@ -5,7 +5,7 @@ statementMapping:
     # item is the main subject, in this case the country;
     # when is the cell in $col,$row, the corresponding 
     # country is in column A, and in the same $row
-    item: =item[A, $row]
+    subject: =item[A, $row]
     property: P100024 # murder
     value: =value[$col, $row]
     unit: Qnumber_incidents

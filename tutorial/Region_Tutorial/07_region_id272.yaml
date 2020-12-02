@@ -2,13 +2,13 @@
 # This example shows how to filter out all that comply with an expression. In this case, all the cells that say "Total"
 statementMapping:
   region:
-    - range: D10:E19
+    - range: D11:E20
       skip_rows:
         - =value[B,$row]=="Total"
   template:
-    item: =item[B, $row, "main subject"]
-    property: =item[$col, 9, "property"]
+    subject: =item[B, $row, "main subject"]
+    property: =item[$col, 10, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 9, "property"]
+      - property: =item[C, 10, "property"]
         value: =value[C, $row]

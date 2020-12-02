@@ -3,16 +3,15 @@
 # T2WML has to lookup those values using iterator variables for column B and C
 statementMapping:
   region:
-    - range: E8:E15
+    - range: E9:E16
   template:
-    item: =item[B, $row-$n, "main subject"]
-    property: =item[E, 7, "property"]
+    subject: =item[B, $row-$n, "main subject"]
+    property: =item[E, 8, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 7, "property"]
+      - property: =item[C, 8, "property"]
         value: =value[C, $row-$n]
       - calendar: Q1985727
-        format: '%Y'
         precision: year
         property: P585
         time_zone: 0

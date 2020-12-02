@@ -4,6 +4,8 @@ import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
 import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
 import { Cell } from '../common/general';
+import RequestService from '../common/service';
+import { defaultYamlContent } from '../project/default-values';
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
 class EditorsState {
@@ -52,8 +54,47 @@ class OutputState {
 }
 
 class YamlEditorState {
-    @observable public yamlContent?: string;
+    public requestService = new RequestService();
+    @observable public yamlName = '';
+    @observable public yamlList: string[] = [];
+    @observable public showSpinner = false;
+    @observable public yamlContent: string = defaultYamlContent;
     @observable public yamlError?: string | undefined;
+    @observable public yamlhasChanged = false;
+    
+    @observable public async saveYaml() {
+        if (!this.yamlhasChanged) {
+            return;
+        }
+
+        console.log("Save yaml: ", this.yamlName);
+        console.log(this.yamlContent);
+
+        // before sending request
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
+
+        // send request
+        const formData = new FormData();
+        formData.append("yaml", this.yamlContent!);
+        formData.append("title", this.yamlName!);
+        formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
+
+        try {
+            await this.requestService.saveYaml(wikiStore.projects.current!.folder, formData);
+
+            // follow-ups (success)
+            wikiStore.output.isDownloadDisabled = false;
+
+        } catch {
+            console.error("Save yaml failed.");
+        } finally {
+            wikiStore.table.showSpinner = false;
+            wikiStore.yaml.showSpinner = false;
+            wikiStore.table.isCellSelectable = true;
+            this.yamlhasChanged = false;
+        }
+    }
 }
 
 class Layer<T extends Entry> {
@@ -77,7 +118,8 @@ class Layer<T extends Entry> {
     }
 
     public find(row: number | null, col: number | null): T | undefined {
-        if (row && col) {
+
+        if (row!=null && col!=null) {
             const index = `${row},${col}`;
             // In case a map doesn't support an array as an index, use `${row},${col}`
             return this.entryMap.get(index);
@@ -109,7 +151,7 @@ class StatementLayer extends Layer<StatementEntry>{
 }
 
 
-class LayerState {
+export class LayerState {
     @observable public qnode: Layer<QNodeEntry>;
     @observable public type: Layer<TypeEntry>;
     @observable public statement: StatementLayer;

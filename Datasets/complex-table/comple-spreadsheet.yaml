@@ -9,7 +9,7 @@ statementMapping:
         - =value[C:G, $row] == ""
         - =value[B, $row] == "2012/13"
   template:
-    item: =item[A, $row]
+    subject: =item[A, $row]
     property: =item[B, 5, "property"] #value(B/$row-$n) = "TOTAL AREA IN HECTARES" -> item(B/$row-$n, "property")
     value: =value[$col, $row]
     qualifier:

@@ -4,12 +4,12 @@ statementMapping:
   # The region attribute defines the cells containing the variable values
   region:
     # The range attribute defines a rectangular block of cells
-    - range: D8:D10
+    - range: D9:D11
   # The template attribute defines variable statements and qualifier relationships on those variable statements
   template:
     # Variable statement consists of three parts: item, propety and value
     # The item attribute defines the main subjects of the variables
-    item: =item[B, $row, "main subject"]
+    subject: =item[B, $row, "main subject"]
     # The property attribute defines the variable name
     property: PProduction
     # The value attribute defines the variable values

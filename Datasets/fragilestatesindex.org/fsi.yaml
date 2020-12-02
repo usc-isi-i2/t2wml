@@ -5,7 +5,7 @@ statementMapping:
       top: 1
       bottom: 180
   template:
-    item: =item[A, $row]
+    subject: =item[A, $row]
     property: =item[$col, 1]
     value: =value[$col, $row]
     #unit: # need to define the units

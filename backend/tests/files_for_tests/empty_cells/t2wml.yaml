@@ -10,7 +10,7 @@ statementMapping:
       - =contains(value[$col, $row], '‐')
       - =contains(value[$col, $row], '-')
   template:
-    item: =item[B, $row, "admin1"]
+    subject: =item[B, $row, "admin1"]
     property: =item[$col, 13, "property"]
     qualifier:
     - calendar: Q1985727
