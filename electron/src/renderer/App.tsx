@@ -52,13 +52,6 @@ class App extends Component<{}, AppState> {
     console.log("command args", commandArgs);
 
     let lastArg = commandArgs[commandArgs.length - 1];
-    if (lastArg.endsWith(".js") || //default args
-       lastArg.endsWith(".exe")|| 
-       lastArg.includes("dist/electron")){ 
-      wikiStore.changeProject();
-      return;
-    }
-
     let projectDir=path.resolve(lastArg);
     console.log("ProjectDir:", projectDir)
     if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
