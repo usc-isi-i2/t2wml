@@ -1,7 +1,7 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import treeKill from 'tree-kill';
