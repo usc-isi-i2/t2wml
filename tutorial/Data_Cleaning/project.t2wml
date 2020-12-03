@@ -29,16 +29,20 @@ yaml_files:
 - 02_cleaning_id340.yaml
 - 03_cleaning_exercise_id341.yaml
 - 03_cleaning_solution_id342.yaml
+- 00_cleaning.yaml
+- 01_cleaning.yaml
 yaml_sheet_associations:
   cleaning.xlsx:
     00_cleaning:
-      selected: 00_cleaning_id339.yaml
+      selected: 00_cleaning.yaml
       val_arr:
       - 00_cleaning_id339.yaml
+      - 00_cleaning.yaml
     01_cleaning:
-      selected: 01_cleaning_id338.yaml
+      selected: 01_cleaning.yaml
       val_arr:
       - 01_cleaning_id338.yaml
+      - 01_cleaning.yaml
     02_cleaning:
       selected: 02_cleaning_id340.yaml
       val_arr:

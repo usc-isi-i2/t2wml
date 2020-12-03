@@ -23,3 +23,5 @@ cleaningMapping:
       - remove_numbers
       - strip_whitespace:
           where: everywhere
+      - change_case:
+          case: title
