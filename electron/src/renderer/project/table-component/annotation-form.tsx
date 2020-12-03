@@ -43,8 +43,9 @@ const TYPES = [{
 
 
 interface AnnotationFormProperties {
+  selections: Array<any> | null,
   onChange: any | null,
-  selections: CellSelection[],
+  onSubmit: any | null,
 }
 
 
