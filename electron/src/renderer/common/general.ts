@@ -53,7 +53,7 @@ export enum t2wmlColors {
 }
 
 export interface CellSelection{
-    x1: number; 
+    x1: number;
     x2: number;
     y1: number;
     y2: number;

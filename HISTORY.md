@@ -1,6 +1,12 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.4.1: 
+-----------------------
+* t2wml-api version 0.0.19
+* switch over to new table. support for annotations not yet integrated
+* it is now possible to launch t2wml.exe with a directory name
+
 Changes in version 2.4.0: 
 -----------------------
 * upgrade to t2wml-api version 0.0.18

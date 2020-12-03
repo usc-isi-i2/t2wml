@@ -3,7 +3,6 @@ import React from 'react';
 import * as utils from './table-utils';
 
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { CellSelection } from '../../common/general';
 
 
 const ROLES = [{
@@ -43,8 +42,9 @@ const TYPES = [{
 
 
 interface AnnotationFormProperties {
+  selections: Array<any> | null,
   onChange: any | null,
-  selections: CellSelection[],
+  onSubmit: any | null,
 }
 
 
@@ -53,18 +53,19 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
   handleOnChange(event: any, input: string) {
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    onChange(selection, input, value);
+    onChange(input, value);
   }
 
   handleOnSubmit(event: any) {
     event.preventDefault();
-    const { selection, onSubmit } = this.props;
-    onSubmit(selection);
+    const { onSubmit } = this.props;
+    onSubmit();
   }
 
   renderSelectionAreas() {
     const { selections } = this.props;
-    return selections.map((selection, index) => (
+    if ( !selections ) { return null; }
+    return selections.map((selection: any, index: number) => (
       <p className="area" key={index}>
         {utils.humanReadableSelection(selection)}
       </p>
@@ -77,7 +78,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
         onSubmit={this.handleOnSubmit.bind(this)}>
         {this.renderSelectionAreas()}
         <Form.Group as={Row}
-          onChange={(event) => this.handleOnChange(event, 'role')}>
+          onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
           <Col sm="12" md="12">
             <Form.Control size="sm" as="select">
               <option value="" disabled selected>Role</option>
@@ -90,7 +91,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
           </Col>
         </Form.Group>
         <Form.Group as={Row}
-          onChange={(event) => this.handleOnChange(event, 'type')}>
+          onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
           <Col sm="12" md="12">
             <Form.Control size="sm" as="select">
               <option value="" disabled selected>Type</option>
@@ -103,7 +104,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
           </Col>
         </Form.Group>
         <Form.Group as={Row}
-          onChange={(event) => this.handleOnChange(event, 'annotation')}>
+          onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'annotation')}>
           <Col sm="12" md="12">
             <Form.Control
               type="text" size="sm"

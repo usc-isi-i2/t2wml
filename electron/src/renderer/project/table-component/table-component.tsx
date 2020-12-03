@@ -239,12 +239,10 @@ class TableComponent extends Component<{}, TableState> {
   updateTableData(table?: TableDTO) {
     if ( !table ) { return; }
     const tableData = [];
-    for ( const [rowIndex, row] of table.cells.entries() ) {
+    for ( let i = 0; i < table.cells.length; i++ ) {
       const rowData = [];
-      // console.log(rowIndex);
-      for ( const [colIndex, cellContent] of row.entries() ) {
-        // console.log(colIndex);
-        rowData.push({data: cellContent});
+      for ( let j = 0; j < table.cells[i].length; j++ ) {
+        rowData.push({data: table.cells[i][j]});
       }
       tableData.push(rowData);
     }
@@ -254,18 +252,18 @@ class TableComponent extends Component<{}, TableState> {
 
   resetSelections() {
     const table = this.tableRef.current;
-    if (table){
-    table.querySelectorAll('.active').forEach(e => {
-      e.classList.remove('active');
-      e.classList.remove('property');
-      e.classList.remove('qualifier');
-      e.classList.remove('main-subject');
-    });
-    table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
-    table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
-    table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
-    table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
-  }
+    if (table) {
+      table.querySelectorAll('.active').forEach(e => {
+        e.classList.remove('active');
+        e.classList.remove('property');
+        e.classList.remove('qualifier');
+        e.classList.remove('main-subject');
+      });
+      table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
+      table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
+      table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
+      table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
+    }
   }
 
   updateSelections() {
@@ -708,8 +706,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderToast() {
-    const { selectedCell, showToast } = this.state;
-    if ( showToast ) {
+    const { annotationMode, selectedCell, showToast } = this.state;
+    if ( showToast && !annotationMode ) {
       let text = 'Selected:';
       if ( this.selections ) {
         this.selections.forEach(selection => {
