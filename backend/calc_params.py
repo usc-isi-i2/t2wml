@@ -1,4 +1,5 @@
-from t2wml.api import Sheet, SpreadsheetFile, Wikifier, Project
+from t2wml.api import Sheet, SpreadsheetFile, Wikifier
+from t2wml.api import Project
 from caching import CacheHolder
 
 

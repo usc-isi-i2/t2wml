@@ -7,7 +7,7 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-from t2wml.api import Project as apiProject
+from t2wml.api import Project
 from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
@@ -21,13 +21,13 @@ def add_entities_from_file(file_path):
     return api_add_entities_from_file(file_path)
 
 def create_api_project(project_folder):
-    api_proj = apiProject(project_folder)
+    api_proj = Project(project_folder)
     api_proj.title = Path(project_folder).stem
     api_proj.save()
     return api_proj
 
 def get_project_instance(project_folder):
-    project = apiProject.load(project_folder)
+    project = Project.load(project_folder)
     update_t2wml_settings(project)
     return project
 
