@@ -3,7 +3,6 @@ import React from 'react';
 import * as utils from './table-utils';
 
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { CellSelection } from '../../common/general';
 
 
 const ROLES = [{
