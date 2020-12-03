@@ -55,7 +55,7 @@ class App extends Component<{}, AppState> {
     let projectDir = path.resolve(lastArg);
     if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
       console.log("Launched with project directory:", projectDir)
-      const projectFile = projectDir + "project.t2wml";
+      const projectFile = path.join(projectDir, "project.t2wml");
       if (fs.existsSync(projectFile)) { //existing project
         this.onOpenProject(projectDir)
         return;
