@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Treebeard } from 'react-treebeard';
+import { Treebeard, TreeTheme } from 'react-treebeard';
 
 // icons
 import wikiStore from '@/renderer/data/store';
@@ -54,7 +54,7 @@ interface SidebarState {
 @observer
 class Sidebar extends Component<{}, SidebarState> {
     private disposeReaction?: IReactionDisposer;
-    private fileTreeStyle = {};
+    private fileTreeStyle: TreeTheme;
     private requestService: RequestService;
 
     
