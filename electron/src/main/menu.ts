@@ -79,7 +79,7 @@ export default class MainMenuManager {
                     //    label: 'Usage Guide',   
                     //},
                     {
-                        label: 'YamlEditor T2WML syntax guide',
+                        label: 'Syntax Guide',
                         click: () => this.loadGrammar()
                     },
                     {

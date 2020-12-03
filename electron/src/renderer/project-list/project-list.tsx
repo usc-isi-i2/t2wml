@@ -260,7 +260,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                 placement="top"
                 trigger={["hover", "focus"]}
                 overlay={
-                  <Tooltip style={{ width: "fit-content" }} id="delete">
+                  <Tooltip style={{ width: "fit-content" }} id="Remove project from list">
                     <span className="text-left small">Delete</span>
                   </Tooltip>
                 }

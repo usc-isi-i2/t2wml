@@ -46,28 +46,27 @@ class App extends Component<{}, AppState> {
 
   checkCommandLineArgs() {
     var fs = require('fs');
-    const commandArgs = remote.getGlobal('sharedObj').prop1;
-    const lastArg = commandArgs[commandArgs.length - 1];
-    let projectDir = null;
-    if (lastArg == ".") {
-      projectDir = process.cwd();
-    }
-    else if (fs.existsSync(lastArg) && fs.lstatSync(lastArg).isDirectory()) {
-      projectDir = lastArg;
-    }
+    const path = require('path');
 
-    if (projectDir) {
-      const projectFile = projectDir + "project.t2wml";
+    const commandArgs = remote.getGlobal('sharedObj').prop1;
+    console.log("command args", commandArgs);
+
+    let lastArg = commandArgs[commandArgs.length - 1];
+    let projectDir = path.resolve(lastArg);
+    if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
+      console.log("Launched with project directory:", projectDir)
+      const projectFile = path.join(projectDir, "project.t2wml");
       if (fs.existsSync(projectFile)) { //existing project
         this.onOpenProject(projectDir)
+        return;
       }
       else {
         this.onNewProject(projectDir)
+        return;
       }
-
-    } else {
-      wikiStore.changeProject();
     }
+    console.log("no project directory argument detected")
+    wikiStore.changeProject();
   }
 
   onToggleCleaned(checked: boolean) {
