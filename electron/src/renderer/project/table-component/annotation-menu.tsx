@@ -17,8 +17,8 @@ interface AnnotationMenuProperties {
 
 class AnnotationMenu extends React.Component<AnnotationMenuProperties, {}> {
 
-  handleOnChange(selection: CellSelection, input: string, value: string) {
-    console.log(selection, input, value);
+  handleOnChange(input: string, value: string) {
+    console.log(input, value);
   }
 
   handleOnSubmit(selection: CellSelection) {

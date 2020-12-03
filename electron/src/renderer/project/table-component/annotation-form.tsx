@@ -54,13 +54,13 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
   handleOnChange(event: any, input: string) {
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    onChange(selection, input, value);
+    onChange(input, value);
   }
 
   handleOnSubmit(event: any) {
     event.preventDefault();
-    const { selection, onSubmit } = this.props;
-    onSubmit(selection);
+    const { onSubmit } = this.props;
+    onSubmit();
   }
 
   renderSelectionAreas() {
