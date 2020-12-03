@@ -43,6 +43,13 @@ class AnnotationIntegration(object):
                 return False
             annotation_rows = list(range(0, 7)) + [header_row]
             self.annotation = self.df.iloc[annotation_rows].fillna("")
+
+            if len(self.annotation.iloc[0]) <= 5:
+                self.annotation.insert(5, 5, '')
+                self.annotation.insert(6, 6, '')
+            elif len(self.annotation.iloc[0]) <= 6:
+                self.annotation.insert(6, 6, '')
+
             self.annotation.iat[0, 5] = header_row
             self.annotation.iat[0, 6] = data_row
 
@@ -202,7 +209,6 @@ class AnnotationIntegration(object):
 def create_datafile(project, df, filepath, sheet_name):
     folder = project.directory
 
-    
     if filepath.endswith('.csv'):
         df.to_csv(filepath, index=False, header=False)
     elif filepath.endswith('.xlsx') or filepath.endswith('.xls'):
