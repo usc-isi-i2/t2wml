@@ -1,4 +1,4 @@
-import { Selection } from '../../common/general';
+import { CellSelection } from '../../common/general';
 
 export function columnToLetter(column: number) {
   let temp, letter = '';
@@ -19,7 +19,7 @@ export function letterToColumn(letter: String) {
   return column;
 }
 
-export function humanReadableSelection(selection: Selection) {
+export function humanReadableSelection(selection: CellSelection) {
   const { x1, y1, x2, y2 } = selection;
   let text = '';
   if ( x1 === x2 && y1 === y2 ) {
