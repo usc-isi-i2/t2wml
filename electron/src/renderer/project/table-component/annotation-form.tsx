@@ -11,15 +11,37 @@ const TYPES = [{
 }, {
   'label': 'monolingual string',
   'value': 'monolingualString',
+  'children': [{
+    'label': 'language',
+    'value': 'language',
+  }],
 }, {
   'label': 'quantity',
   'value': 'quantity',
+  'children': [{
+    'label': 'unit',
+    'value': 'unit',
+  }],
 }, {
   'label': 'time',
   'value': 'time',
+  'children': [{
+    'label': 'precision',
+    'value': 'precision',
+  }, {
+    'label': 'calendar',
+    'value': 'calendar',
+  }, {
+    'label': 'format',
+    'value': 'format',
+  }],
 }, {
-  'label': 'q-node',
+  'label': 'Q-Node',
   'value': 'qNode',
+  'children': [{
+    'label': 'Q-Node ID',
+    'value': 'qNodeID',
+  }],
 }];
 
 
