@@ -73,8 +73,8 @@ interface AnnotationFormProperties {
 
 
 interface AnnotationFormState {
-  role: string | null,
-  type: string | null,
+  role?: string | null,
+  type?: string | null,
 }
 
 
