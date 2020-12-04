@@ -447,6 +447,8 @@ class TableComponent extends Component<{}, TableState> {
   handleOnMouseDown(event: React.MouseEvent) {
     const element = event.target as any;
 
+    if ( element.nodeName !== 'TD' ) { return; }
+
     // Activate the selection mode
     this.selecting = true;
 
