@@ -114,16 +114,16 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderNestedOptionsDropdown() {
-    const { role } = this.state;
-    const option = OPTIONS.find(option => option.value === role);
-    if ( !option || !('children' in option) ) { return null; }
-    return (
+    const { role, type } = this.state;
+    const selectedOption = OPTIONS.find(option => option.value === role);
+    if ( !selectedOption || !('children' in selectedOption) ) { return null; }
+    const optionsDropdown = (
       <Form.Group as={Row}
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
         <Col sm="12" md="12">
           <Form.Control size="sm" as="select">
             <option value="" disabled selected>Type</option>
-            {option?.children?.map((type, i) => (
+            {selectedOption?.children?.map((type, i) => (
               <option key={i} value={type.value}>
                 {type.label}
               </option>
@@ -132,6 +132,26 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         </Col>
       </Form.Group>
     )
+    const selectedType = selectedOption?.children?.find(t => t.value === type);
+    if ( !selectedType || !('children' in selectedType) ) {
+      return optionsDropdown;
+    } else {
+      return (
+        <React.Fragment>
+          {optionsDropdown}
+          {selectedType?.children?.map((type, i) => (
+            <Form.Group as={Row} key={i}
+              onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, type.value)}>
+              <Col sm="12" md="12">
+                <Form.Control
+                  type="text" size="sm"
+                  placeholder={type.label} />
+              </Col>
+            </Form.Group>
+          ))}
+        </React.Fragment>
+      )
+    }
   }
 
   renderOptionsDropdown() {
@@ -159,14 +179,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptionsDropdown()}
-        <Form.Group as={Row}
-          onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'annotation')}>
-          <Col sm="12" md="12">
-            <Form.Control
-              type="text" size="sm"
-              placeholder="annotation" />
-          </Col>
-        </Form.Group>
         <Form.Group as={Row}>
           <Col sm="12" md="12">
             <Button
