@@ -50,10 +50,10 @@ interface AnnotationFormProperties {
 
 class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
 
-  handleOnChange(event: any, input: string) {
+  handleOnChange(event: any, key: string) {
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    onChange(input, value);
+    onChange(key, value);
   }
 
   handleOnSubmit(event: any) {
