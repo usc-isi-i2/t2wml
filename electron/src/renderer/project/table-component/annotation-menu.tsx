@@ -40,7 +40,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   async handleOnSubmit(values: { [key: string]: string }) {
-    const { selections } = this.props;
+    const { selections, onClose } = this.props;
     console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
 
     const formData = new FormData();
@@ -58,6 +58,8 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     } catch (error) {
       error.errorDescription += "\n\nCannot submit annotations!";
       this.setState({ errorMessage: error });
+    } finally {
+      onClose();
     }
   }
 
