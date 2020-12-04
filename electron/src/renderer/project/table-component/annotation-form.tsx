@@ -172,6 +172,21 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     )
   }
 
+  renderSubmitButton() {
+    return (
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <Button
+            size="sm"
+            type="submit"
+            variant="outline-dark">
+            Submit
+          </Button>
+        </Col>
+      </Form.Group>
+    )
+  }
+
   render() {
     return (
       <Form className="container annotation-form"
@@ -179,16 +194,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptionsDropdown()}
-        <Form.Group as={Row}>
-          <Col sm="12" md="12">
-            <Button
-              size="sm"
-              type="submit"
-              variant="outline-dark">
-              Submit
-            </Button>
-          </Col>
-        </Form.Group>
+        {this.renderSubmitButton()}
       </Form>
     )
   }
