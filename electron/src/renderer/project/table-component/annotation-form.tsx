@@ -5,24 +5,6 @@ import * as utils from './table-utils';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
-const ROLES = [{
-  'label': 'main subject',
-  'value': 'mainSubject',
-}, {
-  'label': 'property',
-  'value': 'property',
-}, {
-  'label': 'qualifier',
-  'value': 'qualifier',
-}, {
-  'label': 'dependent variable',
-  'value': 'dependentVar',
-}, {
-  'label': 'metadata',
-  'value': 'metadata',
-}];
-
-
 const TYPES = [{
   'label': 'string',
   'value': 'string',
@@ -38,6 +20,26 @@ const TYPES = [{
 }, {
   'label': 'q-node',
   'value': 'qNode',
+}];
+
+
+const OPTIONS = [{
+  'label': 'main subject',
+  'value': 'mainSubject',
+}, {
+  'label': 'property',
+  'value': 'property',
+}, {
+  'label': 'qualifier',
+  'value': 'qualifier',
+  'children': TYPES,
+}, {
+  'label': 'dependent variable',
+  'value': 'dependentVar',
+  'children': TYPES,
+}, {
+  'label': 'metadata',
+  'value': 'metadata',
 }];
 
 
