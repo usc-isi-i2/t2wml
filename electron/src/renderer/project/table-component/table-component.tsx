@@ -530,6 +530,23 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
+  handleOnClickHeader(event: React.MouseEvent) {
+    const element = event.target as any;
+    element.setAttribute('style', 'width: 100%;');
+    element.parentElement.setAttribute('style', 'max-width: 1%');
+
+    const table = this.tableRef.current;
+    const rows = table!.querySelectorAll('tr');
+    const index = element.parentElement.cellIndex;
+    rows.forEach(row => {
+      row.children[index].setAttribute('style', 'max-width: 1%');
+    });
+
+    setTimeout(() => {
+      element.setAttribute('style', `min-width: ${element.clientWidth}px`);
+    }, 100);
+  }
+
   getClassName(stuff: LayersDTO, row: number, col: number) {
     const {
       selectedCell,
@@ -771,7 +788,9 @@ class TableComponent extends Component<{}, TableState> {
                 <th></th>
                 {cols.map((r, i) => (
                   <th key={i}>
-                    <div>{utils.columnToLetter(i + 1)}</div>
+                    <div onDoubleClick={this.handleOnClickHeader.bind(this)}>
+                      {utils.columnToLetter(i + 1)}
+                    </div>
                   </th>
                 ))}
               </tr>
