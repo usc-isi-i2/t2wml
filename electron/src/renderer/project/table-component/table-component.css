@@ -67,7 +67,6 @@
   color: #777;
   z-index: 3;
   top: 0;
-  pointer-events: none;
 }
 .table-wrapper table thead tr th::after {
   content: "";
@@ -78,7 +77,6 @@
   height: 1px;
   position: absolute;
   background: #c7c7c7;
-  pointer-events: none;
 }
 .table-wrapper table thead tr th > div {
   width: 75px;
@@ -86,7 +84,6 @@
   resize: horizontal;
   overflow: hidden;
   display: block;
-  pointer-events: none;
 }
 
 /* left column */
