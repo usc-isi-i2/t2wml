@@ -74,6 +74,7 @@ interface AnnotationFormProperties {
 
 interface AnnotationFormState {
   role: string | null,
+  type: string | null,
 }
 
 
@@ -83,7 +84,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     super(props);
 
     this.state = {
-      'role': null,
+      role: null,
+      type: null,
     };
   }
 
