@@ -5,6 +5,7 @@ import AnnotationForm from './annotation-form';
 
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
+import RequestService from '../../common/service';
 import { CellSelection } from '../../common/general';
 
 
@@ -16,6 +17,14 @@ interface AnnotationMenuProperties {
 
 
 class AnnotationMenu extends React.Component<AnnotationMenuProperties, {}> {
+
+  private requestService: RequestService;
+
+  constructor(props: AnnotationMenuProperties) {
+    super(props);
+
+    this.requestService = new RequestService();
+  }
 
   handleOnChange(key: string, value: string) {
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
