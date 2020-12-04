@@ -48,12 +48,17 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       formData.append(key, value);
     }
 
-    await this.requestService.call(this, () => (
-      this.requestService.annotateProject(
-        wikiStore.projects.current!.folder,
-        formData,
-      )
-    ));
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.annotateProject(
+          wikiStore.projects.current!.folder,
+          formData,
+        )
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot submit annotations!";
+      this.setState({ errorMessage: error });
+    }
   }
 
   renderAnnotationForms() {
