@@ -6,61 +6,61 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
 const TYPES = [{
-  'label': 'string',
+  'label': 'String',
   'value': 'string',
 }, {
-  'label': 'monolingual string',
+  'label': 'Monolingual String',
   'value': 'monolingualString',
   'children': [{
-    'label': 'language',
+    'label': 'Language',
     'value': 'language',
   }],
 }, {
-  'label': 'quantity',
+  'label': 'Quantity',
   'value': 'quantity',
   'children': [{
-    'label': 'unit',
+    'label': 'Unit',
     'value': 'unit',
   }],
 }, {
-  'label': 'time',
+  'label': 'Time',
   'value': 'time',
   'children': [{
-    'label': 'precision',
+    'label': 'Precision',
     'value': 'precision',
   }, {
-    'label': 'calendar',
+    'label': 'Calendar',
     'value': 'calendar',
   }, {
-    'label': 'format',
+    'label': 'Format',
     'value': 'format',
   }],
 }, {
   'label': 'Q-Node',
   'value': 'qNode',
   'children': [{
-    'label': 'Q-Node ID',
+    'label': 'ID',
     'value': 'qNodeID',
   }],
 }];
 
 
 const OPTIONS = [{
-  'label': 'main subject',
+  'label': 'Main Subject',
   'value': 'mainSubject',
 }, {
-  'label': 'property',
+  'label': 'Property',
   'value': 'property',
 }, {
-  'label': 'qualifier',
+  'label': 'Qualifier',
   'value': 'qualifier',
   'children': TYPES,
 }, {
-  'label': 'dependent variable',
+  'label': 'Dependent Variable',
   'value': 'dependentVar',
   'children': TYPES,
 }, {
-  'label': 'metadata',
+  'label': 'Metadata',
   'value': 'metadata',
 }];
 
