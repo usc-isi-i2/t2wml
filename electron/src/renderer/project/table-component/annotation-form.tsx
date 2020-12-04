@@ -60,15 +60,15 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   constructor(props: AnnotationFormProperties) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      'role': null,
+    };
   }
 
   handleOnChange(event: any, key: string) {
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    const updatedState: { [key: string]: string; } = {};
-    updatedState[key] = value;
-    this.setState({...updatedState}, () => onChange(key, value));
+    this.setState({'role': value}, () => onChange(key, value));
   }
 
   handleOnSubmit(event: any) {
