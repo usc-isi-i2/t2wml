@@ -7,7 +7,7 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../common/general';
 import RequestService from '../../common/service';
-import { CellSelection } from '../../common/general';
+import wikiStore from '../../data/store';
 
 
 interface AnnotationMenuProperties {
@@ -39,9 +39,21 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
   }
 
-  handleOnSubmit(values: any) {
+  async handleOnSubmit(values: { [key: string]: string }) {
     const { selections } = this.props;
     console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
+
+    const formData = new FormData();
+    for ( const [key, value] of Object.entries(values) ) {
+      formData.append(key, value);
+    }
+
+    await this.requestService.call(this, () => (
+      this.requestService.annotateProject(
+        wikiStore.projects.current!.folder,
+        formData,
+      )
+    ));
   }
 
   renderAnnotationForms() {
