@@ -1,13 +1,13 @@
 _saved_state:
   current_data_file: cleaning.xlsx
-  current_sheet: 03_cleaning_solution
+  current_sheet: 00_cleaning
   current_wikifiers:
   - wikifier.csv
-  current_yaml: 03_cleaning_solution_id342.yaml
+  current_yaml: 00_cleaning.yaml
 cache_id: 410df160-96c8-4722-bcb4-27b0dd67e12f
 data_files:
   cleaning.xlsx:
-    selected: 03_cleaning_solution
+    selected: 00_cleaning
     val_arr:
     - 00_cleaning
     - 01_cleaning
