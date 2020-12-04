@@ -87,6 +87,27 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     ));
   }
 
+  renderNestedOptionsDropdown() {
+    const { role } = this.state;
+    const option = OPTIONS.find(option => option.value === role);
+    if ( !option || !('children' in option) ) { return null; }
+    return (
+      <Form.Group as={Row}
+        onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
+        <Col sm="12" md="12">
+          <Form.Control size="sm" as="select">
+            <option value="" disabled selected>Type</option>
+            {option?.children?.map((type, i) => (
+              <option key={i} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </Form.Control>
+        </Col>
+      </Form.Group>
+    )
+  }
+
   renderOptionsDropdown() {
     return (
       <Form.Group as={Row}
@@ -111,19 +132,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onSubmit={this.handleOnSubmit.bind(this)}>
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
-        <Form.Group as={Row}
-          onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
-          <Col sm="12" md="12">
-            <Form.Control size="sm" as="select">
-              <option value="" disabled selected>Type</option>
-              {TYPES.map((type, i) => (
-                <option key={i} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </Form.Control>
-          </Col>
-        </Form.Group>
+        {this.renderNestedOptionsDropdown()}
         <Form.Group as={Row}
           onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'annotation')}>
           <Col sm="12" md="12">
