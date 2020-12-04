@@ -78,6 +78,12 @@ class StoreFiller {
 class RequestService {
   storeFiller = new StoreFiller();
 
+  public async annotateProject(folder: string, formData: any) {
+    const response = await backendPost(`/annotation?project_folder=${folder}`, formData) as any;
+    // TODO: update table data with the response?
+    console.log(response);
+  }
+
   public async createProject(folder: string) {
     const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
     this.storeFiller.fillProjectInStore(response.project); // not necessary
