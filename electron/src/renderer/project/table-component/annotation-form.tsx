@@ -82,24 +82,30 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
     ));
   }
 
+  renderOptionsDropdown() {
+    return (
+      <Form.Group as={Row}
+        onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
+        <Col sm="12" md="12">
+          <Form.Control size="sm" as="select">
+            <option value="" disabled selected>Role</option>
+            {OPTIONS.map((role, i) => (
+              <option key={i} value={role.value}>
+                {role.label}
+              </option>
+            ))}
+          </Form.Control>
+        </Col>
+      </Form.Group>
+    )
+  }
+
   render() {
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
         {this.renderSelectionAreas()}
-        <Form.Group as={Row}
-          onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
-          <Col sm="12" md="12">
-            <Form.Control size="sm" as="select">
-              <option value="" disabled selected>Role</option>
-              {ROLES.map((role, i) => (
-                <option key={i} value={role.value}>
-                  {role.label}
-                </option>
-              ))}
-            </Form.Control>
-          </Col>
-        </Form.Group>
+        {this.renderOptionsDropdown()}
         <Form.Group as={Row}
           onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
           <Col sm="12" md="12">
