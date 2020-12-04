@@ -1,14 +1,23 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
-  ResponseWithYamlContentDTO, ProjectDTO, ResponseWithTableDTO, ResponseWithProjectDTO,
-   UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ResponseWithLayersDTO,
+  ResponseWithYamlContentDTO,
+  ProjectDTO,
+  ResponseWithTableDTO,
+  ResponseWithProjectDTO,
+  UploadEntitiesDTO,
+  CallWikifierServiceDTO,
+  TableDTO,
+  LayersDTO,
+  ResponseWithLayersDTO,
 } from './dtos';
 import { Cell, ErrorMessage } from './general';
+
 
 export interface IStateWithError {
   errorMessage: ErrorMessage;
 }
+
 
 class StoreFiller {
   //I have created this class to setion off all the filling functions, which were seriously cluttering up service
@@ -25,13 +34,10 @@ class StoreFiller {
     wikiStore.yaml.yamlContent = content;
   }
 
-
   public fillUploadDataInStore(response: ResponseWithTableDTO) {
-
     this.fillProjectInStore(response.project);
     this.fillTableInStore(response.table);
     this.fillLayersInStore(response.layers);
-
   }
 
   public fillgetProjectData(response: ResponseWithYamlContentDTO) {
@@ -63,7 +69,7 @@ class StoreFiller {
     this.fillTableInStore(response.table);
     this.fillLayersInStore(response.layers);
     this.fillYamlContentInStore(response.yamlContent);
-    
+
     // clear output window
     wikiStore.table.selectedCell = new Cell();
   }
@@ -152,10 +158,9 @@ class RequestService {
   }
 
   public async changeYaml(folder: string, filename: string) {
-    const response = await backendGet(`yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithYamlContentDTO;
+    const response = await backendGet(`/yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithYamlContentDTO;
     this.storeFiller.fillgetProjectData(response);
   }
-
 
   public async call<IProp, IState extends IStateWithError, ReturnValue >(
     component: React.Component<IProp, IState>,
@@ -168,7 +173,7 @@ class RequestService {
       throw error
     }
   }
-
 }
+
 
 export default RequestService;
