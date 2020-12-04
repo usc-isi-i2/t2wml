@@ -50,7 +50,12 @@ interface AnnotationFormProperties {
 }
 
 
-class AnnotationForm extends React.Component<AnnotationFormProperties, {}> {
+interface AnnotationFormState {
+  role: string | null,
+}
+
+
+class AnnotationForm extends React.Component<AnnotationFormProperties, AnnotationFormState> {
 
   constructor(props: AnnotationFormProperties) {
     super(props);
