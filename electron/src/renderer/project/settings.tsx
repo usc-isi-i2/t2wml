@@ -17,7 +17,7 @@ interface SettingsProperties {
     warnEmpty: boolean;
     calendar: string;
     datamartIntegration: boolean;
-    datamartApi: string | null;
+    datamartApi: string;
 
     handleSaveSettings: (
       endpoint: string,
@@ -32,7 +32,7 @@ interface SettingsProperties {
 interface SettingsState {
   tmpWarnEmpty: boolean;
   datamartIntegration: boolean;
-  datamartApi: string | null;
+  datamartApi: string;
 }
 
 const calendarOptions = {

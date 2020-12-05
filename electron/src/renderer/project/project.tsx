@@ -33,7 +33,7 @@ interface ProjectState extends IStateWithError {
   warnEmpty: boolean;
   calendar: string;
   datamartIntegration: boolean;
-  datamartApi: string | null;
+  datamartApi: string;
   name: string;
   showTreeFlag: boolean;
 }
@@ -65,7 +65,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       warnEmpty: false,
       calendar: 'leave',
       datamartIntegration: false,
-      datamartApi: null,
+      datamartApi: '',
       name: '',
 
       errorMessage: {} as ErrorMessage,
@@ -160,7 +160,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
       calendar: wikiStore.projects.projectDTO?.handle_calendar || "leave",
       datamartIntegration: wikiStore.projects.projectDTO?.datamart_integration || false,
-      datamartApi: wikiStore.projects.projectDTO?.datamart_api || false,
+      datamartApi: wikiStore.projects.projectDTO?.datamart_api || '',
       showSettings: true
     });
   }
