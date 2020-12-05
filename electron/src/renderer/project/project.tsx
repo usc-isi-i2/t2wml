@@ -32,6 +32,7 @@ interface ProjectState extends IStateWithError {
   endpoint: string;
   warnEmpty: boolean;
   calendar: string;
+  datamartIntegration: boolean;
   name: string;
   showTreeFlag: boolean;
 }
@@ -62,6 +63,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: '',
       warnEmpty: false,
       calendar: 'leave',
+      datamartIntegration: false,
       name: '',
 
       errorMessage: {} as ErrorMessage,
@@ -155,6 +157,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
       calendar: wikiStore.projects.projectDTO?.handle_calendar || "leave",
+      datamartIntegration: wikiStore.projects.projectDTO?.datamart_integration || false,
       showSettings: true
     });
   }
@@ -199,7 +202,8 @@ class Project extends Component<ProjectProps, ProjectState> {
           endpoint={this.state.endpoint}
           warnEmpty={this.state.warnEmpty}
           calendar={this.state.calendar}
-          handleSaveSettings={(endpoint, warn, calendar) => this.handleSaveSettings(endpoint, warn, calendar)}
+          datamartIntegration={this.state.datamartIntegration}
+          handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}

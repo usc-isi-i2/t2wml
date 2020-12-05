@@ -16,6 +16,7 @@ interface SettingsProperties {
     endpoint: string;
     warnEmpty: boolean;
     calendar: string;
+    datamartIntegration: boolean;
 
     handleSaveSettings: (endpoint: string, warn: boolean, calendar:string) => void;
     cancelSaveSettings: () => void;
@@ -23,6 +24,7 @@ interface SettingsProperties {
 
 interface SettingsState {
   tmpWarnEmpty: boolean;
+  datamartIntegration: boolean;
 }
 
 const calendarOptions = {
@@ -41,8 +43,11 @@ class Settings extends Component<SettingsProperties, SettingsState> {
     this.tempSparqlEndpointRef = React.createRef();
     this.tempCalendarRef = React.createRef();
 
+    const { warnEmpty, datamartIntegration } = this.props;
+
     this.state = {
-      tmpWarnEmpty: this.props.warnEmpty,
+      tmpWarnEmpty,
+      datamartIntegration,
     }
   }
 
@@ -138,7 +143,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               <Col sm="12" md="9">
                 <input type="checkbox"
                   style={{ width: '25px', height: '25px', marginTop: '5px' }}
-                  defaultChecked={false} />
+                  defaultChecked={false}
+                  onChange={(event) => this.setState({ datamartIntegration: event?.target.checked })}/>
               </Col>
             </Form.Group>
 
