@@ -487,6 +487,9 @@ def update_settings():
     datamart = request.form.get("datamartIntegration", None)
     if datamart is not None:
         project.datamart_integration = datamart.lower() == 'true'
+    datamart_api = request.form.get("datamartApi", None)
+    if datamart_api:
+        project.datamart_api = datamart_api
     calendar=request.form.get("handleCalendar", None)
     if calendar:
         project.handle_calendar=calendar
