@@ -152,7 +152,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               <Col sm="12" md="9">
                 <input type="checkbox"
                   style={{ width: '25px', height: '25px', marginTop: '5px' }}
-                  defaultChecked={false}
+                  defaultChecked={this.props.datamartIntegration}
                   onChange={(event) => this.setState({ datamartIntegration: event?.target.checked })}/>
               </Col>
             </Form.Group>
