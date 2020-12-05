@@ -165,7 +165,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               <Col sm="12" md="9">
                 <Form.Control
                   type="text" size="sm"
-                  placeholder="Datamart api url"
+                  defaultValue={this.props.datamartApi}
                   onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
               </Col>
             </Form.Group>
