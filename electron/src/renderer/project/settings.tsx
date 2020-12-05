@@ -17,14 +17,22 @@ interface SettingsProperties {
     warnEmpty: boolean;
     calendar: string;
     datamartIntegration: boolean;
+    datamartApi: string | null;
 
-    handleSaveSettings: (endpoint: string, warn: boolean, calendar: string) => void;
+    handleSaveSettings: (
+      endpoint: string,
+      warn: boolean,
+      calendar: string,
+      datamartIntegration: boolean,
+      datamartApi: string,
+    ) => void;
     cancelSaveSettings: () => void;
 }
 
 interface SettingsState {
   tmpWarnEmpty: boolean;
   datamartIntegration: boolean;
+  datamartApi: string | null;
 }
 
 const calendarOptions = {
@@ -44,11 +52,10 @@ class Settings extends Component<SettingsProperties, SettingsState> {
     this.tempSparqlEndpointRef = React.createRef();
     this.tempCalendarRef = React.createRef();
 
-    const { warnEmpty, datamartIntegration } = this.props;
-
     this.state = {
-      tmpWarnEmpty,
-      datamartIntegration,
+      tmpWarnEmpty: this.props.warnEmpty,
+      datamartIntegration: this.props.datamartIntegration,
+      datamartApi: this.props.datamartApi,
     }
   }
 
@@ -56,7 +63,9 @@ class Settings extends Component<SettingsProperties, SettingsState> {
     const endpoint = (this.tempSparqlEndpointRef as any).current.value;
     const warn = this.state.tmpWarnEmpty;
     const calendar = (calendarOptions as any)[(this.tempCalendarRef as any).current.value];
-    this.props.handleSaveSettings(endpoint, warn, calendar);
+    const datamartIntegration = this.state.datamartIntegration;
+    const datamartApi = this.state.datamartApi;
+    this.props.handleSaveSettings(endpoint, warn, calendar, datamartIntegration, datamartApi);
   }
 
   render() {
@@ -156,7 +165,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               <Col sm="12" md="9">
                 <Form.Control
                   type="text" size="sm"
-                  placeholder="Datamart api url" />
+                  placeholder="Datamart api url"
+                  onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
               </Col>
             </Form.Group>
           </Form>
