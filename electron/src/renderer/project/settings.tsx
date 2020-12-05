@@ -130,6 +130,18 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               </Col>
             </Form.Group>
 
+            {/* datamart integration on/off */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+              Turn Datamart Integration ON
+              </Form.Label>
+              <Col sm="12" md="9">
+                <input type="checkbox"
+                  style={{ width: '25px', height: '25px', marginTop: '5px' }}
+                  defaultChecked={false} />
+              </Col>
+            </Form.Group>
+
             {/* datamart url */}
             <Form.Group as={Row}>
               <Form.Label column sm="12" md="3" className="text-right">
