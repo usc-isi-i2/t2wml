@@ -484,6 +484,9 @@ def update_settings():
     warn = request.form.get("warnEmpty", None)
     if warn is not None:
         project.warn_for_empty_cells = warn.lower() == 'true'
+    datamart = request.form.get("datamartIntegration", None)
+    if datamart is not None:
+        project.datamart_integration = datamart.lower() == 'true'
     calendar=request.form.get("handleCalendar", None)
     if calendar:
         project.handle_calendar=calendar
