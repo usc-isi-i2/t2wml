@@ -129,6 +129,18 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 </Dropdown>
               </Col>
             </Form.Group>
+
+            {/* datamart url */}
+            <Form.Group as={Row}>
+              <Form.Label column sm="12" md="3" className="text-right">
+              Datamart api url
+              </Form.Label>
+              <Col sm="12" md="9">
+                <Form.Control
+                  type="text" size="sm"
+                  placeholder="Datamart api url" />
+              </Col>
+            </Form.Group>
           </Form>
         </Modal.Body>
 
