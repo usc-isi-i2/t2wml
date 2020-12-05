@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import './project.css';
-import './ag-grid.css'
-import './ag-theme-balham.css'
-
+import './ag-grid.css';
+import './ag-theme-balham.css';
 
 // App
 import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-bootstrap';
@@ -11,6 +10,7 @@ import Config from '@/shared/config';
 
 import { observer } from "mobx-react";
 
+
 interface SettingsProperties {
     showSettings: boolean;
     endpoint: string;
@@ -18,7 +18,7 @@ interface SettingsProperties {
     calendar: string;
     datamartIntegration: boolean;
 
-    handleSaveSettings: (endpoint: string, warn: boolean, calendar:string) => void;
+    handleSaveSettings: (endpoint: string, warn: boolean, calendar: string) => void;
     cancelSaveSettings: () => void;
 }
 
@@ -40,6 +40,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
 
   constructor(props: SettingsProperties) {
     super(props);
+
     this.tempSparqlEndpointRef = React.createRef();
     this.tempCalendarRef = React.createRef();
 
@@ -57,7 +58,6 @@ class Settings extends Component<SettingsProperties, SettingsState> {
     const calendar = (calendarOptions as any)[(this.tempCalendarRef as any).current.value];
     this.props.handleSaveSettings(endpoint, warn, calendar);
   }
-
 
   render() {
     const sparqlEndpoints = [
@@ -99,22 +99,22 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
-              </Form.Group>
+            </Form.Group>
 
-
-              <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-
+            {/* warn for empty cells */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
                 Warn for empty cells
               </Form.Label>
               <Col sm="12" md="9">
-
-                <input type="checkbox" 
+                <input type="checkbox"
                   style={{ width: '25px', height: '25px', marginTop: '5px' }}
                   defaultChecked={(this.props.warnEmpty)}
                   onChange={(event) => this.setState({ tmpWarnEmpty: event?.target.checked })}/>
               </Col>
             </Form.Group>
+
+            {/* calendar settings */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
               Non-Gregorian Calendar
@@ -160,6 +160,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               </Col>
             </Form.Group>
           </Form>
+
         </Modal.Body>
 
         {/* footer */}
@@ -172,7 +173,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
           </Button>
         </Modal.Footer>
 
-      </Modal >
+      </Modal>
     );
   }
 }
