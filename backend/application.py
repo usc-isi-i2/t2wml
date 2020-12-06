@@ -190,6 +190,8 @@ def upload_data_file():
     response=dict(project=get_project_dict(project))
 
     get_all_layers_and_table(response, calc_params)
+    if calc_params.yaml_path:
+        response["yamlContent"]=get_yaml_content(calc_params)
     return response, 200
 
 

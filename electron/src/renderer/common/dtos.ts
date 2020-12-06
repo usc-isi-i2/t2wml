@@ -41,12 +41,9 @@ export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     yamlError?: string;
 }
 
-export interface ResponseWithTableDTO extends ResponseWithLayersDTO {
+export interface ResponseWithTableandMaybeYamlDTO extends ResponseWithLayersDTO {
     table: TableDTO;
-}
-
-export interface ResponseWithYamlContentDTO extends ResponseWithTableDTO {
-    yamlContent: string;
+    yamlContent?: string;
 }
 
 export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
