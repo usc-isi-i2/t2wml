@@ -26,8 +26,7 @@ debug_mode = False
 def run_annotation(project, calc_params):
     is_csv=Path(calc_params.data_path).suffix == ".csv"
     sheet = project.current_sheet
-    ai = AnnotationIntegration(is_csv, calc_params.sheet_name,
-                                w_requests=request)
+    ai = AnnotationIntegration(is_csv, calc_params)
     if ai.is_annotated_spreadsheet(project.directory):
         dataset_exists = ai.automate_integration(project, calc_params.data_path, sheet)
         if not dataset_exists:
@@ -39,7 +38,7 @@ def run_annotation(project, calc_params):
                             calc_params.sheet_name)
             calc_params = get_calc_params(project)
             sheet = project.current_sheet
-            ai = AnnotationIntegration(is_csv, calc_params.sheet_name,
+            ai = AnnotationIntegration(is_csv, calc_params,
                                         df=new_df)
 
             # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse

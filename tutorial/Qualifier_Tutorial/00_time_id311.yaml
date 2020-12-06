@@ -1,0 +1,16 @@
+# 00_time
+# Example showing how to add a time qualifier (years) on the data variable Production. 
+statementMapping:
+  region:
+    - range: D9:D14
+  template:
+    subject: =item[B, $row, "main subject"]
+    property: =item[$col, 8, "property"]
+    value: =value[$col, $row]
+    qualifier:
+    - calendar: Q1985727
+      # format: '%Y'
+      precision: year
+      property: P585
+      time_zone: 0
+      value: =value[C, $row]

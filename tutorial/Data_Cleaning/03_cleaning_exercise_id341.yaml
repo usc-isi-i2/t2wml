@@ -1,0 +1,18 @@
+# 03_advanced_exercise
+# Exercise: Fix the product values removing numbers and spaces.
+# Use functions: remove_numbers, strip_whitespace
+statementMapping:
+  region:
+    - range: D9:D18
+  template:
+    subject: =item[B, $row-$n, "main subject"]
+    property: =item[D, 8, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[E, 8, "property"]
+        value: =value[E, $row]
+      - calendar: Q1985727
+        precision: year
+        property: P585
+        time_zone: 0
+        value: =value[C, $row]

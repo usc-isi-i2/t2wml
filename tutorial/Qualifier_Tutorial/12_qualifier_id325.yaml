@@ -1,10 +1,8 @@
-# 08_region
-# This example shows how to skip columns. In particular, those columns which have "Comment" as its header
+# 12_qualifier
+# Add another variable Total area. Both variables are qualified by Crop and Estimated.
 statementMapping:
   region:
-    - range: D9:F16
-      skip_columns:
-        - =value[$col,8]=="Comment"
+    - range: D9:E14
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]
@@ -12,3 +10,5 @@ statementMapping:
     qualifier:
       - property: =item[C, 8, "property"]
         value: =value[C, $row]
+      - property: =item[F, 8, "property"]
+        value: =value[F, $row]

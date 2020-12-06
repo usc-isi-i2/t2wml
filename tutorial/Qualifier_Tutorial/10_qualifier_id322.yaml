@@ -1,4 +1,4 @@
-# 00_region
+# 10_qualifier
 # Structure of T2WML YAML with one variable and one qualifier
 statementMapping:
   # The region attribute defines the cells containing the variable values
@@ -11,12 +11,12 @@ statementMapping:
     # The item attribute defines the main subjects of the variables
     subject: =item[B, $row, "main subject"]
     # The property attribute defines the variable name
-    property: PProduction
+    property: =item[D, 8, "property"]
     # The value attribute defines the variable values
     value: =value[$col, $row]
     # The qualifier attribute defines additional context for variable statements
     qualifier:
       # The property attribute defines the qualifier name
-      - property: PCropType
+      - property: =item[C, 8, "property"]
         # The value attribute defines the qualifier values
         value: =value[C, $row]
