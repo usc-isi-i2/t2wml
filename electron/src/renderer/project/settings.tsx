@@ -35,11 +35,11 @@ interface SettingsState {
   datamartApi: string;
 }
 
-const calendarOptions = {
-  "leave (Leave Untouched)": "leave",
-  "replace (Replace with Gregorian)": "replace",
-  "add (Add Gregorian)": "add"
-};
+const calendarOptions = [
+  {text: "leave (Leave Untouched)", value: "leave"},
+  {text: "replace (Replace with Gregorian)", value: "replace"},
+  {text: "add (Add Gregorian)", value: "add"}
+];
 
 @observer
 class Settings extends Component<SettingsProperties, SettingsState> {
@@ -62,7 +62,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
   handleSaveSettings() {
     const endpoint = (this.tempSparqlEndpointRef as any).current.value;
     const warn = this.state.tmpWarnEmpty;
-    const calendar = (calendarOptions as any)[(this.tempCalendarRef as any).current.value];
+    const calendar = (this.tempCalendarRef as any).current.value;
     const datamartIntegration = this.state.datamartIntegration;
     const datamartApi = this.state.datamartApi;
     this.props.handleSaveSettings(endpoint, warn, calendar, datamartIntegration, datamartApi);
@@ -170,7 +170,9 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   />
                   <Dropdown.Toggle split variant="outline-dark" id="calendar"/>
                   <Dropdown.Menu style={{ width: "100%" }}>
-                    {calendarOptions}
+                    {calendarOptions.map((opt) => 
+                    <Dropdown.Item onClick={() => (this.tempCalendarRef as any).current.value = opt.value}>{opt.text}</Dropdown.Item>
+                    )}
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>

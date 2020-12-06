@@ -53,15 +53,28 @@ def get_calc_params(project):
         return None
     data_file = Path(project.directory) / project.current_data_file
     sheet_name = project.current_sheet
-    if project.current_yaml:
-        yaml_file = Path(project.directory) / project.current_yaml
-    else:
-        yaml_file = None
-    if project.current_wikifiers:
-        wikifier_files = [Path(project.directory) / wf for wf in project.current_wikifiers]
-    else:
-        wikifier_files = None
-    calc_params = CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
+
+    def _inner_get_calc_params():
+        if project.current_yaml:
+            yaml_file = Path(project.directory) / project.current_yaml
+        else:
+            yaml_file = None
+        if project.current_wikifiers:
+            wikifier_files = [Path(project.directory) / wf for wf in project.current_wikifiers]
+        else:
+            wikifier_files = None
+        calc_params = CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
+        return calc_params
+
+    calc_params=_inner_get_calc_params()
+
+
+    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
+    # and item definitions automatically
+    if not calc_params.yaml_path and global_settings.datamart_integration:
+        run_annotation(project, calc_params)
+        calc_params=_inner_get_calc_params()
+
     return calc_params
 
 
@@ -176,13 +189,6 @@ def upload_data_file():
     calc_params = get_calc_params(project)
 
     response=dict(project=get_project_dict(project))
-    
-
-    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
-    # and item definitions automatically
-    if global_settings.datamart_integration:
-        run_annotation(project, calc_params)
-        calc_params = get_calc_params(project)
 
     get_all_layers_and_table(response, calc_params)
     return response, 200
@@ -202,12 +208,6 @@ def change_sheet(sheet_name):
     project.save()
     response=dict(project=get_project_dict(project))
     calc_params = get_calc_params(project)
-
-    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
-    # and item definitions automatically
-    if global_settings.datamart_integration:
-        run_annotation(project, calc_params)
-        calc_params = get_calc_params(project)
 
     if calc_params:
         response["yamlContent"]=get_yaml_content(calc_params)
@@ -234,6 +234,7 @@ def change_data_file():
     project.save()
 
     calc_params = get_calc_params(project)
+
     if calc_params:
         response["yamlContent"]=get_yaml_content(calc_params)
         get_all_layers_and_table(response, calc_params)
