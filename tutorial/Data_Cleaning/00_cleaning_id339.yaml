@@ -1,5 +1,5 @@
-# 00_advanced
-# Example T2WML YAML mapping crop production by country.
+# 00_cleaning
+# Example T2WML YAML mapping crop production by country. The capitalization for the crop changes with a function
 statementMapping:
   region:
     - range: D9:D12
@@ -10,3 +10,9 @@ statementMapping:
     qualifier:
       - property: =item[C, 8, "property"]
         value: =value[C, $row]
+cleaningMapping:
+  - region:
+      range: C9:C12
+    functions:
+    - change_case:
+        case: lower

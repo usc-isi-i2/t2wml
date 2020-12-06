@@ -25,6 +25,8 @@ export interface ProjectDTO {
     yaml_sheet_associations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
+    datamart_integration: boolean;
+    datamart_api: string;
     handle_calendar: string;
     cache_id: string;
     _saved_state: SavedStateDTO;
@@ -39,12 +41,9 @@ export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     yamlError?: string;
 }
 
-export interface ResponseWithTableDTO extends ResponseWithLayersDTO {
+export interface ResponseWithTableandMaybeYamlDTO extends ResponseWithLayersDTO {
     table: TableDTO;
-}
-
-export interface ResponseWithYamlContentDTO extends ResponseWithTableDTO {
-    yamlContent: string;
+    yamlContent?: string;
 }
 
 export interface UploadEntitiesDTO extends ResponseWithLayersDTO {

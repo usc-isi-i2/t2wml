@@ -1,7 +1,7 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
-  ResponseWithYamlContentDTO, ProjectDTO, ResponseWithTableDTO, ResponseWithProjectDTO,
+  ResponseWithTableandMaybeYamlDTO, ProjectDTO, ResponseWithProjectDTO,
    UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ResponseWithLayersDTO,
 } from './dtos';
 import { Cell, ErrorMessage } from './general';
@@ -12,57 +12,31 @@ export interface IStateWithError {
 
 class StoreFiller {
   //I have created this class to setion off all the filling functions, which were seriously cluttering up service
-  public fillProjectInStore(project: ProjectDTO) {
-    wikiStore.projects.projectDTO = project;
-  }
-  public fillTableInStore(table: TableDTO) {
-    wikiStore.table.table = table;
-  }
-  public fillLayersInStore(layers: LayersDTO) {
-    wikiStore.layers.updateFromDTO(layers)  // respone.layers should be LayersDTO, instead of casting
-  }
-  public fillYamlContentInStore(content: string) {
-    wikiStore.yaml.yamlContent = content;
-  }
-
-
-  public fillUploadDataInStore(response: ResponseWithTableDTO) {
-
-    this.fillProjectInStore(response.project);
-    this.fillTableInStore(response.table);
-    this.fillLayersInStore(response.layers);
-
-  }
-
-  public fillgetProjectData(response: ResponseWithYamlContentDTO) {
-    this.fillUploadDataInStore(response);
-    this.fillYamlContentInStore(response.yamlContent);
+  public fillTableAndLayers(response: ResponseWithTableandMaybeYamlDTO){
+    wikiStore.table.table = response.table;
+    wikiStore.layers.updateFromDTO(response.layers);
+    if (response.yamlContent){
+      wikiStore.yaml.yamlContent = response.yamlContent;
+    }
     wikiStore.yaml.yamlError = response.yamlError;
+  }
+
+  public fillProjectLayersYaml(response: ResponseWithTableandMaybeYamlDTO) {
+    wikiStore.projects.projectDTO = response.project;
+    this.fillTableAndLayers(response);
   }
 
   public fillProjectAndLayers(response: ResponseWithLayersDTO) {
-    this.fillProjectInStore(response.project);
-    this.fillLayersInStore(response.layers);
+    wikiStore.projects.projectDTO = response.project;
+    wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlError = response.yamlError;
   }
 
-  public fillCallWikifier(response: CallWikifierServiceDTO) {
-    this.fillProjectAndLayers(response);
-    wikiStore.wikifier.wikifierError = response.wikifierError;
-  }
-
-  public fillEntitiesData(response: UploadEntitiesDTO) {
-    this.fillProjectAndLayers(response);
-    wikiStore.wikifier.entitiesStats = response.entitiesStats;
-  }
-
-  public fillChangeDataFile(response: ResponseWithYamlContentDTO) {
+  public fillChangeDataFile(response: ResponseWithTableandMaybeYamlDTO) {
     // don't change project when changing file in file tree
     wikiStore.projects.projectDTO!._saved_state = response.project._saved_state;
 
-    this.fillTableInStore(response.table);
-    this.fillLayersInStore(response.layers);
-    this.fillYamlContentInStore(response.yamlContent);
+    this.fillTableAndLayers(response);
     
     // clear output window
     wikiStore.table.selectedCell = new Cell();
@@ -74,23 +48,23 @@ class RequestService {
 
   public async createProject(folder: string) {
     const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
-    this.storeFiller.fillProjectInStore(response.project); // not necessary
+    wikiStore.projects.projectDTO = response.project; // not necessary
     wikiStore.changeProject(folder);
   }
 
   public async uploadDataFile(folder: string, formData: any) {
-    const response = await backendPost(`/data?project_folder=${folder}`, formData) as ResponseWithTableDTO;
-    this.storeFiller.fillUploadDataInStore(response);
+    const response = await backendPost(`/data?project_folder=${folder}`, formData) as ResponseWithTableandMaybeYamlDTO;
+    this.storeFiller.fillProjectLayersYaml(response);
   }
 
   public async changeSheet(folder: string, sheetName: string) {
-    const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ResponseWithYamlContentDTO;
-    this.storeFiller.fillgetProjectData(response);
+    const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
+    this.storeFiller.fillProjectLayersYaml(response);
   }
 
   public async changeDataFile(dataFileName: string, folder: string) {
-    const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ResponseWithYamlContentDTO;
-    this.storeFiller.fillgetProjectData(response);
+    const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
+    this.storeFiller.fillProjectLayersYaml(response);
   }
 
   public async uploadWikifierOutput(folder: string, formData: any) {
@@ -105,29 +79,31 @@ class RequestService {
 
   public async callWikifierService(folder: string, formData: any) {
     const response = await backendPost(`/wikifier_service?project_folder=${folder}`, formData) as CallWikifierServiceDTO;
-    this.storeFiller.fillCallWikifier(response);
+    this.storeFiller.fillProjectAndLayers(response);
+    wikiStore.wikifier.wikifierError = response.wikifierError;
   }
 
   public async getProject(folder: string) {
-    const response = await backendGet(`/project?project_folder=${folder}`) as ResponseWithYamlContentDTO;
-    this.storeFiller.fillgetProjectData(response);
+    const response = await backendGet(`/project?project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
+    this.storeFiller.fillProjectLayersYaml(response);
   }
 
   public async renameProject(folder: string, formData: any) {
     //returns project
     const response = await backendPut(`/project?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.storeFiller.fillProjectInStore(response.project); // not necessary
+    wikiStore.projects.projectDTO = response.project; // not necessary
   }
 
   public async getSettings(folder: string, formData: any) {
     //returns endpoint, warnEmpty
     const response = await backendPut(`/project/settings?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.storeFiller.fillProjectInStore(response.project);
+    wikiStore.projects.projectDTO = response.project;
   }
 
   public async uploadEntities(folder: string, formData: any) {
     const response = await backendPost(`/project/entity?project_folder=${folder}`, formData) as UploadEntitiesDTO;
-    this.storeFiller.fillEntitiesData(response);
+    this.storeFiller.fillProjectAndLayers(response);
+    wikiStore.wikifier.entitiesStats = response.entitiesStats;
   }
 
   public async downloadResults(folder: string, fileType: string) {
@@ -143,17 +119,17 @@ class RequestService {
 
   public async renameYaml(folder: string, formData: any) {
     const response = await backendPost(`/yaml/rename?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.storeFiller.fillProjectInStore(response.project);
+    wikiStore.projects.projectDTO = response.project;
   }
 
   public async saveYaml(folder: string, formData: any) {
     const response = await backendPost(`/yaml/save?project_folder=${folder}`, formData) as ResponseWithProjectDTO;
-    this.storeFiller.fillProjectInStore(response.project);
+    wikiStore.projects.projectDTO = response.project;
   }
 
   public async changeYaml(folder: string, filename: string) {
-    const response = await backendGet(`yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithYamlContentDTO;
-    this.storeFiller.fillgetProjectData(response);
+    const response = await backendGet(`yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithTableandMaybeYamlDTO;
+    this.storeFiller.fillProjectLayersYaml(response);
   }
 
 

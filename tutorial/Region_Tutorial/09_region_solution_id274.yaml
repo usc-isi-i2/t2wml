@@ -2,14 +2,14 @@
 # Solution to the exercise to skip all cells with a specific value. In particular, all cells that have "--" or "*"
 statementMapping:
   region:
-    - range: D8:E15
+    - range: D9:E16
       skip_cells:
         - =value[$col, $row]=="--"
         - =value[$col, $row]=="*"
   template:
     subject: =item[B, $row, "main subject"]
-    property: =item[$col, 7, "property"]
+    property: =item[$col, 8, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 7, "property"]
+      - property: =item[C, 8, "property"]
         value: =value[C, $row]

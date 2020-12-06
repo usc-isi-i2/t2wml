@@ -1,17 +1,19 @@
 _saved_state:
   current_data_file: advanced.xlsx
-  current_sheet: 00_advanced
+  current_sheet: 03_advanced_solution
   current_wikifiers:
   - wikifier.csv
-  current_yaml: 00_advanced_id339.yaml
+  current_yaml: 03_advanced_solution.yaml
 cache_id: 410df160-96c8-4722-bcb4-27b0dd67e12f
 data_files:
   advanced.xlsx:
-  - 00_advanced
-  - 01_advanced
-  - 02_advanced
-  - 03_advanced_exercise
-  - 03_advanced_solution
+    selected: 03_advanced_solution
+    val_arr:
+    - 00_advanced
+    - 01_advanced
+    - 02_advanced
+    - 03_advanced_exercise
+    - 03_advanced_solution
 entity_files:
 - properties.tsv
 handle_calendar: leave
@@ -30,13 +32,23 @@ yaml_files:
 yaml_sheet_associations:
   advanced.xlsx:
     00_advanced:
-    - 00_advanced_id339.yaml
+      selected: 00_advanced_id339.yaml
+      val_arr:
+      - 00_advanced_id339.yaml
     01_advanced:
-    - 01_advanced_id338.yaml
+      selected: 01_advanced_id338.yaml
+      val_arr:
+      - 01_advanced_id338.yaml
     02_advanced:
-    - 02_advanced_id340.yaml
+      selected: 02_advanced_id340.yaml
+      val_arr:
+      - 02_advanced_id340.yaml
     03_advanced_exercise:
-    - 03_advanced_exercise_id341.yaml
+      selected: 03_advanced_exercise_id341.yaml
+      val_arr:
+      - 03_advanced_exercise_id341.yaml
     03_advanced_solution:
-    - 03_advanced_solution_id342.yaml
-    - 03_advanced_solution.yaml
+      selected: 03_advanced_solution.yaml
+      val_arr:
+      - 03_advanced_solution_id342.yaml
+      - 03_advanced_solution.yaml

@@ -1,6 +1,5 @@
-# 02_advanced
-# In this sheet the Country and Crop values are omitted.
-# T2WML has to lookup those values using iterator variables for column B and C
+# 02_cleaning
+# This tutorial shows how to remove undesired string from text fields. In this case the word "code"
 statementMapping:
   region:
     - range: E9:E16
@@ -16,3 +15,12 @@ statementMapping:
         property: P585
         time_zone: 0
         value: =value[D, $row]
+      - property: =item[F, 8, "property"]
+        value: =value[F, $row]
+cleaningMapping:
+  - region:
+      range: F9:F16
+    functions:
+      - replace_regex:
+          to_replace: "code-"
+          replacement: ""

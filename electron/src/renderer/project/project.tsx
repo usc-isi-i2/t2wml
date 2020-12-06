@@ -32,6 +32,8 @@ interface ProjectState extends IStateWithError {
   endpoint: string;
   warnEmpty: boolean;
   calendar: string;
+  datamartIntegration: boolean;
+  datamartApi: string;
   name: string;
   showTreeFlag: boolean;
 }
@@ -62,6 +64,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: '',
       warnEmpty: false,
       calendar: 'leave',
+      datamartIntegration: false,
+      datamartApi: '',
       name: '',
 
       errorMessage: {} as ErrorMessage,
@@ -155,6 +159,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
       calendar: wikiStore.projects.projectDTO?.handle_calendar || "leave",
+      datamartIntegration: wikiStore.projects.projectDTO?.datamart_integration || false,
+      datamartApi: wikiStore.projects.projectDTO?.datamart_api || '',
       showSettings: true
     });
   }
@@ -163,7 +169,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     wikiStore.projects.showFileTree = checked;
   }
 
-  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string) {
+  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, datamartIntegration: boolean, datamartApi: string) {
     // update settings
     this.setState({ showSettings: false });
 
@@ -172,6 +178,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     formData.append("endpoint", endpoint);
     formData.append("warnEmpty", warn.toString());
     formData.append("handleCalendar", calendar);
+    formData.append("datamartIntegration", datamartIntegration.toString());
+    formData.append("datamartApi", datamartApi);
 
     try {
       await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
@@ -199,7 +207,9 @@ class Project extends Component<ProjectProps, ProjectState> {
           endpoint={this.state.endpoint}
           warnEmpty={this.state.warnEmpty}
           calendar={this.state.calendar}
-          handleSaveSettings={(endpoint, warn, calendar) => this.handleSaveSettings(endpoint, warn, calendar)}
+          datamartIntegration={this.state.datamartIntegration}
+          datamartApi={this.state.datamartApi}
+          handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}

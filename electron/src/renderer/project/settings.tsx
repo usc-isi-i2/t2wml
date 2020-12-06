@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import './project.css';
-import './ag-grid.css'
-import './ag-theme-balham.css'
-
+import './ag-grid.css';
+import './ag-theme-balham.css';
 
 // App
 import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-bootstrap';
@@ -11,25 +10,36 @@ import Config from '@/shared/config';
 
 import { observer } from "mobx-react";
 
+
 interface SettingsProperties {
     showSettings: boolean;
     endpoint: string;
     warnEmpty: boolean;
     calendar: string;
+    datamartIntegration: boolean;
+    datamartApi: string;
 
-    handleSaveSettings: (endpoint: string, warn: boolean, calendar:string) => void;
+    handleSaveSettings: (
+      endpoint: string,
+      warn: boolean,
+      calendar: string,
+      datamartIntegration: boolean,
+      datamartApi: string,
+    ) => void;
     cancelSaveSettings: () => void;
 }
 
 interface SettingsState {
   tmpWarnEmpty: boolean;
+  datamartIntegration: boolean;
+  datamartApi: string;
 }
 
-const calendarOptions = {
-  "leave (Leave Untouched)": "leave",
-  "replace (Replace with Gregorian)": "replace",
-  "add (Add Gregorian)": "add"
-};
+const calendarOptions = [
+  {text: "leave (Leave Untouched)", value: "leave"},
+  {text: "replace (Replace with Gregorian)", value: "replace"},
+  {text: "add (Add Gregorian)", value: "add"}
+];
 
 @observer
 class Settings extends Component<SettingsProperties, SettingsState> {
@@ -38,21 +48,25 @@ class Settings extends Component<SettingsProperties, SettingsState> {
 
   constructor(props: SettingsProperties) {
     super(props);
+
     this.tempSparqlEndpointRef = React.createRef();
     this.tempCalendarRef = React.createRef();
 
     this.state = {
       tmpWarnEmpty: this.props.warnEmpty,
+      datamartIntegration: this.props.datamartIntegration,
+      datamartApi: this.props.datamartApi,
     }
   }
 
   handleSaveSettings() {
     const endpoint = (this.tempSparqlEndpointRef as any).current.value;
     const warn = this.state.tmpWarnEmpty;
-    const calendar = (calendarOptions as any)[(this.tempCalendarRef as any).current.value];
-    this.props.handleSaveSettings(endpoint, warn, calendar);
+    const calendar = (this.tempCalendarRef as any).current.value;
+    const datamartIntegration = this.state.datamartIntegration;
+    const datamartApi = this.state.datamartApi;
+    this.props.handleSaveSettings(endpoint, warn, calendar, datamartIntegration, datamartApi);
   }
-
 
   render() {
     const sparqlEndpoints = [
@@ -74,6 +88,38 @@ class Settings extends Component<SettingsProperties, SettingsState> {
         <Modal.Body>
           <Form className="container">
 
+            Global settings:
+
+                        {/* datamart integration on/off */}
+                        <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+              Turn Datamart Integration ON
+              </Form.Label>
+              <Col sm="12" md="9">
+                <input type="checkbox"
+                  style={{ width: '25px', height: '25px', marginTop: '5px' }}
+                  defaultChecked={this.props.datamartIntegration}
+                  onChange={(event) => this.setState({ datamartIntegration: event?.target.checked })}/>
+              </Col>
+            </Form.Group>
+
+            {/* datamart url */}
+            <Form.Group as={Row}>
+              <Form.Label column sm="12" md="3" className="text-right">
+              Datamart api url
+              </Form.Label>
+              <Col sm="12" md="9">
+                <Form.Control
+                  type="text" size="sm"
+                  defaultValue={this.props.datamartApi}
+                  onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
+              </Col>
+            </Form.Group>
+
+            <hr></hr>
+
+            Project settings:
+
             {/* sparql endpoint */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
@@ -94,22 +140,22 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
-              </Form.Group>
+            </Form.Group>
 
-
-              <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-
+            {/* warn for empty cells */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
                 Warn for empty cells
               </Form.Label>
               <Col sm="12" md="9">
-
-                <input type="checkbox" 
+                <input type="checkbox"
                   style={{ width: '25px', height: '25px', marginTop: '5px' }}
                   defaultChecked={(this.props.warnEmpty)}
                   onChange={(event) => this.setState({ tmpWarnEmpty: event?.target.checked })}/>
               </Col>
             </Form.Group>
+
+            {/* calendar settings */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
               Non-Gregorian Calendar
@@ -124,12 +170,17 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   />
                   <Dropdown.Toggle split variant="outline-dark" id="calendar"/>
                   <Dropdown.Menu style={{ width: "100%" }}>
-                    {calendarOptions}
+                    {calendarOptions.map((opt) => 
+                    <Dropdown.Item onClick={() => (this.tempCalendarRef as any).current.value = opt.value}>{opt.text}</Dropdown.Item>
+                    )}
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
             </Form.Group>
+
+
           </Form>
+
         </Modal.Body>
 
         {/* footer */}
@@ -142,7 +193,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
           </Button>
         </Modal.Footer>
 
-      </Modal >
+      </Modal>
     );
   }
 }
