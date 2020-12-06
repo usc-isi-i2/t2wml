@@ -1,13 +1,13 @@
 _saved_state:
   current_data_file: Challenge Datasets.xlsx
-  current_sheet: canonical
+  current_sheet: colombia-elections
   current_wikifiers:
   - wikify_region_output.csv
-  current_yaml: canonical.yaml
+  current_yaml: colombia-elections-2.yaml
 cache_id: 3491203f-3a48-4346-87db-6abb86bcb624
 data_files:
   Challenge Datasets.xlsx:
-    selected: canonical
+    selected: colombia-elections
     val_arr:
     - canonical
     - relational
@@ -40,7 +40,7 @@ yaml_sheet_associations:
       val_arr:
       - canonical.yaml
     colombia-elections:
-      selected: colombia-elections-3.yaml
+      selected: colombia-elections-2.yaml
       val_arr:
       - colombia-elections-1.yaml
       - colombia-elections-2.yaml

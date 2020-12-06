@@ -16,7 +16,7 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended"
   ],
-  "rules": { 
+  "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",

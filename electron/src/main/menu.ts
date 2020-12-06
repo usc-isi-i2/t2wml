@@ -6,6 +6,7 @@ import { settings } from './settings';
 import { uiState } from './ui-state';
 import { rendererNotifier } from './renderer-notifier';
 import * as path from 'path';
+import * as url from 'url';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -78,7 +79,7 @@ export default class MainMenuManager {
                     //    label: 'Usage Guide',   
                     //},
                     {
-                        label: 'YamlEditor T2WML syntax guide',
+                        label: 'Syntax Guide',
                         click: () => this.loadGrammar()
                     },
                     {
@@ -108,10 +109,10 @@ export default class MainMenuManager {
     }
 
     private loadGrammar(){
-        let child = new BrowserWindow({parent:this.mainWindow});
-        const link = require('url').format({
+        const child = new BrowserWindow({parent:this.mainWindow});
+        const link = url.format({
             protocol: 'file',
-            pathname: require('path').join(__dirname, './grammar.html')
+            pathname: path.join(__dirname, './grammar.html')
           })
         child.loadURL(link);
         child.show();
@@ -145,6 +146,7 @@ export default class MainMenuManager {
             enabled,
         }, {
             label: 'Settings...',
+            accelerator: 'CmdOrCtrl+,',
             click: () => this.onProjectSettingsClick(),
             enabled,
         },

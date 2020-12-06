@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Treebeard } from 'react-treebeard';
+import { Treebeard, TreeTheme } from 'react-treebeard';
 
 // icons
 import wikiStore from '@/renderer/data/store';
@@ -54,10 +54,10 @@ interface SidebarState {
 @observer
 class Sidebar extends Component<{}, SidebarState> {
     private disposeReaction?: IReactionDisposer;
-    private fileTreeStyle = {};
+    private fileTreeStyle: TreeTheme;
     private requestService: RequestService;
 
-    
+
     constructor(props: any){
         super(props);
 
@@ -88,23 +88,23 @@ class Sidebar extends Component<{}, SidebarState> {
         this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => {this.setState({treeFlag: flag})});
         this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, () => this.getFilesData());
     }
-    
+
     componentWillUnmount() {
         if (this.disposeReaction) {
           this.disposeReaction();
         }
     }
-    
+
     async onToggle(node: any) {//, toggled: any) {
         const cursor = this.state.cursor;
         cursor.active = false;
         this.setState({ cursor });
 
         node.active = true;
-        // if (node.children) { 
-        //     node.toggled = toggled; 
+        // if (node.children) {
+        //     node.toggled = toggled;
         // }
-    
+
         // Does nothing when clicking on the current file
         if (!node.children && node.name !== wikiStore.projects.projectDTO?._saved_state.current_data_file) {
             wikiStore.wikifier.showSpinner = true;
@@ -128,7 +128,7 @@ class Sidebar extends Component<{}, SidebarState> {
             console.error("Change datafile failed");
         }
     }
-    
+
     getFilesData() {
         const dataFiles = [];
         if (wikiStore.projects.projectDTO && wikiStore.projects.projectDTO.data_files) {
@@ -151,7 +151,7 @@ class Sidebar extends Component<{}, SidebarState> {
 
     render(){
         return (
-            <div className={this.state.treeFlag ? 'opened-sidebar' : 'closed-sidebar'}>  
+            <div className={this.state.treeFlag ? 'opened-sidebar' : 'closed-sidebar'}>
             {
                 /* loading spinner */}
                 <div className="mySpinner" hidden={!this.state.showSpinner}>
@@ -160,7 +160,7 @@ class Sidebar extends Component<{}, SidebarState> {
                 {
                     this.state.treeFlag ?
                     <Treebeard
-                    style={this.fileTreeStyle}
+                      style={this.fileTreeStyle}
                         data={this.state.data}
                         onToggle={this.onToggle}
                     />

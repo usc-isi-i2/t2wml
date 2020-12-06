@@ -1,0 +1,16 @@
+# PLEASE NOTE NON-USE of "Player" despite example. 
+# We don't currently have a way to express property of main subject
+# as distinct from property of data
+# I added the nation qualifier, but submitted its property as a separate block
+#AUTO-GENERATED YAML
+statementMapping:
+        region:
+            range: A2:B13
+        template:
+            subject: =value[D, $row-$n]
+            property: =item[$col-$n, 1]
+            value: =value[$col, $row]
+
+            qualifier:
+                - property: =item[C, 1]
+                  value: =value[C, $row-$n]

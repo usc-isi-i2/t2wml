@@ -17,16 +17,33 @@ from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration, create_datafile
-
-annotation_integration = False
-try:
-    from local_settings import *
-except:
-    pass
+from global_settings import global_settings
 
 debug_mode = False
 
 
+
+def run_annotation(project, calc_params):
+    is_csv=Path(calc_params.data_path).suffix == ".csv"
+    sheet = project.current_sheet
+    ai = AnnotationIntegration(is_csv, calc_params)
+    if ai.is_annotated_spreadsheet(project.directory):
+        dataset_exists = ai.automate_integration(project, calc_params.data_path, sheet)
+        if not dataset_exists:
+            raise web_exceptions.NoSuchDatasetIDException(ai.dataset)
+    else:  # not annotation file, check if annotation is available
+        annotation_found, new_df = ai.is_annotation_available(project.directory)
+        if annotation_found and new_df is not None:
+            create_datafile(project, new_df, calc_params.data_path,
+                            calc_params.sheet_name)
+            calc_params = get_calc_params(project)
+            sheet = project.current_sheet
+            ai = AnnotationIntegration(is_csv, calc_params,
+                                        df=new_df)
+
+            # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
+            # TODO the users. There has to be a better way to handle it. For Future implementation
+            ai.automate_integration(project, calc_params.data_path, sheet)
 
 
 
@@ -35,15 +52,28 @@ def get_calc_params(project):
         return None
     data_file = Path(project.directory) / project.current_data_file
     sheet_name = project.current_sheet
-    if project.current_yaml:
-        yaml_file = Path(project.directory) / project.current_yaml
-    else:
-        yaml_file = None
-    if project.current_wikifiers:
-        wikifier_files = [Path(project.directory) / wf for wf in project.current_wikifiers]
-    else:
-        wikifier_files = None
-    calc_params = CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
+
+    def _inner_get_calc_params():
+        if project.current_yaml:
+            yaml_file = Path(project.directory) / project.current_yaml
+        else:
+            yaml_file = None
+        if project.current_wikifiers:
+            wikifier_files = [Path(project.directory) / wf for wf in project.current_wikifiers]
+        else:
+            wikifier_files = None
+        calc_params = CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
+        return calc_params
+
+    calc_params=_inner_get_calc_params()
+
+
+    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
+    # and item definitions automatically
+    if not calc_params.yaml_path and global_settings.datamart_integration:
+        run_annotation(project, calc_params)
+        calc_params=_inner_get_calc_params()
+
     return calc_params
 
 
@@ -54,6 +84,11 @@ def get_project_folder():
     except KeyError:
         raise web_exceptions.InvalidRequestException("project folder parameter not specified")
 
+def get_project_dict(project):
+    return_dict={}
+    return_dict.update(project.__dict__)
+    return_dict.update(global_settings.__dict__)
+    return return_dict
 
 def json_response(func):
     def wrapper(*args, **kwargs):
@@ -90,8 +125,8 @@ def create_project():
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(project_folder)
     # create project
-    api_proj=create_api_project(project_folder)
-    response = dict(project=api_proj.__dict__)
+    project=create_api_project(project_folder)
+    response = dict(project=get_project_dict(project))
     return response, 201
 
 
@@ -106,7 +141,7 @@ def get_project():
     project = get_project_instance(project_folder)
     add_entities_from_project(project)
 
-    response=dict(project=project.__dict__, table=None, layers=get_empty_layers(), yamlContent=None)
+    response=dict(project=get_project_dict(project), table=None, layers=get_empty_layers(), yamlContent=None)
     calc_params = get_calc_params(project)
     if calc_params:
         get_all_layers_and_table(response, calc_params)
@@ -127,7 +162,7 @@ def upload_entities():
     project.save()
 
     entities_stats = add_entities_from_file(file_path)
-    response = dict(entitiesStats= entities_stats, project=project.__dict__)
+    response = dict(entitiesStats= entities_stats, project=get_project_dict(project))
     calc_params = get_calc_params(project)
     if calc_params:
         response["layers"] = get_qnodes_layer(calc_params)
@@ -152,46 +187,11 @@ def upload_data_file():
 
     calc_params = get_calc_params(project)
 
-    response=dict(project=project.__dict__)
-    is_csv=Path(calc_params.data_path).suffix == ".csv"
-    
+    response=dict(project=get_project_dict(project))
 
-    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
-    # and item definitions automatically
-    if annotation_integration:
-        sheet = project.current_sheet
-        ai = AnnotationIntegration(is_csv, calc_params.sheet_name,
-                                   w_requests=request)
-        if ai.is_annotated_spreadsheet(project.directory):
-            dataset_exists = ai.automate_integration(project, calc_params.data_path, sheet)
-            if not dataset_exists:
-                # report to user
-                error_dict = {
-                    "errorCode": 404,
-                    "errorTitle": "Datamart Integration Error",
-                    "errorDescription": f"Dataset: \"{ai.dataset}\" does not exist. To create this dataset, "
-                                        f"please provide dataset name in cell C1 \n"
-                                        f"dataset description in cell D1 \n"
-                                        f"and url in cell E1\n\n"
-                }
-                response['error'] = error_dict
-                return response, 404
-        else:  # not annotation file, check if annotation is available
-            annotation_found, new_df = ai.is_annotation_available(project.directory)
-            if annotation_found and new_df is not None:
-                create_datafile(project, new_df, calc_params.data_path,
-                                calc_params.sheet_name)
-                calc_params = get_calc_params(project)
-                sheet = project.current_sheet
-                ai = AnnotationIntegration(is_csv, calc_params.sheet_name,
-                                           df=new_df)
-
-                # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
-                # TODO the users. There has to be a better way to handle it. For Future implementation
-                ai.automate_integration(project, calc_params.data_path, sheet)
-
-    calc_params = get_calc_params(project)
     get_all_layers_and_table(response, calc_params)
+    if calc_params.yaml_path:
+        response["yamlContent"]=get_yaml_content(calc_params)
     return response, 200
 
 
@@ -207,8 +207,9 @@ def change_sheet(sheet_name):
 
     project.update_saved_state(current_sheet=sheet_name)
     project.save()
-    response=dict(project=project.__dict__)
+    response=dict(project=get_project_dict(project))
     calc_params = get_calc_params(project)
+
     if calc_params:
         response["yamlContent"]=get_yaml_content(calc_params)
         get_all_layers_and_table(response, calc_params)
@@ -228,12 +229,13 @@ def change_data_file():
         raise web_exceptions.InvalidRequestException("data file parameter not specified")
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    response = dict(project=project.__dict__)
+    response = dict(project=get_project_dict(project))
 
     project.update_saved_state(current_data_file=data_file)
     project.save()
 
     calc_params = get_calc_params(project)
+
     if calc_params:
         response["yamlContent"]=get_yaml_content(calc_params)
         get_all_layers_and_table(response, calc_params)
@@ -257,7 +259,7 @@ def upload_wikifier_output():
     project.update_saved_state(current_wikifiers=[file_path])
     project.save()
 
-    response=dict(project=project.__dict__)
+    response=dict(project=get_project_dict(project))
     calc_params = get_calc_params(project)
     if calc_params:
         response["layers"]=get_qnodes_layer(calc_params)
@@ -289,7 +291,7 @@ def call_wikifier_service():
     project.save()
 
     calc_params = get_calc_params(project)
-    response=dict(project=project.__dict__)
+    response=dict(project=get_project_dict(project))
     response["layers"]=get_qnodes_layer(calc_params)
 
     if problem_cells:
@@ -329,7 +331,7 @@ def rename_yaml():
             sheet_arr[old_name_index]=new_name
     project.save()
     
-    response=dict(project=project.__dict__)
+    response=dict(project=get_project_dict(project))
     return response, 200
 
 
@@ -348,7 +350,7 @@ def change_yaml():
         raise web_exceptions.InvalidRequestException("data file parameter not specified")
     project.update_saved_state(current_yaml=yaml_file)
     project.save()
-    response=dict(project=project.__dict__)
+    response=dict(project=get_project_dict(project))
     calc_params = get_calc_params(project)
     if calc_params:
         response["yamlContent"]=get_yaml_content(calc_params)
@@ -372,7 +374,7 @@ def upload_yaml():
     yaml_title = request.form["title"]
     sheet_name = request.form["sheetName"]
     save_yaml(project, yaml_data, yaml_title, sheet_name)
-    response=dict(project=project.__dict__)
+    response=dict(project=get_project_dict(project))
     return response, 200
 
 @app.route('/api/yaml/apply', methods=['POST'])
@@ -395,7 +397,7 @@ def apply_yaml():
     
     save_yaml(project, yaml_data, yaml_title, sheet_name)
     
-    response=dict(project=project.__dict__, layers=get_empty_layers())
+    response=dict(project=get_project_dict(project), layers=get_empty_layers())
     try:
         yaml.safe_load(yaml_data)
     except:
@@ -409,6 +411,16 @@ def apply_yaml():
         response["yamlError"] = str(e)
     return response, 200
 
+@app.route('/api/annotation', methods=['POST'])
+@json_response
+def upload_annotations():
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    annotations = request.form["annotations"]
+    annotations_path=os.path.join(project_folder, "annotations.json")
+    with open(annotations_path, 'w') as f:
+        f.write(annotations)
+    return {}, 200
 
 @app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response
@@ -454,7 +466,7 @@ def rename_project():
     project = get_project_instance(project_folder)
     project.title = ptitle
     project.save()
-    response = dict(project= project.__dict__)
+    response = dict(project= get_project_dict(project))
     return response, 200
 
 
@@ -468,18 +480,29 @@ def update_settings():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
 
-    endpoint = request.form.get("endpoint", None)
-    if endpoint:
-        project.sparql_endpoint = endpoint
-    warn = request.form.get("warnEmpty", None)
-    if warn is not None:
-        project.warn_for_empty_cells = warn.lower() == 'true'
-    calendar=request.form.get("handleCalendar", None)
-    if calendar:
-        project.handle_calendar=calendar
-    project.save()
-    update_t2wml_settings(project)
-    response=dict(project = project.__dict__)
+    if request.method == 'PUT':
+        endpoint = request.form.get("endpoint", None)
+        if endpoint:
+            project.sparql_endpoint = endpoint
+        warn = request.form.get("warnEmpty", None)
+        if warn is not None:
+            project.warn_for_empty_cells = warn.lower() == 'true'
+        calendar=request.form.get("handleCalendar", None)
+        if calendar:
+            project.handle_calendar=calendar
+        project.save()
+        update_t2wml_settings(project)
+
+        new_global_settings=dict()
+        datamart = request.form.get("datamartIntegration", None)
+        if datamart is not None:
+            new_global_settings["datamart_integration"] = datamart.lower() == 'true'
+        datamart_api = request.form.get("datamartApi", None)
+        if datamart_api is not None:
+            new_global_settings["datamart_api"] = datamart_api
+        global_settings.update(**new_global_settings)
+        
+    response=dict(project = get_project_dict(project))
     return response, 200
 
 

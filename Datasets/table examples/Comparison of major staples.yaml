@@ -1,0 +1,8 @@
+#AUTO-GENERATED YAML
+statementMapping:
+        region:
+            range: B2:L8
+        template:
+            subject: =value[$col-$n, 1]
+            property: =item[A, $row-$n]
+            value: =value[$col, $row]

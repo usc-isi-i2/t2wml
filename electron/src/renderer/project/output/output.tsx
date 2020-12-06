@@ -108,6 +108,7 @@ class Output extends Component<{}, OutputComponentState> {
       Downloader(data, filename);
 
     } catch (error) {
+      console.log(error);
     } finally {
       this.setState({ isDownloading: false });
     }
@@ -127,8 +128,8 @@ class Output extends Component<{}, OutputComponentState> {
 
     if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row) { return; } //no cell selected
     const selectedCell = wikiStore.table.selectedCell;
-    const error = wikiStore.layers.error.find(selectedCell.rowIndex, selectedCell.colIndex)
-    const statement = wikiStore.layers.statement.find(selectedCell.rowIndex, selectedCell.colIndex)
+    const error = wikiStore.layers.error.find(selectedCell);
+    const statement = wikiStore.layers.statement.find(selectedCell);
 
     if (error) {
       this.setState({ errors: JSON.stringify(error.error) }); //TODO: fix to work better.
@@ -157,7 +158,7 @@ class Output extends Component<{}, OutputComponentState> {
       } else {
         alert("Failed to load to Datamart\nError: " + description)
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
       const { errorTitle, errorDescription } = error;
       if (errorTitle !== undefined) {

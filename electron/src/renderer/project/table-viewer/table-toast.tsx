@@ -28,9 +28,9 @@ class TableToast extends Component<TableToastProperties, {}> {
     // get qnode according to cell index, e.g. "Q967"
     const { selectedCell } = this.props;
 
-    if (selectedCell === null || selectedCell.colIndex === null || selectedCell.rowIndex === null) return;
+    if (selectedCell === null || selectedCell.col === null || selectedCell.row === null) return;
 
-    const selectedQnode = wikiStore.layers.qnode.find(selectedCell.rowIndex, selectedCell.colIndex)
+    const selectedQnode = wikiStore.layers.qnode.find(selectedCell)
 
     // fill in data
     if (selectedQnode === undefined) return;

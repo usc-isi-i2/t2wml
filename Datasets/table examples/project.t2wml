@@ -1,0 +1,78 @@
+_saved_state:
+  current_data_file: Table Annotation Examples.xlsx
+  current_sheet: largest biotech
+  current_wikifiers:
+  - wikifier.csv
+  current_yaml: largest biotech.yaml
+cache_id: ae7eff8a-e840-4928-8b0f-5d605bed7315
+data_files:
+  Table Annotation Examples.xlsx:
+    selected: largest biotech
+    val_arr:
+    - Colombian Elections 2018
+    - FC Barcelona Current Squad
+    - Comparison of major staples
+    - World production staple foods
+    - Largest buildings
+    - queen discography 1980s
+    - tallest buildings
+    - world tennis players
+    - largest biotech
+entity_files:
+- entities.tsv
+handle_calendar: leave
+sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
+title: table examples
+warn_for_empty_cells: false
+wikifier_files:
+- wikifier.csv
+yaml_files:
+- Colombian Elections 2018.yaml
+- FC Barcelona Current Squad.yaml
+- Comparison of major staples.yaml
+- World production staple foods.yaml
+- World production staple foods-1.yaml
+- Largest buildings.yaml
+- queen discography 1980s.yaml
+- tallest buildings.yaml
+- world tennis players.yaml
+- largest biotech.yaml
+yaml_sheet_associations:
+  Table Annotation Examples.xlsx:
+    Colombian Elections 2018:
+      selected: Colombian Elections 2018.yaml
+      val_arr:
+      - Colombian Elections 2018.yaml
+    Comparison of major staples:
+      selected: Comparison of major staples.yaml
+      val_arr:
+      - Comparison of major staples.yaml
+    FC Barcelona Current Squad:
+      selected: FC Barcelona Current Squad.yaml
+      val_arr:
+      - FC Barcelona Current Squad.yaml
+    Largest buildings:
+      selected: Largest buildings.yaml
+      val_arr:
+      - Largest buildings.yaml
+    World production staple foods:
+      selected: World production staple foods.yaml
+      val_arr:
+      - World production staple foods.yaml
+      - World production staple foods-1.yaml
+    largest biotech:
+      selected: largest biotech.yaml
+      val_arr:
+      - largest biotech.yaml
+    queen discography 1980s:
+      selected: queen discography 1980s.yaml
+      val_arr:
+      - queen discography 1980s.yaml
+    tallest buildings:
+      selected: tallest buildings.yaml
+      val_arr:
+      - tallest buildings.yaml
+    world tennis players:
+      selected: world tennis players.yaml
+      val_arr:
+      - world tennis players.yaml

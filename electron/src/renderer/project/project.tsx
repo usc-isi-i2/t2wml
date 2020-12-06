@@ -14,7 +14,7 @@ import { ErrorMessage, t2wmlColors } from '../common/general';
 // components
 import Editors from './editor';
 import Output from './output/output';
-import TableViewer from './table-viewer/table-viewer';
+import TableComponent from './table-component/table-component';
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
 
@@ -32,6 +32,8 @@ interface ProjectState extends IStateWithError {
   endpoint: string;
   warnEmpty: boolean;
   calendar: string;
+  datamartIntegration: boolean;
+  datamartApi: string;
   name: string;
   showTreeFlag: boolean;
 }
@@ -62,6 +64,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: '',
       warnEmpty: false,
       calendar: 'leave',
+      datamartIntegration: false,
+      datamartApi: '',
       name: '',
 
       errorMessage: {} as ErrorMessage,
@@ -135,7 +139,8 @@ class Project extends Component<ProjectProps, ProjectState> {
         wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
       }
 
-    } catch {
+    } catch (error) {
+      console.log(error);
 
     } finally {
       wikiStore.table.showSpinner = false;
@@ -154,6 +159,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
       calendar: wikiStore.projects.projectDTO?.handle_calendar || "leave",
+      datamartIntegration: wikiStore.projects.projectDTO?.datamart_integration || false,
+      datamartApi: wikiStore.projects.projectDTO?.datamart_api || '',
       showSettings: true
     });
   }
@@ -162,7 +169,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     wikiStore.projects.showFileTree = checked;
   }
 
-  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string) {
+  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, datamartIntegration: boolean, datamartApi: string) {
     // update settings
     this.setState({ showSettings: false });
 
@@ -171,10 +178,13 @@ class Project extends Component<ProjectProps, ProjectState> {
     formData.append("endpoint", endpoint);
     formData.append("warnEmpty", warn.toString());
     formData.append("handleCalendar", calendar);
+    formData.append("datamartIntegration", datamartIntegration.toString());
+    formData.append("datamartApi", datamartApi);
 
     try {
       await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
-    } catch {
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -197,7 +207,9 @@ class Project extends Component<ProjectProps, ProjectState> {
           endpoint={this.state.endpoint}
           warnEmpty={this.state.warnEmpty}
           calendar={this.state.calendar}
-          handleSaveSettings={(endpoint, warn, calendar) => this.handleSaveSettings(endpoint, warn, calendar)}
+          datamartIntegration={this.state.datamartIntegration}
+          datamartApi={this.state.datamartApi}
+          handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* content */}
@@ -206,9 +218,9 @@ class Project extends Component<ProjectProps, ProjectState> {
             <Sidebar />
           </div>
 
-          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300} 
+          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
-            <TableViewer />
+            <TableComponent />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />
               <Output />

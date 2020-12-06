@@ -5,11 +5,13 @@ import Project from './project/project';
 import { observer } from 'mobx-react';
 import wikiStore from './data/store';
 import RequestService, { IStateWithError } from './common/service';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import { ErrorMessage, LOG } from './common/general';
 import ToastMessage from './common/toast';
 import { Spinner } from 'react-bootstrap';
 import { IpcRendererEvent } from 'electron/renderer';
+import * as path from 'path';
+import * as fs from 'fs';
 
 
 interface AppState extends IStateWithError {
@@ -40,6 +42,30 @@ class App extends Component<{}, AppState> {
       this.onToggleCleaned(checked);
     });
 
+    this.checkCommandLineArgs();
+
+  }
+
+  checkCommandLineArgs() {
+
+    const commandArgs = remote.getGlobal('sharedObj').prop1;
+    console.log("command args", commandArgs);
+
+    const lastArg = commandArgs[commandArgs.length - 1];
+    const projectDir = path.resolve(lastArg);
+    if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
+      console.log("Launched with project directory:", projectDir)
+      const projectFile = path.join(projectDir, "project.t2wml");
+      if (fs.existsSync(projectFile)) { //existing project
+        this.onOpenProject(projectDir)
+        return;
+      }
+      else {
+        this.onNewProject(projectDir)
+        return;
+      }
+    }
+    console.log("no project directory argument detected")
     wikiStore.changeProject();
   }
 
@@ -65,8 +91,8 @@ class App extends Component<{}, AppState> {
     try {
       await this.requestService.call(this, () => this.requestService.createProject(folder));
       console.log("<App> <- %c/create_project%c with:", LOG.link, LOG.default);
-    } catch {
-
+    } catch (error) {
+      console.log(error);
     } finally {
       //after request
       this.setState({ showSpinner: false });
@@ -84,8 +110,8 @@ class App extends Component<{}, AppState> {
     try {
       await this.requestService.call(this, () => this.requestService.getProject(folder));
       wikiStore.changeProject(folder);
-    } catch {
-
+    } catch (error) {
+      console.log(error);
     } finally {
       //after request
       this.setState({ showSpinner: false });

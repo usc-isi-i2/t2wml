@@ -12,32 +12,6 @@ body {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.05);
 }
-.myToast {
-  position: absolute;
-  top: 65px;
-  right: 5px;
-  z-index: 200;
-  width: 30%; 
-  min-width: 250px; 
-  max-width: 350px;
-}
-.myPopover {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 200;
-  border: 0;
-  background-color: rgba(0,0,0,0.4);
-}
-.legend {
-  border: 1px solid lightgray;
-  display: inline-block;
-  /* margin-left: 10px; */
-  width: 100px;
-  font-size: 12px;
-  color: black;
-  text-align: center;
-}
 .popover {
   max-width: 800px;
 }
@@ -51,7 +25,7 @@ body {
   box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
 }
 
-/* 
+/*
  * Resizer
  */
 .Resizer {
@@ -92,16 +66,6 @@ body {
   width: 151px;
   -webkit-transition: all 0.25s ease;
   transition: all 0.25s ease;
-}
-#sheetSelector::-webkit-scrollbar {
-  height: 10px;
-}
-#sheetSelector::-webkit-scrollbar-thumb {
-  background: #339966;
-}
-/* Handle on hover */
-#sheetSelector::-webkit-scrollbar-thumb:hover {
-  background: #266444; 
 }
 
 #yamlSelector::-webkit-scrollbar {

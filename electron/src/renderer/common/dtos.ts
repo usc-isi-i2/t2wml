@@ -25,6 +25,8 @@ export interface ProjectDTO {
     yaml_sheet_associations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
+    datamart_integration: boolean;
+    datamart_api: string;
     handle_calendar: string;
     cache_id: string;
     _saved_state: SavedStateDTO;
@@ -39,12 +41,9 @@ export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     yamlError?: string;
 }
 
-export interface ResponseWithTableDTO extends ResponseWithLayersDTO {
+export interface ResponseWithTableandMaybeYamlDTO extends ResponseWithLayersDTO {
     table: TableDTO;
-}
-
-export interface ResponseWithYamlContentDTO extends ResponseWithTableDTO {
-    yamlContent: string;    
+    yamlContent?: string;
 }
 
 export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
@@ -55,14 +54,30 @@ export interface CallWikifierServiceDTO extends ResponseWithLayersDTO {
     wikifierError: string;
 }
 
+//types:
+
+export interface TableDTO {
+    cells: string[][];
+    firstRowIndex: number;
+    dims: number[];
+}
+
+export interface EntitiesStatsDTO {
+    added: string[];
+    updated: string[];
+    failed: string[];
+}
+
 export type CellIndex = [number, number];
+
+
+//layers:
+
 export interface Entry {
     indices: CellIndex[];
 }
 
-
- 
-export type LayerType = "qnode" | "statement" | "error" | "type"| "cleaned";
+export type LayerType = "qnode" | "statement" | "error" | "type"| "cleaned" | "annotation";
 
 export interface LayerDTO<T extends Entry> {
     layerType: LayerType;
@@ -86,6 +101,7 @@ export interface LayersDTO {
     error?: LayerDTO<ErrorEntry>;
     type?: LayerDTO<TypeEntry>;
     cleaned?: LayerDTO<CleanEntry>;
+    annotation?: LayerDTO<AnnotationEntry>;
 }
 
 
@@ -109,21 +125,28 @@ export interface ErrorEntry extends Entry {
 export interface StatementEntry extends Entry{
     subject: string
     property: string
-    cell: string
+    cells: any
     value: string
     qnodes: any
     qualifier?: any
     unit?: string
 }
 
-export interface TableDTO {
-    cells: string[][];
-    firstRowIndex: number;
-    dims: number[];
+
+//annotations:
+export interface AnnotationTypeArgs{
+    type: "MonolingualText" | "Quantity" | "Time" | "WikibaseItem";
+    language?: string;
+    unit?: string;
+    precision?: string;
+    calendar?: string;
+    format?: string;
 }
 
-export interface EntitiesStatsDTO {
-    added: string[];
-    updated: string[];
-    failed: string[];
+export interface AnnotationEntry extends Entry {
+    //indices: CellIndex[];
+    indexArguments: string[];
+    role: "mainSubject" | "property" | "dependentVar" | "qualifier";
+    typeArgs?: AnnotationTypeArgs;
 }
+

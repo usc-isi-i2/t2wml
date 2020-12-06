@@ -7,18 +7,35 @@ from tests.utils import (client, BaseClass, create_project, sanitize_highlight_r
 
 project_folder=None #we need to use a global for some reason... self.project_folder does not work.
 
-
+datamart_integration_switch=None
 
 
 class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
     results_dict={}
+
     def test_01_add_project(self, client):
         #POST /api/project
         global project_folder
         project_folder=create_project(client)
         assert project_folder is not None 
+    
+    def test_01a_clear_annotation_settings(self, client):
+        #get old settings:
+        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+        response=client.get(url) 
+        data = response.data.decode("utf-8")
+        data = json.loads(data)
+        global datamart_integration_switch
+        datamart_integration_switch=data["project"]["datamart_integration"]
+
+        #set new settings
+        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+        response=client.put(url,
+                data=dict( 
+                datamartIntegration=False
+            )) 
         
     def test_01b_change_project_name(self, client):
         url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
@@ -135,6 +152,14 @@ class TestBasicWorkflow(BaseClass):
         project=data.pop('project')
         assert project["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert project["warn_for_empty_cells"]==False
+    
+    def test_998_reset_global_settings(self, client):
+        #reset to old settings:
+        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+        response=client.put(url,
+                data=dict(
+                datamartIntegration=datamart_integration_switch
+            )) 
     
     def xtest_999_save(self):
         #used when overwriting all old results with new ones 

@@ -23,7 +23,7 @@ class ToastMessage extends Component<ToastProperties, ToastState> {
     }
 
     render() {
-        let style = {
+        const style = {
             position: 'absolute',
             zIndex: 999,
             top: 0,

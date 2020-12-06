@@ -1,0 +1,20 @@
+#AUTO-GENERATED YAML
+statementMapping:
+        region:
+            range: E2:F18
+        template:
+            subject: =value[B, $row-$n]
+            property: =value[$col-$n, 1]
+            value: =value[$col, $row]
+
+            qualifier:
+                - region:
+                        left: C
+                        right: D
+                        top: =$row
+                        bottom: =$row
+                  property: =value[$qcol-$n, 1]
+                  value: =value[$qcol, $qrow]
+
+                - property: =value[G, 1]
+                  value: =value[G, $row-$n]

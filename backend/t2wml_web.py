@@ -7,7 +7,10 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-from t2wml.api import Project as apiProject
+try:
+    from t2wml.api import ProjectWithSavedState as Project
+except:
+    from t2wml.api import Project
 from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
@@ -21,13 +24,13 @@ def add_entities_from_file(file_path):
     return api_add_entities_from_file(file_path)
 
 def create_api_project(project_folder):
-    api_proj = apiProject(project_folder)
+    api_proj = Project(project_folder)
     api_proj.title = Path(project_folder).stem
     api_proj.save()
     return api_proj
 
 def get_project_instance(project_folder):
-    project = apiProject.load(project_folder)
+    project = Project.load(project_folder)
     update_t2wml_settings(project)
     return project
 
@@ -160,22 +163,21 @@ def get_yaml_layers(calc_params):
         
 
         
-        for cell in errors:
-            #todo: convert cell to indices
-            cell_index=indexer(cell)
-            errorEntry=dict(indices=[cell_index], error=errors[cell])
+        for cell_name in errors:
+            cell_index=indexer(cell_name)
+            errorEntry=dict(indices=[cell_index], error=errors[cell_name])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell].keys())):	
-                cell_type_indices["majorError"][cell]=True
+            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell_name].keys())):	
+                cell_type_indices["majorError"][cell_name]=True
             else:	
-                cell_type_indices["minorError"][cell]=True
+                cell_type_indices["minorError"][cell_name]=True
 
 
-        for cell in statements:
-            cell_type_indices["data"][cell]=True
+        for cell_name in statements:
+            cell_type_indices["data"][cell_name]=True
 
-            statement = statements[cell]
+            statement = statements[cell_name]
             get_cell_qnodes(statement, qnodes)
             cells=statement["cells"]
             cells.pop("value")
@@ -184,23 +186,32 @@ def get_yaml_layers(calc_params):
                     cell_type_indices[key][cells[key]]=True
                 else:
                     cell_type_indices["metadata"][cells[key]]=True
+                #convert to frontend format
+                cells[key]=indexer(cells[key])
+            cells["qualifiers"]=[]
 
             qualifiers = statement.get("qualifier", None)
             if qualifiers:
                 for qualifier in qualifiers:
-                    q_cells=qualifier["cells"]
+                    q_cells=qualifier.pop("cells", None)
                     qual_cell = q_cells.pop("value", None)
                     if qual_cell:
-                        cell_type_indices["qualifier"][qual_cell]=True
+                        q_cells["qualifier"]=qual_cell
+                        
                     for key in q_cells:
-                        if key=="property":
+                        if key in ["property", "qualifier"]:
                             cell_type_indices[key][q_cells[key]]=True
                         else:
                             cell_type_indices["metadata"][q_cells[key]]=True
+                        #convert to frontend format
+                        q_cells[key]=indexer(q_cells[key])
+                    cells["qualifiers"].append(q_cells)
+                        
+
 
             
-            statementEntry=dict(indices=[indexer(cell)])#, qnodes=qnodes)
-            statementEntry.update(**statements[cell])
+            statementEntry=dict(indices=[indexer(cell_name)])#, qnodes=qnodes)
+            statementEntry.update(**statements[cell_name])
             statementLayer["entries"].append(statementEntry)
         
 
@@ -218,7 +229,7 @@ def get_yaml_layers(calc_params):
 
     type_entries=[]
     for key in cell_type_indices:
-        indices = [indexer(cell) for cell in cell_type_indices[key]]
+        indices = [indexer(cell_name) for cell_name in cell_type_indices[key]]
         type_entries.append(dict(type=key, indices=indices))
     typeLayer=dict(layerType="type", entries=type_entries)
 
@@ -250,12 +261,24 @@ def get_table(calc_params, first_index=0, num_rows=None):
     return dict(dims=dims, firstRowIndex=first_index, cells=cells)
 
 
+def get_annotations_layer(calc_params):
+    annotation_path= os.path.join(calc_params.project_path, "annotations.json")
+    try:
+        with open(annotation_path, 'r') as f:
+            annotation_entries= json.load(f)
+        return {"annotation": dict(layerType="annotation", entries=annotation_entries)}
+    except:
+        return  {"annotation": dict(layerType="annotation", entries=[])}
+        
+
+
 def get_all_layers_and_table(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
 
     response["table"] = get_table(calc_params)
     response["layers"].update(get_qnodes_layer(calc_params))
+    response["layers"].update(get_annotations_layer(calc_params))
 
     try:
         response["layers"].update(get_yaml_layers(calc_params))
