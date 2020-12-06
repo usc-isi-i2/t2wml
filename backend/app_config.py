@@ -34,8 +34,7 @@ class AppConfig:
 app.config.from_object(AppConfig)
 
 DEFAULT_SPARQL_ENDPOINT = 'https://query.wikidata.org/bigdata/namespace/wdq/sparql'
-#DATAMART_API_ENDPOINT = 'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
-DATAMART_API_ENDPOINT = 'http://localhost:12543'
+
 
 #############SQL STUFF
 

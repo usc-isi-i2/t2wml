@@ -7,10 +7,9 @@ import pandas as pd
 from glob import glob
 from pathlib import Path
 from requests import post, get
-from app_config import DATAMART_API_ENDPOINT
 from utils import save_yaml, save_dataframe
 from t2wml.api import add_entities_from_file
-
+from global_settings import datamart_api_endpoint
 
 class AnnotationIntegration(object):
     def __init__(self, is_csv, sheet_name, w_requests=None, df=None):
@@ -112,7 +111,7 @@ class AnnotationIntegration(object):
             return True
 
         else:
-            response = get(f'{DATAMART_API_ENDPOINT}/metadata/datasets/{self.dataset}')
+            response = get(f'{datamart_api_endpoint()}/metadata/datasets/{self.dataset}')
             dataset_metadata = response.json()
             if isinstance(dataset_metadata, dict):
                 if 'Error' in dataset_metadata:
@@ -133,7 +132,7 @@ class AnnotationIntegration(object):
             'file': (t_file.split('/')[-1], open(t_file, mode='rb'), 'application/octet-stream')
         }
         response = post(
-            f'{DATAMART_API_ENDPOINT}/datasets/{self.dataset}/annotated?validate=False&files_only=true&create_if_not_exist=true',
+            f'{datamart_api_endpoint()}/datasets/{self.dataset}/annotated?validate=False&files_only=true&create_if_not_exist=true',
             files=files)
 
         if response.status_code != 200:

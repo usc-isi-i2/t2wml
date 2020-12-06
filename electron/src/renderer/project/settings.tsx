@@ -88,6 +88,38 @@ class Settings extends Component<SettingsProperties, SettingsState> {
         <Modal.Body>
           <Form className="container">
 
+            Global settings:
+
+                        {/* datamart integration on/off */}
+                        <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+              Turn Datamart Integration ON
+              </Form.Label>
+              <Col sm="12" md="9">
+                <input type="checkbox"
+                  style={{ width: '25px', height: '25px', marginTop: '5px' }}
+                  defaultChecked={this.props.datamartIntegration}
+                  onChange={(event) => this.setState({ datamartIntegration: event?.target.checked })}/>
+              </Col>
+            </Form.Group>
+
+            {/* datamart url */}
+            <Form.Group as={Row}>
+              <Form.Label column sm="12" md="3" className="text-right">
+              Datamart api url
+              </Form.Label>
+              <Col sm="12" md="9">
+                <Form.Control
+                  type="text" size="sm"
+                  defaultValue={this.props.datamartApi}
+                  onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
+              </Col>
+            </Form.Group>
+
+            <hr></hr>
+
+            Project settings:
+
             {/* sparql endpoint */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
@@ -144,31 +176,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               </Col>
             </Form.Group>
 
-            {/* datamart integration on/off */}
-            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Form.Label column sm="12" md="3" className="text-right">
-              Turn Datamart Integration ON
-              </Form.Label>
-              <Col sm="12" md="9">
-                <input type="checkbox"
-                  style={{ width: '25px', height: '25px', marginTop: '5px' }}
-                  defaultChecked={this.props.datamartIntegration}
-                  onChange={(event) => this.setState({ datamartIntegration: event?.target.checked })}/>
-              </Col>
-            </Form.Group>
 
-            {/* datamart url */}
-            <Form.Group as={Row}>
-              <Form.Label column sm="12" md="3" className="text-right">
-              Datamart api url
-              </Form.Label>
-              <Col sm="12" md="9">
-                <Form.Control
-                  type="text" size="sm"
-                  defaultValue={this.props.datamartApi}
-                  onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
-              </Col>
-            </Form.Group>
           </Form>
 
         </Modal.Body>
