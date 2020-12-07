@@ -414,7 +414,7 @@ def apply_yaml():
 def upload_annotations():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    annotations = request.form["annotations"]
+    annotations = request.form["annotation"]
     annotations_path=os.path.join(project_folder, "annotations.json")
     with open(annotations_path, 'w') as f:
         f.write(annotations)
