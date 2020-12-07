@@ -192,7 +192,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   updateYamlContent(yamlContent: string | undefined) {
-    const newYamlContent = yamlContent || defaultYamlContent;
+    if (yamlContent == undefined){
+      yamlContent = defaultYamlContent
+    }
+    const newYamlContent = yamlContent;
     wikiStore.yaml.yamlContent = newYamlContent;
     try {
       const yamlJson = (yaml.safeLoad(newYamlContent)) as JSON;
