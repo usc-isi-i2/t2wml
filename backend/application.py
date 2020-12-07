@@ -411,27 +411,6 @@ def apply_yaml():
         response["yamlError"] = str(e)
     return response, 200
 
-@app.route('/api/annotation', methods=['POST'])
-@json_response
-def upload_annotation():
-    from t2wml.input_processing.annotation_parsing import DynamicallyGeneratedAnnotation
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    annotation = json.loads(request.form["annotation"])
-    annotations_dir=os.path.join(project_folder, "annotations")
-    if not os.path.isdir(annotations_dir):
-        os.mkdir(annotations_dir)
-    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
-    try:
-        dga = DynamicallyGeneratedAnnotation.load(annotations_path)
-    except FileNotFoundError:
-        dga=DynamicallyGeneratedAnnotation()
-    
-    dga.add_annotation(annotation)
-    dga.save(annotations_path)
-
-    return_dict=dict(annotations=dga.__dict__, yaml=dga.generate_yaml())
-    return return_dict, 200
 
 @app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response
@@ -464,6 +443,28 @@ def load_to_datamart():
     data = upload_to_datamart(calc_params)
     return data, 201
 
+
+@app.route('/api/annotation', methods=['POST'])
+@json_response
+def upload_annotation():
+    from t2wml.input_processing.annotation_parsing import DynamicallyGeneratedAnnotation
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    annotation = json.loads(request.form["annotation"])
+    annotations_dir=os.path.join(project_folder, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
+    try:
+        dga = DynamicallyGeneratedAnnotation.load(annotations_path)
+    except FileNotFoundError:
+        dga=DynamicallyGeneratedAnnotation()
+    
+    dga.add_annotation(annotation)
+    dga.save(annotations_path)
+
+    return_dict=dict(annotations=dga.__dict__, yaml=dga.generate_yaml())
+    return return_dict, 200
 
 @app.route('/api/project', methods=['PUT'])
 @json_response
