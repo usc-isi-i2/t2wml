@@ -1,5 +1,8 @@
 from t2wml.api import Sheet, SpreadsheetFile, Wikifier
-from t2wml.api import Project
+try:
+    from t2wml.api import ProjectWithSavedState as Project
+except:
+    from t2wml.api import Project
 from caching import CacheHolder
 
 

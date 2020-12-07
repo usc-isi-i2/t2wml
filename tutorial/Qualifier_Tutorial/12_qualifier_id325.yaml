@@ -1,0 +1,14 @@
+# 12_qualifier
+# Add another variable Total area. Both variables are qualified by Crop and Estimated.
+statementMapping:
+  region:
+    - range: D9:E14
+  template:
+    subject: =item[B, $row, "main subject"]
+    property: =item[$col, 8, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[C, 8, "property"]
+        value: =value[C, $row]
+      - property: =item[F, 8, "property"]
+        value: =value[F, $row]

@@ -7,7 +7,10 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-from t2wml.api import Project
+try:
+    from t2wml.api import ProjectWithSavedState as Project
+except:
+    from t2wml.api import Project
 from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers

@@ -3,9 +3,18 @@ T2WML Standalone Server App History
 
 Changes in version 2.4.1: 
 -----------------------
-* t2wml-api version 0.0.19
-* switch over to new table. support for annotations not yet integrated
-* it is now possible to launch t2wml.exe with a directory name
+* t2wml-api version 0.0.19
+* switch over to new table. support for annotations still a WIP.
+* it is now possible to launch t2wml.exe from command line with a directory name and have that directory be directly opened as a project (or created as a project if project.t2wml doesn't exist in the directory yet). this is particularly convenient if t2wml has been added to PATH, but that functionality will be added only in a future release (you can, however, manually add it to the PATH yourself already)
+* added global settings for datamart integration and datamart api url
+* bug fixes:
+    * loading calendar options was causing frontend to hang
+    * removed gear icon for settings, it was causing bugs. access settings through project menu or ctrl/cmd+comma
+    * small UI tweaks (better tooltips, renamed help menu item)
+* datamart bug fixes:
+    * yaml returned when loading data file
+    * annotations calculated when switching sheet
+* datamart integration test added to testing pipeline
 
 Changes in version 2.4.0: 
 -----------------------

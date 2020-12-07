@@ -28,12 +28,6 @@ class T2wmlNavbar extends Component<NavbarProperteis> {
               {this.props.name}
             </Navbar.Text>
           
-            {/* settings */}
-            {(this.props.showSettings && 
-            this.props.onShowSettingsClicked !== undefined) ? 
-            <button style={{ position: 'absolute', right: '1rem' }} onClick={this.props.onShowSettingsClicked.bind(this)}>
-                <FontAwesomeIcon icon={faCogs} />
-            </button>: null }
 
         </Navbar>
       </div>

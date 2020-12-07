@@ -146,6 +146,7 @@ export default class MainMenuManager {
             enabled,
         }, {
             label: 'Settings...',
+            accelerator: 'CmdOrCtrl+,',
             click: () => this.onProjectSettingsClick(),
             enabled,
         },

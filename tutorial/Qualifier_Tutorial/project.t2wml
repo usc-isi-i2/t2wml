@@ -1,0 +1,82 @@
+_saved_state:
+  current_data_file: qualifier.xlsx
+  current_sheet: 12_qualifier
+  current_wikifiers:
+  - wikifier.csv
+  current_yaml: 12_qualifier_id325.yaml
+cache_id: 50b1be8a-ce57-44e1-8c19-662ed597abb2
+data_files:
+  qualifier.xlsx:
+    selected: 12_qualifier
+    val_arr:
+    - 00_time
+    - 01_time
+    - 02_time
+    - 03_time_exercise
+    - 03_time_solution
+    - 10_qualifier
+    - 11_qualifier
+    - 12_qualifier
+    - 13_qualifier_exercise
+    - 13_qualifier_solution
+entity_files:
+- properties.tsv
+handle_calendar: leave
+sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
+title: Qualifier_Tutorial
+warn_for_empty_cells: false
+wikifier_files:
+- wikifier.csv
+yaml_files:
+- 00_time_id311.yaml
+- 01_time_id312.yaml
+- 02_time_id313.yaml
+- 03_time_exercise_id314.yaml
+- 03_time_solution_id315.yaml
+- 10_qualifier_id322.yaml
+- 11_qualifier_id324.yaml
+- 12_qualifier_id325.yaml
+- 13_qualifier_exercise_id326.yaml
+- 13_qualifier_solution_id327.yaml
+yaml_sheet_associations:
+  qualifier.xlsx:
+    00_time:
+      selected: 00_time_id311.yaml
+      val_arr:
+      - 00_time_id311.yaml
+    01_time:
+      selected: 01_time_id312.yaml
+      val_arr:
+      - 01_time_id312.yaml
+    02_time:
+      selected: 02_time_id313.yaml
+      val_arr:
+      - 02_time_id313.yaml
+    03_time_exercise:
+      selected: 03_time_exercise_id314.yaml
+      val_arr:
+      - 03_time_exercise_id314.yaml
+    03_time_solution:
+      selected: 03_time_solution_id315.yaml
+      val_arr:
+      - 03_time_solution_id315.yaml
+    10_qualifier:
+      selected: 10_qualifier_id322.yaml
+      val_arr:
+      - 10_qualifier_id322.yaml
+    11_qualifier:
+      selected: 11_qualifier_id324.yaml
+      val_arr:
+      - 11_qualifier_id324.yaml
+    12_qualifier:
+      selected: 12_qualifier_id325.yaml
+      val_arr:
+      - 12_qualifier_id325.yaml
+    13_qualifier_exercise:
+      selected: 13_qualifier_exercise_id326.yaml
+      val_arr:
+      - 13_qualifier_exercise_id326.yaml
+    13_qualifier_solution:
+      selected: 13_qualifier_solution_id327.yaml
+      val_arr:
+      - 13_qualifier_solution_id327.yaml

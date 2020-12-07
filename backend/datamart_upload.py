@@ -3,8 +3,9 @@ import requests
 import tempfile
 from pathlib import Path
 from t2wml_web import download
-from app_config import DATAMART_API_ENDPOINT
 from web_exceptions import NoSuchDatasetIDException, CellResolutionWithoutYAMLFileException
+from global_settings import datamart_api_endpoint
+
 
 
 def get_dataset_id(sheet):
@@ -14,9 +15,9 @@ def get_dataset_id(sheet):
     except:
         raise ValueError("Could not get dataset id from sheet")
     # step two: check if dataset id exists
-    response = requests.get(DATAMART_API_ENDPOINT + "/metadata/datasets/{dataset_id}".format(dataset_id=data_cell))
+    response = requests.get(datamart_api_endpoint() + "/metadata/datasets/{dataset_id}".format(dataset_id=data_cell))
     if response.status_code != 200:
-        raise ValueError("Dataset ID not found in datamart")
+        raise NoSuchDatasetIDException(data_cell)
 
     return data_cell
 
@@ -38,10 +39,8 @@ def get_item_definitions_filepath(calc_params):
 
 def upload_to_datamart(calc_params):
     # get the dataset id
-    try:
-        dataset_id = get_dataset_id(calc_params.sheet)
-    except Exception as e:
-        raise NoSuchDatasetIDException(str(e))
+    dataset_id = get_dataset_id(calc_params.sheet)
+        
 
     # get the download kgtk
     kgtk = get_download(calc_params)
@@ -60,7 +59,7 @@ def upload_to_datamart(calc_params):
             'kgtk_output': ('kgt_output.tsv', tmpfile, 'application/octet-stream')
         }
 
-        response = requests.put(f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/t2wml', files=files)
+        response = requests.put(f'{datamart_api_endpoint()}/datasets/{dataset_id}/t2wml', files=files)
 
         if response.status_code == 201:
             variable_ids = []
@@ -73,7 +72,7 @@ def upload_to_datamart(calc_params):
                 url_param = '?'
                 for variable_id in variable_ids:
                     url_param += f'variable={variable_id}&'
-                get_url = f'{DATAMART_API_ENDPOINT}/datasets/{dataset_id}/variables{url_param[:-1]}'
+                get_url = f'{datamart_api_endpoint()}/datasets/{dataset_id}/variables{url_param[:-1]}'
                 data = {'datamart_get_url': get_url}
             else:
                 data = {'description': 'No variables defined'}

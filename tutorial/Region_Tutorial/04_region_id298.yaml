@@ -3,14 +3,14 @@
 # In this case, we do not wish to include rows 18 and 19, which represent aggregations
 statementMapping:
   region:
-    - range: D10:E19
+    - range: D11:E20
       skip_rows:
-        - 18
         - 19
+        - 20
   template:
     subject: =item[B, $row, "main subject"]
-    property: =item[$col, 9, "property"]
+    property: =item[$col, 10, "property"]
     value: =value[$col, $row]
     qualifier:
-      - property: =item[C, 9, "property"]
+      - property: =item[C, 10, "property"]
         value: =value[C, $row]

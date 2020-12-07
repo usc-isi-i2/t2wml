@@ -25,6 +25,8 @@ export interface ProjectDTO {
     yaml_sheet_associations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
+    datamart_integration: boolean;
+    datamart_api: string;
     handle_calendar: string;
     cache_id: string;
     _saved_state: SavedStateDTO;
@@ -39,12 +41,9 @@ export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     yamlError?: string;
 }
 
-export interface ResponseWithTableDTO extends ResponseWithLayersDTO {
+export interface ResponseWithTableandMaybeYamlDTO extends ResponseWithLayersDTO {
     table: TableDTO;
-}
-
-export interface ResponseWithYamlContentDTO extends ResponseWithTableDTO {
-    yamlContent: string;
+    yamlContent?: string;
 }
 
 export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
@@ -136,18 +135,28 @@ export interface StatementEntry extends Entry{
 
 //annotations:
 export interface AnnotationTypeArgs{
-    type: "MonolingualText" | "Quantity" | "Time" | "WikibaseItem";
+    type: "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
+    
     language?: string;
+    
     unit?: string;
+    upperBound?: string;
+    lowerBound?: string;
+    
+    latitude?: string;
+    longitude?: string;
+    globe?: string;
+    
     precision?: string;
     calendar?: string;
     format?: string;
+    time_zone?: string;
 }
 
 export interface AnnotationEntry extends Entry {
     //indices: CellIndex[];
-    indexArguments: string[];
-    role: "mainSubject" | "property" | "dependentVar" | "qualifier";
+    selections: string[];
+    role: "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject"
     typeArgs?: AnnotationTypeArgs;
 }
 
