@@ -50,7 +50,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     }
 
     const formData = new FormData();
-    formData.append('annotation', annotation);
+    formData.append('annotation', JSON.stringify(annotation));
 
     try {
       await this.requestService.call(this, () => (
