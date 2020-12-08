@@ -170,9 +170,12 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   />
                   <Dropdown.Toggle split variant="outline-dark" id="calendar"/>
                   <Dropdown.Menu style={{ width: "100%" }}>
-                    {calendarOptions.map((opt) => 
-                    <Dropdown.Item onClick={() => (this.tempCalendarRef as any).current.value = opt.value}>{opt.text}</Dropdown.Item>
-                    )}
+                    {calendarOptions.map((option, index) => (
+                      <Dropdown.Item key={index}
+                        onClick={() => (this.tempCalendarRef as any).current.value = option.value}>
+                        {option.text}
+                      </Dropdown.Item>
+                    ))}
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
