@@ -153,9 +153,11 @@ export interface AnnotationTypeArgs{
     time_zone?: string;
 }
 
+// Devora:
+// Call this an AnnotationBlock
 export interface AnnotationEntry extends Entry {
     //indices: CellIndex[];
-    selections: string[];
+    selections: string[]; // Devora - change this into an array of ranges
     role: "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject"
     typeArgs?: AnnotationTypeArgs;
 }

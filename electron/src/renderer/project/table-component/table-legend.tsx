@@ -8,6 +8,11 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import './table-legend.css';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
+// Gleb: Receive the legend as a property
+interface LegendEntry {
+  lable: string;
+  className: string;
+}
 
 const LEGEND = [{
   label: 'qnode',
