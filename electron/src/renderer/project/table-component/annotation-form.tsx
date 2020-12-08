@@ -62,6 +62,9 @@ const OPTIONS = [{
 }, {
   'label': 'Metadata',
   'value': 'metadata',
+}, {
+  'label': 'Unit',
+  'value': 'unit',
 }];
 
 
