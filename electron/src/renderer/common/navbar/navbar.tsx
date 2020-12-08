@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { Navbar } from 'react-bootstrap';
 import T2WMLLogo from './T2WMLLogo';
-// icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCogs} from '@fortawesome/free-solid-svg-icons'
 
 
 interface NavbarProperteis {
