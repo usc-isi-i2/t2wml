@@ -8,7 +8,7 @@ from flask import request
 
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, 
+from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, get_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe, numpy_converter,
@@ -447,24 +447,13 @@ def load_to_datamart():
 @app.route('/api/annotation', methods=['POST'])
 @json_response
 def upload_annotation():
-    from t2wml.input_processing.annotation_parsing import DynamicallyGeneratedAnnotation
+    
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
     annotation = json.loads(request.form["annotation"])
-    annotations_dir=os.path.join(project_folder, "annotations")
-    if not os.path.isdir(annotations_dir):
-        os.mkdir(annotations_dir)
-    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
-    try:
-        dga = DynamicallyGeneratedAnnotation.load(annotations_path)
-    except FileNotFoundError:
-        dga=DynamicallyGeneratedAnnotation()
-    
-    dga.add_annotation(annotation)
-    dga.save(annotations_path)
-
-    return_dict=dict(annotations=dga.__dict__, yaml=dga.generate_yaml())
-    return return_dict, 200
+    response = get_annotations(project, annotation)
+    response["project"]=get_project_dict(project)
+    return response, 200
 
 @app.route('/api/project', methods=['PUT'])
 @json_response

@@ -50,6 +50,7 @@ class RequestService {
 
   public async annotateProject(folder: string, formData: any) {
     const response = await backendPost(`/annotation?project_folder=${folder}`, formData) as any;
+    wikiStore.yaml.yamlContent = response.yamlContent;
     // TODO: update table data with the response?
     console.log(response);
   }

@@ -16,6 +16,8 @@ from database_provider import DatabaseProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
+
+
 def add_entities_from_project(project):
     for f in project.entity_files:
         api_add_entities_from_file(Path(project.directory) / f)
@@ -285,3 +287,21 @@ def get_all_layers_and_table(response, calc_params):
     except Exception as e:
         response["yamlError"] = str(e)
 
+
+def get_annotations(project, annotation):
+    from t2wml.input_processing.annotation_parsing import DynamicallyGeneratedAnnotation
+    annotations_dir=os.path.join(project.directory, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
+    try:
+        dga = DynamicallyGeneratedAnnotation.load(annotations_path)
+    except FileNotFoundError:
+        dga=DynamicallyGeneratedAnnotation()
+    
+    dga.add_annotation(annotation)
+    dga.save(annotations_path)
+
+    layers=get_empty_layers()
+    return_dict=dict(annotations=dga.__dict__, yamlContent=dga.generate_yaml()[0], layers=layers)
+    return return_dict
