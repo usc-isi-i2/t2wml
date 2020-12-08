@@ -1,8 +1,8 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
-  ResponseWithTableandMaybeYamlDTO, ProjectDTO, ResponseWithProjectDTO,
-   UploadEntitiesDTO, CallWikifierServiceDTO, TableDTO, LayersDTO, ResponseWithLayersDTO,
+  ResponseWithTableandMaybeYamlDTO, ResponseWithProjectDTO,
+   UploadEntitiesDTO, CallWikifierServiceDTO, ResponseWithLayersDTO,
 } from './dtos';
 import { Cell, ErrorMessage } from './general';
 
