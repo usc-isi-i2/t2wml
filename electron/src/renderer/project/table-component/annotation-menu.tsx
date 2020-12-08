@@ -43,7 +43,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     const { selections, onClose } = this.props;
     console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
 
-    let annotation: { [key: string]: any } = {};
+    const annotation: { [key: string]: any } = {};
     annotation['selections'] = selections;
     for ( const [key, value] of Object.entries(values) ) {
       annotation[key] = value;
