@@ -7,6 +7,7 @@ import { uiState } from './ui-state';
 import { rendererNotifier } from './renderer-notifier';
 import * as path from 'path';
 import * as url from 'url';
+import { addToPath } from './path-helper';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -88,7 +89,12 @@ export default class MainMenuManager {
                     {
                         label: 'Report a bug',
                         click: () => shell.openExternal("https://github.com/usc-isi-i2/t2wml/issues/new/choose")
-                    }
+                    },
+                    { type: 'separator' },
+                    {
+                        label: 'Add t2wml to your PATH',
+                        click: () => this.onAddToPath(),
+                    },
                 ]
             },
             {
@@ -225,5 +231,9 @@ export default class MainMenuManager {
 
     private onShowCleanedClick(checked: boolean) {
         rendererNotifier.toggleShowCleanedData(checked);
+    }
+
+    private async onAddToPath() {
+        await addToPath();
     }
 }

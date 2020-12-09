@@ -18,6 +18,7 @@ from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration, create_datafile
 from global_settings import global_settings
+import path_utils
 
 debug_mode = False
 
@@ -509,6 +510,19 @@ def update_settings():
 @app.route('/api/is-alive')
 def is_alive():
     return 'Backend is here', 200
+
+@app.route('/api/windows/add-to-path', methods=['POST'])
+def windows_add_to_path():
+    if sys.platform != 'win32':
+        raise web_exceptions.InvalidRequestException("path can only be set on Windows")
+
+    path = request.args.get('path')
+    if not path:
+        raise web_exceptions.InvalidRequestException("path parameter not specified")
+
+    path_utils.windows_add_to_path(path)
+    return {}, 201
+
 
 
 # We want to serve the static files in case the t2wml is deployed as a stand-alone system.
