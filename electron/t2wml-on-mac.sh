@@ -9,5 +9,5 @@
 function realpath() { python -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$0"; }
 CONTENTS="$(dirname "$(dirname "$(realpath "$0")")")"
 EXECUTABLE="$CONTENTS/MacOS/t2wml"
-ELECTRON_RUN_AS_NODE=1 "$EXECUTABLE"
+$EXECUTABLE
 exit $?
