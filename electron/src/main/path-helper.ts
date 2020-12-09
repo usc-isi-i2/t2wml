@@ -3,6 +3,7 @@ import { app, BrowserWindow, dialog } from 'electron';
 import axios from 'axios';
 import { MessageBoxOptions } from 'electron/main';
 import * as path from 'path';
+import * as child_process from 'child_process';
 
 export async function addToPath() {
     if (config.platform === 'windows') {
@@ -26,8 +27,21 @@ async function addToWindowsPath() {
     showMessageBox();
 }
 
-function addToMacPath() {
-    // Add to Mac path
+async function promiseFromChildProcess(child: child_process.ChildProcess) {
+    // Taken from https://stackoverflow.com/a/30883005/871910
+    return new Promise(function (resolve, reject) {
+        child.addListener("error", reject);
+        child.addListener("exit", resolve);
+    });
+}
+
+async function addToMacPath() {
+    // Taken from the VS Code source
+    const command = 'osascript -e "do shell script \\"mkdir -p /usr/local/bin && ln -sf \'' + app.getPath('exe') + '\' \'t2wml\'\\" with administrator privileges"';
+    const child = child_process.exec(command);
+    await promiseFromChildProcess(child)
+
+    showMessageBox();
 }
 
 function addToLinuxPath() {
