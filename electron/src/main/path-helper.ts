@@ -4,7 +4,6 @@ import axios from 'axios';
 import { MessageBoxOptions } from 'electron/main';
 import * as path from 'path';
 import * as child_process from 'child_process';
-import * as fs from 'fs';
 
 export async function addToPath() {
     if (config.platform === 'windows') {
@@ -41,10 +40,7 @@ async function addToMacPath() {
     const helperPathname = path.join(process.resourcesPath || __dirname, 't2wml-on-mac.sh');
     console.log('Helper script at ', helperPathname);
 
-    fs.chmodSync(helperPathname, '755')
-    console.log('Changed helper to executable')
-
-    const command = 'osascript -e "do shell script \\"mkdir -p /usr/local/bin && ln -sf \'' + helperPathname + '\' \'/usr/local/bin/t2wml\'\\" with administrator privileges"';
+    const command = 'osascript -e "do shell script \\"mkdir -p /usr/local/bin && ln -sf \'' + helperPathname + '\' \'/usr/local/bin/t2wml\' && chmod ugo+x \'' + helperPathname + '\'\\" with administrator privileges"';
     console.log(command);
     const child = child_process.exec(command);
     await promiseFromChildProcess(child)
