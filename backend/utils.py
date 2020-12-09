@@ -80,12 +80,10 @@ def get_empty_layers():
     cleanedLayer=dict(layerType="cleaned", entries=[])
     typeLayer=dict(layerType="type", entries=[])
     qnodeLayer=dict(layerType="qnode", entries=[])
-    annotationLayer=dict(layerType="annotation", entries=[])
-
+    
     return dict(error= errorLayer, 
             statement= statementLayer, 
             cleaned= cleanedLayer, 
             type = typeLayer,
-            qnode=qnodeLayer,
-            annotation = annotationLayer)
+            qnode=qnodeLayer)
 

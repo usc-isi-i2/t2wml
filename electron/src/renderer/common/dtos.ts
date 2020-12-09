@@ -2,6 +2,8 @@
  * Types returned from the server
  */
 
+import { CellSelection } from "./general";
+
 interface SavedStateDTO {
     current_data_file: string;
     current_sheet: string;
@@ -77,7 +79,7 @@ export interface Entry {
     indices: CellIndex[];
 }
 
-export type LayerType = "qnode" | "statement" | "error" | "type"| "cleaned" | "annotation";
+export type LayerType = "qnode" | "statement" | "error" | "type"| "cleaned";
 
 export interface LayerDTO<T extends Entry> {
     layerType: LayerType;
@@ -101,7 +103,6 @@ export interface LayersDTO {
     error?: LayerDTO<ErrorEntry>;
     type?: LayerDTO<TypeEntry>;
     cleaned?: LayerDTO<CleanEntry>;
-    annotation?: LayerDTO<AnnotationEntry>;
 }
 
 
@@ -133,32 +134,25 @@ export interface StatementEntry extends Entry{
 }
 
 
-//annotations:
-export interface AnnotationTypeArgs{
+
+export interface AnnotationBlock{
+    selections: CellSelection[];
+    role: "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject" | "Unit";
     type: "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
     
     language?: string;
     
     unit?: string;
-    upperBound?: string;
-    lowerBound?: string;
+    //upperBound?: string;
+    //lowerBound?: string;
     
-    latitude?: string;
-    longitude?: string;
-    globe?: string;
+    //latitude?: string;
+    //longitude?: string;
+    //globe?: string;
     
     precision?: string;
     calendar?: string;
     format?: string;
-    time_zone?: string;
-}
-
-// Devora:
-// Call this an AnnotationBlock
-export interface AnnotationEntry extends Entry {
-    //indices: CellIndex[];
-    selections: string[]; // Devora - change this into an array of ranges
-    role: "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject"
-    typeArgs?: AnnotationTypeArgs;
+    //time_zone?: string;
 }
 

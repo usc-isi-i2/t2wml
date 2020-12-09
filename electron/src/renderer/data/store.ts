@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { AnnotationEntry, CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
+import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, StatementEntry, StatementLayerDTO, TableDTO, TypeEntry} from '../common/dtos';
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
@@ -18,7 +18,6 @@ class TableState {
     @observable public showSpinner: boolean;
     @observable public selectedCell: Cell;
     @observable public showCleanedData: boolean;
-
 
     constructor() {
         this.table = {} as TableDTO;
@@ -156,7 +155,6 @@ export class LayerState {
     @observable public statement: StatementLayer;
     @observable public error: Layer<ErrorEntry>;
     @observable public cleaned: Layer<CleanEntry>;
-    @observable public annotation: Layer<AnnotationEntry>;
 
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
@@ -164,7 +162,6 @@ export class LayerState {
         this.statement = new StatementLayer();
         this.error = new Layer<ErrorEntry>();
         this.cleaned = new Layer<CleanEntry>();
-        this.annotation = new Layer<AnnotationEntry>();
     }
 
     @action
@@ -193,6 +190,10 @@ export class LayerState {
 
 }
 
+export class AnnotationState{
+
+}
+
 
 class WikiStore {
     @observable public editors = new EditorsState();
@@ -201,6 +202,7 @@ class WikiStore {
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
     @observable public layers = new LayerState();
+    @observable public annotations = new AnnotationState();
 
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();

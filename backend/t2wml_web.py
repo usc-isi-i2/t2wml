@@ -263,15 +263,6 @@ def get_table(calc_params, first_index=0, num_rows=None):
     return dict(dims=dims, firstRowIndex=first_index, cells=cells)
 
 
-def get_annotations_layer(calc_params):
-    annotation_path= os.path.join(calc_params.project_path, "annotations.json")
-    try:
-        with open(annotation_path, 'r') as f:
-            annotation_entries= json.load(f)
-        return {"annotation": dict(layerType="annotation", entries=annotation_entries)}
-    except:
-        return  {"annotation": dict(layerType="annotation", entries=[])}
-        
 
 
 def get_all_layers_and_table(response, calc_params):
@@ -280,7 +271,6 @@ def get_all_layers_and_table(response, calc_params):
 
     response["table"] = get_table(calc_params)
     response["layers"].update(get_qnodes_layer(calc_params))
-    response["layers"].update(get_annotations_layer(calc_params))
 
     try:
         response["layers"].update(get_yaml_layers(calc_params))
