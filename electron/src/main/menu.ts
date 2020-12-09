@@ -64,8 +64,11 @@ export default class MainMenuManager {
                 label: 'View',
                 submenu: [
                     { role: 'zoomIn', accelerator: 'CommandOrControl+=' },
+                    { role: 'zoomIn', accelerator: 'CommandOrControl+numadd', acceleratorWorksWhenHidden: true, visible: false },
                     { role: 'zoomOut' },
+                    { role: 'zoomOut', accelerator: 'CommandOrControl+numsub', acceleratorWorksWhenHidden: true, visible: false },
                     { role: 'resetZoom' },
+                    { role: 'resetZoom', accelerator: 'CommandOrControl+num0', acceleratorWorksWhenHidden: true, visible: false },
                     { type: 'separator' },
                     { role: 'togglefullscreen' },
                     { type: 'separator' },
