@@ -444,15 +444,24 @@ def load_to_datamart():
     return data, 201
 
 
-@app.route('/api/annotation', methods=['POST'])
+@app.route('/api/annotation', methods=['POST', 'GET'])
 @json_response
 def upload_annotation():
-    
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    annotation = json.loads(request.form["annotation"])
-    response = get_annotations(project, annotation)
-    response["project"]=get_project_dict(project)
+
+    #TODO: will be replaced with proper fetching of annotation name and being able to switch between annotations
+    annotations_dir=os.path.join(project.directory, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
+
+    if request.method == 'POST':
+        annotation = json.loads(request.form["annotation"])
+    else:
+        annotation=None
+    annotation, yamlContent = get_annotations(project, annotations_path, annotation)
+    response=dict(annotations=annotation.to_array(), yamlContent=yamlContent, project=get_project_dict(project))
     return response, 200
 
 @app.route('/api/project', methods=['PUT'])
