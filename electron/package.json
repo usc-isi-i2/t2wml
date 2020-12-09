@@ -28,6 +28,10 @@
         {
           "from": "../backend/dist/t2wml-server",
           "to": "."
+        },
+        {
+          "from": "./t2wml-on-mac.sh",
+          "to": "t2wml-on-mac.sh"
         }
       ],
       "icon": "icons/t2wml-mac.icns"
