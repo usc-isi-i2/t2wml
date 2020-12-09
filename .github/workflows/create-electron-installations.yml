@@ -95,6 +95,7 @@ jobs:
           CI: false   # Otherwise React stops on warnings
         run: |
           cd $GITHUB_WORKSPACE/backend
+          chmod ugo+x ../electron/t2wml-on-mac.sh    # Make sure it is packaged as an executable
           python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Rename installer to canonical name
         run: |
