@@ -63,7 +63,7 @@ export default class MainMenuManager {
             {
                 label: 'View',
                 submenu: [
-                    { role: 'zoomIn' },
+                    { role: 'zoomIn', accelerator: 'CommandOrControl+=' },
                     { role: 'zoomOut' },
                     { role: 'resetZoom' },
                     { type: 'separator' },
