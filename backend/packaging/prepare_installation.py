@@ -107,6 +107,9 @@ def build_electron():
         os.chdir(electron_path)
         os.system('yarn install')
         os.system('yarn prod')
+
+        if (os_name == 'mac'):
+            os.system('chmod ugo+x t2wml-on-mac.sh')  # Make sure it is an executable.
         os.system(f'yarn build:{os_name}')
     finally:
         os.chdir(cwd)
