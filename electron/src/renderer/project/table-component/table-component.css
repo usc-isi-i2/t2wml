@@ -200,16 +200,12 @@
   pointer-events: none;
 }
 
-/* different cell types */
-.table-wrapper table tr td.role-dependentVar {
-  background: #D9F2E6;
-}
+/* yaml cell types */
+
 .table-wrapper table tr td.type-cleaned {
   font-weight: bold;
 }
-.table-wrapper table tr td.role-mainSubject {
-  color: #006699;
-}
+
 .table-wrapper table tr td.type-subject {
   background: #D9EAF2;
 }
@@ -219,7 +215,7 @@
 .table-wrapper table tr td.type-property {
   background: #FBE5CE;
 }
-.table-wrapper table tr td.role-qualifier {
+.table-wrapper table tr td.type-qualifier {
   background: #DDD9F2;
 }
 .table-wrapper table tr td.type-minorError {
@@ -227,4 +223,25 @@
 }
 .table-wrapper table tr td.type-majorError {
   background: #FF3333;
+}
+
+/* annotation cell types */
+.table-wrapper table tr td.role-dependentVar {
+  background: #D9F2E6;
+}
+.table-wrapper table tr td.role-mainSubject {
+  background: #D9EAF2;
+}
+.table-wrapper table tr td.role-metadata {
+  background: #d8dfe7;
+}
+.table-wrapper table tr td.role-qualifier {
+  background: #DDD9F2;
+}
+.table-wrapper table tr td.role-property {
+  background: #fbe5ce;
+}
+
+.table-wrapper table tr td.role-unit {
+  background: #fff2ce;
 }
