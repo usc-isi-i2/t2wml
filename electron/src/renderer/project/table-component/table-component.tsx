@@ -2,7 +2,7 @@ import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
 
-import { QNode, TableDTO, AnnotationBlock } from '../../common/dtos';
+import { QNode, TableDTO } from '../../common/dtos';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
@@ -262,7 +262,7 @@ class TableComponent extends Component<{}, TableState> {
 
   updateAnnotationBlocks() {
     console.log('annotation blocks update triggered');
-    for ( const block: AnnotationBlock of wikiStore.annotations.blocks ) {
+    for ( const block of wikiStore.annotations.blocks ) {
       console.log(block.role, block.type);
       for ( const selection of block.selections ) {
         const { x1, y1, x2, y2 } = selection;
