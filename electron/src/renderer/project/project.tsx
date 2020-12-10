@@ -45,7 +45,7 @@ interface ProjectProps {
 @observer
 class Project extends Component<ProjectProps, ProjectState> {
   private requestService: RequestService;
-  private disposeReaction?: IReactionDisposer;
+  private disposers: IReactionDisposer[] = [];
 
   constructor(props: ProjectProps) {
     super(props);
@@ -91,7 +91,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       this.onShowFileTreeClicked(checked);
     });
 
-    this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
+    this.disposers.push(reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag})));
 
     this.fetchAnnotations();
   }
@@ -104,8 +104,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
 
-    if (this.disposeReaction) {
-      this.disposeReaction();
+    for ( const disposer of this.disposers ) {
+      disposer();
     }
   }
 
