@@ -185,9 +185,6 @@ export class LayerState {
         if (dto.cleaned) {
             this.cleaned = new Layer(dto.cleaned);
         }
-        if (dto.annotation){
-            this.annotation = new Layer(dto.annotation)
-        }
     }
 }
 
