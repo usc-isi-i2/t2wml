@@ -233,7 +233,7 @@ def change_data_file():
     :return:
     """
     try:
-        data_file = request.args['data_file'] 
+        data_file = request.args['data_file']
     except KeyError:
         raise web_exceptions.InvalidRequestException("data file parameter not specified")
     project_folder = get_project_folder()
@@ -287,7 +287,7 @@ def call_wikifier_service():
     action = request.form["action"]
     region = request.form["region"]
     context = request.form["context"]
-    
+
     if not project.current_data_file:
         raise web_exceptions.WikifyWithoutDataFileException(
             "Upload data file before wikifying a region")
@@ -326,7 +326,7 @@ def rename_yaml():
     if new_name in project.yaml_files:
         raise web_exceptions.MissingYAMLFileException(
             "The new name you have provided already exists in the project as a yaml file")
-    
+
     old_path=os.path.join(project.directory, old_name)
     new_path=os.path.join(project.directory, new_name)
 
@@ -339,7 +339,7 @@ def rename_yaml():
             old_name_index=sheet_arr.index(old_name)
             sheet_arr[old_name_index]=new_name
     project.save()
-    
+
     response=dict(project=get_project_dict(project))
     return response, 200
 
@@ -354,7 +354,7 @@ def change_yaml():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
     try:
-        yaml_file = request.args['yaml_file'] 
+        yaml_file = request.args['yaml_file']
     except KeyError:
         raise web_exceptions.InvalidRequestException("data file parameter not specified")
     project.update_saved_state(current_yaml=yaml_file)
@@ -403,9 +403,9 @@ def apply_yaml():
     yaml_data = request.form["yaml"]
     yaml_title = request.form["title"]
     sheet_name = request.form["sheetName"]
-    
+
     save_yaml(project, yaml_data, yaml_title, sheet_name)
-    
+
     response=dict(project=get_project_dict(project), layers=get_empty_layers())
     try:
         yaml.safe_load(yaml_data)
@@ -520,7 +520,7 @@ def update_settings():
         if datamart_api is not None:
             new_global_settings["datamart_api"] = datamart_api
         global_settings.update(**new_global_settings)
-        
+
     response=dict(project = get_project_dict(project))
     return response, 200
 
@@ -560,8 +560,8 @@ if __name__ == "__main__":
             profiles_dir = os.path.join(DATADIR, "profiles")
             if not os.path.isdir(profiles_dir):
                 os.mkdir(profiles_dir)
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app, 
-            restrictions=[100], 
+            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
+            restrictions=[100],
             profile_dir=profiles_dir)
         app.run(debug=True, port=13000)
     else:
