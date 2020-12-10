@@ -232,14 +232,20 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateAnnotationBlocks() {
-    console.log('annotation blocks update triggered');
+    const { tableData } = this.state;
     for ( const block of wikiStore.annotations.blocks ) {
-      console.log(block.role, block.type);
-      for ( const selection of block.selections ) {
+      const { role, type, selections } = block;
+      for ( const selection of selections ) {
         const { x1, y1, x2, y2 } = selection;
-        console.log('selection', x1, y1, x2, y2);
+        for ( let row = y1; row <= y2; row++ ) {
+          for ( let col = x1; col <= x2; col++ ) {
+            const stuff = tableData[row-1][col-1];
+            tableData[row-1][col-1] = {...stuff, role, type};
+          }
+        }
       }
     }
+    this.setState({tableData});
   }
 
   resetSelections() {
