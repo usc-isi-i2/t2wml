@@ -22,6 +22,7 @@ import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { LayersDTO } from '../../common/dtos';
+import { config } from '../../../main/config';
 
 // Gleb:
 // The generic table should have a data property that is a TableCell[][]
@@ -457,7 +458,16 @@ class TableComponent extends Component<{}, TableState> {
     const y2 = element.parentElement.rowIndex;
 
     // Update selection coordinates
-    if ( !event.metaKey ) {
+    if ( ( config.platform === 'mac' && event.metaKey ) ||
+         ( config.platform === 'linux' && event.ctrlKey ) ||
+         ( config.platform === 'windows' && event.ctrlKey ) ) {
+
+      // Add a new selection separately
+      this.selections.push({x1, x2, y1, y2});
+
+      // Activate the element on click
+      this.selectCell(element, y1, x1, y1, x1, x1, y1);
+    } else {
 
       // Extend the previous selection if user is holding down Shift key
       if ( event.shiftKey && !!this.selections.length ) {
@@ -490,13 +500,6 @@ class TableComponent extends Component<{}, TableState> {
         this.selectCell(element, y1, x1, y1, x1, x1, y1);
         this.selectRelatedCells(y1, x1);
       }
-    } else {
-
-      // Add a new selection separately
-      this.selections.push({x1, x2, y1, y2});
-
-      // Activate the element on click
-      this.selectCell(element, y1, x1, y1, x1, x1, y1);
     }
 
     // Initialize the previous element with the one selected
