@@ -444,18 +444,36 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
+    const { annotationMode } = this.state;
     const element = event.target as any;
 
     if ( element.nodeName !== 'TD' ) { return; }
-
-    // Activate the selection mode
-    this.selecting = true;
 
     // Set both coordinates to the same cell
     const x1 = element.cellIndex;
     const x2 = element.cellIndex;
     const y1 = element.parentElement.rowIndex;
     const y2 = element.parentElement.rowIndex;
+
+    // check if the user is selecting an annotation block
+    if ( annotationMode ) {
+      for ( const block of wikiStore.annotations.blocks ) {
+        for ( const selection of block.selections ) {
+          if ( x1 >= selection['x1'] &&
+               x2 <= selection['x2'] &&
+               y1 >= selection['y1'] &&
+               y2 <= selection['y2'] ) {
+            this.resetSelections();
+            this.selections = [selection];
+            this.updateSelections();
+            return;
+          }
+        }
+      }
+    }
+
+    // Activate the selection mode
+    this.selecting = true;
 
     // Update selection coordinates
     if ( ( config.platform === 'mac' && event.metaKey ) ||
