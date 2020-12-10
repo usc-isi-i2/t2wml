@@ -8,7 +8,7 @@ from flask import request
 
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, get_annotations,
+from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, get_annotations, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_file, save_dataframe, numpy_converter,
@@ -457,11 +457,13 @@ def upload_annotation():
     annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
 
     if request.method == 'POST':
-        annotation = json.loads(request.form["annotation"])
+        annotation = json.loads(request.form["annotations"])
+        annotation, yamlContent = save_annotations(project, annotation, annotations_path)
     else:
-        annotation=None
-    annotation, yamlContent = get_annotations(project, annotations_path, annotation)
-    response=dict(annotations=annotation.to_array(), yamlContent=yamlContent, project=get_project_dict(project))
+        annotation, yamlContent=get_annotations(annotations_path)
+
+
+    response=dict(annotations=annotation, yamlContent=yamlContent, project=get_project_dict(project))
     return response, 200
 
 @app.route('/api/project', methods=['PUT'])

@@ -15,7 +15,7 @@ from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
-from t2wml.input_processing.annotation_parsing import DynamicAnnotation
+from t2wml.input_processing.annotation_parsing import Annotation
 
 
 def add_entities_from_project(project):
@@ -278,19 +278,27 @@ def get_all_layers_and_table(response, calc_params):
         response["yamlError"] = str(e)
 
 
-def get_annotations(project, annotations_path, annotation):
+def get_annotations(annotations_path):
     try:
-        dga = DynamicAnnotation.load(annotations_path)
+        dga = Annotation.load(annotations_path)
     except FileNotFoundError:
-        dga=DynamicAnnotation()
+        dga=Annotation()
     
-    if annotation is not None:
-        dga.add_annotation(annotation)
-        dga.save(annotations_path)
-        project.add_annotation_file(annotations_path, project.current_data_file, project.current_sheet)
-        project.save()
     try:
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
-    return dga, yamlContent
+    return dga.annotation_block_array, yamlContent
+
+def save_annotations(project, annotation, annotations_path):
+    dga=Annotation(annotation)
+    dga.save(annotations_path)
+    project.add_annotation_file(annotations_path, project.current_data_file, project.current_sheet)
+    project.save()
+
+    try:
+        yamlContent=dga.generate_yaml()[0]
+    except Exception as e:
+        yamlContent="#Error when generating yaml: "+str(e)
+    
+    return dga.annotation_block_array, yamlContent
