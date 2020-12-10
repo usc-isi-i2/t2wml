@@ -50,7 +50,9 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     }
 
     const formData = new FormData();
-    formData.append('annotation', JSON.stringify(annotation));
+    const annotations = wikiStore.annotations.blocks;
+    annotations.push(annotation);
+    formData.append('annotations', JSON.stringify(annotations));
 
     try {
       await this.requestService.call(this, () => (
