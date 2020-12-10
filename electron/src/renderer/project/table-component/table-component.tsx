@@ -511,7 +511,7 @@ class TableComponent extends Component<{}, TableState> {
 
         this.updateSelections();
       } else {
-        this.resetSelections()
+        this.resetSelections();
         this.selections = [{x1, x2, y1, y2}];
 
         // Activate the element on click
