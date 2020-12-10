@@ -24,6 +24,7 @@ import Settings from './settings';
 import { ipcRenderer } from 'electron';
 import { IpcRendererEvent } from 'electron/renderer';
 import Sidebar from './sidebar/sidebar';
+import { TableDTO } from '../common/dtos';
 import { IReactionDisposer, reaction } from 'mobx';
 
 
@@ -91,9 +92,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       this.onShowFileTreeClicked(checked);
     });
 
+    this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.fetchAnnotations(table)));
     this.disposers.push(reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag})));
-
-    this.fetchAnnotations();
   }
 
   async componentWillUnmount() {
@@ -115,7 +115,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
   }
 
-  async fetchAnnotations() {
+  async fetchAnnotations(table?: TableDTO) {
+    if ( !table ) { return; }
     try {
       await this.requestService.call(this, () => (
         this.requestService.getAnnotationBlocks(
