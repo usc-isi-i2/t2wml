@@ -2,16 +2,18 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from './projects';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry, 
+import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
         StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock} from '../common/dtos';
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
 
+
 type EditorsStatus = "Wikifier" | "YamlEditor";
 class EditorsState {
     @observable public nowShowing: EditorsStatus = "Wikifier";
 }
+
 
 class TableState {
     @observable public table: TableDTO;
@@ -28,7 +30,6 @@ class TableState {
         this.showCleanedData = false;
 
     }
-
 }
 
 
@@ -43,6 +44,7 @@ class WikifierState {
     }
 }
 
+
 class OutputState {
     @observable public showSpinner: boolean;
     @observable public isDownloadDisabled: boolean;
@@ -51,8 +53,8 @@ class OutputState {
         this.showSpinner = false;
         this.isDownloadDisabled = true;
     }
-
 }
+
 
 class YamlEditorState {
     public requestService = new RequestService();
@@ -62,7 +64,7 @@ class YamlEditorState {
     @observable public yamlContent: string = defaultYamlContent;
     @observable public yamlError?: string | undefined;
     @observable public yamlhasChanged = false;
-    
+
     @observable public async saveYaml() {
         if (!this.yamlhasChanged) {
             return;
@@ -187,11 +189,10 @@ export class LayerState {
             this.annotation = new Layer(dto.annotation)
         }
     }
-
-
 }
 
-export class AnnotationState{
+
+export class AnnotationState {
     @observable public blocks: AnnotationBlock[] =[];
 }
 
