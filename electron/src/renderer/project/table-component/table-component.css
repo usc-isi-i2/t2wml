@@ -201,13 +201,13 @@
 }
 
 /* different cell types */
-.table-wrapper table tr td.type-data {
+.table-wrapper table tr td.role-dependentVar {
   background: #D9F2E6;
 }
 .table-wrapper table tr td.type-cleaned {
   font-weight: bold;
 }
-.table-wrapper table tr td.type-qnode {
+.table-wrapper table tr td.role-mainSubject {
   color: #006699;
 }
 .table-wrapper table tr td.type-subject {
@@ -219,7 +219,7 @@
 .table-wrapper table tr td.type-property {
   background: #FBE5CE;
 }
-.table-wrapper table tr td.type-qualifier {
+.table-wrapper table tr td.role-qualifier {
   background: #DDD9F2;
 }
 .table-wrapper table tr td.type-minorError {

@@ -552,12 +552,11 @@ class TableComponent extends Component<{}, TableState> {
       selectedQualifiers,
       selectedMainSubject,
     } = this.state;
-    let className = stuff['type'] ? `type-${stuff['type']}` : '';
+    let className = '';
+    className += stuff['type'] ? ` type-${stuff['type']}` : '';
+    className += stuff['role'] ? ` role-${stuff['role']}` : '';
     if ( stuff.cleaned ) {
         className += ' type-cleaned';
-    }
-    if ( stuff.qnode ) {
-        className += ' type-qnode';
     }
     if ( selectedCell ) {
       if ( selectedCell.row === row && selectedCell.col === col ) {
