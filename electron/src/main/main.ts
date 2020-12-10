@@ -38,6 +38,7 @@ function openSplashScreen(): void {
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
     },
+    title: 'T2WML',
     icon: ICON_URL,
   });
 
@@ -72,6 +73,7 @@ function createMainWindow(): void {
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
     },
+    title: 'T2WML',
     icon: ICON_URL,
   });
 
