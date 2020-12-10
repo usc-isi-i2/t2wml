@@ -229,7 +229,8 @@
 .table-wrapper table tr td.role-dependentVar {
   background: #D9F2E6;
 }
-.table-wrapper table tr td.role-mainSubject {
+.table-wrapper table tr td.role-mainSubject,
+.table-wrapper table tr td.type-qNode {
   color: #006699;
 }
 .table-wrapper table tr td.role-metadata {
