@@ -92,6 +92,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
 
     this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag}));
+
+    this.fetchAnnotations();
   }
 
   async componentWillUnmount() {
@@ -110,6 +112,19 @@ class Project extends Component<ProjectProps, ProjectState> {
   componentDidUpdate(prevProps: ProjectProps) {
     if (this.props.path !== prevProps.path) {
       this.loadProject();
+    }
+  }
+
+  async fetchAnnotations() {
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.getAnnotationBlocks(
+          wikiStore.projects.current!.folder,
+        )
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot submit annotations!";
+      this.setState({ errorMessage: error });
     }
   }
 
