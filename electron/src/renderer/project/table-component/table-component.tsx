@@ -110,7 +110,6 @@ class TableComponent extends Component<{}, TableState> {
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
-    this.disposers.push(reaction(() => wikiStore.layers.type, () => this.styleCellTypeColors()));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.showCleanedData()));
   }
 
@@ -173,34 +172,6 @@ class TableComponent extends Component<{}, TableState> {
       selectedMainSubject: null,
       showAnnotationMenu: false,
     });
-  }
-
-  styleCellTypeColors() {
-    const { tableData } = this.state;
-    const types = wikiStore.layers.type;
-    for (const entry of types.entries) {
-      const type = entry.type;
-      for (const index of entry.indices) {
-        const stuff = tableData[index[0]][index[1]];
-        tableData[index[0]][index[1]] = {...stuff, type};
-      }
-    }
-    const qnodes = wikiStore.layers.qnode;
-    for (const entry of qnodes.entries) {
-      for (const index of entry.indices) {
-        const stuff = tableData[index[0]][index[1]];
-        tableData[index[0]][index[1]] = {...stuff, qnode: true};
-      }
-    }
-    const cleaned = wikiStore.layers.cleaned;
-    for (const entry of cleaned.entries) {
-      const { cleaned, original } = entry;
-      for (const index of entry.indices) {
-        const stuff = tableData[index[0]][index[1]];
-        tableData[index[0]][index[1]] = {...stuff, cleaned, original};
-      }
-    }
-    this.setState({tableData});
   }
 
   async handleSelectSheet(event: React.MouseEvent) {
