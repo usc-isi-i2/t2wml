@@ -51,9 +51,7 @@ class RequestService {
 
   public async getAnnotationBlocks(folder: string) {
     const response = await backendGet(`/annotation?project_folder=${folder}`) as any;
-    wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.annotations.blocks = response.annotations;
-    wikiStore.projects.projectDTO = response.project;
   }
 
   public async postAnnotationBlocks(folder: string, formData: any) {
