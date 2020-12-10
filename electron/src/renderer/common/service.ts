@@ -16,7 +16,6 @@ class StoreFiller {
   //I have created this class to setion off all the filling functions, which were seriously cluttering up service
   public fillTableAndLayers(response: ResponseWithTableandMaybeYamlDTO){
     wikiStore.table.table = response.table;
-    wikiStore.annotations.blocks = response.annotations;
     wikiStore.layers.updateFromDTO(response.layers);
     if (response.yamlContent){
       wikiStore.yaml.yamlContent = response.yamlContent;
