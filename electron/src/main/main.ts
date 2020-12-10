@@ -16,6 +16,15 @@ import { rendererNotifier } from './renderer-notifier';
 import { settings } from './settings';
 import { uiState } from './ui-state';
 
+
+/* App Icon */
+const ICON_URL = url.format({
+  pathname: path.join(__dirname, './icon.icns'),
+  protocol: 'file:',
+  slashes: true,
+});
+
+
 /* Splash Screen */
 let splashWindow: Electron.BrowserWindow | null;
 
@@ -28,7 +37,8 @@ function openSplashScreen(): void {
     webPreferences: {
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
-    }
+    },
+    icon: ICON_URL,
   });
 
   splashWindow.loadURL(
@@ -61,7 +71,8 @@ function createMainWindow(): void {
       enableRemoteModule: true,
       nodeIntegration: true,
       worldSafeExecuteJavaScript: true,
-    }
+    },
+    icon: ICON_URL,
   });
 
   // and load the index.html of the app.
