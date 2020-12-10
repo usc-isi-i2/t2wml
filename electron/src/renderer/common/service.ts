@@ -60,7 +60,6 @@ class RequestService {
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.annotations.blocks = response.annotations;
     wikiStore.projects.projectDTO = response.project;
-    console.log(response);
   }
 
   public async createProject(folder: string) {
