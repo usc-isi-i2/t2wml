@@ -139,17 +139,17 @@ export interface AnnotationBlock{
     selections: CellSelection[];
     role: "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject" | "Unit";
     type: "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
-    
+
     language?: string;
-    
+
     unit?: string;
     //upperBound?: string;
     //lowerBound?: string;
-    
+
     //latitude?: string;
     //longitude?: string;
     //globe?: string;
-    
+
     precision?: string;
     calendar?: string;
     format?: string;
