@@ -147,6 +147,15 @@ def get_project():
         get_all_layers_and_table(response, calc_params)
         response["yamlContent"] = get_yaml_content(calc_params)
 
+    # TODO: this should probably be replaced as to avoid repetition
+    annotations_dir=os.path.join(project.directory, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
+    annotation, yamlContent = get_annotations(project, annotations_path, None)
+    if annotation:
+        response["annotations"] = annotation.to_array()
+
     return response, 200
 
 
