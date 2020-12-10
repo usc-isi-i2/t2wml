@@ -2,12 +2,12 @@ import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
 
-import { QNode, TableDTO } from '../../common/dtos';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
+import { AnnotationBlock, QNode, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
@@ -21,7 +21,6 @@ import * as utils from './table-utils';
 import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
-import { LayersDTO } from '../../common/dtos';
 import { config } from '../../../main/config';
 
 // Gleb:
@@ -566,7 +565,7 @@ class TableComponent extends Component<{}, TableState> {
     }, 100);
   }
 
-  getClassName(stuff: LayersDTO, row: number, col: number) {
+  getClassName(stuff: AnnotationBlock, row: number, col: number) {
     const {
       selectedCell,
       selectedProperty,
@@ -576,9 +575,6 @@ class TableComponent extends Component<{}, TableState> {
     let className = '';
     className += stuff['type'] ? ` type-${stuff['type']}` : '';
     className += stuff['role'] ? ` role-${stuff['role']}` : '';
-    if ( stuff.cleaned ) {
-        className += ' type-cleaned';
-    }
     if ( selectedCell ) {
       if ( selectedCell.row === row && selectedCell.col === col ) {
         className += ' active';
