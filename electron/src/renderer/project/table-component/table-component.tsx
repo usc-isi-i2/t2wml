@@ -2,7 +2,7 @@ import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
 
-import { QNode, TableDTO } from '../../common/dtos';
+import { QNode, TableDTO, AnnotationBlock } from '../../common/dtos';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
@@ -109,6 +109,7 @@ class TableComponent extends Component<{}, TableState> {
     document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
+    this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
     this.disposers.push(reaction(() => wikiStore.layers.type, () => this.styleCellTypeColors()));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.showCleanedData()));
   }
@@ -257,6 +258,17 @@ class TableComponent extends Component<{}, TableState> {
     }
     this.setState({tableData});
     this.updateProjectInfo();
+  }
+
+  updateAnnotationBlocks() {
+    console.log('annotation blocks update triggered');
+    for ( const block: AnnotationBlock of wikiStore.annotations.blocks ) {
+      console.log(block.role, block.type);
+      for ( const selection of block.selections ) {
+        const { x1, y1, x2, y2 } = selection;
+        console.log('selection', x1, y1, x2, y2);
+      }
+    }
   }
 
   resetSelections() {
