@@ -48,6 +48,13 @@ class StoreFiller {
 class RequestService {
   storeFiller = new StoreFiller();
 
+  public async getAnnotationBlocks(folder: string) {
+    const response = await backendGet(`/annotation?project_folder=${folder}`) as any;
+    wikiStore.yaml.yamlContent = response.yamlContent;
+    wikiStore.annotations.blocks = response.annotations;
+    wikiStore.projects.projectDTO = response.project;
+  }
+
   public async postAnnotationBlocks(folder: string, formData: any) {
     const response = await backendPost(`/annotation?project_folder=${folder}`, formData) as any;
     wikiStore.yaml.yamlContent = response.yamlContent;
