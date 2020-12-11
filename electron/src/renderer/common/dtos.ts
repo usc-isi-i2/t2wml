@@ -138,7 +138,7 @@ export interface StatementEntry extends Entry{
 export interface AnnotationBlock{
     selections: CellSelection[];
     role: "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject" | "Unit";
-    type: "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
+    type?: "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
 
     language?: string;
 
