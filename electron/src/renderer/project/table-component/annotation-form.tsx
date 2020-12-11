@@ -45,7 +45,7 @@ const TYPES = [{
 }];
 
 
-const OPTIONS = [{
+const ROLES = [{
   'label': 'Main Subject',
   'value': 'mainSubject',
 }, {
@@ -118,7 +118,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderNestedOptionsDropdown() {
     const { role, type } = this.state;
-    const selectedOption = OPTIONS.find(option => option.value === role);
+    const selectedOption = ROLES.find(option => option.value === role);
     if ( !selectedOption || !('children' in selectedOption) ) { return null; }
     const optionsDropdown = (
       <Form.Group as={Row}
@@ -164,7 +164,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         <Col sm="12" md="12">
           <Form.Control size="sm" as="select">
             <option value="" disabled selected>Role</option>
-            {OPTIONS.map((role, i) => (
+            {ROLES.map((role, i) => (
               <option key={i} value={role.value}>
                 {role.label}
               </option>
