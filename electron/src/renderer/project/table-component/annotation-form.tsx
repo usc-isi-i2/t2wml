@@ -56,13 +56,18 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderNestedOptionsDropdown() {
-    const { selectedAnnotationBlock: selected } = this.props;
-    const selectedAnnotationRole =  selected ? selected.role : '';
-    const selectedAnnotationType =  selected ? selected.type : '';
+    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const selectedAnnotationRole =  selectedBlock ? selectedBlock.role : '';
+    const selectedAnnotationType =  selectedBlock ? selectedBlock.type : '';
     const { role, type } = this.state;
-    const selectedOption = ROLES.find(option => (
-      option.value === selectedAnnotationRole ? selectedAnnotationRole : role
-    ));
+    let selectedOption = null;
+    if ( selectedAnnotationRole ) {
+      selectedOption = ROLES.find(option => (
+        option.value === selectedAnnotationRole
+      ));
+    } else {
+      selectedOption = ROLES.find(option => option.value === role);
+    }
     if ( !selectedOption || !('children' in selectedOption) ) { return null; }
     const optionsDropdown = (
       <Form.Group as={Row}
@@ -81,9 +86,16 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         </Col>
       </Form.Group>
     )
-    const selectedType = selectedOption?.children?.find(option => (
-      option.value === selectedAnnotationType ? selectedAnnotationType : type
-    ));
+    let selectedType = null;
+    if ( selectedAnnotationType ) {
+      selectedType = selectedOption?.children?.find(option => (
+        option.value === selectedAnnotationType
+      ));
+    } else {
+      selectedType = selectedOption?.children?.find(option => (
+        option.value === type
+      ));
+    }
     if ( !selectedType || !('children' in selectedType) ) {
       return optionsDropdown;
     } else {
