@@ -172,6 +172,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedProperty: null,
       selectedQualifiers: null,
       selectedMainSubject: null,
+      selectedAnnotationBlock: null,
       showAnnotationMenu: false,
     });
   }
