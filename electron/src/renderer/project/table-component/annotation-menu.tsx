@@ -8,12 +8,14 @@ import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../common/general';
 import RequestService from '../../common/service';
 import wikiStore from '../../data/store';
+import { AnnotationBlock } from '../../common/dtos';
 
 
 interface AnnotationMenuProperties {
   selections: Array<any> | null,
   position: Array<number> | null,
   onClose: any | null,
+  selectedAnnotationBlock: AnnotationBlock | null,
 }
 
 interface AnnotationMenuState {
