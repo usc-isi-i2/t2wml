@@ -725,7 +725,10 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   closeAnnotationMenu() {
-    this.setState({showAnnotationMenu: false}, () => this.resetSelections());
+    this.setState({
+      showAnnotationMenu: false,
+      selectedAnnotationBlock: null,
+    }, () => this.resetSelections());
   }
 
   renderAnnotationMenu() {
