@@ -459,20 +459,22 @@ class TableComponent extends Component<{}, TableState> {
 
     // check if the user is selecting an annotation block
     if ( annotationMode ) {
-      for ( const block of wikiStore.annotations.blocks ) {
-        for ( const selection of block.selections ) {
-          if ( x1 >= selection['x1'] &&
-               x2 <= selection['x2'] &&
-               y1 >= selection['y1'] &&
-               y2 <= selection['y2'] ) {
-            this.resetSelections();
-            this.selections = [selection];
-            this.updateSelections();
-            this.setState({selectedAnnotationBlock: block});
-            return;
+      this.setState({selectedAnnotationBlock: null}, () => {
+        for ( const block of wikiStore.annotations.blocks ) {
+          for ( const selection of block.selections ) {
+            if ( x1 >= selection['x1'] &&
+                 x2 <= selection['x2'] &&
+                 y1 >= selection['y1'] &&
+                 y2 <= selection['y2'] ) {
+              this.resetSelections();
+              this.selections = [selection];
+              this.updateSelections();
+              this.setState({selectedAnnotationBlock: block});
+              return;
+            }
           }
         }
-      }
+      });
     }
 
     // Activate the selection mode
