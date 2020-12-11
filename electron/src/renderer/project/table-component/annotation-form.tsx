@@ -1,11 +1,13 @@
 import React from 'react';
 
+import { AnnotationBlock } from '../../common/dtos';
 import * as utils from './table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
 interface AnnotationFormProperties {
+  selectedAnnotationBlock: AnnotationBlock | null,
   selections: Array<any> | null,
   onChange: any | null,
   onSubmit: any | null,

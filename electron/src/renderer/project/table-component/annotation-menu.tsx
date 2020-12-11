@@ -75,10 +75,11 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   renderAnnotationForms() {
-    const { selections } = this.props;
+    const { selections, selectedAnnotationBlock } = this.props;
     return (
       <AnnotationForm
         selections={selections}
+        selectedAnnotationBlock={selectedAnnotationBlock}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
     )
