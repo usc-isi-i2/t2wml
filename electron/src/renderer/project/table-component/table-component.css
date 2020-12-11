@@ -232,6 +232,7 @@
 .table-wrapper table tr td.role-mainSubject,
 .table-wrapper table tr td.type-qNode {
   color: #006699;
+  background: #D9EAF2;
 }
 .table-wrapper table tr td.role-metadata {
   background: #d8dfe7;
