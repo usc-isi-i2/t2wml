@@ -55,6 +55,7 @@ interface TableState {
   showCleanedData: boolean,
   showAnnotationMenu: boolean,
   annotationMenuPosition: Array<number> | null,
+  selectedAnnotationBlock: AnnotationBlock | null,
 
   errorMessage: ErrorMessage;
 }
@@ -98,6 +99,7 @@ class TableComponent extends Component<{}, TableState> {
       showCleanedData: false,
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
+      selectedAnnotationBlock: null,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -465,6 +467,7 @@ class TableComponent extends Component<{}, TableState> {
             this.resetSelections();
             this.selections = [selection];
             this.updateSelections();
+            this.setState({selectedAnnotationBlock: block});
             return;
           }
         }
