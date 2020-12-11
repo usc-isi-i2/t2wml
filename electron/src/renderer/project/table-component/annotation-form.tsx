@@ -69,7 +69,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
         <Col sm="12" md="12">
           <Form.Control size="sm" as="select">
-            <option value="" disabled selected>Type</option>
+            <option value="" disabled
+              selected={!selectedAnnotationType}>Type</option>
             {selectedOption?.children?.map((type, i) => (
               <option key={i}
                 value={type.value}
@@ -111,7 +112,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
         <Col sm="12" md="12">
           <Form.Control size="sm" as="select">
-            <option value="" disabled selected>Role</option>
+            <option value="" disabled
+              selected={!selectedAnnotationRole}>Role</option>
             {ROLES.map((role, i) => (
               <option key={i}
                 value={role.value}
