@@ -56,6 +56,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderNestedOptionsDropdown() {
+    const { selectedAnnotationBlock: selected } = this.props;
+    const selectedAnnotationType =  selected ? selected.type : '';
     const { role, type } = this.state;
     const selectedOption = ROLES.find(option => option.value === role);
     if ( !selectedOption || !('children' in selectedOption) ) { return null; }
@@ -66,7 +68,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Form.Control size="sm" as="select">
             <option value="" disabled selected>Type</option>
             {selectedOption?.children?.map((type, i) => (
-              <option key={i} value={type.value}>
+              <option key={i}
+                value={type.value}
+                selected={type.value === selectedAnnotationType}>
                 {type.label}
               </option>
             ))}
@@ -97,6 +101,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderOptionsDropdown() {
+    const { selectedAnnotationBlock: selected } = this.props;
+    const selectedAnnotationRole =  selected ? selected.role : '';
     return (
       <Form.Group as={Row}
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
@@ -104,7 +110,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Form.Control size="sm" as="select">
             <option value="" disabled selected>Role</option>
             {ROLES.map((role, i) => (
-              <option key={i} value={role.value}>
+              <option key={i}
+                value={role.value}
+                selected={role.value === selectedAnnotationRole}>
                 {role.label}
               </option>
             ))}
