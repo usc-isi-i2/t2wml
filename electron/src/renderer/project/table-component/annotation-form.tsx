@@ -81,7 +81,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         </Col>
       </Form.Group>
     )
-    const selectedType = selectedOption?.children?.find(t => t.value === type);
+    const selectedType = selectedOption?.children?.find(option => (
+      option.value === selectedAnnotationType ? selectedAnnotationType : type
+    ));
     if ( !selectedType || !('children' in selectedType) ) {
       return optionsDropdown;
     } else {
