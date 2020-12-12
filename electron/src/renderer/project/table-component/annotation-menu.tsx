@@ -41,6 +41,11 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
   }
 
+  handleOnDelete() {
+    const { selections } = this.props;
+    console.log('AnnotationMenu OnDelete triggered for -> ', selections);
+  }
+
   async handleOnSubmit(values: { [key: string]: string }) {
     const { selections, onClose } = this.props;
     console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
@@ -81,6 +86,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
         selections={selections}
         selectedAnnotationBlock={selectedAnnotationBlock}
         onChange={this.handleOnChange.bind(this)}
+        onDelete={this.handleOnDelete.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
     )
   }

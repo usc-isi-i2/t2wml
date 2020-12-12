@@ -10,6 +10,7 @@ interface AnnotationFormProperties {
   selectedAnnotationBlock: AnnotationBlock | any,
   selections: Array<any> | null,
   onChange: any | null,
+  onDelete: any | null,
   onSubmit: any | null,
 }
 
@@ -47,8 +48,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   handleOnDelete(event: any) {
     event.preventDefault();
-    const { onSubmit } = this.props;
-    onSubmit(this.state);
+    this.props.onDelete();
   }
 
   renderSelectionAreas() {
