@@ -497,7 +497,10 @@ class TableComponent extends Component<{}, TableState> {
 
     // check if the user is selecting an annotation block
     if ( annotationMode ) {
-      this.setState({selectedAnnotationBlock: null}, () => {
+      this.setState({
+        showAnnotationMenu: false,
+        selectedAnnotationBlock: null,
+      }, () => {
         for ( const block of wikiStore.annotations.blocks ) {
           for ( const selection of block.selections ) {
             if ( x1 >= selection['x1'] &&
