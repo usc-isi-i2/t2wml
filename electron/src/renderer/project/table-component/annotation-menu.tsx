@@ -41,34 +41,19 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
   }
 
-  async handleOnDelete() {
-    const { selectedAnnotationBlock, selections, onClose } = this.props;
+  handleOnDelete() {
+    const { selectedAnnotationBlock, selections } = this.props;
     console.log('AnnotationMenu OnDelete triggered for -> ', selections);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedAnnotationBlock;
     });
 
-    const formData = new FormData();
-    formData.append('annotations', JSON.stringify(annotations));
-
-    try {
-      await this.requestService.call(this, () => (
-        this.requestService.postAnnotationBlocks(
-          wikiStore.projects.current!.folder,
-          formData,
-        )
-      ));
-    } catch (error) {
-      error.errorDescription += "\n\nCannot submit annotations!";
-      this.setState({ errorMessage: error });
-    } finally {
-      onClose();
-    }
+    this.postAnnotations(annotations);
   }
 
-  async handleOnSubmit(values: { [key: string]: string }) {
-    const { selections, onClose } = this.props;
+  handleOnSubmit(values: { [key: string]: string }) {
+    const { selections } = this.props;
     console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
 
     const annotation: any = {
@@ -80,9 +65,16 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       annotation[key] = value;
     }
 
-    const formData = new FormData();
     const annotations = wikiStore.annotations.blocks;
     annotations.push(annotation);
+
+    this.postAnnotations(annotations);
+  }
+
+  async postAnnotations(annotations: AnnotationBlock[]) {
+    const { onClose } = this.props;
+
+    const formData = new FormData();
     formData.append('annotations', JSON.stringify(annotations));
 
     try {
