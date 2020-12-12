@@ -467,7 +467,7 @@ class TableComponent extends Component<{}, TableState> {
                  y1 >= selection['y1'] &&
                  y2 <= selection['y2'] ) {
               this.resetSelections();
-              this.selections = [selection];
+              this.selections = block.selections;
               this.updateSelections();
               this.setState({selectedAnnotationBlock: block});
               return;
