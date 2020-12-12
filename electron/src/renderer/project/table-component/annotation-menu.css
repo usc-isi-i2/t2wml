@@ -15,3 +15,9 @@
   margin-bottom: 10px;
   font-weight: bold;
 }
+
+.annotation-menu form.annotation-form button.delete {
+  cursor: pointer;
+  padding: 0px;
+  color: red;
+}
