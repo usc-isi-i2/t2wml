@@ -7,7 +7,7 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
 interface AnnotationFormProperties {
-  selectedAnnotationBlock: AnnotationBlock | null,
+  selectedAnnotationBlock: AnnotationBlock | any,
   selections: Array<any> | null,
   onChange: any | null,
   onSubmit: any | null,
