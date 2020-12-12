@@ -759,8 +759,8 @@ class TableComponent extends Component<{}, TableState> {
 
   openAnnotationMenu(event: React.MouseEvent) {
     let { pageX, pageY } = event;
-    pageX = pageX < 50 ? 50 : pageX;
-    pageY = pageY - 50;
+    pageX = pageX < 50 ? 50 : pageX + 25;
+    pageY = pageY < 50 ? 50 : pageY + 25;
     this.setState({
       showAnnotationMenu: true,
       annotationMenuPosition: [pageX, pageY],
