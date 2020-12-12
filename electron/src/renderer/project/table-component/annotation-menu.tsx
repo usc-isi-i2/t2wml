@@ -53,19 +53,22 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   handleOnSubmit(values: { [key: string]: string }) {
-    const { selections } = this.props;
+    const { selectedAnnotationBlock, selections } = this.props;
     console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
+
+    const annotations = wikiStore.annotations.blocks.filter(block => {
+      return block !== selectedAnnotationBlock;
+    });
 
     const annotation: any = {
       'selections': selections,
     };
 
-    // Add of the values that are annotation in the block
+    // Add all updated values from the annotation form
     for ( const [key, value] of Object.entries(values) ) {
       annotation[key] = value;
     }
 
-    const annotations = wikiStore.annotations.blocks;
     annotations.push(annotation);
 
     this.postAnnotations(annotations);
