@@ -26,9 +26,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   constructor(props: AnnotationFormProperties) {
     super(props);
 
+    const { selectedAnnotationBlock: selectedBlock } = this.props;
     this.state = {
-      role: null,
-      type: null,
+      role: selectedBlock ? selectedBlock.role : null,
+      type: selectedBlock ? selectedBlock.type : null,
     };
   }
 
