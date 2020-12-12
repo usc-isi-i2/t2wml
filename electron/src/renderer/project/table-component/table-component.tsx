@@ -291,6 +291,7 @@ class TableComponent extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
+      table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
     }
   }
 
@@ -363,6 +364,12 @@ class TableComponent extends Component<{}, TableState> {
       const borderBottom = document.createElement('div');
       borderBottom.classList.add('cell-border-bottom');
       cell.appendChild(borderBottom);
+    }
+
+    if ( rowIndex === bottomRow && colIndex === rightCol ) {
+      const resizeCorner = document.createElement('div');
+      resizeCorner.classList.add('cell-resize-corner');
+      cell.appendChild(resizeCorner);
     }
   }
 
