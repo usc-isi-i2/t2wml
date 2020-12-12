@@ -109,7 +109,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
                 <Form.Label className="text-muted">{type.label}</Form.Label>
                 <Form.Control
                   type="text" size="sm"
-                  placeholder={type.label} />
+                  defaultValue={selectedBlock ? selectedBlock[type.value] : ''} />
               </Col>
             </Form.Group>
           ))}
