@@ -483,7 +483,11 @@ class TableComponent extends Component<{}, TableState> {
     const { annotationMode } = this.state;
     const element = event.target as any;
 
-    if ( element.nodeName !== 'TD' ) { return; }
+    if ( element.className === 'cell-resize-corner' ) {
+      this.prevElement = element;
+      this.selecting = true;
+      return;
+    } else if ( element.nodeName !== 'TD' ) { return; }
 
     // Set both coordinates to the same cell
     const x1 = element.cellIndex;
