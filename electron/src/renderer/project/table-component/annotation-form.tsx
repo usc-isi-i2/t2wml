@@ -45,6 +45,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     onSubmit(this.state);
   }
 
+  handleOnDelete(event: any) {
+    event.preventDefault();
+    const { onSubmit } = this.props;
+    onSubmit(this.state);
+  }
+
   renderSelectionAreas() {
     const { selections } = this.props;
     if ( !selections ) { return null; }
@@ -155,6 +161,23 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     )
   }
 
+  renderDeleteButton() {
+    return (
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <Button
+            size="sm"
+            type="button"
+            variant="link"
+            className="delete"
+            onClick={(event) => this.handleOnDelete(event)}>
+            delete this selection
+          </Button>
+        </Col>
+      </Form.Group>
+    )
+  }
+
   render() {
     return (
       <Form className="container annotation-form"
@@ -163,6 +186,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         {this.renderOptionsDropdown()}
         {this.renderNestedOptionsDropdown()}
         {this.renderSubmitButton()}
+        {this.renderDeleteButton()}
       </Form>
     )
   }
