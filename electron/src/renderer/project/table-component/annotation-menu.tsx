@@ -41,9 +41,30 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
   }
 
-  handleOnDelete() {
-    const { selections } = this.props;
+  async handleOnDelete() {
+    const { selectedAnnotationBlock, selections, onClose } = this.props;
     console.log('AnnotationMenu OnDelete triggered for -> ', selections);
+
+    const annotations = wikiStore.annotations.blocks.filter(block => {
+      return block !== selectedAnnotationBlock;
+    });
+
+    const formData = new FormData();
+    formData.append('annotations', JSON.stringify(annotations));
+
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.postAnnotationBlocks(
+          wikiStore.projects.current!.folder,
+          formData,
+        )
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot submit annotations!";
+      this.setState({ errorMessage: error });
+    } finally {
+      onClose();
+    }
   }
 
   async handleOnSubmit(values: { [key: string]: string }) {
