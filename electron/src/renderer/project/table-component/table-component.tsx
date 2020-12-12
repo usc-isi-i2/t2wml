@@ -240,10 +240,37 @@ class TableComponent extends Component<{}, TableState> {
       const { role, type, selections } = block;
       for ( const selection of selections ) {
         const { x1, y1, x2, y2 } = selection;
-        for ( let row = y1; row <= y2; row++ ) {
-          for ( let col = x1; col <= x2; col++ ) {
-            const stuff = tableData[row-1][col-1];
-            tableData[row-1][col-1] = {...stuff, role, type};
+        if ( y1 <= y2 ) {
+          if ( x1 <= x2 ) {
+            for ( let row = y1; row <= y2; row++ ) {
+              for ( let col = x1; col <= x2; col++ ) {
+                const stuff = tableData[row-1][col-1];
+                tableData[row-1][col-1] = {...stuff, role, type};
+              }
+            }
+          } else {
+            for ( let row = y1; row <= y2; row++ ) {
+              for ( let col = x2; col <= x1; col++ ) {
+                const stuff = tableData[row-1][col-1];
+                tableData[row-1][col-1] = {...stuff, role, type};
+              }
+            }
+          }
+        } else {
+          if ( x1 <= x2 ) {
+            for ( let row = y2; row <= y1; row++ ) {
+              for ( let col = x1; col <= x2; col++ ) {
+                const stuff = tableData[row-1][col-1];
+                tableData[row-1][col-1] = {...stuff, role, type};
+              }
+            }
+          } else {
+            for ( let row = y2; row <= y1; row++ ) {
+              for ( let col = x2; col <= x1; col++ ) {
+                const stuff = tableData[row-1][col-1];
+                tableData[row-1][col-1] = {...stuff, role, type};
+              }
+            }
           }
         }
       }
