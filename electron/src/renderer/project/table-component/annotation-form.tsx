@@ -162,20 +162,23 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderDeleteButton() {
-    return (
-      <Form.Group as={Row}>
-        <Col sm="12" md="12">
-          <Button
-            size="sm"
-            type="button"
-            variant="link"
-            className="delete"
-            onClick={(event) => this.handleOnDelete(event)}>
-            delete this selection
-          </Button>
-        </Col>
-      </Form.Group>
-    )
+    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    if ( selectedBlock ) {
+      return (
+        <Form.Group as={Row}>
+          <Col sm="12" md="12">
+            <Button
+              size="sm"
+              type="button"
+              variant="link"
+              className="delete"
+              onClick={(event) => this.handleOnDelete(event)}>
+              delete this selection
+            </Button>
+          </Col>
+        </Form.Group>
+      )
+    }
   }
 
   render() {
