@@ -9,9 +9,9 @@ export async function addToPath() {
     if (config.platform === 'windows') {
         addToWindowsPath();
     } else if (config.platform === 'mac') {
-        addToMacPath();
+        await addToMacPath();
     } else if (config.platform === 'linux') {
-        addToLinuxPath();
+        await addToLinuxPath();
     }
 }
 
@@ -49,8 +49,17 @@ async function addToMacPath() {
     showMessageBox();
 }
 
-function addToLinuxPath() {
-    // Add to Linux path
+async function addToLinuxPath() {
+    console.log('Executable path is at ', app.getPath('exe'));
+    console.log('Or maybe at ', process.env.PORTABLE_EXECUTABLE_FILE);
+    const exePath = process.env.PORTABLE_EXECUTABLE_FILE;
+
+    const command = `mkdir p ~/.local/bin && ln -sf ${exePath} ~/.local/bin/t2wml`;
+    console.log(command);
+    const child = child_process.exec(command);
+    await promiseFromChildProcess(child);
+
+    showMessageBox('Make sure to add ~/.local/bin to your path');
 }
 
 function showMessageBox(details?: string) {
