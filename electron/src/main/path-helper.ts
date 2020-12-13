@@ -50,11 +50,9 @@ async function addToMacPath() {
 }
 
 async function addToLinuxPath() {
-    console.log('Executable path is at ', app.getPath('exe'));
-    console.log('Or maybe at ', process.env.PORTABLE_EXECUTABLE_FILE);
-    const exePath = process.env.PORTABLE_EXECUTABLE_FILE;
+    const exePath = process.env.APPIMAGE;
 
-    const command = `mkdir p ~/.local/bin && ln -sf ${exePath} ~/.local/bin/t2wml`;
+    const command = `mkdir -p ~/.local/bin && ln -sf ${exePath} ~/.local/bin/t2wml`;
     console.log(command);
     const child = child_process.exec(command);
     await promiseFromChildProcess(child);
