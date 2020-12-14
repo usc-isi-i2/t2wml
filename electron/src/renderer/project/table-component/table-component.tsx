@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component } from 'react';
+import React, { ChangeEvent, Component, RefObject } from 'react';
 
 import './table-component.css';
 
@@ -56,7 +56,7 @@ interface TableState {
 class TableComponent extends Component<{}, TableState> {
 
   private tableRef = React.createRef<HTMLTableElement>();
-  setTableReference(reference) {
+  setTableReference(reference: RefObject<HTMLTableElement>) {
     if ( !reference ) { return; }
     this.tableRef = reference;
   }
@@ -283,24 +283,24 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   resetSelections() {
-    const table = this.tableRef;
+    const table: any = this.tableRef;
     if ( table ) {
-      table.querySelectorAll('.active').forEach(e => {
+      table.querySelectorAll('.active').forEach((e: any) => {
         e.classList.remove('active');
         e.classList.remove('property');
         e.classList.remove('qualifier');
         e.classList.remove('main-subject');
       });
-      table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
-      table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
-      table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
-      table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
-      table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+      table.querySelectorAll('.cell-border-top').forEach((e: any) => e.remove());
+      table.querySelectorAll('.cell-border-left').forEach((e: any)  => e.remove());
+      table.querySelectorAll('.cell-border-right').forEach((e: any) => e.remove());
+      table.querySelectorAll('.cell-border-bottom').forEach((e: any) => e.remove());
+      table.querySelectorAll('.cell-resize-corner').forEach((e: any) => e.remove());
     }
   }
 
   updateSelections() {
-    const table = this.tableRef;
+    const table: any = this.tableRef;
     if ( !table ) { return; }
 
     // Reset selections before update
@@ -386,7 +386,7 @@ class TableComponent extends Component<{}, TableState> {
     if ( !statement || !statement.cells ) { return; }
 
     // Get a reference to the table elements
-    const table = this.tableRef;
+    const table: any = this.tableRef;
     const rows = table!.querySelectorAll('tr');
 
     // Select qualifier cells
@@ -477,7 +477,7 @@ class TableComponent extends Component<{}, TableState> {
 
       event.preventDefault();
       const {x1, x2, y1, y2} = this.selections[0];
-      const table = this.tableRef;
+      const table: any = this.tableRef;
       const rows = table!.querySelectorAll('tr');
       const element = rows[y1].children[x1];
 
@@ -672,10 +672,10 @@ class TableComponent extends Component<{}, TableState> {
     element.setAttribute('style', 'width: 100%;');
     element.parentElement.setAttribute('style', 'max-width: 1%');
 
-    const table = this.tableRef;
+    const table: any = this.tableRef;
     const rows = table!.querySelectorAll('tr');
     const index = element.parentElement.cellIndex;
-    rows.forEach(row => {
+    rows.forEach((row: any) => {
       row.children[index].setAttribute('style', 'max-width: 1%');
     });
 
