@@ -59,7 +59,8 @@ class TableComponent extends Component<{}, TableState> {
 
   private tableRef = React.createRef<HTMLTableElement>();
   setTableReference(reference) {
-    console.log(reference);
+    if ( !reference ) { return; }
+    this.tableRef = reference;
   }
 
   private selecting = false;
@@ -284,8 +285,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   resetSelections() {
-    const table = this.tableRef.current;
-    if (table) {
+    const table = this.tableRef;
+    if ( table ) {
       table.querySelectorAll('.active').forEach(e => {
         e.classList.remove('active');
         e.classList.remove('property');
@@ -301,10 +302,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateSelections() {
-    const table = this.tableRef.current;
-    if (!table) {
-      return;
-    }
+    const table = this.tableRef;
+    if ( !table ) { return; }
 
     // Reset selections before update
     this.resetSelections();
@@ -389,7 +388,7 @@ class TableComponent extends Component<{}, TableState> {
     if ( !statement || !statement.cells ) { return; }
 
     // Get a reference to the table elements
-    const table = this.tableRef.current;
+    const table = this.tableRef;
     const rows = table!.querySelectorAll('tr');
 
     // Select qualifier cells
@@ -480,7 +479,7 @@ class TableComponent extends Component<{}, TableState> {
 
       event.preventDefault();
       const {x1, x2, y1, y2} = this.selections[0];
-      const table = this.tableRef.current;
+      const table = this.tableRef;
       const rows = table!.querySelectorAll('tr');
       const element = rows[y1].children[x1];
 
@@ -675,7 +674,7 @@ class TableComponent extends Component<{}, TableState> {
     element.setAttribute('style', 'width: 100%;');
     element.parentElement.setAttribute('style', 'max-width: 1%');
 
-    const table = this.tableRef.current;
+    const table = this.tableRef;
     const rows = table!.querySelectorAll('tr');
     const index = element.parentElement.cellIndex;
     rows.forEach(row => {
