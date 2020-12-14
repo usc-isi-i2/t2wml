@@ -98,11 +98,11 @@ class Table extends React.Component<TableProperties>{
                 <td>{i+1}</td>
                 {cols.map((r, j) => {
                   if ( i < tableData.length && j < tableData[i].length ) {
-                    const cell = tableData[i][j];
+                    const { content, classNames } = tableData[i][j];
                     return (
                       <td key={`cell-${j}`}
-                        className={cell.classNames.join(' ')}>
-                        {cell.content}
+                        className={classNames ? classNames.join(' ') : ''}>
+                        {content}
                       </td>
                     )
                   } else {
