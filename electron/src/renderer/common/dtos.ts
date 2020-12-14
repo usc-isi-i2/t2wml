@@ -134,11 +134,13 @@ export interface StatementEntry extends Entry{
 }
 
 
+export type AnnotationBlockRole = "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject" | "Unit";
+export type AnnotationBlockType = "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
 
 export interface AnnotationBlock{
     selections: CellSelection[];
-    role: "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject" | "Unit";
-    type?: "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
+    role: AnnotationBlockRole;
+    type?: AnnotationBlockType; 
 
     language?: string;
 
