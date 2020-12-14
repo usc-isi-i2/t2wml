@@ -1,15 +1,10 @@
 import React from 'react';
 import * as utils from './table-utils';
+import { TableCell } from '../../common/dtos';
 
 
 const MIN_NUM_ROWS = 100;
 const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUpperCase());
-
-
-interface TableCell{
-  content: string;
-  classNames: string[];
-}
 
 
 interface TableProperties{

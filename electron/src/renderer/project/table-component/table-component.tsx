@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { AnnotationBlock, QNode, TableDTO } from '../../common/dtos';
+import { AnnotationBlock, QNode, TableDTO, TableCell } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
@@ -221,12 +221,17 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateTableData(table?: TableDTO) {
+
     if ( !table ) { return; }
     const tableData = [];
     for ( let i = 0; i < table.cells.length; i++ ) {
       const rowData = [];
       for ( let j = 0; j < table.cells[i].length; j++ ) {
-        rowData.push({data: table.cells[i][j]});
+        const cell: TableCell = {
+          content: table.cells[i][j],
+          classNames: [],
+        };
+        rowData.push(cell);
       }
       tableData.push(rowData);
     }
@@ -244,15 +249,17 @@ class TableComponent extends Component<{}, TableState> {
           if ( x1 <= x2 ) {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           } else {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           }
@@ -260,15 +267,17 @@ class TableComponent extends Component<{}, TableState> {
           if ( x1 <= x2 ) {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           } else {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           }
