@@ -15,6 +15,7 @@ import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 import AnnotationMenu from './annotation-menu';
 import TableToast from './table-toast';
+import Table from './table';
 
 import * as utils from './table-utils';
 
@@ -840,7 +841,17 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   renderTable() {
-    const { showCleanedData, tableData } = this.state;
+    const { tableData } = this.state;
+    return (
+      <Table
+        tableData={tableData}
+        onMouseUp={this.handleOnMouseUp.bind(this)}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={this.handleOnMouseMove.bind(this)}
+        onClickHeader={this.handleOnClickHeader.bind(this)}
+        setTableReference={this.setTableReference.bind(this)} />
+    )
+
     if ( tableData ) {
       const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
       const cols = [...Array(Math.max(tableData[0].length, 26))];
