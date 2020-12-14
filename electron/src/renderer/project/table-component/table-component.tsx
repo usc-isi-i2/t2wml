@@ -474,6 +474,76 @@ class TableComponent extends Component<{}, TableState> {
     if ( event.keyCode == 27 ) {
       this.resetTableData();
     }
+
+    if ( [37, 38, 39, 40].includes(event.keyCode) &&
+      !!this.selections.length ) {
+
+      event.preventDefault();
+      const {x1, x2, y1, y2} = this.selections[0];
+      const table = this.tableRef.current;
+      const rows = table!.querySelectorAll('tr');
+      const element = rows[y1].children[x1];
+
+      // arrow up
+      if ( event.keyCode == 38 && y1 > 1 ) {
+        this.resetSelections();
+        if ( event.shiftKey ) {
+          this.selections = [{'x1': x1, 'x2': x2, 'y1': y1-1, 'y2': y2}];
+          this.updateSelections();
+        } else {
+          const nextElement = rows[y1-1].children[x1];
+          this.selections = [{'x1': x1, 'x2': x1, 'y1': y1-1, 'y2': y1-1}];
+          this.selectCell(nextElement, y1-1, x1, y1-1, x1, x1, y1-1);
+          this.selectRelatedCells(y1-1, x1);
+        }
+        this.prevElement = element;
+      }
+
+      // arrow down
+      if ( event.keyCode == 40 && y1 < rows.length-1 ) {
+        this.resetSelections();
+        if ( event.shiftKey ) {
+          this.selections = [{'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2+1}];
+          this.updateSelections();
+        } else {
+          const nextElement = rows[y1+1].children[x1];
+          this.selections = [{'x1': x1, 'x2': x1, 'y1': y1+1, 'y2': y1+1}];
+          this.selectCell(nextElement, y1+1, x1, y1+1, x1, x1, y1+1);
+          this.selectRelatedCells(y1+1, x1);
+        }
+        this.prevElement = element;
+      }
+
+      // arrow left
+      if ( event.keyCode == 37 && x1 > 1) {
+        this.resetSelections();
+        if ( event.shiftKey ) {
+          this.selections = [{'x1': x1-1, 'x2': x2, 'y1': y1, 'y2': y2}];
+          this.updateSelections();
+        } else {
+          const nextElement = rows[y1].children[x1-1];
+          this.selections = [{'x1': x1-1, 'x2': x1-1, 'y1': y1, 'y2': y1}];
+          this.selectCell(nextElement, y1, x1-1, y1, x1-1, x1-1, y1);
+          this.selectRelatedCells(y1, x1-1);
+        }
+        this.prevElement = element;
+      }
+
+      // arrow right
+      if ( event.keyCode == 39 && x1 < rows[y1].children.length-1 ) {
+        this.resetSelections();
+        if ( event.shiftKey ) {
+          this.selections = [{'x1': x1, 'x2': x2+1, 'y1': y1, 'y2': y2}];
+          this.updateSelections();
+        } else {
+          const nextElement = rows[y1].children[x1+1];
+          this.selections = [{'x1': x1+1, 'x2': x1+1, 'y1': y1, 'y2': y1}];
+          this.selectCell(nextElement, y1, x1+1, y1, x1+1, x1+1, y1);
+          this.selectRelatedCells(y1, x1+1);
+        }
+        this.prevElement = element;
+      }
+    }
   }
 
   handleOnMouseUp(event: React.MouseEvent) {
