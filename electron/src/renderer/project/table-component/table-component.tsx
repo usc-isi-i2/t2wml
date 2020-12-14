@@ -890,34 +890,6 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  renderEmptyTable() {
-    return (
-      <div className="table-wrapper">
-        <table ref={this.tableRef}
-          onMouseUp={this.handleOnMouseUp.bind(this)}
-          onMouseDown={this.handleOnMouseDown.bind(this)}
-          onMouseMove={this.handleOnMouseMove.bind(this)}>
-          <thead>
-            <tr>
-              <th></th>
-              {CHARACTERS.map(c => <th key={c}><div>{c}</div></th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(MIN_NUM_ROWS)].map((e, i) => (
-              <tr key={`row-${i}`}>
-                <td>{i+1}</td>
-                {CHARACTERS.map((c, j) => (
-                  <td key={`cell-${j}`}></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )
-  }
-
   renderTable() {
     const { tableData } = this.state;
     return (
@@ -929,55 +901,6 @@ class TableComponent extends Component<{}, TableState> {
         onClickHeader={this.handleOnClickHeader.bind(this)}
         setTableReference={this.setTableReference.bind(this)} />
     )
-
-    if ( tableData ) {
-      const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-      const cols = [...Array(Math.max(tableData[0].length, 26))];
-      return (
-        <div className="table-wrapper">
-          <table ref={this.tableRef}
-            onMouseUp={this.handleOnMouseUp.bind(this)}
-            onMouseDown={this.handleOnMouseDown.bind(this)}
-            onMouseMove={this.handleOnMouseMove.bind(this)}>
-            <thead>
-              <tr>
-                <th></th>
-                {cols.map((r, i) => (
-                  <th key={i}>
-                    <div onDoubleClick={this.handleOnClickHeader.bind(this)}>
-                      {utils.columnToLetter(i + 1)}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((e, i) => (
-                <tr key={`row-${i}`}>
-                  <td>{i+1}</td>
-                  {cols.map((r, j) => {
-                    if ( i < tableData.length && j < tableData[i].length ) {
-                      const stuff = tableData[i][j];
-                      const { data, cleaned } = stuff;
-                      return (
-                        <td key={`cell-${j}`}
-                          className={this.getClassName(stuff, i, j)}>
-                          { showCleanedData && !!cleaned ? cleaned : data }
-                        </td>
-                      )
-                    } else {
-                      return <td key={`cell-${j}`} />
-                    }
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )
-    } else {
-      return this.renderEmptyTable();
-    }
   }
 
   renderSheetSelector() {
