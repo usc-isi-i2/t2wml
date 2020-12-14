@@ -16,7 +16,7 @@ class AnnotationIntegration(object):
         sheet_name=calc_params.sheet_name
         if df is None:
             if not is_csv:
-                df = pd.read_excel(calc_params.data_path, dtype=object, header=None, sheet_name=sheet_name, engine="openpyxl").fillna(
+                df = pd.read_excel(calc_params.data_path, dtype=object, header=None, sheet_name=sheet_name).fillna(
                     '')
             else:
                 df = pd.read_csv(calc_params.data_path, dtype=object, header=None).fillna('')
