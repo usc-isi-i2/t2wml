@@ -156,3 +156,7 @@ export interface AnnotationBlock{
     //time_zone?: string;
 }
 
+export interface TableCell {
+  content: string;
+  classNames?: string[];
+}
