@@ -56,7 +56,12 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUppe
 
 @observer
 class TableComponent extends Component<{}, TableState> {
+
   private tableRef = React.createRef<HTMLTableElement>();
+  setTableReference(reference) {
+    console.log(reference);
+  }
+
   private selecting = false;
   private selections: CellSelection[] = [];
   private prevElement: EventTarget | undefined = undefined;

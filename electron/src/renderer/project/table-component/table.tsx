@@ -18,8 +18,6 @@ interface TableProperties{
 
 class Table extends React.Component<TableProperties>{
 
-  private tableRef = React.createRef<HTMLTableElement>();
-
   constructor(props: TableProperties) {
     super(props);
   }
@@ -29,10 +27,11 @@ class Table extends React.Component<TableProperties>{
       onMouseUp,
       onMouseDown,
       onMouseMove,
+      setTableReference,
     } = this.props;
     return (
       <div className="table-wrapper">
-        <table ref={this.tableRef}
+        <table ref={setTableReference}
           onMouseUp={onMouseUp.bind(this)}
           onMouseDown={onMouseDown.bind(this)}
           onMouseMove={onMouseMove.bind(this)}>
@@ -64,6 +63,7 @@ class Table extends React.Component<TableProperties>{
       onMouseDown,
       onMouseMove,
       onClickHeader,
+      setTableReference,
     } = this.props;
 
     if ( !tableData ) {
@@ -75,7 +75,7 @@ class Table extends React.Component<TableProperties>{
 
     return (
       <div className="table-wrapper">
-        <table ref={this.tableRef}
+        <table ref={setTableReference}
           onMouseUp={onMouseUp.bind(this)}
           onMouseDown={onMouseDown.bind(this)}
           onMouseMove={onMouseMove.bind(this)}>
