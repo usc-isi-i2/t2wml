@@ -23,16 +23,6 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { config } from '../../../main/config';
 
-// Gleb:
-// The generic table should have a data property that is a TableCell[][]
-// Events from the table component:
-// selectionChanged(list of selected ranges)
-// mouseHover(row, col)
-
-interface TableCell {
-  content: any;
-  classNames?: string[];
-}
 
 interface TableState {
   showSpinner: boolean;
