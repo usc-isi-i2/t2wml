@@ -218,7 +218,6 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateTableData(table?: TableDTO) {
-
     if ( !table ) { return; }
     const tableData = [];
     for ( let i = 0; i < table.cells.length; i++ ) {
@@ -285,30 +284,38 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   resetSelections() {
-    const table = this.tableRef;
-    if ( table ) {
-      table.querySelectorAll('.active').forEach(e => {
-        e.classList.remove('active');
-        e.classList.remove('property');
-        e.classList.remove('qualifier');
-        e.classList.remove('main-subject');
+    if ( this.tableRef ) {
+      this.tableRef.querySelectorAll('.active').forEach(element => {
+        element.classList.remove('active');
+        element.classList.remove('property');
+        element.classList.remove('qualifier');
+        element.classList.remove('main-subject');
       });
-      table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
-      table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
-      table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
-      table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
-      table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+      this.tableRef.querySelectorAll('.cell-border-top').forEach(element => {
+        element.remove();
+      });
+      this.tableRef.querySelectorAll('.cell-border-left').forEach(element => {
+        element.remove();
+      });
+      this.tableRef.querySelectorAll('.cell-border-right').forEach(element => {
+        element.remove();
+      });
+      this.tableRef.querySelectorAll('.cell-border-bottom').forEach(element => {
+        element.remove();
+      });
+      this.tableRef.querySelectorAll('.cell-resize-corner').forEach(element => {
+        element.remove();
+      });
     }
   }
 
   updateSelections() {
-    const table = this.tableRef;
-    if ( !table ) { return; }
+    if ( !this.tableRef ) { return; }
 
     // Reset selections before update
     this.resetSelections();
 
-    const rows = table.querySelectorAll('tr');
+    const rows = this.tableRef.querySelectorAll('tr');
     this.selections.forEach(selection => {
       const {x1, x2, y1, y2} = selection;
       const leftCol = Math.min(x1, x2);
@@ -388,8 +395,7 @@ class TableComponent extends Component<{}, TableState> {
     if ( !statement || !statement.cells ) { return; }
 
     // Get a reference to the table elements
-    const table = this.tableRef;
-    const rows = table!.querySelectorAll('tr');
+    const rows = this.tableRef!.querySelectorAll('tr');
 
     // Select qualifier cells
     if ( 'qualifiers' in statement.cells ) {
@@ -479,8 +485,7 @@ class TableComponent extends Component<{}, TableState> {
 
       event.preventDefault();
       const {x1, x2, y1, y2} = this.selections[0];
-      const table = this.tableRef;
-      const rows = table!.querySelectorAll('tr');
+      const rows = this.tableRef!.querySelectorAll('tr');
       const element = rows[y1].children[x1];
 
       // arrow up
@@ -674,8 +679,7 @@ class TableComponent extends Component<{}, TableState> {
     element.setAttribute('style', 'width: 100%;');
     element.parentElement.setAttribute('style', 'max-width: 1%');
 
-    const table = this.tableRef;
-    const rows = table!.querySelectorAll('tr');
+    const rows = this.tableRef!.querySelectorAll('tr');
     const index = element.parentElement.cellIndex;
     rows.forEach(row => {
       row.children[index].setAttribute('style', 'max-width: 1%');
