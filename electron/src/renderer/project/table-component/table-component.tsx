@@ -51,8 +51,6 @@ interface TableState {
   errorMessage: ErrorMessage;
 }
 
-const MIN_NUM_ROWS = 100; // how many rows do we want?
-const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUpperCase());
 
 @observer
 class TableComponent extends Component<{}, TableState> {
