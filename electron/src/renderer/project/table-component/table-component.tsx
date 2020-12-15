@@ -594,6 +594,62 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
+  checkSelectedAnnotationBlocks(x1, x2, y1, y2) {
+    for ( const block of wikiStore.annotations.blocks ) {
+      for ( const selection of block.selections ) {
+        if ( selection['y1'] <= selection['y2'] ) {
+          if ( selection['x1'] <= selection['x2'] ) {
+            if ( x1 >= selection['x1'] &&
+                 x2 <= selection['x2'] &&
+                 y1 >= selection['y1'] &&
+                 y2 <= selection['y2'] ) {
+              this.resetSelections();
+              this.selections = block.selections;
+              this.updateSelections();
+              this.setState({selectedAnnotationBlock: block});
+              return;
+            }
+          } else {
+            if ( x1 <= selection['x1'] &&
+                 x2 >= selection['x2'] &&
+                 y1 >= selection['y1'] &&
+                 y2 <= selection['y2'] ) {
+              this.resetSelections();
+              this.selections = block.selections;
+              this.updateSelections();
+              this.setState({selectedAnnotationBlock: block});
+              return;
+            }
+          }
+        } else {
+          if ( selection['x1'] <= selection['x2'] ) {
+            if ( x1 >= selection['x1'] &&
+                 x2 <= selection['x2'] &&
+                 y1 <= selection['y1'] &&
+                 y2 >= selection['y2'] ) {
+              this.resetSelections();
+              this.selections = block.selections;
+              this.updateSelections();
+              this.setState({selectedAnnotationBlock: block});
+              return;
+            }
+          } else {
+            if ( x1 <= selection['x1'] &&
+                 x2 >= selection['x2'] &&
+                 y1 <= selection['y1'] &&
+                 y2 >= selection['y2'] ) {
+              this.resetSelections();
+              this.selections = block.selections;
+              this.updateSelections();
+              this.setState({selectedAnnotationBlock: block});
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+
   handleOnMouseDown(event: React.MouseEvent) {
     const { annotationMode } = this.state;
     const element = event.target as any;
@@ -616,58 +672,8 @@ class TableComponent extends Component<{}, TableState> {
         showAnnotationMenu: false,
         selectedAnnotationBlock: undefined,
       }, () => {
-        for ( const block of wikiStore.annotations.blocks ) {
-          for ( const selection of block.selections ) {
-            if ( selection['y1'] <= selection['y2'] ) {
-              if ( selection['x1'] <= selection['x2'] ) {
-                if ( x1 >= selection['x1'] &&
-                     x2 <= selection['x2'] &&
-                     y1 >= selection['y1'] &&
-                     y2 <= selection['y2'] ) {
-                  this.resetSelections();
-                  this.selections = block.selections;
-                  this.updateSelections();
-                  this.setState({selectedAnnotationBlock: block});
-                  return;
-                }
-              } else {
-                if ( x1 <= selection['x1'] &&
-                     x2 >= selection['x2'] &&
-                     y1 >= selection['y1'] &&
-                     y2 <= selection['y2'] ) {
-                  this.resetSelections();
-                  this.selections = block.selections;
-                  this.updateSelections();
-                  this.setState({selectedAnnotationBlock: block});
-                  return;
-                }
-              }
-            } else {
-              if ( selection['x1'] <= selection['x2'] ) {
-                if ( x1 >= selection['x1'] &&
-                     x2 <= selection['x2'] &&
-                     y1 <= selection['y1'] &&
-                     y2 >= selection['y2'] ) {
-                  this.resetSelections();
-                  this.selections = block.selections;
-                  this.updateSelections();
-                  this.setState({selectedAnnotationBlock: block});
-                  return;
-                }
-              } else {
-                if ( x1 <= selection['x1'] &&
-                     x2 >= selection['x2'] &&
-                     y1 <= selection['y1'] &&
-                     y2 >= selection['y2'] ) {
-                  this.resetSelections();
-                  this.selections = block.selections;
-                  this.updateSelections();
-                  this.setState({selectedAnnotationBlock: block});
-                  return;
-                }
-              }
-            }
-          }
+        if ( this.checkSelectedAnnotationBlocks(x1, x2, y1, y2) ) {
+          return;
         }
       });
     }
