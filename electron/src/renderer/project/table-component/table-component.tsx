@@ -615,15 +615,54 @@ class TableComponent extends Component<{}, TableState> {
       }, () => {
         for ( const block of wikiStore.annotations.blocks ) {
           for ( const selection of block.selections ) {
-            if ( x1 >= selection['x1'] &&
-                 x2 <= selection['x2'] &&
-                 y1 >= selection['y1'] &&
-                 y2 <= selection['y2'] ) {
-              this.resetSelections();
-              this.selections = block.selections;
-              this.updateSelections();
-              this.setState({selectedAnnotationBlock: block});
-              return;
+            if ( selection['y1'] <= selection['y2'] ) {
+              if ( selection['x1'] <= selection['x2'] ) {
+                if ( x1 >= selection['x1'] &&
+                     x2 <= selection['x2'] &&
+                     y1 >= selection['y1'] &&
+                     y2 <= selection['y2'] ) {
+                  this.resetSelections();
+                  this.selections = block.selections;
+                  this.updateSelections();
+                  this.setState({selectedAnnotationBlock: block});
+                  return;
+                }
+              } else {
+                if ( x1 <= selection['x1'] &&
+                     x2 >= selection['x2'] &&
+                     y1 >= selection['y1'] &&
+                     y2 <= selection['y2'] ) {
+                  this.resetSelections();
+                  this.selections = block.selections;
+                  this.updateSelections();
+                  this.setState({selectedAnnotationBlock: block});
+                  return;
+                }
+              }
+            } else {
+              if ( selection['x1'] <= selection['x2'] ) {
+                if ( x1 >= selection['x1'] &&
+                     x2 <= selection['x2'] &&
+                     y1 <= selection['y1'] &&
+                     y2 >= selection['y2'] ) {
+                  this.resetSelections();
+                  this.selections = block.selections;
+                  this.updateSelections();
+                  this.setState({selectedAnnotationBlock: block});
+                  return;
+                }
+              } else {
+                if ( x1 <= selection['x1'] &&
+                     x2 >= selection['x2'] &&
+                     y1 <= selection['y1'] &&
+                     y2 >= selection['y2'] ) {
+                  this.resetSelections();
+                  this.selections = block.selections;
+                  this.updateSelections();
+                  this.setState({selectedAnnotationBlock: block});
+                  return;
+                }
+              }
             }
           }
         }
