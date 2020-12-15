@@ -486,7 +486,17 @@ class TableComponent extends Component<{}, TableState> {
         this.resetSelections();
         const nextElement = rows[y1-1].children[x1];
         if ( event.shiftKey ) {
-          this.selections = [{'x1': x1, 'x2': x2, 'y1': y1-1, 'y2': y2}];
+          if ( y1 === y2 ) {
+            this.selections = [{'x1': x1, 'x2': x2, 'y1': y1-1, 'y2': y2}];
+            this.prevDirection = 'up';
+          } else {
+            if ( this.prevDirection === 'down' ) {
+              this.selections = [{'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2-1}];
+            } else {
+              this.selections = [{'x1': x1, 'x2': x2, 'y1': y1-1, 'y2': y2}];
+              this.prevDirection = 'up';
+            }
+          }
           this.updateSelections();
         } else {
           this.selections = [{'x1': x1, 'x2': x1, 'y1': y1-1, 'y2': y1-1}];
@@ -494,7 +504,6 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1-1, x1);
         }
         this.prevElement = nextElement;
-        this.prevDirection = 'up';
       }
 
       // arrow down
@@ -502,7 +511,17 @@ class TableComponent extends Component<{}, TableState> {
         this.resetSelections();
         const nextElement = rows[y1+1].children[x1];
         if ( event.shiftKey ) {
-          this.selections = [{'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2+1}];
+          if ( y1 === y2 ) {
+            this.selections = [{'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2+1}];
+            this.prevDirection = 'down';
+          } else {
+            if ( this.prevDirection === 'up' ) {
+              this.selections = [{'x1': x1, 'x2': x2, 'y1': y1+1, 'y2': y2}];
+            } else {
+              this.selections = [{'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2+1}];
+              this.prevDirection = 'down';
+            }
+          }
           this.updateSelections();
         } else {
           this.selections = [{'x1': x1, 'x2': x1, 'y1': y1+1, 'y2': y1+1}];
@@ -510,7 +529,6 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1+1, x1);
         }
         this.prevElement = nextElement;
-        this.prevDirection = 'down';
       }
 
       // arrow left
@@ -518,7 +536,17 @@ class TableComponent extends Component<{}, TableState> {
         this.resetSelections();
         const nextElement = rows[y1].children[x1-1];
         if ( event.shiftKey ) {
-          this.selections = [{'x1': x1-1, 'x2': x2, 'y1': y1, 'y2': y2}];
+          if ( x1 === x2 ) {
+            this.selections = [{'x1': x1-1, 'x2': x2, 'y1': y1, 'y2': y2}];
+            this.prevDirection = 'left';
+          } else {
+            if ( this.prevDirection === 'right' ) {
+              this.selections = [{'x1': x1, 'x2': x2-1, 'y1': y1, 'y2': y2}];
+            } else {
+              this.selections = [{'x1': x1-1, 'x2': x2, 'y1': y1, 'y2': y2}];
+              this.prevDirection = 'left';
+            }
+          }
           this.updateSelections();
         } else {
           this.selections = [{'x1': x1-1, 'x2': x1-1, 'y1': y1, 'y2': y1}];
@@ -526,7 +554,6 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1, x1-1);
         }
         this.prevElement = nextElement;
-        this.prevDirection = 'left';
       }
 
       // arrow right
@@ -534,7 +561,17 @@ class TableComponent extends Component<{}, TableState> {
         this.resetSelections();
         const nextElement = rows[y1].children[x1+1];
         if ( event.shiftKey ) {
-          this.selections = [{'x1': x1, 'x2': x2+1, 'y1': y1, 'y2': y2}];
+          if ( x1 === x2 ) {
+            this.selections = [{'x1': x1, 'x2': x2+1, 'y1': y1, 'y2': y2}];
+            this.prevDirection = 'right';
+          } else {
+            if ( this.prevDirection === 'left' ) {
+              this.selections = [{'x1': x1+1, 'x2': x2, 'y1': y1, 'y2': y2}];
+            } else {
+              this.selections = [{'x1': x1, 'x2': x2+1, 'y1': y1, 'y2': y2}];
+              this.prevDirection = 'right';
+            }
+          }
           this.updateSelections();
         } else {
           this.selections = [{'x1': x1+1, 'x2': x1+1, 'y1': y1, 'y2': y1}];
@@ -542,7 +579,6 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1, x1+1);
         }
         this.prevElement = nextElement;
-        this.prevDirection = 'right';
       }
     }
   }
