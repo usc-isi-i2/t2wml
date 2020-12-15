@@ -63,7 +63,7 @@ class TableComponent extends Component<{}, TableState> {
 
   private selecting = false;
   private selections: CellSelection[] = [];
-  private prevElement: EventTarget | undefined = undefined;
+  private prevElement?: EventTarget;
 
   private requestService: RequestService;
 
