@@ -580,6 +580,9 @@ class TableComponent extends Component<{}, TableState> {
         }
         this.prevElement = nextElement;
       }
+
+      // Show the updated selection while moving
+      this.setState({showToast: true});
     }
   }
 
