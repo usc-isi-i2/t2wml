@@ -1,12 +1,19 @@
 export const TYPES = [{
   'label': 'String',
   'value': 'string',
+  'children': [{
+    'label': 'Property',
+    'value': 'property',
+  }],
 }, {
   'label': 'Monolingual String',
   'value': 'monolingualString',
   'children': [{
     'label': 'Language',
     'value': 'language',
+  }, {
+    'label': 'Property',
+    'value': 'property',
   }],
 }, {
   'label': 'Quantity',
@@ -14,6 +21,9 @@ export const TYPES = [{
   'children': [{
     'label': 'Unit',
     'value': 'unit',
+  }, {
+    'label': 'Property',
+    'value': 'property',
   }],
 }, {
   'label': 'Time',
@@ -27,10 +37,17 @@ export const TYPES = [{
   }, {
     'label': 'Format',
     'value': 'format',
+  }, {
+    'label': 'Property',
+    'value': 'property',
   }],
 }, {
   'label': 'Q-Node',
   'value': 'qNode',
+  'children': [{
+    'label': 'Property',
+    'value': 'property',
+  }],
 }];
 
 
