@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component, RefObject } from 'react';
+import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
 
