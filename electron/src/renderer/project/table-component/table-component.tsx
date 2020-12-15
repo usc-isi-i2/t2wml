@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { AnnotationBlock, QNode, TableDTO } from '../../common/dtos';
+import { AnnotationBlock, QNode, TableDTO, TableCell } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
@@ -15,6 +15,7 @@ import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 import AnnotationMenu from './annotation-menu';
 import TableToast from './table-toast';
+import Table from './table';
 
 import * as utils from './table-utils';
 
@@ -23,16 +24,6 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { config } from '../../../main/config';
 
-// Gleb:
-// The generic table should have a data property that is a TableCell[][]
-// Events from the table component:
-// selectionChanged(list of selected ranges)
-// mouseHover(row, col)
-
-interface TableCell {
-  content: any;
-  classNames?: string[];
-}
 
 interface TableState {
   showSpinner: boolean;
@@ -60,12 +51,16 @@ interface TableState {
   errorMessage: ErrorMessage;
 }
 
-const MIN_NUM_ROWS = 100; // how many rows do we want?
-const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUpperCase());
 
 @observer
 class TableComponent extends Component<{}, TableState> {
-  private tableRef = React.createRef<HTMLTableElement>();
+
+  private tableRef = React.createRef<HTMLTableElement>().current!;
+  setTableReference(reference?: HTMLTableElement) {
+    if ( !reference ) { return; }
+    this.tableRef = reference;
+  }
+
   private selecting = false;
   private selections: CellSelection[] = [];
   private prevElement: EventTarget | undefined = undefined;
@@ -221,12 +216,17 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateTableData(table?: TableDTO) {
+
     if ( !table ) { return; }
     const tableData = [];
     for ( let i = 0; i < table.cells.length; i++ ) {
       const rowData = [];
       for ( let j = 0; j < table.cells[i].length; j++ ) {
-        rowData.push({data: table.cells[i][j]});
+        const cell: TableCell = {
+          content: table.cells[i][j],
+          classNames: [],
+        };
+        rowData.push(cell);
       }
       tableData.push(rowData);
     }
@@ -244,15 +244,17 @@ class TableComponent extends Component<{}, TableState> {
           if ( x1 <= x2 ) {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           } else {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           }
@@ -260,15 +262,17 @@ class TableComponent extends Component<{}, TableState> {
           if ( x1 <= x2 ) {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           } else {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
-                const stuff = tableData[row-1][col-1];
-                tableData[row-1][col-1] = {...stuff, role, type};
+                const cell = tableData[row-1][col-1];
+                cell.classNames.push(`role-${role}`);
+                cell.classNames.push(`type-${type}`);
               }
             }
           }
@@ -279,8 +283,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   resetSelections() {
-    const table = this.tableRef.current;
-    if (table) {
+    const table = this.tableRef;
+    if ( table ) {
       table.querySelectorAll('.active').forEach(e => {
         e.classList.remove('active');
         e.classList.remove('property');
@@ -288,7 +292,7 @@ class TableComponent extends Component<{}, TableState> {
         e.classList.remove('main-subject');
       });
       table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
-      table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
+      table.querySelectorAll('.cell-border-left').forEach(e  => e.remove());
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
@@ -296,10 +300,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateSelections() {
-    const table = this.tableRef.current;
-    if (!table) {
-      return;
-    }
+    const table: any = this.tableRef;
+    if ( !table ) { return; }
 
     // Reset selections before update
     this.resetSelections();
@@ -384,7 +386,7 @@ class TableComponent extends Component<{}, TableState> {
     if ( !statement || !statement.cells ) { return; }
 
     // Get a reference to the table elements
-    const table = this.tableRef.current;
+    const table: any = this.tableRef;
     const rows = table!.querySelectorAll('tr');
 
     // Select qualifier cells
@@ -475,7 +477,7 @@ class TableComponent extends Component<{}, TableState> {
 
       event.preventDefault();
       const {x1, x2, y1, y2} = this.selections[0];
-      const table = this.tableRef.current;
+      const table: any = this.tableRef;
       const rows = table!.querySelectorAll('tr');
 
       // arrow up
@@ -669,10 +671,10 @@ class TableComponent extends Component<{}, TableState> {
     element.setAttribute('style', 'width: 100%;');
     element.parentElement.setAttribute('style', 'max-width: 1%');
 
-    const table = this.tableRef.current;
+    const table: any = this.tableRef;
     const rows = table!.querySelectorAll('tr');
     const index = element.parentElement.cellIndex;
-    rows.forEach(row => {
+    rows.forEach((row: any) => {
       row.children[index].setAttribute('style', 'max-width: 1%');
     });
 
@@ -881,84 +883,17 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  renderEmptyTable() {
-    return (
-      <div className="table-wrapper">
-        <table ref={this.tableRef}
-          onMouseUp={this.handleOnMouseUp.bind(this)}
-          onMouseDown={this.handleOnMouseDown.bind(this)}
-          onMouseMove={this.handleOnMouseMove.bind(this)}>
-          <thead>
-            <tr>
-              <th></th>
-              {CHARACTERS.map(c => <th key={c}><div>{c}</div></th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(MIN_NUM_ROWS)].map((e, i) => (
-              <tr key={`row-${i}`}>
-                <td>{i+1}</td>
-                {CHARACTERS.map((c, j) => (
-                  <td key={`cell-${j}`}></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )
-  }
-
   renderTable() {
-    const { showCleanedData, tableData } = this.state;
-    if ( tableData ) {
-      const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-      const cols = [...Array(Math.max(tableData[0].length, 26))];
-      return (
-        <div className="table-wrapper">
-          <table ref={this.tableRef}
-            onMouseUp={this.handleOnMouseUp.bind(this)}
-            onMouseDown={this.handleOnMouseDown.bind(this)}
-            onMouseMove={this.handleOnMouseMove.bind(this)}>
-            <thead>
-              <tr>
-                <th></th>
-                {cols.map((r, i) => (
-                  <th key={i}>
-                    <div onDoubleClick={this.handleOnClickHeader.bind(this)}>
-                      {utils.columnToLetter(i + 1)}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((e, i) => (
-                <tr key={`row-${i}`}>
-                  <td>{i+1}</td>
-                  {cols.map((r, j) => {
-                    if ( i < tableData.length && j < tableData[i].length ) {
-                      const stuff = tableData[i][j];
-                      const { data, cleaned } = stuff;
-                      return (
-                        <td key={`cell-${j}`}
-                          className={this.getClassName(stuff, i, j)}>
-                          { showCleanedData && !!cleaned ? cleaned : data }
-                        </td>
-                      )
-                    } else {
-                      return <td key={`cell-${j}`} />
-                    }
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )
-    } else {
-      return this.renderEmptyTable();
-    }
+    const { tableData } = this.state;
+    return (
+      <Table
+        tableData={tableData}
+        onMouseUp={this.handleOnMouseUp.bind(this)}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={this.handleOnMouseMove.bind(this)}
+        onClickHeader={this.handleOnClickHeader.bind(this)}
+        setTableReference={this.setTableReference.bind(this)} />
+    )
   }
 
   renderSheetSelector() {
