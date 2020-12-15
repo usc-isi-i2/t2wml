@@ -63,10 +63,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderNestedOptionsDropdown() {
-    const { selectedAnnotationBlock: selectedBlock } = this.props;
-    const selectedAnnotationRole =  selectedBlock ? selectedBlock.role : '';
-    const selectedAnnotationType =  selectedBlock ? selectedBlock.type : '';
     const { role, type } = this.state;
+    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const selectedAnnotationRole =  selectedBlock ? selectedBlock.role : role;
+    const selectedAnnotationType =  selectedBlock ? selectedBlock.type : type;
     let selectedOption = null;
     if ( selectedAnnotationRole ) {
       selectedOption = ROLES.find(option => (
