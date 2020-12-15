@@ -31,10 +31,6 @@ export const TYPES = [{
 }, {
   'label': 'Q-Node',
   'value': 'qNode',
-  'children': [{
-    'label': 'ID',
-    'value': 'qNodeID',
-  }],
 }];
 
 
