@@ -477,66 +477,65 @@ class TableComponent extends Component<{}, TableState> {
       const {x1, x2, y1, y2} = this.selections[0];
       const table = this.tableRef.current;
       const rows = table!.querySelectorAll('tr');
-      const element = rows[y1].children[x1];
 
       // arrow up
       if ( event.keyCode == 38 && y1 > 1 ) {
         this.resetSelections();
+        const nextElement = rows[y1-1].children[x1];
         if ( event.shiftKey ) {
           this.selections = [{'x1': x1, 'x2': x2, 'y1': y1-1, 'y2': y2}];
           this.updateSelections();
         } else {
-          const nextElement = rows[y1-1].children[x1];
           this.selections = [{'x1': x1, 'x2': x1, 'y1': y1-1, 'y2': y1-1}];
           this.selectCell(nextElement, y1-1, x1, y1-1, x1, x1, y1-1);
           this.selectRelatedCells(y1-1, x1);
         }
-        this.prevElement = element;
+        this.prevElement = nextElement;
       }
 
       // arrow down
       if ( event.keyCode == 40 && y1 < rows.length-1 ) {
         this.resetSelections();
+        const nextElement = rows[y1+1].children[x1];
         if ( event.shiftKey ) {
           this.selections = [{'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2+1}];
           this.updateSelections();
         } else {
-          const nextElement = rows[y1+1].children[x1];
           this.selections = [{'x1': x1, 'x2': x1, 'y1': y1+1, 'y2': y1+1}];
           this.selectCell(nextElement, y1+1, x1, y1+1, x1, x1, y1+1);
           this.selectRelatedCells(y1+1, x1);
         }
-        this.prevElement = element;
+        this.prevElement = nextElement;
       }
 
       // arrow left
       if ( event.keyCode == 37 && x1 > 1) {
         this.resetSelections();
+        const nextElement = rows[y1].children[x1-1];
         if ( event.shiftKey ) {
           this.selections = [{'x1': x1-1, 'x2': x2, 'y1': y1, 'y2': y2}];
           this.updateSelections();
         } else {
-          const nextElement = rows[y1].children[x1-1];
           this.selections = [{'x1': x1-1, 'x2': x1-1, 'y1': y1, 'y2': y1}];
           this.selectCell(nextElement, y1, x1-1, y1, x1-1, x1-1, y1);
           this.selectRelatedCells(y1, x1-1);
         }
-        this.prevElement = element;
+        this.prevElement = nextElement;
       }
 
       // arrow right
       if ( event.keyCode == 39 && x1 < rows[y1].children.length-1 ) {
         this.resetSelections();
+        const nextElement = rows[y1].children[x1+1];
         if ( event.shiftKey ) {
           this.selections = [{'x1': x1, 'x2': x2+1, 'y1': y1, 'y2': y2}];
           this.updateSelections();
         } else {
-          const nextElement = rows[y1].children[x1+1];
           this.selections = [{'x1': x1+1, 'x2': x1+1, 'y1': y1, 'y2': y1}];
           this.selectCell(nextElement, y1, x1+1, y1, x1+1, x1+1, y1);
           this.selectRelatedCells(y1, x1+1);
         }
-        this.prevElement = element;
+        this.prevElement = nextElement;
       }
     }
   }
