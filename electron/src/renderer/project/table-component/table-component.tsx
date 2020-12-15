@@ -45,8 +45,8 @@ interface TableState {
   annotationMode: boolean,
   showCleanedData: boolean,
   showAnnotationMenu: boolean,
-  annotationMenuPosition: Array<number> | null,
-  selectedAnnotationBlock: AnnotationBlock | null,
+  annotationMenuPosition?: Array<number>,
+  selectedAnnotationBlock?: AnnotationBlock,
 
   errorMessage: ErrorMessage;
 }
@@ -95,7 +95,7 @@ class TableComponent extends Component<{}, TableState> {
       showCleanedData: false,
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
-      selectedAnnotationBlock: null,
+      selectedAnnotationBlock: undefined,
 
       errorMessage: {} as ErrorMessage,
     };
@@ -168,7 +168,7 @@ class TableComponent extends Component<{}, TableState> {
       selectedProperty: null,
       selectedQualifiers: null,
       selectedMainSubject: null,
-      selectedAnnotationBlock: null,
+      selectedAnnotationBlock: undefined,
       showAnnotationMenu: false,
     });
   }
@@ -611,7 +611,7 @@ class TableComponent extends Component<{}, TableState> {
     if ( annotationMode ) {
       this.setState({
         showAnnotationMenu: false,
-        selectedAnnotationBlock: null,
+        selectedAnnotationBlock: undefined,
       }, () => {
         for ( const block of wikiStore.annotations.blocks ) {
           for ( const selection of block.selections ) {
@@ -882,7 +882,7 @@ class TableComponent extends Component<{}, TableState> {
   closeAnnotationMenu() {
     this.setState({
       showAnnotationMenu: false,
-      selectedAnnotationBlock: null,
+      selectedAnnotationBlock: undefined,
     }, () => this.resetSelections());
   }
 

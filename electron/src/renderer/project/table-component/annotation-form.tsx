@@ -110,17 +110,23 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       return (
         <React.Fragment>
           {optionsDropdown}
-          {selectedType?.children?.map((type, i) => (
-            <Form.Group as={Row} key={i}
-              onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, type.value)}>
-              <Col sm="12" md="12">
-                <Form.Label className="text-muted">{type.label}</Form.Label>
-                <Form.Control
-                  type="text" size="sm"
-                  defaultValue={selectedBlock ? selectedBlock[type.value] : ''} />
-              </Col>
-            </Form.Group>
-          ))}
+          {selectedType?.children?.map((type, i) => {
+            let defaultValue = '';
+            if ( selectedBlock ) {
+              defaultValue = (selectedBlock as any)[type.value];
+            }
+            return (
+              <Form.Group as={Row} key={i}
+                onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, type.value)}>
+                <Col sm="12" md="12">
+                  <Form.Label className="text-muted">{type.label}</Form.Label>
+                  <Form.Control
+                    type="text" size="sm"
+                    defaultValue={defaultValue} />
+                </Col>
+              </Form.Group>
+          )
+          })}
         </React.Fragment>
       )
     }

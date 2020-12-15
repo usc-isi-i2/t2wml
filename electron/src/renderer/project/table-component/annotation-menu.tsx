@@ -12,10 +12,10 @@ import { AnnotationBlock } from '../../common/dtos';
 
 
 interface AnnotationMenuProperties {
-  selections: Array<any> | null,
-  position: Array<number> | null,
+  selections?: Array<any>,
+  position?: Array<number>,
   onClose: any | null,
-  selectedAnnotationBlock: AnnotationBlock | null,
+  selectedAnnotationBlock?: AnnotationBlock,
 }
 
 interface AnnotationMenuState {
@@ -110,7 +110,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   render() {
     const { position, onClose } = this.props;
     let style = {};
-    if (position) {
+    if ( position ) {
       style = {
         'left': position[0],
         'top': position[1],
