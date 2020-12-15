@@ -7,17 +7,17 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
 interface AnnotationFormProperties {
-  selectedAnnotationBlock: AnnotationBlock | any,
-  selections: Array<any> | null,
-  onChange: any | null,
+  selectedAnnotationBlock?: AnnotationBlock,
+  selections?: Array<any>,
+  onChange: any | null, // Use the actual function type: (arg: argType) => returnType
   onDelete: any | null,
   onSubmit: any | null,
 }
 
 
 interface AnnotationFormState {
-  role?: string | null,
-  type?: string | null,
+  role?: string,
+  type?: string,
 }
 
 
@@ -28,8 +28,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
     const { selectedAnnotationBlock: selectedBlock } = this.props;
     this.state = {
-      role: selectedBlock ? selectedBlock.role : null,
-      type: selectedBlock ? selectedBlock.type : null,
+      role: selectedBlock?.role,
+      type: selectedBlock?.type,
     };
   }
 
