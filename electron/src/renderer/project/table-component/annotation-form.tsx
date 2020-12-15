@@ -176,7 +176,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
               variant="link"
               className="delete"
               onClick={(event) => this.handleOnDelete(event)}>
-              delete this selection
+              delete this annotation block
             </Button>
           </Col>
         </Form.Group>
