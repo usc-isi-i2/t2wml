@@ -469,6 +469,8 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   handleOnKeyDown(event: KeyboardEvent) {
+    const { annotationMode } = this.state;
+
     if ( event.keyCode == 27 ) {
       this.resetTableData();
     }
@@ -502,6 +504,9 @@ class TableComponent extends Component<{}, TableState> {
           this.selections = [{'x1': x1, 'x2': x1, 'y1': y1-1, 'y2': y1-1}];
           this.selectCell(nextElement, y1-1, x1, y1-1, x1, x1, y1-1);
           this.selectRelatedCells(y1-1, x1);
+          if ( annotationMode ) {
+            this.checkSelectedAnnotationBlocks(x1, x1, y1-1, y1-1);
+          }
         }
         this.prevElement = nextElement;
       }
@@ -527,6 +532,9 @@ class TableComponent extends Component<{}, TableState> {
           this.selections = [{'x1': x1, 'x2': x1, 'y1': y1+1, 'y2': y1+1}];
           this.selectCell(nextElement, y1+1, x1, y1+1, x1, x1, y1+1);
           this.selectRelatedCells(y1+1, x1);
+          if ( annotationMode ) {
+            this.checkSelectedAnnotationBlocks(x1, x1, y1+1, y1+1);
+          }
         }
         this.prevElement = nextElement;
       }
@@ -552,6 +560,9 @@ class TableComponent extends Component<{}, TableState> {
           this.selections = [{'x1': x1-1, 'x2': x1-1, 'y1': y1, 'y2': y1}];
           this.selectCell(nextElement, y1, x1-1, y1, x1-1, x1-1, y1);
           this.selectRelatedCells(y1, x1-1);
+          if ( annotationMode ) {
+            this.checkSelectedAnnotationBlocks(x1-1, x1-1, y1, y1);
+          }
         }
         this.prevElement = nextElement;
       }
@@ -577,6 +588,9 @@ class TableComponent extends Component<{}, TableState> {
           this.selections = [{'x1': x1+1, 'x2': x1+1, 'y1': y1, 'y2': y1}];
           this.selectCell(nextElement, y1, x1+1, y1, x1+1, x1+1, y1);
           this.selectRelatedCells(y1, x1+1);
+          if ( annotationMode ) {
+            this.checkSelectedAnnotationBlocks(x1+1, x1+1, y1, y1);
+          }
         }
         this.prevElement = nextElement;
       }
