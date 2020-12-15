@@ -64,6 +64,7 @@ class TableComponent extends Component<{}, TableState> {
   private selecting = false;
   private selections: CellSelection[] = [];
   private prevElement?: EventTarget;
+  private prevDirection?: 'up' | 'down' | 'left' | 'right';
 
   private requestService: RequestService;
 
@@ -493,6 +494,7 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1-1, x1);
         }
         this.prevElement = nextElement;
+        this.prevDirection = 'up';
       }
 
       // arrow down
@@ -508,6 +510,7 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1+1, x1);
         }
         this.prevElement = nextElement;
+        this.prevDirection = 'down';
       }
 
       // arrow left
@@ -523,6 +526,7 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1, x1-1);
         }
         this.prevElement = nextElement;
+        this.prevDirection = 'left';
       }
 
       // arrow right
@@ -538,6 +542,7 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1, x1+1);
         }
         this.prevElement = nextElement;
+        this.prevDirection = 'right';
       }
     }
   }
