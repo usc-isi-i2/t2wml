@@ -505,7 +505,8 @@ class TableComponent extends Component<{}, TableState> {
           this.selectCell(nextElement, y1-1, x1, y1-1, x1, x1, y1-1);
           this.selectRelatedCells(y1-1, x1);
           if ( annotationMode ) {
-            this.checkSelectedAnnotationBlocks(x1, x1, y1-1, y1-1);
+            const selection: CellSelection = {'x1': x1, 'x2': x1, 'y1': y1-1, 'y2': y1-1};
+            this.checkSelectedAnnotationBlocks(selection);
           }
         }
         this.prevElement = nextElement;
@@ -533,7 +534,8 @@ class TableComponent extends Component<{}, TableState> {
           this.selectCell(nextElement, y1+1, x1, y1+1, x1, x1, y1+1);
           this.selectRelatedCells(y1+1, x1);
           if ( annotationMode ) {
-            this.checkSelectedAnnotationBlocks(x1, x1, y1+1, y1+1);
+            const selection: CellSelection = {'x1': x1, 'x2': x1, 'y1': y1+1, 'y2': y1+1};
+            this.checkSelectedAnnotationBlocks(selection);
           }
         }
         this.prevElement = nextElement;
@@ -561,7 +563,8 @@ class TableComponent extends Component<{}, TableState> {
           this.selectCell(nextElement, y1, x1-1, y1, x1-1, x1-1, y1);
           this.selectRelatedCells(y1, x1-1);
           if ( annotationMode ) {
-            this.checkSelectedAnnotationBlocks(x1-1, x1-1, y1, y1);
+            const selection: CellSelection = {'x1': x1-1, 'x2': x1-1, 'y1': y1, 'y2': y1};
+            this.checkSelectedAnnotationBlocks(selection);
           }
         }
         this.prevElement = nextElement;
@@ -589,7 +592,8 @@ class TableComponent extends Component<{}, TableState> {
           this.selectCell(nextElement, y1, x1+1, y1, x1+1, x1+1, y1);
           this.selectRelatedCells(y1, x1+1);
           if ( annotationMode ) {
-            this.checkSelectedAnnotationBlocks(x1+1, x1+1, y1, y1);
+            const selection: CellSelection = {'x1': x1+1, 'x2': x1+1, 'y1': y1, 'y2': y1};
+            this.checkSelectedAnnotationBlocks(selection);
           }
         }
         this.prevElement = nextElement;
@@ -608,7 +612,8 @@ class TableComponent extends Component<{}, TableState> {
     }
   }
 
-  checkSelectedAnnotationBlocks(x1, x2, y1, y2) {
+  checkSelectedAnnotationBlocks(selection: CellSelection) {
+    const {x1, x2, y1, y2} = selection;
     for ( const block of wikiStore.annotations.blocks ) {
       for ( const selection of block.selections ) {
         if ( selection['y1'] <= selection['y2'] ) {
@@ -675,10 +680,11 @@ class TableComponent extends Component<{}, TableState> {
     } else if ( element.nodeName !== 'TD' ) { return; }
 
     // Set both coordinates to the same cell
-    const x1 = element.cellIndex;
-    const x2 = element.cellIndex;
-    const y1 = element.parentElement.rowIndex;
-    const y2 = element.parentElement.rowIndex;
+    const x1: number = element.cellIndex;
+    const x2: number = element.cellIndex;
+    const y1: number = element.parentElement.rowIndex;
+    const y2: number = element.parentElement.rowIndex;
+    const selection: CellSelection = {x1, x2, y1, y2};
 
     // check if the user is selecting an annotation block
     if ( annotationMode ) {
@@ -686,9 +692,7 @@ class TableComponent extends Component<{}, TableState> {
         showAnnotationMenu: false,
         selectedAnnotationBlock: undefined,
       }, () => {
-        if ( this.checkSelectedAnnotationBlocks(x1, x2, y1, y2) ) {
-          return;
-        }
+        this.checkSelectedAnnotationBlocks(selection);
       });
     }
 
