@@ -301,12 +301,22 @@ class TableComponent extends Component<{}, TableState> {
   }
 
   updateSelections() {
+    const { selectedAnnotationBlock: selectedBlock } = this.state;
     const table: any = this.tableRef;
     if ( !table ) { return; }
 
     // Reset selections before update
     this.resetSelections();
 
+    const classNames = [];
+    if ( selectedBlock ) {
+      if ( selectedBlock['role'] ) {
+        classNames.push(`role-${selectedBlock['role']}`);
+      }
+      if ( selectedBlock['type'] ) {
+        classNames.push(`type-${selectedBlock['type']}`);
+      }
+    }
     const rows = table.querySelectorAll('tr');
     this.selections.forEach(selection => {
       const {x1, x2, y1, y2} = selection;
@@ -325,7 +335,8 @@ class TableComponent extends Component<{}, TableState> {
             topRow,
             leftCol,
             rightCol,
-            bottomRow
+            bottomRow,
+            classNames,
           );
           colIndex += 1;
         }
