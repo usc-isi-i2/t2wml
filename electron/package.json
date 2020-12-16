@@ -1,6 +1,6 @@
 {
   "name": "t2wml",
-  "version": "2.3.7",
+  "version": "2.4.2-pre.3",
   "description": "A Cell-Based Language To Map Tables Into Wikidata Records",
   "main": "./dist/main.bundle.js",
   "scripts": {
@@ -28,6 +28,10 @@
         {
           "from": "../backend/dist/t2wml-server",
           "to": "."
+        },
+        {
+          "from": "./t2wml-on-mac.sh",
+          "to": "t2wml-on-mac.sh"
         }
       ],
       "icon": "icons/t2wml-mac.icns"
