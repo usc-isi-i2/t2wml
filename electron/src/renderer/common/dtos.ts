@@ -38,6 +38,11 @@ export interface ResponseWithProjectDTO {
     project: ProjectDTO;
 }
 
+export interface ResponseWithAnnotationsDTO extends ResponseWithProjectDTO{
+    annotations: AnnotationBlock[];
+    yamlContent: string;
+}
+
 export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
     layers: LayersDTO;
     yamlError?: string;

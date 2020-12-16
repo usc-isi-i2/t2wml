@@ -1,7 +1,7 @@
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
-  ResponseWithTableandMaybeYamlDTO, ResponseWithProjectDTO,
+  ResponseWithTableandMaybeYamlDTO, ResponseWithProjectDTO, ResponseWithAnnotationsDTO,
    UploadEntitiesDTO, CallWikifierServiceDTO, ResponseWithLayersDTO,
 } from './dtos';
 import { Cell, ErrorMessage } from './general';
@@ -43,22 +43,26 @@ class StoreFiller {
     // clear output window
     wikiStore.table.selectedCell = new Cell();
   }
+
+  public fillAnnotations(response: ResponseWithAnnotationsDTO){
+    wikiStore.yaml.yamlContent = response.yamlContent;
+    wikiStore.annotations.blocks = response.annotations;
+    wikiStore.projects.projectDTO = response.project;
+
+  }
 }
 
 class RequestService {
   storeFiller = new StoreFiller();
 
   public async getAnnotationBlocks(folder: string) {
-    const response = await backendGet(`/annotation?project_folder=${folder}`) as any;
-    wikiStore.annotations.blocks = response.annotations;
-    wikiStore.yaml.yamlContent = response.yamlContent;
+    const response = await backendGet(`/annotation?project_folder=${folder}`) as ResponseWithAnnotationsDTO;
+    this.storeFiller.fillAnnotations(response)
   }
 
   public async postAnnotationBlocks(folder: string, formData: any) {
-    const response = await backendPost(`/annotation?project_folder=${folder}`, formData) as any;
-    wikiStore.yaml.yamlContent = response.yamlContent;
-    wikiStore.annotations.blocks = response.annotations;
-    wikiStore.projects.projectDTO = response.project;
+    const response = await backendPost(`/annotation?project_folder=${folder}`, formData) as ResponseWithAnnotationsDTO;
+    this.storeFiller.fillAnnotations(response)
   }
 
   public async createProject(folder: string) {
