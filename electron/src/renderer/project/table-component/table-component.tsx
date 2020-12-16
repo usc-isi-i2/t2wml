@@ -334,12 +334,10 @@ class TableComponent extends Component<{}, TableState> {
     });
   }
 
-  selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, className?: string) {
+  selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
     // Activate the current cell
     cell.classList.add('active');
-    if ( className ) {
-      cell.classList.add(className);
-    }
+    classNames.map(className => cell.classList.add(className));
 
     // Add a top border to the cells at the top of the selection
     if ( rowIndex === topRow ) {
@@ -369,7 +367,7 @@ class TableComponent extends Component<{}, TableState> {
       cell.appendChild(borderBottom);
     }
 
-    if ( rowIndex === bottomRow && colIndex === rightCol && !className ) {
+    if ( rowIndex === bottomRow && colIndex === rightCol && !classNames.length ) {
       const resizeCorner = document.createElement('div');
       resizeCorner.classList.add('cell-resize-corner');
       cell.appendChild(resizeCorner);
@@ -397,7 +395,7 @@ class TableComponent extends Component<{}, TableState> {
           const y = cell.qualifier[0];
           const x = cell.qualifier[1];
           const tableCell = rows[y+1].children[x+1];
-          this.selectCell(tableCell, y, x, y, x, x, y, 'qualifier');
+          this.selectCell(tableCell, y, x, y, x, x, y, ['role-qualifier']);
         }
       });
     }
@@ -407,7 +405,7 @@ class TableComponent extends Component<{}, TableState> {
       const y = statement.cells.subject[0];
       const x = statement.cells.subject[1];
       const cell = rows[y+1].children[x+1];
-      this.selectCell(cell, y, x, y, x, x, y, 'main-subject');
+      this.selectCell(cell, y, x, y, x, x, y, ['role-mainSubject']);
     }
 
     // Select the cell with the property
@@ -415,7 +413,7 @@ class TableComponent extends Component<{}, TableState> {
       const y = statement.cells.property[0];
       const x = statement.cells.property[1];
       const cell = rows[y+1].children[x+1];
-      this.selectCell(cell, y, x, y, x, x, y, 'property');
+      this.selectCell(cell, y, x, y, x, x, y, ['role-property']);
     }
   }
 
