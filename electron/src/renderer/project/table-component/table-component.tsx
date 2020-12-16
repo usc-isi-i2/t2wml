@@ -626,7 +626,7 @@ class TableComponent extends Component<{}, TableState> {
               this.selections = block.selections;
               this.updateSelections();
               this.setState({selectedAnnotationBlock: block});
-              return;
+              return true;
             }
           } else {
             if ( x1 <= selection['x1'] &&
@@ -637,7 +637,7 @@ class TableComponent extends Component<{}, TableState> {
               this.selections = block.selections;
               this.updateSelections();
               this.setState({selectedAnnotationBlock: block});
-              return;
+              return true;
             }
           }
         } else {
@@ -650,7 +650,7 @@ class TableComponent extends Component<{}, TableState> {
               this.selections = block.selections;
               this.updateSelections();
               this.setState({selectedAnnotationBlock: block});
-              return;
+              return true;
             }
           } else {
             if ( x1 <= selection['x1'] &&
@@ -661,12 +661,13 @@ class TableComponent extends Component<{}, TableState> {
               this.selections = block.selections;
               this.updateSelections();
               this.setState({selectedAnnotationBlock: block});
-              return;
+              return true;
             }
           }
         }
       }
     }
+    return false;
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
@@ -691,9 +692,9 @@ class TableComponent extends Component<{}, TableState> {
       this.setState({
         showAnnotationMenu: false,
         selectedAnnotationBlock: undefined,
-      }, () => {
-        this.checkSelectedAnnotationBlocks(selection);
       });
+      const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+      if ( selectedBlock ) { return; }
     }
 
     // Activate the selection mode
