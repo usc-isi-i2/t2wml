@@ -1,10 +1,6 @@
 {
     "add_data_file": {
         "layers": {
-            "annotation": {
-                "entries": [],
-                "layerType": "annotation"
-            },
             "cleaned": {
                 "entries": [],
                 "layerType": "cleaned"
@@ -1822,10 +1818,6 @@
     },
     "change_sheet": {
         "layers": {
-            "annotation": {
-                "entries": [],
-                "layerType": "annotation"
-            },
             "cleaned": {
                 "entries": [],
                 "layerType": "cleaned"
