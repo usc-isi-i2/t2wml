@@ -506,7 +506,10 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1-1, x1);
           if ( annotationMode ) {
             const selection: CellSelection = {'x1': x1, 'x2': x1, 'y1': y1-1, 'y2': y1-1};
-            this.checkSelectedAnnotationBlocks(selection);
+            const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+            if ( selectedBlock ) {
+              this.setState({showAnnotationMenu: true});
+            }
           }
         }
         this.prevElement = nextElement;
@@ -535,7 +538,10 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1+1, x1);
           if ( annotationMode ) {
             const selection: CellSelection = {'x1': x1, 'x2': x1, 'y1': y1+1, 'y2': y1+1};
-            this.checkSelectedAnnotationBlocks(selection);
+            const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+            if ( selectedBlock ) {
+              this.setState({showAnnotationMenu: true});
+            }
           }
         }
         this.prevElement = nextElement;
@@ -564,7 +570,10 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1, x1-1);
           if ( annotationMode ) {
             const selection: CellSelection = {'x1': x1-1, 'x2': x1-1, 'y1': y1, 'y2': y1};
-            this.checkSelectedAnnotationBlocks(selection);
+            const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+            if ( selectedBlock ) {
+              this.setState({showAnnotationMenu: true});
+            }
           }
         }
         this.prevElement = nextElement;
@@ -593,7 +602,10 @@ class TableComponent extends Component<{}, TableState> {
           this.selectRelatedCells(y1, x1+1);
           if ( annotationMode ) {
             const selection: CellSelection = {'x1': x1+1, 'x2': x1+1, 'y1': y1, 'y2': y1};
-            this.checkSelectedAnnotationBlocks(selection);
+            const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+            if ( selectedBlock ) {
+              this.setState({showAnnotationMenu: true});
+            }
           }
         }
         this.prevElement = nextElement;
