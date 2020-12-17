@@ -10,6 +10,12 @@ project_folder=None #we need to use a global for some reason... self.project_fol
 datamart_integration_switch=None
 
 
+def get_data(data):
+    data = json.loads(data)
+    if "error" in data:
+        assert data=="" #a way to see the actual error message from failed runs
+    return data
+
 class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
@@ -26,7 +32,7 @@ class TestBasicWorkflow(BaseClass):
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.get(url) 
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         global datamart_integration_switch
         datamart_integration_switch=data["project"]["datamart_integration"]
 
@@ -45,7 +51,7 @@ class TestBasicWorkflow(BaseClass):
                 ptitle=ptitle
             )) 
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         assert data['project']['title']==ptitle
 
     def test_02_get_project_files(self, client):
@@ -59,7 +65,7 @@ class TestBasicWorkflow(BaseClass):
         filename=os.path.join(self.files_dir, "dataset.xlsx")
         response=load_data_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
-        data = json.loads(data)  
+        data = get_data(data)  
         data.pop('project')
         self.results_dict['add_data_file']=data
         self.compare_jsons(data, 'add_data_file')
@@ -68,7 +74,7 @@ class TestBasicWorkflow(BaseClass):
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
         response=load_wikifier_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         data.pop('project')
         self.results_dict['add_wikifier_file']=data
         self.compare_jsons(data, 'add_wikifier_file')
@@ -78,7 +84,7 @@ class TestBasicWorkflow(BaseClass):
         filename=os.path.join(self.files_dir, "kgtk_item_defs.tsv")
         response=load_item_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         data.pop('project')
         self.results_dict['add_items']=data
         self.compare_jsons(data, 'add_items')
@@ -87,7 +93,7 @@ class TestBasicWorkflow(BaseClass):
         filename=os.path.join(self.files_dir, "test.yaml")
         response=load_yaml_file(client, project_folder, filename, "Sheet3")
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         data.pop('project')
         self.results_dict['add_yaml']=data
         self.compare_jsons(data, 'add_yaml')
@@ -98,7 +104,7 @@ class TestBasicWorkflow(BaseClass):
         response=client.get(url) 
         data = response.data.decode("utf-8")
         data = json.loads(data)
-        data=data["data"]
+        data= data["data"]
         with open(os.path.join(self.files_dir, "download.tsv"), 'r') as f:
             expected=f.read()
         assert expected==data
@@ -108,7 +114,7 @@ class TestBasicWorkflow(BaseClass):
         url='/api/data/{sheet_name}?project_folder={project_folder}'.format(project_folder=project_folder,sheet_name="Sheet4")
         response=client.get(url) 
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         project=data.pop('project')
         assert project["_saved_state"]["current_sheet"]=="Sheet4"
         self.results_dict['change_sheet']=data
@@ -127,7 +133,7 @@ class TestBasicWorkflow(BaseClass):
             )
 
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         data.pop('project')
         self.results_dict['wikify_region']=data
         self.compare_jsons(data, 'wikify_region')
@@ -148,7 +154,7 @@ class TestBasicWorkflow(BaseClass):
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.get(url) 
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         project=data.pop('project')
         assert project["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert project["warn_for_empty_cells"]==False
@@ -177,7 +183,7 @@ class TestLoadingProject(BaseClass):
         url= '/api/project?project_folder={path}'.format(path=self.files_dir)
         response=client.get(url)
         data = response.data.decode("utf-8")
-        data = json.loads(data)
+        data = get_data(data)
         data.pop('project')
         self.results_dict['load_from_path']=data
         #with open(self.expected_results_path, 'w') as f:
