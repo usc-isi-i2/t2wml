@@ -94,7 +94,7 @@ def load_data_file(client, pid, filename):
     url = '/api/data?project_folder={pid}'.format(pid=pid)
     response=client.post(url,
                 json=dict(
-                filename=filename
+                filepath=filename
                 )
             )
     return response
@@ -107,7 +107,7 @@ def load_yaml_file(client, pid, filename, sheet_name):
     response=client.post(url,
             json=dict(
             yaml=yaml,
-            filename=filename,
+            filepath=filename,
             title=title,
             sheetName=sheet_name
             )
@@ -118,7 +118,7 @@ def load_wikifier_file(client, pid, filename):
     url='/api/wikifier?project_folder={pid}'.format(pid=pid)
     response=client.post(url,
             json=dict(
-            filename=filename
+            filepath=filename
             )
         )
     return response
@@ -127,7 +127,7 @@ def load_item_file(client, pid, filename):
     url='/api/project/entity?project_folder={pid}'.format(pid=pid)
     response=client.post(url,
             json=dict(
-            filename=filename
+            filepath=filename
             )
         )
     return response
