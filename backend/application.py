@@ -276,9 +276,9 @@ def call_wikifier_service():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    action = request.form["action"]
-    region = request.form["region"]
-    context = request.form["context"]
+    action = request.json["action"]
+    region = request.json["region"]
+    context = request.json["context"]
     
     if not project.current_data_file:
         raise web_exceptions.WikifyWithoutDataFileException(
@@ -309,8 +309,8 @@ def rename_yaml():
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload a data file before renaming yaml")
 
-    old_name = request.form["old_name"]
-    new_name = request.form["new_name"]
+    old_name = request.json["old_name"]
+    new_name = request.json["new_name"]
 
     if old_name not in project.yaml_files:
         raise web_exceptions.MissingYAMLFileException(
@@ -371,9 +371,9 @@ def upload_yaml():
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload a data file before editing or importing yaml")
 
-    yaml_data = request.form["yaml"]
-    yaml_title = request.form["title"]
-    sheet_name = request.form["sheetName"]
+    yaml_data = request.json["yaml"]
+    yaml_title = request.json["title"]
+    sheet_name = request.json["sheetName"]
     save_yaml(project, yaml_data, yaml_title, sheet_name)
     response=dict(project=get_project_dict(project))
     return response, 200
@@ -392,9 +392,9 @@ def apply_yaml():
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload data file before applying YAML.")
 
-    yaml_data = request.form["yaml"]
-    yaml_title = request.form["title"]
-    sheet_name = request.form["sheetName"]
+    yaml_data = request.json["yaml"]
+    yaml_title = request.json["title"]
+    sheet_name = request.json["sheetName"]
     
     save_yaml(project, yaml_data, yaml_title, sheet_name)
     
@@ -417,7 +417,7 @@ def apply_yaml():
 def upload_annotations():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    annotations = request.form["annotations"]
+    annotations = request.json["annotations"]
     annotations_path=os.path.join(project_folder, "annotations.json")
     with open(annotations_path, 'w') as f:
         f.write(annotations)
@@ -462,7 +462,7 @@ def rename_project():
     This route is used to rename a project.
     :return:
     """
-    ptitle = request.form["ptitle"]
+    ptitle = request.json["ptitle"]
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
     project.title = ptitle
@@ -482,23 +482,23 @@ def update_settings():
     project = get_project_instance(project_folder)
 
     if request.method == 'PUT':
-        endpoint = request.form.get("endpoint", None)
+        endpoint = request.json.get("endpoint", None)
         if endpoint:
             project.sparql_endpoint = endpoint
-        warn = request.form.get("warnEmpty", None)
+        warn = request.json.get("warnEmpty", None)
         if warn is not None:
             project.warn_for_empty_cells = warn.lower() == 'true'
-        calendar=request.form.get("handleCalendar", None)
+        calendar=request.json.get("handleCalendar", None)
         if calendar:
             project.handle_calendar=calendar
         project.save()
         update_t2wml_settings(project)
 
         new_global_settings=dict()
-        datamart = request.form.get("datamartIntegration", None)
+        datamart = request.json.get("datamartIntegration", None)
         if datamart is not None:
             new_global_settings["datamart_integration"] = datamart.lower() == 'true'
-        datamart_api = request.form.get("datamartApi", None)
+        datamart_api = request.json.get("datamartApi", None)
         if datamart_api is not None:
             new_global_settings["datamart_api"] = datamart_api
         global_settings.update(**new_global_settings)
