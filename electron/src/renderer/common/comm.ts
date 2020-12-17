@@ -24,7 +24,7 @@ const instance = axios.create({
 
 
 function getResponse(response: Response, method: string): Promise<any> {
-  if (response.statusText !== "OK") {
+  if (response.statusText !== "OK" && response.statusText !== "CREATED") {
     if (response.status === 401) {
       // Unauthorized
       throw {
@@ -56,17 +56,11 @@ export async function backendGet(url: string): Promise<any> {
 
 export async function backendPost(
   url: string,
-  formData?: FormData
+  data?: any
 ): Promise<any> {
   let response: Response;
   try {
-    response = await instance.post(url, formData);
-    // response = await fetch(getUrl(url), {
-    //   mode: "cors",
-    //   method: "POST",
-    //   body: formData,
-    //   credentials: "include",
-    // });
+    response = await instance.post(url, data);
   } catch (error) {
     throw {
       errorTitle: error.message,
@@ -79,17 +73,11 @@ export async function backendPost(
 
 export async function backendPut(
   url: string,
-  formData?: FormData
+  data?: any
 ): Promise<any> {
   let response: Response;
   try {
-    response = await instance.put(url, formData);
-    // response = await fetch(getUrl(url), {
-    //   mode: "cors",
-    //   method: "PUT",
-    //   body: formData,
-    //   credentials: "include",
-    // });
+    response = await instance.put(url, data);
   } catch (error) {
     throw {
       errorTitle: error.message,

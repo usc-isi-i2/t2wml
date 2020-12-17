@@ -104,10 +104,9 @@ class ProjectList extends Component<{}, ProjectListState> {
 
     // send request
     console.log("<App> -> %c/rename_project%c to rename project %c" + path + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
-    const formData = new FormData();
-    formData.append("ptitle", ptitle);
+    const data = {"ptitle": ptitle};
     try {
-      await this.requestService.call(this, () => this.requestService.renameProject(path, formData));
+      await this.requestService.call(this, () => this.requestService.renameProject(path, data));
       wikiStore.projects.refreshList();
     } catch (error) {
       console.log(error);

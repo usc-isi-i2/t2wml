@@ -90,13 +90,12 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // send request
     console.log("<Wikifier> -> %c/call_wikifier_service%c to wikify region: %c" + region, LOG.link, LOG.default, LOG.highlight);
-    const formData = new FormData();
-    formData.append("action", "wikify_region");
-    formData.append("region", region);
-    formData.append("context", context);
-    formData.append("flag", flag);
+    const data = { "action": "wikify_region",
+                  "region": region,
+                  "context": context,
+                  "flag": flag };
     try {
-      await this.requestService.call(this, () => this.requestService.callWikifierService(wikiStore.projects.current!.folder, formData));
+      await this.requestService.call(this, () => this.requestService.callWikifierService(wikiStore.projects.current!.folder, data));
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       if (wikiStore.wikifier.wikifierError) {
         console.log("Wikify region cell errors:", wikiStore.wikifier.wikifierError)
@@ -145,10 +144,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     this.setState({ propertiesMessage: '' });
 
     // send request
-    const formData = new FormData();
-    formData.append("file", file);
+    const data = {"filepath": file.path};
     try {
-      await this.requestService.call(this, () => this.requestService.uploadEntities(wikiStore.projects.current!.folder, formData));
+      await this.requestService.call(this, () => this.requestService.uploadEntities(wikiStore.projects.current!.folder, data));
       console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
 
       const { added, failed, updated } = wikiStore.wikifier.entitiesStats!;
@@ -180,10 +178,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // send request
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-    const formData = new FormData();
-    formData.append("file", file);
+    const data = {"filepath": file.path};
     try {
-      await this.requestService.call(this, () => this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, formData));
+      await this.requestService.call(this, () => this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, data));
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
 
       this.setState({
