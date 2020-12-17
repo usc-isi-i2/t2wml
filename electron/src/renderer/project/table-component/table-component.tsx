@@ -308,7 +308,7 @@ class TableComponent extends Component<{}, TableState> {
     // Reset selections before update
     this.resetSelections();
 
-    const classNames = [];
+    const classNames: string[] = [];
     if ( selectedBlock ) {
       if ( selectedBlock['role'] ) {
         classNames.push(`role-${selectedBlock['role']}`);
