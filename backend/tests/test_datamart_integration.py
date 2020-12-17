@@ -18,7 +18,7 @@ def test_datamart_integration(client):
     url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
     endpoint='https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
     response=client.put(url,
-            data=dict(
+            json=dict(
             datamartApi=endpoint, 
             datamartIntegration=True
         )) 
@@ -33,7 +33,7 @@ def test_datamart_integration(client):
     url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
     endpoint='https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api'  #'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
     response=client.put(url,
-            data=dict(
+            json=dict(
             datamartApi=old_global_settings["datamart_api"], 
             datamartIntegration=old_global_settings["datamart_integration"]
         )) 

@@ -1,9 +1,11 @@
 _saved_state:
+  current_annotation: null
   current_data_file: fertilizer.xlsx
   current_sheet: Sheet1
   current_wikifiers:
   - consolidated-wikifier.csv
   current_yaml: t2wml.yaml
+annotations: {}
 cache_id: 76e8cf28-665f-4851-82d9-00f8a69923c1
 data_files:
   fertilizer.xlsx:

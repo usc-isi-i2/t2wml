@@ -33,7 +33,7 @@ class TestBasicWorkflow(BaseClass):
         #set new settings
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.put(url,
-                data=dict( 
+                json=dict( 
                 datamartIntegration=False
             )) 
         
@@ -41,7 +41,7 @@ class TestBasicWorkflow(BaseClass):
         url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
         ptitle="Unit test"
         response=client.put(url,
-                data=dict(
+                json=dict(
                 ptitle=ptitle
             )) 
         data = response.data.decode("utf-8")
@@ -118,7 +118,7 @@ class TestBasicWorkflow(BaseClass):
         #POST '/api/wikifier_service/{project_folder}'
         url='/api/wikifier_service?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.post(url,
-                data=dict(
+                json=dict(
                 action="wikify_region",
                 region="I3:I8",
                 context="wikifier test",
@@ -138,7 +138,7 @@ class TestBasicWorkflow(BaseClass):
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         endpoint='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         response=client.put(url,
-                data=dict(
+                json=dict(
                 endpoint=endpoint, 
                 warnEmpty=False
             )) 
@@ -157,7 +157,7 @@ class TestBasicWorkflow(BaseClass):
         #reset to old settings:
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.put(url,
-                data=dict(
+                json=dict(
                 datamartIntegration=datamart_integration_switch
             )) 
     

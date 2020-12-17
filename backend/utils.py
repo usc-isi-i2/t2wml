@@ -22,30 +22,22 @@ def get_yaml_content(calc_params):
 
 
 def file_upload_validator(file_extensions):
-    if 'file' not in request.files:
+    if 'filename' not in request.get_json():
         raise web_exceptions.NoFilePartException(
-            "Missing 'file' parameter in the file upload request")
+            "Missing 'filename' parameter in the file upload request")
 
-    in_file = request.files['file']
-    if in_file.filename == '':
+    filename = request.get_json()["filename"]
+    if filename == '':
         raise web_exceptions.BlankFileNameException(
             "No file selected for uploading")
 
-    file_extension = in_file.filename.split(".")[-1].lower()
+    file_extension = Path(filename).suffix.lower()
     file_allowed = file_extension in file_extensions
     if not file_allowed:
         raise web_exceptions.FileTypeNotSupportedException(
             "File with extension '" + file_extension + "' is not allowed")
 
-    return in_file
-
-
-def save_file(project_folder, in_file):
-    folder = project_folder
-    filename = Path(in_file.filename).name  # otherwise secure_filename does weird things on linux
-    file_path = Path(folder) / filename
-    in_file.save(str(file_path))
-    return file_path
+    return filename
 
 
 def save_dataframe(project, df, file_name, kgtk=False):
