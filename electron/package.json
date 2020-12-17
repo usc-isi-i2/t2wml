@@ -58,8 +58,7 @@
       "icon": "icons/t2wml-windows.ico"
     }
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.11.1",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -90,7 +89,7 @@
     "ag-grid-community": "^23.0.2",
     "ag-grid-react": "^23.0.3",
     "ajv": "^6.10.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.0",
     "babel-loader": "^8.1.0",
     "bootstrap": "^4.4.1",
     "copy-pkg-json-webpack-plugin": "0.0.38",
