@@ -14,6 +14,7 @@ import { AnnotationBlock } from '../../common/dtos';
 interface AnnotationMenuProperties {
   selections?: Array<any>,
   position?: Array<number>,
+  onDelete: any | null,
   onClose: any | null,
   selectedAnnotationBlock?: AnnotationBlock,
 }
@@ -42,7 +43,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   handleOnDelete() {
-    const { selectedAnnotationBlock, selections } = this.props;
+    const { selectedAnnotationBlock, selections, onDelete } = this.props;
     console.log('AnnotationMenu OnDelete triggered for -> ', selections);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
@@ -50,6 +51,8 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     });
 
     this.postAnnotations(annotations);
+
+    onDelete(selectedAnnotationBlock);
   }
 
   handleOnSubmit(values: { [key: string]: string }) {

@@ -974,6 +974,24 @@ class TableComponent extends Component<{}, TableState> {
     }, () => this.resetSelections());
   }
 
+  deleteAnnotationBlock(block) {
+    const { role, type, selections } = block;
+
+    const table: any = this.tableRef;
+    const rows = table!.querySelectorAll('tr');
+
+    selections.map(selection => {
+      const {x1, x2, y1, y2} = selection;
+      for ( let row = y1; row <= y2; row++ ) {
+        for ( let col = x1; col <= x2; col++ ) {
+          const cell = rows[row].children[col];
+          cell.classList.remove(`role-${role}`);
+          cell.classList.remove(`type-${type}`);
+        }
+      }
+    });
+  }
+
   renderAnnotationMenu() {
     const {
       annotationMode,
@@ -987,6 +1005,7 @@ class TableComponent extends Component<{}, TableState> {
           selections={this.selections}
           position={annotationMenuPosition}
           selectedAnnotationBlock={selectedAnnotationBlock}
+          onDelete={this.deleteAnnotationBlock.bind(this)}
           onClose={() => this.closeAnnotationMenu()} />
       )
     }
