@@ -974,7 +974,7 @@ class TableComponent extends Component<{}, TableState> {
     }, () => this.resetSelections());
   }
 
-  deleteAnnotationBlock(block) {
+  deleteAnnotationBlock(block: AnnotationBlock) {
     const { role, type, selections } = block;
 
     const table: any = this.tableRef;
