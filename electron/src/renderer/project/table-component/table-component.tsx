@@ -423,7 +423,7 @@ class TableComponent extends Component<{}, TableState> {
       cell.appendChild(borderBottom);
     }
 
-    if ( rowIndex === bottomRow && colIndex === rightCol && !classNames.length ) {
+    if ( rowIndex === bottomRow && colIndex === rightCol ) {
       const resizeCorner = document.createElement('div');
       resizeCorner.classList.add('cell-resize-corner');
       cell.appendChild(resizeCorner);
