@@ -239,6 +239,13 @@ class TableComponent extends Component<{}, TableState> {
     const { tableData } = this.state;
     for ( const block of wikiStore.annotations.blocks ) {
       const { role, type, selections } = block;
+      const classNames = [];
+      if ( role ) {
+        classNames.push(`role-${role}`);
+      }
+      if ( type ) {
+        classNames.push(`type-${type}`);
+      }
       for ( const selection of selections ) {
         const { x1, y1, x2, y2 } = selection;
         if ( y1 <= y2 ) {
@@ -246,16 +253,14 @@ class TableComponent extends Component<{}, TableState> {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
                 const cell = tableData[row-1][col-1];
-                cell.classNames.push(`role-${role}`);
-                cell.classNames.push(`type-${type}`);
+                cell.classNames = classNames;
               }
             }
           } else {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
                 const cell = tableData[row-1][col-1];
-                cell.classNames.push(`role-${role}`);
-                cell.classNames.push(`type-${type}`);
+                cell.classNames = classNames;
               }
             }
           }
@@ -264,16 +269,14 @@ class TableComponent extends Component<{}, TableState> {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
                 const cell = tableData[row-1][col-1];
-                cell.classNames.push(`role-${role}`);
-                cell.classNames.push(`type-${type}`);
+                cell.classNames = classNames;
               }
             }
           } else {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
                 const cell = tableData[row-1][col-1];
-                cell.classNames.push(`role-${role}`);
-                cell.classNames.push(`type-${type}`);
+                cell.classNames = classNames;
               }
             }
           }
