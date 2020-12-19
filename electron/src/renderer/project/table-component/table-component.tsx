@@ -286,6 +286,54 @@ class TableComponent extends Component<{}, TableState> {
     this.setState({tableData});
   }
 
+  deleteAnnotationBlock(block: AnnotationBlock) {
+    const { role, type, selections } = block;
+
+    const table: any = this.tableRef;
+    const rows = table!.querySelectorAll('tr');
+
+    for ( const selection of selections ) {
+      const { x1, y1, x2, y2 } = selection;
+      if ( y1 <= y2 ) {
+        if ( x1 <= x2 ) {
+          for ( let row = y1; row <= y2; row++ ) {
+            for ( let col = x1; col <= x2; col++ ) {
+              const cell = rows[row].children[col];
+              cell.classList.remove(`role-${role}`);
+              cell.classList.remove(`type-${type}`);
+            }
+          }
+        } else {
+          for ( let row = y1; row <= y2; row++ ) {
+            for ( let col = x2; col <= x1; col++ ) {
+              const cell = rows[row].children[col];
+              cell.classList.remove(`role-${role}`);
+              cell.classList.remove(`type-${type}`);
+            }
+          }
+        }
+      } else {
+        if ( x1 <= x2 ) {
+          for ( let row = y2; row <= y1; row++ ) {
+            for ( let col = x1; col <= x2; col++ ) {
+              const cell = rows[row].children[col];
+              cell.classList.remove(`role-${role}`);
+              cell.classList.remove(`type-${type}`);
+            }
+          }
+        } else {
+          for ( let row = y2; row <= y1; row++ ) {
+            for ( let col = x2; col <= x1; col++ ) {
+              const cell = rows[row].children[col];
+              cell.classList.remove(`role-${role}`);
+              cell.classList.remove(`type-${type}`);
+            }
+          }
+        }
+      }
+    }
+  }
+
   resetSelections() {
     const table = this.tableRef;
     if ( table ) {
@@ -975,54 +1023,6 @@ class TableComponent extends Component<{}, TableState> {
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
     }, () => this.resetSelections());
-  }
-
-  deleteAnnotationBlock(block: AnnotationBlock) {
-    const { role, type, selections } = block;
-
-    const table: any = this.tableRef;
-    const rows = table!.querySelectorAll('tr');
-
-    for ( const selection of selections ) {
-      const { x1, y1, x2, y2 } = selection;
-      if ( y1 <= y2 ) {
-        if ( x1 <= x2 ) {
-          for ( let row = y1; row <= y2; row++ ) {
-            for ( let col = x1; col <= x2; col++ ) {
-              const cell = rows[row].children[col];
-              cell.classList.remove(`role-${role}`);
-              cell.classList.remove(`type-${type}`);
-            }
-          }
-        } else {
-          for ( let row = y1; row <= y2; row++ ) {
-            for ( let col = x2; col <= x1; col++ ) {
-              const cell = rows[row].children[col];
-              cell.classList.remove(`role-${role}`);
-              cell.classList.remove(`type-${type}`);
-            }
-          }
-        }
-      } else {
-        if ( x1 <= x2 ) {
-          for ( let row = y2; row <= y1; row++ ) {
-            for ( let col = x1; col <= x2; col++ ) {
-              const cell = rows[row].children[col];
-              cell.classList.remove(`role-${role}`);
-              cell.classList.remove(`type-${type}`);
-            }
-          }
-        } else {
-          for ( let row = y2; row <= y1; row++ ) {
-            for ( let col = x2; col <= x1; col++ ) {
-              const cell = rows[row].children[col];
-              cell.classList.remove(`role-${role}`);
-              cell.classList.remove(`type-${type}`);
-            }
-          }
-        }
-      }
-    }
   }
 
   renderAnnotationMenu() {
