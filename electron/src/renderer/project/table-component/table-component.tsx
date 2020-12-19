@@ -354,11 +354,12 @@ class TableComponent extends Component<{}, TableState> {
 
     const classNames: string[] = [];
     if ( selectedBlock ) {
-      if ( selectedBlock['role'] ) {
-        classNames.push(`role-${selectedBlock['role']}`);
+      const { role, type } = selectedBlock;
+      if ( role ) {
+        classNames.push(`active-role-${role}`);
       }
-      if ( selectedBlock['type'] ) {
-        classNames.push(`type-${selectedBlock['type']}`);
+      if ( type ) {
+        classNames.push(`active-type-${type}`);
       }
     }
     const rows = table.querySelectorAll('tr');

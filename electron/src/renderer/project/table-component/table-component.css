@@ -238,25 +238,31 @@
 }
 
 /* annotation cell types */
+.table-wrapper table tr td.active-role-dependentVar,
 .table-wrapper table tr td.role-dependentVar {
   background: #D9F2E6;
 }
+.table-wrapper table tr td.active-role-mainSubject,
 .table-wrapper table tr td.role-mainSubject {
   background: #D9EAF2;
 }
+.table-wrapper table tr td.active-type-qNode,
 .table-wrapper table tr td.type-qNode {
   color: #006699;
 }
+.table-wrapper table tr td.active-role-metadata,
 .table-wrapper table tr td.role-metadata {
   background: #d8dfe7;
 }
+.table-wrapper table tr td.active-role-qualifier,
 .table-wrapper table tr td.role-qualifier {
   background: #DDD9F2;
 }
+.table-wrapper table tr td.active-role-property,
 .table-wrapper table tr td.role-property {
   background: #fbe5ce;
 }
-
+.table-wrapper table tr td.active-role-unit,
 .table-wrapper table tr td.role-unit {
   background: #fff2ce;
 }
