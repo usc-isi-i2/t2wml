@@ -239,7 +239,7 @@ class TableComponent extends Component<{}, TableState> {
     const { tableData } = this.state;
     for ( const block of wikiStore.annotations.blocks ) {
       const { role, type, selections } = block;
-      const classNames = [];
+      const classNames: string[] = [];
       if ( role ) {
         classNames.push(`role-${role}`);
       }
