@@ -857,44 +857,6 @@ class TableComponent extends Component<{}, TableState> {
     }, 100);
   }
 
-  getClassName(stuff: AnnotationBlock, row: number, col: number) {
-    const {
-      selectedCell,
-      selectedProperty,
-      selectedQualifiers,
-      selectedMainSubject,
-    } = this.state;
-    let className = '';
-    className += stuff['type'] ? ` type-${stuff['type']}` : '';
-    className += stuff['role'] ? ` role-${stuff['role']}` : '';
-    if ( selectedCell ) {
-      if ( selectedCell.row === row && selectedCell.col === col ) {
-        className += ' active';
-      }
-    }
-    if ( selectedMainSubject ) {
-      if ( selectedMainSubject.row === row &&
-        selectedMainSubject.col === col ) {
-        className += ' active-main-subject';
-      }
-    }
-    if ( selectedProperty ) {
-      if ( selectedProperty.row === row &&
-        selectedProperty.col === col ) {
-        className += ' active-property';
-      }
-    }
-    if ( selectedQualifiers ) {
-      selectedQualifiers.forEach(selectedQualifier => {
-        if ( selectedQualifier.row === row &&
-          selectedQualifier.col === col ) {
-          className += ' active-qualifier';
-        }
-      })
-    }
-    return className;
-  }
-
   onCloseToast() {
     this.setState({showToast: false});
   }
