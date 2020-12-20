@@ -151,10 +151,9 @@ class TableViewer extends Component<{}, TableState> {
 
     // send request
     console.log("<TableViewer> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-    const formData = new FormData();
-    formData.append("file", file);
+    const data = {"filepath": file.path};
     try {
-      await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, formData));
+      await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
       console.log("<TableViewer> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
 
       // load yaml data

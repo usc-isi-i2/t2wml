@@ -80,14 +80,11 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   async postAnnotations(annotations: AnnotationBlock[]) {
     const { onClose } = this.props;
 
-    const formData = new FormData();
-    formData.append('annotations', JSON.stringify(annotations));
-
     try {
       await this.requestService.call(this, () => (
         this.requestService.postAnnotationBlocks(
           wikiStore.projects.current!.folder,
-          formData,
+          {'annotations': annotations}
         )
       ));
     } catch (error) {

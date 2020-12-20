@@ -81,7 +81,7 @@ def create_project(client):
     os.makedirs(path)
     url = '/api/project?project_folder={pid}'.format(pid=path)
     response=client.post(url,
-        data=dict(
+        json=dict(
             path=path
         )
     )
@@ -92,21 +92,22 @@ def create_project(client):
 
 def load_data_file(client, pid, filename):
     url = '/api/data?project_folder={pid}'.format(pid=pid)
-    with open(filename, 'rb') as f:
-        response=client.post(url,
-            data=dict(
-            file=f
+    response=client.post(url,
+                json=dict(
+                filepath=filename
+                )
             )
-        )
     return response
 
 def load_yaml_file(client, pid, filename, sheet_name):
     url='/api/yaml/apply?project_folder={pid}'.format(pid=pid)
     title=Path(filename).name
     with open(filename, 'r', encoding="utf-8") as f:
-        response=client.post(url,
-            data=dict(
-            yaml=f.read(),
+        yaml=f.read()
+    response=client.post(url,
+            json=dict(
+            yaml=yaml,
+            filepath=filename,
             title=title,
             sheetName=sheet_name
             )
@@ -115,20 +116,18 @@ def load_yaml_file(client, pid, filename, sheet_name):
 
 def load_wikifier_file(client, pid, filename):
     url='/api/wikifier?project_folder={pid}'.format(pid=pid)
-    with open(filename, 'rb') as f:
-        response=client.post(url,
-            data=dict(
-            file=f
+    response=client.post(url,
+            json=dict(
+            filepath=filename
             )
         )
     return response
 
 def load_item_file(client, pid, filename):
     url='/api/project/entity?project_folder={pid}'.format(pid=pid)
-    with open(filename, 'rb') as f:
-        response=client.post(url,
-            data=dict(
-            file=f
+    response=client.post(url,
+            json=dict(
+            filepath=filename
             )
         )
     return response

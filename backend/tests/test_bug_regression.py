@@ -11,7 +11,7 @@ def test_empty_cells(client):
     #change project settings
     url='/api/project/settings?project_folder={path}'.format(path=files_dir)
     response=client.put(url,
-            data=dict(
+            json=dict(
             warnEmpty=False
         )) 
 
@@ -21,7 +21,7 @@ def test_empty_cells(client):
     #change project settings
     url='/api/project/settings?project_folder={path}'.format(path=files_dir)
     response=client.put(url,
-            data=dict(
+            json=dict(
             warnEmpty=True
         )) 
     

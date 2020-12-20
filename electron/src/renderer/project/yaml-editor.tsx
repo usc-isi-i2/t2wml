@@ -90,14 +90,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
-    const formData = new FormData();
-    formData.append("yaml", wikiStore.yaml.yamlContent);
-    formData.append("title", wikiStore.yaml.yamlName as string);
-    formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
-
+    const data = {"yaml": wikiStore.yaml.yamlContent,
+                  "title": wikiStore.yaml.yamlName as string,
+                  "sheetName": wikiStore.projects.projectDTO!._saved_state.current_sheet};
 
     try {
-      await this.requestService.call(this, () => this.requestService.uploadYaml(wikiStore.projects.current!.folder, formData));
+      await this.requestService.call(this, () => this.requestService.uploadYaml(wikiStore.projects.current!.folder, data));
       console.debug('Uploading yaml ', wikiStore.yaml.yamlContent);
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
 
@@ -308,12 +306,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
 
     // send request
-    const formData = new FormData();
-    formData.append("old_name", oldName);
-    formData.append("new_name", val);
+    const data = {"old_name": oldName,
+                  "new_name": val };
 
     try {
-      await this.requestService.call(this, () => this.requestService.renameYaml(wikiStore.projects.current!.folder, formData));
+      await this.requestService.call(this, () => this.requestService.renameYaml(wikiStore.projects.current!.folder, data));
       // update yaml files according to received project.
       wikiStore.yaml.yamlList = wikiStore.projects.projectDTO!.yaml_files;
     } catch(error) {

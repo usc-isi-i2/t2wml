@@ -78,13 +78,12 @@ class YamlEditorState {
         wikiStore.yaml.showSpinner = true;
 
         // send request
-        const formData = new FormData();
-        formData.append("yaml", this.yamlContent!);
-        formData.append("title", this.yamlName!);
-        formData.append("sheetName", wikiStore.projects.projectDTO!._saved_state.current_sheet);
+        const data = {"yaml": this.yamlContent!,
+                      "title": this.yamlName!,
+                      "sheetName": wikiStore.projects.projectDTO!._saved_state.current_sheet};
 
         try {
-            await this.requestService.saveYaml(wikiStore.projects.current!.folder, formData);
+            await this.requestService.saveYaml(wikiStore.projects.current!.folder, data);
 
             // follow-ups (success)
             wikiStore.output.isDownloadDisabled = false;

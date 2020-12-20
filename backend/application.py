@@ -11,7 +11,7 @@ from app_config import app
 from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, get_annotations, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
-from utils import (file_upload_validator, save_file, save_dataframe, numpy_converter,
+from utils import (file_upload_validator, save_dataframe, numpy_converter,
                    get_empty_layers, get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
@@ -157,8 +157,7 @@ def upload_entities():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
 
-    in_file = file_upload_validator({"tsv"})
-    file_path = save_file(project_folder, in_file)
+    file_path = file_upload_validator({".tsv"})
     project.add_entity_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
 
@@ -180,10 +179,9 @@ def upload_data_file():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
 
-    in_file = file_upload_validator({'xlsx', 'xls', 'csv'})
-    file_path = save_file(project_folder, in_file)
-    project.add_data_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
-    project.update_saved_state(current_data_file=file_path)
+    file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
+    data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
+    project.update_saved_state(current_data_file=data_file)
     project.save()
 
     calc_params = get_calc_params(project)
@@ -254,9 +252,8 @@ def upload_wikifier_output():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
 
-    in_file = file_upload_validator({"csv"})
-    file_path = save_file(project_folder, in_file)
-    project.add_wikifier_file(file_path, copy_from_elsewhere=True, overwrite=True)
+    file_path = file_upload_validator({".csv"})
+    file_path = project.add_wikifier_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.update_saved_state(current_wikifiers=[file_path])
     project.save()
 
@@ -276,9 +273,9 @@ def call_wikifier_service():
     """
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    action = request.form["action"]
-    region = request.form["region"]
-    context = request.form["context"]
+    action = request.get_json()["action"]
+    region = request.get_json()["region"]
+    context = request.get_json()["context"]
 
     if not project.current_data_file:
         raise web_exceptions.WikifyWithoutDataFileException(
@@ -287,7 +284,7 @@ def call_wikifier_service():
 
     cell_qnode_map, problem_cells = wikify(calc_params, region, context)
     file_path = save_dataframe(project, cell_qnode_map, "wikify_region_output.csv")
-    project.add_wikifier_file(file_path)  # , copy_from_elsewhere=True, overwrite=True)
+    file_path = project.add_wikifier_file(file_path,  copy_from_elsewhere=True, overwrite=True)
     project.update_saved_state(current_wikifiers=[file_path])
     project.save()
 
@@ -309,8 +306,8 @@ def rename_yaml():
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload a data file before renaming yaml")
 
-    old_name = request.form["old_name"]
-    new_name = request.form["new_name"]
+    old_name = request.get_json()["old_name"]
+    new_name = request.get_json()["new_name"]
 
     if old_name not in project.yaml_files:
         raise web_exceptions.MissingYAMLFileException(
@@ -371,9 +368,9 @@ def upload_yaml():
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload a data file before editing or importing yaml")
 
-    yaml_data = request.form["yaml"]
-    yaml_title = request.form["title"]
-    sheet_name = request.form["sheetName"]
+    yaml_data = request.get_json()["yaml"]
+    yaml_title = request.get_json()["title"]
+    sheet_name = request.get_json()["sheetName"]
     save_yaml(project, yaml_data, yaml_title, sheet_name)
     response=dict(project=get_project_dict(project))
     return response, 200
@@ -392,9 +389,9 @@ def apply_yaml():
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Upload data file before applying YAML.")
 
-    yaml_data = request.form["yaml"]
-    yaml_title = request.form["title"]
-    sheet_name = request.form["sheetName"]
+    yaml_data = request.get_json()["yaml"]
+    yaml_title = request.get_json()["title"]
+    sheet_name = request.get_json()["sheetName"]
 
     save_yaml(project, yaml_data, yaml_title, sheet_name)
 
@@ -458,7 +455,7 @@ def upload_annotation():
     annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
 
     if request.method == 'POST':
-        annotation = json.loads(request.form["annotations"])
+        annotation = request.get_json()["annotations"]
         annotation, yamlContent = save_annotations(project, annotation, annotations_path)
     else:
         annotation, yamlContent=get_annotations(annotations_path)
@@ -474,7 +471,7 @@ def rename_project():
     This route is used to rename a project.
     :return:
     """
-    ptitle = request.form["ptitle"]
+    ptitle = request.get_json()["ptitle"]
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
     project.title = ptitle
@@ -494,23 +491,23 @@ def update_settings():
     project = get_project_instance(project_folder)
 
     if request.method == 'PUT':
-        endpoint = request.form.get("endpoint", None)
+        endpoint = request.get_json().get("endpoint", None)
         if endpoint:
             project.sparql_endpoint = endpoint
-        warn = request.form.get("warnEmpty", None)
+        warn = request.get_json().get("warnEmpty", None)
         if warn is not None:
-            project.warn_for_empty_cells = warn.lower() == 'true'
-        calendar=request.form.get("handleCalendar", None)
+            project.warn_for_empty_cells = warn
+        calendar=request.get_json().get("handleCalendar", None)
         if calendar:
             project.handle_calendar=calendar
         project.save()
         update_t2wml_settings(project)
 
         new_global_settings=dict()
-        datamart = request.form.get("datamartIntegration", None)
+        datamart = request.get_json().get("datamartIntegration", None)
         if datamart is not None:
-            new_global_settings["datamart_integration"] = datamart.lower() == 'true'
-        datamart_api = request.form.get("datamartApi", None)
+            new_global_settings["datamart_integration"] = datamart
+        datamart_api = request.get_json().get("datamartApi", None)
         if datamart_api is not None:
             new_global_settings["datamart_api"] = datamart_api
         global_settings.update(**new_global_settings)

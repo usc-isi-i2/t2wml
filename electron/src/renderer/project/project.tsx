@@ -190,15 +190,14 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({ showSettings: false });
 
     // notify backend
-    const formData = new FormData();
-    formData.append("endpoint", endpoint);
-    formData.append("warnEmpty", warn.toString());
-    formData.append("handleCalendar", calendar);
-    formData.append("datamartIntegration", datamartIntegration.toString());
-    formData.append("datamartApi", datamartApi);
+    const data = {"endpoint": endpoint,
+                  "warnEmpty": warn,
+                  "handleCalendar": calendar,
+                  "datamartIntegration": datamartIntegration,
+                  "datamartApi": datamartApi };
 
     try {
-      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, formData));
+      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, data));
     } catch (error) {
       console.log(error);
     }
