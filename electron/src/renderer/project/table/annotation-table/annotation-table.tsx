@@ -1,0 +1,1 @@
+//fills in tabledata and the mouse events, renders a "table" with those properties

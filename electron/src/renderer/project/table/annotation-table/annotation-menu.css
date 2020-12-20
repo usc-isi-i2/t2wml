@@ -1,0 +1,23 @@
+.annotation-menu {
+  position: absolute;
+  min-width: 300px;
+  z-index: 250;
+  left: 50px;
+  top: 70px;
+}
+
+.annotation-menu .handle {
+  background: whitesmoke;
+  cursor: pointer;
+}
+
+.annotation-menu form.annotation-form p.area {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.annotation-menu form.annotation-form button.delete {
+  cursor: pointer;
+  padding: 0px;
+  color: red;
+}
