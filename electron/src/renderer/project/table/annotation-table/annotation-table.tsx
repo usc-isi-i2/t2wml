@@ -38,7 +38,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
         // init state
         this.state = {
-            tableData: [],
+            tableData: null,
             showAnnotationMenu: false,
             annotationMenuPosition: [50, 70],
             selectedAnnotationBlock: undefined,

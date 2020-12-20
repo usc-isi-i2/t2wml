@@ -31,7 +31,7 @@ class OutputTable extends Component<{}, TableState> {
 
         // init state
         this.state = {
-            tableData: [],
+            tableData: null,
             selectedCell: new Cell(),
             showToast: false,
         };
