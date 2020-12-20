@@ -90,7 +90,6 @@ class TableContainer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.showCleanedData()));
   }
 
