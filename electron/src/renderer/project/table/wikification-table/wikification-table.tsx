@@ -4,24 +4,25 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
 
-interface TableProps {
+interface TableState {
     tableData: any;
 }
 
 @observer
-class WikificationTable extends Component<TableProps, {}> {
+class WikificationTable extends Component<{}, TableState> {
     private tableRef = React.createRef<HTMLTableElement>().current!;
     setTableReference(reference?: HTMLTableElement) {
         if ( !reference ) { return; }
         this.tableRef = reference;
     }
 
-    constructor(props: TableProps) {
+    constructor(props: {}) {
         super(props);
 
         // init state
-        // this.state = {
-        // };
+        this.state = {
+            tableData: []
+        };
     }
  
     handleOnMouseUp() {
@@ -43,7 +44,7 @@ class WikificationTable extends Component<TableProps, {}> {
     render() {
         return (
             <Table
-                tableData={this.props.tableData}
+                tableData={this.state.tableData}
                 onMouseUp={this.handleOnMouseUp.bind(this)}
                 onMouseDown={this.handleOnMouseDown.bind(this)}
                 onMouseMove={this.handleOnMouseMove.bind(this)}

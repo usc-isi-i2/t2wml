@@ -9,15 +9,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { AnnotationBlock, QNode, TableDTO, TableCell } from '../../common/dtos';
+import { AnnotationBlock } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
-import TableToast from './table-toast';
 
-import * as utils from './table-utils';
 
 import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
@@ -35,8 +33,6 @@ interface TableState {
   multipleSheets: boolean,
   sheetNames: Array<string> | null,
   currSheetName: string | null,
-
-  tableData: any;// TODO- add the type
 
   selectedCell: Cell | null;
   selectedQualifiers: Array<Cell> | null,
@@ -72,7 +68,6 @@ class TableContainer extends Component<{}, TableState> {
 
       // table data
       filename: null,
-      tableData: null,
       sheetNames: null,
       currSheetName: null,
       multipleSheets: false,
@@ -201,29 +196,7 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
   }
-
-  updateTableData(table?: TableDTO) {
-    if ( !table ) { return; }
-    const tableData = [];
-    for ( let i = 0; i < table.cells.length; i++ ) {
-      const rowData = [];
-      for ( let j = 0; j < table.cells[i].length; j++ ) {
-        const cell: TableCell = {
-          content: table.cells[i][j],
-          classNames: [],
-        };
-        rowData.push(cell);
-      }
-      tableData.push(rowData);
-    }
-    this.setState({tableData});
-    this.updateProjectInfo();
-  }
  
-  onCloseToast() { // ?
-    this.setState({showToast: false});
-  }
-
   toggleAnnotationMode() {
     const { annotationMode } = this.state;
     this.setState({annotationMode: !annotationMode});
@@ -323,11 +296,11 @@ class TableContainer extends Component<{}, TableState> {
   renderTable() {
       if (this.state.annotationMode) {
         return (
-            <AnnotationTable tableData={this.state.tableData} />
+            <AnnotationTable />
         );
       } else {
           return (
-              <OutputTable tableData={this.state.tableData} />
+              <OutputTable />
           );
       }
   }
@@ -339,25 +312,6 @@ class TableContainer extends Component<{}, TableState> {
     )
   }
 
-  renderToast() { //?
-    const { annotationMode, selectedCell, showToast } = this.state;
-    if ( showToast && !annotationMode ) {
-      let text = 'Selected:';
-      if ( this.selections ) {
-        this.selections.forEach(selection => {
-          text += ` ${utils.humanReadableSelection(selection)}`;
-        });
-      }
-      const qnode = wikiStore.layers.qnode.find(selectedCell);
-      return (
-        <TableToast
-          text={text}
-          qnode={qnode as QNode}
-          onClose={() => this.onCloseToast()}
-        />
-      )
-    }
-  }
 
   renderSheetSelector() {
     const { currSheetName, sheetNames } = this.state;
@@ -391,7 +345,6 @@ class TableContainer extends Component<{}, TableState> {
             {this.renderLoading()}
             {this.renderTable()}
             {this.renderLegend()}
-            {this.renderToast()}
           </Card.Body>
 
           <Card.Footer hidden={!multipleSheets} className={'p-0'}>
