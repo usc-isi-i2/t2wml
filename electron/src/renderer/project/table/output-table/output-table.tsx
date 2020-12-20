@@ -13,7 +13,7 @@ import { QNode, TableCell, TableDTO } from '../../../common/dtos';
 import TableToast from '../table-toast';
 
 interface TableState {
-    tableData: any;
+    tableData: TableCell[][];
     selectedCell: Cell | null;
     showToast: boolean;
 }
@@ -43,6 +43,8 @@ class OutputTable extends Component<{}, TableState> {
         this.updateTableData(wikiStore.table.table);
         document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
+        this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
+
     }
 
     componentWillUnmount() {
@@ -144,18 +146,18 @@ class OutputTable extends Component<{}, TableState> {
         const element = event.target as any;
         element.setAttribute('style', 'width: 100%;');
         element.parentElement.setAttribute('style', 'max-width: 1%');
-    
+
         const table: any = this.tableRef;
         const rows = table!.querySelectorAll('tr');
         const index = element.parentElement.cellIndex;
         rows.forEach((row: any) => {
-          row.children[index].setAttribute('style', 'max-width: 1%');
+            row.children[index].setAttribute('style', 'max-width: 1%');
         });
-    
+
         setTimeout(() => {
-          element.setAttribute('style', `min-width: ${element.clientWidth}px`);
+            element.setAttribute('style', `min-width: ${element.clientWidth}px`);
         }, 100);
-      }
+    }
 
     handleOnKeyDown(event: KeyboardEvent) {
 
@@ -200,22 +202,22 @@ class OutputTable extends Component<{}, TableState> {
         }
     }
 
-onCloseToast() {
-        this.setState({showToast: false});
-      }
-    
-  renderToast() {
-    const {selectedCell, showToast } = this.state;
-    if ( showToast) {
-      const qnode = wikiStore.layers.qnode.find(selectedCell);
-      return (
-        <TableToast
-          qnode={qnode as QNode}
-          onClose={() => this.onCloseToast()}
-        />
-      )
+    onCloseToast() {
+        this.setState({ showToast: false });
     }
-  }
+
+    renderToast() {
+        const { selectedCell, showToast } = this.state;
+        if (showToast) {
+            const qnode = wikiStore.layers.qnode.find(selectedCell);
+            return (
+                <TableToast
+                    qnode={qnode as QNode}
+                    onClose={() => this.onCloseToast()}
+                />
+            )
+        }
+    }
 
     render() {
         return <div>

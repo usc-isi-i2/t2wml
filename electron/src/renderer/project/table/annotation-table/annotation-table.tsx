@@ -13,7 +13,7 @@ import * as utils from '../table-utils'
 import TableToast from '../table-toast';
 
 interface TableState {
-    tableData: any;
+    tableData: TableCell[][];
     showAnnotationMenu: boolean,
     annotationMenuPosition?: Array<number>,
     selectedAnnotationBlock?: AnnotationBlock,
@@ -77,7 +77,7 @@ class AnnotationTable extends Component<{}, TableState> {
             }
             tableData.push(rowData);
         }
-        this.setState({ tableData: tableData });
+        this.updateAnnotationBlocks(tableData)
     }
 
     checkSelectedAnnotationBlocks(selection: CellSelection) {
@@ -139,48 +139,52 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
 
-    updateAnnotationBlocks() {
-        const { tableData } = this.state;
-        for (const block of wikiStore.annotations.blocks) {
-            const { role, type, selections } = block;
-            const classNames: string[] = [];
-            if (role) {
-                classNames.push(`role-${role}`);
-            }
-            if (type) {
-                classNames.push(`type-${type}`);
-            }
-            for (const selection of selections) {
-                const { x1, y1, x2, y2 } = selection;
-                if (y1 <= y2) {
-                    if (x1 <= x2) {
-                        for (let row = y1; row <= y2; row++) {
-                            for (let col = x1; col <= x2; col++) {
-                                const cell = tableData[row - 1][col - 1];
-                                cell.classNames = classNames;
+    updateAnnotationBlocks(tableData?: TableCell[][]) {
+        if (!tableData) {
+            const { tableData } = this.state;
+        }
+        if (wikiStore.annotations.blocks) {
+            for (const block of wikiStore.annotations.blocks) {
+                const { role, type, selections } = block;
+                const classNames: string[] = [];
+                if (role) {
+                    classNames.push(`role-${role}`);
+                }
+                if (type) {
+                    classNames.push(`type-${type}`);
+                }
+                for (const selection of selections) {
+                    const { x1, y1, x2, y2 } = selection;
+                    if (y1 <= y2) {
+                        if (x1 <= x2) {
+                            for (let row = y1; row <= y2; row++) {
+                                for (let col = x1; col <= x2; col++) {
+                                    const cell = tableData[row - 1][col - 1];
+                                    cell.classNames = classNames;
+                                }
+                            }
+                        } else {
+                            for (let row = y1; row <= y2; row++) {
+                                for (let col = x2; col <= x1; col++) {
+                                    const cell = tableData[row - 1][col - 1];
+                                    cell.classNames = classNames;
+                                }
                             }
                         }
                     } else {
-                        for (let row = y1; row <= y2; row++) {
-                            for (let col = x2; col <= x1; col++) {
-                                const cell = tableData[row - 1][col - 1];
-                                cell.classNames = classNames;
+                        if (x1 <= x2) {
+                            for (let row = y2; row <= y1; row++) {
+                                for (let col = x1; col <= x2; col++) {
+                                    const cell = tableData[row - 1][col - 1];
+                                    cell.classNames = classNames;
+                                }
                             }
-                        }
-                    }
-                } else {
-                    if (x1 <= x2) {
-                        for (let row = y2; row <= y1; row++) {
-                            for (let col = x1; col <= x2; col++) {
-                                const cell = tableData[row - 1][col - 1];
-                                cell.classNames = classNames;
-                            }
-                        }
-                    } else {
-                        for (let row = y2; row <= y1; row++) {
-                            for (let col = x2; col <= x1; col++) {
-                                const cell = tableData[row - 1][col - 1];
-                                cell.classNames = classNames;
+                        } else {
+                            for (let row = y2; row <= y1; row++) {
+                                for (let col = x2; col <= x1; col++) {
+                                    const cell = tableData[row - 1][col - 1];
+                                    cell.classNames = classNames;
+                                }
                             }
                         }
                     }
@@ -690,7 +694,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     renderToast() {
-        const {showToast } = this.state;
+        const { showToast } = this.state;
         if (showToast) {
             let text = 'Selected:';
             if (this.selections) {
@@ -701,7 +705,7 @@ class AnnotationTable extends Component<{}, TableState> {
             return (
                 <TableToast
                     text={text}
-                    qnode= {null}
+                    qnode={null}
                     onClose={() => this.onCloseToast()}
                 />
             )
