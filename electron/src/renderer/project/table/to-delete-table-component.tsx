@@ -16,7 +16,7 @@ import RequestService from '../../common/service';
 import SheetSelector from './sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
-import AnnotationMenu from './annotation-menu';
+import AnnotationMenu from './annotation-table/annotation-menu';
 import TableToast from './table-toast';
 import Table from './table';
 

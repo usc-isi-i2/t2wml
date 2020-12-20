@@ -5,10 +5,10 @@ import AnnotationForm from './annotation-form';
 
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
-import { ErrorMessage } from '../../common/general';
-import RequestService from '../../common/service';
-import wikiStore from '../../data/store';
-import { AnnotationBlock } from '../../common/dtos';
+import { ErrorMessage } from '../../../common/general';
+import RequestService from '../../../common/service';
+import wikiStore from '../../../data/store';
+import { AnnotationBlock } from '../../../common/dtos';
 
 
 interface AnnotationMenuProperties {
