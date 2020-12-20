@@ -1,0 +1,25 @@
+# 01_cleaning
+# This tutorial shows two cleaning functions on the input data, on different regions
+# The first one extracts just a number from column C
+# The second one normalizes the strings to be capital letters.
+statementMapping:
+  region:
+    - range: C9:C12
+  template:
+    subject: =item[B, $row-$n, "main subject"]
+    property: =item[C, 8, "property"]
+    value: =value[$col, $row]
+    qualifier:
+      - property: =item[D, 8, "property"]
+        value: =value[D, $row]
+    
+cleaningMapping:
+  - region:
+      range: C9:C12
+    functions:
+      - make_numeric
+  - region:
+      range: D9:D12
+    functions:
+      - change_case:
+          case: upper     

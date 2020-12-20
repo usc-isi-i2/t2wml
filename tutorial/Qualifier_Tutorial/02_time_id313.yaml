@@ -9,8 +9,6 @@ statementMapping:
     value: =value[$col, $row]
     qualifier:
     - calendar: Q1985727
-      # The format tells T2WML how to recognized the concatenated date %Year-%month-%day
-      # format: '%Y-%m-%d'
       precision: year
       property: P585
       time_zone: 0
