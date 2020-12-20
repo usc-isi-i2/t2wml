@@ -40,6 +40,7 @@ class OutputTable extends Component<{}, TableState> {
     private disposers: IReactionDisposer[] = [];
 
     componentDidMount() {
+        this.updateTableData(wikiStore.table.table);
         document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     }
@@ -52,7 +53,7 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     updateTableData(table?: TableDTO) {
-        if (!table) { return; }
+        if (!table || !table.cells) { return; }
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
             const rowData = [];
