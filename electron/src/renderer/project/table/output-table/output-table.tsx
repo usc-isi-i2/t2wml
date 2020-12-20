@@ -9,11 +9,13 @@ import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore from '../../../data/store';
 import { Cell, ErrorMessage } from '../../../common/general';
-import { TableCell, TableDTO } from '../../../common/dtos';
+import { QNode, TableCell, TableDTO } from '../../../common/dtos';
+import TableToast from '../table-toast';
 
 interface TableState {
     tableData: any;
     selectedCell: Cell | null;
+    showToast: boolean;
 }
 
 @observer
@@ -30,7 +32,8 @@ class OutputTable extends Component<{}, TableState> {
         // init state
         this.state = {
             tableData: [],
-            selectedCell: new Cell()
+            selectedCell: new Cell(),
+            showToast: false,
         };
     }
 
@@ -196,8 +199,27 @@ class OutputTable extends Component<{}, TableState> {
         }
     }
 
+onCloseToast() {
+        this.setState({showToast: false});
+      }
+    
+  renderToast() {
+    const {selectedCell, showToast } = this.state;
+    if ( showToast) {
+      const qnode = wikiStore.layers.qnode.find(selectedCell);
+      return (
+        <TableToast
+          qnode={qnode as QNode}
+          onClose={() => this.onCloseToast()}
+        />
+      )
+    }
+  }
+
     render() {
-        return (
+        return <div>
+            {this.renderToast()}
+
             <Table
                 tableData={this.state.tableData}
                 onMouseUp={this.handleOnMouseUp.bind(this)}
@@ -205,7 +227,7 @@ class OutputTable extends Component<{}, TableState> {
                 onMouseMove={this.handleOnMouseMove.bind(this)}
                 onClickHeader={this.handleOnClickHeader.bind(this)}
                 setTableReference={this.setTableReference.bind(this)} />
-        )
+        </div>
     }
 }
 
