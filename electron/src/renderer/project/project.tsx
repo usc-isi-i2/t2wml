@@ -26,6 +26,7 @@ import { IpcRendererEvent } from 'electron/renderer';
 import Sidebar from './sidebar/sidebar';
 import { TableDTO } from '../common/dtos';
 import { IReactionDisposer, reaction } from 'mobx';
+import TableContainer from './table/table-container';
 
 
 interface ProjectState extends IStateWithError {
@@ -235,7 +236,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
           <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
-            <TableComponent />
+            <TableContainer />
             <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
               <Editors />
               <Output />

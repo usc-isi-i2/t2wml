@@ -7,25 +7,24 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
 
-interface TableState {
+interface TableProps {
     tableData: any;
 }
 
 @observer
-class OutputTable extends Component<{}, TableState> {
+class OutputTable extends Component<TableProps, {}> {
     private tableRef = React.createRef<HTMLTableElement>().current!;
     setTableReference(reference?: HTMLTableElement) {
         if ( !reference ) { return; }
         this.tableRef = reference;
     }
 
-    constructor(props: {}) {
+    constructor(props: TableProps) {
         super(props);
 
         // init state
-        this.state = {
-            tableData: []
-        };
+        // this.state = {
+        // };
     }
  
     handleOnMouseUp() {
@@ -47,7 +46,7 @@ class OutputTable extends Component<{}, TableState> {
     render() {
         return (
             <Table
-                tableData={this.state.tableData}
+                tableData={this.props.tableData}
                 onMouseUp={this.handleOnMouseUp.bind(this)}
                 onMouseDown={this.handleOnMouseDown.bind(this)}
                 onMouseMove={this.handleOnMouseMove.bind(this)}
