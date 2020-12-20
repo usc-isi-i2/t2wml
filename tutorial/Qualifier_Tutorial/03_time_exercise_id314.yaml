@@ -13,4 +13,4 @@ statementMapping:
       property: P585
       time_zone: 0
       # Fill in the value that the time qualifier is on (production column)
-      value: ### TO DO
+      value: # TO DO
