@@ -253,9 +253,8 @@ class AnnotationTable extends Component<{}, TableState> {
         const classNames: string[] = [];
         if (selectedBlock) {
             const { role } = selectedBlock;
+            classNames.push(`active`);
             if (role) {
-                debugger
-                classNames.push('active');
                 classNames.push(`role-${role}`)
             }
         }
@@ -456,6 +455,8 @@ class AnnotationTable extends Component<{}, TableState> {
                 this.updateSelections();
             } else {
                 this.resetSelections();
+                // Activate the element on click
+                this.selectCell(element, y1, x1, y1, x1, x1, y1);
                 this.selections = [{ x1, x2, y1, y2 }];
 
             }
