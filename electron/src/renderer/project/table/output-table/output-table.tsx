@@ -13,7 +13,7 @@ import { QNode, TableCell, TableDTO } from '../../../common/dtos';
 import TableToast from '../table-toast';
 
 interface TableState {
-    tableData: TableCell[][];
+    tableData: TableCell[][] | null;
     selectedCell: Cell | null;
     showToast: boolean;
 }
@@ -43,8 +43,6 @@ class OutputTable extends Component<{}, TableState> {
         this.updateTableData(wikiStore.table.table);
         document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-        this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-
     }
 
     componentWillUnmount() {
@@ -55,7 +53,9 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     updateTableData(table?: TableDTO) {
-        if (!table || !table.cells) { return; }
+        if (!table || !table.cells) { 
+            this.setState({ tableData: null });
+            return; }
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
             const rowData = [];

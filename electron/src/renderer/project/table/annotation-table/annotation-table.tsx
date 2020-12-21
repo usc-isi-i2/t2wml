@@ -13,7 +13,7 @@ import * as utils from '../table-utils'
 import TableToast from '../table-toast';
 
 interface TableState {
-    tableData: TableCell[][];
+    tableData: TableCell[][] | null;
     showAnnotationMenu: boolean,
     annotationMenuPosition?: Array<number>,
     selectedAnnotationBlock?: AnnotationBlock,
@@ -64,7 +64,10 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     updateTableData(table?: TableDTO) {
-        if (!table || !table.cells) { return; }
+        if (!table || !table.cells) {
+            this.setState({ tableData: null });
+            return; 
+        }
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
             const rowData = [];
