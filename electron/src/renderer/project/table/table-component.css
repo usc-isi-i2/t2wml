@@ -126,33 +126,51 @@
   z-index: 1;
 }
 
+
 /* active cell */
 .table-wrapper table tr td.active div.cell-border-top,
 .table-wrapper table tr td.active div.cell-border-left,
 .table-wrapper table tr td.active div.cell-border-right,
 .table-wrapper table tr td.active div.cell-border-bottom {
   background: #555;
-  z-index: 5;
 }
-.table-wrapper table tr td.active.property div.cell-border-top,
-.table-wrapper table tr td.active.property div.cell-border-left,
-.table-wrapper table tr td.active.property div.cell-border-right,
-.table-wrapper table tr td.active.property div.cell-border-bottom {
-  background: #ff0000;
+.table-wrapper table tr td.active.role-property div.cell-border-top,
+.table-wrapper table tr td.active.role-property div.cell-border-left,
+.table-wrapper table tr td.active.role-property div.cell-border-right,
+.table-wrapper table tr td.active.role-property div.cell-border-bottom {
+  background: #f1a655;
+}
+.table-wrapper table tr td.active.role-qualifier div.cell-border-top,
+.table-wrapper table tr td.active.role-qualifier div.cell-border-left,
+.table-wrapper table tr td.active.role-qualifier div.cell-border-right,
+.table-wrapper table tr td.active.role-qualifier div.cell-border-bottom {
+  background: #8867cb;
+}
+.table-wrapper table tr td.active.role-mainSubject div.cell-border-top,
+.table-wrapper table tr td.active.role-mainSubject div.cell-border-left,
+.table-wrapper table tr td.active.role-mainSubject div.cell-border-right,
+.table-wrapper table tr td.active.role-mainSubject div.cell-border-bottom {
+  background: #499bc1;
+}
+
+.table-wrapper table tr td.active.role-dependentVar div.cell-border-top,
+.table-wrapper table tr td.active.role-dependentVar div.cell-border-left,
+.table-wrapper table tr td.active.role-dependentVar div.cell-border-right,
+.table-wrapper table tr td.active.role-dependentVar div.cell-border-bottom {
+  background:#3bab75;
+}
+.table-wrapper table tr td.active.role-metadata div.cell-border-top,
+.table-wrapper table tr td.active.role-metadata div.cell-border-left,
+.table-wrapper table tr td.active.role-metadata div.cell-border-right,
+.table-wrapper table tr td.active.role-metadata div.cell-border-bottom {
+  background: #556e8b;
   z-index: 10;
 }
-.table-wrapper table tr td.active.qualifier div.cell-border-top,
-.table-wrapper table tr td.active.qualifier div.cell-border-left,
-.table-wrapper table tr td.active.qualifier div.cell-border-right,
-.table-wrapper table tr td.active.qualifier div.cell-border-bottom {
-  background: #ff4500;
-  z-index: 10;
-}
-.table-wrapper table tr td.active.main-subject div.cell-border-top,
-.table-wrapper table tr td.active.main-subject div.cell-border-left,
-.table-wrapper table tr td.active.main-subject div.cell-border-right,
-.table-wrapper table tr td.active.main-subject div.cell-border-bottom {
-  background: #111111;
+.table-wrapper table tr td.active.role-unit div.cell-border-top,
+.table-wrapper table tr td.active.role-unit div.cell-border-left,
+.table-wrapper table tr td.active.role-unit div.cell-border-right,
+.table-wrapper table tr td.active.role-unit div.cell-border-bottom {
+  background: #ffca38;
   z-index: 15;
 }
 
@@ -214,55 +232,44 @@
   border: 1px solid whitesmoke;
 }
 
-/* yaml cell types */
-.table-wrapper table tr td.type-cleaned {
+/*cell statuses - may eventually become triangles etc*/
+.table-wrapper table tr td.status-cleaned {
   font-weight: bold;
 }
-.table-wrapper table tr td.type-subject {
-  background: #D9EAF2;
-}
-.table-wrapper table tr td.type-metadata {
-  background: #FFF2CE;
-}
-.table-wrapper table tr td.type-property {
-  background: #FBE5CE;
-}
-.table-wrapper table tr td.type-qualifier {
-  background: #DDD9F2;
-}
-.table-wrapper table tr td.type-minorError {
+.table-wrapper table tr td.status-minorError {
   background: #FF8000;
 }
-.table-wrapper table tr td.type-majorError {
+.table-wrapper table tr td.status-majorError {
   background: #FF3333;
 }
 
-/* annotation cell types */
-.table-wrapper table tr td.active-role-dependentVar,
+/* cell roles */
 .table-wrapper table tr td.role-dependentVar {
   background: #D9F2E6;
 }
-.table-wrapper table tr td.active-role-mainSubject,
 .table-wrapper table tr td.role-mainSubject {
   background: #D9EAF2;
 }
-.table-wrapper table tr td.active-type-qNode,
-.table-wrapper table tr td.type-qNode {
-  color: #006699;
-}
-.table-wrapper table tr td.active-role-metadata,
+
 .table-wrapper table tr td.role-metadata {
   background: #d8dfe7;
 }
-.table-wrapper table tr td.active-role-qualifier,
+
 .table-wrapper table tr td.role-qualifier {
   background: #DDD9F2;
 }
-.table-wrapper table tr td.active-role-property,
 .table-wrapper table tr td.role-property {
   background: #fbe5ce;
 }
-.table-wrapper table tr td.active-role-unit,
 .table-wrapper table tr td.role-unit {
   background: #fff2ce;
+}
+
+
+
+
+
+/* cell types*/
+.table-wrapper table tr td.type-qNode {
+  color: #006699;
 }
