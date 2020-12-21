@@ -13,7 +13,7 @@ import { QNode, TableCell, TableDTO } from '../../../common/dtos';
 import TableToast from '../table-toast';
 
 interface TableState {
-    tableData: TableCell[][] | null;
+    tableData: TableCell[][] | undefined;
     selectedCell: Cell | null;
     showToast: boolean;
 }
@@ -31,7 +31,7 @@ class OutputTable extends Component<{}, TableState> {
 
         // init state
         this.state = {
-            tableData: null,
+            tableData: undefined,
             selectedCell: new Cell(),
             showToast: false,
         };
@@ -52,10 +52,30 @@ class OutputTable extends Component<{}, TableState> {
         }
     }
 
+    colorCellsByType(tableData?: TableCell[][]) {
+        if (!tableData) {
+            const { tableData } = this.state;
+        }
+
+        const types = wikiStore.layers.type;
+
+        if (types && tableData) {
+            for (const entry of types.entries) {
+                for (const indexPair of entry.indices) {
+                    const tableCell = tableData[indexPair[0]][indexPair[1]];
+                    tableCell.classNames.push(`role-${entry.type}`)
+                }
+            }
+        }
+
+        this.setState({ tableData: tableData });
+    }
+
     updateTableData(table?: TableDTO) {
         if (!table || !table.cells) { 
-            this.setState({ tableData: null });
-            return; }
+            this.setState({ tableData: undefined });
+            return; 
+        }
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
             const rowData = [];
@@ -68,19 +88,48 @@ class OutputTable extends Component<{}, TableState> {
             }
             tableData.push(rowData);
         }
-        this.setState({ tableData: tableData });
+        this.colorCellsByType(tableData)
     }
 
     selectCell(cell: Element, classNames: string[] = []) {
         // Activate the current cell
         cell.classList.add('active');
         classNames.map(className => cell.classList.add(className));
+
+        // Add a top border to the cells at the top of the selection
+        {
+            const borderTop = document.createElement('div');
+            borderTop.classList.add('cell-border-top');
+            cell.appendChild(borderTop);
+        }
+
+        // Add a left border to the cells on the left of the selection
+        {
+            const borderLeft = document.createElement('div');
+            borderLeft.classList.add('cell-border-left');
+            cell.appendChild(borderLeft);
+        }
+
+        // Add a right border to the cells on the right of the selection
+        {
+            const borderRight = document.createElement('div');
+            borderRight.classList.add('cell-border-right');
+            cell.appendChild(borderRight);
+        }
+
+        // Add a bottom border to the cells at the bottom of the selection
+        {
+            const borderBottom = document.createElement('div');
+            borderBottom.classList.add('cell-border-bottom');
+            cell.appendChild(borderBottom);
+        }
+
     }
 
     selectRelatedCells(row: number, col: number) {
         const selectedCell = new Cell(col - 1, row - 1);
 
-        this.setState({selectedCell, showToast: true});
+        this.setState({ selectedCell, showToast: true });
 
         // Update selected cell in the data store
         wikiStore.table.selectedCell = selectedCell;
@@ -99,7 +148,7 @@ class OutputTable extends Component<{}, TableState> {
                     const y = cell.qualifier[0];
                     const x = cell.qualifier[1];
                     const tableCell = rows[y + 1].children[x + 1];
-                    this.selectCell(tableCell, ['role-qualifier']);
+                    this.selectCell(tableCell, []);
                 }
             });
         }
@@ -109,7 +158,7 @@ class OutputTable extends Component<{}, TableState> {
             const y = statement.cells.subject[0];
             const x = statement.cells.subject[1];
             const cell = rows[y + 1].children[x + 1];
-            this.selectCell(cell, ['role-mainSubject']);
+            this.selectCell(cell, []);
         }
 
         // Select the cell with the property
@@ -117,7 +166,7 @@ class OutputTable extends Component<{}, TableState> {
             const y = statement.cells.property[0];
             const x = statement.cells.property[1];
             const cell = rows[y + 1].children[x + 1];
-            this.selectCell(cell, ['role-property']);
+            this.selectCell(cell, []);
         }
     }
 
