@@ -10,7 +10,7 @@ import { faSquare } from '@fortawesome/free-solid-svg-icons';
 import { AnnotationBlock, QNode, TableDTO, TableCell } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
-import SheetSelector from './sheet-selector';
+import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 import AnnotationMenu from './annotation-menu';
