@@ -1,6 +1,6 @@
 //fills in tabledata and the mouse events, renders a "table" with those properties
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
@@ -713,11 +713,11 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     render() {
-        return <div>
+        return <Fragment>
             {this.renderToast()}
             {this.renderTable()}
             {this.renderAnnotationMenu()}
-        </div>
+        </Fragment>
     }
 }
 

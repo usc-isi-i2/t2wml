@@ -3,7 +3,7 @@
 //replace this with table-wrapper and the individual output-table and annotation-table components
 
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
@@ -287,7 +287,7 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     render() {
-        return <div>
+        return <Fragment>
             {this.renderToast()}
 
             <Table
@@ -297,7 +297,7 @@ class OutputTable extends Component<{}, TableState> {
                 onMouseMove={this.handleOnMouseMove.bind(this)}
                 onClickHeader={this.handleOnClickHeader.bind(this)}
                 setTableReference={this.setTableReference.bind(this)} />
-        </div>
+        </Fragment>
     }
 }
 
