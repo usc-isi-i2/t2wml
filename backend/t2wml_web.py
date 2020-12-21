@@ -145,12 +145,13 @@ def get_yaml_layers(calc_params):
 
     cell_type_indices={
         "qualifier":{},
-        "subject":{},
-        "data":{},
+        "mainSubject":{},
+        "dependentVar":{},
         "majorError":{},
         "minorError":{},
         "property":{},
-        "metadata":{}
+        "unit":{},
+        "additionalFields":{}
     }
 
     errorLayer=dict(layerType="error", entries=[])
@@ -177,17 +178,19 @@ def get_yaml_layers(calc_params):
 
 
         for cell_name in statements:
-            cell_type_indices["data"][cell_name]=True
+            cell_type_indices["dependentVar"][cell_name]=True
 
             statement = statements[cell_name]
             get_cell_qnodes(statement, qnodes)
             cells=statement["cells"]
             cells.pop("value")
             for key in cells:
-                if key in ["subject", "property"]:
+                if key == "property":
                     cell_type_indices[key][cells[key]]=True
+                elif key == "subject":
+                    cell_type_indices["mainSubject"][cells[key]]=True
                 else:
-                    cell_type_indices["metadata"][cells[key]]=True
+                    cell_type_indices["additionalFields"][cells[key]]=True
                 #convert to frontend format
                 cells[key]=indexer(cells[key])
             cells["qualifiers"]=[]
@@ -201,10 +204,10 @@ def get_yaml_layers(calc_params):
                         q_cells["qualifier"]=qual_cell
                         
                     for key in q_cells:
-                        if key in ["property", "qualifier"]:
+                        if key in ["property", "qualifier", "unit"]:
                             cell_type_indices[key][q_cells[key]]=True
                         else:
-                            cell_type_indices["metadata"][q_cells[key]]=True
+                            cell_type_indices["additionalFields"][q_cells[key]]=True
                         #convert to frontend format
                         q_cells[key]=indexer(q_cells[key])
                     cells["qualifiers"].append(q_cells)

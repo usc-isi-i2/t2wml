@@ -80,8 +80,7 @@ class OutputTable extends Component<{}, TableState> {
     selectRelatedCells(row: number, col: number) {
         const selectedCell = new Cell(col - 1, row - 1);
 
-        //TODO:
-        //this.setState({selectedCell, showToast: true});
+        this.setState({selectedCell, showToast: true});
 
         // Update selected cell in the data store
         wikiStore.table.selectedCell = selectedCell;
@@ -106,7 +105,7 @@ class OutputTable extends Component<{}, TableState> {
         }
 
         // Select the cell with the main-subject
-        if ('subject' in statement.cells) {
+        if ('mainSubject' in statement.cells) {
             const y = statement.cells.subject[0];
             const x = statement.cells.subject[1];
             const cell = rows[y + 1].children[x + 1];

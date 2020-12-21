@@ -25,11 +25,11 @@
                     },
                     {
                         "indices": [],
-                        "type": "subject"
+                        "type": "mainSubject"
                     },
                     {
                         "indices": [],
-                        "type": "data"
+                        "type": "dependentVar"
                     },
                     {
                         "indices": [],
@@ -45,7 +45,11 @@
                     },
                     {
                         "indices": [],
-                        "type": "metadata"
+                        "type": "unit"
+                    },
+                    {
+                        "indices": [],
+                        "type": "additionalFields"
                     }
                 ],
                 "layerType": "type"
@@ -1629,7 +1633,7 @@
                                 1
                             ]
                         ],
-                        "type": "subject"
+                        "type": "mainSubject"
                     },
                     {
                         "indices": [
@@ -1706,7 +1710,7 @@
                                 7
                             ]
                         ],
-                        "type": "data"
+                        "type": "dependentVar"
                     },
                     {
                         "indices": [],
@@ -1795,6 +1799,10 @@
                         "type": "property"
                     },
                     {
+                        "indices": [],
+                        "type": "unit"
+                    },
+                    {
                         "indices": [
                             [
                                 0,
@@ -1809,7 +1817,7 @@
                                 7
                             ]
                         ],
-                        "type": "metadata"
+                        "type": "additionalFields"
                     }
                 ],
                 "layerType": "type"
@@ -1991,11 +1999,11 @@
                     },
                     {
                         "indices": [],
-                        "type": "subject"
+                        "type": "mainSubject"
                     },
                     {
                         "indices": [],
-                        "type": "data"
+                        "type": "dependentVar"
                     },
                     {
                         "indices": [],
@@ -2011,7 +2019,11 @@
                     },
                     {
                         "indices": [],
-                        "type": "metadata"
+                        "type": "unit"
+                    },
+                    {
+                        "indices": [],
+                        "type": "additionalFields"
                     }
                 ],
                 "layerType": "type"
