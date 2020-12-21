@@ -1127,7 +1127,7 @@
                         ]
                     },
                     {
-                        "type": "subject",
+                        "type": "mainSubject",
                         "indices": [
                             [
                                 2,
@@ -1156,7 +1156,7 @@
                         ]
                     },
                     {
-                        "type": "data",
+                        "type": "dependentVar",
                         "indices": [
                             [
                                 2,
@@ -1319,7 +1319,11 @@
                         ]
                     },
                     {
-                        "type": "metadata",
+                        "type": "unit",
+                        "indices": []
+                    },
+                    {
+                        "type": "additionalFields",
                         "indices": [
                             [
                                 0,
