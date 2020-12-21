@@ -167,11 +167,30 @@ class OutputTable extends Component<{}, TableState> {
         }
     }
 
+    resetSelections() {
+        const table = this.tableRef;
+        if (table) {
+            table.querySelectorAll('td[class*="active"]').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('active')) {
+                        e.classList.remove(className);
+                    }
+                });
+            });
+            table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
+            table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+        }
+    }
+
     handleOnMouseUp(event: React.MouseEvent) {
 
     }
 
     handleOnMouseDown(event: React.MouseEvent) {
+        this.resetSelections()
         const element = event.target as any;
         const x1: number = element.cellIndex;
         const x2: number = element.cellIndex;
