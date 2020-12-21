@@ -16,7 +16,7 @@ import { observer } from "mobx-react"
 import wikiStore, { LayerState } from '../data/store';
 import { defaultYamlContent } from "./default-values";
 import { IReactionDisposer, reaction } from 'mobx';
-import SheetSelector from './table-viewer/sheet-selector';
+import SheetSelector from './sheet-selector/sheet-selector';
 import { ProjectDTO } from '../common/dtos';
 
 

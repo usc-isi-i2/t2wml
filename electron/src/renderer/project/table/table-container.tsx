@@ -12,7 +12,7 @@ import { faSquare } from '@fortawesome/free-solid-svg-icons';
 import { AnnotationBlock } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
-import SheetSelector from './sheet-selector';
+import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 
@@ -90,6 +90,7 @@ class TableContainer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.showCleanedData()));
   }
 
