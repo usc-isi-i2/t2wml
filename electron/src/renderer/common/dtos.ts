@@ -25,6 +25,7 @@ export interface ProjectDTO {
     wikifier_files: string[];
     entity_files: string[];
     yaml_sheet_associations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
+    annotations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
     datamart_integration: boolean;

@@ -1,4 +1,5 @@
 import wikiStore from '../data/store';
+import { saveFiles } from '../project/save-files';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithTableandMaybeYamlDTO, ResponseWithProjectDTO, ResponseWithAnnotationsDTO,
@@ -25,6 +26,7 @@ class StoreFiller {
 
   public fillProjectLayersYaml(response: ResponseWithTableandMaybeYamlDTO) {
     wikiStore.projects.projectDTO = response.project;
+    saveFiles.fillFilesData(response.project);
     this.fillTableAndLayers(response);
   }
 
