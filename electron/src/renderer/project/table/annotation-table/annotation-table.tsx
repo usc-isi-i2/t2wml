@@ -66,7 +66,7 @@ class AnnotationTable extends Component<{}, TableState> {
     updateTableData(table?: TableDTO) {
         if (!table || !table.cells) {
             this.setState({ tableData: undefined });
-            return; 
+            return;
         }
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
@@ -84,7 +84,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
 
-    checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock|null {
+    checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | null {
         //checks if a given selection is part of an annotation block
         //if so, returns the annotation block
         const { x1, x2, y1, y2 } = selection;
@@ -96,14 +96,14 @@ class AnnotationTable extends Component<{}, TableState> {
                             x2 <= selection['x2'] &&
                             y1 >= selection['y1'] &&
                             y2 <= selection['y2']) {
-                                return block;
+                            return block;
                         }
                     } else {
                         if (x1 <= selection['x1'] &&
                             x2 >= selection['x2'] &&
                             y1 >= selection['y1'] &&
                             y2 <= selection['y2']) {
-                                return block;
+                            return block;
                         }
                     }
                 } else {
@@ -112,14 +112,14 @@ class AnnotationTable extends Component<{}, TableState> {
                             x2 <= selection['x2'] &&
                             y1 <= selection['y1'] &&
                             y2 >= selection['y2']) {
-                                return block;
+                            return block;
                         }
                     } else {
                         if (x1 <= selection['x1'] &&
                             x2 >= selection['x2'] &&
                             y1 <= selection['y1'] &&
                             y2 >= selection['y2']) {
-                                return block;
+                            return block;
                         }
                     }
                 }
@@ -244,8 +244,8 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     updateSelections(selectedBlock?: AnnotationBlock) {
-        if (!selectedBlock){
-        const { selectedAnnotationBlock: selectedBlock } = this.state;
+        if (!selectedBlock) {
+            const { selectedAnnotationBlock: selectedBlock } = this.state;
         }
         const table: any = this.tableRef;
         if (!table) { return; }
@@ -411,12 +411,13 @@ class AnnotationTable extends Component<{}, TableState> {
             selectedAnnotationBlock: undefined,
         });
         const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
-        if (selectedBlock) { 
+        if (selectedBlock) {
             this.resetSelections();
             this.selections = selectedBlock.selections;
             this.setState({ selectedAnnotationBlock: selectedBlock });
             this.updateSelections(selectedBlock);
-            return; }
+            return;
+        }
 
         // Activate the selection mode
         this.selecting = true;
@@ -546,8 +547,10 @@ class AnnotationTable extends Component<{}, TableState> {
                     const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 - 1, 'y2': y1 - 1 };
                     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
                     if (selectedBlock) {
-                        this.setState({ showAnnotationMenu: true,
-                            selectedAnnotationBlock: selectedBlock });
+                        this.setState({
+                            showAnnotationMenu: true,
+                            selectedAnnotationBlock: selectedBlock
+                        });
                     }
                 }
                 this.prevElement = nextElement;
@@ -576,8 +579,10 @@ class AnnotationTable extends Component<{}, TableState> {
                     const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 + 1, 'y2': y1 + 1 };
                     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
                     if (selectedBlock) {
-                        this.setState({ showAnnotationMenu: true,
-                            selectedAnnotationBlock: selectedBlock });
+                        this.setState({
+                            showAnnotationMenu: true,
+                            selectedAnnotationBlock: selectedBlock
+                        });
                     }
                 }
                 this.prevElement = nextElement;
@@ -606,8 +611,10 @@ class AnnotationTable extends Component<{}, TableState> {
                     const selection: CellSelection = { 'x1': x1 - 1, 'x2': x1 - 1, 'y1': y1, 'y2': y1 };
                     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
                     if (selectedBlock) {
-                        this.setState({ showAnnotationMenu: true,
-                            selectedAnnotationBlock: selectedBlock });
+                        this.setState({
+                            showAnnotationMenu: true,
+                            selectedAnnotationBlock: selectedBlock
+                        });
                     }
                 }
                 this.prevElement = nextElement;
@@ -636,8 +643,10 @@ class AnnotationTable extends Component<{}, TableState> {
                     const selection: CellSelection = { 'x1': x1 + 1, 'x2': x1 + 1, 'y1': y1, 'y2': y1 };
                     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
                     if (selectedBlock) {
-                        this.setState({ showAnnotationMenu: true,
-                            selectedAnnotationBlock: selectedBlock });
+                        this.setState({
+                            showAnnotationMenu: true,
+                            selectedAnnotationBlock: selectedBlock
+                        });
                     }
                 }
                 this.prevElement = nextElement;

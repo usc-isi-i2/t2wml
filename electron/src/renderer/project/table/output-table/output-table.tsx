@@ -72,9 +72,9 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     updateTableData(table?: TableDTO) {
-        if (!table || !table.cells) { 
+        if (!table || !table.cells) {
             this.setState({ tableData: undefined });
-            return; 
+            return;
         }
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {

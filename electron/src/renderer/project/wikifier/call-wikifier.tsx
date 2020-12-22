@@ -10,14 +10,14 @@ import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 import { observer } from "mobx-react"
 
 interface CallWikifierProperties {
-    showCallWikifier: boolean;
+  showCallWikifier: boolean;
 
-    cancelCallWikifier: () => void;
-    handleWikifyRegion: (region: string, flag: string, context: string) => void;
+  cancelCallWikifier: () => void;
+  handleWikifyRegion: (region: string, flag: string, context: string) => void;
 }
 
 interface CallWikifierState {
-    regionChanged: boolean;
+  regionChanged: boolean;
 }
 
 @observer
@@ -37,15 +37,15 @@ class CallWikifier extends Component<CallWikifierProperties, CallWikifierState> 
 
     // init state
     this.state = {
-        regionChanged: false,
+      regionChanged: false,
     };
   }
 
   disabledWikify() {
-      if (this.state.regionChanged) {
-        if (this.tempWikifyRegionRef.current && this.tempWikifyRegionRef.current.value.trim()) {
-            return false;
-        }
+    if (this.state.regionChanged) {
+      if (this.tempWikifyRegionRef.current && this.tempWikifyRegionRef.current.value.trim()) {
+        return false;
+      }
     }
     return true;
   }
@@ -80,7 +80,7 @@ class CallWikifier extends Component<CallWikifierProperties, CallWikifierState> 
                   type="text"
                   ref={this.tempWikifyRegionRef}
                   placeholder="e.g. A1:A10"
-                  onChange={() => this.setState({regionChanged: true})}
+                  onChange={() => this.setState({ regionChanged: true })}
                 />
               </Col>
             </Form.Group>
@@ -125,7 +125,7 @@ class CallWikifier extends Component<CallWikifierProperties, CallWikifierState> 
           <Button variant="outline-dark" onClick={this.props.cancelCallWikifier}>
             Cancel
           </Button>
-          <Button variant="dark" 
+          <Button variant="dark"
             onClick={this.callWikifier.bind(this)}
             disabled={this.disabledWikify()}>
             Wikify

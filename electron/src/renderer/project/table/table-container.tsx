@@ -95,14 +95,14 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    for (const disposer of this.disposers ) {
+    for (const disposer of this.disposers) {
       disposer();
     }
   }
 
   showCleanedData() {
     const { showCleanedData } = this.state;
-    this.setState({showCleanedData: !showCleanedData});
+    this.setState({ showCleanedData: !showCleanedData });
   }
 
   async handleOpenTableFile(event: ChangeEvent) {
@@ -110,7 +110,7 @@ class TableContainer extends Component<{}, TableState> {
 
     // get table file
     const file = (event.target as HTMLInputElement).files![0];
-    if ( !file ) { return; }
+    if (!file) { return; }
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -118,18 +118,18 @@ class TableContainer extends Component<{}, TableState> {
 
     // send request
     console.log("<TableComponent> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-    const data = {"filepath": file.path};
+    const data = { "filepath": file.path };
     try {
       await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
       console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
 
       // load yaml data
-      if ( wikiStore.yaml.yamlContent ) {
+      if (wikiStore.yaml.yamlContent) {
         wikiStore.table.isCellSelectable = true;
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-    } catch(error) {
+    } catch (error) {
       error.errorDescription += "\n\nCannot open file!";
       this.setState({ errorMessage: error });
     } finally {
@@ -187,7 +187,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   updateProjectInfo() {
-    if ( wikiStore.projects.projectDTO ) {
+    if (wikiStore.projects.projectDTO) {
       const project = wikiStore.projects.projectDTO;
       const filename = project._saved_state.current_data_file;
       const sheetNames = project.data_files[filename].val_arr;
@@ -196,15 +196,15 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
   }
- 
+
   toggleAnnotationMode() {
     const { annotationMode } = this.state;
-    this.setState({annotationMode: !annotationMode});
+    this.setState({ annotationMode: !annotationMode });
   }
 
   renderErrorMessage() {
     const { errorMessage } = this.state;
-    if ( errorMessage.errorDescription ) {
+    if (errorMessage.errorDescription) {
       return (
         <ToastMessage message={this.state.errorMessage} />
       )
@@ -224,8 +224,8 @@ class TableContainer extends Component<{}, TableState> {
             </span>
           </span>
         ) : (
-          <span>Table&nbsp;Viewer</span>
-        )}
+            <span>Table&nbsp;Viewer</span>
+          )}
       </div>
     )
   }
@@ -238,8 +238,8 @@ class TableContainer extends Component<{}, TableState> {
         {annotationMode ? (
           <FontAwesomeIcon icon={faCheckSquare} />
         ) : (
-          <FontAwesomeIcon icon={faSquare} />
-        )}
+            <FontAwesomeIcon icon={faSquare} />
+          )}
         <p>Annotation Mode</p>
       </div>
     )
@@ -294,15 +294,15 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderTable() {
-      if (this.state.annotationMode) {
-        return (
-            <AnnotationTable />
-        );
-      } else {
-          return (
-              <OutputTable />
-          );
-      }
+    if (this.state.annotationMode) {
+      return (
+        <AnnotationTable />
+      );
+    } else {
+      return (
+        <OutputTable />
+      );
+    }
   }
 
   renderLegend() {

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import * as utils from '../common/utils'
 
@@ -88,7 +88,7 @@ class RenameProject extends Component<RenameProperties, RenameState> {
           <Button variant="outline-dark" onClick={() => this.props.cancelRenameProject()} >
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => {this.input.current ? this.props.handleRenameProject(this.input.current?.value): this.props.handleRenameProject('')}} disabled={!(this.state.isNameVaild)}>
+          <Button variant="dark" onClick={() => { this.input.current ? this.props.handleRenameProject(this.input.current?.value) : this.props.handleRenameProject('') }} disabled={!(this.state.isNameVaild)}>
             Rename
           </Button>
         </Modal.Footer>

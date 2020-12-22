@@ -4,10 +4,10 @@ import { TableCell } from '../../common/dtos';
 
 
 const MIN_NUM_ROWS = 100;
-const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97+i).toUpperCase());
+const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUpperCase());
 
 
-interface TableProperties{
+interface TableProperties {
   tableData: TableCell[][] | undefined;
   onMouseUp: any;
   onMouseDown: any;
@@ -45,7 +45,7 @@ class Table extends React.Component<TableProperties>{
           <tbody>
             {[...Array(MIN_NUM_ROWS)].map((e, i) => (
               <tr key={`row-${i}`}>
-                <td>{i+1}</td>
+                <td>{i + 1}</td>
                 {CHARACTERS.map((c, j) => (
                   <td key={`cell-${j}`}></td>
                 ))}
@@ -67,7 +67,7 @@ class Table extends React.Component<TableProperties>{
       setTableReference,
     } = this.props;
 
-    if ( !tableData ) {
+    if (!tableData) {
       return this.renderEmptyTable();
     }
 
@@ -95,9 +95,9 @@ class Table extends React.Component<TableProperties>{
           <tbody>
             {rows.map((e, i) => (
               <tr key={`row-${i}`}>
-                <td>{i+1}</td>
+                <td>{i + 1}</td>
                 {cols.map((r, j) => {
-                  if ( i < tableData.length && j < tableData[i].length ) {
+                  if (i < tableData.length && j < tableData[i].length) {
                     const { content, classNames } = tableData[i][j];
                     return (
                       <td key={`cell-${j}`}
