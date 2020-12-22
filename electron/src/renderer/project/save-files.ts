@@ -1,31 +1,23 @@
-// The App's settings
-import * as os from 'os';
+// import * as os from 'os';
 import * as fs from 'fs';
 import { ProjectDTO } from '../common/dtos';
 
-interface WindowSettings {
-    x?: number;
-    y?: number;
-    width: number;
-    height: number;
-    maximized: boolean;
+interface Data {
+    currentState: CurrentFiles;
+    prevSelections: any;
 }
 
-interface DevSettings {
-    devToolsOpen: boolean;
+interface CurrentFiles {
+    dataFile: string;
+	sheetName: string;
+	yamlFile: string | null;
+	annotationFile: string | null;
 }
 
-interface AppSettings {
-    recentlyUsed: string[];
-    window: WindowSettings;
-    dev: DevSettings;
-}
 
-// Settings stored here 
-const file = `${os.homedir()}/.t2wml/t2wmlproj.user.json`;
-
-export class SaveFiles {
-    private static _instance?: SaveFiles
+export class SaveFiles implements Data {
+    // Instance needed ?
+    private static _instance?: SaveFiles;
     public static get instance() {
         if (!SaveFiles._instance) {
             SaveFiles._instance = new SaveFiles();
@@ -34,21 +26,32 @@ export class SaveFiles {
         return SaveFiles._instance;
     }
 
-    recentlyUsed: string[] = [];
+    currentState: CurrentFiles = {} as CurrentFiles;
+    prevSelections = {};
 
 
     // getFiles() {
 
     // }
 
-    saveFiles(data: any) {
-        fs.writeFileSync(file, JSON.stringify({
-            data: data,
+    saveFiles(directory: string) {
+        const path = `${directory}/t2wmlproj.user.json`;
+        fs.writeFileSync(path, JSON.stringify({
+            'current state': this.currentState,
+            // 'previous selections': this.prevSelections,
         }));
     }
 
-    // TODO - add currents
-    fillFilesData(project: ProjectDTO) {
+    fillCurrents() {
+        this.currentState = {
+            dataFile: "string",
+            sheetName: "string",
+            yamlFile: "string",
+            annotationFile: "string | null"
+        };
+    }
+
+    fillPrevSelections(project: ProjectDTO) {
         const dataFiles = [];
         if (project && project.data_files) {
             for (const file of Object.keys(project.data_files).sort()) {
@@ -70,12 +73,16 @@ export class SaveFiles {
                 dataFiles.push({ name: file, type: "datafile", Sheets: sheets });
             }
         }
-        const data = {
+        this.prevSelections = {
             name: project.title,
             DataFiles: dataFiles
-        }
-            
-        this.saveFiles(data);
+        }        
+    }
+
+    fillFilesData(project: ProjectDTO) {
+        this.fillCurrents();
+        this.fillPrevSelections(project);
+        this.saveFiles(project.directory);
     }
 }
 
