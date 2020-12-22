@@ -8,7 +8,7 @@ import web_exceptions
 
 
 def numpy_converter(o):
-    if isinstance(o, np.generic): return o.item()  
+    if isinstance(o, np.generic): return o.item()
     raise TypeError
 
 
@@ -64,6 +64,7 @@ def save_yaml(project, yaml_data, yaml_title=None, sheet_name=None):
     project.add_yaml_file(file_path, project.current_data_file, sheet_name)
     project.update_saved_state(current_yaml=file_path)
     project.save()
+    return file_path
 
 
 def get_empty_layers():
@@ -72,10 +73,10 @@ def get_empty_layers():
     cleanedLayer=dict(layerType="cleaned", entries=[])
     typeLayer=dict(layerType="type", entries=[])
     qnodeLayer=dict(layerType="qnode", entries=[])
-    
-    return dict(error= errorLayer, 
-            statement= statementLayer, 
-            cleaned= cleanedLayer, 
+
+    return dict(error= errorLayer,
+            statement= statementLayer,
+            cleaned= cleanedLayer,
             type = typeLayer,
             qnode=qnodeLayer)
 

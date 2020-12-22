@@ -1,3 +1,4 @@
+from pathlib import Path
 from t2wml.api import Sheet, SpreadsheetFile, Wikifier
 try:
     from t2wml.api import ProjectWithSavedState as Project
@@ -7,12 +8,11 @@ from caching import CacheHolder
 
 
 class CalcParams:
-    def __init__(self, project_path, data_path, sheet_name, yaml_path=None, wiki_paths=None):
+    def __init__(self, project_path, data_path, sheet_name, yaml_path=None):
         self.project_path = project_path
         self.data_path = data_path
         self.sheet_name = sheet_name
         self.yaml_path = yaml_path
-        self.wiki_paths = wiki_paths or []
 
     @property
     def project(self):
@@ -29,8 +29,13 @@ class CalcParams:
 
     @property
     def wikifier(self):
+        project=self.project
+        if project.current_wikifiers:
+            wikifier_files = [Path(self.project_path) / wf for wf in project.current_wikifiers]
+        else:
+            wikifier_files=[]
         wikifier = Wikifier()
-        for path in self.wiki_paths:
+        for path in wikifier_files:
             wikifier.add_file(path)
         return wikifier
 

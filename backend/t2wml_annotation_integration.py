@@ -7,6 +7,7 @@ import pandas as pd
 from glob import glob
 from pathlib import Path
 from requests import post, get
+import web_exceptions
 from utils import save_yaml, save_dataframe
 from t2wml.api import add_entities_from_file
 from global_settings import datamart_api_endpoint
@@ -183,7 +184,7 @@ class AnnotationIntegration(object):
             filename = Path(data_path).name
             dataset_exists = self.check_dataset_exists()
             if not dataset_exists:
-                return False
+                raise web_exceptions.NoSuchDatasetIDException(self.dataset)
             t2wml_yaml, consolidated_wikifier_df, combined_item_df, annotation_df = self.get_files(
                 filename)
             if_path = save_dataframe(project, combined_item_df, "datamart_item_definitions.tsv", kgtk=True)
@@ -194,14 +195,14 @@ class AnnotationIntegration(object):
             project.add_wikifier_file(wf_path)
             project.update_saved_state(current_wikifiers=[wf_path])
 
-            save_yaml(project, t2wml_yaml)  # give it a better name eventually
+            yaml_path=save_yaml(project, t2wml_yaml)  # give it a better name eventually
 
             project.save()
-            return True
+            return yaml_path
         except Exception as e:
             traceback.print_exc()
             print(e)  # continue to normal spreadsheet handling
-            return True
+            return None
 
 
 def create_datafile(project, df, filepath, sheet_name):
