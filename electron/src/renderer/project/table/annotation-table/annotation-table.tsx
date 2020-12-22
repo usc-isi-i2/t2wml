@@ -515,6 +515,11 @@ class AnnotationTable extends Component<{}, TableState> {
 
   handleOnKeyDown(event: KeyboardEvent) {
 
+    // Close annotation menu with ESC key
+    if (event.keyCode == 27) {
+      this.closeAnnotationMenu();
+    }
+
     if ([37, 38, 39, 40].includes(event.keyCode) &&
       !!this.selections.length) {
 
