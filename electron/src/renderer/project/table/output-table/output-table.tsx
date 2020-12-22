@@ -7,9 +7,10 @@ import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore from '../../../data/store';
-import { Cell, ErrorMessage } from '../../../common/general';
+import { Cell, CellSelection, ErrorMessage } from '../../../common/general';
 import { QNode, TableCell, TableDTO } from '../../../common/dtos';
 import TableToast from '../table-toast';
+import * as utils from '../table-utils';
 
 
 interface TableState {
@@ -281,10 +282,19 @@ class OutputTable extends Component<{}, TableState> {
 
   renderToast() {
     const { selectedCell, showToast } = this.state;
-    if (showToast) {
+    if ( selectedCell && showToast ) {
+      let text = 'Selected:';
+      const selection: CellSelection = {
+        x1: selectedCell.col,
+        x2: selectedCell.col,
+        y1: selectedCell.row,
+        y2: selectedCell.row,
+      };
+      text += ` ${utils.humanReadableSelection(selection)}`;
       const qnode = wikiStore.layers.qnode.find(selectedCell);
       return (
         <TableToast
+          text={text}
           qnode={qnode as QNode}
           onClose={() => this.onCloseToast()}
         />
