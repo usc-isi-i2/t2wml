@@ -230,9 +230,12 @@ class OutputTable extends Component<{}, TableState> {
     const { selectedCell } = this.state;
     if ( !selectedCell ) { return; }
 
-    // Show the updated selection while moving
-    // TODO
-    //this.setState({showToast: true});
+    // Hide table toast with ESC key
+    if (event.keyCode == 27) {
+      this.setState({showToast: false}, () => {
+        this.resetSelections();
+      });
+    }
 
     if ([37, 38, 39, 40].includes(event.keyCode)) {
       event.preventDefault();
