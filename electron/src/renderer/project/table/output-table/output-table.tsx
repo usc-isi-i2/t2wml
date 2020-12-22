@@ -262,6 +262,7 @@ class OutputTable extends Component<{}, TableState> {
       }
 
       if ( col >= 0 && row >= 0 ) { //TODO: Also add max
+        this.resetSelections();
         const nextElement = rows[row+1].children[col+1];
         this.selectCell(nextElement);
         this.selectRelatedCells(row+1, col+1);
