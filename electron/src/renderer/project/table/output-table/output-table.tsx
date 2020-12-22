@@ -244,29 +244,31 @@ class OutputTable extends Component<{}, TableState> {
       // arrow up
       if ( event.keyCode == 38 ) {
         row = row - 1;
+        if ( row < 0 ) { return; }
       }
 
       // arrow down
       if ( event.keyCode == 40 ) {
         row = row + 1;
+        if ( row >= rows.length - 1 ) { return; }
       }
 
       // arrow left
       if ( event.keyCode == 37 ) {
         col = col - 1;
+        if ( col < 0 ) { return; }
       }
 
       // arrow right
       if ( event.keyCode == 39 ) {
         col = col + 1;
+        if ( col >= rows[row].children.length - 1 ) { return; }
       }
 
-      if ( col >= 0 && row >= 0 ) { //TODO: Also add max
-        this.resetSelections();
-        const nextElement = rows[row+1].children[col+1];
-        this.selectCell(nextElement);
-        this.selectRelatedCells(row+1, col+1);
-      }
+      this.resetSelections();
+      const nextElement = rows[row+1].children[col+1];
+      this.selectCell(nextElement);
+      this.selectRelatedCells(row+1, col+1);
     }
   }
 
