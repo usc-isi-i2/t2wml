@@ -235,38 +235,36 @@ class OutputTable extends Component<{}, TableState> {
     //this.setState({showToast: true});
 
     if ([37, 38, 39, 40].includes(event.keyCode)) {
+      event.preventDefault();
+
       const table: any = this.tableRef;
       const rows = table!.querySelectorAll('tr');
-
-      event.preventDefault();
-      let X = this.state.selectedCell.col
-      let Y = this.state.selectedCell.row
-
+      let { row, col } = selectedCell;
 
       // arrow up
-      if (event.keyCode == 38) {
-        Y = Y - 1;
+      if ( event.keyCode == 38 ) {
+        row = row - 1;
       }
 
       // arrow down
-      if (event.keyCode == 40) {
-        Y = Y = 1
+      if ( event.keyCode == 40 ) {
+        row = row + 1;
       }
 
       // arrow left
-      if (event.keyCode == 37) {
-        X = X - 1
+      if ( event.keyCode == 37 ) {
+        col = col - 1;
       }
 
       // arrow right
-      if (event.keyCode == 39) {
-        X = X + 1
+      if ( event.keyCode == 39 ) {
+        col = col + 1;
       }
 
-      if (X >= 0 && Y >= 0) { //TODO: Also add max
-        const nextElement = rows[Y].children[X];
+      if ( col >= 0 && row >= 0 ) { //TODO: Also add max
+        const nextElement = rows[row+1].children[col+1];
         this.selectCell(nextElement);
-        this.selectRelatedCells(Y, X);
+        this.selectRelatedCells(row+1, col+1);
       }
     }
   }
