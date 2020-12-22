@@ -227,6 +227,8 @@ class OutputTable extends Component<{}, TableState> {
   }
 
   handleOnKeyDown(event: KeyboardEvent) {
+    const { selectedCell } = this.state;
+    if ( !selectedCell ) { return; }
 
     // Show the updated selection while moving
     // TODO
