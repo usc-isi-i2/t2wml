@@ -45,6 +45,7 @@ class OutputTable extends Component<{}, TableState> {
     this.updateTableData(wikiStore.table.table);
     document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
+    this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)));
   }
 
   componentWillUnmount() {
@@ -54,13 +55,9 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
-  colorCellsByType(tableData?: TableCell[][]) {
-    if ( !tableData ) {
-      const { tableData } = this.state;
-    }
-
-    const types = wikiStore.layers.type;
-
+  colorCellsByType(types) {
+    if ( !types ) { return; }
+    const { tableData } = this.state;
     if ( types && tableData ) {
       for ( const entry of types.entries ) {
         for ( const indexPair of entry.indices ) {
@@ -68,9 +65,8 @@ class OutputTable extends Component<{}, TableState> {
           tableCell.classNames.push(`role-${entry.type}`)
         }
       }
+      this.setState({ tableData });
     }
-
-    this.setState({ tableData: tableData });
   }
 
   updateTableData(table?: TableDTO) {
@@ -90,9 +86,8 @@ class OutputTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-
-    this.setState({ tableData: tableData }, () => {
-      this.colorCellsByType(tableData);
+    this.setState({ tableData }, () => {
+      this.colorCellsByType(wikiStore.layers.type);
     });
   }
 
