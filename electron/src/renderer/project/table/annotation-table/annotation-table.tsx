@@ -9,7 +9,7 @@ import { AnnotationBlock, TableCell, TableDTO } from '../../../common/dtos';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import { config } from '../../../../main/config';
 import AnnotationMenu from './annotation-menu';
-import * as utils from '../table-utils'
+import * as utils from '../table-utils';
 import TableToast from '../table-toast';
 
 
@@ -31,7 +31,7 @@ class AnnotationTable extends Component<{}, TableState> {
   private selections: CellSelection[] = [];
 
   setTableReference(reference?: HTMLTableElement) {
-    if (!reference) { return; }
+    if ( !reference ) { return; }
     this.tableRef = reference;
   }
 
@@ -60,20 +60,20 @@ class AnnotationTable extends Component<{}, TableState> {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
-    for (const disposer of this.disposers) {
+    for ( const disposer of this.disposers ) {
       disposer();
     }
   }
 
   updateTableData(table?: TableDTO) {
-    if (!table || !table.cells) {
+    if ( !table || !table.cells ) {
       this.setState({ tableData: undefined });
       return;
     }
     const tableData = [];
-    for (let i = 0; i < table.cells.length; i++) {
+    for ( let i = 0; i < table.cells.length; i++ ) {
       const rowData = [];
-      for (let j = 0; j < table.cells[i].length; j++) {
+      for ( let j = 0; j < table.cells[i].length; j++ ) {
         const cell: TableCell = {
           content: table.cells[i][j],
           classNames: [],
@@ -89,37 +89,37 @@ class AnnotationTable extends Component<{}, TableState> {
     //checks if a given selection is part of an annotation block
     //if so, returns the annotation block
     const { x1, x2, y1, y2 } = selection;
-    for (const block of wikiStore.annotations.blocks) {
-      for (const selection of block.selections) {
-        if (selection['y1'] <= selection['y2']) {
-          if (selection['x1'] <= selection['x2']) {
-            if (x1 >= selection['x1'] &&
-              x2 <= selection['x2'] &&
-              y1 >= selection['y1'] &&
-              y2 <= selection['y2']) {
+    for ( const block of wikiStore.annotations.blocks ) {
+      for ( const selection of block.selections ) {
+        if ( selection['y1'] <= selection['y2'] ) {
+          if ( selection['x1'] <= selection['x2'] ) {
+            if ( x1 >= selection['x1'] &&
+                 x2 <= selection['x2'] &&
+                 y1 >= selection['y1'] &&
+                 y2 <= selection['y2'] ) {
               return block;
             }
           } else {
-            if (x1 <= selection['x1'] &&
-              x2 >= selection['x2'] &&
-              y1 >= selection['y1'] &&
-              y2 <= selection['y2']) {
+            if ( x1 <= selection['x1'] &&
+                 x2 >= selection['x2'] &&
+                 y1 >= selection['y1'] &&
+                 y2 <= selection['y2'] ) {
               return block;
             }
           }
         } else {
-          if (selection['x1'] <= selection['x2']) {
-            if (x1 >= selection['x1'] &&
-              x2 <= selection['x2'] &&
-              y1 <= selection['y1'] &&
-              y2 >= selection['y2']) {
+          if ( selection['x1'] <= selection['x2'] ) {
+            if ( x1 >= selection['x1'] &&
+                 x2 <= selection['x2'] &&
+                 y1 <= selection['y1'] &&
+                 y2 >= selection['y2'] ) {
               return block;
             }
           } else {
-            if (x1 <= selection['x1'] &&
-              x2 >= selection['x2'] &&
-              y1 <= selection['y1'] &&
-              y2 >= selection['y2']) {
+            if ( x1 <= selection['x1'] &&
+                 x2 >= selection['x2'] &&
+                 y1 <= selection['y1'] &&
+                 y2 >= selection['y2'] ) {
               return block;
             }
           }
@@ -130,48 +130,48 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   updateAnnotationBlocks(tableData?: TableCell[][]) {
-    if (!tableData) {
+    if ( !tableData ) {
       const { tableData } = this.state;
     }
-    if (wikiStore.annotations.blocks) {
-      for (const block of wikiStore.annotations.blocks) {
+    if ( wikiStore.annotations.blocks ) {
+      for ( const block of wikiStore.annotations.blocks ) {
         const { role, type, selections } = block;
         const classNames: string[] = [];
-        if (role) {
+        if ( role ) {
           classNames.push(`role-${role}`);
         }
-        if (type) {
+        if ( type ) {
           classNames.push(`type-${type}`);
         }
-        for (const selection of selections) {
+        for ( const selection of selections ) {
           const { x1, y1, x2, y2 } = selection;
-          if (y1 <= y2) {
-            if (x1 <= x2) {
-              for (let row = y1; row <= y2; row++) {
-                for (let col = x1; col <= x2; col++) {
+          if ( y1 <= y2 ) {
+            if ( x1 <= x2 ) {
+              for ( let row = y1; row <= y2; row++ ) {
+                for ( let col = x1; col <= x2; col++ ) {
                   const cell = tableData[row - 1][col - 1];
                   cell.classNames = classNames;
                 }
               }
             } else {
-              for (let row = y1; row <= y2; row++) {
-                for (let col = x2; col <= x1; col++) {
+              for ( let row = y1; row <= y2; row++ ) {
+                for ( let col = x2; col <= x1; col++ ) {
                   const cell = tableData[row - 1][col - 1];
                   cell.classNames = classNames;
                 }
               }
             }
           } else {
-            if (x1 <= x2) {
-              for (let row = y2; row <= y1; row++) {
-                for (let col = x1; col <= x2; col++) {
+            if ( x1 <= x2 ) {
+              for ( let row = y2; row <= y1; row++ ) {
+                for ( let col = x1; col <= x2; col++ ) {
                   const cell = tableData[row - 1][col - 1];
                   cell.classNames = classNames;
                 }
               }
             } else {
-              for (let row = y2; row <= y1; row++) {
-                for (let col = x2; col <= x1; col++) {
+              for ( let row = y2; row <= y1; row++ ) {
+                for ( let col = x2; col <= x1; col++ ) {
                   const cell = tableData[row - 1][col - 1];
                   cell.classNames = classNames;
                 }
@@ -186,35 +186,35 @@ class AnnotationTable extends Component<{}, TableState> {
 
   deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
-    for (const selection of block.selections) {
+    for ( const selection of block.selections ) {
       const { x1, y1, x2, y2 } = selection;
-      if (y1 <= y2) {
-        if (x1 <= x2) {
-          for (let row = y1; row <= y2; row++) {
-            for (let col = x1; col <= x2; col++) {
+      if ( y1 <= y2 ) {
+        if ( x1 <= x2 ) {
+          for ( let row = y1; row <= y2; row++ ) {
+            for ( let col = x1; col <= x2; col++ ) {
               const cell = tableData[row - 1][col - 1];
               cell.classNames = [];
             }
           }
         } else {
-          for (let row = y1; row <= y2; row++) {
-            for (let col = x2; col <= x1; col++) {
+          for ( let row = y1; row <= y2; row++ ) {
+            for ( let col = x2; col <= x1; col++ ) {
               const cell = tableData[row - 1][col - 1];
               cell.classNames = [];
             }
           }
         }
       } else {
-        if (x1 <= x2) {
-          for (let row = y2; row <= y1; row++) {
-            for (let col = x1; col <= x2; col++) {
+        if ( x1 <= x2 ) {
+          for ( let row = y2; row <= y1; row++ ) {
+            for ( let col = x1; col <= x2; col++ ) {
               const cell = tableData[row - 1][col - 1];
               cell.classNames = [];
             }
           }
         } else {
-          for (let row = y2; row <= y1; row++) {
-            for (let col = x2; col <= x1; col++) {
+          for ( let row = y2; row <= y1; row++ ) {
+            for ( let col = x2; col <= x1; col++ ) {
               const cell = tableData[row - 1][col - 1];
               cell.classNames = [];
             }
@@ -227,7 +227,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
   resetSelections() {
     const table = this.tableRef;
-    if (table) {
+    if ( table ) {
       table.querySelectorAll('td[class*="active"]').forEach(e => {
         e.classList.forEach(className => {
           if (className.startsWith('active')) {
@@ -244,23 +244,24 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   updateSelections(selectedBlock?: AnnotationBlock) {
-    if (!selectedBlock) {
+    if ( !selectedBlock ) {
       const { selectedAnnotationBlock: selectedBlock } = this.state;
     }
     const table: any = this.tableRef;
-    if (!table) { return; }
+    if ( !table ) { return; }
 
     // Reset selections before update
     this.resetSelections();
 
     const classNames: string[] = [];
-    if (selectedBlock) {
+    if ( selectedBlock ) {
       const { role } = selectedBlock;
       classNames.push(`active`);
-      if (role) {
+      if ( role ) {
         classNames.push(`role-${role}`)
       }
     }
+
     const rows = table.querySelectorAll('tr');
     this.selections.forEach(selection => {
       const { x1, x2, y1, y2 } = selection;
@@ -269,9 +270,9 @@ class AnnotationTable extends Component<{}, TableState> {
       const topRow = Math.min(y1, y2);
       const bottomRow = Math.max(y1, y2);
       let rowIndex = topRow;
-      while (rowIndex <= bottomRow) {
+      while ( rowIndex <= bottomRow ) {
         let colIndex = leftCol;
-        while (colIndex <= rightCol) {
+        while ( colIndex <= rightCol ) {
           this.selectCell(
             rows[rowIndex].children[colIndex],
             rowIndex,
@@ -299,8 +300,8 @@ class AnnotationTable extends Component<{}, TableState> {
       const aRight = x2 >= x1 ? x2 : x1;
       const aBottom = y2 >= y1 ? y2 : y1;
 
-      for (let j = 0; j < this.selections.length; j++) {
-        if (j !== i) {
+      for ( let j = 0; j < this.selections.length; j++ ) {
+        if ( j !== i ) {
           const area = this.selections[j];
 
           // Get the coordinates of the sides
@@ -310,16 +311,16 @@ class AnnotationTable extends Component<{}, TableState> {
           const bBottom = area.y2 >= area.y1 ? area.y2 : area.y1;
 
           // check for no-collisions between area A and B
-          if (aTop > bBottom) {
+          if ( aTop > bBottom ) {
             continue;
           }
-          if (aBottom < bTop) {
+          if ( aBottom < bTop ) {
             continue;
           }
-          if (aLeft > bRight) {
+          if ( aLeft > bRight ) {
             continue;
           }
-          if (aRight < bLeft) {
+          if ( aRight < bLeft ) {
             continue;
           }
 
@@ -343,34 +344,34 @@ class AnnotationTable extends Component<{}, TableState> {
     classNames.map(className => cell.classList.add(className));
 
     // Add a top border to the cells at the top of the selection
-    if (rowIndex === topRow) {
+    if ( rowIndex === topRow ) {
       const borderTop = document.createElement('div');
       borderTop.classList.add('cell-border-top');
       cell.appendChild(borderTop);
     }
 
     // Add a left border to the cells on the left of the selection
-    if (colIndex === leftCol) {
+    if ( colIndex === leftCol ) {
       const borderLeft = document.createElement('div');
       borderLeft.classList.add('cell-border-left');
       cell.appendChild(borderLeft);
     }
 
     // Add a right border to the cells on the right of the selection
-    if (colIndex === rightCol) {
+    if ( colIndex === rightCol ) {
       const borderRight = document.createElement('div');
       borderRight.classList.add('cell-border-right');
       cell.appendChild(borderRight);
     }
 
     // Add a bottom border to the cells at the bottom of the selection
-    if (rowIndex === bottomRow) {
+    if ( rowIndex === bottomRow ) {
       const borderBottom = document.createElement('div');
       borderBottom.classList.add('cell-border-bottom');
       cell.appendChild(borderBottom);
     }
 
-    if (rowIndex === bottomRow && colIndex === rightCol) {
+    if ( rowIndex === bottomRow && colIndex === rightCol ) {
       const resizeCorner = document.createElement('div');
       resizeCorner.classList.add('cell-resize-corner');
       cell.appendChild(resizeCorner);
@@ -389,7 +390,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
   handleOnMouseUp(event: React.MouseEvent) {
     this.selecting = false;
-    if (this.selections) {
+    if ( this.selections ) {
       this.checkSelectionOverlaps();
       this.openAnnotationMenu(event);
     }
@@ -410,8 +411,9 @@ class AnnotationTable extends Component<{}, TableState> {
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
     });
+
     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
-    if (selectedBlock) {
+    if ( selectedBlock ) {
       this.resetSelections();
       this.selections = selectedBlock.selections;
       this.setState({ selectedAnnotationBlock: selectedBlock });
@@ -423,9 +425,9 @@ class AnnotationTable extends Component<{}, TableState> {
     this.selecting = true;
 
     // Update selection coordinates
-    if ((config.platform === 'mac' && event.metaKey) ||
-      (config.platform === 'linux' && event.ctrlKey) ||
-      (config.platform === 'windows' && event.ctrlKey)) {
+    if (( config.platform === 'mac' && event.metaKey ) ||
+        ( config.platform === 'linux' && event.ctrlKey ) ||
+        ( config.platform === 'windows' && event.ctrlKey )) {
 
       // Add a new selection separately
       this.selections.push({ x1, x2, y1, y2 });
@@ -435,12 +437,12 @@ class AnnotationTable extends Component<{}, TableState> {
     } else {
 
       // Extend the previous selection if user is holding down Shift key
-      if (event.shiftKey && !!this.selections.length) {
+      if ( event.shiftKey && !!this.selections.length ) {
         const prevSelection = this.selections[this.selections.length - 1];
 
         // Extend the previous selection left or right
-        if (x1 !== prevSelection['x1']) {
-          if (x1 < prevSelection['x1']) {
+        if ( x1 !== prevSelection['x1'] ) {
+          if ( x1 < prevSelection['x1'] ) {
             prevSelection['x1'] = x1;
           } else {
             prevSelection['x2'] = x1;
@@ -448,8 +450,8 @@ class AnnotationTable extends Component<{}, TableState> {
         }
 
         // Extend the previous selection up or down
-        if (y1 !== prevSelection['y1']) {
-          if (y1 < prevSelection['y1']) {
+        if ( y1 !== prevSelection['y1'] ) {
+          if ( y1 < prevSelection['y1'] ) {
             prevSelection['y1'] = y1;
           } else {
             prevSelection['y2'] = y1;
@@ -459,10 +461,10 @@ class AnnotationTable extends Component<{}, TableState> {
         this.updateSelections();
       } else {
         this.resetSelections();
+
         // Activate the element on click
         this.selectCell(element, y1, x1, y1, x1, x1, y1);
         this.selections = [{ x1, x2, y1, y2 }];
-
       }
     }
 
@@ -472,9 +474,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
   handleOnMouseMove(event: React.MouseEvent) {
     const element = event.target as any;
-    if (element === this.prevElement) { return; }
+    if ( element === this.prevElement ) { return; }
 
-    if (this.selecting && !event.shiftKey) {
+    if ( this.selecting && !event.shiftKey ) {
 
       // TODO - deal with toasts
       // Show the updated selection while moving
@@ -516,12 +518,11 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnKeyDown(event: KeyboardEvent) {
 
     // Close annotation menu with ESC key
-    if (event.keyCode == 27) {
+    if ( event.keyCode == 27 ) {
       this.closeAnnotationMenu();
     }
 
-    if ([37, 38, 39, 40].includes(event.keyCode) &&
-      !!this.selections.length) {
+    if ( [37, 38, 39, 40].includes(event.keyCode) && !!this.selections.length ) {
 
       event.preventDefault();
       const { x1, x2, y1, y2 } = this.selections[0];
@@ -529,15 +530,15 @@ class AnnotationTable extends Component<{}, TableState> {
       const rows = table!.querySelectorAll('tr');
 
       // arrow up
-      if (event.keyCode == 38 && y1 > 1) {
+      if ( event.keyCode == 38 && y1 > 1 ) {
         this.resetSelections();
         const nextElement = rows[y1 - 1].children[x1];
-        if (event.shiftKey) {
-          if (y1 === y2) {
+        if ( event.shiftKey ) {
+          if ( y1 === y2 ) {
             this.selections = [{ 'x1': x1, 'x2': x2, 'y1': y1 - 1, 'y2': y2 }];
             this.prevDirection = 'up';
           } else {
-            if (this.prevDirection === 'down') {
+            if ( this.prevDirection === 'down' ) {
               this.selections = [{ 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 - 1 }];
             } else {
               this.selections = [{ 'x1': x1, 'x2': x2, 'y1': y1 - 1, 'y2': y2 }];
@@ -550,10 +551,10 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selectCell(nextElement, y1 - 1, x1, y1 - 1, x1, x1, y1 - 1);
           const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 - 1, 'y2': y1 - 1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
-          if (selectedBlock) {
+          if ( selectedBlock ) {
             this.setState({
               showAnnotationMenu: true,
-              selectedAnnotationBlock: selectedBlock
+              selectedAnnotationBlock: selectedBlock,
             });
           }
         }
@@ -561,15 +562,15 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow down
-      if (event.keyCode == 40 && y1 < rows.length - 1) {
+      if ( event.keyCode == 40 && y1 < rows.length - 1 ) {
         this.resetSelections();
         const nextElement = rows[y1 + 1].children[x1];
-        if (event.shiftKey) {
-          if (y1 === y2) {
+        if ( event.shiftKey ) {
+          if ( y1 === y2 ) {
             this.selections = [{ 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 + 1 }];
             this.prevDirection = 'down';
           } else {
-            if (this.prevDirection === 'up') {
+            if ( this.prevDirection === 'up' ) {
               this.selections = [{ 'x1': x1, 'x2': x2, 'y1': y1 + 1, 'y2': y2 }];
             } else {
               this.selections = [{ 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 + 1 }];
@@ -582,10 +583,10 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selectCell(nextElement, y1 + 1, x1, y1 + 1, x1, x1, y1 + 1);
           const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 + 1, 'y2': y1 + 1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
-          if (selectedBlock) {
+          if ( selectedBlock ) {
             this.setState({
               showAnnotationMenu: true,
-              selectedAnnotationBlock: selectedBlock
+              selectedAnnotationBlock: selectedBlock,
             });
           }
         }
@@ -593,15 +594,15 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow left
-      if (event.keyCode == 37 && x1 > 1) {
+      if ( event.keyCode == 37 && x1 > 1 ) {
         this.resetSelections();
         const nextElement = rows[y1].children[x1 - 1];
-        if (event.shiftKey) {
-          if (x1 === x2) {
+        if ( event.shiftKey ) {
+          if ( x1 === x2 ) {
             this.selections = [{ 'x1': x1 - 1, 'x2': x2, 'y1': y1, 'y2': y2 }];
             this.prevDirection = 'left';
           } else {
-            if (this.prevDirection === 'right') {
+            if ( this.prevDirection === 'right' ) {
               this.selections = [{ 'x1': x1, 'x2': x2 - 1, 'y1': y1, 'y2': y2 }];
             } else {
               this.selections = [{ 'x1': x1 - 1, 'x2': x2, 'y1': y1, 'y2': y2 }];
@@ -614,10 +615,10 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selectCell(nextElement, y1, x1 - 1, y1, x1 - 1, x1 - 1, y1);
           const selection: CellSelection = { 'x1': x1 - 1, 'x2': x1 - 1, 'y1': y1, 'y2': y1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
-          if (selectedBlock) {
+          if ( selectedBlock ) {
             this.setState({
               showAnnotationMenu: true,
-              selectedAnnotationBlock: selectedBlock
+              selectedAnnotationBlock: selectedBlock,
             });
           }
         }
@@ -625,15 +626,15 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow right
-      if (event.keyCode == 39 && x1 < rows[y1].children.length - 1) {
+      if ( event.keyCode == 39 && x1 < rows[y1].children.length - 1 ) {
         this.resetSelections();
         const nextElement = rows[y1].children[x1 + 1];
-        if (event.shiftKey) {
-          if (x1 === x2) {
+        if ( event.shiftKey ) {
+          if ( x1 === x2 ) {
             this.selections = [{ 'x1': x1, 'x2': x2 + 1, 'y1': y1, 'y2': y2 }];
             this.prevDirection = 'right';
           } else {
-            if (this.prevDirection === 'left') {
+            if ( this.prevDirection === 'left' ) {
               this.selections = [{ 'x1': x1 + 1, 'x2': x2, 'y1': y1, 'y2': y2 }];
             } else {
               this.selections = [{ 'x1': x1, 'x2': x2 + 1, 'y1': y1, 'y2': y2 }];
@@ -646,10 +647,10 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selectCell(nextElement, y1, x1 + 1, y1, x1 + 1, x1 + 1, y1);
           const selection: CellSelection = { 'x1': x1 + 1, 'x2': x1 + 1, 'y1': y1, 'y2': y1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
-          if (selectedBlock) {
+          if ( selectedBlock ) {
             this.setState({
               showAnnotationMenu: true,
-              selectedAnnotationBlock: selectedBlock
+              selectedAnnotationBlock: selectedBlock,
             });
           }
         }
@@ -675,14 +676,14 @@ class AnnotationTable extends Component<{}, TableState> {
       annotationMenuPosition,
       selectedAnnotationBlock,
     } = this.state;
-    if (showAnnotationMenu) {
+    if ( showAnnotationMenu ) {
       return (
         <AnnotationMenu
+          selectedAnnotationBlock={selectedAnnotationBlock}
           selections={this.selections}
           position={annotationMenuPosition}
-          selectedAnnotationBlock={selectedAnnotationBlock}
-          onDelete={this.deleteAnnotationBlock.bind(this)}
-          onClose={() => this.closeAnnotationMenu()} />
+          onClose={() => this.closeAnnotationMenu()}
+          onDelete={this.deleteAnnotationBlock.bind(this)} />
       )
     }
   }
@@ -705,9 +706,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
   renderToast() {
     const { showToast } = this.state;
-    if (showToast) {
+    if ( showToast ) {
       let text = 'Selected:';
-      if (this.selections) {
+      if ( this.selections ) {
         this.selections.forEach(selection => {
           text += ` ${utils.humanReadableSelection(selection)}`;
         });
@@ -723,11 +724,13 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   render() {
-    return <Fragment>
-      {this.renderToast()}
-      {this.renderTable()}
-      {this.renderAnnotationMenu()}
-    </Fragment>
+    return (
+      <Fragment>
+        {this.renderToast()}
+        {this.renderTable()}
+        {this.renderAnnotationMenu()}
+      </Fragment>
+    )
   }
 }
 
