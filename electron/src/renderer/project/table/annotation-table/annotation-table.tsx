@@ -144,7 +144,6 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   updateAnnotationBlocks(tableData?: TableCell[][]) {
-    debugger
     if (!tableData) {
       tableData = this.state.tableData;
     }

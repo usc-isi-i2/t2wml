@@ -64,7 +64,6 @@ class OutputTable extends Component<{}, TableState> {
       return;
     }
 
-    console.debug('colorCellsByType: ', tableData, types);
     for ( const entry of types.entries ) {
       for ( const indexPair of entry.indices ) {
         const tableCell = tableData[indexPair[0]][indexPair[1]];
