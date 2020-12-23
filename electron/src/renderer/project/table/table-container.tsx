@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { AnnotationBlock } from '../../common/dtos';
+import { AnnotationBlock, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -199,7 +199,24 @@ class TableContainer extends Component<{}, TableState> {
 
   toggleAnnotationMode() {
     const { annotationMode } = this.state;
+    if (!annotationMode){
+      this.fetchAnnotations()
+    }
     this.setState({ annotationMode: !annotationMode });
+  }
+
+  async fetchAnnotations() {
+    
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.getAnnotationBlocks(
+          wikiStore.projects.current!.folder,
+        )
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot fetch annotations!";
+      this.setState({ errorMessage: error });
+    }
   }
 
   renderErrorMessage() {

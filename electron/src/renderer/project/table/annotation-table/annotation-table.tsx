@@ -23,7 +23,6 @@ interface TableState {
 @observer
 class AnnotationTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
-  private requestService: RequestService;
   private prevElement?: EventTarget;
   private prevDirection?: 'up' | 'down' | 'left' | 'right';
   private selecting = false;
@@ -36,7 +35,6 @@ class AnnotationTable extends Component<{}, TableState> {
 
   constructor(props: {}) {
     super(props);
-    this.requestService = new RequestService();
 
     // init state
     this.state = {
@@ -56,7 +54,6 @@ class AnnotationTable extends Component<{}, TableState> {
     document.addEventListener('keydown', this.handleOnKeyDown);
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-    this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.fetchAnnotations(table)));
     this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
 
   }
@@ -86,17 +83,6 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData.push(rowData);
     }
     this.updateAnnotationBlocks(tableData)
-  }
-
-  async fetchAnnotations(table?: TableDTO) {
-    if ( !table ) { return; }
-    try {
-      await this.requestService.getAnnotationBlocks(
-          wikiStore.projects.current!.folder,
-        );
-    } catch (error) {
-      //
-    }
   }
 
   checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | null {
