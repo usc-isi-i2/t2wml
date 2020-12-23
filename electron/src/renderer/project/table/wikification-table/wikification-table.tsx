@@ -14,7 +14,7 @@ interface TableState {
 class WikificationTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
   setTableReference(reference?: HTMLTableElement) {
-    if ( !reference ) { return; }
+    if (!reference) { return; }
     this.tableRef = reference;
   }
 
@@ -27,10 +27,18 @@ class WikificationTable extends Component<{}, TableState> {
     };
   }
 
+  handleOnMouseDown(event: React.MouseEvent) {
+    //TODO
+  }
+
   render() {
     return (
       <Table
         tableData={this.state.tableData}
+        onMouseUp={() => void 0}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={() => void 0}
+        onClickHeader={() => void 0}
         setTableReference={this.setTableReference.bind(this)} />
     )
   }
