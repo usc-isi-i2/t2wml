@@ -453,15 +453,15 @@ def upload_annotation():
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
     annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
-
+    response=dict(project=get_project_dict(project))
+    calc_params=get_calc_params(project)
+    calc_params.annotation_path=annotations_path
     if request.method == 'POST':
         annotation = request.get_json()["annotations"]
-        annotation, yamlContent = save_annotations(project, annotation, annotations_path)
+        annotation, yamlContent = save_annotations(project, calc_params, annotation, response)
     else:
-        annotation, yamlContent=get_annotations(annotations_path)
+        annotation, yamlContent=get_annotations(calc_params, response)
 
-
-    response=dict(annotations=annotation, yamlContent=yamlContent, project=get_project_dict(project))
     return response, 200
 
 @app.route('/api/project', methods=['PUT'])

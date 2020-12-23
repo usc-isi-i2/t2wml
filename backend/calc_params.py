@@ -13,6 +13,7 @@ class CalcParams:
         self.sheet_name = sheet_name
         self.yaml_path = yaml_path
         self.wiki_paths = wiki_paths or []
+        self.annotation_path=None
 
     @property
     def project(self):
