@@ -1,3 +1,4 @@
+import { action } from 'mobx';
 import wikiStore from '../data/store';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
@@ -14,6 +15,7 @@ export interface IStateWithError {
 
 class StoreFiller {
   //I have created this class to setion off all the filling functions, which were seriously cluttering up service
+  @action
   public fillTableAndLayers(response: ResponseWithTableandMaybeYamlDTO){
     wikiStore.table.table = response.table;
     wikiStore.layers.updateFromDTO(response.layers);
@@ -23,17 +25,20 @@ class StoreFiller {
     wikiStore.yaml.yamlError = response.yamlError;
   }
 
+  @action
   public fillProjectLayersYaml(response: ResponseWithTableandMaybeYamlDTO) {
     wikiStore.projects.projectDTO = response.project;
     this.fillTableAndLayers(response);
   }
 
+  @action
   public fillProjectAndLayers(response: ResponseWithLayersDTO) {
     wikiStore.projects.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlError = response.yamlError;
   }
 
+  @action
   public fillChangeDataFile(response: ResponseWithTableandMaybeYamlDTO) {
     // don't change project when changing file in file tree
     wikiStore.projects.projectDTO!._saved_state = response.project._saved_state;
@@ -44,11 +49,11 @@ class StoreFiller {
     wikiStore.table.selectedCell = new Cell();
   }
 
+  @action
   public fillAnnotations(response: ResponseWithAnnotationsDTO){
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.annotations.blocks = response.annotations;
     wikiStore.projects.projectDTO = response.project;
-
   }
 }
 

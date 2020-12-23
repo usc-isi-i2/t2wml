@@ -6,9 +6,9 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
-import wikiStore from '../../../data/store';
+import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
-import { QNode, TableCell, TableDTO } from '../../../common/dtos';
+import { QNode, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
 import TableToast from '../table-toast';
 import * as utils from '../table-utils';
 
@@ -58,18 +58,20 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
-  colorCellsByType(types) {
-    if ( !types ) { return; }
+  colorCellsByType(types: Layer<TypeEntry>) {
     const { tableData } = this.state;
-    if ( types && tableData ) {
-      for ( const entry of types.entries ) {
-        for ( const indexPair of entry.indices ) {
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`role-${entry.type}`)
-        }
-      }
-      this.setState({ tableData });
+    if (!tableData) {
+      return;
     }
+
+    console.debug('colorCellsByType: ', tableData, types);
+    for ( const entry of types.entries ) {
+      for ( const indexPair of entry.indices ) {
+        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.classNames.push(`role-${entry.type}`)
+      }
+    }
+    this.setState({ tableData });
   }
 
   updateTableData(table?: TableDTO) {
