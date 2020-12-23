@@ -37,19 +37,22 @@ class OutputTable extends Component<{}, TableState> {
       selectedCell: new Cell(),
       showToast: false,
     };
+
+    this.handleOnClickHeader = this.handleOnClickHeader.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)));
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    console.debug('OutputTable.componentWillUnmount');
+    document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }

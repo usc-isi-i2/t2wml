@@ -45,13 +45,15 @@ class AnnotationTable extends Component<{}, TableState> {
       annotationMenuPosition: [50, 70],
       selectedAnnotationBlock: undefined,
     };
+
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.addEventListener('keydown', this.handleOnKeyDown);
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.fetchAnnotations(table)));
@@ -60,7 +62,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }
@@ -93,6 +95,7 @@ class AnnotationTable extends Component<{}, TableState> {
           wikiStore.projects.current!.folder,
         );
     } catch (error) {
+      //
     }
   }
 
