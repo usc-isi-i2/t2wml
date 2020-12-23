@@ -10,7 +10,6 @@ import { CellSelection, ErrorMessage } from '../../../common/general';
 import { config } from '../../../../main/config';
 import AnnotationMenu from './annotation-menu';
 import * as utils from '../table-utils';
-import TableToast from '../table-toast';
 
 
 interface TableState {
@@ -18,7 +17,6 @@ interface TableState {
   showAnnotationMenu: boolean,
   annotationMenuPosition?: Array<number>,
   selectedAnnotationBlock?: AnnotationBlock,
-  showToast: boolean,
 }
 
 
@@ -44,7 +42,6 @@ class AnnotationTable extends Component<{}, TableState> {
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
       selectedAnnotationBlock: undefined,
-      showToast: false,
     };
   }
 
@@ -478,10 +475,6 @@ class AnnotationTable extends Component<{}, TableState> {
 
     if ( this.selecting && !event.shiftKey ) {
 
-      // TODO - deal with toasts
-      // Show the updated selection while moving
-      // this.setState({ showToast: element.nodeName === 'TD' });
-
       // Update the last x coordinate of the selection
       const x2 = element.cellIndex;
       this.selections[this.selections.length - 1]['x2'] = x2;
@@ -656,10 +649,6 @@ class AnnotationTable extends Component<{}, TableState> {
         }
         this.prevElement = nextElement;
       }
-
-      // Show the updated selection while moving
-      // TODO
-      //this.setState({showToast: true});
     }
   }
 
@@ -700,33 +689,9 @@ class AnnotationTable extends Component<{}, TableState> {
     )
   }
 
-  onCloseToast() {
-    this.setState({ showToast: false });
-  }
-
-  renderToast() {
-    const { showToast } = this.state;
-    if ( showToast ) {
-      let text = 'Selected:';
-      if ( this.selections ) {
-        this.selections.forEach(selection => {
-          text += ` ${utils.humanReadableSelection(selection)}`;
-        });
-      }
-      return (
-        <TableToast
-          text={text}
-          qnode={null}
-          onClose={() => this.onCloseToast()}
-        />
-      )
-    }
-  }
-
   render() {
     return (
       <Fragment>
-        {this.renderToast()}
         {this.renderTable()}
         {this.renderAnnotationMenu()}
       </Fragment>
