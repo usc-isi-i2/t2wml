@@ -1,6 +1,7 @@
 // import * as os from 'os';
 import * as fs from 'fs';
 import { ProjectDTO } from '../common/dtos';
+import wikiStore from '../data/store';
 
 interface Data {
     currentState: CurrentFiles;
@@ -10,10 +11,11 @@ interface Data {
 interface CurrentFiles {
     dataFile: string;
 	sheetName: string;
-	yamlFile: string | null;
-	annotationFile: string | null;
+	yamlFile: string | undefined;
+	annotationFile: string | undefined;
 }
 
+const filename = 't2wmlproj.user.json';
 
 export class SaveFiles implements Data {
     // Instance needed ?
@@ -30,12 +32,85 @@ export class SaveFiles implements Data {
     prevSelections = {};
 
 
-    // getFiles() {
+    getFiles(project: ProjectDTO) {
+        try {
+            const path = `${project.directory}/${filename}`;
+            const content = fs.readFileSync(path, {encoding: 'utf8'});
+            if (content) {
+                const contentObj: any = JSON.parse(content);
+                if (contentObj.currentState) {
+                    this.currentState = contentObj.currentState;
+                }
 
-    // }
+                if (contentObj.prevSelections) {
+                    this.prevSelections = contentObj.prevSelections;
+                }
+            }
+        } catch {
+            // If the file doen't exist, first files are the defaults
+            if (project.data_files) {
+                this.currentState.dataFile = Object.keys(project.data_files)[0];
+                this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
+            }
+            
+            if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile]) {
+                this.currentState.yamlFile = project.yaml_sheet_associations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
+            } else {
+                this.currentState.yamlFile = undefined;
+            }
+
+            if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile]) {
+                this.currentState.annotationFile = project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
+            } else {
+                this.currentState.annotationFile = undefined;
+            }
+
+            this.saveFiles(project.directory);
+        }
+    }
+
+    changeDataFile(newFile: string) {
+        const project = wikiStore.projects.projectDTO!;
+        this.currentState.dataFile = newFile;
+        this.currentState.sheetName = project.data_files[newFile].val_arr[0];
+        if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[newFile] && project.yaml_sheet_associations[newFile][this.currentState.sheetName]) {
+            this.currentState.yamlFile = project.yaml_sheet_associations[newFile][this.currentState.sheetName].val_arr[0];
+        } else {
+            this.currentState.yamlFile = undefined;
+        }
+        if (Object.keys(project.annotations).length && project.annotations[newFile] && project.annotations[newFile][this.currentState.sheetName]) {
+            this.currentState.annotationFile = project.annotations[newFile][this.currentState.sheetName].val_arr[0];
+        } else {
+            this.currentState.annotationFile = undefined;
+        }
+
+        this.saveFiles(project.directory);
+    }
+
+    changeSheet(newSheet: string) {
+        const project = wikiStore.projects.projectDTO!;
+        const dataFile = this.currentState.dataFile;
+        if (project.data_files[dataFile].val_arr.indexOf(newSheet) < 0) {
+            console.error(`${newSheet} sheet not exist in ${dataFile} data file`);
+            return;
+        }
+        this.currentState.sheetName = newSheet;
+        if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][newSheet]) {
+            this.currentState.yamlFile = project.yaml_sheet_associations[dataFile][newSheet].val_arr[0];
+        } else {
+            this.currentState.yamlFile = undefined;
+        }
+        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][newSheet]) {
+            this.currentState.annotationFile = project.annotations[dataFile][newSheet].val_arr[0];
+        } else {
+            this.currentState.annotationFile = undefined;
+        }
+
+        this.saveFiles(project.directory);
+    }
 
     saveFiles(directory: string) {
-        const path = `${directory}/t2wmlproj.user.json`;
+        const path = `${directory}/${filename}`;
         fs.writeFileSync(path, JSON.stringify({
             'current state': this.currentState,
             // 'previous selections': this.prevSelections,
@@ -43,47 +118,48 @@ export class SaveFiles implements Data {
     }
 
     fillCurrents() {
-        this.currentState = {
-            dataFile: "string",
-            sheetName: "string",
-            yamlFile: "string",
-            annotationFile: "string | null"
-        };
+        // this.currentState = {
+        //     dataFile: "string",
+        //     sheetName: "string",
+        //     yamlFile: "string",
+        //     annotationFile: "string | null"
+        // };
     }
 
-    fillPrevSelections(project: ProjectDTO) {
-        const dataFiles = [];
-        if (project && project.data_files) {
-            for (const file of Object.keys(project.data_files).sort()) {
-                const sheets = [];
-                for (const sheet of project.data_files[file]["val_arr"]) {
-                    const yamls = [];
-                    if (project.yaml_sheet_associations[file] && project.yaml_sheet_associations[file][sheet]) {
-                        for (const yaml of project.yaml_sheet_associations[file][sheet].val_arr) {
-                            yamls.push({ name: yaml, type: "yaml" });
-                        }
-                    }
-                    if (project.annotations[file] && project.annotations[file][sheet]) {
-                        for (const annotation of project.annotations[file][sheet].val_arr) {
-                            yamls.push({ name: annotation, type: "annotation" });
-                        }
-                    }
-                    sheets.push({ name: sheet, type: "sheet", YamlsAndAnnotoions: yamls });
-                }
-                dataFiles.push({ name: file, type: "datafile", Sheets: sheets });
-            }
-        }
-        this.prevSelections = {
-            name: project.title,
-            DataFiles: dataFiles
-        }        
-    }
+    // fillPrevSelections(project: ProjectDTO) {
+    //     const dataFiles = [];
+    //     if (project && project.data_files) {
+    //         for (const file of Object.keys(project.data_files).sort()) {
+    //             const sheets = [];
+    //             for (const sheet of project.data_files[file]["val_arr"]) {
+    //                 const yamls = [];
+    //                 if (project.yaml_sheet_associations[file] && project.yaml_sheet_associations[file][sheet]) {
+    //                     for (const yaml of project.yaml_sheet_associations[file][sheet].val_arr) {
+    //                         yamls.push({ name: yaml, type: "yaml" });
+    //                     }
+    //                 }
+    //                 if (project.annotations[file] && project.annotations[file][sheet]) {
+    //                     for (const annotation of project.annotations[file][sheet].val_arr) {
+    //                         yamls.push({ name: annotation, type: "annotation" });
+    //                     }
+    //                 }
+    //                 sheets.push({ name: sheet, type: "sheet", YamlsAndAnnotoions: yamls });
+    //             }
+    //             dataFiles.push({ name: file, type: "datafile", Sheets: sheets });
+    //         }
+    //     }
+    //     this.prevSelections = {
+    //         name: project.title,
+    //         DataFiles: dataFiles
+    //     }        
+    // }
 
-    fillFilesData(project: ProjectDTO) {
-        this.fillCurrents();
-        this.fillPrevSelections(project);
-        this.saveFiles(project.directory);
-    }
+    // fillFilesData() {
+    //     const project = wikiStore.projects.projectDTO!;
+    //     this.fillCurrents();
+    //     this.fillPrevSelections(project);
+    //     this.saveFiles(project.directory);
+    // }
 }
 
 export const saveFiles = SaveFiles.instance;

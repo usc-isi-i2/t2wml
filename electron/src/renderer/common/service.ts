@@ -26,7 +26,7 @@ class StoreFiller {
 
   public fillProjectLayersYaml(response: ResponseWithTableandMaybeYamlDTO) {
     wikiStore.projects.projectDTO = response.project;
-    saveFiles.fillFilesData(response.project);
+    saveFiles.getFiles(response.project);
     this.fillTableAndLayers(response);
   }
 

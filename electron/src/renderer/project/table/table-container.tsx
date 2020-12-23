@@ -22,6 +22,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
+import { saveFiles } from '../save-files';
 
 
 interface TableState {
@@ -169,7 +170,8 @@ class TableContainer extends Component<{}, TableState> {
     const sheetName = (event.target as HTMLInputElement).innerHTML;
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
-      await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
+      // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
+      saveFiles.changeSheet(sheetName);
       console.log("<TableComponent> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 
       if (wikiStore.yaml.yamlContent) {
