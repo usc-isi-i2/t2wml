@@ -62,8 +62,8 @@ class OutputTable extends Component<{}, TableState> {
     const types = wikiStore.layers.type;
 
     if ( types && tableData ) {
-      for (const entry of types.entries) {
-        for (const indexPair of entry.indices) {
+      for ( const entry of types.entries ) {
+        for ( const indexPair of entry.indices ) {
           const tableCell = tableData[indexPair[0]][indexPair[1]];
           tableCell.classNames.push(`role-${entry.type}`)
         }
@@ -79,9 +79,9 @@ class OutputTable extends Component<{}, TableState> {
       return;
     }
     const tableData = [];
-    for (let i = 0; i < table.cells.length; i++) {
+    for ( let i = 0; i < table.cells.length; i++ ) {
       const rowData = [];
-      for (let j = 0; j < table.cells[i].length; j++) {
+      for ( let j = 0; j < table.cells[i].length; j++ ) {
         const cell: TableCell = {
           content: table.cells[i][j],
           classNames: [],
@@ -90,7 +90,10 @@ class OutputTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-    this.colorCellsByType(tableData)
+
+    this.setState({ tableData: tableData }, () => {
+      this.colorCellsByType(tableData);
+    });
   }
 
   selectCell(cell: Element, classNames: string[] = []) {

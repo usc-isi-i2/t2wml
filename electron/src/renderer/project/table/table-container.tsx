@@ -29,7 +29,7 @@ interface TableState {
   showToast: boolean;
 
   // table data
-  filename: string | null,       // if null, show "Table Viewer"
+  filename: string | null, // if null, show "Table Viewer"
   multipleSheets: boolean,
   sheetNames: Array<string> | null,
   currSheetName: string | null,
@@ -45,7 +45,7 @@ interface TableState {
   annotationMenuPosition?: Array<number>,
   selectedAnnotationBlock?: AnnotationBlock,
 
-  errorMessage: ErrorMessage;
+  errorMessage: ErrorMessage,
 }
 
 @observer
@@ -95,7 +95,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    for (const disposer of this.disposers) {
+    for ( const disposer of this.disposers ) {
       disposer();
     }
   }
@@ -110,7 +110,7 @@ class TableContainer extends Component<{}, TableState> {
 
     // get table file
     const file = (event.target as HTMLInputElement).files![0];
-    if (!file) { return; }
+    if ( !file ) { return; }
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -124,12 +124,12 @@ class TableContainer extends Component<{}, TableState> {
       console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
 
       // load yaml data
-      if (wikiStore.yaml.yamlContent) {
+      if ( wikiStore.yaml.yamlContent ) {
         wikiStore.table.isCellSelectable = true;
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-    } catch (error) {
+    } catch ( error ) {
       error.errorDescription += "\n\nCannot open file!";
       this.setState({ errorMessage: error });
     } finally {
@@ -172,13 +172,13 @@ class TableContainer extends Component<{}, TableState> {
       await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       console.log("<TableComponent> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 
-      if (wikiStore.yaml.yamlContent) {
+      if ( wikiStore.yaml.yamlContent ) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-    } catch (error) {
+    } catch ( error ) {
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
     }
@@ -187,7 +187,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   updateProjectInfo() {
-    if (wikiStore.projects.projectDTO) {
+    if ( wikiStore.projects.projectDTO ) {
       const project = wikiStore.projects.projectDTO;
       const filename = project._saved_state.current_data_file;
       const sheetNames = project.data_files[filename].val_arr;
@@ -204,7 +204,7 @@ class TableContainer extends Component<{}, TableState> {
 
   renderErrorMessage() {
     const { errorMessage } = this.state;
-    if (errorMessage.errorDescription) {
+    if ( errorMessage.errorDescription ) {
       return (
         <ToastMessage message={this.state.errorMessage} />
       )
@@ -216,7 +216,7 @@ class TableContainer extends Component<{}, TableState> {
     return (
       <div style={{ width: "calc(100% - 350px)", cursor: "default" }}
         className="text-white font-weight-bold d-inline-block text-truncate">
-        {filename ? (
+        { filename ? (
           <span>
             {filename}
             <span style={{ opacity: "0.5", paddingLeft: "5px" }}>
@@ -224,8 +224,8 @@ class TableContainer extends Component<{}, TableState> {
             </span>
           </span>
         ) : (
-            <span>Table&nbsp;Viewer</span>
-          )}
+          <span>Table&nbsp;Viewer</span>
+        )}
       </div>
     )
   }
@@ -238,8 +238,8 @@ class TableContainer extends Component<{}, TableState> {
         {annotationMode ? (
           <FontAwesomeIcon icon={faCheckSquare} />
         ) : (
-            <FontAwesomeIcon icon={faSquare} />
-          )}
+          <FontAwesomeIcon icon={faSquare} />
+        )}
         <p>Annotation Mode</p>
       </div>
     )
@@ -294,15 +294,8 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderTable() {
-    if (this.state.annotationMode) {
-      return (
-        <AnnotationTable />
-      );
-    } else {
-      return (
-        <OutputTable />
-      );
-    }
+    const { annotationMode } = this.state;
+    return annotationMode ? <AnnotationTable /> : <OutputTable />;
   }
 
   renderLegend() {
@@ -311,7 +304,6 @@ class TableContainer extends Component<{}, TableState> {
       <TableLegend offset={multipleSheets} />
     )
   }
-
 
   renderSheetSelector() {
     const { currSheetName, sheetNames } = this.state;
