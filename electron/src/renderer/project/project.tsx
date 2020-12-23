@@ -8,15 +8,15 @@ import Navbar from '../common/navbar/navbar';
 // App
 import SplitPane from 'react-split-pane';
 import Config from '@/shared/config';
-
 import { ErrorMessage, t2wmlColors } from '../common/general';
+
 
 // components
 import Editors from './editor';
 import Output from './output/output';
-import TableComponent from './table-component/table-component';
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
+
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';

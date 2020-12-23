@@ -4,9 +4,11 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
 
+
 interface TableState {
   tableData: any;
 }
+
 
 @observer
 class WikificationTable extends Component<{}, TableState> {
@@ -25,33 +27,14 @@ class WikificationTable extends Component<{}, TableState> {
     };
   }
 
-  handleOnMouseUp() {
-
-  }
-
-  handleOnMouseDown() {
-
-  }
-
-  handleOnMouseMove() {
-
-  }
-
-  handleOnClickHeader() {
-
-  }
-
   render() {
     return (
       <Table
         tableData={this.state.tableData}
-        onMouseUp={this.handleOnMouseUp.bind(this)}
-        onMouseDown={this.handleOnMouseDown.bind(this)}
-        onMouseMove={this.handleOnMouseMove.bind(this)}
-        onClickHeader={this.handleOnClickHeader.bind(this)}
         setTableReference={this.setTableReference.bind(this)} />
     )
   }
 }
+
 
 export default WikificationTable;

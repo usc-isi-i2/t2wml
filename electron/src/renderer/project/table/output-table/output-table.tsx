@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore from '../../../data/store';
-import { Cell, CellSelection, ErrorMessage } from '../../../common/general';
+import { Cell, CellSelection } from '../../../common/general';
 import { QNode, TableCell, TableDTO } from '../../../common/dtos';
 import TableToast from '../table-toast';
 import * as utils from '../table-utils';
@@ -179,24 +179,15 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
-  handleOnMouseUp(event: React.MouseEvent) {
-
-  }
-
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
     const element = event.target as any;
     const x1: number = element.cellIndex;
-    const x2: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
-    const y2: number = element.parentElement.rowIndex;
     this.selectCell(element);
 
     // Activate the element on click
     this.selectRelatedCells(y1, x1);
-  }
-
-  handleOnMouseMove(event: React.MouseEvent) {
   }
 
   handleOnClickHeader(event: React.MouseEvent) {
@@ -297,9 +288,7 @@ class OutputTable extends Component<{}, TableState> {
         {this.renderToast()}
         <Table
           tableData={this.state.tableData}
-          onMouseUp={this.handleOnMouseUp.bind(this)}
           onMouseDown={this.handleOnMouseDown.bind(this)}
-          onMouseMove={this.handleOnMouseMove.bind(this)}
           onClickHeader={this.handleOnClickHeader.bind(this)}
           setTableReference={this.setTableReference.bind(this)} />
       </Fragment>

@@ -6,10 +6,9 @@ import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
 import wikiStore from '@/renderer/data/store';
 import { AnnotationBlock, TableCell, TableDTO } from '../../../common/dtos';
-import { CellSelection, ErrorMessage } from '../../../common/general';
+import { CellSelection } from '../../../common/general';
 import { config } from '../../../../main/config';
 import AnnotationMenu from './annotation-menu';
-import * as utils from '../table-utils';
 
 
 interface TableState {
@@ -128,7 +127,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
   updateAnnotationBlocks(tableData?: TableCell[][]) {
     if ( !tableData ) {
-      const { tableData } = this.state;
+      tableData = this.state.tableData;
     }
     if ( wikiStore.annotations.blocks ) {
       for ( const block of wikiStore.annotations.blocks ) {
@@ -242,7 +241,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
   updateSelections(selectedBlock?: AnnotationBlock) {
     if ( !selectedBlock ) {
-      const { selectedAnnotationBlock: selectedBlock } = this.state;
+      selectedBlock = this.state.selectedAnnotationBlock;
     }
     const table: any = this.tableRef;
     if ( !table ) { return; }
