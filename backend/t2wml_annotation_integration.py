@@ -193,9 +193,9 @@ class AnnotationIntegration(object):
 
             wf_path = save_dataframe(project, consolidated_wikifier_df, "annotation_wikify_region_output.csv")
             project.add_wikifier_file(wf_path)
-            project.update_saved_state(current_wikifiers=[wf_path])
+            #project.update_saved_state(current_wikifiers=[wf_path])
 
-            yaml_path=save_yaml(project, t2wml_yaml)  # give it a better name eventually
+            yaml_path=save_yaml(project, t2wml_yaml, sheet_name=sheet)  # give it a better name eventually
 
             project.save()
             return yaml_path

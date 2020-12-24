@@ -311,7 +311,7 @@ def upload_yaml():
     sheet_name=calc_params.sheet_name
     yaml_data = request.get_json()["yaml"]
     yaml_title = request.get_json()["title"]
-    save_yaml(project, yaml_data, yaml_title, sheet_name)
+    save_yaml(project, yaml_data, sheet_name, yaml_title)
     response=dict(project=get_project_dict(project))
     return response, 200
 
