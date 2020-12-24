@@ -1,7 +1,7 @@
 import json
 import os
-from tests.utils import (client, BaseClass, create_project, sanitize_highlight_region,
-                load_data_file, load_yaml_file, get_project_files, url_builder,
+from tests.utils import (client, BaseClass, create_project, get_yaml_calculation,
+                load_data_file, load_yaml_file, url_builder,
                 load_wikifier_file, load_item_file)
 
 
