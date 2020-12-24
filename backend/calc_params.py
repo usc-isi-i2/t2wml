@@ -8,12 +8,15 @@ from caching import CacheHolder
 
 
 class CalcParams:
-    def __init__(self, project_path, data_path, sheet_name, yaml_path=None):
-        self.project_path = project_path
-        self.data_path = data_path
+    def __init__(self, project, data_path, sheet_name, yaml_path=None):
+        self.project_path = project.directory
+        self.data_path = Path(project.directory) / data_path
         self.sheet_name = sheet_name
-        self.yaml_path = yaml_path
-        self.annotation_path=None
+        if yaml_path:
+            self.yaml_path = Path(project.directory) / yaml_path
+        else:
+            self.yaml_path = None
+        self.annotation_path = None
 
     @property
     def project(self):
@@ -30,11 +33,12 @@ class CalcParams:
 
     @property
     def wikifier(self):
-        project=self.project
+        project = self.project
         if project.current_wikifiers:
-            wikifier_files = [Path(self.project_path) / wf for wf in project.current_wikifiers]
+            wikifier_files = [Path(self.project_path) /
+                              wf for wf in project.current_wikifiers]
         else:
-            wikifier_files=[]
+            wikifier_files = []
         wikifier = Wikifier()
         for path in wikifier_files:
             wikifier.add_file(path)
@@ -50,4 +54,3 @@ class CalcParams:
     def sparql_endpoint(self):
         p = Project.load(self.project_path)
         return p.sparql_endpoint
-

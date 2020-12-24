@@ -38,13 +38,13 @@ class BaseClass:
                 expected_results_dict=json.load(f)
             self.e_results_dict=expected_results_dict
             return self.e_results_dict
-    
+
     def recurse_lists_and_dicts(self, input1, input2):
         if isinstance(input1, dict):
             assert input1.keys()==input2.keys()
             for key in input1:
                 self.recurse_lists_and_dicts(input1[key], input2[key])
-                
+
         elif isinstance(input1, list):
             assert len(input1)==len(input2)
             for index, thing in enumerate(input1):
@@ -114,8 +114,8 @@ def load_yaml_file(client, pid, filename, sheet_name):
         )
     return response
 
-def load_wikifier_file(client, pid, filename):
-    url='/api/wikifier?project_folder={pid}'.format(pid=pid)
+def load_wikifier_file(client, pid, filename, data_file=None, sheet_name=None):
+    url=url_builder('/api/wikifier', pid, data_file, sheet_name)
     response=client.post(url,
             json=dict(
             filepath=filename
@@ -123,8 +123,8 @@ def load_wikifier_file(client, pid, filename):
         )
     return response
 
-def load_item_file(client, pid, filename):
-    url='/api/project/entity?project_folder={pid}'.format(pid=pid)
+def load_item_file(client, pid, filename, data_file=None, sheet_name=None):
+    url=url_builder('/api/project/entity', pid, data_file, sheet_name)
     response=client.post(url,
             json=dict(
             filepath=filename
@@ -138,3 +138,12 @@ def get_project_files(client, pid):
     data = response.data.decode("utf-8")
     data = json.loads(data)
     return data
+
+
+def url_builder(base, project_folder, data_file, sheet_name, yaml_file=None, annotation_file=None):
+    url=base+f'?project_folder={project_folder}&data_file={data_file}&sheet_name={sheet_name}'
+    if yaml_file:
+        url+=f'&yaml_file={yaml_file}'
+    elif annotation_file:
+        url+=f'&annotation_file={annotation_file}'
+    return url

@@ -84,23 +84,30 @@ def json_response(func):
     return wrapper
 
 
-def get_calc_params(project):
+def get_calc_params(project, data_required=True):
     try:
-        data_file = request.args['data_file']
-        data_file = Path(project.directory) / data_file
-    except KeyError:
-        raise web_exceptions.InvalidRequestException("data file parameter not specified")
+        try:
+            data_file = request.args['data_file']
+            data_file = data_file
+        except KeyError:
+            raise web_exceptions.InvalidRequestException("data file parameter not specified")
 
-    try:
-        sheet_name = request.args['sheet_name']
-    except KeyError:
-        raise web_exceptions.InvalidRequestException("sheet name parameter not specified")
+        try:
+            sheet_name = request.args['sheet_name']
+        except KeyError:
+            raise web_exceptions.InvalidRequestException("sheet name parameter not specified")
+    except web_exceptions.InvalidRequestException as e:
+        if data_required:
+            raise e
+        else:
+            return None
+
 
     yaml_file=request.args.get("yaml_file", None)
     if yaml_file:
-        yaml_file = Path(project.directory) / yaml_file
+        yaml_file = yaml_file
 
-    calc_params = CalcParams(project.directory, data_file, sheet_name, yaml_file)
+    calc_params = CalcParams(project, data_file, sheet_name, yaml_file)
     return calc_params
 
 @app.route('/api/calculation/yaml', methods=['GET'])
@@ -183,13 +190,13 @@ def upload_data_file():
     project.save()
 
     response=dict(project=get_project_dict(project))
+    sheet_name=project.data_files[data_file]["val_arr"][0]
+    calc_params=CalcParams(project, data_file, sheet_name, None)
 
     if global_settings.datamart_integration:
-        sheet_name=project.data_files["val_arr"][0]
-        calc_params=CalcParams(project.directory, data_file, sheet_name, None)
         calc_params.yaml_path=run_annotation(project, calc_params)
         response["yamlContent"]=get_yaml_content(calc_params)
-        get_all_layers_and_table(response, calc_params)
+    get_all_layers_and_table(response, calc_params)
 
 
     return response, 200
@@ -208,7 +215,7 @@ def upload_entities():
 
     entities_stats = add_entities_from_file(file_path)
     response = dict(entitiesStats= entities_stats, project=get_project_dict(project))
-    calc_params = get_calc_params(project)
+    calc_params = get_calc_params(project, data_required=False)
     if calc_params:
         response["layers"] = get_qnodes_layer(calc_params)
     return response, 200
@@ -229,7 +236,7 @@ def upload_wikifier_output():
     project.save()
 
     response=dict(project=get_project_dict(project))
-    calc_params = get_calc_params(project)
+    calc_params = get_calc_params(project, data_required=False)
     if calc_params:
         response["layers"]=get_qnodes_layer(calc_params)
     return response, 200
@@ -247,11 +254,8 @@ def call_wikifier_service():
     action = request.get_json()["action"]
     region = request.get_json()["region"]
     context = request.get_json()["context"]
-
-    if not project.current_data_file:
-        raise web_exceptions.WikifyWithoutDataFileException(
-            "Upload data file before wikifying a region")
     calc_params = get_calc_params(project)
+
 
     cell_qnode_map, problem_cells = wikify(calc_params, region, context)
     file_path = save_dataframe(project, cell_qnode_map, "wikify_region_output.csv")
@@ -380,14 +384,14 @@ def load_to_datamart():
 def upload_annotation():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-
+    calc_params=get_calc_params(project)
     #TODO: will be replaced with proper fetching of annotation name and being able to switch between annotations
     annotations_dir=os.path.join(project.directory, "annotations")
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
-    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
+    annotations_path=os.path.join(annotations_dir, Path(calc_params.data_path).stem+"_"+calc_params.sheet_name+".json")
     response=dict(project=get_project_dict(project))
-    calc_params=get_calc_params(project)
+
     calc_params.annotation_path=annotations_path
     if request.method == 'POST':
         annotation = request.get_json()["annotations"]

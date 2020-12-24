@@ -3,7 +3,7 @@ import os
 from tests.utils import (client, BaseClass, create_project, sanitize_highlight_region,
                 load_data_file, load_yaml_file, get_project_files,
                 load_wikifier_file, load_item_file)
-    
+
 
 project_folder=None #we need to use a global for some reason... self.project_folder does not work.
 
@@ -16,21 +16,25 @@ def get_data(data):
         assert data=="" #a way to see the actual error message from failed runs
     return data
 
+
 class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
     results_dict={}
 
+    data_file='dataset.xlsx'
+    sheet_name="Sheet3"
+
     def test_01_add_project(self, client):
         #POST /api/project
         global project_folder
         project_folder=create_project(client)
-        assert project_folder is not None 
-    
+        assert project_folder is not None
+
     def test_01a_clear_annotation_settings(self, client):
         #get old settings:
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
-        response=client.get(url) 
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
         global datamart_integration_switch
@@ -39,40 +43,33 @@ class TestBasicWorkflow(BaseClass):
         #set new settings
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.put(url,
-                json=dict( 
+                json=dict(
                 datamartIntegration=False
-            )) 
-        
+            ))
+
     def test_01b_change_project_name(self, client):
         url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
         ptitle="Unit test"
         response=client.put(url,
                 json=dict(
                 ptitle=ptitle
-            )) 
+            ))
         data = response.data.decode("utf-8")
         data = get_data(data)
         assert data['project']['title']==ptitle
 
-    def test_02_get_project_files(self, client):
-        data=get_project_files(client, project_folder)
-        assert data["table"] is None
-        assert isinstance(data["layers"], dict)
-        assert data["yamlContent"] is None
-
-
-    def test_03_add_data_file(self, client):   
+    def test_03_add_data_file(self, client):
         filename=os.path.join(self.files_dir, "dataset.xlsx")
         response=load_data_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
-        data = get_data(data)  
+        data = get_data(data)
         data.pop('project')
         self.results_dict['add_data_file']=data
         self.compare_jsons(data, 'add_data_file')
 
     def test_05_add_wikifier_file(self, client):
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
-        response=load_wikifier_file(client, project_folder, filename)
+        response=load_wikifier_file(client, project_folder, filename, self.data_file, self.sheet_name)
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project')
@@ -82,7 +79,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_06_add_items_file(self, client):
         filename=os.path.join(self.files_dir, "kgtk_item_defs.tsv")
-        response=load_item_file(client, project_folder, filename)
+        response=load_item_file(client, project_folder, filename, self.data_file, self.sheet_name)
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project')
@@ -101,7 +98,7 @@ class TestBasicWorkflow(BaseClass):
     def test_11_get_download(self, client):
         #GET '/api/project/{project_folder}/download/<filetype>'
         url='/api/project/download/{filetype}?project_folder={project_folder}'.format(project_folder=project_folder, filetype="tsv")
-        response=client.get(url) 
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data= data["data"]
@@ -112,7 +109,7 @@ class TestBasicWorkflow(BaseClass):
     def test_12_change_sheet(self, client):
         #GET /api/data/{project_folder}/<sheet_name>
         url='/api/data/{sheet_name}?project_folder={project_folder}'.format(project_folder=project_folder,sheet_name="Sheet4")
-        response=client.get(url) 
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
         project=data.pop('project')
@@ -145,30 +142,30 @@ class TestBasicWorkflow(BaseClass):
         endpoint='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         response=client.put(url,
                 json=dict(
-                endpoint=endpoint, 
+                endpoint=endpoint,
                 warnEmpty=False
-            )) 
+            ))
         assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
 
         #GET '/api/project/{project_folder}/settings'
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
-        response=client.get(url) 
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
         project=data.pop('project')
         assert project["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert project["warn_for_empty_cells"]==False
-    
+
     def test_998_reset_global_settings(self, client):
         #reset to old settings:
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.put(url,
                 json=dict(
                 datamartIntegration=datamart_integration_switch
-            )) 
-    
+            ))
+
     def xtest_999_save(self):
-        #used when overwriting all old results with new ones 
+        #used when overwriting all old results with new ones
         with open(self.expected_results_path, 'w') as f:
             json.dump(self.results_dict, f, sort_keys=True, indent=4)
 
@@ -178,7 +175,7 @@ class TestLoadingProject(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "project_results.json")
     results_dict={}
-    
+
     def test_11_get_loaded_yaml_files(self, client):
         url= '/api/project?project_folder={path}'.format(path=self.files_dir)
         response=client.get(url)
