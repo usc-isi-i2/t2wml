@@ -79,7 +79,7 @@ def sanitize_highlight_region(dict_1, dict_2):
 def create_project(client):
     path=os.path.join(os.path.dirname(__file__), "project_dirs", str(uuid4()))
     os.makedirs(path)
-    url = '/api/project?project_folder={pid}'.format(pid=path)
+    url = '/api/project?project_folder={project_folder}'.format(project_folder=path)
     response=client.post(url,
         json=dict(
             path=path
@@ -90,8 +90,8 @@ def create_project(client):
     data = json.loads(data)
     return path
 
-def load_data_file(client, pid, filename):
-    url = '/api/data?project_folder={pid}'.format(pid=pid)
+def load_data_file(client, project_folder, filename):
+    url = '/api/data?project_folder={project_folder}'.format(project_folder=project_folder)
     response=client.post(url,
                 json=dict(
                 filepath=filename
@@ -99,23 +99,21 @@ def load_data_file(client, pid, filename):
             )
     return response
 
-def load_yaml_file(client, pid, filename, sheet_name):
-    url='/api/yaml/apply?project_folder={pid}'.format(pid=pid)
+def load_yaml_file(client, project_folder, filename, data_file, sheet_name):
+    url=url_builder('/api/yaml/apply', project_folder, data_file, sheet_name)
     title=Path(filename).name
     with open(filename, 'r', encoding="utf-8") as f:
         yaml=f.read()
     response=client.post(url,
             json=dict(
             yaml=yaml,
-            filepath=filename,
-            title=title,
-            sheetName=sheet_name
+            title=title
             )
         )
     return response
 
-def load_wikifier_file(client, pid, filename, data_file=None, sheet_name=None):
-    url=url_builder('/api/wikifier', pid, data_file, sheet_name)
+def load_wikifier_file(client, project_folder, filename, data_file=None, sheet_name=None):
+    url=url_builder('/api/wikifier', project_folder, data_file, sheet_name)
     response=client.post(url,
             json=dict(
             filepath=filename
@@ -123,8 +121,8 @@ def load_wikifier_file(client, pid, filename, data_file=None, sheet_name=None):
         )
     return response
 
-def load_item_file(client, pid, filename, data_file=None, sheet_name=None):
-    url=url_builder('/api/project/entity', pid, data_file, sheet_name)
+def load_item_file(client, project_folder, filename, data_file=None, sheet_name=None):
+    url=url_builder('/api/project/entity', project_folder, data_file, sheet_name)
     response=client.post(url,
             json=dict(
             filepath=filename
@@ -132,8 +130,8 @@ def load_item_file(client, pid, filename, data_file=None, sheet_name=None):
         )
     return response
 
-def get_project_files(client, pid):
-    url= '/api/project?project_folder={pid}'.format(pid=pid)
+def get_project_files(client, project_folder, data_file, sheet_name, yaml_file=None):
+    url=url_builder('/api/project', project_folder, data_file, sheet_name, yaml_file)
     response=client.get(url)
     data = response.data.decode("utf-8")
     data = json.loads(data)

@@ -102,12 +102,10 @@ def get_calc_params(project, data_required=True):
         else:
             return None
 
-
+    add_entities_from_project(project)
     yaml_file=request.args.get("yaml_file", None)
-    if yaml_file:
-        yaml_file = yaml_file
-
-    calc_params = CalcParams(project, data_file, sheet_name, yaml_file)
+    annotation_file=request.args.get("annotation_file", None)
+    calc_params = CalcParams(project, data_file, sheet_name, yaml_file, annotation_file)
     return calc_params
 
 @app.route('/api/calculation/yaml', methods=['GET'])
@@ -162,7 +160,6 @@ def create_project():
     This route creates a project
     :return:
     """
-
     project_folder = get_project_folder()
     # check we're not overwriting existing project
     project_file = Path(project_folder) / "project.t2wml"
@@ -205,7 +202,6 @@ def upload_data_file():
 @app.route('/api/project/entity', methods=['POST'])
 @json_response
 def upload_entities():
-    ###########?????????????????????????????????
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
 
@@ -311,17 +307,8 @@ def rename_yaml():
 def upload_yaml():
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
-    try:
-        data_file = request.args['data_file']
-        data_file = Path(project.directory) / data_file
-    except KeyError:
-        raise web_exceptions.InvalidRequestException("data file parameter not specified")
-
-    try:
-        sheet_name = request.args['sheet_name']
-    except KeyError:
-        raise web_exceptions.InvalidRequestException("sheet name parameter not specified")
-
+    calc_params = get_calc_params(project)
+    sheet_name=calc_params.sheet_name
     yaml_data = request.get_json()["yaml"]
     yaml_title = request.get_json()["title"]
     save_yaml(project, yaml_data, yaml_title, sheet_name)
@@ -341,7 +328,8 @@ def apply_yaml():
     upload_yaml()
     yaml_title = request.get_json()["title"]
     yaml_path = Path(project.directory) / yaml_title
-    return get_yaml_calculation(yaml_path)
+    response, code = get_yaml_calculation(yaml_path)
+    return json.loads(response), code
 
 
 
@@ -399,7 +387,8 @@ def upload_annotation():
     else:
         annotation, yamlContent=get_annotations(calc_params, response)
 
-    return get_annotation_calculation(annotations_path)
+    response, code = get_annotation_calculation(annotations_path)
+    return json.loads(response), code
 
 @app.route('/api/project', methods=['PUT'])
 @json_response

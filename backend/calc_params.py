@@ -8,15 +8,17 @@ from caching import CacheHolder
 
 
 class CalcParams:
-    def __init__(self, project, data_path, sheet_name, yaml_path=None):
+    def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
         self.project_path = project.directory
         self.data_path = Path(project.directory) / data_path
         self.sheet_name = sheet_name
+        self.yaml_path = None
         if yaml_path:
             self.yaml_path = Path(project.directory) / yaml_path
-        else:
-            self.yaml_path = None
         self.annotation_path = None
+        if annotation_path:
+            self.annotation_path= Path(project.directory) / annotation_path
+
 
     @property
     def project(self):
