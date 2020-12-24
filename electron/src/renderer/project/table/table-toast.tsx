@@ -18,7 +18,7 @@ class TableToast extends React.Component<TableToastProperties, {}> {
 
   renderToastBody() {
     const { qnode } = this.props;
-    if ( !qnode ) { return; }
+    if (!qnode) { return; }
     return (
       <Toast.Body>
         <strong>{qnode.label}</strong> ({qnode.url ? (
@@ -29,8 +29,8 @@ class TableToast extends React.Component<TableToastProperties, {}> {
             {qnode.id}
           </a>
         ) : (
-          <span>{qnode.id}</span>
-        )})
+            <span>{qnode.id}</span>
+          )})
         <br />
         <br />
         {qnode.description}

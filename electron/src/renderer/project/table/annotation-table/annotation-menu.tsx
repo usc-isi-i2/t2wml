@@ -68,7 +68,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };
 
     // Add all updated values from the annotation form
-    for ( const [key, value] of Object.entries(values) ) {
+    for (const [key, value] of Object.entries(values)) {
       annotation[key] = value;
     }
 
@@ -84,7 +84,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       await this.requestService.call(this, () => (
         this.requestService.postAnnotationBlocks(
           wikiStore.projects.current!.folder,
-          {'annotations': annotations}
+          { 'annotations': annotations }
         )
       ));
     } catch (error) {
@@ -110,7 +110,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   render() {
     const { position, onClose } = this.props;
     let style = {};
-    if ( position ) {
+    if (position) {
       style = {
         'left': position[0],
         'top': position[1],

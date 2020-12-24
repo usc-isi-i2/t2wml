@@ -2,7 +2,7 @@ import { CellSelection } from '../../common/general';
 
 export function columnToLetter(column: number) {
   let temp, letter = '';
-  while ( column > 0 ) {
+  while (column > 0) {
     temp = (column - 1) % 26;
     letter = String.fromCharCode(temp + 65) + letter;
     column = (column - temp - 1) / 26;
@@ -13,7 +13,7 @@ export function columnToLetter(column: number) {
 export function letterToColumn(letter: String) {
   let column = 0;
   const length = letter.length;
-  for ( let i = 0; i < length; i++ ) {
+  for (let i = 0; i < length; i++) {
     column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
   }
   return column;
@@ -22,10 +22,10 @@ export function letterToColumn(letter: String) {
 export function humanReadableSelection(selection: CellSelection) {
   const { x1, y1, x2, y2 } = selection;
   let text = '';
-  if ( x1 === x2 && y1 === y2 ) {
+  if (x1 === x2 && y1 === y2) {
     text += `${columnToLetter(x1)}${y1}`;
   } else {
-    if ( x1 <= x2 ) {
+    if (x1 <= x2) {
       text += `${columnToLetter(x1)}${y1 <= y2 ? y1 : y2}`;
       text += `:${columnToLetter(x2)}${y1 <= y2 ? y2 : y1}`;
     } else {

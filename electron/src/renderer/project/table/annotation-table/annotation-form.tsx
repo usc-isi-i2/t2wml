@@ -39,7 +39,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const value = (event.target as HTMLInputElement).value;
     const updatedState: { [key: string]: string; } = {};
     updatedState[key] = value;
-    this.setState({...updatedState}, () => onChange(key, value));
+    this.setState({ ...updatedState }, () => onChange(key, value));
   }
 
   handleOnSubmit(event: any) {
@@ -55,7 +55,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderSelectionAreas() {
     const { selections } = this.props;
-    if ( !selections ) { return null; }
+    if (!selections) { return null; }
     return selections.map((selection: any, index: number) => (
       <p className="area" key={index}>
         {utils.humanReadableSelection(selection)}
@@ -66,17 +66,17 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderNestedOptionsDropdown() {
     const { role, type } = this.state;
     const { selectedAnnotationBlock: selectedBlock } = this.props;
-    const selectedAnnotationRole =  selectedBlock ? selectedBlock.role : role;
-    const selectedAnnotationType =  selectedBlock ? selectedBlock.type : type;
+    const selectedAnnotationRole = selectedBlock ? selectedBlock.role : role;
+    const selectedAnnotationType = selectedBlock ? selectedBlock.type : type;
     let selectedOption = null;
-    if ( selectedAnnotationRole ) {
+    if (selectedAnnotationRole) {
       selectedOption = ROLES.find(option => (
         option.value === selectedAnnotationRole
       ));
     } else {
       selectedOption = ROLES.find(option => option.value === role);
     }
-    if ( !selectedOption || !('children' in selectedOption) ) { return null; }
+    if (!selectedOption || !('children' in selectedOption)) { return null; }
     const optionsDropdown = (
       <Form.Group as={Row}
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
@@ -96,7 +96,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       </Form.Group>
     )
     let selectedType = null;
-    if ( selectedAnnotationType ) {
+    if (selectedAnnotationType) {
       selectedType = selectedOption?.children?.find(option => (
         option.value === selectedAnnotationType
       ));
@@ -105,7 +105,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         option.value === type
       ));
     }
-    if ( !selectedType || !('children' in selectedType) ) {
+    if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
       return (
@@ -113,7 +113,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           {optionsDropdown}
           {selectedType?.children?.map((type, i) => {
             let defaultValue = '';
-            if ( selectedBlock ) {
+            if (selectedBlock) {
               defaultValue = (selectedBlock as any)[type.value];
             }
             return (
@@ -126,7 +126,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
                     defaultValue={defaultValue} />
                 </Col>
               </Form.Group>
-          )
+            )
           })}
         </React.Fragment>
       )
@@ -135,7 +135,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderOptionsDropdown() {
     const { selectedAnnotationBlock: selected } = this.props;
-    const selectedAnnotationRole =  selected ? selected.role : '';
+    const selectedAnnotationRole = selected ? selected.role : '';
     return (
       <Form.Group as={Row}
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
@@ -173,7 +173,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderDeleteButton() {
     const { selectedAnnotationBlock: selectedBlock } = this.props;
-    if ( selectedBlock ) {
+    if (selectedBlock) {
       return (
         <Form.Group as={Row}>
           <Col sm="12" md="12">

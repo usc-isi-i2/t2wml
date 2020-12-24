@@ -99,7 +99,7 @@ class YamlEditorState {
     }
 }
 
-class Layer<T extends Entry> {
+export class Layer<T extends Entry> {
     @observable public entries: T[];
     private entryMap: Map<string, T>;
 

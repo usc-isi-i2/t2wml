@@ -4,7 +4,7 @@ import json
 import numpy as np
 from pathlib import Path
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
-from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
+from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 try:
@@ -51,12 +51,15 @@ def update_t2wml_settings(project):
 
 
 
-def get_kg(calc_params):
-    if calc_params.cache:
+def get_kg(calc_params, annotation=False):
+    if calc_params.cache and not annotation:
         kg = calc_params.cache.load_kg()
         if kg:
             return kg
-    cell_mapper = YamlMapper(calc_params.yaml_path)
+    if annotation:
+        cell_mapper = YamlMapper(calc_params.annotation_path)
+    else:
+        cell_mapper = YamlMapper(calc_params.yaml_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
     db.session.commit()  # save any queried properties
     return kg
@@ -136,7 +139,7 @@ def get_cell_qnodes(statement, qnodes):
                     qnodes[str(outer_value)] = None
 
 
-def get_yaml_layers(calc_params):
+def get_yaml_layers(calc_params, for_annotation=False):
     if calc_params.cache:
         layers=calc_params.cache.get_layers()
         if layers:
@@ -160,7 +163,7 @@ def get_yaml_layers(calc_params):
     qnodes={} #passed by reference everywhere, so gets updated simultaneously across all of them
 
     if calc_params.yaml_path:
-        kg = get_kg(calc_params)
+        kg = get_kg(calc_params, annotation=for_annotation)
         statements=kg.statements
         errors=kg.errors
 
@@ -268,20 +271,21 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 
 
-def get_all_layers_and_table(response, calc_params):
+def get_all_layers_and_table(response, calc_params, for_annotation=False):
     #convenience function for code that repeats three times
-    response["layers"]=get_empty_layers()
-
     response["table"] = get_table(calc_params)
+
+    response["layers"]=get_empty_layers()
     response["layers"].update(get_qnodes_layer(calc_params))
 
     try:
-        response["layers"].update(get_yaml_layers(calc_params))
+        response["layers"].update(get_yaml_layers(calc_params, for_annotation=for_annotation))
     except Exception as e:
         response["yamlError"] = str(e)
 
 
-def get_annotations(annotations_path):
+def get_annotations(calc_params, response):
+    annotations_path=calc_params.annotation_path
     try:
         dga = Annotation.load(annotations_path)
     except FileNotFoundError:
@@ -291,9 +295,13 @@ def get_annotations(annotations_path):
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
-    return dga.annotation_block_array, yamlContent
+    response.update(dict(annotations=dga.annotation_block_array, yamlContent=yamlContent))
+    get_all_layers_and_table(response, calc_params, True)
+    response.pop('table')
+    return  dga.annotation_block_array, yamlContent
 
-def save_annotations(project, annotation, annotations_path):
+def save_annotations(project, calc_params, annotation, response):
+    annotations_path=calc_params.annotation_path
     dga=Annotation(annotation)
     dga.save(annotations_path)
     project.add_annotation_file(annotations_path, project.current_data_file, project.current_sheet)

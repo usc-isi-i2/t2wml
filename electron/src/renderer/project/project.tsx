@@ -8,14 +8,15 @@ import Navbar from '../common/navbar/navbar';
 // App
 import SplitPane from 'react-split-pane';
 import Config from '@/shared/config';
-
 import { ErrorMessage, t2wmlColors } from '../common/general';
+
 
 // components
 import Editors from './editor';
 import Output from './output/output';
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
+
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
@@ -91,8 +92,6 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.on('toggle-file-tree', (sender: IpcRendererEvent, checked: boolean) => {
       this.onShowFileTreeClicked(checked);
     });
-
-    this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.fetchAnnotations(table)));
     this.disposers.push(reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag})));
   }
 
@@ -115,19 +114,6 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
   }
 
-  async fetchAnnotations(table?: TableDTO) {
-    if ( !table ) { return; }
-    try {
-      await this.requestService.call(this, () => (
-        this.requestService.getAnnotationBlocks(
-          wikiStore.projects.current!.folder,
-        )
-      ));
-    } catch (error) {
-      error.errorDescription += "\n\nCannot submit annotations!";
-      this.setState({ errorMessage: error });
-    }
-  }
 
   async loadProject() {
     // before fetching project files
