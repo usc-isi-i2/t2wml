@@ -53,6 +53,11 @@ def get_project_folder():
     except KeyError:
         raise web_exceptions.InvalidRequestException("project folder parameter not specified")
 
+def get_project():
+    project_folder=get_project_folder()
+    project=get_project_instance(project_folder)
+    return project
+
 def get_project_dict(project):
     return_dict={}
     return_dict.update(project.__dict__)
@@ -106,9 +111,8 @@ def get_calc_params(project, data_required=True):
 
 @app.route('/api/project', methods=['GET'])
 @json_response
-def get_project():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+def get_project_files():
+    project=get_project()
     response=dict(project=get_project_dict(project))
     return response, 200
 
@@ -120,8 +124,7 @@ def get_yaml_calculation(yaml_file=None):
     This route is used when switching the selected yaml
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     calc_params=get_calc_params(project)
     if yaml_file: #redirect from saving yaml
         calc_params.yaml_path=Path(project.directory) / yaml_file
@@ -141,8 +144,7 @@ def get_annotation_calculation(annotation_path=None):
     This route is used when switching the selected yaml
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     if annotation_path: #redirect from saving annotation
         annotation_file = Path(project.directory) / annotation_path
     else:
@@ -184,8 +186,7 @@ def upload_data_file():
     If datamart_integration is True, it will attempt to run that on the file
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
     data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
@@ -207,8 +208,7 @@ def upload_data_file():
 @app.route('/api/project/entity', methods=['POST'])
 @json_response
 def upload_entities():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     file_path = file_upload_validator({".tsv"})
     project.add_entity_file(file_path, copy_from_elsewhere=True, overwrite=True)
@@ -228,8 +228,7 @@ def upload_wikifier_output():
     This function uploads the wikifier output
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     file_path = file_upload_validator({".csv"})
     file_path = project.add_wikifier_file(file_path, copy_from_elsewhere=True, overwrite=True)
@@ -249,8 +248,7 @@ def call_wikifier_service():
     This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     region = request.get_json()["region"]
     context = request.get_json()["context"]
     calc_params = get_calc_params(project)
@@ -273,8 +271,7 @@ def call_wikifier_service():
 @app.route('/api/yaml/rename', methods=['POST'])
 @json_response
 def rename_yaml():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     old_name = request.get_json()["old_name"]
     new_name = request.get_json()["new_name"]
@@ -307,8 +304,7 @@ def rename_yaml():
 @app.route('/api/yaml/save', methods=['POST'])
 @json_response
 def upload_yaml():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     calc_params = get_calc_params(project)
     sheet_name=calc_params.sheet_name
     yaml_data = request.get_json()["yaml"]
@@ -324,8 +320,7 @@ def apply_yaml():
     This function uploads and processes the yaml file
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     upload_yaml()
     yaml_title = request.get_json()["title"]
@@ -344,8 +339,7 @@ def download_results(filetype):
     This functions initiates the download
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     calc_params = get_calc_params(project)
     if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
@@ -357,8 +351,7 @@ def download_results(filetype):
 @app.route('/api/project/datamart', methods=['GET'])
 @json_response
 def load_to_datamart():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     calc_params = get_calc_params(project)
     try:
         sheet = calc_params.sheet_name
@@ -372,8 +365,7 @@ def load_to_datamart():
 @app.route('/api/annotation', methods=['POST'])
 @json_response
 def upload_annotation():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     calc_params=get_calc_params(project)
     #TODO: will be replaced with proper fetching of annotation name and being able to switch between annotations
     annotations_dir=os.path.join(project.directory, "annotations")
@@ -400,8 +392,7 @@ def rename_project():
     :return:
     """
     ptitle = request.get_json()["ptitle"]
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     project.title = ptitle
     project.save()
     response = dict(project= get_project_dict(project))
@@ -415,8 +406,7 @@ def update_settings():
     This function updates the settings from GUI
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     if request.method == 'PUT':
         endpoint = request.get_json().get("endpoint", None)
