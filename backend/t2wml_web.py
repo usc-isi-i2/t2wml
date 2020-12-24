@@ -7,10 +7,7 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-try:
-    from t2wml.api import ProjectWithSavedState as Project
-except:
-    from t2wml.api import Project
+from t2wml.api import Project
 from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
@@ -304,5 +301,5 @@ def save_annotations(project, calc_params, annotation, response):
     annotations_path=calc_params.annotation_path
     dga=Annotation(annotation)
     dga.save(annotations_path)
-    project.add_annotation_file(annotations_path, project.current_data_file, project.current_sheet)
+    project.add_annotation_file(annotations_path, calc_params.data_path, calc_params.sheet_name)
     project.save()

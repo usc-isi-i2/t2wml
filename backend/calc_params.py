@@ -1,9 +1,6 @@
 from pathlib import Path
 from t2wml.api import Sheet, SpreadsheetFile, Wikifier
-try:
-    from t2wml.api import ProjectWithSavedState as Project
-except:
-    from t2wml.api import Project
+from t2wml.api import Project
 from caching import CacheHolder
 
 
@@ -36,9 +33,10 @@ class CalcParams:
     @property
     def wikifier(self):
         project = self.project
-        if project.current_wikifiers:
-            wikifier_files = [Path(self.project_path) /
-                              wf for wf in project.current_wikifiers]
+        if project.wikifier_files:
+            wikifier_files = [Path(self.project_path) /wf
+                              for wf in project.wikifier_files]
+            wikifier_files= [wikifier_files[-1]] #temporary solution where we only use the last-added wikifier
         else:
             wikifier_files = []
         wikifier = Wikifier()

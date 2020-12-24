@@ -195,7 +195,7 @@ class AnnotationIntegration(object):
             project.add_wikifier_file(wf_path)
             #project.update_saved_state(current_wikifiers=[wf_path])
 
-            yaml_path=save_yaml(project, t2wml_yaml, sheet_name=sheet)  # give it a better name eventually
+            yaml_path=save_yaml(project, t2wml_yaml, data_file=filename, sheet_name=sheet)  # give it a better name eventually
 
             project.save()
             return yaml_path

@@ -52,7 +52,7 @@ def save_dataframe(project, df, file_name, kgtk=False):
     return filepath
 
 
-def save_yaml(project, yaml_data, sheet_name, yaml_title=None):
+def save_yaml(project, yaml_data, data_file, sheet_name, yaml_title=None):
     if not yaml_title:
         yaml_title = sheet_name + ".yaml"
 
@@ -60,7 +60,7 @@ def save_yaml(project, yaml_data, sheet_name, yaml_title=None):
     with open(file_path, 'w', newline='', encoding="utf-8") as f:
         f.write(yaml_data)
 
-    project.add_yaml_file(file_path, project.current_data_file, sheet_name)
+    project.add_yaml_file(file_path, data_file, sheet_name)
     project.save()
     return file_path
 
