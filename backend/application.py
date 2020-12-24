@@ -104,6 +104,15 @@ def get_calc_params(project, data_required=True):
     calc_params = CalcParams(project, data_file, sheet_name, yaml_file, annotation_file)
     return calc_params
 
+@app.route('/api/project', methods=['GET'])
+@json_response
+def get_project():
+    project_folder = get_project_folder()
+    project = get_project_instance(project_folder)
+    response=dict(project=get_project_dict(project))
+    return response, 200
+
+
 @app.route('/api/calculation/yaml', methods=['GET'])
 @json_response
 def get_yaml_calculation(yaml_file=None):

@@ -59,6 +59,14 @@ class TestBasicWorkflow(BaseClass):
         data = get_data(data)
         assert data['project']['title']==ptitle
 
+    def test_02_get_project(self, client):
+        url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = get_data(data)
+        assert data["project"]["directory"]==project_folder
+
+
     def test_03_add_data_file(self, client):
         filename=os.path.join(self.files_dir, self.data_file)
         response=load_data_file(client, project_folder, filename)
