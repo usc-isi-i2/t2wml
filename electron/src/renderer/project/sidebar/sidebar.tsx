@@ -8,6 +8,7 @@ import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '@/renderer/common/service';
 import { Spinner } from 'react-bootstrap';
+import { saveFiles } from '../save-files';
 
 // const data = {
 //     name: 'root',
@@ -106,7 +107,7 @@ class Sidebar extends Component<{}, SidebarState> {
         // }
 
         // Does nothing when clicking on the current file
-        if (!node.children && node.name !== wikiStore.projects.projectDTO?._saved_state.current_data_file) {
+        if (!node.children && node.name !== saveFiles.currentState.dataFile) {
             wikiStore.wikifier.showSpinner = true;
             this.setState({showSpinner: true});
 
@@ -122,11 +123,7 @@ class Sidebar extends Component<{}, SidebarState> {
         // save prev yaml
         await wikiStore.yaml.saveYaml();
 
-        try {
-            await this.requestService.changeDataFile(fileName, wikiStore.projects.current!.folder);
-        } catch {
-            console.error("Change datafile failed");
-        }
+        saveFiles.changeDataFile(fileName);
     }
 
     getFilesData() {
