@@ -4,13 +4,10 @@ import json
 import numpy as np
 from pathlib import Path
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
-from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper
+from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-try:
-    from t2wml.api import ProjectWithSavedState as Project
-except:
-    from t2wml.api import Project
+from t2wml.api import Project
 from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
@@ -51,12 +48,15 @@ def update_t2wml_settings(project):
 
 
 
-def get_kg(calc_params):
-    if calc_params.cache:
+def get_kg(calc_params, annotation=False):
+    if calc_params.cache and not annotation:
         kg = calc_params.cache.load_kg()
         if kg:
             return kg
-    cell_mapper = YamlMapper(calc_params.yaml_path)
+    if annotation:
+        cell_mapper = YamlMapper(calc_params.annotation_path)
+    else:
+        cell_mapper = YamlMapper(calc_params.yaml_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
     db.session.commit()  # save any queried properties
     return kg
@@ -95,11 +95,11 @@ def get_qnodes_layer(calc_params):
         for id in qnode_entries:
             if id in labels_and_descriptions:
                 qnode_entries[id]['qNode'].update(**labels_and_descriptions[id])
-        
+
         for id in qnode_entries:
             qNode=qnode_entries[id].pop("qNode")
             qnode_entries[id].update(qNode.__dict__)
-    
+
     return {"qnode": dict(layerType="qNode", entries=list(qnode_entries.values()))}
 
 
@@ -112,7 +112,7 @@ def get_cleaned(kg):
     cleanedLayer=dict(layerType="cleaned", entries=[])
     if kg.sheet:
         cleaned_data=kg.sheet.cleaned_data
-        if cleaned_data is not None: 
+        if cleaned_data is not None:
             comparison=cleaned_data.ne(kg.sheet.raw_data)
             comparison=comparison.to_numpy()
             changed_values = np.argwhere(comparison)
@@ -124,24 +124,24 @@ def get_cleaned(kg):
     return cleanedLayer
 
 def get_cell_qnodes(statement, qnodes):
-        # get cell qnodes	
-        for outer_key, outer_value in statement.items():	
-            if outer_key == "qualifier":	
-                for qual_dict in outer_value:	
-                    for inner_key, inner_value in qual_dict.items():	
-                        if str(inner_value).upper()[0] in ["P", "Q"]:	
-                            qnodes[str(inner_value)] = None	
-            else:	
-                if str(outer_value).upper()[0] in ["P", "Q"]:	
-                    qnodes[str(outer_value)] = None	
+        # get cell qnodes
+        for outer_key, outer_value in statement.items():
+            if outer_key == "qualifier":
+                for qual_dict in outer_value:
+                    for inner_key, inner_value in qual_dict.items():
+                        if str(inner_value).upper()[0] in ["P", "Q"]:
+                            qnodes[str(inner_value)] = None
+            else:
+                if str(outer_value).upper()[0] in ["P", "Q"]:
+                    qnodes[str(outer_value)] = None
 
 
-def get_yaml_layers(calc_params):
+def get_yaml_layers(calc_params, for_annotation=False):
     if calc_params.cache:
         layers=calc_params.cache.get_layers()
         if layers:
             return layers
-    
+
 
     cell_type_indices={
         "qualifier":{},
@@ -160,20 +160,20 @@ def get_yaml_layers(calc_params):
     qnodes={} #passed by reference everywhere, so gets updated simultaneously across all of them
 
     if calc_params.yaml_path:
-        kg = get_kg(calc_params)
+        kg = get_kg(calc_params, annotation=for_annotation)
         statements=kg.statements
         errors=kg.errors
-        
 
-        
+
+
         for cell_name in errors:
             cell_index=indexer(cell_name)
             errorEntry=dict(indices=[cell_index], error=errors[cell_name])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell_name].keys())):	
+            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell_name].keys())):
                 cell_type_indices["majorError"][cell_name]=True
-            else:	
+            else:
                 cell_type_indices["minorError"][cell_name]=True
 
 
@@ -202,7 +202,7 @@ def get_yaml_layers(calc_params):
                     qual_cell = q_cells.pop("value", None)
                     if qual_cell:
                         q_cells["qualifier"]=qual_cell
-                        
+
                     for key in q_cells:
                         if key in ["property", "qualifier", "unit"]:
                             cell_type_indices[key][q_cells[key]]=True
@@ -211,25 +211,25 @@ def get_yaml_layers(calc_params):
                         #convert to frontend format
                         q_cells[key]=indexer(q_cells[key])
                     cells["qualifiers"].append(q_cells)
-                        
 
 
-            
+
+
             statementEntry=dict(indices=[indexer(cell_name)])#, qnodes=qnodes)
             statementEntry.update(**statements[cell_name])
             statementLayer["entries"].append(statementEntry)
-        
+
 
 
         cleanedLayer=get_cleaned(kg)
 
-        labels = get_labels_and_descriptions(qnodes, calc_params.project.sparql_endpoint)	
-        qnodes.update(labels)	
+        labels = get_labels_and_descriptions(qnodes, calc_params.project.sparql_endpoint)
+        qnodes.update(labels)
         for id in qnodes:
             if qnodes[id]:
                 qnodes[id]["url"]=get_qnode_url(id)
                 qnodes[id]["id"]=id
-        
+
         statementLayer["qnodes"]=qnodes
 
     type_entries=[]
@@ -238,9 +238,9 @@ def get_yaml_layers(calc_params):
         type_entries.append(dict(type=key, indices=indices))
     typeLayer=dict(layerType="type", entries=type_entries)
 
-    layers= dict(error= errorLayer, 
-            statement= statementLayer, 
-            cleaned= cleanedLayer, 
+    layers= dict(error= errorLayer,
+            statement= statementLayer,
+            cleaned= cleanedLayer,
             type = typeLayer)
     if calc_params.yaml_path:
         calc_params.cache.save(kg, layers)
@@ -254,7 +254,7 @@ def get_table(calc_params, first_index=0, num_rows=None):
         raise ValueError("Calc params does not have sheet loaded")
     df = sheet.data
     dims = list(df.shape)
-    
+
     if num_rows:
         last_index=first_index+num_rows
     else:
@@ -268,40 +268,38 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 
 
-def get_all_layers_and_table(response, calc_params):
+def get_all_layers_and_table(response, calc_params, for_annotation=False):
     #convenience function for code that repeats three times
-    response["layers"]=get_empty_layers()
-
     response["table"] = get_table(calc_params)
+
+    response["layers"]=get_empty_layers()
     response["layers"].update(get_qnodes_layer(calc_params))
 
     try:
-        response["layers"].update(get_yaml_layers(calc_params))
+        response["layers"].update(get_yaml_layers(calc_params, for_annotation=for_annotation))
     except Exception as e:
         response["yamlError"] = str(e)
 
 
-def get_annotations(annotations_path):
+def get_annotations(calc_params, response):
+    annotations_path=calc_params.annotation_path
     try:
         dga = Annotation.load(annotations_path)
     except FileNotFoundError:
         dga=Annotation()
-    
+
     try:
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
-    return dga.annotation_block_array, yamlContent
+    response.update(dict(annotations=dga.annotation_block_array, yamlContent=yamlContent))
+    get_all_layers_and_table(response, calc_params, True)
+    response.pop('table')
+    return  dga.annotation_block_array, yamlContent
 
-def save_annotations(project, annotation, annotations_path):
+def save_annotations(project, calc_params, annotation, response):
+    annotations_path=calc_params.annotation_path
     dga=Annotation(annotation)
     dga.save(annotations_path)
-    project.add_annotation_file(annotations_path, project.current_data_file, project.current_sheet)
+    project.add_annotation_file(annotations_path, calc_params.data_path, calc_params.sheet_name)
     project.save()
-
-    try:
-        yamlContent=dga.generate_yaml()[0]
-    except Exception as e:
-        yamlContent="#Error when generating yaml: "+str(e)
-    
-    return dga.annotation_block_array, yamlContent

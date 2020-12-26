@@ -1,18 +1,21 @@
+from pathlib import Path
 from t2wml.api import Sheet, SpreadsheetFile, Wikifier
-try:
-    from t2wml.api import ProjectWithSavedState as Project
-except:
-    from t2wml.api import Project
+from t2wml.api import Project
 from caching import CacheHolder
 
 
 class CalcParams:
-    def __init__(self, project_path, data_path, sheet_name, yaml_path=None, wiki_paths=None):
-        self.project_path = project_path
-        self.data_path = data_path
+    def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
+        self.project_path = project.directory
+        self.data_path = Path(project.directory) / data_path
         self.sheet_name = sheet_name
-        self.yaml_path = yaml_path
-        self.wiki_paths = wiki_paths or []
+        self.yaml_path = None
+        if yaml_path:
+            self.yaml_path = Path(project.directory) / yaml_path
+        self.annotation_path = None
+        if annotation_path:
+            self.annotation_path= Path(project.directory) / annotation_path
+
 
     @property
     def project(self):
@@ -29,8 +32,15 @@ class CalcParams:
 
     @property
     def wikifier(self):
+        project = self.project
+        if project.wikifier_files:
+            wikifier_files = [Path(self.project_path) /wf
+                              for wf in project.wikifier_files]
+            wikifier_files= [wikifier_files[-1]] #temporary solution where we only use the last-added wikifier
+        else:
+            wikifier_files = []
         wikifier = Wikifier()
-        for path in self.wiki_paths:
+        for path in wikifier_files:
             wikifier.add_file(path)
         return wikifier
 
@@ -44,4 +54,3 @@ class CalcParams:
     def sparql_endpoint(self):
         p = Project.load(self.project_path)
         return p.sparql_endpoint
-

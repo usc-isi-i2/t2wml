@@ -1,9 +1,9 @@
 import json
 import os
-from tests.utils import (client, BaseClass, create_project, sanitize_highlight_region,
-                load_data_file, load_yaml_file, get_project_files,
+from tests.utils import (client, BaseClass, create_project, get_yaml_calculation,
+                load_data_file, load_yaml_file, url_builder,
                 load_wikifier_file, load_item_file)
-    
+
 
 project_folder=None #we need to use a global for some reason... self.project_folder does not work.
 
@@ -16,21 +16,26 @@ def get_data(data):
         assert data=="" #a way to see the actual error message from failed runs
     return data
 
+
 class TestBasicWorkflow(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "results.json")
     results_dict={}
 
+    data_file='dataset.xlsx'
+    sheet_name="Sheet3"
+    yaml_file="test.yaml"
+
     def test_01_add_project(self, client):
         #POST /api/project
         global project_folder
         project_folder=create_project(client)
-        assert project_folder is not None 
-    
+        assert project_folder is not None
+
     def test_01a_clear_annotation_settings(self, client):
         #get old settings:
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
-        response=client.get(url) 
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
         global datamart_integration_switch
@@ -39,40 +44,41 @@ class TestBasicWorkflow(BaseClass):
         #set new settings
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.put(url,
-                json=dict( 
+                json=dict(
                 datamartIntegration=False
-            )) 
-        
+            ))
+
     def test_01b_change_project_name(self, client):
         url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
         ptitle="Unit test"
         response=client.put(url,
                 json=dict(
                 ptitle=ptitle
-            )) 
+            ))
         data = response.data.decode("utf-8")
         data = get_data(data)
         assert data['project']['title']==ptitle
 
-    def test_02_get_project_files(self, client):
-        data=get_project_files(client, project_folder)
-        assert data["table"] is None
-        assert isinstance(data["layers"], dict)
-        assert data["yamlContent"] is None
+    def test_02_get_project(self, client):
+        url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = get_data(data)
+        assert data["project"]["directory"]==project_folder
 
 
-    def test_03_add_data_file(self, client):   
-        filename=os.path.join(self.files_dir, "dataset.xlsx")
+    def test_03_add_data_file(self, client):
+        filename=os.path.join(self.files_dir, self.data_file)
         response=load_data_file(client, project_folder, filename)
         data = response.data.decode("utf-8")
-        data = get_data(data)  
+        data = get_data(data)
         data.pop('project')
         self.results_dict['add_data_file']=data
         self.compare_jsons(data, 'add_data_file')
 
     def test_05_add_wikifier_file(self, client):
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
-        response=load_wikifier_file(client, project_folder, filename)
+        response=load_wikifier_file(client, project_folder, filename, self.data_file, self.sheet_name)
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project')
@@ -82,7 +88,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_06_add_items_file(self, client):
         filename=os.path.join(self.files_dir, "kgtk_item_defs.tsv")
-        response=load_item_file(client, project_folder, filename)
+        response=load_item_file(client, project_folder, filename, self.data_file, self.sheet_name)
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project')
@@ -90,8 +96,8 @@ class TestBasicWorkflow(BaseClass):
         self.compare_jsons(data, 'add_items')
 
     def test_08_add_yaml_file(self, client):
-        filename=os.path.join(self.files_dir, "test.yaml")
-        response=load_yaml_file(client, project_folder, filename, "Sheet3")
+        filename=os.path.join(self.files_dir, self.yaml_file)
+        response=load_yaml_file(client, project_folder, filename, self.data_file, "Sheet3")
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project')
@@ -100,8 +106,8 @@ class TestBasicWorkflow(BaseClass):
 
     def test_11_get_download(self, client):
         #GET '/api/project/{project_folder}/download/<filetype>'
-        url='/api/project/download/{filetype}?project_folder={project_folder}'.format(project_folder=project_folder, filetype="tsv")
-        response=client.get(url) 
+        url=url_builder(f'/api/project/download/tsv', project_folder, self.data_file, self.sheet_name, self.yaml_file)
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data= data["data"]
@@ -111,18 +117,17 @@ class TestBasicWorkflow(BaseClass):
 
     def test_12_change_sheet(self, client):
         #GET /api/data/{project_folder}/<sheet_name>
-        url='/api/data/{sheet_name}?project_folder={project_folder}'.format(project_folder=project_folder,sheet_name="Sheet4")
-        response=client.get(url) 
+        url=url_builder('/api/calculation/yaml', project_folder, self.data_file, "Sheet4")
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
-        project=data.pop('project')
-        assert project["_saved_state"]["current_sheet"]=="Sheet4"
+        data.pop('project')
         self.results_dict['change_sheet']=data
         self.compare_jsons(data, 'change_sheet')
 
     def test_12_wikify_region(self, client):
         #POST '/api/wikifier_service/{project_folder}'
-        url='/api/wikifier_service?project_folder={project_folder}'.format(project_folder=project_folder)
+        url=url_builder('/api/wikifier_service', project_folder, self.data_file, "Sheet4")
         response=client.post(url,
                 json=dict(
                 action="wikify_region",
@@ -145,30 +150,30 @@ class TestBasicWorkflow(BaseClass):
         endpoint='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         response=client.put(url,
                 json=dict(
-                endpoint=endpoint, 
+                endpoint=endpoint,
                 warnEmpty=False
-            )) 
+            ))
         assert t2wml_settings.wikidata_provider.sparql_endpoint==endpoint
 
         #GET '/api/project/{project_folder}/settings'
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
-        response=client.get(url) 
+        response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
         project=data.pop('project')
         assert project["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert project["warn_for_empty_cells"]==False
-    
+
     def test_998_reset_global_settings(self, client):
         #reset to old settings:
         url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.put(url,
                 json=dict(
                 datamartIntegration=datamart_integration_switch
-            )) 
-    
+            ))
+
     def xtest_999_save(self):
-        #used when overwriting all old results with new ones 
+        #used when overwriting all old results with new ones
         with open(self.expected_results_path, 'w') as f:
             json.dump(self.results_dict, f, sort_keys=True, indent=4)
 
@@ -178,9 +183,9 @@ class TestLoadingProject(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "aid")
     expected_results_path=os.path.join(files_dir, "project_results.json")
     results_dict={}
-    
+
     def test_11_get_loaded_yaml_files(self, client):
-        url= '/api/project?project_folder={path}'.format(path=self.files_dir)
+        url=url_builder('/api/calculation/yaml', self.files_dir, "dataset.xlsx", "Sheet3", "test.yaml")
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
@@ -192,24 +197,13 @@ class TestLoadingProject(BaseClass):
         self.compare_jsons(data, 'load_from_path')
 
 
-class TestCleaningAndMultiFile(BaseClass):
+class TestCleaning(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
     def test_11_get_cleaned_data(self, client):
-        url= '/api/project?project_folder={path}'.format(path=self.files_dir)
+        url=url_builder('/api/calculation/yaml', self.files_dir, "homicide_report_total_and_sex.xlsx", "table-1a", "t2wml/table-1a.yaml")
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = json.loads(data)
         cleaned_entries = data['layers']['cleaned']['entries']
         assert len(cleaned_entries)== 3
         assert cleaned_entries[1] == {'cleaned': '200', 'indices': [[6,3]], 'original': '4'}
-
-    def test_12_change_file(self, client):
-        url= '/api/data/change_data_file?project_folder={path}&data_file={data_file}'.format(path=self.files_dir, data_file="csv/sheet-2.csv")
-        response=client.get(url)
-        data = response.data.decode("utf-8")
-        data1 = json.loads(data)
-        url= '/api/data/change_data_file?project_folder={path}&data_file={data_file}'.format(path=self.files_dir, data_file="homicide_report_total_and_sex.xlsx")
-        response=client.get(url)
-        data = response.data.decode("utf-8")
-        data2 = json.loads(data)
-        assert data1 != data2

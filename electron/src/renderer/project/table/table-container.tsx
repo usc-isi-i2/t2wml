@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { AnnotationBlock } from '../../common/dtos';
+import { AnnotationBlock, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -30,7 +30,7 @@ interface TableState {
   showToast: boolean;
 
   // table data
-  filename: string | null,       // if null, show "Table Viewer"
+  filename: string | null, // if null, show "Table Viewer"
   multipleSheets: boolean,
   sheetNames: Array<string> | null,
   currSheetName: string | null,
@@ -46,7 +46,7 @@ interface TableState {
   annotationMenuPosition?: Array<number>,
   selectedAnnotationBlock?: AnnotationBlock,
 
-  errorMessage: ErrorMessage;
+  errorMessage: ErrorMessage,
 }
 
 @observer
@@ -96,14 +96,14 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    for (const disposer of this.disposers ) {
+    for ( const disposer of this.disposers ) {
       disposer();
     }
   }
 
   showCleanedData() {
     const { showCleanedData } = this.state;
-    this.setState({showCleanedData: !showCleanedData});
+    this.setState({ showCleanedData: !showCleanedData });
   }
 
   async handleOpenTableFile(event: ChangeEvent) {
@@ -119,7 +119,7 @@ class TableContainer extends Component<{}, TableState> {
 
     // send request
     console.log("<TableComponent> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-    const data = {"filepath": file.path};
+    const data = { "filepath": file.path };
     try {
       await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
       console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
@@ -130,7 +130,7 @@ class TableContainer extends Component<{}, TableState> {
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-    } catch(error) {
+    } catch ( error ) {
       error.errorDescription += "\n\nCannot open file!";
       this.setState({ errorMessage: error });
     } finally {
@@ -174,13 +174,13 @@ class TableContainer extends Component<{}, TableState> {
       saveFiles.changeSheet(sheetName);
       console.log("<TableComponent> <- %c/change_sheet%c with:", LOG.link, LOG.default);
 
-      if (wikiStore.yaml.yamlContent) {
+      if ( wikiStore.yaml.yamlContent ) {
         wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
       } else {
         wikiStore.table.isCellSelectable = false;
       }
-    } catch (error) {
+    } catch ( error ) {
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
     }
@@ -198,10 +198,27 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
   }
- 
+
   toggleAnnotationMode() {
     const { annotationMode } = this.state;
-    this.setState({annotationMode: !annotationMode});
+    if (!annotationMode){
+      this.fetchAnnotations()
+    }
+    this.setState({ annotationMode: !annotationMode });
+  }
+
+  async fetchAnnotations() {
+    
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.getAnnotationBlocks(
+          wikiStore.projects.current!.folder,
+        )
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot fetch annotations!";
+      this.setState({ errorMessage: error });
+    }
   }
 
   renderErrorMessage() {
@@ -218,7 +235,7 @@ class TableContainer extends Component<{}, TableState> {
     return (
       <div style={{ width: "calc(100% - 350px)", cursor: "default" }}
         className="text-white font-weight-bold d-inline-block text-truncate">
-        {filename ? (
+        { filename ? (
           <span>
             {filename}
             <span style={{ opacity: "0.5", paddingLeft: "5px" }}>
@@ -296,15 +313,8 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderTable() {
-      if (this.state.annotationMode) {
-        return (
-            <AnnotationTable />
-        );
-      } else {
-          return (
-              <OutputTable />
-          );
-      }
+    const { annotationMode } = this.state;
+    return annotationMode ? <AnnotationTable /> : <OutputTable />;
   }
 
   renderLegend() {
@@ -313,7 +323,6 @@ class TableContainer extends Component<{}, TableState> {
       <TableLegend offset={multipleSheets} />
     )
   }
-
 
   renderSheetSelector() {
     const { currSheetName, sheetNames } = this.state;

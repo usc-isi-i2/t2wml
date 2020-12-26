@@ -138,7 +138,7 @@ export type AnnotationBlockType = "Monolingual String" | "String" | "Quantity" |
 export interface AnnotationBlock{
     selections: CellSelection[];
     role: AnnotationBlockRole;
-    type?: AnnotationBlockType; 
+    type?: AnnotationBlockType;
 
     language?: string;
 
@@ -158,5 +158,5 @@ export interface AnnotationBlock{
 
 export interface TableCell {
   content: string;
-  classNames?: string[];
+  classNames: string[];
 }

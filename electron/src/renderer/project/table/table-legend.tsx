@@ -14,6 +14,7 @@ interface LegendEntry {
   className: string;
 }
 
+
 const LEGEND = [{
   label: 'qnode',
   className: 'type-qnode',
