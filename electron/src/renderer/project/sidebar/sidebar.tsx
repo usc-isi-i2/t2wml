@@ -124,7 +124,8 @@ class Sidebar extends Component<{}, SidebarState> {
         await wikiStore.yaml.saveYaml();
 
         saveFiles.changeDataFile(fileName);
-        //todo: update data file in table viewer
+
+        await this.requestService.getYamlCalculation(saveFiles.currentState);
     }
 
     getFilesData() {

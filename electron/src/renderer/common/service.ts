@@ -1,12 +1,12 @@
 import { action } from 'mobx';
 import wikiStore from '../data/store';
-import { saveFiles } from '../project/save-files';
+import { saveFiles, StateParams, CurrentFiles } from '../project/save-files';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithTableandMaybeYamlDTO, ResponseWithProjectDTO, ResponseWithAnnotationsDTO,
    UploadEntitiesDTO, CallWikifierServiceDTO, ResponseWithLayersDTO,
 } from './dtos';
-import { Cell, ErrorMessage } from './general';
+import { ErrorMessage } from './general';
 
 
 export interface IStateWithError {
@@ -16,6 +16,11 @@ export interface IStateWithError {
 
 class StoreFiller {
   //I have created this class to setion off all the filling functions, which were seriously cluttering up service
+  public fillProject(response: ResponseWithProjectDTO) {
+    wikiStore.projects.projectDTO = response.project;
+    saveFiles.getFiles(response.project);
+  }
+  
   @action
   public fillTableAndLayers(response: ResponseWithTableandMaybeYamlDTO){
     wikiStore.table.table = response.table;
@@ -28,7 +33,7 @@ class StoreFiller {
 
   @action
   public fillProjectLayersYaml(response: ResponseWithTableandMaybeYamlDTO) {
-    // wikiStore.projects.projectDTO = response.project;
+    wikiStore.projects.projectDTO = response.project;
     saveFiles.getFiles(response.project);
     this.fillTableAndLayers(response);
   }
@@ -61,6 +66,17 @@ class StoreFiller {
 
 class RequestService {
   storeFiller = new StoreFiller();
+
+  public getStateParams(params: StateParams) {
+    let url = `project_folder=${params.directory}&data_file=${params.dataFile}&sheet_name=${params.sheetName}`;
+    if (params.yamlFile) {
+      url += `&yaml_file=${params.yamlFile}`;
+    }
+    if (params.annotationFile) {
+      url += `&annotation_file=${params.annotationFile}`;
+    }
+    return url;
+  }
 
   public async getAnnotationBlocks(folder: string) {
     const response = await backendGet(`/annotation?project_folder=${folder}`) as ResponseWithAnnotationsDTO;
@@ -111,6 +127,17 @@ class RequestService {
 
   public async getProject(folder: string) {
     const response = await backendGet(`/project?project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
+    this.storeFiller.fillProject(response);
+  }
+
+  public async getYamlCalculation(params: CurrentFiles) {
+    const stateParams = {...params, directory: wikiStore.projects.projectDTO?.directory} as StateParams;
+    const response = await backendGet(`/calculation/yaml?${this.getStateParams(stateParams)}`) as ResponseWithTableandMaybeYamlDTO;
+    this.storeFiller.fillProjectLayersYaml(response);
+  }
+
+  public async getAnnotationCalculation(params: StateParams) {
+    const response = await backendGet(`/calculation/annotation?${this.getStateParams(params)}`) as ResponseWithTableandMaybeYamlDTO;
     this.storeFiller.fillProjectLayersYaml(response);
   }
 

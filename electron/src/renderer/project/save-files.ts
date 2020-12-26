@@ -1,5 +1,6 @@
 // import * as os from 'os';
 import * as fs from 'fs';
+import { action } from 'mobx';
 import { ProjectDTO } from '../common/dtos';
 import wikiStore from '../data/store';
 
@@ -8,11 +9,16 @@ interface Data {
     prevSelections: any;
 }
 
-interface CurrentFiles {
+export interface CurrentFiles {
     dataFile: string;
 	sheetName: string;
 	yamlFile: string | undefined;
 	annotationFile: string | undefined;
+}
+
+// send these params to the backend when asking project data
+export interface StateParams extends CurrentFiles {
+    directory: string;
 }
 
 const filename = 't2wmlproj.user.json';
@@ -170,8 +176,8 @@ export class SaveFiles implements Data {
     saveFiles(directory: string) {
         const path = `${directory}/${filename}`;
         fs.writeFileSync(path, JSON.stringify({
-            'current state': this.currentState,
-            // 'previous selections': this.prevSelections,
+            'currentState': this.currentState,
+            // 'previousSelections': this.prevSelections,
         }));
     }
 
