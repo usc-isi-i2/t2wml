@@ -25,7 +25,7 @@ class StoreFiller {
   }
 
   public fillProjectLayersYaml(response: ResponseWithTableandMaybeYamlDTO) {
-    wikiStore.projects.projectDTO = response.project;
+    // wikiStore.projects.projectDTO = response.project;
     saveFiles.getFiles(response.project);
     this.fillTableAndLayers(response);
   }
@@ -36,15 +36,15 @@ class StoreFiller {
     wikiStore.yaml.yamlError = response.yamlError;
   }
 
-  public fillChangeDataFile(response: ResponseWithTableandMaybeYamlDTO) {
-    // don't change project when changing file in file tree
-    wikiStore.projects.projectDTO!._saved_state = response.project._saved_state;
+  // public fillChangeDataFile(response: ResponseWithTableandMaybeYamlDTO) {
+  //   // don't change project when changing file in file tree
+  //   wikiStore.projects.projectDTO!._saved_state = response.project._saved_state;
 
-    this.fillTableAndLayers(response);
+  //   this.fillTableAndLayers(response);
 
-    // clear output window
-    wikiStore.table.selectedCell = new Cell();
-  }
+  //   // clear output window
+  //   wikiStore.table.selectedCell = new Cell();
+  // }
 
   public fillAnnotations(response: ResponseWithAnnotationsDTO){
     wikiStore.yaml.yamlContent = response.yamlContent;
@@ -78,15 +78,15 @@ class RequestService {
     this.storeFiller.fillProjectLayersYaml(response);
   }
 
-  public async changeSheet(folder: string, sheetName: string) {
-    const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
-    this.storeFiller.fillProjectLayersYaml(response);
-  }
+  // public async changeSheet(folder: string, sheetName: string) {
+  //   const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
+  //   this.storeFiller.fillProjectLayersYaml(response);
+  // }
 
-  public async changeDataFile(dataFileName: string, folder: string) {
-    const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
-    this.storeFiller.fillProjectLayersYaml(response);
-  }
+  // public async changeDataFile(dataFileName: string, folder: string) {
+  //   const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
+  //   this.storeFiller.fillProjectLayersYaml(response);
+  // }
 
   public async uploadWikifierOutput(folder: string, data: any) {
     const response = await backendPost(`/wikifier?project_folder=${folder}`, data) as ResponseWithLayersDTO;
@@ -148,10 +148,10 @@ class RequestService {
     wikiStore.projects.projectDTO = response.project;
   }
 
-  public async changeYaml(folder: string, filename: string) {
-    const response = await backendGet(`yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithTableandMaybeYamlDTO;
-    this.storeFiller.fillProjectLayersYaml(response);
-  }
+  // public async changeYaml(folder: string, filename: string) {
+  //   const response = await backendGet(`yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithTableandMaybeYamlDTO;
+  //   this.storeFiller.fillProjectLayersYaml(response);
+  // }
 
   public async call<IProp, IState extends IStateWithError, ReturnValue >(
     component: React.Component<IProp, IState>,

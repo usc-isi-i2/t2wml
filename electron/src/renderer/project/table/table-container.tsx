@@ -191,9 +191,9 @@ class TableContainer extends Component<{}, TableState> {
   updateProjectInfo() {
     if ( wikiStore.projects.projectDTO ) {
       const project = wikiStore.projects.projectDTO;
-      const filename = project._saved_state.current_data_file;
+      const filename = saveFiles.currentState.dataFile;
       const sheetNames = project.data_files[filename].val_arr;
-      const currSheetName = project._saved_state.current_sheet;
+      const currSheetName = saveFiles.currentState.sheetName;
       const multipleSheets = sheetNames && sheetNames.length > 1;
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }

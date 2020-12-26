@@ -4,13 +4,6 @@
 
 import { CellSelection } from "./general";
 
-interface SavedStateDTO {
-    current_data_file: string;
-    current_sheet: string;
-    current_wikifiers: string[];
-    current_yaml: string;
- }
-
  interface CurrentAndArrayDTO{
      selected: string,
      val_arr: string[]
@@ -32,7 +25,6 @@ export interface ProjectDTO {
     datamart_api: string;
     handle_calendar: string;
     cache_id: string;
-    _saved_state: SavedStateDTO;
 }
 
 export interface ResponseWithProjectDTO {

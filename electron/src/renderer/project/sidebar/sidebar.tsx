@@ -124,6 +124,7 @@ class Sidebar extends Component<{}, SidebarState> {
         await wikiStore.yaml.saveYaml();
 
         saveFiles.changeDataFile(fileName);
+        //todo: update data file in table viewer
     }
 
     getFilesData() {
@@ -140,7 +141,7 @@ class Sidebar extends Component<{}, SidebarState> {
             this.setState({data: data});
 
             if (dataFiles.length) {
-                const currentNode = dataFiles.find(n => n.name === wikiStore.projects.projectDTO!._saved_state.current_data_file)
+                const currentNode = dataFiles.find(n => n.name === saveFiles.currentState.dataFile)
                 this.onToggle(currentNode);
             }
         }

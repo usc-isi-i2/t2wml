@@ -89,11 +89,15 @@ export class SaveFiles implements Data {
 
     changeSheet(newSheet: string) {
         const project = wikiStore.projects.projectDTO!;
-        const dataFile = this.currentState.dataFile;
-        if (project.data_files[dataFile].val_arr.indexOf(newSheet) < 0) {
-            console.error(`${newSheet} sheet not exist in ${dataFile} data file`);
-            return;
+        // If this sheet is not part of current datafile, search the relevant data file.
+        if (project.data_files[this.currentState.dataFile].val_arr.indexOf(newSheet) < 0) {
+            for (const df of Object.keys(project.data_files)) {
+                if (project.data_files[df].val_arr.indexOf(newSheet) > -1) {
+                    this.currentState.dataFile = df;
+                }
+            }
         }
+        const dataFile = this.currentState.dataFile;
         this.currentState.sheetName = newSheet;
         if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][newSheet]) {
             this.currentState.yamlFile = project.yaml_sheet_associations[dataFile][newSheet].val_arr[0];
@@ -106,6 +110,60 @@ export class SaveFiles implements Data {
             this.currentState.annotationFile = undefined;
         }
 
+        this.saveFiles(project.directory);
+    }
+
+    changeYaml(newYaml: string) {
+        const project = wikiStore.projects.projectDTO!;
+        // If this yaml is not part of current datafile, search the relevant data file and sheet.
+        if (project.yaml_sheet_associations[this.currentState.dataFile][this.currentState.sheetName].val_arr.indexOf(newYaml) < 0) {
+            for (const df of Object.keys(project.yaml_sheet_associations)) {
+                for (const sheet of Object.keys(project.yaml_sheet_associations[df])) {
+                    if (project.yaml_sheet_associations[df][sheet].val_arr.indexOf(newYaml) > -1) {
+                        this.currentState.dataFile = df;
+                        this.currentState.sheetName = sheet;
+                    }
+                }
+            }
+        }
+
+        this.currentState.yamlFile = newYaml;
+        const dataFile = this.currentState.dataFile;
+        const sheet = this.currentState.sheetName;
+        
+        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
+            this.currentState.annotationFile = project.annotations[dataFile][sheet].val_arr[0];
+        } else {
+            this.currentState.annotationFile = undefined;
+        }
+
+        this.saveFiles(project.directory);
+    }
+
+    changeAnnotation(newAnnotation: string) {
+        const project = wikiStore.projects.projectDTO!;
+        // If this yaml is not part of current datafile, search the relevant data file and sheet.
+        if (project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr.indexOf(newAnnotation) < 0) {
+            for (const df of Object.keys(project.annotations)) {
+                for (const sheet of Object.keys(project.annotations[df])) {
+                    if (project.annotations[df][sheet].val_arr.indexOf(newAnnotation) > -1) {
+                        this.currentState.dataFile = df;
+                        this.currentState.sheetName = sheet;
+                    }
+                }
+            }
+        }
+
+        this.currentState.annotationFile = newAnnotation;
+        const dataFile = this.currentState.dataFile;
+        const sheet = this.currentState.sheetName;
+        
+        if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][sheet]) {
+            this.currentState.yamlFile = project.yaml_sheet_associations[dataFile][sheet].val_arr[0];
+        } else {
+            this.currentState.yamlFile = undefined;
+        }
+        
         this.saveFiles(project.directory);
     }
 
