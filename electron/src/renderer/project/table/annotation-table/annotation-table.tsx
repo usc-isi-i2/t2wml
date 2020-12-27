@@ -13,7 +13,7 @@ import RequestService from '@/renderer/common/service';
 
 
 interface TableState {
-  tableData: TableCell[][];
+  tableData: TableCell[][] | undefined;
   showAnnotationMenu: boolean,
   annotationMenuPosition?: Array<number>,
   selectedAnnotationBlock?: AnnotationBlock,
@@ -151,7 +151,7 @@ class AnnotationTable extends Component<{}, TableState> {
                     const cell = tableData[row - 1][col - 1];
                     cell.classNames = classNames;
                   }
-                  catch{
+                  catch {
                     console.log(row, col, tableData, classNames)
 
                   }
@@ -190,43 +190,45 @@ class AnnotationTable extends Component<{}, TableState> {
 
   deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
-    for (const selection of block.selections) {
-      const { x1, y1, x2, y2 } = selection;
-      if (y1 <= y2) {
-        if (x1 <= x2) {
-          for (let row = y1; row <= y2; row++) {
-            for (let col = x1; col <= x2; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
+    if (tableData) {
+      for (const selection of block.selections) {
+        const { x1, y1, x2, y2 } = selection;
+        if (y1 <= y2) {
+          if (x1 <= x2) {
+            for (let row = y1; row <= y2; row++) {
+              for (let col = x1; col <= x2; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
+            }
+          } else {
+            for (let row = y1; row <= y2; row++) {
+              for (let col = x2; col <= x1; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
             }
           }
         } else {
-          for (let row = y1; row <= y2; row++) {
-            for (let col = x2; col <= x1; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
+          if (x1 <= x2) {
+            for (let row = y2; row <= y1; row++) {
+              for (let col = x1; col <= x2; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
             }
-          }
-        }
-      } else {
-        if (x1 <= x2) {
-          for (let row = y2; row <= y1; row++) {
-            for (let col = x1; col <= x2; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
-            }
-          }
-        } else {
-          for (let row = y2; row <= y1; row++) {
-            for (let col = x2; col <= x1; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
+          } else {
+            for (let row = y2; row <= y1; row++) {
+              for (let col = x2; col <= x1; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
             }
           }
         }
       }
+      this.setState({ tableData });
     }
-    this.setState({ tableData });
   }
 
   resetSelections() {

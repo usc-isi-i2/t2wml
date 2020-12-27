@@ -8,7 +8,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
-import { QNode, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
+import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
 import TableToast from '../table-toast';
 import * as utils from '../table-utils';
 
@@ -24,7 +24,7 @@ interface TableState {
 class OutputTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
   setTableReference(reference?: HTMLTableElement) {
-    if ( !reference ) { return; }
+    if (!reference) { return; }
     this.tableRef = reference;
   }
 
@@ -45,7 +45,8 @@ class OutputTable extends Component<{}, TableState> {
     this.updateTableData(wikiStore.table.table);
     document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-    this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)));
+    this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)))
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.colorCellsByType(qnodes)));
   }
 
   componentWillUnmount() {
@@ -55,14 +56,54 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
+  colorQnodeCells(qnodes: Layer<QNodeEntry>) {
+    const { tableData } = this.state;
+    if (!tableData) {
+      return;
+    }
+
+    //clear any existing qnode coloration
+    const table = this.tableRef;
+    if (table) {
+      table.querySelectorAll('td').forEach(e => {
+        e.classList.forEach(className => {
+          if (className.startsWith('type-qNode')) {
+            e.classList.remove(className);
+          }
+        });
+      });
+    }
+
+    for (const entry of qnodes.entries) {
+      for (const indexPair of entry.indices) {
+        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.classNames.push(`type-qNode`)
+      }
+    }
+    this.setState({ tableData });
+  }
+
   colorCellsByType(types: Layer<TypeEntry>) {
     const { tableData } = this.state;
     if (!tableData) {
       return;
     }
 
-    for ( const entry of types.entries ) {
-      for ( const indexPair of entry.indices ) {
+    //clear any existing type coloration
+    const table = this.tableRef;
+    if (table) {
+      table.querySelectorAll('td').forEach(e => {
+        e.classList.forEach(className => {
+          if (className.startsWith('role')) {
+            e.classList.remove(className);
+          }
+        });
+      });
+    }
+
+
+    for (const entry of types.entries) {
+      for (const indexPair of entry.indices) {
         const tableCell = tableData[indexPair[0]][indexPair[1]];
         tableCell.classNames.push(`role-${entry.type}`)
       }
@@ -70,15 +111,22 @@ class OutputTable extends Component<{}, TableState> {
     this.setState({ tableData });
   }
 
+  toggleCleanedData(){
+    const { tableData } = this.state;
+    if (!tableData) {
+      return;
+    }
+  }
+
   updateTableData(table?: TableDTO) {
-    if ( !table || !table.cells ) {
+    if (!table || !table.cells) {
       this.setState({ tableData: undefined });
       return;
     }
     const tableData = [];
-    for ( let i = 0; i < table.cells.length; i++ ) {
+    for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
-      for ( let j = 0; j < table.cells[i].length; j++ ) {
+      for (let j = 0; j < table.cells[i].length; j++) {
         const cell: TableCell = {
           content: table.cells[i][j],
           classNames: [],
@@ -89,6 +137,7 @@ class OutputTable extends Component<{}, TableState> {
     }
     this.setState({ tableData }, () => {
       this.colorCellsByType(wikiStore.layers.type);
+      this.colorQnodeCells(wikiStore.layers.qnode);
     });
   }
 
@@ -127,16 +176,16 @@ class OutputTable extends Component<{}, TableState> {
     wikiStore.table.selectedCell = selectedCell;
 
     const statement = wikiStore.layers.statement.find(selectedCell);
-    if ( !statement || !statement.cells ) { return; }
+    if (!statement || !statement.cells) { return; }
 
     // Get a reference to the table elements
     const table: any = this.tableRef;
     const rows = table!.querySelectorAll('tr');
 
     // Select qualifier cells
-    if ( 'qualifiers' in statement.cells ) {
+    if ('qualifiers' in statement.cells) {
       statement.cells.qualifiers.forEach((cell: any) => {
-        if ( cell.qualifier ) {
+        if (cell.qualifier) {
           const y = cell.qualifier[0];
           const x = cell.qualifier[1];
           const tableCell = rows[y + 1].children[x + 1];
@@ -146,7 +195,7 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     // Select the cell with the main-subject
-    if ( 'mainSubject' in statement.cells ) {
+    if ('mainSubject' in statement.cells) {
       const y = statement.cells.subject[0];
       const x = statement.cells.subject[1];
       const cell = rows[y + 1].children[x + 1];
@@ -154,7 +203,7 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     // Select the cell with the property
-    if ( 'property' in statement.cells ) {
+    if ('property' in statement.cells) {
       const y = statement.cells.property[0];
       const x = statement.cells.property[1];
       const cell = rows[y + 1].children[x + 1];
@@ -164,10 +213,10 @@ class OutputTable extends Component<{}, TableState> {
 
   resetSelections() {
     const table = this.tableRef;
-    if ( table ) {
+    if (table) {
       table.querySelectorAll('td[class*="active"]').forEach(e => {
         e.classList.forEach(className => {
-          if ( className.startsWith('active') ) {
+          if (className.startsWith('active')) {
             e.classList.remove(className);
           }
         });
@@ -210,16 +259,16 @@ class OutputTable extends Component<{}, TableState> {
 
   handleOnKeyDown(event: KeyboardEvent) {
     const { selectedCell } = this.state;
-    if ( !selectedCell ) { return; }
+    if (!selectedCell) { return; }
 
     // Hide table toast with ESC key
-    if ( event.keyCode == 27 ) {
-      this.setState({showToast: false}, () => {
+    if (event.keyCode == 27) {
+      this.setState({ showToast: false }, () => {
         this.resetSelections();
       });
     }
 
-    if ( [37, 38, 39, 40].includes(event.keyCode) ) {
+    if ([37, 38, 39, 40].includes(event.keyCode)) {
       event.preventDefault();
 
       const table: any = this.tableRef;
@@ -227,33 +276,33 @@ class OutputTable extends Component<{}, TableState> {
       let { row, col } = selectedCell;
 
       // arrow up
-      if ( event.keyCode == 38 ) {
+      if (event.keyCode == 38) {
         row = row - 1;
-        if ( row < 0 ) { return; }
+        if (row < 0) { return; }
       }
 
       // arrow down
-      if ( event.keyCode == 40 ) {
+      if (event.keyCode == 40) {
         row = row + 1;
-        if ( row >= rows.length - 1 ) { return; }
+        if (row >= rows.length - 1) { return; }
       }
 
       // arrow left
-      if ( event.keyCode == 37 ) {
+      if (event.keyCode == 37) {
         col = col - 1;
-        if ( col < 0 ) { return; }
+        if (col < 0) { return; }
       }
 
       // arrow right
-      if ( event.keyCode == 39 ) {
+      if (event.keyCode == 39) {
         col = col + 1;
-        if ( col >= rows[row].children.length - 1 ) { return; }
+        if (col >= rows[row].children.length - 1) { return; }
       }
 
       this.resetSelections();
-      const nextElement = rows[row+1].children[col+1];
+      const nextElement = rows[row + 1].children[col + 1];
       this.selectCell(nextElement);
-      this.selectRelatedCells(row+1, col+1);
+      this.selectRelatedCells(row + 1, col + 1);
     }
   }
 
@@ -263,7 +312,7 @@ class OutputTable extends Component<{}, TableState> {
 
   renderToast() {
     const { selectedCell, showToast } = this.state;
-    if ( selectedCell && showToast ) {
+    if (selectedCell && showToast) {
       let text = 'Selected:';
       const selection: CellSelection = {
         x1: selectedCell.col,
