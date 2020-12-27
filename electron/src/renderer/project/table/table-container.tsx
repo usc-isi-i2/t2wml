@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { AnnotationBlock, TableDTO } from '../../common/dtos';
+import { AnnotationBlock } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -166,7 +166,7 @@ class TableContainer extends Component<{}, TableState> {
     try {
       // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       saveFiles.changeSheet(sheetName);
-      await this.requestService.getYamlCalculation(saveFiles.currentState);
+      await this.requestService.getYamlCalculation();
 
       if ( wikiStore.yaml.yamlContent ) {
         wikiStore.table.isCellSelectable = true;

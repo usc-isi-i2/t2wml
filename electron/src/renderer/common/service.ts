@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import wikiStore from '../data/store';
-import { saveFiles, StateParams, CurrentFiles } from '../project/save-files';
+import { saveFiles, StateParams } from '../project/save-files';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithTableandMaybeYamlDTO, ResponseWithProjectDTO, ResponseWithAnnotationsDTO,
@@ -67,7 +67,12 @@ class StoreFiller {
 class RequestService {
   storeFiller = new StoreFiller();
 
-  public getStateParams(params: StateParams) {
+  public getStateParams() {
+    if (!wikiStore.projects.projectDTO || !wikiStore.projects.projectDTO!.directory) {
+      console.error("There is no project directory!");
+      return;
+    }
+    const params = {...saveFiles.currentState, directory: wikiStore.projects.projectDTO!.directory} as StateParams;
     let url = `project_folder=${params.directory}&data_file=${params.dataFile}&sheet_name=${params.sheetName}`;
     if (params.yamlFile) {
       url += `&yaml_file=${params.yamlFile}`;
@@ -83,8 +88,8 @@ class RequestService {
     this.storeFiller.fillAnnotations(response)
   }
 
-  public async postAnnotationBlocks(folder: string, data: any) {
-    const response = await backendPost(`/annotation?project_folder=${folder}`, data) as ResponseWithAnnotationsDTO;
+  public async postAnnotationBlocks(data: any) {
+    const response = await backendPost(`/annotation?${this.getStateParams()}`, data) as ResponseWithAnnotationsDTO;
     this.storeFiller.fillAnnotations(response)
   }
 
@@ -99,16 +104,6 @@ class RequestService {
     this.storeFiller.fillProjectLayersYaml(response);
   }
 
-  // public async changeSheet(folder: string, sheetName: string) {
-  //   const response = await backendGet(`/data/${sheetName}?project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
-  //   this.storeFiller.fillProjectLayersYaml(response);
-  // }
-
-  // public async changeDataFile(dataFileName: string, folder: string) {
-  //   const response = await backendGet(`/data/change_data_file?data_file=${dataFileName}&project_folder=${folder}`) as ResponseWithTableandMaybeYamlDTO;
-  //   this.storeFiller.fillProjectLayersYaml(response);
-  // }
-
   public async uploadWikifierOutput(folder: string, data: any) {
     const response = await backendPost(`/wikifier?project_folder=${folder}`, data) as ResponseWithLayersDTO;
     this.storeFiller.fillProjectAndLayers(response);
@@ -119,8 +114,8 @@ class RequestService {
     this.storeFiller.fillProjectAndLayers(response);
   }
 
-  public async callWikifierService(folder: string, data: any) {
-    const response = await backendPost(`/wikifier_service?project_folder=${folder}`, data) as CallWikifierServiceDTO;
+  public async callWikifierService(data: any) {
+    const response = await backendPost(`/wikifier_service?${this.getStateParams()}`, data) as CallWikifierServiceDTO;
     this.storeFiller.fillProjectAndLayers(response);
     wikiStore.wikifier.wikifierError = response.wikifierError;
   }
@@ -130,14 +125,13 @@ class RequestService {
     this.storeFiller.fillProject(response);
   }
 
-  public async getYamlCalculation(params: CurrentFiles) {
-    const stateParams = {...params, directory: wikiStore.projects.projectDTO?.directory} as StateParams;
-    const response = await backendGet(`/calculation/yaml?${this.getStateParams(stateParams)}`) as ResponseWithTableandMaybeYamlDTO;
+  public async getYamlCalculation() {
+    const response = await backendGet(`/calculation/yaml?${this.getStateParams()}`) as ResponseWithTableandMaybeYamlDTO;
     this.storeFiller.fillProjectLayersYaml(response);
   }
 
-  public async getAnnotationCalculation(params: StateParams) {
-    const response = await backendGet(`/calculation/annotation?${this.getStateParams(params)}`) as ResponseWithTableandMaybeYamlDTO;
+  public async getAnnotationCalculation() {
+    const response = await backendGet(`/calculation/annotation?${this.getStateParams()}`) as ResponseWithTableandMaybeYamlDTO;
     this.storeFiller.fillProjectLayersYaml(response);
   }
 
@@ -159,14 +153,14 @@ class RequestService {
     wikiStore.wikifier.entitiesStats = response.entitiesStats;
   }
 
-  public async downloadResults(folder: string, fileType: string) {
+  public async downloadResults(fileType: string) {
     //returns "data" (the download), "error": None, and "internalErrors"
-    const response = await backendGet(`/project/download/${fileType}?project_folder=${folder}`);
+    const response = await backendGet(`/project/download/${fileType}?${this.getStateParams()}`);
     return response;
   }
 
-  public async loadToDatamart(folder: string) {
-    const response = await backendGet(`/project/datamart?project_folder=${folder}`);
+  public async loadToDatamart() {
+    const response = await backendGet(`/project/datamart?${this.getStateParams()}`);
     return response;
   }
 
@@ -175,15 +169,10 @@ class RequestService {
     wikiStore.projects.projectDTO = response.project;
   }
 
-  public async saveYaml(folder: string, data: any) {
-    const response = await backendPost(`/yaml/save?project_folder=${folder}`, data) as ResponseWithProjectDTO;
+  public async saveYaml(data: any) {
+    const response = await backendPost(`/yaml/save?${this.getStateParams()}`, data) as ResponseWithProjectDTO;
     wikiStore.projects.projectDTO = response.project;
   }
-
-  // public async changeYaml(folder: string, filename: string) {
-  //   const response = await backendGet(`yaml/change?project_folder=${folder}&yaml_file=${filename}`) as ResponseWithTableandMaybeYamlDTO;
-  //   this.storeFiller.fillProjectLayersYaml(response);
-  // }
 
   public async call<IProp, IState extends IStateWithError, ReturnValue >(
     component: React.Component<IProp, IState>,

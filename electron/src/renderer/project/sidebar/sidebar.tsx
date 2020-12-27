@@ -125,7 +125,7 @@ class Sidebar extends Component<{}, SidebarState> {
 
         saveFiles.changeDataFile(fileName);
 
-        await this.requestService.getYamlCalculation(saveFiles.currentState);
+        await this.requestService.getYamlCalculation();
     }
 
     getFilesData() {

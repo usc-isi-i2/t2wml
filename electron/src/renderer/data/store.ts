@@ -84,7 +84,7 @@ class YamlEditorState {
                       "sheetName": saveFiles.currentState.sheetName};
 
         try {
-            await this.requestService.saveYaml(wikiStore.projects.current!.folder, data);
+            await this.requestService.saveYaml(data);
 
             // follow-ups (success)
             wikiStore.output.isDownloadDisabled = false;

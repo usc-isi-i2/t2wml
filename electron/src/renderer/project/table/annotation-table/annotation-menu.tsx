@@ -83,7 +83,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     try {
       await this.requestService.call(this, () => (
         this.requestService.postAnnotationBlocks(
-          wikiStore.projects.current!.folder,
           { 'annotations': annotations }
         )
       ));

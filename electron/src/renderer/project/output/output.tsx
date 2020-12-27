@@ -65,10 +65,6 @@ class Output extends Component<{}, OutputComponentState> {
     }
   }
 
-  private get projectPath() {
-    return wikiStore.projects.current!.folder;
-  }
-
   async handleDoDownload(fileName: string, fileType: string) {
     const filename = fileName + "." + fileType;
 
@@ -79,7 +75,7 @@ class Output extends Component<{}, OutputComponentState> {
     console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
 
     try {
-      const json = await this.requestService.call(this, () => this.requestService.downloadResults(this.projectPath, fileType));
+      const json = await this.requestService.call(this, () => this.requestService.downloadResults(fileType));
       console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
       console.log(json);
 
@@ -149,7 +145,7 @@ class Output extends Component<{}, OutputComponentState> {
     this.setState({ isLoadDatamart: true });
     console.log("Load to Datamart");
     try {
-      const json = await this.requestService.call(this, () => this.requestService.loadToDatamart(this.projectPath))
+      const json = await this.requestService.call(this, () => this.requestService.loadToDatamart())
       console.log(json);
       const { datamart_get_url, description } = json;
       if (datamart_get_url !== undefined) {

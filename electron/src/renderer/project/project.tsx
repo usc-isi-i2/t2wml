@@ -26,7 +26,6 @@ import { IpcRendererEvent } from 'electron/renderer';
 import Sidebar from './sidebar/sidebar';
 import { IReactionDisposer, reaction } from 'mobx';
 import TableContainer from './table/table-container';
-import { saveFiles, StateParams } from './save-files';
 
 
 interface ProjectState extends IStateWithError {
@@ -126,7 +125,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     console.debug('Refreshing project ', this.props.path);
     try {
       await this.requestService.call(this, () => this.requestService.getProject(this.props.path));
-      await this.requestService.call(this, () => this.requestService.getYamlCalculation(saveFiles.currentState));
+      await this.requestService.call(this, () => this.requestService.getYamlCalculation());
       
       document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
       this.setState({ name: wikiStore.projects.projectDTO!.title });
