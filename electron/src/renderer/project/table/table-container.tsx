@@ -91,18 +91,12 @@ class TableContainer extends Component<{}, TableState> {
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
-    this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.showCleanedData()));
   }
 
   componentWillUnmount() {
     for ( const disposer of this.disposers ) {
       disposer();
     }
-  }
-
-  showCleanedData() {
-    const { showCleanedData } = this.state;
-    this.setState({ showCleanedData: !showCleanedData });
   }
 
   async handleOpenTableFile(event: ChangeEvent) {
@@ -206,7 +200,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async fetchAnnotations() {
-    
+
     try {
       await this.requestService.call(this, () => (
         this.requestService.getAnnotationBlocks(
