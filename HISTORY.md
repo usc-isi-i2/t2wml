@@ -7,7 +7,7 @@ Changes in version 2.5.0:
 * Major new feature: UI support for user annotations. For now only a single annotation per sheet is supported.
 * Various minor UI features accompany the main one, for example it is now possible to scroll through the table with the arrow keys 
 * table separated into multiple table components
-* 'add t2wml to PATH' menu item added in help menu. once invoked, you can run t2wml from the command line, and if you pass it a directory argument (including . for current directory, or relative paths from current directory) t2wml will either create a project for that directory or open an existing project if there is one
+* 'add t2wml to PATH' menu item added in help menu. once invoked, you can run t2wml from the command line, and if you pass it a directory argument (including . for current directory, or relative paths from current directory) t2wml will either create a project for that directory or open an existing project if there is one. please note that linux and windows machines may require user to log out and log back in to register the change to path.
 * fixed bug where it was impossible to have an empty yaml
 
 Some known bugs related to the major changes that we are already aware of and plan on fixing in the next release:
@@ -15,7 +15,7 @@ Some known bugs related to the major changes that we are already aware of and pl
 * we removed some of the yaml switching functionality (eg the plus button for adding a new, empty yaml)
 * annotations over empty cells outside of the boundaries of the data (ie at edges of spreadsheet) do weird things
 
-The next release is planned to include a complete overhaul of the file management and mode switching, which is we decided not to delay this release over these issues.
+The next release is planned to include a complete overhaul of the file management and mode switching, which is why we decided not to delay this release over these issues.
 
 
 Changes in version 2.4.1: 
