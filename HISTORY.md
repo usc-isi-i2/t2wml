@@ -1,6 +1,23 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.5.0:
+-----------------------
+* t2wml-api version 0.0.20
+* Major new feature: UI support for user annotations. For now only a single annotation per sheet is supported.
+* Various minor UI features accompany the main one, for example it is now possible to scroll through the table with the arrow keys 
+* table separated into multiple table components
+* 'add t2wml to PATH' menu item added in help menu. once invoked, you can run t2wml from the command line, and if you pass it a directory argument (including . for current directory, or relative paths from current directory) t2wml will either create a project for that directory or open an existing project if there is one
+* fixed bug where it was impossible to have an empty yaml
+
+Some known bugs related to the major changes that we are already aware of and plan on fixing in the next release:
+* when switching between annotation and regular mode, the regular mode yaml will be applied, but the content in the yaml window will not be updated. 
+* we removed some of the yaml switching functionality (eg the plus button for adding a new, empty yaml)
+* annotations over empty cells outside of the boundaries of the data (ie at edges of spreadsheet) do weird things
+
+The next release is planned to include a complete overhaul of the file management and mode switching, which is we decided not to delay this release over these issues.
+
+
 Changes in version 2.4.1: 
 -----------------------
 * t2wml-api version 0.0.19
