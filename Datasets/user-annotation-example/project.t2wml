@@ -1,0 +1,32 @@
+_saved_state:
+  current_annotation: annotations/Inputs_FertilizersProduct_E.20_Inputs_FertilizersProduct_E.20.csv.json
+  current_data_file: Inputs_FertilizersProduct_E.20.csv
+  current_sheet: Inputs_FertilizersProduct_E.20.csv
+  current_wikifiers: null
+  current_yaml: Inputs_FertilizersProduct_E.20.yaml
+annotations:
+  Inputs_FertilizersProduct_E.20.csv:
+    Inputs_FertilizersProduct_E.20.csv:
+      selected: annotations/Inputs_FertilizersProduct_E.20_Inputs_FertilizersProduct_E.20.csv.json
+      val_arr:
+      - annotations/Inputs_FertilizersProduct_E.20_Inputs_FertilizersProduct_E.20.csv.json
+cache_id: 3a2ec5a4-0851-4974-b564-18abfed9c695
+data_files:
+  Inputs_FertilizersProduct_E.20.csv:
+    selected: Inputs_FertilizersProduct_E.20.csv
+    val_arr:
+    - Inputs_FertilizersProduct_E.20.csv
+entity_files: []
+handle_calendar: leave
+sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
+title: user-annotation-example
+warn_for_empty_cells: false
+wikifier_files: []
+yaml_files:
+- Inputs_FertilizersProduct_E.20.yaml
+yaml_sheet_associations:
+  Inputs_FertilizersProduct_E.20.csv:
+    Inputs_FertilizersProduct_E.20.csv:
+      selected: Inputs_FertilizersProduct_E.20.yaml
+      val_arr:
+      - Inputs_FertilizersProduct_E.20.yaml
