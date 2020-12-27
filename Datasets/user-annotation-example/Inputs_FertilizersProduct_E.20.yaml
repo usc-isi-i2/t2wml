@@ -1,0 +1,14 @@
+#AUTO-GENERATED YAML
+statementMapping:
+    region:
+        range: J2:J20
+    template:
+        subject: =value[B, $row-$n]
+        property: P1114 #(auto-suggestion) #TODO-- no property alignment found
+        value: =value[$col, $row]
+        unit: =value[I, $row-$n]
+
+        qualifier:
+            - property: P585 #(auto-suggestion) #TODO-- no property alignment found
+              value: =value[H, $row-$n]
+              format: "%Y"

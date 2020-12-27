@@ -13,7 +13,7 @@ import RequestService from '@/renderer/common/service';
 
 
 interface TableState {
-  tableData: TableCell[][];
+  tableData: TableCell[][] | undefined;
   showAnnotationMenu: boolean,
   annotationMenuPosition?: Array<number>,
   selectedAnnotationBlock?: AnnotationBlock,
@@ -43,15 +43,13 @@ class AnnotationTable extends Component<{}, TableState> {
       annotationMenuPosition: [50, 70],
       selectedAnnotationBlock: undefined,
     };
-
-    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('keydown', this.handleOnKeyDown);
+    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
@@ -59,7 +57,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleOnKeyDown);
+    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
     for (const disposer of this.disposers) {
       disposer();
     }
@@ -153,7 +151,7 @@ class AnnotationTable extends Component<{}, TableState> {
                     const cell = tableData[row - 1][col - 1];
                     cell.classNames = classNames;
                   }
-                  catch{
+                  catch {
                     console.log(row, col, tableData, classNames)
 
                   }
@@ -192,43 +190,45 @@ class AnnotationTable extends Component<{}, TableState> {
 
   deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
-    for (const selection of block.selections) {
-      const { x1, y1, x2, y2 } = selection;
-      if (y1 <= y2) {
-        if (x1 <= x2) {
-          for (let row = y1; row <= y2; row++) {
-            for (let col = x1; col <= x2; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
+    if (tableData) {
+      for (const selection of block.selections) {
+        const { x1, y1, x2, y2 } = selection;
+        if (y1 <= y2) {
+          if (x1 <= x2) {
+            for (let row = y1; row <= y2; row++) {
+              for (let col = x1; col <= x2; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
+            }
+          } else {
+            for (let row = y1; row <= y2; row++) {
+              for (let col = x2; col <= x1; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
             }
           }
         } else {
-          for (let row = y1; row <= y2; row++) {
-            for (let col = x2; col <= x1; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
+          if (x1 <= x2) {
+            for (let row = y2; row <= y1; row++) {
+              for (let col = x1; col <= x2; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
             }
-          }
-        }
-      } else {
-        if (x1 <= x2) {
-          for (let row = y2; row <= y1; row++) {
-            for (let col = x1; col <= x2; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
-            }
-          }
-        } else {
-          for (let row = y2; row <= y1; row++) {
-            for (let col = x2; col <= x1; col++) {
-              const cell = tableData[row - 1][col - 1];
-              cell.classNames = [];
+          } else {
+            for (let row = y2; row <= y1; row++) {
+              for (let col = x2; col <= x1; col++) {
+                const cell = tableData[row - 1][col - 1];
+                cell.classNames = [];
+              }
             }
           }
         }
       }
+      this.setState({ tableData });
     }
-    this.setState({ tableData });
   }
 
   resetSelections() {
