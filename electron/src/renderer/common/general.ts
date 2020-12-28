@@ -49,7 +49,8 @@ export enum t2wmlColors {
     TABLE = "#339966",
     WIKIFIER = "#006699",
     YAML = "#006699",
-    OUTPUT = "#990000"
+    OUTPUT = "#990000",
+    TREE = "#695b5a"
 }
 
 export interface CellSelection{

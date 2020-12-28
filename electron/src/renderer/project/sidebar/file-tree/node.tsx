@@ -18,19 +18,19 @@ class FileNode extends Component<Node, NodeState> {
         super(props);
     }
 
-    onNodeClicked() {
-        console.log("onNodeClicked: ", this.props.label);
+    onNodeClicked(child: React.MouseEvent) {
+        console.log("onNodeClicked: ", child.currentTarget.innerHTML);
     }
 
-    onNodeRightClick() {
-        console.log("onNodeRightClicked: ", this.props.label);
+    onNodeRightClick(child: React.MouseEvent) {
+        console.log("onNodeRightClicked: ", child.currentTarget.innerHTML);
     }
 
     renderChild(child: Node) {
         if (child.childNodes) {
             return (
                 <ul key={child.label}>
-                    <label onClick={() => this.onNodeClicked()} onContextMenu={() => this.onNodeRightClick()}>{child.label}</label>
+                    <label onClick={(child) => this.onNodeClicked(child)} onContextMenu={(child) => this.onNodeRightClick(child)}>{child.label}</label>
                     {child.childNodes.map((n: Node) => this.renderChild(n))}
                 </ul>
             )

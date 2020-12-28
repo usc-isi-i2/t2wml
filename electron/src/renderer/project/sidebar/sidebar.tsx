@@ -1,46 +1,16 @@
 import React, { Component } from 'react';
 
-import { Treebeard, TreeTheme } from 'react-treebeard';
-
 // icons
 import wikiStore from '@/renderer/data/store';
 import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '@/renderer/common/service';
-import { Spinner } from 'react-bootstrap';
+import { Card, Spinner } from 'react-bootstrap';
 import { saveFiles } from '../save-files';
 import FileTree from './file-tree/file-tree';
+import { t2wmlColors } from '@/renderer/common/general';
+import SheetSelector from '../sheet-selector/sheet-selector';
 
-// const data = {
-//     name: 'root',
-//     toggled: true,
-//     children: [
-//         {
-//             name: 'parent',
-//             children: [
-//                 { name: 'child1' },
-//                 { name: 'child2' }
-//             ]
-//         },
-//         {
-//             name: 'loading parent',
-//             loading: true,
-//             children: []
-//         },
-//         {
-//             name: 'parent',
-//             children: [
-//                 {
-//                     name: 'nested parent',
-//                     children: [
-//                         { name: 'nested child 1' },
-//                         { name: 'nested child 2' }
-//                     ]
-//                 }
-//             ]
-//         }
-//     ]
-// };
 
 // interface SidebarProperties {
 // }
@@ -51,12 +21,14 @@ interface SidebarState {
     cursor: any,
     active: boolean,
     showSpinner: boolean,
+    currFiles: string,
 }
+
+const filesTypes = ["Data Files", "Mapping", "Wikifiers"];
 
 @observer
 class Sidebar extends Component<{}, SidebarState> {
     private disposeReaction?: IReactionDisposer;
-    private fileTreeStyle: TreeTheme;
     private requestService: RequestService;
 
 
@@ -69,18 +41,8 @@ class Sidebar extends Component<{}, SidebarState> {
             cursor: {},
             active: false,
             showSpinner: false,
+            currFiles: filesTypes[0],
         } as SidebarState;
-
-        this.fileTreeStyle = {
-            tree: {
-                base: {
-                    backgroundColor: "white"
-                },
-                node: {
-                    activeLink: {
-                        background: '#DCDCDC',
-                        fontWeight: 'bold'
-                }}}};
 
         this.requestService = new RequestService();
         this.onToggle = this.onToggle.bind(this);
@@ -149,7 +111,16 @@ class Sidebar extends Component<{}, SidebarState> {
         }
     }
 
-    render(){
+    render() {
+        let currentFileTree;
+        if (this.state.currFiles === filesTypes[0]) {
+            currentFileTree = <FileTree />; // <DataFiles />
+        } else if (this.state.currFiles === filesTypes[1]) { // mapping (yamls)
+            currentFileTree = <FileTree />; // <Mapping />
+        } else { // wikifiers
+            currentFileTree = <FileTree /> ;// <Wikifiers />
+        }
+        
         return (
             <div className={this.state.treeFlag ? 'opened-sidebar' : 'closed-sidebar'}>
             {
@@ -159,12 +130,28 @@ class Sidebar extends Component<{}, SidebarState> {
                 </div>
                 {
                     this.state.treeFlag ?
-                    // <Treebeard
-                    //   style={this.fileTreeStyle}
-                    //     data={this.state.data}
-                    //     onToggle={this.onToggle}
-                    // />
-                    <FileTree />
+                    <Card className="w-100 shadow-sm"
+                         style={{ height: "calc(100% - 40px)", marginTop: "0.25rem" }}>
+                            {/* card header */}
+                            <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.TREE }}>
+                                {/* title */}
+                                <div
+                                    className="text-white font-weight-bold d-inline-block text-truncate"
+                                >File Tree</div>
+                            </Card.Header>
+
+                            {/* card body */}
+                            <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 150px)", display: "flex", overflow: "auto" }}>
+                                {currentFileTree}
+                            </Card.Body>
+                            <Card.Footer style={{ height: "50px" }}>
+                                <SheetSelector
+                                    sheetNames={filesTypes}
+                                    currSheetName={this.state.currFiles}
+                                    handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/>
+
+                            </Card.Footer>
+                        </Card>                    
                     : null}
             </div>
         );
