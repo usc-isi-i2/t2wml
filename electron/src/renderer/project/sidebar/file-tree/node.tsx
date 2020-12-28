@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 // import { TreeMode } from '@/shared/types'
-import { Node } from './file-tree';
-
 
 interface NodeProps {
     label: string;
@@ -10,10 +8,10 @@ interface NodeProps {
 }
 
 interface NodeState {
-
+    collapsed: boolean;
 }
 
-class FileNode extends Component<Node, NodeState> {
+class FileNode extends Component<NodeProps, NodeState> {
     constructor(props: NodeProps) {
         super(props);
     }
@@ -26,7 +24,7 @@ class FileNode extends Component<Node, NodeState> {
         console.log("onNodeRightClicked: ", child.currentTarget.innerHTML);
     }
 
-    renderChild(child: Node) {
+    renderChild(child: NodeProps) {
         if (child.childNodes) {
             return (
                 <ul key={child.label}>
@@ -37,7 +35,7 @@ class FileNode extends Component<Node, NodeState> {
         }
         return <li>{child.label}</li>
     }
- 
+
     render() {
         return this.renderChild(this.props);
     }

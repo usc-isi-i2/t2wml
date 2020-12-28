@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import wikiStore from "../../../data/store";
 // import { TreeMode } from '@/shared/types'
-import FileNode from "./node";
+import FileNode, {NodeProps} from "./node";
 
 
 interface TreeProps {
@@ -10,12 +11,7 @@ interface TreeState {
 
 }
 
-export interface Node {
-    label: string;
-    childNodes: Node[];
-}
-
-const fakeNodes: Node = 
+const fakeNodes: NodeProps =
     {label: "Root",
     childNodes: [
         {label: "node1",
@@ -35,6 +31,13 @@ const fakeNodes: Node =
     ]};
 
 class FileTree extends Component<TreeProps, TreeState> {
+
+    getFileTree(): NodeProps {
+        const rootNode={label: "Files", childNodes: []} as NodeProps;
+        const project = wikiStore.projects.projectDTO;
+        if (!project || !project.data_files) { return rootNode; }
+        return rootNode;
+    }
 
     render() {
         return (
