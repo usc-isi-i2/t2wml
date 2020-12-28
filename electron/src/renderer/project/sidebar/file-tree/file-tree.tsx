@@ -47,7 +47,7 @@ class FileTree extends Component<TreeProps, TreeState> {
       const dataNode = {
         label: df,
         childNodes: [],
-        type: "Datafile",
+        type: "DataFile",
         parentNode: rootNode
       } as NodeProps;
       const sheet_arr = project.data_files[df].val_arr;

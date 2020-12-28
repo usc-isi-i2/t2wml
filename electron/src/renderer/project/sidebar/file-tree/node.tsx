@@ -1,7 +1,9 @@
+import RequestService from "@/renderer/common/service";
 import React, { Component } from "react";
+import { saveFiles } from "../../save-files";
 import DoubleClick from "./double-click-HOC";
 
-export type NodeType = "Datafile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
+export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
 
 export interface NodeProps {
   label: string;
@@ -15,21 +17,53 @@ interface NodeState {
 }
 
 class FileNode extends Component<NodeProps, NodeState> {
+    private requestService: RequestService;
   constructor(props: NodeProps) {
     super(props);
+    this.requestService = new RequestService();
 
     this.state = {
       collapsed: false,
     }
   }
 
-  onClick() {
-    this.setState({ collapsed: !this.state.collapsed });
-    console.log('clicked', this.state.collapsed)
+  async changeDataFile(dataFile: string) {
+    saveFiles.changeDataFile(dataFile);
+    await this.requestService.getYamlCalculation();
   }
 
-  onDoubleClick(e: React.MouseEvent) {
-    console.log("onNodeDoubleClicked: ", e.currentTarget.innerHTML);
+  async changeSheet(sheetName: string, dataFile: string) {
+    saveFiles.changeSheet(sheetName);
+    await this.changeDataFile(dataFile);
+  }
+
+  async changeYaml(yaml: string, sheetName: string, dataFile: string) {
+    saveFiles.changeYaml(yaml);
+    await this.changeSheet(sheetName, dataFile);
+  }
+
+  onClick() {
+    this.setState({ collapsed: !this.state.collapsed });
+  }
+
+  async onDoubleClick() {
+    if (this.props.type === "DataFile") {
+        if (this.props.label !== saveFiles.currentState.dataFile) {
+            await this.changeDataFile(this.props.label);
+        }
+    } else if (this.props.type === "Sheet") { // TODO- check sheet updates
+        if (this.props.label !== saveFiles.currentState.sheetName) {
+            await this.changeSheet(this.props.label, this.props.parentNode!.label);
+        }
+    } else if (this.props.type === "Yaml") {
+        const sheet = this.props.parentNode!;
+        const dataFile = sheet.parentNode!.label;
+            
+        if (this.props.label !== saveFiles.currentState.yamlFile) {
+            await this.changeYaml(this.props.label, sheet.label, dataFile);
+        }
+    }
+
   }
 
   onRightClick(e: React.MouseEvent) {
@@ -46,7 +80,7 @@ class FileNode extends Component<NodeProps, NodeState> {
 
     return (
       <li>
-        <DoubleClick onClick={() => this.onClick()} onDoubleClick={(e) => this.onDoubleClick(e)}>
+        <DoubleClick onClick={() => this.onClick()} onDoubleClick={() => this.onDoubleClick()}>
           <label
             onContextMenu={(e) => this.onRightClick(e)}>
             {this.props.label}
