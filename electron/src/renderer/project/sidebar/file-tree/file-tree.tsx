@@ -7,39 +7,6 @@ import FileNode, { NodeProps } from "./node";
 interface TreeProps {
 }
 
-interface TreeState {
-
-}
-
-const fakeNodes: NodeProps =
-{
-    label: "Root",
-    childNodes: [
-        {
-            label: "node1",
-            childNodes: [
-                {
-                    label: "leaf1",
-                    childNodes: [
-
-                    ]
-                },
-                {
-                    label: "leaf2",
-                    childNodes: [
-
-                    ]
-                }
-            ]
-        },
-        {
-            label: "node2",
-            childNodes: [
-            ]
-        }
-    ]
-};
-
 class FileTree extends Component<TreeProps, TreeState> {
 
     getFileTree(): NodeProps {

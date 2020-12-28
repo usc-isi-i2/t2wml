@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 // import { TreeMode } from '@/shared/types'
 
-interface NodeProps {
+export interface NodeProps {
     label: string;
-    childNodes: Node[];
+    childNodes: NodeProps[];
     // type: TreeMode;
 }
 
@@ -14,30 +14,36 @@ interface NodeState {
 class FileNode extends Component<NodeProps, NodeState> {
     constructor(props: NodeProps) {
         super(props);
+
+        this.state = {
+            collapsed: false,
+        }
     }
 
-    onNodeClicked(child: React.MouseEvent) {
-        console.log("onNodeClicked: ", child.currentTarget.innerHTML);
+    onNodeClicked() {
+        this.setState({collapsed: !this.state.collapsed});
     }
 
     onNodeRightClick(child: React.MouseEvent) {
         console.log("onNodeRightClicked: ", child.currentTarget.innerHTML);
     }
 
-    renderChild(child: NodeProps) {
-        if (child.childNodes) {
+    render() {
+        if (this.props.childNodes && !this.state.collapsed) {
             return (
-                <ul key={child.label}>
-                    <label onClick={(child) => this.onNodeClicked(child)} onContextMenu={(child) => this.onNodeRightClick(child)}>{child.label}</label>
-                    {child.childNodes.map((n: Node) => this.renderChild(n))}
+                <ul key={this.props.label}>
+                    <label onClick={() => this.onNodeClicked()} onContextMenu={(child) => this.onNodeRightClick(child)}>{this.props.label}</label>
+                    {this.props.childNodes.map((n: NodeProps) => 
+                        <FileNode key={n.label} label={n.label} childNodes={n.childNodes} />
+                    )}
                 </ul>
             )
         }
-        return <li>{child.label}</li>
-    }
-
-    render() {
-        return this.renderChild(this.props);
+        return (
+            <ul key={this.props.label}>
+                <label onClick={() => this.onNodeClicked()} onContextMenu={(child) => this.onNodeRightClick(child)}>{this.props.label}</label>
+            </ul>
+        )
     }
 }
 
