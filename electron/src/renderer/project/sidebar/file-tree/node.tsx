@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import DoubleClick from "./double-click-HOC";
 
 export type NodeType = "Datafile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
 
@@ -16,29 +17,34 @@ interface NodeState {
 class FileNode extends Component<NodeProps, NodeState> {
     constructor(props: NodeProps) {
         super(props);
+        this.state={
+            collapsed: false
+        }
+
     }
 
-    onNodeClicked(child: React.MouseEvent) {
-        console.log("onNodeClicked: ", child.currentTarget.innerHTML);
+    onClick(target) {
+        console.log("onNodeClicked: ", target.innerHTML);
     }
 
-    onNodeDoubleClicked(child: React.MouseEvent) {
-        console.log("onNodeDoubleClicked: ", child.currentTarget.innerHTML);
+    onDoubleClick(e: React.MouseEvent) {
+        console.log("onNodeDoubleClicked: ", e.currentTarget.innerHTML);
     }
 
-    onNodeRightClick(child: React.MouseEvent) {
-        console.log("onNodeRightClicked: ", child.currentTarget.innerHTML);
+    onRightClick(e: React.MouseEvent) {
+        console.log("onNodeRightClicked: ", e.currentTarget.innerHTML);
     }
 
     renderChild(child: NodeProps) {
-        if (child.childNodes) {
+        if (child.childNodes ) {
             return (
                 <ul key={child.label}>
-                    <label onClick={(child) => this.onNodeClicked(child)}
-                           onContextMenu={(child) => this.onNodeRightClick(child)}
-                           onDoubleClick={(child) => this.onNodeDoubleClicked(child)}>
+                    <DoubleClick onClick={(e) => this.onClick(e)} onDoubleClick={(e) => this.onDoubleClick(e)}>
+                    <label
+                           onContextMenu={(e) => this.onRightClick(e)}>
                            {child.label}
                     </label>
+                    </DoubleClick>
                     {child.childNodes.map((n: NodeProps) => this.renderChild(n))}
                 </ul>
             )
