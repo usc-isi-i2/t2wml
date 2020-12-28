@@ -1,10 +1,13 @@
 import React, { Component } from "react";
-// import { TreeMode } from '@/shared/types'
+import DoubleClick from "./double-click-HOC";
+
+export type NodeType = "Datafile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
 
 export interface NodeProps {
     label: string;
+    parentNode: NodeProps | null;
     childNodes: NodeProps[];
-    // type: TreeMode;
+    type: NodeType;
 }
 
 interface NodeState {
@@ -20,29 +23,42 @@ class FileNode extends Component<NodeProps, NodeState> {
         }
     }
 
-    onNodeClicked() {
+    onClick() {
         this.setState({collapsed: !this.state.collapsed});
+        console.log('clicked', this.state.collapsed)
     }
 
-    onNodeRightClick(child: React.MouseEvent) {
-        console.log("onNodeRightClicked: ", child.currentTarget.innerHTML);
+    onDoubleClick(e: React.MouseEvent) {
+        console.log("onNodeDoubleClicked: ", e.currentTarget.innerHTML);
+    }
+
+    onRightClick(e: React.MouseEvent) {
+        console.log("onNodeRightClicked: ", e.currentTarget.innerHTML);
     }
 
     render() {
         if (this.props.childNodes && !this.state.collapsed) {
             return (
-                <ul key={this.props.label}>
-                    <label onClick={() => this.onNodeClicked()} onContextMenu={(child) => this.onNodeRightClick(child)}>{this.props.label}</label>
-                    {this.props.childNodes.map((n: NodeProps) => 
-                        <FileNode key={n.label} label={n.label} childNodes={n.childNodes} />
+                <li>
+                    <ul>
+                        <DoubleClick onClick={() => this.onClick()} onDoubleClick={(e) => this.onDoubleClick(e)}>
+                        <label
+                            onContextMenu={(e) => this.onRightClick(e)}>
+                            {this.props.label}
+                        </label>
+                        </DoubleClick>
+                        {this.props.childNodes.map((n: NodeProps) => <FileNode key={n.label} label={n.label} childNodes={n.childNodes} parentNode={n.parentNode} type={n.type}/>
                     )}
-                </ul>
+                    </ul>
+                </li>
             )
         }
         return (
-            <ul key={this.props.label}>
-                <label onClick={() => this.onNodeClicked()} onContextMenu={(child) => this.onNodeRightClick(child)}>{this.props.label}</label>
-            </ul>
+                <li key={this.props.label}>
+                    <DoubleClick onClick={() => this.onClick()} onDoubleClick={(e) => this.onDoubleClick(e)}>
+                        <label onClick={() => this.onClick()} onContextMenu={(child) => this.onRightClick(child)}>{this.props.label}</label>
+                    </DoubleClick>
+                </li>
         )
     }
 }
