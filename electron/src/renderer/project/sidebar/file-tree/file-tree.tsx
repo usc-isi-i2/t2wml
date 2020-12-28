@@ -67,7 +67,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     render() {
         const fileTree = this.getFileTree()
         return (
-            <FileNode label={fileTree.label} childNodes={fileTree.childNodes} />
+            <FileNode label={fileTree.label} childNodes={fileTree.childNodes} type={fileTree.type} />
         )
     }
 }
