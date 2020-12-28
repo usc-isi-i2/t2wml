@@ -10,6 +10,26 @@ interface TreeState {
 
 }
 
+const fakeNodes = [
+    {label: "Root",
+    childNodes: [
+        {label: "node1",
+        childNodes: [
+            {label: "leaf1",
+            childNodes: [
+
+            ]},
+            {label: "leaf2",
+            childNodes: [
+
+            ]}
+        ]},
+        {label: "node1",
+        childNodes: [
+        ]}
+    ]}
+]
+
 class FileTree extends Component<TreeProps, TreeState> {
 
     renderNodes() {
@@ -26,7 +46,7 @@ class FileTree extends Component<TreeProps, TreeState> {
             <ul>
                 {this.renderNodes()}
             </ul>
-        ) 
+        )
     }
 }
 
