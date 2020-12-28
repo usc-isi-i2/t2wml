@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import wikiStore from "../../../data/store";
 // import { TreeMode } from '@/shared/types'
-import FileNode, {NodeProps} from "./node";
+import FileNode, { NodeProps } from "./node";
 
 
 interface TreeProps {
@@ -12,36 +12,62 @@ interface TreeState {
 }
 
 const fakeNodes: NodeProps =
-    {label: "Root",
+{
+    label: "Root",
     childNodes: [
-        {label: "node1",
-        childNodes: [
-            {label: "leaf1",
+        {
+            label: "node1",
             childNodes: [
+                {
+                    label: "leaf1",
+                    childNodes: [
 
-            ]},
-            {label: "leaf2",
+                    ]
+                },
+                {
+                    label: "leaf2",
+                    childNodes: [
+
+                    ]
+                }
+            ]
+        },
+        {
+            label: "node2",
             childNodes: [
-
-            ]}
-        ]},
-        {label: "node2",
-        childNodes: [
-        ]}
-    ]};
+            ]
+        }
+    ]
+};
 
 class FileTree extends Component<TreeProps, TreeState> {
 
     getFileTree(): NodeProps {
-        const rootNode={label: "Files", childNodes: []} as NodeProps;
+        const rootNode = { label: "Files", childNodes: [] } as NodeProps;
         const project = wikiStore.projects.projectDTO;
         if (!project || !project.data_files) { return rootNode; }
+        for (const df of Object.keys(project.data_files).sort()) {
+            const dataNode = {
+                label: df,
+                childNodes: []
+            } as NodeProps;
+            const sheet_arr = project.data_files[df].val_arr;
+            for (const sheetname of sheet_arr) {
+                const sheetNode = {
+                    label: sheetname,
+                    childNodes: []
+                } as NodeProps;
+                dataNode.childNodes.push(sheetNode)
+            }
+            rootNode.childNodes.push(dataNode)
+        }
         return rootNode;
     }
 
     render() {
+        const fileTree=this.getFileTree()
         return (
-            <FileNode label={fakeNodes.label} childNodes={fakeNodes.childNodes} />
+            <FileNode label={fileTree.label} childNodes={fileTree.childNodes} />
         )
     }
 }
