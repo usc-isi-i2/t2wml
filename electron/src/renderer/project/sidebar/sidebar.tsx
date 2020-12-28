@@ -9,6 +9,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '@/renderer/common/service';
 import { Spinner } from 'react-bootstrap';
 import { saveFiles } from '../save-files';
+import FileTree from './file-tree/file-tree';
 
 // const data = {
 //     name: 'root',
@@ -158,11 +159,12 @@ class Sidebar extends Component<{}, SidebarState> {
                 </div>
                 {
                     this.state.treeFlag ?
-                    <Treebeard
-                      style={this.fileTreeStyle}
-                        data={this.state.data}
-                        onToggle={this.onToggle}
-                    />
+                    // <Treebeard
+                    //   style={this.fileTreeStyle}
+                    //     data={this.state.data}
+                    //     onToggle={this.onToggle}
+                    // />
+                    <FileTree />
                     : null}
             </div>
         );
