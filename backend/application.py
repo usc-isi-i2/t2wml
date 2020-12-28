@@ -103,7 +103,7 @@ def json_response(func):
             data = {"error": make_frontend_err_dict(e)}
             try:
                 code=e.code
-                data["error"]["code"]=code
+                data["error"]["errorCode"]=code
             except AttributeError:
                 code=500
             return json.dumps(data, indent=3, default=numpy_converter), code
