@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { TreeMode } from '@/shared/types'
-import Node from "./node";
+// import { TreeMode } from '@/shared/types'
+import FileNode from "./node";
 
 
 interface TreeProps {
@@ -10,7 +10,12 @@ interface TreeState {
 
 }
 
-const fakeNodes = [
+export interface Node {
+    label: string;
+    childNodes: Node[];
+}
+
+const fakeNodes: Node = 
     {label: "Root",
     childNodes: [
         {label: "node1",
@@ -24,28 +29,16 @@ const fakeNodes = [
 
             ]}
         ]},
-        {label: "node1",
+        {label: "node2",
         childNodes: [
         ]}
-    ]}
-]
+    ]};
 
 class FileTree extends Component<TreeProps, TreeState> {
 
-    renderNodes() {
-        const fileList = [{name: "aaa", type: "Yamls"}, {name: "a11", type: "Wikifiers"}, {name: "a22", type: "DataFiles"}];
-        const nodes = [];
-        for (const n of fileList) {
-            nodes.push( <li key={n.name}><Node name={n.name} type={n.type} /></li>)
-        }
-        return nodes;
-    }
-
     render() {
         return (
-            <ul>
-                {this.renderNodes()}
-            </ul>
+            <FileNode label={fakeNodes.label} childNodes={fakeNodes.childNodes} />
         )
     }
 }

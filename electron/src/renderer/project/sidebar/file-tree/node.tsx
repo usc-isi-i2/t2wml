@@ -1,35 +1,46 @@
 import React, { Component } from "react";
-import { TreeMode } from '@/shared/types'
+// import { TreeMode } from '@/shared/types'
+import { Node } from './file-tree';
 
 
 interface NodeProps {
-    name: string;
-    type: TreeMode;
+    label: string;
+    childNodes: Node[];
+    // type: TreeMode;
 }
 
 interface NodeState {
 
 }
 
-class Node extends Component<NodeProps, NodeState> {
+class FileNode extends Component<Node, NodeState> {
     constructor(props: NodeProps) {
         super(props);
     }
 
     onNodeClicked() {
-        console.log("onNodeClicked: ", this.props.name);
+        console.log("onNodeClicked: ", this.props.label);
     }
 
     onNodeRightClick() {
-        console.log("onNodeRightClicked: ", this.props.name);
+        console.log("onNodeRightClicked: ", this.props.label);
     }
 
-    // TODO- add click and right click functions
+    renderChild(child: Node) {
+        if (child.childNodes) {
+            return (
+                <ul key={child.label}>
+                    <label onClick={() => this.onNodeClicked()} onContextMenu={() => this.onNodeRightClick()}>{child.label}</label>
+                    {child.childNodes.map((n: Node) => this.renderChild(n))}
+                </ul>
+            )
+        }
+        return <li>{child.label}</li>
+    }
+ 
     render() {
-        return (
-            <label onClick={() => this.onNodeClicked()} onContextMenu={() => this.onNodeRightClick()}>Node: {this.props.name}, {this.props.type}</label>
-        )
+        return this.renderChild(this.props);
     }
 }
 
-export default Node;
+export default FileNode;
