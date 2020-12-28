@@ -4,6 +4,7 @@ export type NodeType = "Datafile" | "Sheet" | "Label" | "Yaml" | "Annotation" | 
 
 export interface NodeProps {
     label: string;
+    parentNode: NodeProps | null;
     childNodes: NodeProps[];
     type: NodeType;
 }

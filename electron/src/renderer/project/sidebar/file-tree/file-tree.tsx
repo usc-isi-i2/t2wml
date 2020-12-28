@@ -29,7 +29,8 @@ class FileTree extends Component<TreeProps, TreeState> {
                 {
                     label: filename,
                     childNodes: [] as NodeProps[],
-                    type: type
+                    type: type,
+                    parentNode: parentNode
                 }
             )
         }
@@ -37,21 +38,23 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
 
     getFileTree(): NodeProps {
-        const rootNode = { label: "Files", childNodes: [], type: "Label" } as NodeProps;
+        const rootNode = { label: "Files", childNodes: [], type: "Label", parentNode: null } as NodeProps;
         const project = wikiStore.projects.projectDTO;
         if (!project || !project.data_files) { return rootNode; }
         for (const df of Object.keys(project.data_files).sort()) {
             const dataNode = {
                 label: df,
                 childNodes: [],
-                type: "Datafile"
+                type: "Datafile",
+                parentNode: rootNode
             } as NodeProps;
             const sheet_arr = project.data_files[df].val_arr;
             for (const sheetName of sheet_arr) {
                 const sheetNode = {
                     label: sheetName,
                     childNodes: [],
-                    type: "Sheet"
+                    type: "Sheet",
+                    parentNode: dataNode
                 } as NodeProps;
                 this.getSubFileTree(project.yaml_sheet_associations, df, sheetName, "Yaml files", "Yaml", sheetNode)
                 this.getSubFileTree(project.annotations, df, sheetName, "Annotation files", "Annotation", sheetNode)
@@ -65,7 +68,10 @@ class FileTree extends Component<TreeProps, TreeState> {
     render() {
         const fileTree = this.getFileTree()
         return (
-            <FileNode label={fileTree.label} childNodes={fileTree.childNodes} type={fileTree.type} />
+            <FileNode label={fileTree.label}
+                      childNodes={fileTree.childNodes}
+                      type={fileTree.type}
+                      parentNode={fileTree.parentNode} />
         )
     }
 }
