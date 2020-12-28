@@ -21,6 +21,10 @@ class FileNode extends Component<NodeProps, NodeState> {
         console.log("onNodeClicked: ", child.currentTarget.innerHTML);
     }
 
+    onNodeDoubleClicked(child: React.MouseEvent) {
+        console.log("onNodeDoubleClicked: ", child.currentTarget.innerHTML);
+    }
+
     onNodeRightClick(child: React.MouseEvent) {
         console.log("onNodeRightClicked: ", child.currentTarget.innerHTML);
     }
@@ -29,8 +33,12 @@ class FileNode extends Component<NodeProps, NodeState> {
         if (child.childNodes) {
             return (
                 <ul key={child.label}>
-                    <label onClick={(child) => this.onNodeClicked(child)} onContextMenu={(child) => this.onNodeRightClick(child)}>{child.label}</label>
-                    {child.childNodes.map((n: Node) => this.renderChild(n))}
+                    <label onClick={(child) => this.onNodeClicked(child)}
+                           onContextMenu={(child) => this.onNodeRightClick(child)}
+                           onDoubleClick={(child) => this.onNodeDoubleClicked(child)}>
+                           {child.label}
+                    </label>
+                    {child.childNodes.map((n: NodeProps) => this.renderChild(n))}
                 </ul>
             )
         }

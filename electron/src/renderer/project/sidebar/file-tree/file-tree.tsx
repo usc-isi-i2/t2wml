@@ -33,13 +33,11 @@ class FileTree extends Component<TreeProps, TreeState> {
                 }
             )
         }
-
         parentNode.childNodes.push(labelNode);
-
     }
 
     getFileTree(): NodeProps {
-        const rootNode = { label: "Files", childNodes: [] , type: "Label"} as NodeProps;
+        const rootNode = { label: "Files", childNodes: [], type: "Label" } as NodeProps;
         const project = wikiStore.projects.projectDTO;
         if (!project || !project.data_files) { return rootNode; }
         for (const df of Object.keys(project.data_files).sort()) {
