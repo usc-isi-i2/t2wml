@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-// import { TreeMode } from '@/shared/types'
 
-interface NodeProps {
+export type NodeType = "Datafile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
+
+export interface NodeProps {
     label: string;
-    childNodes: Node[];
-    // type: TreeMode;
+    childNodes: NodeProps[];
+    type: NodeType;
 }
 
 interface NodeState {
