@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import wikiStore from "../../../data/store";
+import './file-tree.css';
 // import { TreeMode } from '@/shared/types'
 import FileNode, { NodeProps, NodeType } from "./node";
 
