@@ -24,7 +24,7 @@ class FileNode extends Component<NodeProps, NodeState> {
     }
 
     onClick() {
-        this.setState({collapsed: !this.state.collapsed});
+        this.setState({ collapsed: !this.state.collapsed });
         console.log('clicked', this.state.collapsed)
     }
 
@@ -37,28 +37,23 @@ class FileNode extends Component<NodeProps, NodeState> {
     }
 
     render() {
+        let childrenNodes=null;
         if (this.props.childNodes && !this.state.collapsed) {
-            return (
-                <li>
-                    <ul>
-                        <DoubleClick onClick={() => this.onClick()} onDoubleClick={(e) => this.onDoubleClick(e)}>
-                        <label
-                            onContextMenu={(e) => this.onRightClick(e)}>
-                            {this.props.label}
-                        </label>
-                        </DoubleClick>
-                        {this.props.childNodes.map((n: NodeProps) => <FileNode key={n.label} label={n.label} childNodes={n.childNodes} parentNode={n.parentNode} type={n.type}/>
-                    )}
-                    </ul>
-                </li>
-            )
-        }
+            childrenNodes = (<ul>
+            {this.props.childNodes.map((n: NodeProps) => <FileNode key={n.label} label={n.label} childNodes={n.childNodes} parentNode={n.parentNode} type={n.type} /> )}
+            </ul>)
+            }
+
         return (
-                <li key={this.props.label}>
-                    <DoubleClick onClick={() => this.onClick()} onDoubleClick={(e) => this.onDoubleClick(e)}>
-                        <label onClick={() => this.onClick()} onContextMenu={(child) => this.onRightClick(child)}>{this.props.label}</label>
-                    </DoubleClick>
-                </li>
+            <li>
+                <DoubleClick onClick={() => this.onClick()} onDoubleClick={(e) => this.onDoubleClick(e)}>
+                    <label
+                        onContextMenu={(e) => this.onRightClick(e)}>
+                        {this.props.label}
+                    </label>
+                </DoubleClick>
+                {childrenNodes}
+            </li>
         )
     }
 }
