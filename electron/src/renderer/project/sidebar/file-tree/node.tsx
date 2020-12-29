@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import DoubleClick from "./double-click-HOC";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile} from '@fortawesome/free-solid-svg-icons';
+import {faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile, IconDefinition} from '@fortawesome/free-solid-svg-icons';
 
 
 export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
@@ -80,12 +80,17 @@ class FileNode extends Component<NodeProps, NodeState> {
       </span>)
     }
 
+    let typeIcon=null;
+    if (nodeToIconMapping[this.props.type] &&  nodeToIconMapping[this.props.type] as IconDefinition){
+      typeIcon=<FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
+    }
+
     return (
       <li>
           <label
             onContextMenu={(e) => this.onRightClick(e)}
             onDoubleClick={() => this.onDoubleClick()}>
-            {arrowIcon}{this.props.label}
+            {arrowIcon}{typeIcon}{this.props.label}
           </label>
         {childrenNodes}
       </li>
