@@ -1,9 +1,20 @@
 
 import React, { Component } from "react";
-
 import DoubleClick from "./double-click-HOC";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile} from '@fortawesome/free-solid-svg-icons';
+
 
 export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
+const nodeToIconMapping={
+  "DataFile": faTable,
+  "Sheet": faFile,
+  "Label": null, //todo?
+  "Yaml": faStream,
+  "Annotation": faColumns,
+  "Wikifier": null, //todo
+  "Entity": null, //todo
+  };
 
 export interface NodeProps {
   label: string;
@@ -30,7 +41,7 @@ class FileNode extends Component<NodeProps, NodeState> {
 
 
 
-  onClick() {
+  onArrowClick() {
     this.setState({ collapsed: !this.state.collapsed });
   }
 
@@ -45,27 +56,37 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   render() {
     let childrenNodes = null;
-    if (this.props.childNodes && !this.state.collapsed) {
+    if (this.props.childNodes.length && !this.state.collapsed) {
       childrenNodes = (<ul>
-        {this.props.childNodes.map((n: NodeProps) => 
-        <FileNode key={n.label} 
-          label={n.label} 
-          childNodes={n.childNodes} 
-          parentNode={n.parentNode} 
+        {this.props.childNodes.map((n: NodeProps) =>
+        <FileNode key={n.label}
+          label={n.label}
+          childNodes={n.childNodes}
+          parentNode={n.parentNode}
           type={n.type}
           rightClick={n.rightClick}
           doubleClick={n.doubleClick} />)}
       </ul>)
     }
 
+    let arrowIcon=null;
+    if (this.props.childNodes.length){
+      arrowIcon=(<span
+        className="action-download"
+        style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
+        onClick={() => this.onArrowClick()}
+      >
+        {this.state.collapsed ? <FontAwesomeIcon icon={faChevronRight} size="xs" /> : <FontAwesomeIcon icon={faChevronDown} size="xs" />}
+      </span>)
+    }
+
     return (
       <li>
-        <DoubleClick onClick={() => this.onClick()} onDoubleClick={() => this.onDoubleClick()}>
           <label
-            onContextMenu={(e) => this.onRightClick(e)}>
-            {this.props.label}
+            onContextMenu={(e) => this.onRightClick(e)}
+            onDoubleClick={() => this.onDoubleClick()}>
+            {arrowIcon}{this.props.label}
           </label>
-        </DoubleClick>
         {childrenNodes}
       </li>
     )
