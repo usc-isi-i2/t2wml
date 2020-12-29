@@ -2,6 +2,8 @@ import RequestService from "@/renderer/common/service";
 import React, { Component } from "react";
 import { saveFiles } from "../../save-files";
 import DoubleClick from "./double-click-HOC";
+import { Menu, Item, Separator, Submenu, useContextMenu } from 'react-contexify';
+
 
 export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
 
@@ -16,8 +18,13 @@ interface NodeState {
   collapsed: boolean;
 }
 
+const { show }  = useContextMenu({
+  id: 'blahblah',
+});
+
 class FileNode extends Component<NodeProps, NodeState> {
     private requestService: RequestService;
+    private MENU_ID: string;
   constructor(props: NodeProps) {
     super(props);
     this.requestService = new RequestService();
@@ -25,6 +32,8 @@ class FileNode extends Component<NodeProps, NodeState> {
     this.state = {
       collapsed: false,
     }
+
+    this.MENU_ID = 'blahblah';
   }
 
   async changeDataFile(dataFile: string) {
@@ -69,8 +78,14 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   }
 
-  onRightClick(e: React.MouseEvent) {
-    console.log("onNodeRightClicked: ", e.currentTarget.innerHTML);
+  onRightClick(event: any){
+      event.preventDefault();
+      show({
+        event,
+        props: {
+            key: 'value'
+        }
+      } as any)
   }
 
   render() {
@@ -90,6 +105,18 @@ class FileNode extends Component<NodeProps, NodeState> {
           </label>
         </DoubleClick>
         {childrenNodes}
+
+        <Menu id={this.MENU_ID}>
+          <Item onClick={()=> console.log("clicked")}>Item 1</Item>
+          <Item onClick={()=> console.log("clicked")}>Item 2</Item>
+          <Separator />
+          <Item disabled>Disabled</Item>
+          <Separator />
+          <Submenu label="Foobar">
+            <Item onClick={()=> console.log("clicked")}>Sub Item 1</Item>
+            <Item onClick={()=> console.log("clicked")}>Sub Item 2</Item>
+          </Submenu>
+      </Menu>
       </li>
     )
   }
