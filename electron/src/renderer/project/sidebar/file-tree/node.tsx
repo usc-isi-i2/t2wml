@@ -33,13 +33,16 @@ class FileNode extends Component<NodeProps, NodeState> {
   }
 
   async changeSheet(sheetName: string, dataFile: string) {
+    saveFiles.changeDataFile(dataFile);
     saveFiles.changeSheet(sheetName);
-    await this.changeDataFile(dataFile);
+    await this.requestService.getYamlCalculation();
   }
 
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {
+    saveFiles.changeDataFile(dataFile);
+    saveFiles.changeSheet(sheetName);
     saveFiles.changeYaml(yaml);
-    await this.changeSheet(sheetName, dataFile);
+    await this.requestService.getYamlCalculation();
   }
 
   onClick() {
