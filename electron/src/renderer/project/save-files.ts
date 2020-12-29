@@ -1,6 +1,5 @@
-// import * as os from 'os';
 import * as fs from 'fs';
-import { action } from 'mobx';
+import { action, observable } from 'mobx';
 import { ProjectDTO } from '../common/dtos';
 import wikiStore from '../data/store';
 
@@ -34,10 +33,11 @@ export class SaveFiles implements Data {
         return SaveFiles._instance;
     }
 
-    currentState: CurrentFiles = {} as CurrentFiles;
-    prevSelections = {};
+    @observable currentState: CurrentFiles = {} as CurrentFiles;
+    @observable prevSelections = {};
 
 
+    @action
     getFiles(project: ProjectDTO) {
         try {
             const path = `${project.directory}/${filename}`;
@@ -75,6 +75,7 @@ export class SaveFiles implements Data {
         }
     }
 
+    @action
     changeDataFile(newFile: string) {
         const project = wikiStore.projects.projectDTO!;
         this.currentState.dataFile = newFile;
@@ -93,6 +94,7 @@ export class SaveFiles implements Data {
         this.saveFiles(project.directory);
     }
 
+    @action
     changeSheet(newSheet: string) {
         const project = wikiStore.projects.projectDTO!;
         // If this sheet is not part of current datafile, search the relevant data file.
@@ -119,6 +121,7 @@ export class SaveFiles implements Data {
         this.saveFiles(project.directory);
     }
 
+    @action
     changeYaml(newYaml: string) {
         const project = wikiStore.projects.projectDTO!;
         // If this yaml is not part of current datafile, search the relevant data file and sheet.
@@ -146,6 +149,7 @@ export class SaveFiles implements Data {
         this.saveFiles(project.directory);
     }
 
+    @action
     changeAnnotation(newAnnotation: string) {
         const project = wikiStore.projects.projectDTO!;
         // If this yaml is not part of current datafile, search the relevant data file and sheet.
