@@ -37,7 +37,8 @@ class Sidebar extends Component<{}, SidebarState> {
 
         this.state = {
             data: {},
-            treeFlag: wikiStore.projects.showFileTree,
+            // TODO 1: add this code, now the tree always open
+            treeFlag: true,// wikiStore.projects.showFileTree,
             cursor: {},
             active: false,
             showSpinner: false,
@@ -49,7 +50,8 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     componentDidMount() {
-        this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => {this.setState({treeFlag: flag})});
+        // TODO 2: add this code, now the tree always open
+        // this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => {this.setState({treeFlag: flag})});
         this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, () => this.getFilesData());
     }
 

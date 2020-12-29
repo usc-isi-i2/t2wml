@@ -70,7 +70,8 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
-      showTreeFlag: wikiStore.projects.showFileTree,
+      // TODO 3: add this code, now the tree always open
+      showTreeFlag: true,// wikiStore.projects.showFileTree,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
@@ -91,7 +92,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     ipcRenderer.on('toggle-file-tree', (sender: IpcRendererEvent, checked: boolean) => {
       this.onShowFileTreeClicked(checked);
     });
-    this.disposers.push(reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag})));
+    // TODO 4: add this code, now the tree always open
+    // this.disposers.push(reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag})));
   }
 
   async componentWillUnmount() {
