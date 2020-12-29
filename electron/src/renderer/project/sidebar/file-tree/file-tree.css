@@ -1,9 +1,10 @@
 ul{
-    padding-left: 2px;
+    padding: 0;
     margin: 0;
     list-style-type: none;
   }
 
 li{
-    margin-left: 10px;
+    margin-left: 15px;
+    white-space: nowrap;
   }

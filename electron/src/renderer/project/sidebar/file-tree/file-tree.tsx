@@ -73,17 +73,8 @@ class FileTree extends Component<TreeProps, TreeState> {
     if (!projDict[df] || !projDict[df][sheetName]) {
       return;
     }
-    const labelNode = {
-      label: label,
-      childNodes: [],
-      parentNode: null,
-      type: "Label",
-      rightClick: emptyFunc,
-      doubleClick: emptyFunc
-    } as NodeProps;
-
     for (const filename of projDict[df][sheetName]["val_arr"]) {
-      labelNode.childNodes.push(
+      parentNode.childNodes.push(
         {
           label: filename,
           childNodes: [] as NodeProps[],
@@ -94,7 +85,6 @@ class FileTree extends Component<TreeProps, TreeState> {
         }
       )
     }
-    parentNode.childNodes.push(labelNode);
   }
 
   getFileTree(): NodeProps {

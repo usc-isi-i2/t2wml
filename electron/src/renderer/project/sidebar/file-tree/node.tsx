@@ -2,18 +2,18 @@
 import React, { Component } from "react";
 import DoubleClick from "./double-click-HOC";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile, IconDefinition} from '@fortawesome/free-solid-svg-icons';
+import {IconDefinition, faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile, faProjectDiagram, faList} from '@fortawesome/free-solid-svg-icons';
 
 
 export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
 const nodeToIconMapping={
   "DataFile": faTable,
   "Sheet": faFile,
-  "Label": null, //todo?
+  "Label": null,
   "Yaml": faStream,
   "Annotation": faColumns,
-  "Wikifier": null, //todo
-  "Entity": null, //todo
+  "Wikifier": faList,
+  "Entity": faProjectDiagram,
   };
 
 export interface NodeProps {
@@ -22,7 +22,7 @@ export interface NodeProps {
   childNodes: NodeProps[];
   type: NodeType;
   doubleClick: (node: NodeProps) => void,
-  rightClick: (node:NodeProps) => any
+  rightClick: (node:NodeProps) => any,
 }
 
 interface NodeState {
@@ -69,15 +69,11 @@ class FileNode extends Component<NodeProps, NodeState> {
       </ul>)
     }
 
-    let arrowIcon=null;
+    let arrowIcon=<em>{'\u00A0\u00A0'}</em> //align with entries that do have an arrow icon
     if (this.props.childNodes.length){
       arrowIcon=(<span
-        className="action-download"
-        style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
         onClick={() => this.onArrowClick()}
-      >
-        {this.state.collapsed ? <FontAwesomeIcon icon={faChevronRight} size="xs" /> : <FontAwesomeIcon icon={faChevronDown} size="xs" />}
-      </span>)
+      >{this.state.collapsed ? <FontAwesomeIcon icon={faChevronRight} size="xs"/>:<FontAwesomeIcon icon={faChevronDown} size="xs"/>}</span>)
     }
 
     let typeIcon=null;
@@ -90,7 +86,7 @@ class FileNode extends Component<NodeProps, NodeState> {
           <label
             onContextMenu={(e) => this.onRightClick(e)}
             onDoubleClick={() => this.onDoubleClick()}>
-            {arrowIcon}{typeIcon}{this.props.label}
+            {arrowIcon} <span>{typeIcon} {this.props.label}</span>
           </label>
         {childrenNodes}
       </li>
