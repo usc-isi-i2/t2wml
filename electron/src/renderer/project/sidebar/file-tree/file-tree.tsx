@@ -63,8 +63,8 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
 
-  onRightClick(event: any){
-      event.preventDefault();
+  onRightClick(node: NodeProps){
+      console.log("right click", node)
 
   }
 
@@ -89,8 +89,8 @@ class FileTree extends Component<TreeProps, TreeState> {
           childNodes: [] as NodeProps[],
           type: type,
           parentNode: parentNode,
-          rightClick: this.onRightClick,
-          doubleClick: this.onDoubleClick
+          rightClick: (node: NodeProps) => this.onRightClick(node),
+          doubleClick: (node: NodeProps) => this.onDoubleClick(node)
         }
       )
     }
@@ -112,8 +112,8 @@ class FileTree extends Component<TreeProps, TreeState> {
         childNodes: [],
         type: "DataFile",
         parentNode: rootNode,
-        rightClick: this.onRightClick,
-        doubleClick: this.onDoubleClick
+        rightClick: (node: NodeProps) => this.onRightClick(node),
+        doubleClick: (node: NodeProps) => this.onDoubleClick(node)
       } as NodeProps;
       const sheet_arr = project.data_files[df].val_arr;
       for (const sheetName of sheet_arr) {
@@ -122,8 +122,8 @@ class FileTree extends Component<TreeProps, TreeState> {
           childNodes: [],
           type: "Sheet",
           parentNode: dataNode,
-          rightClick: this.onRightClick,
-          doubleClick: this.onDoubleClick
+          rightClick: (node: NodeProps) => this.onRightClick(node),
+          doubleClick: (node: NodeProps) => this.onDoubleClick(node)
         } as NodeProps;
         this.getSubFileTree(project.yaml_sheet_associations, df, sheetName, "Yaml files", "Yaml", sheetNode)
         this.getSubFileTree(project.annotations, df, sheetName, "Annotation files", "Annotation", sheetNode)

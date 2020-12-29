@@ -10,8 +10,8 @@ export interface NodeProps {
   parentNode: NodeProps | null;
   childNodes: NodeProps[];
   type: NodeType;
-  doubleClick: any,
-  rightClick: any
+  doubleClick: (node: NodeProps) => void,
+  rightClick: (node:NodeProps) => any
 }
 
 interface NodeState {
@@ -35,19 +35,26 @@ class FileNode extends Component<NodeProps, NodeState> {
   }
 
   async onDoubleClick() {
-    this.props.doubleClick(this.props)
+    this.props.doubleClick(this.props);
   }
 
   onRightClick(event: any){
       event.preventDefault();
-      this.props.rightClick(this.props)
+      this.props.rightClick(this.props);
   }
 
   render() {
     let childrenNodes = null;
     if (this.props.childNodes && !this.state.collapsed) {
       childrenNodes = (<ul>
-        {this.props.childNodes.map((n: NodeProps) => <FileNode key={n.label} label={n.label} childNodes={n.childNodes} parentNode={n.parentNode} type={n.type} />)}
+        {this.props.childNodes.map((n: NodeProps) => 
+        <FileNode key={n.label} 
+          label={n.label} 
+          childNodes={n.childNodes} 
+          parentNode={n.parentNode} 
+          type={n.type}
+          rightClick={n.rightClick}
+          doubleClick={n.doubleClick} />)}
       </ul>)
     }
 
