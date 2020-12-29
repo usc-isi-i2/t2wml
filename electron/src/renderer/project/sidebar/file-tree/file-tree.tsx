@@ -5,26 +5,46 @@ import './file-tree.css';
 import RequestService from "@/renderer/common/service";
 import { saveFiles } from "../../save-files";
 import FileNode, { NodeProps, NodeType } from "./node";
+import { IReactionDisposer, reaction } from "mobx";
 
 
 interface TreeProps {
 }
 
 interface TreeState {
-
+  fileTree: NodeProps;
 }
 
 const emptyFunc= (node: NodeProps) => void 0
+const rootNode = { label: "Files",
+                  childNodes: [],
+                  type: "Label",
+                  parentNode: null,
+                  rightClick: emptyFunc,
+                  doubleClick: emptyFunc } as NodeProps;
 
 
 class FileTree extends Component<TreeProps, TreeState> {
   private requestService: RequestService;
+  private disposers: IReactionDisposer[] = [];
 
   constructor(props: TreeProps){
     super(props)
     this.requestService = new RequestService();
-
+    this.state={fileTree: rootNode}
+    this.updateFileTree();
   }
+
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.projects.projectDTO, () => this.updateFileTree()));
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
+  }
+
   async changeDataFile(dataFile: string) {
     saveFiles.changeDataFile(dataFile);
     await this.requestService.getYamlCalculation();
@@ -69,7 +89,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
 
-  getSubFileTree(projDict: any, df: string, sheetName: string, label: string, type: NodeType, parentNode: NodeProps) {
+  buildSubFileTree(projDict: any, df: string, sheetName: string, label: string, type: NodeType, parentNode: NodeProps) {
     if (!projDict[df] || !projDict[df][sheetName]) {
       return;
     }
@@ -87,13 +107,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  getFileTree(): NodeProps {
-    const rootNode = { label: "Files",
-                      childNodes: [],
-                      type: "Label",
-                      parentNode: null,
-                      rightClick: emptyFunc,
-                      doubleClick: emptyFunc } as NodeProps;
+  buildFileTree(): NodeProps {
     const project = wikiStore.projects.projectDTO;
     if (!project || !project.data_files) { return rootNode; }
     for (const df of Object.keys(project.data_files).sort()) {
@@ -115,8 +129,8 @@ class FileTree extends Component<TreeProps, TreeState> {
           rightClick: (node: NodeProps) => this.onRightClick(node),
           doubleClick: (node: NodeProps) => this.onDoubleClick(node)
         } as NodeProps;
-        this.getSubFileTree(project.yaml_sheet_associations, df, sheetName, "Yaml files", "Yaml", sheetNode)
-        this.getSubFileTree(project.annotations, df, sheetName, "Annotation files", "Annotation", sheetNode)
+        this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName, "Yaml files", "Yaml", sheetNode)
+        this.buildSubFileTree(project.annotations, df, sheetName, "Annotation files", "Annotation", sheetNode)
         dataNode.childNodes.push(sheetNode)
       }
       rootNode.childNodes.push(dataNode)
@@ -124,8 +138,14 @@ class FileTree extends Component<TreeProps, TreeState> {
     return rootNode;
   }
 
+  updateFileTree(){
+    const fileTree = this.buildFileTree()
+    this.setState({fileTree})
+  }
+
   render() {
-    const fileTree = this.getFileTree()
+    const fileTree=this.state.fileTree;
+
     return (
       <ul>
         <FileNode label={fileTree.label}

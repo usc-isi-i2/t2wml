@@ -21,6 +21,7 @@ export interface NodeProps {
   parentNode: NodeProps | null;
   childNodes: NodeProps[];
   type: NodeType;
+  bolded?: boolean;
   doubleClick: (node: NodeProps) => void,
   rightClick: (node:NodeProps) => any,
 }
@@ -33,12 +34,10 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   constructor(props: NodeProps) {
     super(props);
-
     this.state = {
       collapsed: false,
     }
   }
-
 
 
   onArrowClick() {
@@ -61,6 +60,7 @@ class FileNode extends Component<NodeProps, NodeState> {
         {this.props.childNodes.map((n: NodeProps) =>
         <FileNode key={n.label}
           label={n.label}
+          bolded={n.bolded}
           childNodes={n.childNodes}
           parentNode={n.parentNode}
           type={n.type}
@@ -81,12 +81,14 @@ class FileNode extends Component<NodeProps, NodeState> {
       typeIcon=<FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
     }
 
+    let label = this.props.bolded ? <b>{this.props.label}</b>: this.props.label
+
     return (
       <li>
           <label
             onContextMenu={(e) => this.onRightClick(e)}
             onDoubleClick={() => this.onDoubleClick()}>
-            {arrowIcon} <span>{typeIcon} {this.props.label}</span>
+            {arrowIcon} <span>{typeIcon} {label}</span>
           </label>
         {childrenNodes}
       </li>
