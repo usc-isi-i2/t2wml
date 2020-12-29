@@ -96,7 +96,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                   "sheetName": saveFiles.currentState.sheetName};
 
     try {
-      await this.requestService.call(this, () => this.requestService.uploadYaml(wikiStore.projects.current!.folder, data));
+      await this.requestService.call(this, () => this.requestService.uploadYaml(data));
       console.debug('Uploading yaml ', wikiStore.yaml.yamlContent);
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
 

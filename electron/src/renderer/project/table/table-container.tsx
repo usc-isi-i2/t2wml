@@ -205,9 +205,7 @@ class TableContainer extends Component<{}, TableState> {
 
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getAnnotationBlocks(
-          wikiStore.projects.current!.folder,
-        )
+        this.requestService.getAnnotationCalculation()
       ));
     } catch (error) {
       error.errorDescription += "\n\nCannot fetch annotations!";
