@@ -28,7 +28,7 @@ export interface NodeProps {
 }
 
 interface NodeState {
-  collapsed: boolean;
+  expanded: boolean;
 }
 
 class FileNode extends Component<NodeProps, NodeState> {
@@ -36,13 +36,13 @@ class FileNode extends Component<NodeProps, NodeState> {
   constructor(props: NodeProps) {
     super(props);
     this.state = {
-      collapsed: false,
+      expanded: props.type=="Label" || props.bolded==true
     }
   }
 
 
   onArrowClick() {
-    this.setState({ collapsed: !this.state.collapsed });
+    this.setState({ expanded: !this.state.expanded });
   }
 
   async onDoubleClick() {
@@ -56,7 +56,7 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   render() {
     let childrenNodes = null;
-    if (this.props.childNodes.length && !this.state.collapsed) {
+    if (this.props.childNodes.length && this.state.expanded) {
       childrenNodes = (<ul>
         {this.props.childNodes.map((n: NodeProps) =>
         <FileNode key={n.id}
@@ -75,7 +75,7 @@ class FileNode extends Component<NodeProps, NodeState> {
     if (this.props.childNodes.length){
       arrowIcon=(<span
         onClick={() => this.onArrowClick()}
-      >{this.state.collapsed ? <FontAwesomeIcon icon={faChevronRight} size="xs"/>:<FontAwesomeIcon icon={faChevronDown} size="xs"/>}</span>)
+      >{this.state.expanded ? <FontAwesomeIcon icon={faChevronDown} size="xs"/>:<FontAwesomeIcon icon={faChevronRight} size="xs"/>}</span>)
     }
 
     let typeIcon=null;
