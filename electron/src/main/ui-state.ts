@@ -11,12 +11,10 @@ class UIState {
 
     public displayMode: DisplayMode;
     public showCleanedData: boolean;
-    public showFileTree: boolean;
 
     private constructor() {
         this.displayMode = 'project-list';
         this.showCleanedData = false;
-        this.showFileTree = false;
     }
 }
 

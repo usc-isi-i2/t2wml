@@ -84,7 +84,6 @@ export class ProjectList {
     @observable public projects: Project[] = [];
     @observable public current?: Project;
     @observable public projectDTO?: ProjectDTO;
-    @observable public showFileTree = false;
     
     constructor() {
         this.refreshList();

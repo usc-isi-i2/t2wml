@@ -22,9 +22,7 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
-import { IpcRendererEvent } from 'electron/renderer';
 import Sidebar from './sidebar/sidebar';
-import { IReactionDisposer, reaction } from 'mobx';
 import TableContainer from './table/table-container';
 import { saveFiles } from './save-files';
 
@@ -37,7 +35,6 @@ interface ProjectState extends IStateWithError {
   datamartIntegration: boolean;
   datamartApi: string;
   name: string;
-  showTreeFlag: boolean;
 }
 
 interface ProjectProps {
@@ -47,7 +44,6 @@ interface ProjectProps {
 @observer
 class Project extends Component<ProjectProps, ProjectState> {
   private requestService: RequestService;
-  private disposers: IReactionDisposer[] = [];
 
   constructor(props: ProjectProps) {
     super(props);
@@ -71,14 +67,11 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
-      // TODO 3: add this code, now the tree always open
-      showTreeFlag: true,// wikiStore.projects.showFileTree,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
     this.onRefreshProject = this.onRefreshProject.bind(this);
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
-    this.onShowFileTreeClicked = this.onShowFileTreeClicked.bind(this);
   }
 
   componentDidMount() {
@@ -90,11 +83,6 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
-    ipcRenderer.on('toggle-file-tree', (sender: IpcRendererEvent, checked: boolean) => {
-      this.onShowFileTreeClicked(checked);
-    });
-    // TODO 4: add this code, now the tree always open
-    // this.disposers.push(reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag})));
   }
 
   async componentWillUnmount() {
@@ -103,11 +91,6 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
-    ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
-
-    for ( const disposer of this.disposers ) {
-      disposer();
-    }
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -173,10 +156,6 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
-  onShowFileTreeClicked(checked: boolean) {
-    wikiStore.projects.showFileTree = checked;
-  }
-
   async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, datamartIntegration: boolean, datamartApi: string) {
     // update settings
     this.setState({ showSettings: false });
@@ -221,16 +200,18 @@ class Project extends Component<ProjectProps, ProjectState> {
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
-          <div>
-            <Sidebar />
-          </div>
 
-          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300}
+          {/* defaultSize={parseInt(localStorage.getItem('splitPos'), 10) as string}
+            onChange={(size) => localStorage.setItem('splitPos', size)} */}
+          <SplitPane className="" split="vertical" defaultSize="20%" minSize={100} maxSize={-100}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
-            <TableContainer />
-            <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-              <Editors />
-              <Output />
+            <Sidebar />
+            <SplitPane className="" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
+              <TableContainer />
+              <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
+                <Editors />
+                <Output />
+              </SplitPane>
             </SplitPane>
           </SplitPane>
         </div>

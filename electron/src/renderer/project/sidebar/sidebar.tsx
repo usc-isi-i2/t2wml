@@ -17,7 +17,6 @@ import SheetSelector from '../sheet-selector/sheet-selector';
 
 interface SidebarState {
     data: any,
-    treeFlag: boolean,
     cursor: any,
     active: boolean,
     showSpinner: boolean,
@@ -37,8 +36,6 @@ class Sidebar extends Component<{}, SidebarState> {
 
         this.state = {
             data: {},
-            // TODO 1: add this code, now the tree always open
-            treeFlag: true,// wikiStore.projects.showFileTree,
             cursor: {},
             active: false,
             showSpinner: false,
@@ -50,8 +47,6 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     componentDidMount() {
-        // TODO 2: add this code, now the tree always open
-        // this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => {this.setState({treeFlag: flag})});
         this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, () => this.getFilesData());
     }
 
@@ -124,37 +119,35 @@ class Sidebar extends Component<{}, SidebarState> {
         }
         
         return (
-            <div className={this.state.treeFlag ? 'opened-sidebar' : 'closed-sidebar'}>
+            <div className=''>
             {
                 /* loading spinner */}
                 <div className="mySpinner" hidden={!this.state.showSpinner}>
                     <Spinner animation="border" />
                 </div>
-                {
-                    this.state.treeFlag ?
-                    <Card className="w-100 shadow-sm"
-                         style={{ height: "calc(100% - 40px)", marginTop: "0.25rem" }}>
-                            {/* card header */}
-                            <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.TREE }}>
-                                {/* title */}
-                                <div
-                                    className="text-white font-weight-bold d-inline-block text-truncate"
-                                >File Tree</div>
-                            </Card.Header>
+                
+                <Card className="w-100 shadow-sm"
+                        style={{ height: "calc(100% - 40px)", marginTop: "0.25rem" }}>
+                        {/* card header */}
+                        <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.TREE }}>
+                            {/* title */}
+                            <div
+                                className="text-white font-weight-bold d-inline-block text-truncate"
+                            >File Tree</div>
+                        </Card.Header>
 
-                            {/* card body */}
-                            <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 150px)", display: "flex", overflow: "auto" }}>
-                                {currentFileTree}
-                            </Card.Body>
-                            <Card.Footer style={{ height: "50px" }}>
-                                {/* <SheetSelector
-                                    sheetNames={filesTypes}
-                                    currSheetName={this.state.currFiles}
-                                    handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/> */}
+                        {/* card body */}
+                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 150px)", display: "flex", overflow: "auto" }}>
+                            {currentFileTree}
+                        </Card.Body>
+                        <Card.Footer style={{ height: "50px" }}>
+                            {/* <SheetSelector
+                                sheetNames={filesTypes}
+                                currSheetName={this.state.currFiles}
+                                handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/> */}
 
-                            </Card.Footer>
-                        </Card>                    
-                    : null}
+                        </Card.Footer>
+                    </Card>
             </div>
         );
     }
