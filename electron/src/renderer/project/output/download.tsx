@@ -21,7 +21,7 @@ interface DownloadState {
 
 @observer
 class Download extends Component<DownloadProperties, DownloadState> {
-  
+
   constructor(props: DownloadProperties) {
     super(props);
 
@@ -30,7 +30,7 @@ class Download extends Component<DownloadProperties, DownloadState> {
       downloadFileType: "json",
     };
   }
-  
+
   download() {
       this.props.handleDoDownload(this.state.downloadFileName, this.state.downloadFileType);
       this.setState({
@@ -45,7 +45,7 @@ class Download extends Component<DownloadProperties, DownloadState> {
 
         {/* header */}
         <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Download</Modal.Title>
+          <Modal.Title>Save to file</Modal.Title>
         </Modal.Header>
 
         {/* body */}
@@ -85,7 +85,7 @@ class Download extends Component<DownloadProperties, DownloadState> {
             }
           >
             <Button variant="dark" onClick={() => this.download()}>
-              Start
+              OK
             </Button>
           </OverlayTrigger>
 

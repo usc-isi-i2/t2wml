@@ -205,7 +205,7 @@ class Output extends Component<{}, OutputComponentState> {
               onClick={() => this.setState({ showDownload: true })}
               disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading}
             >
-              {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Download"}
+              {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Save to file"}
             </Button>
           </Card.Header>
 
