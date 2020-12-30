@@ -47,6 +47,9 @@ export class SaveFiles implements Data {
                 const contentObj: any = JSON.parse(content);
                 if (contentObj.currentState) {
                     this.currentState = contentObj.currentState;
+                    if (!this.currentState.dataFile || !this.currentState.sheetName) {
+                        throw 'current state is empty';
+                    }
                 }
 
                 if (contentObj.prevSelections) {
