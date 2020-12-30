@@ -39,6 +39,7 @@ export class SaveFiles implements Data {
 
     @action
     getFiles(project: ProjectDTO) {
+        this.currentState = {} as CurrentFiles;
         try {
             const path = `${project.directory}/${filename}`;
             const content = fs.readFileSync(path, {encoding: 'utf8'});
@@ -54,7 +55,7 @@ export class SaveFiles implements Data {
             }
         } catch {
             // If the file doen't exist, first files are the defaults
-            if (project.data_files) {
+            if (Object.keys(project.data_files).length) {
                 this.currentState.dataFile = Object.keys(project.data_files)[0];
                 this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
             }

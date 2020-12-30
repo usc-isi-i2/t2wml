@@ -186,9 +186,15 @@ class TableContainer extends Component<{}, TableState> {
     if ( wikiStore.projects.projectDTO ) {
       const project = wikiStore.projects.projectDTO;
       const filename = saveFiles.currentState.dataFile;
-      const sheetNames = project.data_files[filename].val_arr;
-      const currSheetName = saveFiles.currentState.sheetName;
-      const multipleSheets = sheetNames && sheetNames.length > 1;
+      let multipleSheets = false;
+      let sheetNames = [] as string[];
+      let currSheetName = '';
+      if (project.data_files[filename] && saveFiles.currentState.sheetName) { // If there are datafile and sheet name (not a new project)
+        sheetNames = project.data_files[filename].val_arr;
+        currSheetName = saveFiles.currentState.sheetName;
+        multipleSheets = sheetNames && sheetNames.length > 1;
+      }
+      
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
   }

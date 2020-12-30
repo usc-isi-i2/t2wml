@@ -1,10 +1,10 @@
 import { action } from 'mobx';
-import wikiStore from '../data/store';
+import wikiStore, { Layer } from '../data/store';
 import { saveFiles, StateParams } from '../project/save-files';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithTableandMaybeYamlDTO, ResponseWithProjectDTO, ResponseWithAnnotationsDTO,
-   UploadEntitiesDTO, CallWikifierServiceDTO, ResponseWithLayersDTO,
+   UploadEntitiesDTO, CallWikifierServiceDTO, ResponseWithLayersDTO, TableDTO, QNodeEntry,
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -17,8 +17,15 @@ export interface IStateWithError {
 class StoreFiller {
   //I have created this class to setion off all the filling functions, which were seriously cluttering up service
   public fillProject(response: ResponseWithProjectDTO) {
-    wikiStore.projects.projectDTO = response.project;
     saveFiles.getFiles(response.project);
+    wikiStore.projects.projectDTO = response.project;
+
+    // reset table, yaml and wikifier when creating a new project
+    if (!saveFiles.currentState.dataFile && !saveFiles.currentState.sheetName) {
+      wikiStore.table.table = {} as TableDTO; 
+      wikiStore.yaml.yamlContent = '';
+      wikiStore.layers.qnode = new Layer<QNodeEntry>();
+    }
   }
 
   @action
