@@ -16,7 +16,8 @@ interface TreeState {
 }
 
 const emptyFunc= (node: NodeProps) => void 0
-const rootNode = { label: "Files",
+const rootNode = {id: "Root00000123943875",
+                  label: "Files",
                   childNodes: [],
                   type: "Label",
                   parentNode: null,
@@ -97,6 +98,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     for (const filename of projDict[df][sheetName]["val_arr"]) {
       parentNode.childNodes.push(
         {
+          id: filename+parentNode.id,
           label: filename,
           childNodes: [] as NodeProps[],
           type: type,
@@ -112,9 +114,11 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   buildFileTree(): NodeProps {
     const project = wikiStore.projects.projectDTO;
+    rootNode.childNodes=[];
     if (!project || !project.data_files) { return rootNode; }
     for (const df of Object.keys(project.data_files).sort()) {
       const dataNode = {
+        id: df,
         label: df,
         childNodes: [],
         type: "DataFile",
@@ -126,6 +130,7 @@ class FileTree extends Component<TreeProps, TreeState> {
       const sheet_arr = project.data_files[df].val_arr;
       for (const sheetName of sheet_arr) {
         const sheetNode = {
+          id: sheetName+df,
           label: sheetName,
           childNodes: [],
           type: "Sheet",
@@ -149,16 +154,17 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   render() {
-    const fileTree=this.state.fileTree;
 
     return (
       <ul>
-        <FileNode label={fileTree.label}
-          childNodes={fileTree.childNodes}
-          type={fileTree.type}
-          parentNode={fileTree.parentNode}
-          rightClick={fileTree.rightClick}
-          doubleClick={fileTree.doubleClick}/>
+        <FileNode
+          id={this.state.fileTree.id}
+          label={this.state.fileTree.label}
+          childNodes={this.state.fileTree.childNodes}
+          type={this.state.fileTree.type}
+          parentNode={this.state.fileTree.parentNode}
+          rightClick={this.state.fileTree.rightClick}
+          doubleClick={this.state.fileTree.doubleClick}/>
       </ul>
     )
   }

@@ -17,6 +17,7 @@ const nodeToIconMapping={
   };
 
 export interface NodeProps {
+  id: string;
   label: string;
   parentNode: NodeProps | null;
   childNodes: NodeProps[];
@@ -58,7 +59,8 @@ class FileNode extends Component<NodeProps, NodeState> {
     if (this.props.childNodes.length && !this.state.collapsed) {
       childrenNodes = (<ul>
         {this.props.childNodes.map((n: NodeProps) =>
-        <FileNode key={n.label}
+        <FileNode key={n.id}
+          id={n.id}
           label={n.label}
           bolded={n.bolded}
           childNodes={n.childNodes}
