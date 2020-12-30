@@ -147,10 +147,10 @@ class Sidebar extends Component<{}, SidebarState> {
                                 {currentFileTree}
                             </Card.Body>
                             <Card.Footer style={{ height: "50px" }}>
-                                <SheetSelector
+                                {/* <SheetSelector
                                     sheetNames={filesTypes}
                                     currSheetName={this.state.currFiles}
-                                    handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/>
+                                    handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/> */}
 
                             </Card.Footer>
                         </Card>                    
