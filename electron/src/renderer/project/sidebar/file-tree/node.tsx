@@ -79,7 +79,7 @@ class FileNode extends Component<NodeProps, NodeState> {
     }
 
     let typeIcon=null;
-    if (nodeToIconMapping[this.props.type] &&  nodeToIconMapping[this.props.type] as IconDefinition){
+    if (nodeToIconMapping[this.props.type]){
       typeIcon=<FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
     }
 
