@@ -37,6 +37,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.projects.projectDTO, () => this.updateFileTree()));
+    this.disposers.push(reaction(() => saveFiles.currentState, () => this.updateFileTree()));
   }
 
   componentWillUnmount() {
@@ -89,7 +90,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
 
-  buildSubFileTree(projDict: any, df: string, sheetName: string, label: string, type: NodeType, parentNode: NodeProps) {
+  buildSubFileTree(projDict: any, df: string, sheetName: string, type: NodeType, parentNode: NodeProps) {
     if (!projDict[df] || !projDict[df][sheetName]) {
       return;
     }
@@ -101,7 +102,9 @@ class FileTree extends Component<TreeProps, TreeState> {
           type: type,
           parentNode: parentNode,
           rightClick: (node: NodeProps) => this.onRightClick(node),
-          doubleClick: (node: NodeProps) => this.onDoubleClick(node)
+          doubleClick: (node: NodeProps) => this.onDoubleClick(node),
+          //because yaml ends in .yaml and annotation in .json, we can check both simultaneously?
+          bolded: saveFiles.currentState.yamlFile == filename || saveFiles.currentState.annotationFile == filename
         }
       )
     }
@@ -117,7 +120,8 @@ class FileTree extends Component<TreeProps, TreeState> {
         type: "DataFile",
         parentNode: rootNode,
         rightClick: (node: NodeProps) => this.onRightClick(node),
-        doubleClick: (node: NodeProps) => this.onDoubleClick(node)
+        doubleClick: (node: NodeProps) => this.onDoubleClick(node),
+        bolded: saveFiles.currentState.dataFile == df
       } as NodeProps;
       const sheet_arr = project.data_files[df].val_arr;
       for (const sheetName of sheet_arr) {
@@ -127,10 +131,11 @@ class FileTree extends Component<TreeProps, TreeState> {
           type: "Sheet",
           parentNode: dataNode,
           rightClick: (node: NodeProps) => this.onRightClick(node),
-          doubleClick: (node: NodeProps) => this.onDoubleClick(node)
+          doubleClick: (node: NodeProps) => this.onDoubleClick(node),
+          bolded: saveFiles.currentState.sheetName == sheetName
         } as NodeProps;
-        this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName, "Yaml files", "Yaml", sheetNode)
-        this.buildSubFileTree(project.annotations, df, sheetName, "Annotation files", "Annotation", sheetNode)
+        this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName,  "Yaml", sheetNode)
+        this.buildSubFileTree(project.annotations, df, sheetName, "Annotation", sheetNode)
         dataNode.childNodes.push(sheetNode)
       }
       rootNode.childNodes.push(dataNode)
