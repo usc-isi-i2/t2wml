@@ -145,18 +145,13 @@ def get_annotation_calculation(annotation_path=None):
     :return:
     """
     project=get_project()
+    calc_params=get_calc_params(project)
     if annotation_path: #redirect from saving annotation
-        annotation_file = Path(project.directory) / annotation_path
-    else:
-        try:
-            annotation_file = request.args['annotation_file']
-            annotation_file = Path(project.directory) / annotation_file
-        except KeyError:
-            annotation_file="" #get empty annotation
-            #raise web_exceptions.InvalidRequestException("annotation parameter not specified")
+        calc_params.annotation_path = Path(project.directory) / annotation_path
 
-    annotation, yamlContent=get_annotations(annotation_file)
-    response=dict(annotations=annotation, yamlContent=yamlContent, project=get_project_dict(project))
+    response=dict(project=get_project_dict(project))
+    get_annotations(calc_params, response)
+
     return response, 200
 
 
@@ -373,14 +368,8 @@ def upload_annotation():
         os.mkdir(annotations_dir)
     annotations_path=os.path.join(annotations_dir, Path(calc_params.data_path).stem+"_"+calc_params.sheet_name+".json")
     response=dict(project=get_project_dict(project))
-
-    calc_params.annotation_path=annotations_path
-    if request.method == 'POST':
-        annotation = request.get_json()["annotations"]
-        annotation, yamlContent = save_annotations(project, calc_params, annotation, response)
-    else:
-        annotation, yamlContent=get_annotations(calc_params, response)
-
+    annotation = request.get_json()["annotations"]
+    save_annotations(project, calc_params, annotation, response)
     response, code = get_annotation_calculation(annotations_path)
     return json.loads(response), code
 

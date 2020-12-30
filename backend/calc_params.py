@@ -12,7 +12,7 @@ class CalcParams:
         self.yaml_path = None
         if yaml_path:
             self.yaml_path = Path(project.directory) / yaml_path
-        self.annotation_path = None
+        self.annotation_path = annotation_path or ""
         if annotation_path:
             self.annotation_path= Path(project.directory) / annotation_path
 
