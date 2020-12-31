@@ -137,16 +137,16 @@ class Sidebar extends Component<{}, SidebarState> {
                         </Card.Header>
 
                         {/* card body */}
-                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 150px)", display: "flex", overflow: "auto" }}>
+                        {/* height: ... -150px */}
+                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)", display: "flex", overflow: "auto" }}>
                             {currentFileTree}
                         </Card.Body>
-                        <Card.Footer style={{ height: "50px" }}>
-                            {/* <SheetSelector
+                        {/* <Card.Footer style={{ height: "50px" }}>
+                            <SheetSelector
                                 sheetNames={filesTypes}
                                 currSheetName={this.state.currFiles}
-                                handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/> */}
-
-                        </Card.Footer>
+                                handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/>
+                        </Card.Footer> */}
                     </Card>
             </div>
         );
