@@ -141,7 +141,7 @@ def get_yaml_calculation(client, project_folder, data_file, sheet_name, yaml_fil
 def url_builder(base, project_folder, data_file, sheet_name, yaml_file=None, annotation_file=None):
     url=base+f'?project_folder={project_folder}&data_file={data_file}&sheet_name={sheet_name}'
     if yaml_file:
-        url+=f'&yaml_file={yaml_file}'
+        url+=f'&mapping_file={yaml_file}&mapping_type=Yaml'
     elif annotation_file:
-        url+=f'&annotation_file={annotation_file}'
+        url+=f'&mapping_file={annotation_file}&mapping_type=Annotation'
     return url
