@@ -167,9 +167,9 @@ export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDT
 }
 
 export interface ResponseWithProjectAndMappingDTO extends ResponseWithProjectDTO, ResponseWithMappingDTO{
-    
+
 }
 
-export interface ResponseEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO{
+export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO{
 
 }
