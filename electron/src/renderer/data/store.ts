@@ -60,7 +60,7 @@ class OutputState {
 class YamlEditorState {
     public requestService = new RequestService();
     @observable public yamlName = '';
-    @observable public yamlList: string[] = [];
+    // @observable public yamlList: string[] = [];
     @observable public showSpinner = false;
     @observable public yamlContent: string = defaultYamlContent;
     @observable public yamlError?: string | undefined;
