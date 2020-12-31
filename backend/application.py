@@ -5,10 +5,10 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table, get_annotations, get_table, save_annotations,
+from t2wml_web import (download, get_layers, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
-from utils import (file_upload_validator, save_dataframe, numpy_converter, get_yaml_content, save_yaml)
+from utils import (file_upload_validator, save_dataframe, get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
@@ -84,8 +84,13 @@ def json_response(func):
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
 
+def update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type):
+    if mapping_type=="Annotation":
+        calc_params.annotation_path=Path(project.directory) / mapping_file
+    if mapping_type=="Yaml":
+        calc_params.yaml_path=Path(project.directory) / mapping_file
 
-def get_calc_params(project, data_required=True):
+def get_calc_params(project, data_required=True, mapping_type=None, mapping_file=None):
     try:
         try:
             data_file = request.args['data_file']
@@ -105,6 +110,11 @@ def get_calc_params(project, data_required=True):
 
     add_entities_from_project(project)
     calc_params = CalcParams(project, data_file, sheet_name)
+
+    mapping_type=mapping_type or request.args.get("mapping_type")
+    mapping_file=mapping_file or request.args.get("mapping_file")
+    update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type)
+
     return calc_params
 
 @app.route('/api/project', methods=['GET'])
@@ -121,24 +131,17 @@ def get_project_files():
 def get_mapping(mapping_file=None, mapping_type=None):
     project=get_project()
     calc_params=get_calc_params(project)
-    if mapping_type is None: #not a redirect from yaml/apply or POST annotation
-        mapping_type=request.args.get("mapping_type")
-        if not mapping_type:
-            raise web_exceptions.InvalidRequestException("mapping type parameter not specified")
-        mapping_file=request.args.get("mapping_file")
-        if not mapping_file:
-            raise web_exceptions.InvalidRequestException("mapping file parameter not specified")
+    #if redirecting from a save:
+    update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type)
 
     response=dict()
-    if mapping_type=="Annotation":
-        calc_params.annotation_path=Path(project.directory) /mapping_file
-        get_annotations(calc_params, response)
-    elif mapping_type=="Yaml":
-        calc_params.yaml_path=Path(project.directory) /mapping_file
+    for_annotation=False
+    if calc_params.annotation_path:
+        for_annotation=True
+        response["annotations"], response["yamlContent"]=get_annotations(calc_params)
+    elif calc_params.yaml_path:
         response["yamlContent"]=get_yaml_content(calc_params)
-        get_all_layers_and_table(response, calc_params)
-    else:
-        raise web_exceptions.InvalidRequestException("unrecognized mapping type")
+    get_layers(response, calc_params, for_annotation)
 
     return response, 200
 
@@ -149,11 +152,8 @@ def get_data():
     calc_params=get_calc_params(project)
     response=dict()
     response["table"] = get_table(calc_params)
-    try:
-        calc_response, code = get_mapping()
-        response.update(calc_response)
-    except web_exceptions.InvalidRequestException:
-        pass #TODO: fill with empties
+    calc_response, code = get_mapping()
+    response.update(calc_response)
     return response, 200
 
 
@@ -199,7 +199,8 @@ def upload_data_file():
     if global_settings.datamart_integration:
         calc_params.yaml_path=run_annotation(project, calc_params)
         response["yamlContent"]=get_yaml_content(calc_params)
-    get_all_layers_and_table(response, calc_params)
+    response["table"] = get_table(calc_params)
+    get_layers(response, calc_params)
 
 
     return response, 200

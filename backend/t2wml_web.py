@@ -268,20 +268,17 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 
 
-def get_all_layers_and_table(response, calc_params, for_annotation=False):
+def get_layers(response, calc_params, for_annotation=False):
     #convenience function for code that repeats three times
-    response["table"] = get_table(calc_params)
-
     response["layers"]=get_empty_layers()
     response["layers"].update(get_qnodes_layer(calc_params))
-
     try:
         response["layers"].update(get_yaml_layers(calc_params, for_annotation=for_annotation))
     except Exception as e:
         response["yamlError"] = str(e)
 
 
-def get_annotations(calc_params, response):
+def get_annotations(calc_params):
     annotations_path=calc_params.annotation_path
     try:
         dga = Annotation.load(annotations_path)
@@ -292,10 +289,7 @@ def get_annotations(calc_params, response):
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
-    response.update(dict(annotations=dga.annotation_block_array, yamlContent=yamlContent))
-    get_all_layers_and_table(response, calc_params, True)
-    response.pop('table')
-    return  dga.annotation_block_array, yamlContent
+    return dga.annotation_block_array, yamlContent
 
 def save_annotations(project, calc_params, annotation, response):
     annotations_path=calc_params.annotation_path

@@ -1,5 +1,7 @@
 import sys
 import os
+import json
+import numpy as np
 from pathlib import Path
 import uuid
 from flask import Flask
@@ -21,6 +23,14 @@ CACHE_FOLDER = os.path.join(DATADIR, "cache")
 Path(CACHE_FOLDER).mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__, static_folder=None)
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, np.generic):
+            return o.item()
+        return json.JSONEncoder.default(self, o)
+
+app.json_encoder=NumpyEncoder
 CORS(app, supports_credentials=True)
 
 

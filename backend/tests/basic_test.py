@@ -117,11 +117,10 @@ class TestBasicWorkflow(BaseClass):
 
     def test_12_change_sheet(self, client):
         #GET /api/data/{project_folder}/<sheet_name>
-        url=url_builder('/api/calculation/yaml', project_folder, self.data_file, "Sheet4")
+        url=url_builder('/api/table', project_folder, self.data_file, "Sheet4")
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
-        data.pop('project')
         self.results_dict['change_sheet']=data
         self.compare_jsons(data, 'change_sheet')
 
@@ -185,11 +184,10 @@ class TestLoadingProject(BaseClass):
     results_dict={}
 
     def test_11_get_loaded_yaml_files(self, client):
-        url=url_builder('/api/calculation/yaml', self.files_dir, "dataset.xlsx", "Sheet3", "test.yaml")
+        url=url_builder('/api/table', self.files_dir, "dataset.xlsx", "Sheet3", "test.yaml")
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
-        data.pop('project')
         self.results_dict['load_from_path']=data
         #with open(self.expected_results_path, 'w') as f:
         #    json.dump(self.results_dict, f, sort_keys=False, indent=4)
@@ -200,7 +198,7 @@ class TestLoadingProject(BaseClass):
 class TestCleaning(BaseClass):
     files_dir=os.path.join(os.path.dirname(__file__), "files_for_tests", "homicide")
     def test_11_get_cleaned_data(self, client):
-        url=url_builder('/api/calculation/yaml', self.files_dir, "homicide_report_total_and_sex.xlsx", "table-1a", "t2wml/table-1a.yaml")
+        url=url_builder('/api/mapping', self.files_dir, "homicide_report_total_and_sex.xlsx", "table-1a", "t2wml/table-1a.yaml")
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = json.loads(data)
