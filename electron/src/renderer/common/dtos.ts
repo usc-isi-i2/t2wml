@@ -143,6 +143,7 @@ export interface ResponseWithProjectDTO {
 }
 
 export interface ResponseWithMappingDTO{
+    project: ProjectDTO;
     layers: LayersDTO;
     yamlContent: string;
     yamlError?: string;

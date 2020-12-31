@@ -134,7 +134,7 @@ def get_mapping(mapping_file=None, mapping_type=None):
     #if redirecting from a save:
     update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type)
 
-    response=dict()
+    response=dict(project=get_project_dict(project))
     for_annotation=False
     if calc_params.annotation_path:
         for_annotation=True

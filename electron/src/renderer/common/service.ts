@@ -45,6 +45,7 @@ class RequestService {
 
   @action
   public fillMapping(response: ResponseWithMappingDTO){
+    wikiStore.projects.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.yaml.yamlError = response.yamlError;
