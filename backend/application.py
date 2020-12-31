@@ -5,7 +5,7 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table, get_annotations, save_annotations,
+from t2wml_web import (download, get_all_layers_and_table, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_dataframe, numpy_converter, get_yaml_content, save_yaml)
@@ -104,9 +104,7 @@ def get_calc_params(project, data_required=True):
             return None
 
     add_entities_from_project(project)
-    yaml_file=request.args.get("yaml_file", None)
-    annotation_file=request.args.get("annotation_file", None)
-    calc_params = CalcParams(project, data_file, sheet_name, yaml_file, annotation_file)
+    calc_params = CalcParams(project, data_file, sheet_name)
     return calc_params
 
 @app.route('/api/project', methods=['GET'])
@@ -117,42 +115,49 @@ def get_project_files():
     return response, 200
 
 
-@app.route('/api/calculation/yaml', methods=['GET'])
+
+@app.route('/api/mapping', methods=['GET'])
 @json_response
-def get_yaml_calculation(yaml_file=None):
-    """
-    This route is used when switching the selected yaml
-    :return:
-    """
+def get_mapping(mapping_file=None, mapping_type=None):
     project=get_project()
     calc_params=get_calc_params(project)
-    if yaml_file: #redirect from saving yaml
-        calc_params.yaml_path=Path(project.directory) / yaml_file
-    if not calc_params.yaml_path and global_settings.datamart_integration:
-        calc_params.yaml_path=run_annotation(project, calc_params)
+    if mapping_type is None: #not a redirect from yaml/apply or POST annotation
+        mapping_type=request.args.get("mapping_type")
+        if not mapping_type:
+            raise web_exceptions.InvalidRequestException("mapping type parameter not specified")
+        mapping_file=request.args.get("mapping_file")
+        if not mapping_file:
+            raise web_exceptions.InvalidRequestException("mapping type parameter not specified")
 
-    response=dict(project=get_project_dict(project))
-    response["yamlContent"]=get_yaml_content(calc_params)
-    get_all_layers_and_table(response, calc_params)
+    response=dict()
+    if mapping_type=="annotation":
+        calc_params.annotation_path=Path(project.directory) /mapping_file
+        get_annotations(calc_params, response)
+    elif mapping_type=="yaml":
+        calc_params.yaml_path=Path(project.directory) /mapping_file
+        response["yamlContent"]=get_yaml_content(calc_params)
+        get_all_layers_and_table(response, calc_params)
+    else:
+        raise web_exceptions.InvalidRequestException("unrecognized mapping type")
+
+    return response, 200
+
+@app.route('api/table', methods=['GET'])
+@json_response
+def get_data():
+    project=get_project()
+    calc_params=get_calc_params(project)
+    response=dict()
+    response["table"] = get_table(calc_params)
+    try:
+        calc_response, code = get_mapping()
+        response.update(calc_response)
+    except web_exceptions.InvalidRequestException:
+        pass #TODO: fill with empties
     return response, 200
 
 
-@app.route('/api/calculation/annotation', methods=['GET'])
-@json_response
-def get_annotation_calculation(annotation_path=None):
-    """
-    This route is used when switching the selected yaml
-    :return:
-    """
-    project=get_project()
-    calc_params=get_calc_params(project)
-    if annotation_path: #redirect from saving annotation
-        calc_params.annotation_path = Path(project.directory) / annotation_path
 
-    response=dict(project=get_project_dict(project))
-    get_annotations(calc_params, response)
-
-    return response, 200
 
 
 @app.route('/api/project', methods=['POST'])
@@ -320,10 +325,10 @@ def apply_yaml():
     upload_yaml()
     yaml_title = request.get_json()["title"]
     yaml_path = Path(project.directory) / yaml_title
-    response, code = get_yaml_calculation(yaml_path)
+    response=dict(project=get_project_dict(project))
+    calc_response, code = get_mapping(yaml_path, "yaml")
+    response.update(calc_response)
     return response, code
-
-
 
 
 
@@ -370,7 +375,9 @@ def upload_annotation():
     response=dict(project=get_project_dict(project))
     annotation = request.get_json()["annotations"]
     save_annotations(project, calc_params, annotation, response)
-    response, code = get_annotation_calculation(annotations_path)
+    response = dict(project= get_project_dict(project))
+    calc_response, code = get_mapping(annotations_path, "annotation")
+    response.update(calc_response)
     return response, code
 
 @app.route('/api/project', methods=['PUT'])

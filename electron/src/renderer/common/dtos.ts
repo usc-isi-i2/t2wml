@@ -4,11 +4,12 @@
 
 import { CellSelection } from "./general";
 
+/* base types*/
+
  interface CurrentAndArrayDTO{
      selected: string,
      val_arr: string[]
  }
-
 
 export interface ProjectDTO {
     directory: string;
@@ -26,35 +27,6 @@ export interface ProjectDTO {
     handle_calendar: string;
     cache_id: string;
 }
-
-export interface ResponseWithProjectDTO {
-    project: ProjectDTO;
-}
-
-export interface ResponseWithAnnotationsDTO extends ResponseWithProjectDTO{
-    annotations: AnnotationBlock[];
-    yamlContent: string;
-}
-
-export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
-    layers: LayersDTO;
-    yamlError?: string;
-}
-
-export interface ResponseWithTableandMaybeYamlDTO extends ResponseWithLayersDTO {
-    table: TableDTO;
-    yamlContent?: string;
-}
-
-export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
-    entitiesStats: EntitiesStatsDTO;
-}
-
-export interface CallWikifierServiceDTO extends ResponseWithLayersDTO {
-    wikifierError: string;
-}
-
-//types:
 
 export interface TableDTO {
     cells: string[][];
@@ -159,4 +131,45 @@ export interface AnnotationBlock{
 export interface TableCell {
   content: string;
   classNames: string[];
+}
+
+
+/* responses: */
+
+
+
+export interface ResponseWithProjectDTO {
+    project: ProjectDTO;
+}
+
+export interface ResponseWithMappingDTO{
+    layers: LayersDTO;
+    yamlContent: string;
+    yamlError?: string;
+    annotations: AnnotationBlock[];
+}
+
+export interface ResponseWithTableDTO extends ResponseWithMappingDTO{
+    table: TableDTO;
+}
+
+export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO{
+    layers: LayersDTO; //only contains the qnode layer, but leaving it like this for now
+
+}
+
+export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
+    entitiesStats: EntitiesStatsDTO;
+}
+
+export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {
+    wikifierError: string;
+}
+
+export interface ResponseWithProjectAndMappingDTO extends ResponseWithProjectDTO, ResponseWithMappingDTO{
+    
+}
+
+export interface ResponseEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO{
+
 }
