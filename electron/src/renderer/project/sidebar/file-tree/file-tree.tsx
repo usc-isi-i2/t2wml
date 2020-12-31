@@ -139,8 +139,8 @@ class FileTree extends Component<TreeProps, TreeState> {
           doubleClick: (node: NodeProps) => this.onDoubleClick(node),
           bolded: saveFiles.currentState.sheetName == sheetName
         } as NodeProps;
-        this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName,  "Yaml", sheetNode)
         this.buildSubFileTree(project.annotations, df, sheetName, "Annotation", sheetNode)
+        this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName,  "Yaml", sheetNode)
         dataNode.childNodes.push(sheetNode)
       }
       rootNode.childNodes.push(dataNode)
