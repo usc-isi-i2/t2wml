@@ -142,7 +142,7 @@ def get_mapping(mapping_file=None, mapping_type=None):
 
     return response, 200
 
-@app.route('api/table', methods=['GET'])
+@app.route('/api/table', methods=['GET'])
 @json_response
 def get_data():
     project=get_project()
