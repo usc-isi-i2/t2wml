@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import DoubleClick from "./double-click-HOC";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {IconDefinition, faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile, faProjectDiagram, faList} from '@fortawesome/free-solid-svg-icons';
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 
 export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
@@ -54,6 +55,13 @@ class FileNode extends Component<NodeProps, NodeState> {
       this.props.rightClick(this.props);
   }
 
+  getDataFile(node: NodeProps): string{
+    if (node.type !== "DataFile" && node.type !== "Label") {
+      return this.getDataFile(node.parentNode!);
+    }
+    return node.label;
+  }
+
   render() {
     let childrenNodes = null;
     if (this.props.childNodes.length && this.state.expanded) {
@@ -85,13 +93,21 @@ class FileNode extends Component<NodeProps, NodeState> {
 
     let label = this.props.bolded ? <b>{this.props.label}</b>: this.props.label
 
+    const logoTooltipHtml = (
+      <Tooltip style={{ width: "fit-content" }} id="navbar-tooltip">
+          {this.getDataFile(this.props)}
+      </Tooltip>
+    );
+
     return (
       <li>
+        <OverlayTrigger overlay={logoTooltipHtml} placement="top" trigger={["hover", "focus"]}>
           <label
             onContextMenu={(e) => this.onRightClick(e)}
             onDoubleClick={() => this.onDoubleClick()}>
             {arrowIcon} <span>{typeIcon} {label}</span>
           </label>
+        </OverlayTrigger>
         {childrenNodes}
       </li>
     )
