@@ -53,15 +53,17 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async changeSheet(sheetName: string, dataFile: string) {
-    saveFiles.changeDataFile(dataFile);
-    saveFiles.changeSheet(sheetName);
+    saveFiles.changeSheet(sheetName, dataFile);
     await this.requestService.getYamlCalculation();
   }
 
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {
-    saveFiles.changeDataFile(dataFile);
-    saveFiles.changeSheet(sheetName);
-    saveFiles.changeYaml(yaml);
+    saveFiles.changeYaml(yaml, sheetName, dataFile);
+    await this.requestService.getYamlCalculation();
+  }
+
+  async changeAnnotation(annotation: string, sheetName: string, dataFile: string) {
+    saveFiles.changeAnnotation(annotation, sheetName, dataFile);
     await this.requestService.getYamlCalculation();
   }
 
@@ -81,6 +83,13 @@ class FileTree extends Component<TreeProps, TreeState> {
         if (node.label !== saveFiles.currentState.mappingFile) {
             await this.changeYaml(node.label, sheet.label, dataFile);
         }
+    } else if (node.type === "Annotation") {
+      const sheet = node.parentNode!;
+      const dataFile = sheet.parentNode!.label;
+
+      if (node.label !== saveFiles.currentState.mappingFile) {
+          await this.changeAnnotation(node.label, sheet.label, dataFile);
+      }
     }
   }
 

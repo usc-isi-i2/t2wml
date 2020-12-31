@@ -382,7 +382,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               className="text-white font-weight-bold d-inline-block text-truncate"
               style={{ width: "calc(100% - 75px)", cursor: "default" }}
             >
-              YAML&nbsp;Editor&nbsp;({saveFiles.currentState.yamlFile})
+              YAML&nbsp;Editor&nbsp;({saveFiles.currentState.mappingFile})
             </div>
 
             {/* button of open yaml file */}

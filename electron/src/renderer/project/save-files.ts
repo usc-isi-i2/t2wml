@@ -89,12 +89,14 @@ export class SaveFiles implements Data {
                 this.currentState.mappingFile = project.yaml_sheet_associations[dataFile][sheet].val_arr[0];
             } else {
                 this.currentState.mappingFile = undefined;
+                this.currentState.mappingType = undefined;
             }
         } else if (this.currentState.mappingType === 'Annotation') {
             if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
                 this.currentState.mappingFile = project.annotations[dataFile][sheet].val_arr[0];
             } else {
                 this.currentState.mappingFile = undefined;
+                this.currentState.mappingType = undefined;
             }
         } else {
             this.currentState.mappingFile = undefined;
@@ -113,8 +115,9 @@ export class SaveFiles implements Data {
     }
 
     @action
-    changeSheet(newSheet: string) {
+    changeSheet(newSheet: string, dataFile: string) {
         const project = wikiStore.projects.projectDTO!;
+        this.currentState.dataFile = dataFile;
         // If this sheet is not part of current datafile, search the relevant data file.
         if (project.data_files[this.currentState.dataFile].val_arr.indexOf(newSheet) < 0) {
             for (const df of Object.keys(project.data_files)) {
@@ -131,8 +134,10 @@ export class SaveFiles implements Data {
     }
 
     @action
-    changeYaml(newYaml: string) {
+    changeYaml(newYaml: string, sheetName: string, dataFile: string) {
         const project = wikiStore.projects.projectDTO!;
+        this.currentState.dataFile = dataFile;
+        this.currentState.sheetName = sheetName;
         // If this yaml is not part of current datafile, search the relevant data file and sheet.
         if (project.yaml_sheet_associations[this.currentState.dataFile][this.currentState.sheetName].val_arr.indexOf(newYaml) < 0) {
             for (const df of Object.keys(project.yaml_sheet_associations)) {
@@ -152,8 +157,10 @@ export class SaveFiles implements Data {
     }
 
     @action
-    changeAnnotation(newAnnotation: string) {
+    changeAnnotation(newAnnotation: string, sheetName: string, dataFile: string) {
         const project = wikiStore.projects.projectDTO!;
+        saveFiles.currentState.dataFile = dataFile;
+        saveFiles.currentState.sheetName = sheetName;
         // If this yaml is not part of current datafile, search the relevant data file and sheet.
         if (project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr.indexOf(newAnnotation) < 0) {
             for (const df of Object.keys(project.annotations)) {
