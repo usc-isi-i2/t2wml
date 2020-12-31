@@ -11,8 +11,8 @@ interface Data {
 export interface CurrentFiles {
     dataFile: string;
 	sheetName: string;
-	yamlFile: string | undefined;
-	annotationFile: string | undefined;
+	mappingFile: string | undefined;
+	mappingType: 'Yaml' | 'Annotation' | undefined;
 }
 
 // send these params to the backend when asking project data
@@ -63,19 +63,41 @@ export class SaveFiles implements Data {
                 this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
             }
             
-            if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile]) {
-                this.currentState.yamlFile = project.yaml_sheet_associations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
-            } else {
-                this.currentState.yamlFile = undefined;
-            }
-
             if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile]) {
-                this.currentState.annotationFile = project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
+                this.currentState.mappingFile = project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
+                this.currentState.mappingType = 'Annotation';
+            } else if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile]) {
+                this.currentState.mappingFile = project.yaml_sheet_associations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
+                this.currentState.mappingType = 'Yaml';
             } else {
-                this.currentState.annotationFile = undefined;
+                this.currentState.mappingFile = undefined;
+                this.currentState.mappingType = undefined;
             }
-
+            
             this.saveFiles(project.directory);
+        }
+    }
+
+    @action
+    fillMapping() {
+        const project = wikiStore.projects.projectDTO!;
+        const dataFile = this.currentState.dataFile;
+        const sheet = this.currentState.sheetName;
+
+        if (this.currentState.mappingType === 'Yaml') {
+            if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][sheet]) {
+                this.currentState.mappingFile = project.yaml_sheet_associations[dataFile][sheet].val_arr[0];
+            } else {
+                this.currentState.mappingFile = undefined;
+            }
+        } else if (this.currentState.mappingType === 'Annotation') {
+            if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
+                this.currentState.mappingFile = project.annotations[dataFile][sheet].val_arr[0];
+            } else {
+                this.currentState.mappingFile = undefined;
+            }
+        } else {
+            this.currentState.mappingFile = undefined;
         }
     }
 
@@ -84,16 +106,8 @@ export class SaveFiles implements Data {
         const project = wikiStore.projects.projectDTO!;
         this.currentState.dataFile = newFile;
         this.currentState.sheetName = project.data_files[newFile].val_arr[0];
-        if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[newFile] && project.yaml_sheet_associations[newFile][this.currentState.sheetName]) {
-            this.currentState.yamlFile = project.yaml_sheet_associations[newFile][this.currentState.sheetName].val_arr[0];
-        } else {
-            this.currentState.yamlFile = undefined;
-        }
-        if (Object.keys(project.annotations).length && project.annotations[newFile] && project.annotations[newFile][this.currentState.sheetName]) {
-            this.currentState.annotationFile = project.annotations[newFile][this.currentState.sheetName].val_arr[0];
-        } else {
-            this.currentState.annotationFile = undefined;
-        }
+        
+        this.fillMapping();
 
         this.saveFiles(project.directory);
     }
@@ -109,18 +123,9 @@ export class SaveFiles implements Data {
                 }
             }
         }
-        const dataFile = this.currentState.dataFile;
         this.currentState.sheetName = newSheet;
-        if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][newSheet]) {
-            this.currentState.yamlFile = project.yaml_sheet_associations[dataFile][newSheet].val_arr[0];
-        } else {
-            this.currentState.yamlFile = undefined;
-        }
-        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][newSheet]) {
-            this.currentState.annotationFile = project.annotations[dataFile][newSheet].val_arr[0];
-        } else {
-            this.currentState.annotationFile = undefined;
-        }
+        
+        this.fillMapping();
 
         this.saveFiles(project.directory);
     }
@@ -140,15 +145,8 @@ export class SaveFiles implements Data {
             }
         }
 
-        this.currentState.yamlFile = newYaml;
-        const dataFile = this.currentState.dataFile;
-        const sheet = this.currentState.sheetName;
-        
-        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
-            this.currentState.annotationFile = project.annotations[dataFile][sheet].val_arr[0];
-        } else {
-            this.currentState.annotationFile = undefined;
-        }
+        this.currentState.mappingFile = newYaml;
+        this.currentState.mappingType = 'Yaml';
 
         this.saveFiles(project.directory);
     }
@@ -168,15 +166,8 @@ export class SaveFiles implements Data {
             }
         }
 
-        this.currentState.annotationFile = newAnnotation;
-        const dataFile = this.currentState.dataFile;
-        const sheet = this.currentState.sheetName;
-        
-        if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][sheet]) {
-            this.currentState.yamlFile = project.yaml_sheet_associations[dataFile][sheet].val_arr[0];
-        } else {
-            this.currentState.yamlFile = undefined;
-        }
+        this.currentState.mappingFile = newAnnotation;
+        this.currentState.mappingType = 'Annotation';
         
         this.saveFiles(project.directory);
     }

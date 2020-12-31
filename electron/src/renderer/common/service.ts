@@ -1,6 +1,6 @@
 import { action } from 'mobx';
-import wikiStore, { Layer } from '../data/store';
-import { saveFiles, CurrentFiles } from '../project/save-files';
+import wikiStore from '../data/store';
+import { saveFiles } from '../project/save-files';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,

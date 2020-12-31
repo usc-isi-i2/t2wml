@@ -78,7 +78,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         const sheet = node.parentNode!;
         const dataFile = sheet.parentNode!.label;
 
-        if (node.label !== saveFiles.currentState.yamlFile) {
+        if (node.label !== saveFiles.currentState.mappingFile) {
             await this.changeYaml(node.label, sheet.label, dataFile);
         }
     }
@@ -106,7 +106,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           rightClick: (node: NodeProps) => this.onRightClick(node),
           doubleClick: (node: NodeProps) => this.onDoubleClick(node),
           //because yaml ends in .yaml and annotation in .json, we can check both simultaneously?
-          bolded: saveFiles.currentState.yamlFile == filename || saveFiles.currentState.annotationFile == filename
+          bolded: saveFiles.currentState.mappingFile == filename
         }
       )
     }
