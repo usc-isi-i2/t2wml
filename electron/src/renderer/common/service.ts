@@ -53,6 +53,7 @@ class RequestService {
 
   @action
   public fillTable(response: ResponseWithTableDTO){
+    debugger
     wikiStore.table.table = response.table;
     this.fillMapping(response);
   }
@@ -81,6 +82,7 @@ class RequestService {
     this.fillTable(response);
   }
 
+
   public async uploadWikifierOutput(data: any) {
     const response = await backendPost(`/wikifier?${this.getDataFileParams(false)}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
@@ -103,10 +105,16 @@ class RequestService {
     this.switchProjectState(response);
   }
 
+  public async getTable() {
+    const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
+    this.fillTable(response);
+  }
+
   public async getYamlCalculation() {
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
     this.fillMapping(response);
   }
+
 
   public async getAnnotationCalculation() {
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;

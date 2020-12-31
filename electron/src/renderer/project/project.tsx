@@ -112,9 +112,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     try {
       await this.requestService.call(this, () => this.requestService.getProject(this.props.path));
       if (saveFiles.currentState.dataFile && saveFiles.currentState.sheetName) {
-        await this.requestService.call(this, () => this.requestService.getYamlCalculation());
+        await this.requestService.call(this, () => this.requestService.getTable());
       }
-      
+
       document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
       this.setState({ name: wikiStore.projects.projectDTO!.title });
 
