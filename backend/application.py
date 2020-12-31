@@ -127,13 +127,13 @@ def get_mapping(mapping_file=None, mapping_type=None):
             raise web_exceptions.InvalidRequestException("mapping type parameter not specified")
         mapping_file=request.args.get("mapping_file")
         if not mapping_file:
-            raise web_exceptions.InvalidRequestException("mapping type parameter not specified")
+            raise web_exceptions.InvalidRequestException("mapping file parameter not specified")
 
     response=dict()
-    if mapping_type=="annotation":
+    if mapping_type=="Annotation":
         calc_params.annotation_path=Path(project.directory) /mapping_file
         get_annotations(calc_params, response)
-    elif mapping_type=="yaml":
+    elif mapping_type=="Yaml":
         calc_params.yaml_path=Path(project.directory) /mapping_file
         response["yamlContent"]=get_yaml_content(calc_params)
         get_all_layers_and_table(response, calc_params)
@@ -326,7 +326,7 @@ def apply_yaml():
     yaml_title = request.get_json()["title"]
     yaml_path = Path(project.directory) / yaml_title
     response=dict(project=get_project_dict(project))
-    calc_response, code = get_mapping(yaml_path, "yaml")
+    calc_response, code = get_mapping(yaml_path, "Yaml")
     response.update(calc_response)
     return response, code
 
@@ -376,7 +376,7 @@ def upload_annotation():
     annotation = request.get_json()["annotations"]
     save_annotations(project, calc_params, annotation, response)
     response = dict(project= get_project_dict(project))
-    calc_response, code = get_mapping(annotations_path, "annotation")
+    calc_response, code = get_mapping(annotations_path, "Annotation")
     response.update(calc_response)
     return response, code
 
