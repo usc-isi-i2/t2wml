@@ -68,10 +68,10 @@ def json_response(func):
     def wrapper(*args, **kwargs):
         try:
             data, return_code = func(*args, **kwargs)
-            return json.dumps(data, indent=3, default=numpy_converter), return_code
+            return data, return_code
         except WebException as e:
             data = {"error": e.error_dict}
-            return json.dumps(data, indent=3, default=numpy_converter), e.code
+            return data, e.code
         except Exception as e:
             data = {"error": make_frontend_err_dict(e)}
             try:
@@ -79,7 +79,7 @@ def json_response(func):
                 data["error"]["code"]=code
             except AttributeError:
                 code=500
-            return json.dumps(data, indent=3, default=numpy_converter), code
+            return data, code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
@@ -321,7 +321,7 @@ def apply_yaml():
     yaml_title = request.get_json()["title"]
     yaml_path = Path(project.directory) / yaml_title
     response, code = get_yaml_calculation(yaml_path)
-    return json.loads(response), code
+    return response, code
 
 
 
@@ -371,7 +371,7 @@ def upload_annotation():
     annotation = request.get_json()["annotations"]
     save_annotations(project, calc_params, annotation, response)
     response, code = get_annotation_calculation(annotations_path)
-    return json.loads(response), code
+    return response, code
 
 @app.route('/api/project', methods=['PUT'])
 @json_response
