@@ -1,6 +1,6 @@
 import json
 import os
-from tests.utils import (client, BaseClass, create_project, get_yaml_calculation,
+from tests.utils import (client, BaseClass, create_project,
                 load_data_file, load_yaml_file, url_builder,
                 load_wikifier_file, load_item_file)
 

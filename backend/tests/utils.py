@@ -131,7 +131,7 @@ def load_item_file(client, project_folder, filename, data_file=None, sheet_name=
     return response
 
 def get_yaml_calculation(client, project_folder, data_file, sheet_name, yaml_file=None):
-    url=url_builder('/api/calculation/yaml', project_folder, data_file, sheet_name, yaml_file)
+    url=url_builder('/api/mapping', project_folder, data_file, sheet_name, yaml_file)
     response=client.get(url)
     data = response.data.decode("utf-8")
     data = json.loads(data)
