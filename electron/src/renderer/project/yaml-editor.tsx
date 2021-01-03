@@ -73,7 +73,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
-    // this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) { this.updateYamlFiles(project); }});
+    this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) { this.updateYamlFiles(project); }});
   }
 
   componentWillUnmount() {
@@ -231,10 +231,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  // updateYamlFiles(project: ProjectDTO) {
-  //   if (wikiStore.projects.projectDTO && saveFiles.currentState.dataFile) {
-  //     this.setState({disableYaml: false});
-  //   }
+  updateYamlFiles(project: ProjectDTO) {
+    if (wikiStore.projects.projectDTO && saveFiles.currentState.dataFile) {
+      this.setState({disableYaml: false});
+    }
+    
 
   //   const dataFile = saveFiles.currentState.dataFile;
   //   const sheetName = saveFiles.currentState.sheetName;
@@ -260,7 +261,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   //     wikiStore.yaml.yamlName = '';
   //     wikiStore.yaml.yamlList = [];
   //   }
-  // }
+  }
 
   // async handleChangeFile(event: any) {
   //   const yaml = event.target.innerHTML;

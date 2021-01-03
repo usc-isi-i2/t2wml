@@ -165,7 +165,7 @@ class TableContainer extends Component<{}, TableState> {
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
       // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
-      saveFiles.changeSheet(sheetName);
+      saveFiles.changeSheet(sheetName, saveFiles.currentState.dataFile);
       await this.requestService.getYamlCalculation();
 
       if ( wikiStore.yaml.yamlContent ) {
