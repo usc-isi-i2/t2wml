@@ -49,12 +49,12 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async changeDataFile(dataFile: string) {
     saveFiles.changeDataFile(dataFile);
-    await this.requestService.getYamlCalculation();
+    await this.requestService.getTable();
   }
 
   async changeSheet(sheetName: string, dataFile: string) {
     saveFiles.changeSheet(sheetName, dataFile);
-    await this.requestService.getYamlCalculation();
+    await this.requestService.getTable();
   }
 
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {

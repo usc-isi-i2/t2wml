@@ -166,7 +166,7 @@ class TableContainer extends Component<{}, TableState> {
     try {
       // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       saveFiles.changeSheet(sheetName, saveFiles.currentState.dataFile);
-      await this.requestService.getYamlCalculation();
+      await this.requestService.getTable();
 
       if ( wikiStore.yaml.yamlContent ) {
         wikiStore.table.isCellSelectable = true;
