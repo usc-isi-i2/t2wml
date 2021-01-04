@@ -85,15 +85,16 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  delink() {
+  openDelinkModal() {
     // convert to yaml file
     this.setState({showDelink: true});
-    
   }
 
   delinkYaml(fileName: string) {
-    console.log("delink yaml");
+    console.log("delink yaml ", fileName);
     this.setState({ showDelink: false });
+
+    this.handleApplyYaml();
   }
 
   async handleApplyYaml() {
@@ -505,7 +506,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 className="d-inline-block float-right"
                 size="sm"
                 style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
-                onClick={() => this.delink()}
+                onClick={() => this.openDelinkModal()}
               >
                 Delink
               </Button> :

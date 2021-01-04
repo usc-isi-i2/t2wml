@@ -110,13 +110,7 @@ class RequestService {
     this.fillTable(response);
   }
 
-  public async getYamlCalculation() {
-    const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
-    this.fillMapping(response);
-  }
-
-
-  public async getAnnotationCalculation() {
+  public async getMappingCalculation() {
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
     this.fillMapping(response);
   }

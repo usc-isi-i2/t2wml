@@ -5,6 +5,8 @@ import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bo
 
 import { observer } from "mobx-react";
 import { saveFiles } from '../save-files';
+import { defaultYamlContent } from '../default-values';
+import wikiStore from '@/renderer/data/store';
 
 
 interface DelinkProperties {
@@ -20,22 +22,34 @@ interface DelinkState {
 
 @observer
 class Delink extends Component<DelinkProperties, DelinkState> {
-
   constructor(props: DelinkProperties) {
     super(props);
 
-    debugger
     this.state = {
       delinkFileName: saveFiles.currentState.sheetName + '.yaml' ,
     };
   }
 
   delink() {
-      this.props.handleDoDelink(this.state.delinkFileName);
-    //   this.setState({
-    //     downloadFileName: this.state.downloadFileName,
-    //   });
+    wikiStore.yaml.yamlContent = defaultYamlContent; //TODO
+    saveFiles.currentState.mappingFile = this.state.delinkFileName;
+    saveFiles.currentState.mappingType = 'Yaml';
+
+    this.props.handleDoDelink(this.state.delinkFileName);
+  }
+
+  getDefaultName() {
+    let yamlName = saveFiles.currentState.sheetName;
+    if (yamlName) {
+      if (yamlName.endsWith('.csv')) {
+        yamlName = yamlName.split('.csv')[0];
+      } 
+      if (!yamlName.endsWith('.yaml')) {
+        yamlName += '.yaml';
+      }
     }
+    return yamlName;
+  }
 
   render() {
     return (
@@ -51,11 +65,23 @@ class Delink extends Component<DelinkProperties, DelinkState> {
           <Form className="container">
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Col xs="9" md="9" className="pr-0">
+                <Form.Label>
+                  Yaml Name
+                </Form.Label>
                 <Form.Control
                   type="text"
-                  defaultValue={saveFiles.currentState.sheetName + '.yaml'}
+                  defaultValue={this.getDefaultName()}
                   onChange={(event) => this.setState({ delinkFileName: event.target.value })}
                 />
+              </Col>
+            </Form.Group>
+            {/* TODO- show yaml data in the correct format */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Col xs="9" md="9" className="pr-0">
+                <Form.Label>Yaml Content</Form.Label>
+                <Form.Label>
+                  {defaultYamlContent}
+                </Form.Label>
               </Col>
             </Form.Group>
           </Form>

@@ -211,7 +211,7 @@ class TableContainer extends Component<{}, TableState> {
 
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getAnnotationCalculation()
+        this.requestService.getMappingCalculation()
       ));
     } catch (error) {
       error.errorDescription += "\n\nCannot fetch annotations!";
