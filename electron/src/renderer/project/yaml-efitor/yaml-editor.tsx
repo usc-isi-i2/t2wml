@@ -8,17 +8,18 @@ import yaml from 'js-yaml';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG, ErrorMessage, t2wmlColors } from '../common/general';
-import RequestService, { IStateWithError } from '../common/service';
-import ToastMessage from '../common/toast';
+import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
+import RequestService, { IStateWithError } from '../../common/service';
+import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react"
-import wikiStore, { LayerState } from '../data/store';
-import { defaultYamlContent } from "./default-values";
+import wikiStore, { LayerState } from '../../data/store';
+import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
 // import SheetSelector from './sheet-selector/sheet-selector';
-import { ProjectDTO } from '../common/dtos';
-import { saveFiles } from './save-files';
+import { ProjectDTO } from '../../common/dtos';
+import { saveFiles } from '../save-files';
+import Delink from './delink';
 
 
 interface yamlProperties {
@@ -34,6 +35,7 @@ interface yamlState extends IStateWithError {
   isImportFile: boolean;
   disableYaml: boolean;
   isAddedYaml: boolean;
+  showDelink: boolean;
 }
 
 
@@ -60,6 +62,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       isImportFile: false,
       disableYaml: false,
       isAddedYaml: false,
+      showDelink: false,
     };
 
     // init functions
@@ -80,6 +83,17 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     if (this.disposeReaction) {
       this.disposeReaction();
     }
+  }
+
+  delink() {
+    // convert to yaml file
+    this.setState({showDelink: true});
+    
+  }
+
+  delinkYaml(fileName: string) {
+    console.log("delink yaml");
+    this.setState({ showDelink: false });
   }
 
   async handleApplyYaml() {
@@ -370,6 +384,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     return (
       <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
+        <Delink showDelink={this.state.showDelink}
+          handleDoDelink={(fileName: string) => this.delinkYaml(fileName)}
+          cancelDelink={() => {this.setState({showDelink: false});}} />
         <Card
           className="w-100 shadow-sm"
           style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
@@ -483,15 +500,25 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             </div>
 
             {/* apply button */}
-            <Button
-              className="d-inline-block float-right"
-              size="sm"
-              style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
-              onClick={() => this.handleApplyYaml()}
-              disabled={!this.state.isValidYaml || this.state.disableYaml || wikiStore.yaml.showSpinner}
-            >
-              Apply
-            </Button>
+            {saveFiles.currentState.mappingType === 'Annotation'?
+              <Button
+                className="d-inline-block float-right"
+                size="sm"
+                style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
+                onClick={() => this.delink()}
+              >
+                Delink
+              </Button> :
+              <Button
+                className="d-inline-block float-right"
+                size="sm"
+                style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
+                onClick={() => this.handleApplyYaml()}
+                disabled={!this.state.isValidYaml || this.state.disableYaml || wikiStore.yaml.showSpinner}
+              >
+                Apply
+              </Button>
+            }
             
             {/* <div
               id="yamlSelector" // apply custom scroll bar

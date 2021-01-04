@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Wikifier from './wikifier/wikifier';
-import YamlEditor from './yaml-editor';
+import YamlEditor from './yaml-efitor/yaml-editor';
 import { observer } from "mobx-react"
 import wikiStore from '../data/store';
 
