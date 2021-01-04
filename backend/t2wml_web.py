@@ -284,6 +284,8 @@ def get_annotations(calc_params):
         dga = Annotation.load(annotations_path)
     except FileNotFoundError:
         dga=Annotation()
+    except Exception as e:
+        raise e
 
     try:
         yamlContent=dga.generate_yaml()[0]
