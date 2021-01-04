@@ -448,6 +448,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                   verticalSliderSize: 6
                 },
                 showFoldingControls: 'always',
+                readOnly: saveFiles.currentState.mappingType === 'Annotation',
               }}
               onChange={() => this.handleEditYaml()}
               editorDidMount={(editor) => {
