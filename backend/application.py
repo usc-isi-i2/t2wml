@@ -141,6 +141,7 @@ def get_mapping(mapping_file=None, mapping_type=None):
         response["annotations"], response["yamlContent"]=get_annotations(calc_params)
     elif calc_params.yaml_path:
         response["yamlContent"]=get_yaml_content(calc_params)
+        response["annotations"]=[]
     get_layers(response, calc_params, for_annotation)
 
     return response, 200
