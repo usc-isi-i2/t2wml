@@ -184,11 +184,10 @@ def get_yaml_layers(calc_params, for_annotation=False):
             get_cell_qnodes(statement, qnodes)
             cells=statement["cells"]
             cells.pop("value")
+            cells["mainSubject"]=cells.pop("subject")
             for key in cells:
-                if key == "property":
+                if key in ["property", "unit", "mainSubject"]:
                     cell_type_indices[key][cells[key]]=True
-                elif key == "subject":
-                    cell_type_indices["mainSubject"][cells[key]]=True
                 else:
                     cell_type_indices["additionalFields"][cells[key]]=True
                 #convert to frontend format
@@ -284,6 +283,8 @@ def get_annotations(calc_params):
         dga = Annotation.load(annotations_path)
     except FileNotFoundError:
         dga=Annotation()
+    except Exception as e:
+        raise e
 
     try:
         yamlContent=dga.generate_yaml()[0]

@@ -208,27 +208,19 @@ class OutputTable extends Component<{}, TableState> {
     // Select qualifier cells
     if ('qualifiers' in statement.cells) {
       statement.cells.qualifiers.forEach((cell: any) => {
-        if (cell.qualifier) {
-          const y = cell.qualifier[0];
-          const x = cell.qualifier[1];
+        for (const key in cell) {
+          const y = cell[key][0];
+          const x = cell[key][1];
           const tableCell = rows[y + 1].children[x + 1];
           this.selectCell(tableCell, []);
         }
       });
     }
 
-    // Select the cell with the main-subject
-    if ('mainSubject' in statement.cells) {
-      const y = statement.cells.subject[0];
-      const x = statement.cells.subject[1];
-      const cell = rows[y + 1].children[x + 1];
-      this.selectCell(cell, []);
-    }
-
-    // Select the cell with the property
-    if ('property' in statement.cells) {
-      const y = statement.cells.property[0];
-      const x = statement.cells.property[1];
+    for (const key in statement.cells){
+      if (key=="qualifiers"){continue;}
+      const y = statement.cells[key][0];
+      const x = statement.cells[key][1];
       const cell = rows[y + 1].children[x + 1];
       this.selectCell(cell, []);
     }
