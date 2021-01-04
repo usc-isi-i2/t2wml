@@ -92,7 +92,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
     const data = {"yaml": wikiStore.yaml.yamlContent,
-                  "title": wikiStore.yaml.yamlName as string,
+                  "title": saveFiles.currentState.mappingFile,
                   "sheetName": saveFiles.currentState.sheetName};
 
     try {
@@ -151,7 +151,10 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       yamlName = file.path.split(wikiStore.projects.current!.folder)[1].substring(1);
     }
     console.log("<YamlEditor> opened file: " + yamlName);
-    wikiStore.yaml.yamlName = yamlName;
+
+    saveFiles.currentState.mappingFile = yamlName;
+    saveFiles.currentState.mappingType = "Yaml"; 
+    // wikiStore.yaml.yamlName = yamlName;
     // wikiStore.yaml.yamlList = [...wikiStore.yaml.yamlList, yamlName];
 
     wikiStore.table.isCellSelectable = false;
@@ -162,7 +165,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     reader.onloadend = (async() => {
       const yamlContent = reader.result as string;
       wikiStore.yaml.yamlContent = yamlContent;
-      wikiStore.yaml.yamlName = yamlName;
+      // wikiStore.yaml.yamlName = yamlName;
       wikiStore.yaml.yamlhasChanged = true;
       try {
         const yamlJson = (yaml.safeLoad((yamlContent as string))) as JSON;
