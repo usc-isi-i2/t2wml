@@ -374,6 +374,7 @@ def upload_annotation():
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
     annotations_path=os.path.join(annotations_dir, Path(calc_params.data_path).stem+"_"+calc_params.sheet_name+".json")
+    calc_params.annotation_path=annotations_path
     response=dict(project=get_project_dict(project))
     annotation = request.get_json()["annotations"]
     save_annotations(project, calc_params, annotation, response)
