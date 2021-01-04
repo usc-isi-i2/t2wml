@@ -59,7 +59,7 @@ class OutputState {
 
 class YamlEditorState {
     public requestService = new RequestService();
-    @observable public yamlName = '';
+    // @observable public yamlName = '';
     // @observable public yamlList: string[] = [];
     @observable public showSpinner = false;
     @observable public yamlContent: string = defaultYamlContent;
@@ -71,7 +71,6 @@ class YamlEditorState {
             return;
         }
 
-        console.log("Save yaml: ", this.yamlName);
         console.log(this.yamlContent);
 
         // before sending request
@@ -80,7 +79,7 @@ class YamlEditorState {
 
         // send request
         const data = {"yaml": this.yamlContent!,
-                      "title": this.yamlName!,
+                      "title": saveFiles.currentState.mappingFile!,
                       "sheetName": saveFiles.currentState.sheetName};
 
         try {

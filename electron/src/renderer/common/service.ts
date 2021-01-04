@@ -50,9 +50,6 @@ class RequestService {
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.yaml.yamlError = response.yamlError;
     wikiStore.annotations.blocks = response.annotations;
-    if (!response.annotations) { // TODO: backend should return empty array and not null
-      wikiStore.annotations.blocks = [];
-    }
   }
 
   @action
