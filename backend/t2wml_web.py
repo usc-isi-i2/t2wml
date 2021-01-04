@@ -185,7 +185,7 @@ def get_yaml_layers(calc_params, for_annotation=False):
             cells=statement["cells"]
             cells.pop("value")
             for key in cells:
-                if key == "property":
+                if key in ["property", "unit"]:
                     cell_type_indices[key][cells[key]]=True
                 elif key == "subject":
                     cell_type_indices["mainSubject"][cells[key]]=True
