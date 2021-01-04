@@ -54,7 +54,7 @@ def get_kg(calc_params, annotation=False):
         if kg:
             return kg
     if annotation:
-        cell_mapper = YamlMapper(calc_params.annotation_path)
+        cell_mapper = AnnotationMapper(calc_params.annotation_path)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
@@ -159,7 +159,7 @@ def get_yaml_layers(calc_params, for_annotation=False):
     cleanedLayer=dict(layerType="cleaned", entries=[])
     qnodes={} #passed by reference everywhere, so gets updated simultaneously across all of them
 
-    if calc_params.yaml_path:
+    if calc_params.yaml_path or (calc_params.annotation_path and for_annotation):
         kg = get_kg(calc_params, annotation=for_annotation)
         statements=kg.statements
         errors=kg.errors
