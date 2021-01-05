@@ -13,13 +13,13 @@ import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react"
-import wikiStore, { LayerState } from '../../data/store';
+import wikiStore from '../../data/store';
 import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
 // import SheetSelector from './sheet-selector/sheet-selector';
 import { ProjectDTO } from '../../common/dtos';
 import { saveFiles } from '../save-files';
-import Delink from './delink';
+import CreateYaml from './create-yaml';
 
 
 interface yamlProperties {
@@ -35,7 +35,7 @@ interface yamlState extends IStateWithError {
   isImportFile: boolean;
   disableYaml: boolean;
   isAddedYaml: boolean;
-  showDelink: boolean;
+  showCreateYamlModal: boolean;
 }
 
 
@@ -62,7 +62,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       isImportFile: false,
       disableYaml: false,
       isAddedYaml: false,
-      showDelink: false,
+      showCreateYamlModal: false,
     };
 
     // init functions
@@ -77,6 +77,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
     this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) { this.updateYamlFiles(project); }});
+    this.disposeReaction = reaction(() => wikiStore.table.table, () => { this.updateDisableYaml() });
   }
 
   componentWillUnmount() {
@@ -85,14 +86,22 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  openDelinkModal() {
-    // convert to yaml file
-    this.setState({showDelink: true});
+  updateDisableYaml() {
+    if (wikiStore.table.table.cells) {
+      this.setState({ disableYaml: false });
+    } else {
+      this.setState({ disableYaml: true });
+    }
   }
 
-  delinkYaml(fileName: string) {
-    console.log("delink yaml ", fileName);
-    this.setState({ showDelink: false });
+  openCreateYamlModal() {
+    // convert to yaml file
+    this.setState({showCreateYamlModal: true});
+  }
+
+  createYaml() {
+    console.log("create yaml ");
+    this.setState({ showCreateYamlModal: false });
 
     this.handleApplyYaml();
   }
@@ -385,9 +394,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     return (
       <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
-        <Delink showDelink={this.state.showDelink}
-          handleDoDelink={(fileName: string) => this.delinkYaml(fileName)}
-          cancelDelink={() => {this.setState({showDelink: false});}} />
+        <CreateYaml showCreateYamlModal={this.state.showCreateYamlModal}
+          handleDoCreateYaml={() => this.createYaml()}
+          cancelCreateYaml={() => {this.setState({showCreateYamlModal: false});}} />
         <Card
           className="w-100 shadow-sm"
           style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
@@ -466,7 +475,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                   verticalSliderSize: 6
                 },
                 showFoldingControls: 'always',
-                readOnly: saveFiles.currentState.mappingType === 'Annotation',
+                readOnly: saveFiles.currentState.mappingType !== 'Yaml',
               }}
               onChange={() => this.handleEditYaml()}
               editorDidMount={(editor) => {
@@ -501,15 +510,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             </div>
 
             {/* apply button */}
-            {saveFiles.currentState.mappingType === 'Annotation'?
-              <Button
-                className="d-inline-block float-right"
-                size="sm"
-                style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
-                onClick={() => this.openDelinkModal()}
-              >
-                Delink
-              </Button> :
+            {saveFiles.currentState.mappingType === 'Yaml'?
               <Button
                 className="d-inline-block float-right"
                 size="sm"
@@ -518,6 +519,15 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 disabled={!this.state.isValidYaml || this.state.disableYaml || wikiStore.yaml.showSpinner}
               >
                 Apply
+              </Button> :
+              <Button
+                className="d-inline-block float-right"
+                size="sm"
+                style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
+                onClick={() => this.openCreateYamlModal()}
+                disabled={this.state.disableYaml}
+              >
+                Create Yaml
               </Button>
             }
             
