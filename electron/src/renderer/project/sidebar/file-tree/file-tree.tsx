@@ -8,9 +8,7 @@ import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
 
 
-interface TreeProps {
-}
-
+type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
   fileTree: NodeProps;
 }
