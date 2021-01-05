@@ -29,7 +29,12 @@ class TableState {
         this.showSpinner = false;
         this.selectedCell = new Cell()
         this.showCleanedData = false;
+    }
 
+
+    updateTable(table: TableDTO){
+        this.table=table;
+        this.selectedCell=new Cell()
     }
 }
 
