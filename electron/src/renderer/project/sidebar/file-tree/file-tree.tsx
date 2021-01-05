@@ -22,7 +22,7 @@ const rootNode = {id: "Root00000123943875",
                   type: "Label",
                   parentNode: null,
                   rightClick: emptyFunc,
-                  doubleClick: emptyFunc } as NodeProps;
+                  onClick: emptyFunc } as NodeProps;
 
 
 class FileTree extends Component<TreeProps, TreeState> {
@@ -67,7 +67,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     await this.requestService.getMappingCalculation();
   }
 
-    async onDoubleClick(node: NodeProps) {
+    async changeFile(node: NodeProps) {
     if (node.type === "DataFile") {
         if (node.label !== saveFiles.currentState.dataFile) {
             await this.changeDataFile(node.label);
@@ -113,7 +113,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           type: type,
           parentNode: parentNode,
           rightClick: (node: NodeProps) => this.onRightClick(node),
-          doubleClick: (node: NodeProps) => this.onDoubleClick(node),
+          onClick: (node: NodeProps) => this.changeFile(node),
           //because yaml ends in .yaml and annotation in .json, we can check both simultaneously?
           bolded: saveFiles.currentState.mappingFile == filename
         }
@@ -133,7 +133,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         type: "DataFile",
         parentNode: rootNode,
         rightClick: (node: NodeProps) => this.onRightClick(node),
-        doubleClick: (node: NodeProps) => this.onDoubleClick(node),
+        onClick: (node: NodeProps) => this.changeFile(node),
         bolded: saveFiles.currentState.dataFile == df
       } as NodeProps;
       const sheet_arr = project.data_files[df].val_arr;
@@ -145,7 +145,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           type: "Sheet",
           parentNode: dataNode,
           rightClick: (node: NodeProps) => this.onRightClick(node),
-          doubleClick: (node: NodeProps) => this.onDoubleClick(node),
+          onClick: (node: NodeProps) => this.changeFile(node),
           bolded: saveFiles.currentState.sheetName == sheetName
         } as NodeProps;
         this.buildSubFileTree(project.annotations, df, sheetName, "Annotation", sheetNode)
@@ -173,7 +173,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           type={this.state.fileTree.type}
           parentNode={this.state.fileTree.parentNode}
           rightClick={this.state.fileTree.rightClick}
-          doubleClick={this.state.fileTree.doubleClick}/>
+          onClick={this.state.fileTree.onClick}/>
       </ul>
     )
   }

@@ -1,6 +1,5 @@
 
 import React, { Component } from "react";
-import DoubleClick from "./double-click-HOC";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {IconDefinition, faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile, faProjectDiagram, faList} from '@fortawesome/free-solid-svg-icons';
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -24,7 +23,7 @@ export interface NodeProps {
   childNodes: NodeProps[];
   type: NodeType;
   bolded?: boolean;
-  doubleClick: (node: NodeProps) => void,
+  onClick: (node: NodeProps) => void,
   rightClick: (node:NodeProps) => any,
 }
 
@@ -46,8 +45,8 @@ class FileNode extends Component<NodeProps, NodeState> {
     this.setState({ expanded: !this.state.expanded });
   }
 
-  async onDoubleClick() {
-    this.props.doubleClick(this.props);
+  async onNodeClick() {
+    this.props.onClick(this.props);
   }
 
   onRightClick(event: any){
@@ -75,7 +74,7 @@ class FileNode extends Component<NodeProps, NodeState> {
           parentNode={n.parentNode}
           type={n.type}
           rightClick={n.rightClick}
-          doubleClick={n.doubleClick} />)}
+          onClick={n.onClick} />)}
       </ul>)
     }
 
@@ -104,7 +103,7 @@ class FileNode extends Component<NodeProps, NodeState> {
         <OverlayTrigger overlay={logoTooltipHtml} placement="top" trigger={["hover", "focus"]}>
           <label
             onContextMenu={(e) => this.onRightClick(e)}
-            onDoubleClick={() => this.onDoubleClick()}>
+            onClick={() => this.onNodeClick()}>
             {arrowIcon} <span>{typeIcon} {label}</span>
           </label>
         </OverlayTrigger>
