@@ -121,6 +121,7 @@ class TestBasicWorkflow(BaseClass):
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
+        data.pop('project', None)
         self.results_dict['change_sheet']=data
         self.compare_jsons(data, 'change_sheet')
 
@@ -188,6 +189,7 @@ class TestLoadingProject(BaseClass):
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
+        data.pop('project', None)
         self.results_dict['load_from_path']=data
         #with open(self.expected_results_path, 'w') as f:
         #    json.dump(self.results_dict, f, sort_keys=False, indent=4)

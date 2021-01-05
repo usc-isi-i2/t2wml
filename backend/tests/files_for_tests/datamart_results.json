@@ -1,492 +1,492 @@
 {
-    "error": {
-        "layerType": "error",
-        "entries": [
-            {
-                "indices": [
-                    [
-                        8,
-                        3
-                    ]
-                ],
-                "error": {
-                    "unit": "No values defined for context: unit",
-                    "qualifier": {
-                        "0": {
-                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
-                        }
-                    }
-                }
-            },
-            {
-                "indices": [
-                    [
-                        9,
-                        3
-                    ]
-                ],
-                "error": {
-                    "unit": "No values defined for context: unit",
-                    "qualifier": {
-                        "0": {
-                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
-                        }
-                    }
-                }
-            },
-            {
-                "indices": [
-                    [
-                        10,
-                        3
-                    ]
-                ],
-                "error": {
-                    "unit": "No values defined for context: unit",
-                    "qualifier": {
-                        "0": {
-                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
-                        }
-                    }
-                }
-            }
-        ]
+    "cleaned": {
+        "entries": [],
+        "layerType": "cleaned"
     },
-    "statement": {
-        "layerType": "statement",
+    "error": {
         "entries": [
             {
+                "error": {
+                    "qualifier": {
+                        "0": {
+                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
+                        }
+                    },
+                    "unit": "No values defined for context: unit"
+                },
                 "indices": [
                     [
                         8,
                         3
                     ]
-                ],
-                "cells": {
-                    "property": [
-                        7,
-                        3
-                    ],
-                    "subject": [
-                        8,
-                        1
-                    ],
-                    "qualifiers": [
-                        {},
-                        {
-                            "qualifier": [
-                                8,
-                                1
-                            ]
-                        },
-                        {
-                            "qualifier": [
-                                8,
-                                1
-                            ]
-                        },
-                        {
-                            "property": [
-                                7,
-                                2
-                            ],
-                            "qualifier": [
-                                8,
-                                2
-                            ]
-                        }
-                    ]
-                },
-                "property": "PVARIABLE-Qtutorial_dataset-004",
-                "value": "20",
-                "qualifier": [
-                    {
-                        "property": "P2006020004",
-                        "value": "Qtutorial_dataset"
-                    },
-                    {
-                        "property": "P17",
-                        "value": "Q114"
-                    },
-                    {
-                        "property": "P131",
-                        "value": "Q114"
-                    },
-                    {
-                        "property": "PQUALIFIER-Qtutorial_dataset-003",
-                        "value": "Maize"
-                    }
-                ],
-                "subject": "Q114"
+                ]
             },
             {
+                "error": {
+                    "qualifier": {
+                        "0": {
+                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
+                        }
+                    },
+                    "unit": "No values defined for context: unit"
+                },
                 "indices": [
                     [
                         9,
                         3
                     ]
-                ],
-                "cells": {
-                    "property": [
-                        7,
-                        3
-                    ],
-                    "subject": [
-                        9,
-                        1
-                    ],
-                    "qualifiers": [
-                        {},
-                        {
-                            "qualifier": [
-                                9,
-                                1
-                            ]
-                        },
-                        {
-                            "qualifier": [
-                                9,
-                                1
-                            ]
-                        },
-                        {
-                            "property": [
-                                7,
-                                2
-                            ],
-                            "qualifier": [
-                                9,
-                                2
-                            ]
-                        }
-                    ]
-                },
-                "property": "PVARIABLE-Qtutorial_dataset-004",
-                "value": "15",
-                "qualifier": [
-                    {
-                        "property": "P2006020004",
-                        "value": "Qtutorial_dataset"
-                    },
-                    {
-                        "property": "P17",
-                        "value": "Q924"
-                    },
-                    {
-                        "property": "P131",
-                        "value": "Q924"
-                    },
-                    {
-                        "property": "PQUALIFIER-Qtutorial_dataset-003",
-                        "value": "Maize"
-                    }
-                ],
-                "subject": "Q924"
+                ]
             },
             {
+                "error": {
+                    "qualifier": {
+                        "0": {
+                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
+                        }
+                    },
+                    "unit": "No values defined for context: unit"
+                },
                 "indices": [
                     [
                         10,
                         3
                     ]
-                ],
-                "cells": {
-                    "property": [
-                        7,
-                        3
-                    ],
-                    "subject": [
-                        10,
-                        1
-                    ],
-                    "qualifiers": [
-                        {},
-                        {
-                            "qualifier": [
-                                10,
-                                1
-                            ]
-                        },
-                        {
-                            "qualifier": [
-                                10,
-                                1
-                            ]
-                        },
-                        {
-                            "property": [
-                                7,
-                                2
-                            ],
-                            "qualifier": [
-                                10,
-                                2
-                            ]
-                        }
-                    ]
-                },
-                "property": "PVARIABLE-Qtutorial_dataset-004",
-                "value": "25",
-                "qualifier": [
-                    {
-                        "property": "P2006020004",
-                        "value": "Qtutorial_dataset"
-                    },
-                    {
-                        "property": "P17",
-                        "value": "Q953"
-                    },
-                    {
-                        "property": "P131",
-                        "value": "Q953"
-                    },
-                    {
-                        "property": "PQUALIFIER-Qtutorial_dataset-003",
-                        "value": "Maize"
-                    }
-                ],
-                "subject": "Q953"
+                ]
             }
         ],
-        "qnodes": {
-            "PVARIABLE-Qtutorial_dataset-004": {
-                "label": "Production",
-                "description": "",
-                "url": "",
-                "id": "PVARIABLE-Qtutorial_dataset-004"
-            },
-            "P2006020004": {
-                "label": "dataset",
-                "description": "Id of the dataset this variable is included in",
-                "url": "",
-                "id": "P2006020004"
-            },
-            "Qtutorial_dataset": null,
-            "P17": {
-                "label": "country",
-                "description": "sovereign state of this item (not to be used for human beings)",
-                "url": "https://www.wikidata.org/wiki/Property:P17",
-                "id": "P17"
-            },
-            "Q114": {
-                "label": "Kenya",
-                "description": "sovereign state in East Africa",
-                "url": "https://www.wikidata.org/wiki/Q114",
-                "id": "Q114"
-            },
-            "P131": {
-                "label": "located in the administrative territorial entity",
-                "description": "the item is located on the territory of the following administrative entity. Use P276 (location) for specifying locations that are non-administrative places and for items about events",
-                "url": "https://www.wikidata.org/wiki/Property:P131",
-                "id": "P131"
-            },
-            "PQUALIFIER-Qtutorial_dataset-003": {
-                "label": "Crop",
-                "description": "",
-                "url": "",
-                "id": "PQUALIFIER-Qtutorial_dataset-003"
-            },
-            "Q924": {
-                "label": "Tanzania",
-                "description": "sovereign state in Africa",
-                "url": "https://www.wikidata.org/wiki/Q924",
-                "id": "Q924"
-            },
-            "Q953": {
-                "label": "Zambia",
-                "description": "sovereign state in Southern Africa",
-                "url": "https://www.wikidata.org/wiki/Q953",
-                "id": "Q953"
-            }
-        }
-    },
-    "cleaned": {
-        "layerType": "cleaned",
-        "entries": []
-    },
-    "type": {
-        "layerType": "type",
-        "entries": [
-            {
-                "type": "qualifier",
-                "indices": [
-                    [
-                        8,
-                        1
-                    ],
-                    [
-                        8,
-                        2
-                    ],
-                    [
-                        9,
-                        1
-                    ],
-                    [
-                        9,
-                        2
-                    ],
-                    [
-                        10,
-                        1
-                    ],
-                    [
-                        10,
-                        2
-                    ]
-                ]
-            },
-            {
-                "type": "mainSubject",
-                "indices": [
-                    [
-                        8,
-                        1
-                    ],
-                    [
-                        9,
-                        1
-                    ],
-                    [
-                        10,
-                        1
-                    ]
-                ]
-            },
-            {
-                "type": "dependentVar",
-                "indices": [
-                    [
-                        8,
-                        3
-                    ],
-                    [
-                        9,
-                        3
-                    ],
-                    [
-                        10,
-                        3
-                    ]
-                ]
-            },
-            {
-                "type": "majorError",
-                "indices": []
-            },
-            {
-                "type": "minorError",
-                "indices": [
-                    [
-                        8,
-                        3
-                    ],
-                    [
-                        9,
-                        3
-                    ],
-                    [
-                        10,
-                        3
-                    ]
-                ]
-            },
-            {
-                "type": "property",
-                "indices": [
-                    [
-                        7,
-                        3
-                    ],
-                    [
-                        7,
-                        2
-                    ]
-                ]
-            },
-            {
-                "type": "unit",
-                "indices": []
-            },
-            {
-                "type": "additionalFields",
-                "indices": []
-            }
-        ]
+        "layerType": "error"
     },
     "qnode": {
-        "layerType": "qNode",
         "entries": [
             {
+                "context": "",
+                "description": "sovereign state in East Africa",
+                "id": "Q114",
                 "indices": [
                     [
                         8,
                         1
                     ]
                 ],
-                "id": "Q114",
-                "value": "Kenya",
-                "context": "",
                 "label": "Kenya",
-                "description": "sovereign state in East Africa",
-                "url": "https://www.wikidata.org/wiki/Q114"
+                "url": "https://www.wikidata.org/wiki/Q114",
+                "value": "Kenya"
             },
             {
+                "context": "",
+                "description": "sovereign state in Africa",
+                "id": "Q924",
                 "indices": [
                     [
                         9,
                         1
                     ]
                 ],
-                "id": "Q924",
-                "value": "Tanzania",
-                "context": "",
                 "label": "Tanzania",
-                "description": "sovereign state in Africa",
-                "url": "https://www.wikidata.org/wiki/Q924"
+                "url": "https://www.wikidata.org/wiki/Q924",
+                "value": "Tanzania"
             },
             {
+                "context": "",
+                "description": "sovereign state in Southern Africa",
+                "id": "Q953",
                 "indices": [
                     [
                         10,
                         1
                     ]
                 ],
-                "id": "Q953",
-                "value": "Zambia",
-                "context": "",
                 "label": "Zambia",
-                "description": "sovereign state in Southern Africa",
-                "url": "https://www.wikidata.org/wiki/Q953"
+                "url": "https://www.wikidata.org/wiki/Q953",
+                "value": "Zambia"
             },
             {
+                "context": "property",
+                "description": "",
+                "id": "PQUALIFIER-Qtutorial_dataset-003",
                 "indices": [
                     [
                         7,
                         2
                     ]
                 ],
-                "id": "PQUALIFIER-Qtutorial_dataset-003",
-                "value": "Crop",
-                "context": "property",
                 "label": "Crop",
-                "description": "",
-                "url": ""
+                "url": "",
+                "value": "Crop"
             },
             {
+                "context": "property",
+                "description": "",
+                "id": "PVARIABLE-Qtutorial_dataset-004",
                 "indices": [
                     [
                         7,
                         3
                     ]
                 ],
-                "id": "PVARIABLE-Qtutorial_dataset-004",
-                "value": "Production",
-                "context": "property",
                 "label": "Production",
-                "description": "",
-                "url": ""
+                "url": "",
+                "value": "Production"
             }
-        ]
+        ],
+        "layerType": "qNode"
+    },
+    "statement": {
+        "entries": [
+            {
+                "cells": {
+                    "mainSubject": [
+                        8,
+                        1
+                    ],
+                    "property": [
+                        7,
+                        3
+                    ],
+                    "qualifiers": [
+                        {},
+                        {
+                            "qualifier": [
+                                8,
+                                1
+                            ]
+                        },
+                        {
+                            "qualifier": [
+                                8,
+                                1
+                            ]
+                        },
+                        {
+                            "property": [
+                                7,
+                                2
+                            ],
+                            "qualifier": [
+                                8,
+                                2
+                            ]
+                        }
+                    ]
+                },
+                "indices": [
+                    [
+                        8,
+                        3
+                    ]
+                ],
+                "property": "PVARIABLE-Qtutorial_dataset-004",
+                "qualifier": [
+                    {
+                        "property": "P2006020004",
+                        "value": "Qtutorial_dataset"
+                    },
+                    {
+                        "property": "P17",
+                        "value": "Q114"
+                    },
+                    {
+                        "property": "P131",
+                        "value": "Q114"
+                    },
+                    {
+                        "property": "PQUALIFIER-Qtutorial_dataset-003",
+                        "value": "Maize"
+                    }
+                ],
+                "subject": "Q114",
+                "value": "20"
+            },
+            {
+                "cells": {
+                    "mainSubject": [
+                        9,
+                        1
+                    ],
+                    "property": [
+                        7,
+                        3
+                    ],
+                    "qualifiers": [
+                        {},
+                        {
+                            "qualifier": [
+                                9,
+                                1
+                            ]
+                        },
+                        {
+                            "qualifier": [
+                                9,
+                                1
+                            ]
+                        },
+                        {
+                            "property": [
+                                7,
+                                2
+                            ],
+                            "qualifier": [
+                                9,
+                                2
+                            ]
+                        }
+                    ]
+                },
+                "indices": [
+                    [
+                        9,
+                        3
+                    ]
+                ],
+                "property": "PVARIABLE-Qtutorial_dataset-004",
+                "qualifier": [
+                    {
+                        "property": "P2006020004",
+                        "value": "Qtutorial_dataset"
+                    },
+                    {
+                        "property": "P17",
+                        "value": "Q924"
+                    },
+                    {
+                        "property": "P131",
+                        "value": "Q924"
+                    },
+                    {
+                        "property": "PQUALIFIER-Qtutorial_dataset-003",
+                        "value": "Maize"
+                    }
+                ],
+                "subject": "Q924",
+                "value": "15"
+            },
+            {
+                "cells": {
+                    "mainSubject": [
+                        10,
+                        1
+                    ],
+                    "property": [
+                        7,
+                        3
+                    ],
+                    "qualifiers": [
+                        {},
+                        {
+                            "qualifier": [
+                                10,
+                                1
+                            ]
+                        },
+                        {
+                            "qualifier": [
+                                10,
+                                1
+                            ]
+                        },
+                        {
+                            "property": [
+                                7,
+                                2
+                            ],
+                            "qualifier": [
+                                10,
+                                2
+                            ]
+                        }
+                    ]
+                },
+                "indices": [
+                    [
+                        10,
+                        3
+                    ]
+                ],
+                "property": "PVARIABLE-Qtutorial_dataset-004",
+                "qualifier": [
+                    {
+                        "property": "P2006020004",
+                        "value": "Qtutorial_dataset"
+                    },
+                    {
+                        "property": "P17",
+                        "value": "Q953"
+                    },
+                    {
+                        "property": "P131",
+                        "value": "Q953"
+                    },
+                    {
+                        "property": "PQUALIFIER-Qtutorial_dataset-003",
+                        "value": "Maize"
+                    }
+                ],
+                "subject": "Q953",
+                "value": "25"
+            }
+        ],
+        "layerType": "statement",
+        "qnodes": {
+            "P131": {
+                "description": "the item is located on the territory of the following administrative entity. Use P276 (location) for specifying locations that are non-administrative places and for items about events",
+                "id": "P131",
+                "label": "located in the administrative territorial entity",
+                "url": "https://www.wikidata.org/wiki/Property:P131"
+            },
+            "P17": {
+                "description": "sovereign state of this item (not to be used for human beings)",
+                "id": "P17",
+                "label": "country",
+                "url": "https://www.wikidata.org/wiki/Property:P17"
+            },
+            "P2006020004": {
+                "description": "Id of the dataset this variable is included in",
+                "id": "P2006020004",
+                "label": "dataset",
+                "url": ""
+            },
+            "PQUALIFIER-Qtutorial_dataset-003": {
+                "description": "",
+                "id": "PQUALIFIER-Qtutorial_dataset-003",
+                "label": "Crop",
+                "url": ""
+            },
+            "PVARIABLE-Qtutorial_dataset-004": {
+                "description": "",
+                "id": "PVARIABLE-Qtutorial_dataset-004",
+                "label": "Production",
+                "url": ""
+            },
+            "Q114": {
+                "description": "sovereign state in East Africa",
+                "id": "Q114",
+                "label": "Kenya",
+                "url": "https://www.wikidata.org/wiki/Q114"
+            },
+            "Q924": {
+                "description": "sovereign state in Africa",
+                "id": "Q924",
+                "label": "Tanzania",
+                "url": "https://www.wikidata.org/wiki/Q924"
+            },
+            "Q953": {
+                "description": "sovereign state in Southern Africa",
+                "id": "Q953",
+                "label": "Zambia",
+                "url": "https://www.wikidata.org/wiki/Q953"
+            },
+            "Qtutorial_dataset": null
+        }
+    },
+    "type": {
+        "entries": [
+            {
+                "indices": [
+                    [
+                        8,
+                        1
+                    ],
+                    [
+                        8,
+                        2
+                    ],
+                    [
+                        9,
+                        1
+                    ],
+                    [
+                        9,
+                        2
+                    ],
+                    [
+                        10,
+                        1
+                    ],
+                    [
+                        10,
+                        2
+                    ]
+                ],
+                "type": "qualifier"
+            },
+            {
+                "indices": [
+                    [
+                        8,
+                        1
+                    ],
+                    [
+                        9,
+                        1
+                    ],
+                    [
+                        10,
+                        1
+                    ]
+                ],
+                "type": "mainSubject"
+            },
+            {
+                "indices": [
+                    [
+                        8,
+                        3
+                    ],
+                    [
+                        9,
+                        3
+                    ],
+                    [
+                        10,
+                        3
+                    ]
+                ],
+                "type": "dependentVar"
+            },
+            {
+                "indices": [],
+                "type": "majorError"
+            },
+            {
+                "indices": [
+                    [
+                        8,
+                        3
+                    ],
+                    [
+                        9,
+                        3
+                    ],
+                    [
+                        10,
+                        3
+                    ]
+                ],
+                "type": "minorError"
+            },
+            {
+                "indices": [
+                    [
+                        7,
+                        3
+                    ],
+                    [
+                        7,
+                        2
+                    ]
+                ],
+                "type": "property"
+            },
+            {
+                "indices": [],
+                "type": "unit"
+            },
+            {
+                "indices": [],
+                "type": "additionalFields"
+            }
+        ],
+        "layerType": "type"
     }
 }
