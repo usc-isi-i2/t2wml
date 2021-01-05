@@ -247,12 +247,14 @@ class TableContainer extends Component<{}, TableState> {
     return (
       <ButtonGroup aria-label="modes" className="mode-toggle"
         onClick={() => this.toggleAnnotationMode()}>
-        <Button className={classNames('btn-sm', {
-          'active': !annotationMode,
-        })}>Output</Button>
-        <Button className={classNames('btn-sm', {
-          'active': annotationMode,
-        })}>Annotate</Button>
+        <Button variant="outline-light"
+          className={classNames('btn-sm py-0 px-2', {
+            'active': !annotationMode,
+          })}>Output</Button>
+        <Button variant="outline-light"
+          className={classNames('btn-sm py-0 px-2', {
+            'active': annotationMode,
+          })}>Annotate</Button>
       </ButtonGroup>
     )
   }
