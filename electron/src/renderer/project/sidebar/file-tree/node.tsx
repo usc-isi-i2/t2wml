@@ -100,7 +100,7 @@ class FileNode extends Component<NodeProps, NodeState> {
 
     return (
       <li>
-        <OverlayTrigger overlay={logoTooltipHtml} placement="top" trigger={["hover", "focus"]}>
+        <OverlayTrigger overlay={logoTooltipHtml} delay={{show: 1000, hide: 0}} placement="top" trigger={["hover", "focus"]}>
           <label
             onContextMenu={(e) => this.onRightClick(e)}
             onClick={() => this.onNodeClick()}>
