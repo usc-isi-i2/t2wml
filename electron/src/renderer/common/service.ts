@@ -54,7 +54,7 @@ class RequestService {
 
   @action
   public fillTable(response: ResponseWithTableDTO){
-    wikiStore.table.table = response.table;
+    wikiStore.table.updateTable(response.table);
     this.fillMapping(response);
   }
 
