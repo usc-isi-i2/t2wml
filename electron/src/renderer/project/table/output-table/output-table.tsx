@@ -255,6 +255,10 @@ class OutputTable extends Component<{}, TableState> {
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
     const element = event.target as any;
+
+    // Don't let users select header cells
+    if (element.nodeName !== 'TD') { return; }
+
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
     this.selectCell(element);
