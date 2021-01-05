@@ -50,7 +50,7 @@ class RequestService {
 
   @action
   public resetPreProject(){
-    wikiStore.table.table = {} as TableDTO;
+    wikiStore.table.updateTable({} as TableDTO);
     wikiStore.layers.resetLayers();
     wikiStore.yaml.yamlContent = '';
     wikiStore.yaml.yamlError = undefined;
