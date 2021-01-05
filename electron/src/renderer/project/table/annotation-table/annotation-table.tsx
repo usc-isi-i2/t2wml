@@ -405,6 +405,9 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnMouseDown(event: React.MouseEvent) {
     const element = event.target as any;
 
+    // Don't let users select header cells
+    if (element.nodeName !== 'TD') { return; }
+
     // Set both coordinates to the same cell
     const x1: number = element.cellIndex;
     const x2: number = element.cellIndex;
