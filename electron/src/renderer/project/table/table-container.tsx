@@ -118,6 +118,9 @@ class TableContainer extends Component<{}, TableState> {
       await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
       console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
 
+      //update in files state
+      saveFiles.changeDataFile(file.name);
+
       // load yaml data
       if ( wikiStore.yaml.yamlContent ) {
         wikiStore.table.isCellSelectable = true;
