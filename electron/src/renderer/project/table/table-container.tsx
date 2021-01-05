@@ -4,13 +4,14 @@ import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
 
-import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
 import { AnnotationBlock, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
+import { classNames } from '../../common/utils';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
@@ -244,15 +245,15 @@ class TableContainer extends Component<{}, TableState> {
   renderAnnotationToggle() {
     const { annotationMode } = this.state;
     return (
-      <div className="annotation-mode-toggle"
+      <ButtonGroup aria-label="modes" className="mode-toggle"
         onClick={() => this.toggleAnnotationMode()}>
-        {annotationMode ? (
-          <FontAwesomeIcon icon={faCheckSquare} />
-        ) : (
-          <FontAwesomeIcon icon={faSquare} />
-        )}
-        <p>Annotation Mode</p>
-      </div>
+        <Button className={classNames('btn-sm', {
+          'active': !annotationMode,
+        })}>Output</Button>
+        <Button className={classNames('btn-sm', {
+          'active': annotationMode,
+        })}>Annotate</Button>
+      </ButtonGroup>
     )
   }
 
