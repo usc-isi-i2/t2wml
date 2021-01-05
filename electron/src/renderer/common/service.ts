@@ -4,7 +4,7 @@ import { saveFiles } from '../project/save-files';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -41,6 +41,20 @@ class RequestService {
   public switchProjectState(response: ResponseWithProjectDTO){
     saveFiles.getFiles(response.project);
     wikiStore.projects.projectDTO = response.project;
+
+    // new project
+    if (!Object.keys(response.project.data_files).length) {
+      this.resetPreProject();
+    }
+  }
+
+  @action
+  public resetPreProject(){
+    wikiStore.table.table = {} as TableDTO;
+    wikiStore.layers.resetLayers();
+    wikiStore.yaml.yamlContent = '';
+    wikiStore.yaml.yamlError = undefined;
+    wikiStore.annotations.blocks = [];
   }
 
   @action

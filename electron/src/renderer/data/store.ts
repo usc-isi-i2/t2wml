@@ -185,6 +185,15 @@ export class LayerState {
             this.cleaned = new Layer(dto.cleaned);
         }
     }
+
+    @action
+    resetLayers() {
+        this.qnode = new Layer<QNodeEntry>();
+        this.type = new Layer<TypeEntry>();
+        this.statement = new StatementLayer();
+        this.error = new Layer<ErrorEntry>();
+        this.cleaned = new Layer<CleanEntry>();
+    }
 }
 
 
