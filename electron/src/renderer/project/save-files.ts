@@ -15,11 +15,6 @@ export interface CurrentFiles {
     mappingType: 'Yaml' | 'Annotation' | undefined;
 }
 
-// send these params to the backend when asking project data
-export interface StateParams extends CurrentFiles {
-    directory: string;
-}
-
 const filename = 't2wmlproj.user.json';
 
 export class CurrentFilesService implements Data {
