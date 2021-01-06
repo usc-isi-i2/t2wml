@@ -194,8 +194,8 @@ class TableContainer extends Component<{}, TableState> {
 
   toggleAnnotationMode() {
     const { annotationMode } = this.state;
-    if (!annotationMode){
-      this.fetchAnnotations()
+    if ( !annotationMode ) {
+      this.fetchAnnotations();
     }
     this.setState({ annotationMode: !annotationMode });
   }
