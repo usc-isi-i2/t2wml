@@ -140,6 +140,7 @@ class TableContainer extends Component<{}, TableState> {
 
       //update in files state
       currentFilesService.changeDataFile(file.name);
+      wikiStore.table.mode="Annotation"
 
     } catch ( error ) {
       error.errorDescription += "\n\nCannot open file!";
@@ -194,6 +195,7 @@ class TableContainer extends Component<{}, TableState> {
     }
     wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = false;
+
   }
 
   updateProjectInfo() {
