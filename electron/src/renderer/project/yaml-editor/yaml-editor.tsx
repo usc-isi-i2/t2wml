@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
 // YAML
+import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import MonacoEditor from 'react-monaco-editor';
 import yaml from 'js-yaml';
 
@@ -177,7 +178,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     console.log("<YamlEditor> opened file: " + yamlName);
 
     saveFiles.currentState.mappingFile = yamlName;
-    saveFiles.currentState.mappingType = "Yaml"; 
+    saveFiles.currentState.mappingType = "Yaml";
     // wikiStore.yaml.yamlName = yamlName;
     // wikiStore.yaml.yamlList = [...wikiStore.yaml.yamlList, yamlName];
 
@@ -262,7 +263,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     if (wikiStore.projects.projectDTO && saveFiles.currentState.dataFile) {
       this.setState({disableYaml: false});
     }
-    
+
 
   //   const dataFile = saveFiles.currentState.dataFile;
   //   const sheetName = saveFiles.currentState.sheetName;
@@ -276,7 +277,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   //       let yamlToCurrentSheet = saveFiles.currentState.sheetName;
   //       if (yamlToCurrentSheet.endsWith('.csv')) {
   //         yamlToCurrentSheet = yamlToCurrentSheet.split('.csv')[0];
-  //       } 
+  //       }
   //       if (!yamlToCurrentSheet.endsWith('.yaml')) {
   //         yamlToCurrentSheet += '.yaml';
   //       }
@@ -292,7 +293,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   // async handleChangeFile(event: any) {
   //   const yaml = event.target.innerHTML;
-    
+
   //   // save prev yaml
   //   await wikiStore.yaml.saveYaml();
 
@@ -352,7 +353,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   //     wikiStore.yaml.showSpinner = false;
   //   }
   // }
-  // 
+  //
   // async addYaml() {
   //   await wikiStore.yaml.saveYaml();
 
@@ -365,12 +366,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   //   if (sheetName.endsWith('.csv')) {
   //     sheetName = sheetName.split('.csv')[0];
   //   }
-  //   let yamlName = sheetName + "-" + i + ".yaml";  
+  //   let yamlName = sheetName + "-" + i + ".yaml";
   //   while (wikiStore.projects.projectDTO!.yaml_files.includes(yamlName)) {
   //     i++;
-  //     yamlName = sheetName + "-" + i + ".yaml"; 
+  //     yamlName = sheetName + "-" + i + ".yaml";
   //   }
-    
+
   //   wikiStore.yaml.yamlContent = defaultYamlContent;
   //   wikiStore.yaml.yamlName = yamlName;
   //   wikiStore.yaml.yamlList.push(yamlName);
@@ -380,6 +381,15 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   render() {
     const yamlContent = wikiStore.yaml.yamlContent;
+
+    monacoEditor.editor.defineTheme('disabled-theme', {
+      base: 'vs',
+      inherit: true,
+      rules: [{ background: 'CBCBCB' } as any],
+      colors: {
+        'editor.background': '#CBCBCB',
+      },
+});
 
     // render upload tooltip
     const uploadToolTipHtml = (
@@ -457,7 +467,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               width="100%"
               height="100%"
               language="yaml"
-              theme="vs"
+              theme= {saveFiles.currentState.mappingType != 'Yaml'? 'disabled-theme':'vs'}
               value={yamlContent}
               options={{
                 // All options for construction of monaco editor:
@@ -530,7 +540,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 Create Yaml
               </Button>
             }
-            
+
             {/* <div
               id="yamlSelector" // apply custom scroll bar
               style={{
