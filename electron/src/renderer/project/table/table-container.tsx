@@ -207,8 +207,10 @@ class TableContainer extends Component<{}, TableState> {
   toggleAnnotationMode() {
     if (this.state.mode === 'Output'){
       wikiStore.table.mode = 'Annotation';
+      currentFilesService.changeAnnotationInSameSheet();
     } else {
       wikiStore.table.mode = 'Output';
+      currentFilesService.changeYamlInSameSheet();
     }
   }
 
