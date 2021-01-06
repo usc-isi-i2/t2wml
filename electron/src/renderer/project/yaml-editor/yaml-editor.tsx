@@ -77,7 +77,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
-    this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) { this.updateYamlFiles(project); }});
     this.disposeReaction = reaction(() => wikiStore.table.table, () => { this.updateDisableYaml() });
   }
 
@@ -259,125 +258,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  updateYamlFiles(project: ProjectDTO) {
-    if (wikiStore.projects.projectDTO && currentFilesService.currentState.dataFile) {
-      this.setState({disableYaml: false});
-    }
-
-
-  //   const dataFile = currentFilesService.currentState.dataFile;
-  //   const sheetName = currentFilesService.currentState.sheetName;
-  //   if (dataFile) {
-  //     if (project!.yaml_sheet_associations[dataFile] && project!.yaml_sheet_associations[dataFile][sheetName]) {
-  //       debugger
-  //       wikiStore.yaml.yamlList = project!.yaml_sheet_associations[dataFile][sheetName].val_arr;
-  //       wikiStore.yaml.yamlName = project!.yaml_sheet_associations[dataFile][sheetName].selected;
-  //     } else {
-  //       // this.setState({isAddedYaml: true});
-  //       let yamlToCurrentSheet = currentFilesService.currentState.sheetName;
-  //       if (yamlToCurrentSheet.endsWith('.csv')) {
-  //         yamlToCurrentSheet = yamlToCurrentSheet.split('.csv')[0];
-  //       }
-  //       if (!yamlToCurrentSheet.endsWith('.yaml')) {
-  //         yamlToCurrentSheet += '.yaml';
-  //       }
-
-  //       wikiStore.yaml.yamlName = yamlToCurrentSheet;
-  //       wikiStore.yaml.yamlList = [yamlToCurrentSheet];
-  //     }
-  //   } else {
-  //     wikiStore.yaml.yamlName = '';
-  //     wikiStore.yaml.yamlList = [];
-  //   }
-  }
-
-  // async handleChangeFile(event: any) {
-  //   const yaml = event.target.innerHTML;
-
-  //   // save prev yaml
-  //   await wikiStore.yaml.saveYaml();
-
-  //   wikiStore.yaml.yamlName = yaml;
-
-  //   wikiStore.output.isDownloadDisabled = true;
-
-  //   // before sending request
-  //   wikiStore.table.showSpinner = true;
-  //   wikiStore.wikifier.showSpinner = true;
-  //   wikiStore.yaml.showSpinner = true;
-
-  //   // send request
-  //   try {
-  //     currentFilesService.changeYaml(yaml);
-  //     // await this.requestService.call(this, () => this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml));
-
-  //     if (wikiStore.yaml.yamlContent) {
-  //       wikiStore.table.isCellSelectable = true;
-  //       wikiStore.output.isDownloadDisabled = false;
-  //     } else {
-  //       wikiStore.table.isCellSelectable = false;
-  //     }
-  //   } catch(error) {
-  //     console.log(error);
-  //   } finally {
-  //     wikiStore.table.showSpinner = false;
-  //     wikiStore.wikifier.showSpinner = false;
-  //     wikiStore.yaml.showSpinner = false;
-  //   }
-  // }
-  //
-  // We have to add it to the file tree
-  // async renameYaml(val: string, index: number) {
-  //  // before sending request
-  //   wikiStore.table.showSpinner = true;
-  //   wikiStore.yaml.showSpinner = true;
-  //   const oldName = wikiStore.yaml.yamlList[index];
-
-  //   // Check if this yaml file exist, if not- save it before.
-  //   if (!wikiStore.projects.projectDTO?.yaml_files.includes(oldName)) {
-  //     await wikiStore.yaml.saveYaml();
-  //   }
-
-  //   // send request
-  //   const data = {"old_name": oldName,
-  //                 "new_name": val };
-
-  //   try {
-  //     await this.requestService.call(this, () => this.requestService.renameYaml(wikiStore.projects.current!.folder, data));
-  //     // update yaml files according to received project.
-  //     wikiStore.yaml.yamlList = wikiStore.projects.projectDTO!.yaml_files;
-  //   } catch(error) {
-  //     console.error("Rename yaml failed.", error);
-  //   } finally {
-  //     wikiStore.table.showSpinner = false;
-  //     wikiStore.yaml.showSpinner = false;
-  //   }
-  // }
-  //
-  // async addYaml() {
-  //   await wikiStore.yaml.saveYaml();
-
-  //   this.setState({
-  //     isAddedYaml: true,
-  //   });
-  //   let i = 1;
-  //   let sheetName = currentFilesService.currentState.sheetName;
-  //   // remove .csv from sheet name
-  //   if (sheetName.endsWith('.csv')) {
-  //     sheetName = sheetName.split('.csv')[0];
-  //   }
-  //   let yamlName = sheetName + "-" + i + ".yaml";
-  //   while (wikiStore.projects.projectDTO!.yaml_files.includes(yamlName)) {
-  //     i++;
-  //     yamlName = sheetName + "-" + i + ".yaml";
-  //   }
-
-  //   wikiStore.yaml.yamlContent = defaultYamlContent;
-  //   wikiStore.yaml.yamlName = yamlName;
-  //   wikiStore.yaml.yamlList.push(yamlName);
-
-  //   wikiStore.layers = new LayerState();
-  // }
 
   render() {
     const yamlContent = wikiStore.yaml.yamlContent;
