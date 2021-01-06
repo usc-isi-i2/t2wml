@@ -79,7 +79,7 @@ export class CurrentFilesService implements Data {
     }
 
     @action
-    fillMapping() {
+    setMappingFiles() {
         const project = wikiStore.projects.projectDTO!;
         const dataFile = this.currentState.dataFile;
         const sheet = this.currentState.sheetName;
@@ -109,7 +109,7 @@ export class CurrentFilesService implements Data {
         this.currentState.dataFile = newFile;
         this.currentState.sheetName = project.data_files[newFile].val_arr[0];
 
-        this.fillMapping();
+        this.setMappingFiles();
 
         this.currentFilesService(project.directory);
     }
@@ -128,7 +128,7 @@ export class CurrentFilesService implements Data {
         }
         this.currentState.sheetName = newSheet;
 
-        this.fillMapping();
+        this.setMappingFiles();
 
         this.currentFilesService(project.directory);
     }
