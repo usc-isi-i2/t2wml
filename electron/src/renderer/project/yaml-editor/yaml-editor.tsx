@@ -467,7 +467,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               width="100%"
               height="100%"
               language="yaml"
-              theme= {currentFilesService.currentState.mappingType != 'Yaml'? 'disabled-theme':'vs'}
+              theme= {currentFilesService.currentState.mappingType !== 'Yaml'? 'disabled-theme':'vs'}
               value={yamlContent}
               options={{
                 // All options for construction of monaco editor:
