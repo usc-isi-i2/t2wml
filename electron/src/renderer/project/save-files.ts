@@ -74,7 +74,7 @@ export class CurrentFilesService implements Data {
                 this.currentState.mappingType = undefined;
             }
 
-            this.currentFilesService(project.directory);
+            this.saveCurrentFileSelections();
         }
     }
 
@@ -111,7 +111,7 @@ export class CurrentFilesService implements Data {
 
         this.setMappingFiles();
 
-        this.currentFilesService(project.directory);
+        this.saveCurrentFileSelections();
     }
 
     @action
@@ -130,7 +130,7 @@ export class CurrentFilesService implements Data {
 
         this.setMappingFiles();
 
-        this.currentFilesService(project.directory);
+        this.saveCurrentFileSelections();
     }
 
     @action
@@ -153,7 +153,16 @@ export class CurrentFilesService implements Data {
         this.currentState.mappingFile = newYaml;
         this.currentState.mappingType = 'Yaml';
 
-        this.currentFilesService(project.directory);
+        this.saveCurrentFileSelections();
+    }
+
+
+    @action
+    changeYamlInSameSheet(newYaml: string){
+        this.currentState.mappingFile = newYaml;
+        this.currentState.mappingType = 'Yaml';
+        this.saveCurrentFileSelections();
+
     }
 
     @action
@@ -176,11 +185,12 @@ export class CurrentFilesService implements Data {
         this.currentState.mappingFile = newAnnotation;
         this.currentState.mappingType = 'Annotation';
 
-        this.currentFilesService(project.directory);
+        this.saveCurrentFileSelections();
     }
 
-    currentFilesService(directory: string) {
-        const path = `${directory}/${filename}`;
+    saveCurrentFileSelections() {
+        const project = wikiStore.projects.projectDTO!;
+        const path = `${project.directory}/${filename}`;
         fs.writeFileSync(path, JSON.stringify({
             'currentState': this.currentState,
             // 'previousSelections': this.prevSelections,
@@ -228,7 +238,7 @@ export class CurrentFilesService implements Data {
     //     const project = wikiStore.projects.projectDTO!;
     //     this.fillCurrents();
     //     this.fillPrevSelections(project);
-    //     this.currentFilesService(project.directory);
+    //     this.saveCurrentFileSelections(project.directory);
     // }
 }
 

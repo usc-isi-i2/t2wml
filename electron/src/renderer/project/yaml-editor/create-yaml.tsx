@@ -56,9 +56,7 @@ class CreateYaml extends Component<DelinkProperties, DelinkState> {
 
   createYaml() {
     // taking the yaml content from wikiStore
-    currentFilesService.currentState.mappingFile = this.state.yamlFileName;
-    currentFilesService.currentState.mappingType = 'Yaml';
-
+    currentFilesService.changeYamlInSameSheet(this.state.yamlFileName);
     this.props.handleDoCreateYaml();
   }
 

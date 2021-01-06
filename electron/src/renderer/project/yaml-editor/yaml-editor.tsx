@@ -176,10 +176,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
     console.log("<YamlEditor> opened file: " + yamlName);
 
-    currentFilesService.currentState.mappingFile = yamlName;
-    currentFilesService.currentState.mappingType = "Yaml";
-    // wikiStore.yaml.yamlName = yamlName;
-    // wikiStore.yaml.yamlList = [...wikiStore.yaml.yamlList, yamlName];
+    currentFilesService.changeYamlInSameSheet(yamlName);
 
     wikiStore.table.isCellSelectable = false;
 
