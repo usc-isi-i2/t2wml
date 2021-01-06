@@ -10,9 +10,9 @@ interface Data {
 
 export interface CurrentFiles {
     dataFile: string;
-	sheetName: string;
-	mappingFile: string | undefined;
-	mappingType: 'Yaml' | 'Annotation' | undefined;
+    sheetName: string;
+    mappingFile: string | undefined;
+    mappingType: 'Yaml' | 'Annotation' | undefined;
 }
 
 // send these params to the backend when asking project data
@@ -42,7 +42,7 @@ export class CurrentFilesService implements Data {
         this.currentState = {} as CurrentFiles;
         try {
             const path = `${project.directory}/${filename}`;
-            const content = fs.readFileSync(path, {encoding: 'utf8'});
+            const content = fs.readFileSync(path, { encoding: 'utf8' });
             if (content) {
                 const contentObj: any = JSON.parse(content);
                 if (contentObj.currentState) {
@@ -84,22 +84,16 @@ export class CurrentFilesService implements Data {
         const dataFile = this.currentState.dataFile;
         const sheet = this.currentState.sheetName;
 
-        if (this.currentState.mappingType === 'Yaml') {
-            if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][sheet]) {
-                this.currentState.mappingFile = project.yaml_sheet_associations[dataFile][sheet].val_arr[0];
-            } else {
-                this.currentState.mappingFile = undefined;
-                this.currentState.mappingType = undefined;
-            }
-        } else if (this.currentState.mappingType === 'Annotation') {
-            if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
-                this.currentState.mappingFile = project.annotations[dataFile][sheet].val_arr[0];
-            } else {
-                this.currentState.mappingFile = undefined;
-                this.currentState.mappingType = undefined;
-            }
-        } else {
+        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
+            this.currentState.mappingFile = project.annotations[dataFile][sheet].val_arr[0];
+            this.currentState.mappingType = "Annotation"
+        } else if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[dataFile] && project.yaml_sheet_associations[dataFile][sheet]) {
+            this.currentState.mappingFile = project.yaml_sheet_associations[dataFile][sheet].val_arr[0];
+            this.currentState.mappingType = "Yaml"
+        }
+        else {
             this.currentState.mappingFile = undefined;
+            this.currentState.mappingType = undefined;
         }
     }
 
@@ -110,7 +104,6 @@ export class CurrentFilesService implements Data {
         this.currentState.sheetName = project.data_files[newFile].val_arr[0];
 
         this.setMappingFiles();
-
         this.saveCurrentFileSelections();
     }
 
@@ -129,7 +122,6 @@ export class CurrentFilesService implements Data {
         this.currentState.sheetName = newSheet;
 
         this.setMappingFiles();
-
         this.saveCurrentFileSelections();
     }
 
@@ -158,7 +150,7 @@ export class CurrentFilesService implements Data {
 
 
     @action
-    changeYamlInSameSheet(newYaml: string){
+    changeYamlInSameSheet(newYaml: string) {
         this.currentState.mappingFile = newYaml;
         this.currentState.mappingType = 'Yaml';
         this.saveCurrentFileSelections();
