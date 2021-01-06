@@ -3,21 +3,16 @@ import { action, observable } from 'mobx';
 import { ProjectDTO } from '../common/dtos';
 import wikiStore from '../data/store';
 
-interface Data {
-    currentState: CurrentFiles;
-    prevSelections: any;
-}
-
-export interface CurrentFiles {
-    dataFile: string;
-    sheetName: string;
-    mappingFile: string | undefined;
-    mappingType: 'Yaml' | 'Annotation' | undefined;
+export class CurrentFiles {
+    @observable dataFile: string | undefined;
+    @observable sheetName: string | undefined;
+    @observable mappingFile: string | undefined;
+    @observable mappingType: 'Yaml' | 'Annotation' | undefined;
 }
 
 const filename = 't2wmlproj.user.json';
 
-export class CurrentFilesService implements Data {
+export class CurrentFilesService {
     // Instance needed ?
     private static _instance?: CurrentFilesService;
     public static get instance() {

@@ -91,7 +91,9 @@ class TableContainer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
   }
 
   componentWillUnmount() {
