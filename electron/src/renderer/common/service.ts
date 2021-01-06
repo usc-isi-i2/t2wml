@@ -63,7 +63,7 @@ class RequestService {
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.yaml.yamlError = response.yamlError;
-    wikiStore.annotations.blocks = response.annotations;
+    wikiStore.annotations.blocks = response.annotations || [];
   }
 
   @action
