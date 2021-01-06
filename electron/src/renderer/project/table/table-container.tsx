@@ -22,7 +22,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
-import { currentFilesService } from '../save-files';
+import { currentFilesService } from '../current-file-service';
 
 
 interface TableState {
@@ -40,7 +40,7 @@ interface TableState {
   selectedMainSubject: Cell | null,
   selectedProperty: Cell | null,
 
-  annotationMode: boolean,
+  mode: 'Annotation' | 'Output',
   showCleanedData: boolean,
   showAnnotationMenu: boolean,
   annotationMenuPosition?: Array<number>,
@@ -78,7 +78,7 @@ class TableContainer extends Component<{}, TableState> {
       selectedMainSubject: new Cell(),
       selectedProperty: new Cell(),
 
-      annotationMode: false,
+      mode: wikiStore.table.mode,
       showCleanedData: false,
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
@@ -91,9 +91,9 @@ class TableContainer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
+    this.disposers.push(reaction(() => wikiStore.table.mode, () => this.updateMode()));
   }
 
   componentWillUnmount() {
@@ -102,6 +102,15 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
+  updateMode() {
+    if (wikiStore.table.mode === 'Annotation') {
+      this.setState({ mode: 'Annotation' });
+      this.fetchAnnotations();
+    } else {
+      this.setState({ mode: 'Output' });
+    }
+  }
+  
   async handleOpenTableFile(event: ChangeEvent) {
     this.resetTableData();
 
@@ -196,15 +205,14 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   toggleAnnotationMode() {
-    const { annotationMode } = this.state;
-    if (!annotationMode){
-      this.fetchAnnotations()
+    if (this.state.mode === 'Output'){
+      wikiStore.table.mode = 'Annotation';
+    } else {
+      wikiStore.table.mode = 'Output';
     }
-    this.setState({ annotationMode: !annotationMode });
   }
 
   async fetchAnnotations() {
-
     try {
       await this.requestService.call(this, () => (
         this.requestService.getMappingCalculation()
@@ -244,11 +252,11 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderAnnotationToggle() {
-    const { annotationMode } = this.state;
+    const { mode } = this.state;
     return (
       <div className="annotation-mode-toggle"
         onClick={() => this.toggleAnnotationMode()}>
-        {annotationMode ? (
+        {mode === 'Annotation' ? (
           <FontAwesomeIcon icon={faCheckSquare} />
         ) : (
           <FontAwesomeIcon icon={faSquare} />
@@ -307,8 +315,10 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderTable() {
-    const { annotationMode } = this.state;
-    return annotationMode ? <AnnotationTable /> : <OutputTable />;
+    if (this.state.mode === 'Annotation') {
+      return <AnnotationTable />;
+    }
+    return <OutputTable />;
   }
 
   renderLegend() {

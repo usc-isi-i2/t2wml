@@ -17,12 +17,14 @@ class EditorsState {
 
 
 class TableState {
+    @observable public mode: 'Annotation' | 'Output';
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
     @observable public selectedCell: Cell;
     @observable public showCleanedData: boolean;
 
     constructor() {
+        this.mode = 'Annotation';
         this.table = {} as TableDTO;
         this.showSpinner = false;
         this.selectedCell = new Cell()
