@@ -18,14 +18,12 @@ class EditorsState {
 
 class TableState {
     @observable public table: TableDTO;
-    @observable public isCellSelectable: boolean;
     @observable public showSpinner: boolean;
     @observable public selectedCell: Cell;
     @observable public showCleanedData: boolean;
 
     constructor() {
         this.table = {} as TableDTO;
-        this.isCellSelectable = false;
         this.showSpinner = false;
         this.selectedCell = new Cell()
         this.showCleanedData = false;
@@ -98,7 +96,6 @@ class YamlEditorState {
         } finally {
             wikiStore.table.showSpinner = false;
             wikiStore.yaml.showSpinner = false;
-            wikiStore.table.isCellSelectable = true;
             this.yamlhasChanged = false;
         }
     }

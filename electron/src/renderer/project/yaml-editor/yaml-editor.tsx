@@ -133,13 +133,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
-      wikiStore.table.isCellSelectable = true;
     }
 
   }
 
   handleEditYaml() {
-    wikiStore.table.isCellSelectable = false;
 
     const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
     wikiStore.yaml.yamlContent = yamlContent;
@@ -177,8 +175,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     console.log("<YamlEditor> opened file: " + yamlName);
 
     currentFilesService.changeYamlInSameSheet(yamlName);
-
-    wikiStore.table.isCellSelectable = false;
 
     // upload local yaml
     const reader = new FileReader();

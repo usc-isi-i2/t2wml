@@ -50,7 +50,6 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.requestService = new RequestService();
 
     // init global variables
-    wikiStore.table.isCellSelectable = false;
     if (wikiStore.projects.projectDTO) {
       wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
     }
@@ -119,10 +118,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       this.setState({ name: wikiStore.projects.projectDTO!.title });
 
       if (wikiStore.yaml.yamlContent !== null) {
-        wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
-      } else {
-        wikiStore.table.isCellSelectable = false;
       }
 
       // load settings

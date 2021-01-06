@@ -121,12 +121,6 @@ class TableContainer extends Component<{}, TableState> {
       //update in files state
       currentFilesService.changeDataFile(file.name);
 
-      // load yaml data
-      if ( wikiStore.yaml.yamlContent ) {
-        wikiStore.table.isCellSelectable = true;
-      } else {
-        wikiStore.table.isCellSelectable = false;
-      }
     } catch ( error ) {
       error.errorDescription += "\n\nCannot open file!";
       this.setState({ errorMessage: error });
@@ -172,10 +166,7 @@ class TableContainer extends Component<{}, TableState> {
       await this.requestService.getTable();
 
       if ( wikiStore.yaml.yamlContent ) {
-        wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
-      } else {
-        wikiStore.table.isCellSelectable = false;
       }
     } catch ( error ) {
       error.errorDescription += "\n\nCannot change sheet!";
