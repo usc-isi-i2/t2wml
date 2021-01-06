@@ -91,14 +91,23 @@ class TableContainer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+    this.uncheckAnnotationifYaml();
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => wikiStore.table.mode, () => this.updateMode()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, () => this.uncheckAnnotationifYaml()));
   }
 
   componentWillUnmount() {
     for ( const disposer of this.disposers ) {
       disposer();
+    }
+  }
+
+  uncheckAnnotationifYaml(){
+    if (currentFilesService.currentState.mappingType==="Yaml"){
+      wikiStore.table.mode="Output"
+      this.setState({ mode: 'Output' })
     }
   }
 
@@ -110,7 +119,7 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ mode: 'Output' });
     }
   }
-  
+
   async handleOpenTableFile(event: ChangeEvent) {
     this.resetTableData();
 
@@ -207,6 +216,12 @@ class TableContainer extends Component<{}, TableState> {
   toggleAnnotationMode() {
     if (this.state.mode === 'Output'){
       wikiStore.table.mode = 'Annotation';
+      if (currentFilesService.currentState.mappingType=="Yaml"){
+        currentFilesService.setMappingFiles(); //try to change to an existing annotation
+        if (currentFilesService.currentState.mappingType!="Annotation"){
+          this.requestService.postAnnotationBlocks({"annotations":[]});
+        }
+      }
     } else {
       wikiStore.table.mode = 'Output';
     }

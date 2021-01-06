@@ -26,6 +26,13 @@ export class CurrentFilesService {
     @observable currentState: CurrentFiles = {} as CurrentFiles;
     @observable prevSelections = {};
 
+    getAnnotationFileFromProject(): string|undefined{
+        const project = wikiStore.projects.projectDTO!;
+        if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
+            return project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
+        }
+        return undefined;
+    }
 
     @action
     getFiles(project: ProjectDTO) {
@@ -53,11 +60,11 @@ export class CurrentFilesService {
                 this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
             }
 
-            if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile]) {
-                this.currentState.mappingFile = project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
+            if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
+                this.currentState.mappingFile = project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
                 this.currentState.mappingType = 'Annotation';
-            } else if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile]) {
-                this.currentState.mappingFile = project.yaml_sheet_associations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
+            } else if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile!]) {
+                this.currentState.mappingFile = project.yaml_sheet_associations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
                 this.currentState.mappingType = 'Yaml';
             } else {
                 this.currentState.mappingFile = undefined;
@@ -71,8 +78,8 @@ export class CurrentFilesService {
     @action
     setMappingFiles() {
         const project = wikiStore.projects.projectDTO!;
-        const dataFile = this.currentState.dataFile;
-        const sheet = this.currentState.sheetName;
+        const dataFile = this.currentState.dataFile!;
+        const sheet = this.currentState.sheetName!;
 
         if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
             this.currentState.mappingFile = project.annotations[dataFile][sheet].val_arr[0];
@@ -99,6 +106,7 @@ export class CurrentFilesService {
 
     @action
     changeSheet(newSheet: string, dataFile: string) {
+        debugger
         const project = wikiStore.projects.projectDTO!;
         this.currentState.dataFile = dataFile;
         // If this sheet is not part of current datafile, search the relevant data file.
@@ -132,6 +140,7 @@ export class CurrentFilesService {
             }
         }
 
+        debugger
         this.currentState.mappingFile = newYaml;
         this.currentState.mappingType = 'Yaml';
 
