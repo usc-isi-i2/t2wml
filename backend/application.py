@@ -198,8 +198,10 @@ def upload_data_file():
     annotations_dir=os.path.join(project.directory, "annotations")
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
+    annotations_path=os.path.join(annotations_dir, Path(data_file).stem+"_"+sheet_name+".json")
 
-    save_annotations(project, [], os.path.join(annotations_dir, "annotation1.json"), data_file, sheet_name)
+
+    save_annotations(project, [], os.path.join(annotations_path), data_file, sheet_name)
     calc_params=CalcParams(project, data_file, sheet_name, None)
 
     if global_settings.datamart_integration:
