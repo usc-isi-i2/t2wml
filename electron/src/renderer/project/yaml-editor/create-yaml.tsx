@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
-import { saveFiles } from '../save-files';
+import { currentFilesService } from '../save-files';
 import wikiStore from '@/renderer/data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 
@@ -56,18 +56,18 @@ class CreateYaml extends Component<DelinkProperties, DelinkState> {
 
   createYaml() {
     // taking the yaml content from wikiStore
-    saveFiles.currentState.mappingFile = this.state.yamlFileName;
-    saveFiles.currentState.mappingType = 'Yaml';
+    currentFilesService.currentState.mappingFile = this.state.yamlFileName;
+    currentFilesService.currentState.mappingType = 'Yaml';
 
     this.props.handleDoCreateYaml();
   }
 
   getDefaultName() {
-    let sheetName = saveFiles.currentState.sheetName;
+    let sheetName = currentFilesService.currentState.sheetName;
     if (sheetName) {
       if (sheetName.endsWith('.csv')) {
         sheetName = sheetName.split('.csv')[0];
-      } 
+      }
       let yamlName = sheetName + '.yaml';
 
       let i = 1;
@@ -89,7 +89,7 @@ class CreateYaml extends Component<DelinkProperties, DelinkState> {
     if (wikiStore.projects.projectDTO!.yaml_files.indexOf(name) > -1) {
       this.setState({ warningMsg: 'Yaml file with this name already exists, do you want to replace it?' });
     }
-    this.setState({ yamlFileName: name }); 
+    this.setState({ yamlFileName: name });
   }
 
   render() {

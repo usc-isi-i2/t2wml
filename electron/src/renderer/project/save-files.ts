@@ -22,15 +22,15 @@ export interface StateParams extends CurrentFiles {
 
 const filename = 't2wmlproj.user.json';
 
-export class SaveFiles implements Data {
+export class CurrentFilesService implements Data {
     // Instance needed ?
-    private static _instance?: SaveFiles;
+    private static _instance?: CurrentFilesService;
     public static get instance() {
-        if (!SaveFiles._instance) {
-            SaveFiles._instance = new SaveFiles();
+        if (!CurrentFilesService._instance) {
+            CurrentFilesService._instance = new CurrentFilesService();
         }
 
-        return SaveFiles._instance;
+        return CurrentFilesService._instance;
     }
 
     @observable currentState: CurrentFiles = {} as CurrentFiles;
@@ -62,7 +62,7 @@ export class SaveFiles implements Data {
                 this.currentState.dataFile = Object.keys(project.data_files)[0];
                 this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
             }
-            
+
             if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile]) {
                 this.currentState.mappingFile = project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr[0];
                 this.currentState.mappingType = 'Annotation';
@@ -73,8 +73,8 @@ export class SaveFiles implements Data {
                 this.currentState.mappingFile = undefined;
                 this.currentState.mappingType = undefined;
             }
-            
-            this.saveFiles(project.directory);
+
+            this.currentFilesService(project.directory);
         }
     }
 
@@ -108,10 +108,10 @@ export class SaveFiles implements Data {
         const project = wikiStore.projects.projectDTO!;
         this.currentState.dataFile = newFile;
         this.currentState.sheetName = project.data_files[newFile].val_arr[0];
-        
+
         this.fillMapping();
 
-        this.saveFiles(project.directory);
+        this.currentFilesService(project.directory);
     }
 
     @action
@@ -127,10 +127,10 @@ export class SaveFiles implements Data {
             }
         }
         this.currentState.sheetName = newSheet;
-        
+
         this.fillMapping();
 
-        this.saveFiles(project.directory);
+        this.currentFilesService(project.directory);
     }
 
     @action
@@ -153,14 +153,14 @@ export class SaveFiles implements Data {
         this.currentState.mappingFile = newYaml;
         this.currentState.mappingType = 'Yaml';
 
-        this.saveFiles(project.directory);
+        this.currentFilesService(project.directory);
     }
 
     @action
     changeAnnotation(newAnnotation: string, sheetName: string, dataFile: string) {
         const project = wikiStore.projects.projectDTO!;
-        saveFiles.currentState.dataFile = dataFile;
-        saveFiles.currentState.sheetName = sheetName;
+        currentFilesService.currentState.dataFile = dataFile;
+        currentFilesService.currentState.sheetName = sheetName;
         // If this yaml is not part of current datafile, search the relevant data file and sheet.
         if (project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr.indexOf(newAnnotation) < 0) {
             for (const df of Object.keys(project.annotations)) {
@@ -175,11 +175,11 @@ export class SaveFiles implements Data {
 
         this.currentState.mappingFile = newAnnotation;
         this.currentState.mappingType = 'Annotation';
-        
-        this.saveFiles(project.directory);
+
+        this.currentFilesService(project.directory);
     }
 
-    saveFiles(directory: string) {
+    currentFilesService(directory: string) {
         const path = `${directory}/${filename}`;
         fs.writeFileSync(path, JSON.stringify({
             'currentState': this.currentState,
@@ -221,15 +221,15 @@ export class SaveFiles implements Data {
     //     this.prevSelections = {
     //         name: project.title,
     //         DataFiles: dataFiles
-    //     }        
+    //     }
     // }
 
     // fillFilesData() {
     //     const project = wikiStore.projects.projectDTO!;
     //     this.fillCurrents();
     //     this.fillPrevSelections(project);
-    //     this.saveFiles(project.directory);
+    //     this.currentFilesService(project.directory);
     // }
 }
 
-export const saveFiles = SaveFiles.instance;
+export const currentFilesService = CurrentFilesService.instance;

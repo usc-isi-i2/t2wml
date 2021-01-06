@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '@/renderer/common/service';
 import { Card, Spinner } from 'react-bootstrap';
-import { saveFiles } from '../save-files';
+import { currentFilesService } from '../save-files';
 import FileTree from './file-tree/file-tree';
 import { t2wmlColors } from '@/renderer/common/general';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -67,7 +67,7 @@ class Sidebar extends Component<{}, SidebarState> {
         // }
 
         // Does nothing when clicking on the current file
-        if (!node.children && node.name !== saveFiles.currentState.dataFile) {
+        if (!node.children && node.name !== currentFilesService.currentState.dataFile) {
             wikiStore.wikifier.showSpinner = true;
             this.setState({showSpinner: true});
 
@@ -83,7 +83,7 @@ class Sidebar extends Component<{}, SidebarState> {
         // save prev yaml
         await wikiStore.yaml.saveYaml();
 
-        saveFiles.changeDataFile(fileName);
+        currentFilesService.changeDataFile(fileName);
 
         await this.requestService.getTable();
     }
@@ -102,7 +102,7 @@ class Sidebar extends Component<{}, SidebarState> {
             this.setState({data: data});
 
             if (dataFiles.length) {
-                const currentNode = dataFiles.find(n => n.name === saveFiles.currentState.dataFile)
+                const currentNode = dataFiles.find(n => n.name === currentFilesService.currentState.dataFile)
                 this.onToggle(currentNode);
             }
         }
@@ -117,7 +117,7 @@ class Sidebar extends Component<{}, SidebarState> {
         } else { // wikifiers
             currentFileTree = <FileTree /> ;// <Wikifiers />
         }
-        
+
         return (
             <div className=''>
             {
@@ -125,7 +125,7 @@ class Sidebar extends Component<{}, SidebarState> {
                 <div className="mySpinner" hidden={!this.state.showSpinner}>
                     <Spinner animation="border" />
                 </div>
-                
+
                 <Card className="w-100 shadow-sm"
                         style={{ height: "calc(100% - 40px)", marginTop: "0.25rem" }}>
                         {/* card header */}

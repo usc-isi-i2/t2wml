@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import wikiStore from '../data/store';
-import { saveFiles } from '../project/save-files';
+import { currentFilesService } from '../project/save-files';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
@@ -22,24 +22,24 @@ class RequestService {
   }
 
   public getDataFileParams(required = true) {
-    if (!saveFiles.currentState.dataFile && required){
+    if (!currentFilesService.currentState.dataFile && required){
       console.error("There is no data file") //TODO: actual proper error handling?
     }
-    return this.getProjectFolder()+`&data_file=${saveFiles.currentState.dataFile}&sheet_name=${saveFiles.currentState.sheetName}`
+    return this.getProjectFolder()+`&data_file=${currentFilesService.currentState.dataFile}&sheet_name=${currentFilesService.currentState.sheetName}`
   }
 
   public getMappingParams(required = true){
     let url=this.getDataFileParams();
-    if (saveFiles.currentState.mappingFile) {
-      url += `&mapping_file=${saveFiles.currentState.mappingFile}`
-      url += `&mapping_type=${saveFiles.currentState.mappingType}`;
+    if (currentFilesService.currentState.mappingFile) {
+      url += `&mapping_file=${currentFilesService.currentState.mappingFile}`
+      url += `&mapping_type=${currentFilesService.currentState.mappingType}`;
     }
     return url;
   }
 
   @action
   public switchProjectState(response: ResponseWithProjectDTO){
-    saveFiles.getFiles(response.project);
+    currentFilesService.getFiles(response.project);
     wikiStore.projects.projectDTO = response.project;
 
     // new project
@@ -91,6 +91,11 @@ class RequestService {
     wikiStore.changeProject(folder);
   }
 
+  public async getProject(folder: string) {
+    const response = await backendGet(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
+    this.switchProjectState(response);
+  }
+
   public async uploadDataFile(folder: string, data: any) {
     const response = await backendPost(`/data?project_folder=${folder}`, data) as ResponseWithEverythingDTO;
     this.fillTable(response);
@@ -114,10 +119,6 @@ class RequestService {
     wikiStore.wikifier.wikifierError = response.wikifierError;
   }
 
-  public async getProject(folder: string) {
-    const response = await backendGet(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
-    this.switchProjectState(response);
-  }
 
   public async getTable() {
     const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;

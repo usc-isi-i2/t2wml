@@ -24,7 +24,7 @@ import Settings from './settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
 import TableContainer from './table/table-container';
-import { saveFiles } from './save-files';
+import { currentFilesService } from './save-files';
 
 
 interface ProjectState extends IStateWithError {
@@ -111,7 +111,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     console.debug('Refreshing project ', this.props.path);
     try {
       await this.requestService.call(this, () => this.requestService.getProject(this.props.path));
-      if (saveFiles.currentState.dataFile && saveFiles.currentState.sheetName) {
+      if (currentFilesService.currentState.dataFile && currentFilesService.currentState.sheetName) {
         await this.requestService.call(this, () => this.requestService.getTable());
       }
 

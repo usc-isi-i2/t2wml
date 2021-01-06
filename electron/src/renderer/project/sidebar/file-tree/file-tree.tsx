@@ -3,7 +3,7 @@ import wikiStore from "../../../data/store";
 import './file-tree.css';
 // import { TreeMode } from '@/shared/types'
 import RequestService from "@/renderer/common/service";
-import { saveFiles } from "../../save-files";
+import { currentFilesService } from "../../save-files";
 import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
 
@@ -36,7 +36,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.projects.projectDTO, () => this.updateFileTree()));
-    this.disposers.push(reaction(() => saveFiles.currentState, () => this.updateFileTree()));
+    this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
   }
 
   componentWillUnmount() {
@@ -46,46 +46,46 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async changeDataFile(dataFile: string) {
-    saveFiles.changeDataFile(dataFile);
+    currentFilesService.changeDataFile(dataFile);
     await this.requestService.getTable();
   }
 
   async changeSheet(sheetName: string, dataFile: string) {
-    saveFiles.changeSheet(sheetName, dataFile);
+    currentFilesService.changeSheet(sheetName, dataFile);
     await this.requestService.getTable();
   }
 
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {
-    saveFiles.changeYaml(yaml, sheetName, dataFile);
+    currentFilesService.changeYaml(yaml, sheetName, dataFile);
     await this.requestService.getMappingCalculation();
   }
 
   async changeAnnotation(annotation: string, sheetName: string, dataFile: string) {
-    saveFiles.changeAnnotation(annotation, sheetName, dataFile);
+    currentFilesService.changeAnnotation(annotation, sheetName, dataFile);
     await this.requestService.getMappingCalculation();
   }
 
     async changeFile(node: NodeProps) {
     if (node.type === "DataFile") {
-        if (node.label !== saveFiles.currentState.dataFile) {
+        if (node.label !== currentFilesService.currentState.dataFile) {
             await this.changeDataFile(node.label);
         }
     } else if (node.type === "Sheet") { // TODO- check sheet updates
-        if (node.label !== saveFiles.currentState.sheetName) {
+        if (node.label !== currentFilesService.currentState.sheetName) {
             await this.changeSheet(node.label, node.parentNode!.label);
         }
     } else if (node.type === "Yaml") {
         const sheet = node.parentNode!;
         const dataFile = sheet.parentNode!.label;
 
-        if (node.label !== saveFiles.currentState.mappingFile) {
+        if (node.label !== currentFilesService.currentState.mappingFile) {
             await this.changeYaml(node.label, sheet.label, dataFile);
         }
     } else if (node.type === "Annotation") {
       const sheet = node.parentNode!;
       const dataFile = sheet.parentNode!.label;
 
-      if (node.label !== saveFiles.currentState.mappingFile) {
+      if (node.label !== currentFilesService.currentState.mappingFile) {
           await this.changeAnnotation(node.label, sheet.label, dataFile);
       }
     }
@@ -113,7 +113,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           rightClick: (node: NodeProps) => this.onRightClick(node),
           onClick: (node: NodeProps) => this.changeFile(node),
           //because yaml ends in .yaml and annotation in .json, we can check both simultaneously?
-          bolded: saveFiles.currentState.mappingFile == filename
+          bolded: currentFilesService.currentState.mappingFile == filename
         }
       )
     }
@@ -132,7 +132,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         parentNode: rootNode,
         rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: (node: NodeProps) => this.changeFile(node),
-        bolded: saveFiles.currentState.dataFile == df
+        bolded: currentFilesService.currentState.dataFile == df
       } as NodeProps;
       const sheet_arr = project.data_files[df].val_arr;
       for (const sheetName of sheet_arr) {
@@ -144,7 +144,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           parentNode: dataNode,
           rightClick: (node: NodeProps) => this.onRightClick(node),
           onClick: (node: NodeProps) => this.changeFile(node),
-          bolded: saveFiles.currentState.sheetName == sheetName
+          bolded: currentFilesService.currentState.sheetName == sheetName
         } as NodeProps;
         this.buildSubFileTree(project.annotations, df, sheetName, "Annotation", sheetNode)
         this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName,  "Yaml", sheetNode)

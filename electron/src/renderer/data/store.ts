@@ -7,7 +7,7 @@ import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, Q
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
-import { saveFiles } from '../project/save-files';
+import { currentFilesService } from '../project/save-files';
 
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
@@ -84,8 +84,8 @@ class YamlEditorState {
 
         // send request
         const data = {"yaml": this.yamlContent!,
-                      "title": saveFiles.currentState.mappingFile!,
-                      "sheetName": saveFiles.currentState.sheetName};
+                      "title": currentFilesService.currentState.mappingFile!,
+                      "sheetName": currentFilesService.currentState.sheetName};
 
         try {
             await this.requestService.saveYaml(data);

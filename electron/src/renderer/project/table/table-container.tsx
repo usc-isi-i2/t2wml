@@ -22,7 +22,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
-import { saveFiles } from '../save-files';
+import { currentFilesService } from '../save-files';
 
 
 interface TableState {
@@ -119,7 +119,7 @@ class TableContainer extends Component<{}, TableState> {
       console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
 
       //update in files state
-      saveFiles.changeDataFile(file.name);
+      currentFilesService.changeDataFile(file.name);
 
       // load yaml data
       if ( wikiStore.yaml.yamlContent ) {
@@ -168,7 +168,7 @@ class TableContainer extends Component<{}, TableState> {
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
       // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
-      saveFiles.changeSheet(sheetName, saveFiles.currentState.dataFile);
+      currentFilesService.changeSheet(sheetName, currentFilesService.currentState.dataFile);
       await this.requestService.getTable();
 
       if ( wikiStore.yaml.yamlContent ) {
@@ -188,16 +188,16 @@ class TableContainer extends Component<{}, TableState> {
   updateProjectInfo() {
     if ( wikiStore.projects.projectDTO ) {
       const project = wikiStore.projects.projectDTO;
-      const filename = saveFiles.currentState.dataFile;
+      const filename = currentFilesService.currentState.dataFile;
       let multipleSheets = false;
       let sheetNames = [] as string[];
       let currSheetName = '';
-      if (project.data_files[filename] && saveFiles.currentState.sheetName) { // If there are datafile and sheet name (not a new project)
+      if (project.data_files[filename] && currentFilesService.currentState.sheetName) { // If there are datafile and sheet name (not a new project)
         sheetNames = project.data_files[filename].val_arr;
-        currSheetName = saveFiles.currentState.sheetName;
+        currSheetName = currentFilesService.currentState.sheetName;
         multipleSheets = sheetNames && sheetNames.length > 1;
       }
-      
+
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
   }
