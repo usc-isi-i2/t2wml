@@ -216,7 +216,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   toggleAnnotationMode() {
-    if (this.state.mode === 'Output'){
+    if (this.state.mode === 'Output') {
       wikiStore.table.mode = 'Annotation';
       if (currentFilesService.currentState.mappingType=="Yaml"){
         currentFilesService.setMappingFiles(); //try to change to an existing annotation
@@ -227,7 +227,6 @@ class TableContainer extends Component<{}, TableState> {
       }
     } else {
       wikiStore.table.mode = 'Output';
-      currentFilesService.changeYamlInSameSheet();
     }
   }
 
