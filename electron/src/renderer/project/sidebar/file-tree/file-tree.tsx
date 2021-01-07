@@ -35,7 +35,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.project, () => this.updateFileTree()));
+    this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
   }
 
@@ -120,7 +120,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   buildFileTree(): NodeProps {
-    const project = wikiStore.project?.projectDTO;
+    const project = wikiStore.project.projectDTO;
     rootNode.childNodes=[];
     if (!project || !project.data_files) { return rootNode; }
     for (const df of Object.keys(project.data_files).sort()) {

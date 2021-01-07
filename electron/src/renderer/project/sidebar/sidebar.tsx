@@ -47,7 +47,7 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     componentDidMount() {
-        this.disposeReaction = reaction(() => wikiStore.project, () => this.getFilesData());
+        this.disposeReaction = reaction(() => wikiStore.project.projectDTO, () => this.getFilesData());
     }
 
     componentWillUnmount() {
@@ -90,7 +90,7 @@ class Sidebar extends Component<{}, SidebarState> {
 
     getFilesData() {
         const dataFiles = [];
-        if (wikiStore.project && wikiStore.project.projectDTO.data_files) {
+        if (wikiStore.project.projectDTO && wikiStore.project.projectDTO.data_files) {
             for(const file of Object.keys(wikiStore.project.projectDTO.data_files).sort()) {
                 dataFiles.push({name: file});
             }
