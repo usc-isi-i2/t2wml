@@ -206,7 +206,13 @@ export class AnnotationState {
 }
 
 
+export class ProjectState{
+    @observable public projectDTO?: ProjectDTO;
 
+    constructor(projectdto?: ProjectDTO){
+        this.projectDTO=projectdto;
+    }
+}
 
 class WikiStore {
     @observable public editors = new EditorsState();
@@ -219,6 +225,7 @@ class WikiStore {
 
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();
+    @observable public project = new ProjectState();
 
     @action
     public changeWindowDisplayMode(path?: string) {

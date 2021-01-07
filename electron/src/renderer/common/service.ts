@@ -18,7 +18,7 @@ export interface IStateWithError {
 class RequestService {
 
   public getProjectFolder() {
-    return `project_folder=${wikiStore.projects.projectDTO!.directory}`
+    return `project_folder=${wikiStore.project.projectDTO!.directory}`
   }
 
   public getDataFileParams(required = true) {
@@ -43,7 +43,7 @@ class RequestService {
   @action
   public switchProjectState(response: ResponseWithProjectDTO){
     currentFilesService.getFiles(response.project);
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
 
     // new project
     if (!Object.keys(response.project.data_files).length) {
@@ -62,7 +62,7 @@ class RequestService {
 
   @action
   public fillMapping(response: ResponseWithMappingDTO){
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.yaml.yamlError = response.yamlError;
@@ -78,19 +78,19 @@ class RequestService {
   @action
   public updateProjectandQnode(response: ResponseWithQNodeLayerDTO){
     wikiStore.layers.updateFromDTO(response.layers);
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
   }
 
 
   public async postAnnotationBlocks(data: any) {
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
     this.fillMapping(response);
   }
 
   public async createProject(folder: string) {
     const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
-    wikiStore.projects.projectDTO = response.project; // not necessary?
+    wikiStore.project.projectDTO = response.project; // not necessary?
     wikiStore.changeWindowDisplayMode(folder);
   }
 
@@ -113,7 +113,7 @@ class RequestService {
   public async uploadYaml(data: any) {
     const response = await backendPost(`/yaml/apply?${this.getMappingParams()}`, data) as ResponseWithProjectAndMappingDTO;
     this.fillMapping(response)
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
   }
 
   public async callWikifierService(data: any) {
@@ -136,13 +136,13 @@ class RequestService {
   public async renameProject(folder: string, data: any) {
     //returns project
     const response = await backendPut(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
-    wikiStore.projects.projectDTO = response.project; // not necessary
+    wikiStore.project.projectDTO = response.project; // not necessary
   }
 
   public async getSettings(folder: string, data: any) {
     //returns endpoint, warnEmpty
     const response = await backendPut(`/project/settings?project_folder=${folder}`, data) as ResponseWithProjectDTO;
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
   }
 
   public async uploadEntities(data: any) {
@@ -164,12 +164,12 @@ class RequestService {
 
   public async renameYaml(folder: string, data: any) {
     const response = await backendPost(`/yaml/rename?project_folder=${folder}`, data) as ResponseWithProjectDTO;
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
   }
 
   public async saveYaml(data: any) {
     const response = await backendPost(`/yaml/save?${this.getDataFileParams()}`, data) as ResponseWithProjectDTO;
-    wikiStore.projects.projectDTO = response.project;
+    wikiStore.project.projectDTO = response.project;
   }
 
   public async call<IProp, IState extends IStateWithError, ReturnValue>(
