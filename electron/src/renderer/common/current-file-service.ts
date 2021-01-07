@@ -110,6 +110,7 @@ export class CurrentFilesService {
 
     @action
     changeSheet(newSheet: string, dataFile: string) {
+        debugger
         const project = wikiStore.project!.projectDTO;
         this.currentState.dataFile = dataFile;
         // If this sheet is not part of current datafile, search the relevant data file.
@@ -143,6 +144,7 @@ export class CurrentFilesService {
             }
         }
 
+        debugger
         this.currentState.mappingFile = newYaml;
         this.currentState.mappingType = 'Yaml';
         wikiStore.table.mode = 'Output';

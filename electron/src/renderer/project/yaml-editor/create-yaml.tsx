@@ -69,7 +69,7 @@ class CreateYaml extends Component<DelinkProperties, DelinkState> {
       let yamlName = sheetName + '.yaml';
 
       let i = 1;
-      while (wikiStore.project!.projectDTO.yaml_files.includes(yamlName)) {
+      while (wikiStore.projects.projectDTO!.yaml_files.includes(yamlName)) {
         yamlName = sheetName + "(" + i + ").yaml";
         i++;
       }
@@ -80,11 +80,11 @@ class CreateYaml extends Component<DelinkProperties, DelinkState> {
   }
 
   updateYamlName(name: string) {
-    if (!wikiStore.project) {
+    if (!wikiStore.projects.projectDTO) {
       return;
     }
     this.setState({ warningMsg: undefined });
-    if (wikiStore.project!.projectDTO.yaml_files.indexOf(name) > -1) {
+    if (wikiStore.projects.projectDTO!.yaml_files.indexOf(name) > -1) {
       this.setState({ warningMsg: 'Yaml file with this name already exists, do you want to replace it?' });
     }
     this.setState({ yamlFileName: name });

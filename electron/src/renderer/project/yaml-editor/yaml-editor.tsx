@@ -71,7 +71,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   componentDidMount() {
-    if (!wikiStore.project || !currentFilesService.currentState.dataFile) {
+    if (!wikiStore.projects.projectDTO || !currentFilesService.currentState.dataFile) {
       this.setState({disableYaml: true});
     }
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
