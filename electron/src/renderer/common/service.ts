@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import wikiStore from '../data/store';
-import { currentFilesService } from '../project/current-file-service';
+import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,

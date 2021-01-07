@@ -24,7 +24,7 @@ import Settings from './settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
 import TableContainer from './table/table-container';
-import { currentFilesService } from './current-file-service';
+import { currentFilesService } from '../common/current-file-service';
 
 
 interface ProjectState extends IStateWithError {

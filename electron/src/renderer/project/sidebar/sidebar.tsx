@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '@/renderer/common/service';
 import { Card, Spinner } from 'react-bootstrap';
-import { currentFilesService } from '../current-file-service';
+import { currentFilesService } from '../../common/current-file-service';
 import FileTree from './file-tree/file-tree';
 import { t2wmlColors } from '@/renderer/common/general';
 import SheetSelector from '../sheet-selector/sheet-selector';

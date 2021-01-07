@@ -7,7 +7,7 @@ import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, Q
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
-import { currentFilesService } from '../project/current-file-service';
+import { currentFilesService } from '../common/current-file-service';
 
 
 type EditorsStatus = "Wikifier" | "YamlEditor";

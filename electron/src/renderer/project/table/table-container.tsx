@@ -22,7 +22,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
-import { currentFilesService } from '../current-file-service';
+import { currentFilesService } from '../../common/current-file-service';
 
 
 interface TableState {
