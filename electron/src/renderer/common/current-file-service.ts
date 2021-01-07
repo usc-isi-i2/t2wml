@@ -4,8 +4,8 @@ import { ProjectDTO } from './dtos';
 import wikiStore from '../data/store';
 
 export class CurrentFiles {
-    @observable dataFile: string | undefined;
-    @observable sheetName: string | undefined;
+    @observable dataFile: string = "";
+    @observable sheetName: string = "";
     @observable mappingFile: string | undefined;
     @observable mappingType: 'Yaml' | 'Annotation' | undefined;
 }
@@ -26,7 +26,7 @@ export class CurrentFilesService {
     @observable currentState: CurrentFiles = {} as CurrentFiles;
     @observable prevSelections = {};
 
-    getAnnotationFileFromProject(): string|undefined{
+    getAnnotationFileFromProject(): string | undefined {
         const project = wikiStore.project!.projectDTO;
         if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
             return project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
