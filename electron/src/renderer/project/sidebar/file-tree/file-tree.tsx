@@ -57,12 +57,14 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {
     currentFilesService.changeYaml(yaml, sheetName, dataFile);
-    await this.requestService.getMappingCalculation();
+    await this.requestService.getTable();
+    // await this.requestService.getMappingCalculation();
   }
 
   async changeAnnotation(annotation: string, sheetName: string, dataFile: string) {
     currentFilesService.changeAnnotation(annotation, sheetName, dataFile);
-    await this.requestService.getMappingCalculation();
+    await this.requestService.getTable();
+    // await this.requestService.getMappingCalculation();
   }
 
     async changeFile(node: NodeProps) {
