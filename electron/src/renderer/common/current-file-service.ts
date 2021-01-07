@@ -27,7 +27,7 @@ export class CurrentFilesService {
     @observable prevSelections = {};
 
     getAnnotationFileFromProject(): string | undefined {
-        const project = wikiStore.project!.projectDTO;
+        const project = wikiStore.projects.projectDTO!;
         if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
             return project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
         }
@@ -79,7 +79,7 @@ export class CurrentFilesService {
 
     @action
     setMappingFiles() {
-        const project = wikiStore.project!.projectDTO;
+        const project = wikiStore.projects.projectDTO!;
         const dataFile = this.currentState.dataFile!;
         const sheet = this.currentState.sheetName!;
 
@@ -100,7 +100,7 @@ export class CurrentFilesService {
 
     @action
     changeDataFile(newFile: string) {
-        const project = wikiStore.project!.projectDTO;
+        const project = wikiStore.projects.projectDTO!;
         this.currentState.dataFile = newFile;
         this.currentState.sheetName = project.data_files[newFile].val_arr[0];
 
@@ -110,8 +110,7 @@ export class CurrentFilesService {
 
     @action
     changeSheet(newSheet: string, dataFile: string) {
-        debugger
-        const project = wikiStore.project!.projectDTO;
+        const project = wikiStore.projects.projectDTO!;
         this.currentState.dataFile = dataFile;
         // If this sheet is not part of current datafile, search the relevant data file.
         if (project.data_files[this.currentState.dataFile].val_arr.indexOf(newSheet) < 0) {
@@ -129,7 +128,7 @@ export class CurrentFilesService {
 
     @action
     changeYaml(newYaml: string, sheetName: string, dataFile: string) {
-        const project = wikiStore.project!.projectDTO;
+        const project = wikiStore.projects.projectDTO!;
         this.currentState.dataFile = dataFile;
         this.currentState.sheetName = sheetName;
         // If this yaml is not part of current datafile, search the relevant data file and sheet.
@@ -169,7 +168,7 @@ export class CurrentFilesService {
 
     @action
     changeAnnotation(newAnnotation: string, sheetName: string, dataFile: string) {
-        const project = wikiStore.project!.projectDTO;
+        const project = wikiStore.projects.projectDTO!;
         currentFilesService.currentState.dataFile = dataFile;
         currentFilesService.currentState.sheetName = sheetName;
         // If this yaml is not part of current datafile, search the relevant data file and sheet.
@@ -206,7 +205,7 @@ export class CurrentFilesService {
     }
 
     saveCurrentFileSelections() {
-        const project = wikiStore.project!.projectDTO;
+        const project = wikiStore.projects.projectDTO!;
         const path = `${project.directory}/${filename}`;
         fs.writeFileSync(path, JSON.stringify({
             'currentState': this.currentState,
@@ -252,7 +251,7 @@ export class CurrentFilesService {
     // }
 
     // fillFilesData() {
-    //     const project = wikiStore.project!.projectDTO;
+    //     const project = wikiStore.projects.projectDTO!;
     //     this.fillCurrents();
     //     this.fillPrevSelections(project);
     //     this.saveCurrentFileSelections(project.directory);
