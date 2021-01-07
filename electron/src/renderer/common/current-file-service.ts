@@ -151,10 +151,11 @@ export class CurrentFilesService {
     }
 
     @action
-    changeYamlInSameSheet(newYaml: string) {
+    changeYamlInSameSheet(newYaml?: string) {
         if (!newYaml) {
             const project = wikiStore.project!.projectDTO;
-            if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile!]) {
+            if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile!] 
+            && project.yaml_sheet_associations[this.currentState.dataFile!][this.currentState.sheetName]) {
                 newYaml = project.yaml_sheet_associations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
             }
             //TODO- what if there is no yamls to this sheet- add one
@@ -163,7 +164,6 @@ export class CurrentFilesService {
         this.currentState.mappingType = 'Yaml';
         wikiStore.table.mode = 'Output';
         this.saveCurrentFileSelections();
-
     }
 
     @action
@@ -187,20 +187,6 @@ export class CurrentFilesService {
         this.currentState.mappingType = 'Annotation';
         wikiStore.table.mode = 'Annotation';
 
-        this.saveCurrentFileSelections();
-    }
-
-    @action
-    changeAnnotationInSameSheet(newAnnotation?: string) {
-        if (!newAnnotation) {
-            const project = wikiStore.project!.projectDTO;
-            if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
-                newAnnotation = project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
-            } //TODO- if there is no annotation- add one
-        }
-        this.currentState.mappingFile = newAnnotation;
-        this.currentState.mappingType = 'Annotation';
-        wikiStore.table.mode = 'Annotation';
         this.saveCurrentFileSelections();
     }
 
