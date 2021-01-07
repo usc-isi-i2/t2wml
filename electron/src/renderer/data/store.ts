@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
 import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
-        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock} from '../common/dtos';
+        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO} from '../common/dtos';
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
@@ -206,6 +206,8 @@ export class AnnotationState {
 }
 
 
+
+
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
@@ -219,7 +221,7 @@ class WikiStore {
     @observable public projects = new ProjectList();
 
     @action
-    public changeProject(path?: string) {
+    public changeWindowDisplayMode(path?: string) {
         if (path) {
             this.displayMode = 'project';
             if (path) {

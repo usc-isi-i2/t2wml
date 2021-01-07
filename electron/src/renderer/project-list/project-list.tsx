@@ -166,7 +166,7 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
   projectClicked(path: string) {
-    wikiStore.changeProject(path);
+    wikiStore.changeWindowDisplayMode(path);
   }
 
   formatTime(time: Date): string {

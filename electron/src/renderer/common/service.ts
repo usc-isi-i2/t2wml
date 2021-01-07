@@ -91,7 +91,7 @@ class RequestService {
   public async createProject(folder: string) {
     const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
     wikiStore.projects.projectDTO = response.project; // not necessary?
-    wikiStore.changeProject(folder);
+    wikiStore.changeWindowDisplayMode(folder);
   }
 
   public async getProject(folder: string) {
