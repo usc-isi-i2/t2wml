@@ -21,7 +21,7 @@ import RequestService, { IStateWithError } from '../common/service';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
-import { Project } from '../data/projects';
+import { Project } from './project-entry';
 
 import { shell } from 'electron';
 
