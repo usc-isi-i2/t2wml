@@ -22,8 +22,11 @@ class RequestService {
   }
 
   public getDataFileParams(required = true) {
-    if (!currentFilesService.currentState.dataFile && required){
+    if (!currentFilesService.currentState.dataFile){
+      if (required){
       console.error("There is no data file") //TODO: actual proper error handling?
+      }
+      return this.getProjectFolder();
     }
     return this.getProjectFolder()+`&data_file=${currentFilesService.currentState.dataFile}&sheet_name=${currentFilesService.currentState.sheetName}`
   }
