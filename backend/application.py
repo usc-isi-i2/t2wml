@@ -192,9 +192,16 @@ def upload_data_file():
     file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
     data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
-
     response=dict(project=get_project_dict(project))
     sheet_name=project.data_files[data_file]["val_arr"][0]
+
+    annotations_dir=os.path.join(project.directory, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path=os.path.join(annotations_dir, Path(data_file).stem+"_"+sheet_name+".json")
+
+
+    save_annotations(project, [], os.path.join(annotations_path), data_file, sheet_name)
     calc_params=CalcParams(project, data_file, sheet_name, None)
 
     if global_settings.datamart_integration:
@@ -374,10 +381,10 @@ def upload_annotation():
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
     annotations_path=os.path.join(annotations_dir, Path(calc_params.data_path).stem+"_"+calc_params.sheet_name+".json")
-    calc_params.annotation_path=annotations_path
-    response=dict(project=get_project_dict(project))
     annotation = request.get_json()["annotations"]
-    save_annotations(project, calc_params, annotation, response)
+
+
+    save_annotations(project, annotation, annotations_path, calc_params.data_path, calc_params.sheet_name)
     response = dict(project= get_project_dict(project))
     calc_response, code = get_mapping(annotations_path, "Annotation")
     response.update(calc_response)

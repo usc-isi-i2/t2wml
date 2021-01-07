@@ -22,7 +22,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
-import { currentFilesService } from '../current-file-service';
+import { currentFilesService } from '../../common/current-file-service';
 
 
 interface TableState {
@@ -91,14 +91,23 @@ class TableContainer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+    this.uncheckAnnotationifYaml();
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => wikiStore.table.mode, () => this.updateMode()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, () => this.uncheckAnnotationifYaml()));
   }
 
   componentWillUnmount() {
     for ( const disposer of this.disposers ) {
       disposer();
+    }
+  }
+
+  uncheckAnnotationifYaml(){
+    if (currentFilesService.currentState.mappingType==="Yaml"){
+      wikiStore.table.mode="Output"
+      this.setState({ mode: 'Output' })
     }
   }
 
@@ -110,7 +119,7 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ mode: 'Output' });
     }
   }
-  
+
   async handleOpenTableFile(event: ChangeEvent) {
     this.resetTableData();
 
@@ -131,6 +140,7 @@ class TableContainer extends Component<{}, TableState> {
 
       //update in files state
       currentFilesService.changeDataFile(file.name);
+      wikiStore.table.mode="Annotation"
 
     } catch ( error ) {
       error.errorDescription += "\n\nCannot open file!";
@@ -185,6 +195,7 @@ class TableContainer extends Component<{}, TableState> {
     }
     wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = false;
+
   }
 
   updateProjectInfo() {
@@ -207,7 +218,13 @@ class TableContainer extends Component<{}, TableState> {
   toggleAnnotationMode() {
     if (this.state.mode === 'Output'){
       wikiStore.table.mode = 'Annotation';
-      currentFilesService.changeAnnotationInSameSheet();
+      // currentFilesService.changeAnnotationInSameSheet();
+      if (currentFilesService.currentState.mappingType=="Yaml"){
+        currentFilesService.setMappingFiles(); //try to change to an existing annotation
+        if (currentFilesService.currentState.mappingType!="Annotation"){
+          this.requestService.postAnnotationBlocks({"annotations":[]});
+        }
+      }
     } else {
       wikiStore.table.mode = 'Output';
       currentFilesService.changeYamlInSameSheet();

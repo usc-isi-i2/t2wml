@@ -3,7 +3,7 @@ import wikiStore from "../../../data/store";
 import './file-tree.css';
 // import { TreeMode } from '@/shared/types'
 import RequestService from "@/renderer/common/service";
-import { currentFilesService } from "../../current-file-service";
+import { currentFilesService } from "../../../common/current-file-service";
 import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
 

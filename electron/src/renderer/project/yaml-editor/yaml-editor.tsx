@@ -18,7 +18,7 @@ import wikiStore from '../../data/store';
 import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
 // import SheetSelector from './sheet-selector/sheet-selector';
-import { currentFilesService } from '../current-file-service';
+import { currentFilesService } from '../../common/current-file-service';
 import CreateYaml from './create-yaml';
 
 

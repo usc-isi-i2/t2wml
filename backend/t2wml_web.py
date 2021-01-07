@@ -292,9 +292,8 @@ def get_annotations(calc_params):
         yamlContent="#Error when generating yaml: "+str(e)
     return dga.annotation_block_array, yamlContent
 
-def save_annotations(project, calc_params, annotation, response):
-    annotations_path=calc_params.annotation_path
+def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
     dga=Annotation(annotation)
     dga.save(annotations_path)
-    project.add_annotation_file(annotations_path, calc_params.data_path, calc_params.sheet_name)
+    project.add_annotation_file(annotations_path, data_path, sheet_name)
     project.save()

@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
-import { currentFilesService } from '../current-file-service';
+import { currentFilesService } from '../../common/current-file-service';
 import wikiStore from '@/renderer/data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 
