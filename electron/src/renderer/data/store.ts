@@ -205,7 +205,13 @@ export class AnnotationState {
     @observable public blocks: AnnotationBlock[] =[];
 }
 
+export class ProjectState{
+    @observable public projectDTO: ProjectDTO;
 
+    constructor(projectDTO: ProjectDTO){
+        this.projectDTO = projectDTO
+    }
+}
 
 
 class WikiStore {
@@ -219,6 +225,7 @@ class WikiStore {
 
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();
+    @observable public project: ProjectState | null = null;
 
     @action
     public changeWindowDisplayMode(path?: string) {
@@ -231,6 +238,13 @@ class WikiStore {
         } else {
             this.displayMode = 'project-list';
             ipcRenderer.send('show-project', null);
+        }
+    }
+
+    @action
+    public changeProject(projectDTO: ProjectDTO){
+        if (projectDTO){
+            this.project= new ProjectState(projectDTO);
         }
     }
 }

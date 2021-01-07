@@ -50,8 +50,8 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.requestService = new RequestService();
 
     // init global variables
-    if (wikiStore.projects.projectDTO) {
-      wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+    if (wikiStore.project) {
+      wikiStore.project.projectDTO.sparql_endpoint = Config.defaultSparqlEndpoint;
     }
     // init state
     this.state = {
@@ -114,16 +114,16 @@ class Project extends Component<ProjectProps, ProjectState> {
         await this.requestService.call(this, () => this.requestService.getTable());
       }
 
-      document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
-      this.setState({ name: wikiStore.projects.projectDTO!.title });
+      document.title = 't2wml: ' + wikiStore.project!.projectDTO.title;
+      this.setState({ name: wikiStore.project!.projectDTO.title });
 
       if (wikiStore.yaml.yamlContent !== null) {
         wikiStore.output.isDownloadDisabled = false;
       }
 
       // load settings
-      if (!wikiStore.projects.projectDTO!.sparql_endpoint) {
-        wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+      if (!wikiStore.project!.projectDTO.sparql_endpoint) {
+        wikiStore.project!.projectDTO.sparql_endpoint = Config.defaultSparqlEndpoint;
       }
 
     } catch (error) {
@@ -143,11 +143,11 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   async onShowSettingsClicked() {
     this.setState({
-      endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
-      warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
-      calendar: wikiStore.projects.projectDTO?.handle_calendar || "leave",
-      datamartIntegration: wikiStore.projects.projectDTO?.datamart_integration || false,
-      datamartApi: wikiStore.projects.projectDTO?.datamart_api || '',
+      endpoint: wikiStore.project?.projectDTO.sparql_endpoint || "",
+      warnEmpty: wikiStore.project?.projectDTO.warn_for_empty_cells || false,
+      calendar: wikiStore.project?.projectDTO.handle_calendar || "leave",
+      datamartIntegration: wikiStore.project?.projectDTO.datamart_integration || false,
+      datamartApi: wikiStore.project?.projectDTO.datamart_api || '',
       showSettings: true
     });
   }
