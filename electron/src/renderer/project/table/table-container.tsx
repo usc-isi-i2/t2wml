@@ -216,6 +216,9 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async toggleAnnotationMode() {
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    
     if (this.state.mode === 'Output') {
       if (currentFilesService.currentState.mappingType=="Yaml"){
         currentFilesService.setMappingFiles(); //try to change to an existing annotation
@@ -229,6 +232,9 @@ class TableContainer extends Component<{}, TableState> {
     } else {
       wikiStore.table.mode = 'Output';
     }
+    
+    wikiStore.table.showSpinner = false;
+    wikiStore.yaml.showSpinner = false;
   }
 
   async fetchAnnotations() {
