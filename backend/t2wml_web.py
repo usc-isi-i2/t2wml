@@ -241,8 +241,9 @@ def get_yaml_layers(calc_params, for_annotation=False):
             statement= statementLayer,
             cleaned= cleanedLayer,
             type = typeLayer)
-    if calc_params.yaml_path:
-        calc_params.cache.save(kg, layers)
+    #no caching until we've figured out how to make it work
+    #if calc_params.yaml_path:
+    #    calc_params.cache.save(kg, layers)
     return layers
 
 

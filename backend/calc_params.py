@@ -27,6 +27,7 @@ class CalcParams:
 
     @property
     def cache(self):
+        return None #we are getting rid of caching until we've figured out a better way of determining when a project has changed
         if self.yaml_path:
             return CacheHolder(self.project, self.data_path, self.sheet_name, self.yaml_path)
 
