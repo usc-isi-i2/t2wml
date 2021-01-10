@@ -578,6 +578,7 @@
         }
     },
     "add_yaml": {
+        "annotations": [],
         "layers": {
             "cleaned": {
                 "entries": [],
@@ -813,20 +814,187 @@
                 ],
                 "layerType": "error"
             },
+            "qnode": {
+                "entries": [
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-22",
+                        "indices": [
+                            [
+                                2,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 22",
+                        "url": "",
+                        "value": "22"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-47",
+                        "indices": [
+                            [
+                                3,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 47",
+                        "url": "",
+                        "value": "47"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-73",
+                        "indices": [
+                            [
+                                4,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 73",
+                        "url": "",
+                        "value": "73"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-103",
+                        "indices": [
+                            [
+                                5,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 103",
+                        "url": "",
+                        "value": "103"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-475",
+                        "indices": [
+                            [
+                                6,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 475",
+                        "url": "",
+                        "value": "475"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-782",
+                        "indices": [
+                            [
+                                7,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 782",
+                        "url": "",
+                        "value": "782"
+                    },
+                    {
+                        "context": "unit",
+                        "description": "",
+                        "id": "Qaid-security-U002",
+                        "indices": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                0,
+                                7
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "person"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-002",
+                        "indices": [
+                            [
+                                1,
+                                5
+                            ]
+                        ],
+                        "label": "UN",
+                        "url": "",
+                        "value": "UN"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-003",
+                        "indices": [
+                            [
+                                1,
+                                6
+                            ]
+                        ],
+                        "label": "INGO",
+                        "url": "",
+                        "value": "INGO"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-004",
+                        "indices": [
+                            [
+                                1,
+                                7
+                            ]
+                        ],
+                        "label": "LNGO/NRCS",
+                        "url": "",
+                        "value": "LNGO/NRCS"
+                    },
+                    {
+                        "context": "",
+                        "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
+                        "id": "Q21203",
+                        "indices": [
+                            [
+                                3,
+                                8
+                            ]
+                        ],
+                        "label": "Aruba",
+                        "url": "https://www.wikidata.org/wiki/Q21203",
+                        "value": "Aruba"
+                    }
+                ],
+                "layerType": "qNode"
+            },
             "statement": {
                 "entries": [
                     {
                         "cells": {
+                            "mainSubject": [
+                                2,
+                                1
+                            ],
                             "property": [
                                 1,
                                 5
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                2,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -856,6 +1024,10 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                3,
+                                1
+                            ],
                             "property": [
                                 1,
                                 5
@@ -868,10 +1040,6 @@
                                         8
                                     ]
                                 }
-                            ],
-                            "subject": [
-                                3,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -905,16 +1073,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                4,
+                                1
+                            ],
                             "property": [
                                 1,
                                 5
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                4,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -944,16 +1112,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                5,
+                                1
+                            ],
                             "property": [
                                 1,
                                 5
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                5,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -983,16 +1151,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                6,
+                                1
+                            ],
                             "property": [
                                 1,
                                 5
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                6,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1022,16 +1190,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                7,
+                                1
+                            ],
                             "property": [
                                 1,
                                 5
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                7,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1061,16 +1229,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                2,
+                                1
+                            ],
                             "property": [
                                 1,
                                 6
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                2,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1100,6 +1268,10 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                3,
+                                1
+                            ],
                             "property": [
                                 1,
                                 6
@@ -1112,10 +1284,6 @@
                                         8
                                     ]
                                 }
-                            ],
-                            "subject": [
-                                3,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1149,16 +1317,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                4,
+                                1
+                            ],
                             "property": [
                                 1,
                                 6
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                4,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1188,16 +1356,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                5,
+                                1
+                            ],
                             "property": [
                                 1,
                                 6
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                5,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1227,16 +1395,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                6,
+                                1
+                            ],
                             "property": [
                                 1,
                                 6
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                6,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1266,16 +1434,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                7,
+                                1
+                            ],
                             "property": [
                                 1,
                                 6
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                7,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1305,16 +1473,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                2,
+                                1
+                            ],
                             "property": [
                                 1,
                                 7
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                2,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1344,6 +1512,10 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                3,
+                                1
+                            ],
                             "property": [
                                 1,
                                 7
@@ -1356,10 +1528,6 @@
                                         8
                                     ]
                                 }
-                            ],
-                            "subject": [
-                                3,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1393,16 +1561,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                4,
+                                1
+                            ],
                             "property": [
                                 1,
                                 7
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                4,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1432,16 +1600,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                5,
+                                1
+                            ],
                             "property": [
                                 1,
                                 7
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                5,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1471,16 +1639,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                6,
+                                1
+                            ],
                             "property": [
                                 1,
                                 7
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                6,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1510,16 +1678,16 @@
                     },
                     {
                         "cells": {
+                            "mainSubject": [
+                                7,
+                                1
+                            ],
                             "property": [
                                 1,
                                 7
                             ],
                             "qualifiers": [
                                 {}
-                            ],
-                            "subject": [
-                                7,
-                                1
                             ],
                             "unit": [
                                 0,
@@ -1799,10 +1967,6 @@
                         "type": "property"
                     },
                     {
-                        "indices": [],
-                        "type": "unit"
-                    },
-                    {
                         "indices": [
                             [
                                 0,
@@ -1817,12 +1981,17 @@
                                 7
                             ]
                         ],
+                        "type": "unit"
+                    },
+                    {
+                        "indices": [],
                         "type": "additionalFields"
                     }
                 ],
                 "layerType": "type"
             }
-        }
+        },
+        "yamlContent": "statementMapping:\n  region:\n    - left: F\n      right: H\n      top: 3\n      bottom: 8\n  template:\n    subject: =value[B, $row, \"main subject\"]\n    property: =item[$col, 2, \"property\"]\n    value: =value[$col, $row]\n    unit: =item[$col,1,\"unit\"]\n    qualifier:\n      - property: P585  # point in time\n        value: '=concat(value[C:E,$row],\"-\")'\n        calendar: Q1985727\n        precision: [day, month, year]\n        time_zone: 0\n        format: [\"%Y-%m-%d\", \"%Y-%m\", \"%Y\"]\n      - property: P17  # country\n        value: =item[I,$row]\n"
     },
     "change_sheet": {
         "layers": {
@@ -2165,8 +2334,7 @@
                 14
             ],
             "firstRowIndex": 0
-        },
-        "yamlContent": null
+        }
     },
     "wikify_region": {
         "layers": {

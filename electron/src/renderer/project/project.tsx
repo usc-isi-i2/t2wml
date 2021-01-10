@@ -22,11 +22,9 @@ import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './settings';
 import { ipcRenderer } from 'electron';
-import { IpcRendererEvent } from 'electron/renderer';
 import Sidebar from './sidebar/sidebar';
-import { TableDTO } from '../common/dtos';
-import { IReactionDisposer, reaction } from 'mobx';
 import TableContainer from './table/table-container';
+import { currentFilesService } from '../common/current-file-service';
 
 
 interface ProjectState extends IStateWithError {
@@ -37,7 +35,6 @@ interface ProjectState extends IStateWithError {
   datamartIntegration: boolean;
   datamartApi: string;
   name: string;
-  showTreeFlag: boolean;
 }
 
 interface ProjectProps {
@@ -47,16 +44,14 @@ interface ProjectProps {
 @observer
 class Project extends Component<ProjectProps, ProjectState> {
   private requestService: RequestService;
-  private disposers: IReactionDisposer[] = [];
 
   constructor(props: ProjectProps) {
     super(props);
     this.requestService = new RequestService();
 
     // init global variables
-    wikiStore.table.isCellSelectable = false;
-    if (wikiStore.projects.projectDTO) {
-      wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+    if (wikiStore.project.projectDTO) {
+      wikiStore.project.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
     }
     // init state
     this.state = {
@@ -71,13 +66,11 @@ class Project extends Component<ProjectProps, ProjectState> {
       name: '',
 
       errorMessage: {} as ErrorMessage,
-      showTreeFlag: wikiStore.projects.showFileTree,
     };
 
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
     this.onRefreshProject = this.onRefreshProject.bind(this);
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
-    this.onShowFileTreeClicked = this.onShowFileTreeClicked.bind(this);
   }
 
   componentDidMount() {
@@ -89,10 +82,6 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
-    ipcRenderer.on('toggle-file-tree', (sender: IpcRendererEvent, checked: boolean) => {
-      this.onShowFileTreeClicked(checked);
-    });
-    this.disposers.push(reaction(() => wikiStore.projects.showFileTree, (flag) => this.setState({showTreeFlag: flag})));
   }
 
   async componentWillUnmount() {
@@ -101,11 +90,6 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
-    ipcRenderer.removeListener('toggle-file-tree', this.onShowFileTreeClicked);
-
-    for ( const disposer of this.disposers ) {
-      disposer();
-    }
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -126,19 +110,20 @@ class Project extends Component<ProjectProps, ProjectState> {
     console.debug('Refreshing project ', this.props.path);
     try {
       await this.requestService.call(this, () => this.requestService.getProject(this.props.path));
-      document.title = 't2wml: ' + wikiStore.projects.projectDTO!.title;
-      this.setState({ name: wikiStore.projects.projectDTO!.title });
+      if (currentFilesService.currentState.dataFile && currentFilesService.currentState.sheetName) {
+        await this.requestService.call(this, () => this.requestService.getTable());
+      }
+
+      document.title = 't2wml: ' + wikiStore.project.projectDTO!.title;
+      this.setState({ name: wikiStore.project.projectDTO!.title });
 
       if (wikiStore.yaml.yamlContent !== null) {
-        wikiStore.table.isCellSelectable = true;
         wikiStore.output.isDownloadDisabled = false;
-      } else {
-        wikiStore.table.isCellSelectable = false;
       }
 
       // load settings
-      if (!wikiStore.projects.projectDTO!.sparql_endpoint) {
-        wikiStore.projects.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+      if (!wikiStore.project.projectDTO!.sparql_endpoint) {
+        wikiStore.project.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
       }
 
     } catch (error) {
@@ -158,17 +143,13 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   async onShowSettingsClicked() {
     this.setState({
-      endpoint: wikiStore.projects.projectDTO?.sparql_endpoint || "",
-      warnEmpty: wikiStore.projects.projectDTO?.warn_for_empty_cells || false,
-      calendar: wikiStore.projects.projectDTO?.handle_calendar || "leave",
-      datamartIntegration: wikiStore.projects.projectDTO?.datamart_integration || false,
-      datamartApi: wikiStore.projects.projectDTO?.datamart_api || '',
+      endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
+      warnEmpty: wikiStore.project.projectDTO?.warn_for_empty_cells || false,
+      calendar: wikiStore.project.projectDTO?.handle_calendar || "leave",
+      datamartIntegration: wikiStore.project.projectDTO?.datamart_integration || false,
+      datamartApi: wikiStore.project.projectDTO?.datamart_api || '',
       showSettings: true
     });
-  }
-
-  onShowFileTreeClicked(checked: boolean) {
-    wikiStore.projects.showFileTree = checked;
   }
 
   async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, datamartIntegration: boolean, datamartApi: string) {
@@ -215,16 +196,18 @@ class Project extends Component<ProjectProps, ProjectState> {
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
-          <div>
-            <Sidebar />
-          </div>
 
-          <SplitPane className={this.state.showTreeFlag ? "table-sidebar-open" : "table-sidebar-close" + " p-3"} split="vertical" defaultSize="55%" minSize={300} maxSize={-300}
+          {/* defaultSize={parseInt(localStorage.getItem('splitPos'), 10) as string}
+            onChange={(size) => localStorage.setItem('splitPos', size)} */}
+          <SplitPane className="" split="vertical" defaultSize="15%" minSize={200} maxSize={-1000}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
-            <TableContainer />
-            <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-              <Editors />
-              <Output />
+            <Sidebar />
+            <SplitPane className="" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
+              <TableContainer />
+              <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
+                <Editors />
+                <Output />
+              </SplitPane>
             </SplitPane>
           </SplitPane>
         </div>

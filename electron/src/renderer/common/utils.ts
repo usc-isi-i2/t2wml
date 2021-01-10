@@ -4,6 +4,7 @@ const quickColumnConversions: Record<number, string> = {
     'AX', 50: 'AY', 51: 'AZ'
 }
 
+
 function convertToExcel(n: number): string {
   const ordA = 'A'.charCodeAt(0);
   const ordZ = 'Z'.charCodeAt(0);
@@ -17,12 +18,13 @@ function convertToExcel(n: number): string {
   return s;
 }
 
+
 export function getColumnTitleFromIndex(index: number): string {
   // 0 -> A, 1-> B
   if (index in quickColumnConversions) {
     return quickColumnConversions[index]
   }
-  return convertToExcel(index)
+  return convertToExcel(index);
 }
 
 
@@ -33,9 +35,9 @@ export function getColumnTitleFromIndex(index: number): string {
 export function colIdx2colName(colIdx: number) {
   /**
    * Convert col index to col name.
-   * 
+   *
    * @param {int}     colIdx (1, 2, 3, ...)
-   * 
+   *
    * @return {String} colName (A, B, C, ...)
    */
   let dividend = Math.floor(Math.abs(colIdx)), rest, colName = '';
@@ -47,12 +49,13 @@ export function colIdx2colName(colIdx: number) {
   return colName;
 }
 
+
 export function colName2colIdx(colName: string) {
   /**
    * Convert col name to col index.
-   * 
+   *
    * @param {String}  colName (A, B, C, ...)
-   * 
+   *
    * @return {int}    colIdx (1, 2, 3, ...)
    */
   const chrs = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -63,25 +66,27 @@ export function colName2colIdx(colName: string) {
   return colIdx;
 }
 
+
 export function getHueByRandom(total: number) {
   /**
    * Randomly generate different colors.
-   * 
+   *
    * @param {int}     total total number of colors
-   * 
+   *
    * @return {int}    hue, number in [0, 360)
    */
   const division = Math.floor(360 / total);
   return Math.floor(Math.random() * total) * division;
 }
 
+
 export function getHueByQnode(total: number, qnode: string) {
   /**
    * Use qnode as random seed to generate different colors.
-   * 
+   *
    * @param {int}     total total number of colors
    * @param {String}  qnode
-   * 
+   *
    * @return {int}    hue, number in [0, 360)
    */
   const i = parseInt(qnode.substring(1)) % total;
@@ -89,12 +94,13 @@ export function getHueByQnode(total: number, qnode: string) {
   return i * division;
 }
 
+
 export function isValidRegion(region: string) {
   /**
    * Check whether region (A1:B2) is valid.
-   * 
+   *
    * @param {String}    region e.g. "A1:B2"
-   * 
+   *
    * @return {boolean}  true if the region is valid
    */
   const [leftS, topS, rightS, bottomS] = region.match(/[a-z]+|\d+/gi)!; //eslint-disable-line
@@ -105,12 +111,13 @@ export function isValidRegion(region: string) {
   return (left <= right) && (top <= bottom);
 }
 
+
 export function sortCells(cells: string[]) {
   /**
    * Sort cell array in col first order.
-   * 
+   *
    * @param {Array}   cells e.g. [A1, B2, B1, A2]
-   * 
+   *
    * @return {Array}  orderedCells e.g. [A1, A2, B1, B2]
    */
   const len = cells.length;
@@ -122,8 +129,11 @@ export function sortCells(cells: string[]) {
     cellArray[i] = [col, row];
   }
   cellArray.sort(function (cell1, cell2) {
-    if (cell1[0] !== cell2[0]) return cell1[0] - cell2[0];
-    else return cell1[1] - cell2[1];
+    if (cell1[0] !== cell2[0]) {
+      return cell1[0] - cell2[0];
+    } else {
+      return cell1[1] - cell2[1];
+    }
   });
   const orderedCells = new Array(len);
   for (let i = 0; i < len; i++) {
@@ -133,13 +143,14 @@ export function sortCells(cells: string[]) {
   return orderedCells;
 }
 
+
 export function searchProject(title: string, keywords: string[]) {
   /**
    * Search if project title contains all given keywords
-   * 
+   *
    * @param {String}  title     of project
    * @param {Array}   keywords  e.g. ["Hello", "World"]
-   * 
+   *
    * @return {bool}
    */
   title = title.toLowerCase();
@@ -151,12 +162,13 @@ export function searchProject(title: string, keywords: string[]) {
   return true;
 }
 
+
 export function timestamp2abstime(ts: number) {
   /**
    * Convert timestamp to absolute time
-   * 
+   *
    * @param {int}     ts  as timestamp
-   * 
+   *
    * @return {String} absolute time, e.g. Today, Yesterday, Previous 7 Days, Previous 30 Days, July, June, ...
    */
   const datetime = new Date();
@@ -177,26 +189,39 @@ export function timestamp2abstime(ts: number) {
   );
 }
 
+
 export function timestamp2reltime(ts: number) {
   /**
    * Convert timestamp to relative time
-   * 
+   *
    * @param {int}     ts  as timestamp
-   * 
+   *
    * @return {String} relative time, e.g. Today, Yesterday, Previous 7 Days, Previous 30 Days, July, June, ...
    */
   const curr = new Date();
   const proj = new Date(ts);
   const interval = curr.getTime() - ts;
   const oneDay = 24 * 60 * 60 * 1000;
-  if ((interval < oneDay) && (curr.getDate() === proj.getDate())) return "Today";
-  if ((interval < 2 * oneDay) && (curr.getDate() === proj.getDate() + 1)) return "Yesterday";
-  if (interval < 7 * oneDay) return "Previous 7 Days";
-  if (interval < 30 * oneDay) return "Previous 30 Days";
+  if ((interval < oneDay) && (curr.getDate() === proj.getDate())) {
+    return "Today";
+  }
+  if ((interval < 2 * oneDay) && (curr.getDate() === proj.getDate() + 1)) {
+    return "Yesterday";
+  }
+  if (interval < 7 * oneDay) {
+    return "Previous 7 Days";
+  }
+  if (interval < 30 * oneDay) {
+    return "Previous 30 Days";
+  }
   const months = ["January", "February", "Match", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  if (curr.getFullYear() === proj.getFullYear()) return months[proj.getMonth()];
-  else return proj.getFullYear().toString();
+  if (curr.getFullYear() === proj.getFullYear()) {
+    return months[proj.getMonth()];
+  } else {
+    return proj.getFullYear().toString();
+  }
 }
+
 
 export function isValidTitle(title: string) {
   /**
@@ -204,14 +229,17 @@ export function isValidTitle(title: string) {
    * 1. no more than 255 char
    * 2. not containing \ / : * ? " < > |
    * 3. not only spaces
-   * 
+   *
    * @param {String}  title
-   * 
+   *
    * @return {bool}   True if title is valid
    */
-  if (title.length > 255) return false;
+  if (title.length > 255) {
+    return false;
+  }
   return /^[^\\/:*?"<>|]*$/.test(title) && ! /^ +$/.test(title);
 }
+
 
 export const typeStyles = new Map<string, any>([
   ["data", { backgroundColor: "hsl(150, 50%, 90%)" }],
@@ -223,3 +251,10 @@ export const typeStyles = new Map<string, any>([
   ["property", { backgroundColor: "#fbe5ce" }],
   ["metadata", { backgroundColor: "#fff2ce" }],
 ])
+
+
+export function classNames(classNames='', conditionalClassNames={}) {
+  return `${classNames} `.concat(Object.keys(conditionalClassNames).filter((key) => {
+    return conditionalClassNames[key];
+  }).join(' '));
+}

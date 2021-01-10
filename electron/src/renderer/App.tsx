@@ -66,7 +66,7 @@ class App extends Component<{}, AppState> {
       }
     }
     console.log("no project directory argument detected")
-    wikiStore.changeProject();
+    wikiStore.changeWindowDisplayMode();
   }
 
   onToggleCleaned(checked: boolean) {
@@ -109,7 +109,7 @@ class App extends Component<{}, AppState> {
     // send request
     try {
       await this.requestService.call(this, () => this.requestService.getProject(folder));
-      wikiStore.changeProject(folder);
+      wikiStore.changeWindowDisplayMode(folder);
     } catch (error) {
       console.log(error);
     } finally {

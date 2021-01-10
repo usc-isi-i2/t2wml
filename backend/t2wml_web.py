@@ -7,10 +7,7 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-try:
-    from t2wml.api import ProjectWithSavedState as Project
-except:
-    from t2wml.api import Project
+from t2wml.api import Project
 from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
@@ -57,7 +54,7 @@ def get_kg(calc_params, annotation=False):
         if kg:
             return kg
     if annotation:
-        cell_mapper = YamlMapper(calc_params.annotation_path)
+        cell_mapper = AnnotationMapper(calc_params.annotation_path)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
@@ -162,7 +159,7 @@ def get_yaml_layers(calc_params, for_annotation=False):
     cleanedLayer=dict(layerType="cleaned", entries=[])
     qnodes={} #passed by reference everywhere, so gets updated simultaneously across all of them
 
-    if calc_params.yaml_path:
+    if calc_params.yaml_path or (calc_params.annotation_path and for_annotation):
         kg = get_kg(calc_params, annotation=for_annotation)
         statements=kg.statements
         errors=kg.errors
@@ -187,11 +184,10 @@ def get_yaml_layers(calc_params, for_annotation=False):
             get_cell_qnodes(statement, qnodes)
             cells=statement["cells"]
             cells.pop("value")
+            cells["mainSubject"]=cells.pop("subject")
             for key in cells:
-                if key == "property":
+                if key in ["property", "unit", "mainSubject"]:
                     cell_type_indices[key][cells[key]]=True
-                elif key == "subject":
-                    cell_type_indices["mainSubject"][cells[key]]=True
                 else:
                     cell_type_indices["additionalFields"][cells[key]]=True
                 #convert to frontend format
@@ -245,8 +241,9 @@ def get_yaml_layers(calc_params, for_annotation=False):
             statement= statementLayer,
             cleaned= cleanedLayer,
             type = typeLayer)
-    if calc_params.yaml_path:
-        calc_params.cache.save(kg, layers)
+    #no caching until we've figured out how to make it work
+    #if calc_params.yaml_path:
+    #    calc_params.cache.save(kg, layers)
     return layers
 
 
@@ -271,47 +268,33 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 
 
-def get_all_layers_and_table(response, calc_params, for_annotation=False):
+def get_layers(response, calc_params, for_annotation=False):
     #convenience function for code that repeats three times
-    response["table"] = get_table(calc_params)
-
     response["layers"]=get_empty_layers()
     response["layers"].update(get_qnodes_layer(calc_params))
-
     try:
         response["layers"].update(get_yaml_layers(calc_params, for_annotation=for_annotation))
     except Exception as e:
         response["yamlError"] = str(e)
 
 
-def get_annotations(calc_params, response):
+def get_annotations(calc_params):
     annotations_path=calc_params.annotation_path
     try:
         dga = Annotation.load(annotations_path)
     except FileNotFoundError:
         dga=Annotation()
+    except Exception as e:
+        raise e
 
     try:
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
-    response.update(dict(annotations=dga.annotation_block_array, yamlContent=yamlContent))
-    get_all_layers_and_table(response, calc_params, True)
-    response.pop('table')
-    return  dga.annotation_block_array, yamlContent
+    return dga.annotation_block_array, yamlContent
 
-def save_annotations(project, calc_params, annotation, response):
-    annotations_path=calc_params.annotation_path
+def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
     dga=Annotation(annotation)
     dga.save(annotations_path)
-    project.add_annotation_file(annotations_path, project.current_data_file, project.current_sheet)
+    project.add_annotation_file(annotations_path, data_path, sheet_name)
     project.save()
-
-    try:
-        yamlContent=dga.generate_yaml()[0]
-    except Exception as e:
-        yamlContent="#Error when generating yaml: "+str(e)
-    response.update(dict(annotations=dga.annotation_block_array, yamlContent=yamlContent))
-    get_all_layers_and_table(response, calc_params, True)
-    response.pop('table')
-    return dga.annotation_block_array, yamlContent

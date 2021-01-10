@@ -1,16 +1,16 @@
 /* Annotation Mode Toggle */
-.annotation-mode-toggle {
+.mode-toggle {
   margin-right: 15px;
   user-select: none;
   cursor: pointer;
   color: white;
   float: right;
 }
-.annotation-mode-toggle svg {
-  margin-right: 5px;
-}
-.annotation-mode-toggle p {
-  display: inline-block;
+.mode-toggle button.btn.btn-outline-light.btn-sm,
+.mode-toggle button.btn.btn-outline-light.btn-sm:active,
+.mode-toggle button.btn.btn-outline-light.btn-sm:focus {
+  box-shadow: none;
+  outline: none;
 }
 
 .table-wrapper {
@@ -237,12 +237,43 @@
 .table-wrapper table tr td.status-cleaned {
   font-weight: bold;
 }
-.table-wrapper table tr td.status-minorError {
-  background: #FF8000;
+
+/*https://stackoverflow.com/questions/14499048/how-to-add-triangle-in-table-cell*/
+
+.status-minorError {
+  position: relative;
 }
-.table-wrapper table tr td.status-majorError {
-  background: #FF3333;
+.status-minorError:after { /* Magic Happens Here!!! */
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  display: block;
+  border-left: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+
+  border-top: 20px solid  #FF8000;
 }
+
+.status-majorError {
+  position: relative;
+}
+.status-majorError:after { /* Magic Happens Here!!! */
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  display: block;
+  border-left: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+
+  border-top: 20px solid   #FF3333;
+}
+
 
 /* cell roles */
 .table-wrapper table tr td.role-dependentVar {

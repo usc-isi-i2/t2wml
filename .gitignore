@@ -138,3 +138,7 @@ app.db
 
 # lock files
 .~lock*
+
+#t2wml state files
+*/t2wmlproj.user.json
+t2wmlproj.user.json

@@ -97,7 +97,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       "flag": flag
     };
     try {
-      await this.requestService.call(this, () => this.requestService.callWikifierService(wikiStore.projects.current!.folder, data));
+      await this.requestService.call(this, () => this.requestService.callWikifierService(data));
       console.log("<Wikifier> <- %c/call_wikifier_service%c with:", LOG.link, LOG.default);
       if (wikiStore.wikifier.wikifierError) {
         console.log("Wikify region cell errors:", wikiStore.wikifier.wikifierError)
@@ -148,7 +148,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     // send request
     const data = { "filepath": file.path };
     try {
-      await this.requestService.call(this, () => this.requestService.uploadEntities(wikiStore.projects.current!.folder, data));
+      await this.requestService.call(this, () => this.requestService.uploadEntities(data));
       console.log("<Wikifier> <- %c/upload_entity_file%c with:", LOG.link, LOG.default);
 
       const { added, failed, updated } = wikiStore.wikifier.entitiesStats!;
@@ -182,7 +182,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     console.log("<TableViewer> -> %c/upload_wikifier_output%c for wikifier file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
     const data = { "filepath": file.path };
     try {
-      await this.requestService.call(this, () => this.requestService.uploadWikifierOutput(wikiStore.projects.current!.folder, data));
+      await this.requestService.call(this, () => this.requestService.uploadWikifierOutput(data));
       console.log("<TableViewer> <- %c/upload_wikifier_output%c with:", LOG.link, LOG.default);
 
       this.setState({

@@ -1,60 +1,33 @@
 import React, { Component } from 'react';
 
-import { Treebeard, TreeTheme } from 'react-treebeard';
-
 // icons
 import wikiStore from '@/renderer/data/store';
 import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '@/renderer/common/service';
-import { Spinner } from 'react-bootstrap';
+import { Card, Spinner } from 'react-bootstrap';
+import { currentFilesService } from '../../common/current-file-service';
+import FileTree from './file-tree/file-tree';
+import { t2wmlColors } from '@/renderer/common/general';
+import SheetSelector from '../sheet-selector/sheet-selector';
 
-// const data = {
-//     name: 'root',
-//     toggled: true,
-//     children: [
-//         {
-//             name: 'parent',
-//             children: [
-//                 { name: 'child1' },
-//                 { name: 'child2' }
-//             ]
-//         },
-//         {
-//             name: 'loading parent',
-//             loading: true,
-//             children: []
-//         },
-//         {
-//             name: 'parent',
-//             children: [
-//                 {
-//                     name: 'nested parent',
-//                     children: [
-//                         { name: 'nested child 1' },
-//                         { name: 'nested child 2' }
-//                     ]
-//                 }
-//             ]
-//         }
-//     ]
-// };
 
 // interface SidebarProperties {
 // }
 
 interface SidebarState {
     data: any,
-    treeFlag: boolean,
     cursor: any,
     active: boolean,
     showSpinner: boolean,
+    currFiles: string,
 }
+
+const filesTypes = ["Data Files", "Mapping", "Wikifiers"];
 
 @observer
 class Sidebar extends Component<{}, SidebarState> {
     private disposeReaction?: IReactionDisposer;
-    private fileTreeStyle: TreeTheme;
     private requestService: RequestService;
 
 
@@ -63,30 +36,18 @@ class Sidebar extends Component<{}, SidebarState> {
 
         this.state = {
             data: {},
-            treeFlag: wikiStore.projects.showFileTree,
             cursor: {},
             active: false,
             showSpinner: false,
+            currFiles: filesTypes[0],
         } as SidebarState;
-
-        this.fileTreeStyle = {
-            tree: {
-                base: {
-                    backgroundColor: "white"
-                },
-                node: {
-                    activeLink: {
-                        background: '#DCDCDC',
-                        fontWeight: 'bold'
-                }}}};
 
         this.requestService = new RequestService();
         this.onToggle = this.onToggle.bind(this);
     }
 
     componentDidMount() {
-        this.disposeReaction = reaction(() => wikiStore.projects.showFileTree, (flag) => {this.setState({treeFlag: flag})});
-        this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, () => this.getFilesData());
+        this.disposeReaction = reaction(() => wikiStore.project.projectDTO, () => this.getFilesData());
     }
 
     componentWillUnmount() {
@@ -106,7 +67,7 @@ class Sidebar extends Component<{}, SidebarState> {
         // }
 
         // Does nothing when clicking on the current file
-        if (!node.children && node.name !== wikiStore.projects.projectDTO?._saved_state.current_data_file) {
+        if (!node.children && node.name !== currentFilesService.currentState.dataFile) {
             wikiStore.wikifier.showSpinner = true;
             this.setState({showSpinner: true});
 
@@ -122,49 +83,71 @@ class Sidebar extends Component<{}, SidebarState> {
         // save prev yaml
         await wikiStore.yaml.saveYaml();
 
-        try {
-            await this.requestService.changeDataFile(fileName, wikiStore.projects.current!.folder);
-        } catch {
-            console.error("Change datafile failed");
-        }
+        currentFilesService.changeDataFile(fileName);
+
+        await this.requestService.getTable();
     }
 
     getFilesData() {
         const dataFiles = [];
-        if (wikiStore.projects.projectDTO && wikiStore.projects.projectDTO.data_files) {
-            for(const file of Object.keys(wikiStore.projects.projectDTO.data_files).sort()) {
+        if (wikiStore.project.projectDTO && wikiStore.project.projectDTO.data_files) {
+            for(const file of Object.keys(wikiStore.project.projectDTO.data_files).sort()) {
                 dataFiles.push({name: file});
             }
             const data = {
-                name: wikiStore.projects.projectDTO.title,
+                name: wikiStore.project.projectDTO.title,
                 toggled: true,
                 children: dataFiles
             }
             this.setState({data: data});
 
             if (dataFiles.length) {
-                const currentNode = dataFiles.find(n => n.name === wikiStore.projects.projectDTO!._saved_state.current_data_file)
+                const currentNode = dataFiles.find(n => n.name === currentFilesService.currentState.dataFile)
                 this.onToggle(currentNode);
             }
         }
     }
 
-    render(){
+    render() {
+        let currentFileTree;
+        if (this.state.currFiles === filesTypes[0]) {
+            currentFileTree = <FileTree />; // <DataFiles />
+        } else if (this.state.currFiles === filesTypes[1]) { // mapping (yamls)
+            currentFileTree = <FileTree />; // <Mapping />
+        } else { // wikifiers
+            currentFileTree = <FileTree /> ;// <Wikifiers />
+        }
+
         return (
-            <div className={this.state.treeFlag ? 'opened-sidebar' : 'closed-sidebar'}>
+            <div className=''>
             {
                 /* loading spinner */}
                 <div className="mySpinner" hidden={!this.state.showSpinner}>
                     <Spinner animation="border" />
                 </div>
-                {
-                    this.state.treeFlag ?
-                    <Treebeard
-                      style={this.fileTreeStyle}
-                        data={this.state.data}
-                        onToggle={this.onToggle}
-                    />
-                    : null}
+
+                <Card className="w-100 shadow-sm"
+                        style={{ height: "calc(100% - 40px)", marginTop: "0.25rem" }}>
+                        {/* card header */}
+                        <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.TREE }}>
+                            {/* title */}
+                            <div
+                                className="text-white font-weight-bold d-inline-block text-truncate"
+                            >File Tree</div>
+                        </Card.Header>
+
+                        {/* card body */}
+                        {/* height: ... -150px */}
+                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)", display: "flex", overflow: "auto" }}>
+                            {currentFileTree}
+                        </Card.Body>
+                        {/* <Card.Footer style={{ height: "50px" }}>
+                            <SheetSelector
+                                sheetNames={filesTypes}
+                                currSheetName={this.state.currFiles}
+                                handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/>
+                        </Card.Footer> */}
+                    </Card>
             </div>
         );
     }

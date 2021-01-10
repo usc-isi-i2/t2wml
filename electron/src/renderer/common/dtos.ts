@@ -4,18 +4,12 @@
 
 import { CellSelection } from "./general";
 
-interface SavedStateDTO {
-    current_data_file: string;
-    current_sheet: string;
-    current_wikifiers: string[];
-    current_yaml: string;
- }
+/* base types*/
 
  interface CurrentAndArrayDTO{
      selected: string,
      val_arr: string[]
  }
-
 
 export interface ProjectDTO {
     directory: string;
@@ -25,43 +19,14 @@ export interface ProjectDTO {
     wikifier_files: string[];
     entity_files: string[];
     yaml_sheet_associations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
+    annotations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
     datamart_integration: boolean;
     datamart_api: string;
     handle_calendar: string;
     cache_id: string;
-    _saved_state: SavedStateDTO;
 }
-
-export interface ResponseWithProjectDTO {
-    project: ProjectDTO;
-}
-
-export interface ResponseWithAnnotationsDTO extends ResponseWithProjectDTO{
-    annotations: AnnotationBlock[];
-    yamlContent: string;
-}
-
-export interface ResponseWithLayersDTO extends ResponseWithProjectDTO {
-    layers: LayersDTO;
-    yamlError?: string;
-}
-
-export interface ResponseWithTableandMaybeYamlDTO extends ResponseWithLayersDTO {
-    table: TableDTO;
-    yamlContent?: string;
-}
-
-export interface UploadEntitiesDTO extends ResponseWithLayersDTO {
-    entitiesStats: EntitiesStatsDTO;
-}
-
-export interface CallWikifierServiceDTO extends ResponseWithLayersDTO {
-    wikifierError: string;
-}
-
-//types:
 
 export interface TableDTO {
     cells: string[][];
@@ -166,4 +131,46 @@ export interface AnnotationBlock{
 export interface TableCell {
   content: string;
   classNames: string[];
+}
+
+
+/* responses: */
+
+
+
+export interface ResponseWithProjectDTO {
+    project: ProjectDTO;
+}
+
+export interface ResponseWithMappingDTO{
+    project: ProjectDTO;
+    layers: LayersDTO;
+    yamlContent: string;
+    yamlError?: string;
+    annotations: AnnotationBlock[];
+}
+
+export interface ResponseWithTableDTO extends ResponseWithMappingDTO{
+    table: TableDTO;
+}
+
+export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO{
+    layers: LayersDTO; //only contains the qnode layer, but leaving it like this for now
+
+}
+
+export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
+    entitiesStats: EntitiesStatsDTO;
+}
+
+export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {
+    wikifierError: string;
+}
+
+export interface ResponseWithProjectAndMappingDTO extends ResponseWithProjectDTO, ResponseWithMappingDTO{
+
+}
+
+export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO{
+
 }

@@ -6,7 +6,7 @@ from app_config import CACHE_FOLDER, app
 from utils import numpy_converter
 
 #cache version must be changed every time a breaking change is introduced to results format
-__cache_version__ = "18.3" #format: [earliest compatible t2wml-api version].[any changes in web on top of that]
+__cache_version__ = "18w6" #format: [earliest compatible t2wml-api version]w[any changes in web on top of that]
 
 def use_cache():
     return app.config['USE_CACHE']
@@ -27,6 +27,11 @@ class CacheHolder:
             yaml_hash=sha256(yaml.encode('utf-8'))
         m_time_str = str(os.path.getmtime(self.data_file_path))
         cache_hash.update(m_time_str.encode('utf-8'))
+        for wikifier_file in self.project.wikifier_files:
+            full_path=self.project._normalize_path(wikifier_file)
+            m_time_str = str(os.path.getmtime(full_path))
+            cache_hash.update(m_time_str.encode('utf-8'))
+
         file_name = self.sheet_name +"yaml_"+yaml_hash.hexdigest()+ "_" + cache_hash.hexdigest() + ".json"
         file_path = os.path.join(CACHE_FOLDER, "calc_cache_v"+__cache_version__)
         if not os.path.isdir(file_path):
@@ -59,7 +64,7 @@ class CacheHolder:
             except Exception as e:
                 pass
         return None
-    
+
     def get_layers(self):
         if use_cache():
             try:

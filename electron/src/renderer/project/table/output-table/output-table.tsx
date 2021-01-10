@@ -95,7 +95,7 @@ class OutputTable extends Component<{}, TableState> {
     if (table) {
       table.querySelectorAll('td').forEach(e => {
         e.classList.forEach(className => {
-          if (className.startsWith('role')) {
+          if (className.startsWith('role') || className.startsWith('status')) {
             e.classList.remove(className);
           }
         });
@@ -105,8 +105,13 @@ class OutputTable extends Component<{}, TableState> {
 
     for (const entry of types.entries) {
       for (const indexPair of entry.indices) {
+        if (["majorError", "minorError"].includes(entry.type)){
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.classNames.push(`status-${entry.type}`)
+        }else{
         const tableCell = tableData[indexPair[0]][indexPair[1]];
         tableCell.classNames.push(`role-${entry.type}`)
+        }
       }
     }
     this.setState({ tableData });
@@ -208,27 +213,19 @@ class OutputTable extends Component<{}, TableState> {
     // Select qualifier cells
     if ('qualifiers' in statement.cells) {
       statement.cells.qualifiers.forEach((cell: any) => {
-        if (cell.qualifier) {
-          const y = cell.qualifier[0];
-          const x = cell.qualifier[1];
+        for (const key in cell) {
+          const y = cell[key][0];
+          const x = cell[key][1];
           const tableCell = rows[y + 1].children[x + 1];
           this.selectCell(tableCell, []);
         }
       });
     }
 
-    // Select the cell with the main-subject
-    if ('mainSubject' in statement.cells) {
-      const y = statement.cells.subject[0];
-      const x = statement.cells.subject[1];
-      const cell = rows[y + 1].children[x + 1];
-      this.selectCell(cell, []);
-    }
-
-    // Select the cell with the property
-    if ('property' in statement.cells) {
-      const y = statement.cells.property[0];
-      const x = statement.cells.property[1];
+    for (const key in statement.cells){
+      if (key=="qualifiers"){continue;}
+      const y = statement.cells[key][0];
+      const x = statement.cells[key][1];
       const cell = rows[y + 1].children[x + 1];
       this.selectCell(cell, []);
     }
@@ -255,6 +252,10 @@ class OutputTable extends Component<{}, TableState> {
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
     const element = event.target as any;
+
+    // Don't let users select header cells
+    if (element.nodeName !== 'TD') { return; }
+
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
     this.selectCell(element);
@@ -338,10 +339,10 @@ class OutputTable extends Component<{}, TableState> {
     if (selectedCell && showToast) {
       let text = 'Selected:';
       const selection: CellSelection = {
-        x1: selectedCell.col,
-        x2: selectedCell.col,
-        y1: selectedCell.row,
-        y2: selectedCell.row,
+        x1: selectedCell.col + 1,
+        x2: selectedCell.col + 1,
+        y1: selectedCell.row + 1,
+        y2: selectedCell.row + 1,
       };
       text += ` ${utils.humanReadableSelection(selection)}`;
       const qnode = wikiStore.layers.qnode.find(selectedCell);

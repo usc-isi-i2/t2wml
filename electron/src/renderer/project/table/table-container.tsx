@@ -4,13 +4,14 @@ import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
 
-import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
-import { AnnotationBlock, TableDTO } from '../../common/dtos';
+import { AnnotationBlock } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
+import { classNames } from '../../common/utils';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
@@ -22,6 +23,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
+import { currentFilesService } from '../../common/current-file-service';
 
 
 interface TableState {
@@ -39,7 +41,7 @@ interface TableState {
   selectedMainSubject: Cell | null,
   selectedProperty: Cell | null,
 
-  annotationMode: boolean,
+  mode: 'Annotation' | 'Output',
   showCleanedData: boolean,
   showAnnotationMenu: boolean,
   annotationMenuPosition?: Array<number>,
@@ -77,7 +79,7 @@ class TableContainer extends Component<{}, TableState> {
       selectedMainSubject: new Cell(),
       selectedProperty: new Cell(),
 
-      annotationMode: false,
+      mode: wikiStore.table.mode,
       showCleanedData: false,
       showAnnotationMenu: false,
       annotationMenuPosition: [50, 70],
@@ -90,12 +92,32 @@ class TableContainer extends Component<{}, TableState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+    this.uncheckAnnotationifYaml();
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
+    this.disposers.push(reaction(() => wikiStore.table.mode, () => this.updateMode()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, () => this.uncheckAnnotationifYaml()));
   }
 
   componentWillUnmount() {
-    for ( const disposer of this.disposers ) {
+    for (const disposer of this.disposers) {
       disposer();
+    }
+  }
+
+  uncheckAnnotationifYaml() {
+    if (currentFilesService.currentState.mappingType === "Yaml") {
+      wikiStore.table.mode = "Output"
+      this.setState({ mode: 'Output' })
+    }
+  }
+
+  updateMode() {
+    if (wikiStore.table.mode === 'Annotation') {
+      this.setState({ mode: 'Annotation' });
+      this.fetchAnnotations();
+    } else {
+      this.setState({ mode: 'Output' });
     }
   }
 
@@ -104,7 +126,7 @@ class TableContainer extends Component<{}, TableState> {
 
     // get table file
     const file = (event.target as HTMLInputElement).files![0];
-    if ( !file ) { return; }
+    if (!file) { return; }
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -117,13 +139,11 @@ class TableContainer extends Component<{}, TableState> {
       await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
       console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
 
-      // load yaml data
-      if ( wikiStore.yaml.yamlContent ) {
-        wikiStore.table.isCellSelectable = true;
-      } else {
-        wikiStore.table.isCellSelectable = false;
-      }
-    } catch ( error ) {
+      //update in files state
+      currentFilesService.changeDataFile(file.name);
+      wikiStore.table.mode = "Annotation"
+
+    } catch (error) {
       error.errorDescription += "\n\nCannot open file!";
       this.setState({ errorMessage: error });
     } finally {
@@ -163,49 +183,59 @@ class TableContainer extends Component<{}, TableState> {
     const sheetName = (event.target as HTMLInputElement).innerHTML;
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
-      await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
-      console.log("<TableComponent> <- %c/change_sheet%c with:", LOG.link, LOG.default);
+      // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
+      currentFilesService.changeSheet(sheetName, currentFilesService.currentState.dataFile);
+      await this.requestService.getTable();
 
-      if ( wikiStore.yaml.yamlContent ) {
-        wikiStore.table.isCellSelectable = true;
+      if (wikiStore.yaml.yamlContent) {
         wikiStore.output.isDownloadDisabled = false;
-      } else {
-        wikiStore.table.isCellSelectable = false;
       }
-    } catch ( error ) {
+    } catch (error) {
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
     }
     wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = false;
+
   }
 
   updateProjectInfo() {
-    if ( wikiStore.projects.projectDTO ) {
-      const project = wikiStore.projects.projectDTO;
-      const filename = project._saved_state.current_data_file;
-      const sheetNames = project.data_files[filename].val_arr;
-      const currSheetName = project._saved_state.current_sheet;
-      const multipleSheets = sheetNames && sheetNames.length > 1;
+    if (wikiStore.project.projectDTO) {
+      const project = wikiStore.project.projectDTO;
+      const filename = currentFilesService.currentState.dataFile;
+      let multipleSheets = false;
+      let sheetNames = [] as string[];
+      let currSheetName = '';
+      if (project.data_files[filename] && currentFilesService.currentState.sheetName) { // If there are datafile and sheet name (not a new project)
+        sheetNames = project.data_files[filename].val_arr;
+        currSheetName = currentFilesService.currentState.sheetName;
+        multipleSheets = sheetNames && sheetNames.length > 1;
+      }
+
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
   }
 
-  toggleAnnotationMode() {
-    const { annotationMode } = this.state;
-    if (!annotationMode){
-      this.fetchAnnotations()
+  async toggleAnnotationMode() {
+    if (this.state.mode === 'Output') {
+      if (currentFilesService.currentState.mappingType == "Yaml") {
+        currentFilesService.setMappingFiles(); //try to change to an existing annotation
+        //if there wasn't an existing annotation, we need to create it
+        if (currentFilesService.currentState.mappingType === "Yaml") {
+          await this.requestService.postAnnotationBlocks({ "annotations": [] });
+          currentFilesService.setMappingFiles();
+        }
+      }
+      wikiStore.table.mode = 'Annotation';
+    } else {
+      wikiStore.table.mode = 'Output';
     }
-    this.setState({ annotationMode: !annotationMode });
   }
 
   async fetchAnnotations() {
-
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getAnnotationBlocks(
-          wikiStore.projects.current!.folder,
-        )
+        this.requestService.getMappingCalculation()
       ));
     } catch (error) {
       error.errorDescription += "\n\nCannot fetch annotations!";
@@ -215,7 +245,7 @@ class TableContainer extends Component<{}, TableState> {
 
   renderErrorMessage() {
     const { errorMessage } = this.state;
-    if ( errorMessage.errorDescription ) {
+    if (errorMessage.errorDescription) {
       return (
         <ToastMessage message={this.state.errorMessage} />
       )
@@ -235,25 +265,30 @@ class TableContainer extends Component<{}, TableState> {
             </span>
           </span>
         ) : (
-          <span>Table&nbsp;Viewer</span>
-        )}
+            <span>Table&nbsp;Viewer</span>
+          )}
       </div>
     )
   }
 
   renderAnnotationToggle() {
-    const { annotationMode } = this.state;
-    return (
-      <div className="annotation-mode-toggle"
-        onClick={() => this.toggleAnnotationMode()}>
-        {annotationMode ? (
-          <FontAwesomeIcon icon={faCheckSquare} />
-        ) : (
-          <FontAwesomeIcon icon={faSquare} />
-        )}
-        <p>Annotation Mode</p>
-      </div>
-    )
+    const annotationMode = this.state.mode === "Annotation";
+    if (this.state.filename) {
+      return (
+        <ButtonGroup aria-label="modes" className="mode-toggle"
+          onClick={() => this.toggleAnnotationMode()}>
+          <Button variant="outline-light"
+            className={classNames('btn-sm py-0 px-2', {
+              'active': !annotationMode,
+            })}>Output</Button>
+          <Button variant="outline-light"
+            className={classNames('btn-sm py-0 px-2', {
+              'active': annotationMode,
+            })}>Annotate</Button>
+        </ButtonGroup>
+      )
+    }
+    return <div></div>
   }
 
   renderUploadTooltip() {
@@ -305,8 +340,10 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderTable() {
-    const { annotationMode } = this.state;
-    return annotationMode ? <AnnotationTable /> : <OutputTable />;
+    if (this.state.mode === 'Annotation') {
+      return <AnnotationTable />;
+    }
+    return <OutputTable />;
   }
 
   renderLegend() {

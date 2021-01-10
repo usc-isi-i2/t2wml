@@ -1,34 +1,40 @@
-_saved_state:
-  current_data_file: homicide_report_total_and_sex.xlsx
-  current_sheet: table-1a
-  current_wikifiers:
-  - wikifier_homicide.csv
-  current_yaml: t2wml/table-1a.yaml
+annotations:
+  homicide_report_total_and_sex.xlsx:
+    table-1a:
+      selected: annotations/homicide_report_total_and_sex_table-1a.json
+      val_arr:
+      - annotations/homicide_report_total_and_sex_table-1a.json
+    table-4a:
+      selected: annotations/homicide_report_total_and_sex_table-4a.json
+      val_arr:
+      - annotations/homicide_report_total_and_sex_table-4a.json
 cache_id: 19782724-bde6-469d-a4ce-2491c6da3960
 data_files:
   homicide_report_total_and_sex.xlsx:
-  - table-1a
-  - table-1b
-  - table-2a
-  - table-2b
-  - table-3a
-  - table-3b
-  - table-4a
-  - table-4b
-  - table-5a
-  - table-5b
-  - table-6
-  - table-7
-  - table-8
-  - table-9
-  - table-10a
-  - table-10e
-  - table-10b
-  - table-10c
-  - table-10d
-  - Total Count and Rate
-  - By Sex Count and Rate
-  - Sources Codes
+    selected: table-1a
+    val_arr:
+    - table-1a
+    - table-1b
+    - table-2a
+    - table-2b
+    - table-3a
+    - table-3b
+    - table-4a
+    - table-4b
+    - table-5a
+    - table-5b
+    - table-6
+    - table-7
+    - table-8
+    - table-9
+    - table-10a
+    - table-10e
+    - table-10b
+    - table-10c
+    - table-10d
+    - Total Count and Rate
+    - By Sex Count and Rate
+    - Sources Codes
 entity_files:
 - homicide_extra_edges.tsv
 - homicide_properties.tsv
@@ -60,38 +66,74 @@ yaml_files:
 yaml_sheet_associations:
   homicide_report_total_and_sex.xlsx:
     table-10a:
-    - t2wml/table-10a.yaml
+      selected: t2wml/table-10a.yaml
+      val_arr:
+      - t2wml/table-10a.yaml
     table-10b:
-    - t2wml/table-10b.yaml
+      selected: t2wml/table-10b.yaml
+      val_arr:
+      - t2wml/table-10b.yaml
     table-10c:
-    - t2wml/table-10c.yaml
+      selected: t2wml/table-10c.yaml
+      val_arr:
+      - t2wml/table-10c.yaml
     table-10d:
-    - t2wml/table-10d.yaml
+      selected: t2wml/table-10d.yaml
+      val_arr:
+      - t2wml/table-10d.yaml
     table-10e:
-    - t2wml/table-10e.yaml
+      selected: t2wml/table-10e.yaml
+      val_arr:
+      - t2wml/table-10e.yaml
     table-1a:
-    - t2wml/table-1a.yaml
+      selected: t2wml/table-1a.yaml
+      val_arr:
+      - t2wml/table-1a.yaml
     table-1b:
-    - t2wml/table-1b.yaml
+      selected: t2wml/table-1b.yaml
+      val_arr:
+      - t2wml/table-1b.yaml
     table-2a:
-    - t2wml/table-2a.yaml
+      selected: t2wml/table-2a.yaml
+      val_arr:
+      - t2wml/table-2a.yaml
     table-2b:
-    - t2wml/table-2b.yaml
+      selected: t2wml/table-2b.yaml
+      val_arr:
+      - t2wml/table-2b.yaml
     table-3a:
-    - t2wml/table-3a.yaml
+      selected: t2wml/table-3a.yaml
+      val_arr:
+      - t2wml/table-3a.yaml
     table-3b:
-    - t2wml/table-3b.yaml
+      selected: t2wml/table-3b.yaml
+      val_arr:
+      - t2wml/table-3b.yaml
     table-4a:
-    - t2wml/table-4a.yaml
+      selected: t2wml/table-4a.yaml
+      val_arr:
+      - t2wml/table-4a.yaml
     table-4b:
-    - t2wml/table-4b.yaml
+      selected: t2wml/table-4b.yaml
+      val_arr:
+      - t2wml/table-4b.yaml
     table-5a:
-    - t2wml/table-5a.yaml
+      selected: t2wml/table-5a.yaml
+      val_arr:
+      - t2wml/table-5a.yaml
     table-5b:
-    - t2wml/table-5b.yaml
+      selected: t2wml/table-5b.yaml
+      val_arr:
+      - t2wml/table-5b.yaml
     table-6:
-    - t2wml/table-6.yaml
+      selected: t2wml/table-6.yaml
+      val_arr:
+      - t2wml/table-6.yaml
     table-8:
-    - t2wml/table-8.yaml
+      selected: t2wml/table-8.yaml
+      val_arr:
+      - t2wml/table-8.yaml
     table-9:
-    - t2wml/table-9.yaml
+      selected: t2wml/table-9.yaml
+      val_arr:
+      - t2wml/table-9.yaml

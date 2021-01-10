@@ -165,13 +165,6 @@ export default class MainMenuManager {
             checked: uiState.showCleanedData,
             click: (checkbox) => this.onShowCleanedClick(checkbox.checked),
             enabled,
-        },
-        {
-            label: 'Show File Tree',
-            type: 'checkbox',
-            checked: uiState.showFileTree,
-            click: (checkbox) => this.onToggleFileTreeClick(checkbox.checked),
-            enabled,
         }
     ];
     }
@@ -217,10 +210,6 @@ export default class MainMenuManager {
 
     private onProjectSettingsClick() {
         rendererNotifier.projectSettings();
-    }
-    
-    private onToggleFileTreeClick(checked: boolean) {
-        rendererNotifier.toggleFileTree(checked);
     }
 
     private onClearRecentlyOpenedClick() {

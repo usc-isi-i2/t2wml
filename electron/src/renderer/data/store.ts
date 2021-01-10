@@ -1,12 +1,13 @@
 import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
-import { ProjectList } from './projects';
+import { ProjectList } from '../project-list/project-entry';
 import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
-        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock} from '../common/dtos';
+        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO} from '../common/dtos';
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
+import { currentFilesService } from '../common/current-file-service';
 
 
 type EditorsStatus = "Wikifier" | "YamlEditor";
@@ -16,19 +17,24 @@ class EditorsState {
 
 
 class TableState {
+    @observable public mode: 'Annotation' | 'Output';
     @observable public table: TableDTO;
-    @observable public isCellSelectable: boolean;
     @observable public showSpinner: boolean;
     @observable public selectedCell: Cell;
     @observable public showCleanedData: boolean;
 
     constructor() {
+        this.mode = 'Annotation';
         this.table = {} as TableDTO;
-        this.isCellSelectable = false;
         this.showSpinner = false;
         this.selectedCell = new Cell()
         this.showCleanedData = false;
+    }
 
+
+    updateTable(table: TableDTO){
+        this.table=table;
+        this.selectedCell=new Cell()
     }
 }
 
@@ -58,8 +64,8 @@ class OutputState {
 
 class YamlEditorState {
     public requestService = new RequestService();
-    @observable public yamlName = '';
-    @observable public yamlList: string[] = [];
+    // @observable public yamlName = '';
+    // @observable public yamlList: string[] = [];
     @observable public showSpinner = false;
     @observable public yamlContent: string = defaultYamlContent;
     @observable public yamlError?: string | undefined;
@@ -70,7 +76,6 @@ class YamlEditorState {
             return;
         }
 
-        console.log("Save yaml: ", this.yamlName);
         console.log(this.yamlContent);
 
         // before sending request
@@ -79,11 +84,11 @@ class YamlEditorState {
 
         // send request
         const data = {"yaml": this.yamlContent!,
-                      "title": this.yamlName!,
-                      "sheetName": wikiStore.projects.projectDTO!._saved_state.current_sheet};
+                      "title": currentFilesService.currentState.mappingFile!,
+                      "sheetName": currentFilesService.currentState.sheetName};
 
         try {
-            await this.requestService.saveYaml(wikiStore.projects.current!.folder, data);
+            await this.requestService.saveYaml(data);
 
             // follow-ups (success)
             wikiStore.output.isDownloadDisabled = false;
@@ -93,7 +98,6 @@ class YamlEditorState {
         } finally {
             wikiStore.table.showSpinner = false;
             wikiStore.yaml.showSpinner = false;
-            wikiStore.table.isCellSelectable = true;
             this.yamlhasChanged = false;
         }
     }
@@ -185,6 +189,15 @@ export class LayerState {
             this.cleaned = new Layer(dto.cleaned);
         }
     }
+
+    @action
+    resetLayers() {
+        this.qnode = new Layer<QNodeEntry>();
+        this.type = new Layer<TypeEntry>();
+        this.statement = new StatementLayer();
+        this.error = new Layer<ErrorEntry>();
+        this.cleaned = new Layer<CleanEntry>();
+    }
 }
 
 
@@ -192,6 +205,14 @@ export class AnnotationState {
     @observable public blocks: AnnotationBlock[] =[];
 }
 
+
+export class ProjectState{
+    @observable public projectDTO?: ProjectDTO;
+
+    constructor(projectdto?: ProjectDTO){
+        this.projectDTO=projectdto;
+    }
+}
 
 class WikiStore {
     @observable public editors = new EditorsState();
@@ -204,9 +225,10 @@ class WikiStore {
 
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();
+    @observable public project = new ProjectState();
 
     @action
-    public changeProject(path?: string) {
+    public changeWindowDisplayMode(path?: string) {
         if (path) {
             this.displayMode = 'project';
             if (path) {

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
 // YAML
+import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import MonacoEditor from 'react-monaco-editor';
 import yaml from 'js-yaml';
 
@@ -8,16 +9,17 @@ import yaml from 'js-yaml';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 // console.log
-import { LOG, ErrorMessage, t2wmlColors } from '../common/general';
-import RequestService, { IStateWithError } from '../common/service';
-import ToastMessage from '../common/toast';
+import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
+import RequestService, { IStateWithError } from '../../common/service';
+import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react"
-import wikiStore, { LayerState } from '../data/store';
-import { defaultYamlContent } from "./default-values";
+import wikiStore from '../../data/store';
+import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
-import SheetSelector from './sheet-selector/sheet-selector';
-import { ProjectDTO } from '../common/dtos';
+// import SheetSelector from './sheet-selector/sheet-selector';
+import { currentFilesService } from '../../common/current-file-service';
+import CreateYaml from './create-yaml';
 
 
 interface yamlProperties {
@@ -33,6 +35,7 @@ interface yamlState extends IStateWithError {
   isImportFile: boolean;
   disableYaml: boolean;
   isAddedYaml: boolean;
+  showCreateYamlModal: boolean;
 }
 
 
@@ -59,26 +62,47 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       isImportFile: false,
       disableYaml: false,
       isAddedYaml: false,
+      showCreateYamlModal: false,
     };
 
     // init functions
     this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
-    this.handleChangeFile = this.handleChangeFile.bind(this);
+    // this.handleChangeFile = this.handleChangeFile.bind(this);
   }
 
   componentDidMount() {
-    if (!wikiStore.projects.projectDTO || !wikiStore.projects.projectDTO._saved_state.current_data_file) {
+    if (!wikiStore.project.projectDTO || !currentFilesService.currentState.dataFile) {
       this.setState({disableYaml: true});
     }
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
-    this.disposeReaction = reaction(() => wikiStore.projects.projectDTO, (project) => { if (project) { this.updateYamlFiles(project); }});
+    this.disposeReaction = reaction(() => wikiStore.table.table, () => { this.updateDisableYaml() });
   }
 
   componentWillUnmount() {
     if (this.disposeReaction) {
       this.disposeReaction();
     }
+  }
+
+  updateDisableYaml() {
+    if (wikiStore.table.table.cells) {
+      this.setState({ disableYaml: false });
+    } else {
+      this.setState({ disableYaml: true });
+    }
+  }
+
+  openCreateYamlModal() {
+    // convert to yaml file
+    this.setState({showCreateYamlModal: true});
+  }
+
+  createYaml() {
+    console.log("create yaml ");
+    this.setState({ showCreateYamlModal: false });
+
+    this.handleApplyYaml();
   }
 
   async handleApplyYaml() {
@@ -91,11 +115,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
     const data = {"yaml": wikiStore.yaml.yamlContent,
-                  "title": wikiStore.yaml.yamlName as string,
-                  "sheetName": wikiStore.projects.projectDTO!._saved_state.current_sheet};
+                  "title": currentFilesService.currentState.mappingFile,
+                  "sheetName": currentFilesService.currentState.sheetName};
 
     try {
-      await this.requestService.call(this, () => this.requestService.uploadYaml(wikiStore.projects.current!.folder, data));
+      await this.requestService.call(this, () => this.requestService.uploadYaml(data));
       console.debug('Uploading yaml ', wikiStore.yaml.yamlContent);
       console.log("<YamlEditor> <- %c/upload_yaml%c with:", LOG.link, LOG.default);
 
@@ -108,13 +132,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
-      wikiStore.table.isCellSelectable = true;
     }
 
   }
 
   handleEditYaml() {
-    wikiStore.table.isCellSelectable = false;
 
     const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
     wikiStore.yaml.yamlContent = yamlContent;
@@ -150,10 +172,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       yamlName = file.path.split(wikiStore.projects.current!.folder)[1].substring(1);
     }
     console.log("<YamlEditor> opened file: " + yamlName);
-    wikiStore.yaml.yamlName = yamlName;
-    wikiStore.yaml.yamlList = [...wikiStore.yaml.yamlList, yamlName];
 
-    wikiStore.table.isCellSelectable = false;
+    currentFilesService.changeYamlInSameSheet(yamlName);
 
     // upload local yaml
     const reader = new FileReader();
@@ -161,7 +181,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     reader.onloadend = (async() => {
       const yamlContent = reader.result as string;
       wikiStore.yaml.yamlContent = yamlContent;
-      wikiStore.yaml.yamlName = yamlName;
+      // wikiStore.yaml.yamlName = yamlName;
       wikiStore.yaml.yamlhasChanged = true;
       try {
         const yamlJson = (yaml.safeLoad((yamlContent as string))) as JSON;
@@ -190,8 +210,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
   }
 
   updateYamlContent(yamlContent: string | undefined) {
-    if (yamlContent == undefined){
-      yamlContent = defaultYamlContent
+    if (yamlContent == undefined) {
+      yamlContent = defaultYamlContent;
     }
     const newYamlContent = yamlContent;
     wikiStore.yaml.yamlContent = newYamlContent;
@@ -230,124 +250,18 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  updateYamlFiles(project: ProjectDTO) {
-    if (wikiStore.projects.projectDTO && wikiStore.projects.projectDTO._saved_state.current_data_file) {
-      this.setState({disableYaml: false});
-    }
-
-    const dataFile = project._saved_state.current_data_file;
-    const sheetName = project._saved_state.current_sheet;
-    if (dataFile) {
-      if (project!.yaml_sheet_associations[dataFile] && project!.yaml_sheet_associations[dataFile][sheetName]) {
-        wikiStore.yaml.yamlList = project!.yaml_sheet_associations[dataFile][sheetName].val_arr;
-        wikiStore.yaml.yamlName = project!.yaml_sheet_associations[dataFile][sheetName].selected;
-      } else {
-        // this.setState({isAddedYaml: true});
-        let yamlToCurrentSheet = project?._saved_state.current_sheet;
-        if (yamlToCurrentSheet.endsWith('.csv')) {
-          yamlToCurrentSheet = yamlToCurrentSheet.split('.csv')[0];
-        } 
-        if (!yamlToCurrentSheet.endsWith('.yaml')) {
-          yamlToCurrentSheet += '.yaml';
-        }
-
-        wikiStore.yaml.yamlName = yamlToCurrentSheet;
-        wikiStore.yaml.yamlList = [yamlToCurrentSheet];
-      }
-    } else {
-      wikiStore.yaml.yamlName = '';
-      wikiStore.yaml.yamlList = [];
-    }
-  }
-
-  async handleChangeFile(event: any) {
-    const yaml = event.target.innerHTML;
-    
-    // save prev yaml
-    await wikiStore.yaml.saveYaml();
-
-    wikiStore.yaml.yamlName = yaml;
-
-    wikiStore.output.isDownloadDisabled = true;
-
-    // before sending request
-    wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
-
-    // send request
-    try {
-      await this.requestService.call(this, () => this.requestService.changeYaml(wikiStore.projects.current!.folder, yaml));
-
-      if (wikiStore.yaml.yamlContent) {
-        wikiStore.table.isCellSelectable = true;
-        wikiStore.output.isDownloadDisabled = false;
-      } else {
-        wikiStore.table.isCellSelectable = false;
-      }
-    } catch(error) {
-      console.log(error);
-    } finally {
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-    }
-  }
-
-  async renameYaml(val: string, index: number) {
-   // before sending request
-    wikiStore.table.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
-    const oldName = wikiStore.yaml.yamlList[index];
-
-    // Check if this yaml file exist, if not- save it before.
-    if (!wikiStore.projects.projectDTO?.yaml_files.includes(oldName)) {
-      await wikiStore.yaml.saveYaml();
-    }
-
-    // send request
-    const data = {"old_name": oldName,
-                  "new_name": val };
-
-    try {
-      await this.requestService.call(this, () => this.requestService.renameYaml(wikiStore.projects.current!.folder, data));
-      // update yaml files according to received project.
-      wikiStore.yaml.yamlList = wikiStore.projects.projectDTO!.yaml_files;
-    } catch(error) {
-      console.error("Rename yaml failed.", error);
-    } finally {
-      wikiStore.table.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-    }
-  }
-
-  async addYaml() {
-    await wikiStore.yaml.saveYaml();
-
-    this.setState({
-      isAddedYaml: true,
-    });
-    let i = 1;
-    let sheetName = wikiStore.projects.projectDTO!._saved_state.current_sheet;
-    // remove .csv from sheet name
-    if (sheetName.endsWith('.csv')) {
-      sheetName = sheetName.split('.csv')[0];
-    }
-    let yamlName = sheetName + "-" + i + ".yaml";  
-    while (wikiStore.projects.projectDTO!.yaml_files.includes(yamlName)) {
-      i++;
-      yamlName = sheetName + "-" + i + ".yaml"; 
-    }
-    
-    wikiStore.yaml.yamlContent = defaultYamlContent;
-    wikiStore.yaml.yamlName = yamlName;
-    wikiStore.yaml.yamlList.push(yamlName);
-
-    wikiStore.layers = new LayerState();
-  }
 
   render() {
     const yamlContent = wikiStore.yaml.yamlContent;
+
+    monacoEditor.editor.defineTheme('disabled-theme', {
+      base: 'vs',
+      inherit: true,
+      rules: [{ background: 'CBCBCB' } as any],
+      colors: {
+        'editor.background': '#CBCBCB',
+      },
+});
 
     // render upload tooltip
     const uploadToolTipHtml = (
@@ -362,6 +276,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     return (
       <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
+        <CreateYaml showCreateYamlModal={this.state.showCreateYamlModal}
+          handleDoCreateYaml={() => this.createYaml()}
+          cancelCreateYaml={() => {this.setState({showCreateYamlModal: false});}} />
         <Card
           className="w-100 shadow-sm"
           style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
@@ -378,7 +295,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               className="text-white font-weight-bold d-inline-block text-truncate"
               style={{ width: "calc(100% - 75px)", cursor: "default" }}
             >
-              YAML&nbsp;Editor
+              YAML&nbsp;Editor&nbsp;({currentFilesService.currentState.mappingFile})
             </div>
 
             {/* button of open yaml file */}
@@ -422,7 +339,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
               width="100%"
               height="100%"
               language="yaml"
-              theme="vs"
+              theme= {currentFilesService.currentState.mappingType !== 'Yaml'? 'disabled-theme':'vs'}
               value={yamlContent}
               options={{
                 // All options for construction of monaco editor:
@@ -440,6 +357,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                   verticalSliderSize: 6
                 },
                 showFoldingControls: 'always',
+                readOnly: currentFilesService.currentState.mappingType !== 'Yaml',
               }}
               onChange={() => this.handleEditYaml()}
               editorDidMount={(editor) => {
@@ -474,16 +392,27 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             </div>
 
             {/* apply button */}
-            <Button
-              className="d-inline-block float-right"
-              size="sm"
-              style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
-              onClick={() => this.handleApplyYaml()}
-              disabled={!this.state.isValidYaml || this.state.disableYaml || wikiStore.yaml.showSpinner}
-            >
-              Apply
-            </Button>
-            
+            {currentFilesService.currentState.mappingType === 'Yaml'?
+              <Button
+                className="d-inline-block float-right"
+                size="sm"
+                style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
+                onClick={() => this.handleApplyYaml()}
+                disabled={!this.state.isValidYaml || this.state.disableYaml || wikiStore.yaml.showSpinner}
+              >
+                Apply
+              </Button> :
+              <Button
+                className="d-inline-block float-right"
+                size="sm"
+                style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
+                onClick={() => this.openCreateYamlModal()}
+                disabled={this.state.disableYaml}
+              >
+                Create Yaml
+              </Button>
+            }
+
             {/* <div
               id="yamlSelector" // apply custom scroll bar
               style={{
@@ -496,7 +425,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 whiteSpace: "nowrap"
               }}
             > */}
-              <SheetSelector
+              {/* <SheetSelector
                 sheetNames={wikiStore.yaml.yamlList}
                 currSheetName={wikiStore.yaml.yamlName}
                 itemType="file"
@@ -504,7 +433,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 handleAddItem={() => this.addYaml()}
                 disableAdd={wikiStore.yaml.yamlContent === defaultYamlContent}
                 handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
-              />
+              /> */}
             {/* </div> */}
           </Card.Footer>
         </Card>

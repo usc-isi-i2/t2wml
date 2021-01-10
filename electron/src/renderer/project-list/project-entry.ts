@@ -3,9 +3,8 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { observable } from 'mobx';
 import * as path from 'path';
-import { ProjectDTO } from '../common/dtos';
 
-export class Project {
+export class ProjectListEntry {
     private _folder: string;
     public get folder() { return this._folder; }
     private _filepath: string;
@@ -30,7 +29,7 @@ export class Project {
     public constructor(folder: string) {
         this._folder = folder;
         this._filepath = path.join(this.folder, 'project.t2wml');
-        // Make sure a Project can only be created from a factory method
+        // Make sure a ProjectListEntry can only be created from a factory method
 
         this.readProjectFile();
         this.fillFileDates();
@@ -69,7 +68,7 @@ export class Project {
     }
 
     private onProjectFileChanged(eventType: string) {
-        console.log(`Project file ${this._filepath} changed: ${eventType}`);
+        console.log(`ProjectListEntry file ${this._filepath} changed: ${eventType}`);
         try {
             this.readProjectFile();
             this.fillFileDates();
@@ -81,11 +80,9 @@ export class Project {
 }
 
 export class ProjectList {
-    @observable public projects: Project[] = [];
-    @observable public current?: Project;
-    @observable public projectDTO?: ProjectDTO;
-    @observable public showFileTree = false;
-    
+    @observable public projects: ProjectListEntry[] = [];
+    @observable public current?: ProjectListEntry;
+
     constructor() {
         this.refreshList();
     }
@@ -102,7 +99,7 @@ export class ProjectList {
         // Create new projects
         for (const path of paths) {
             try {
-                const project = new Project(path);
+                const project = new ProjectListEntry(path);
                 this.projects.push(project);
             } catch(error) {
                 console.warn(`Can't find project in ${path}, removing from list`);
@@ -111,7 +108,7 @@ export class ProjectList {
         }
     }
 
-    public find(folder: string): Project | undefined {
+    public find(folder: string): ProjectListEntry | undefined {
         const index = this.projects.findIndex((prj) => prj.folder === folder);
 
         return index > -1 ? this.projects[index] : undefined;
@@ -125,7 +122,7 @@ export class ProjectList {
             }
         }
 
-        const project = new Project(folder);
+        const project = new ProjectListEntry(folder);
         this.projects.push(project);
         this.current = project;
     }

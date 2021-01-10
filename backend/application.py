@@ -2,17 +2,13 @@ import json
 import os
 import sys
 from pathlib import Path
-import yaml
 from flask import request
-
-
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_all_layers_and_table,  get_yaml_layers, get_annotations, save_annotations,
+from t2wml_web import (download, get_layers, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
-from utils import (file_upload_validator, save_dataframe, numpy_converter,
-                   get_empty_layers, get_yaml_content, save_yaml)
+from utils import (file_upload_validator, save_dataframe, get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from datamart_upload import upload_to_datamart
@@ -26,56 +22,28 @@ debug_mode = False
 
 def run_annotation(project, calc_params):
     is_csv=Path(calc_params.data_path).suffix == ".csv"
-    sheet = project.current_sheet
+    sheet = calc_params.sheet_name
     ai = AnnotationIntegration(is_csv, calc_params)
     if ai.is_annotated_spreadsheet(project.directory):
-        dataset_exists = ai.automate_integration(project, calc_params.data_path, sheet)
-        if not dataset_exists:
-            raise web_exceptions.NoSuchDatasetIDException(ai.dataset)
+        yaml_path = ai.automate_integration(project, calc_params.data_path, sheet)
+        return yaml_path
+
     else:  # not annotation file, check if annotation is available
         annotation_found, new_df = ai.is_annotation_available(project.directory)
         if annotation_found and new_df is not None:
             create_datafile(project, new_df, calc_params.data_path,
                             calc_params.sheet_name)
             calc_params = get_calc_params(project)
-            sheet = project.current_sheet
+            sheet = calc_params.sheet_name
             ai = AnnotationIntegration(is_csv, calc_params,
                                         df=new_df)
 
             # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
             # TODO the users. There has to be a better way to handle it. For Future implementation
-            ai.automate_integration(project, calc_params.data_path, sheet)
+            yaml_path=ai.automate_integration(project, calc_params.data_path, sheet)
+            return yaml_path
+    return None
 
-
-
-def get_calc_params(project):
-    if not project.current_data_file:
-        return None
-    data_file = Path(project.directory) / project.current_data_file
-    sheet_name = project.current_sheet
-
-    def _inner_get_calc_params():
-        if project.current_yaml:
-            yaml_file = Path(project.directory) / project.current_yaml
-        else:
-            yaml_file = None
-        if project.current_wikifiers:
-            wikifier_files = [Path(project.directory) / wf for wf in project.current_wikifiers]
-        else:
-            wikifier_files = None
-        calc_params = CalcParams(project.directory, data_file, sheet_name, yaml_file, wikifier_files)
-        return calc_params
-
-    calc_params=_inner_get_calc_params()
-
-
-    # If this is an annotated spreadsheet, we can populate the wikifier, properties, yaml
-    # and item definitions automatically
-    if not calc_params.yaml_path and global_settings.datamart_integration:
-        run_annotation(project, calc_params)
-        calc_params=_inner_get_calc_params()
-
-    return calc_params
 
 
 def get_project_folder():
@@ -84,6 +52,11 @@ def get_project_folder():
         return project_folder
     except KeyError:
         raise web_exceptions.InvalidRequestException("project folder parameter not specified")
+
+def get_project():
+    project_folder=get_project_folder()
+    project=get_project_instance(project_folder)
+    return project
 
 def get_project_dict(project):
     return_dict={}
@@ -95,21 +68,97 @@ def json_response(func):
     def wrapper(*args, **kwargs):
         try:
             data, return_code = func(*args, **kwargs)
-            return json.dumps(data, indent=3, default=numpy_converter), return_code
+            return data, return_code
         except WebException as e:
             data = {"error": e.error_dict}
-            return json.dumps(data, indent=3, default=numpy_converter), e.code
+            return data, e.code
         except Exception as e:
             data = {"error": make_frontend_err_dict(e)}
             try:
                 code=e.code
-                data["error"]["code"]=code
+                data["error"]["errorCode"]=code
             except AttributeError:
                 code=500
-            return json.dumps(data, indent=3, default=numpy_converter), code
+            return data, code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
+
+def update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type):
+    if mapping_type=="Annotation":
+        calc_params.annotation_path=Path(project.directory) / mapping_file
+    if mapping_type=="Yaml":
+        calc_params.yaml_path=Path(project.directory) / mapping_file
+
+def get_calc_params(project, data_required=True, mapping_type=None, mapping_file=None):
+    try:
+        try:
+            data_file = request.args['data_file']
+            data_file = data_file
+        except KeyError:
+            raise web_exceptions.InvalidRequestException("data file parameter not specified")
+
+        try:
+            sheet_name = request.args['sheet_name']
+        except KeyError:
+            raise web_exceptions.InvalidRequestException("sheet name parameter not specified")
+    except web_exceptions.InvalidRequestException as e:
+        if data_required:
+            raise e
+        else:
+            return None
+
+    add_entities_from_project(project)
+    calc_params = CalcParams(project, data_file, sheet_name)
+
+    mapping_type=mapping_type or request.args.get("mapping_type")
+    mapping_file=mapping_file or request.args.get("mapping_file")
+    update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type)
+
+    return calc_params
+
+@app.route('/api/project', methods=['GET'])
+@json_response
+def get_project_files():
+    project=get_project()
+    response=dict(project=get_project_dict(project))
+    return response, 200
+
+
+
+@app.route('/api/mapping', methods=['GET'])
+@json_response
+def get_mapping(mapping_file=None, mapping_type=None):
+    project=get_project()
+    calc_params=get_calc_params(project)
+    #if redirecting from a save:
+    update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type)
+
+    response=dict(project=get_project_dict(project))
+    for_annotation=False
+    if calc_params.annotation_path:
+        for_annotation=True
+        response["annotations"], response["yamlContent"]=get_annotations(calc_params)
+    elif calc_params.yaml_path:
+        response["yamlContent"]=get_yaml_content(calc_params)
+        response["annotations"]=[]
+    get_layers(response, calc_params, for_annotation)
+
+    return response, 200
+
+@app.route('/api/table', methods=['GET'])
+@json_response
+def get_data():
+    project=get_project()
+    calc_params=get_calc_params(project)
+    response=dict()
+    response["table"] = get_table(calc_params)
+    calc_response, code = get_mapping()
+    response.update(calc_response)
+    return response, 200
+
+
+
 
 
 @app.route('/api/project', methods=['POST'])
@@ -119,7 +168,6 @@ def create_project():
     This route creates a project
     :return:
     """
-
     project_folder = get_project_folder()
     # check we're not overwriting existing project
     project_file = Path(project_folder) / "project.t2wml"
@@ -131,22 +179,37 @@ def create_project():
     return response, 201
 
 
-@app.route('/api/project', methods=['GET'])
+@app.route('/api/data', methods=['POST'])
 @json_response
-def get_project():
+def upload_data_file():
     """
-    This function fetches the last session of the last opened files in a project when that project is reopened later.
+    This function uploads the data file.
+    If datamart_integration is True, it will attempt to run that on the file
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    add_entities_from_project(project)
+    project=get_project()
 
-    response=dict(project=get_project_dict(project), table=None, layers=get_empty_layers(), yamlContent=None)
-    calc_params = get_calc_params(project)
-    if calc_params:
-        get_all_layers_and_table(response, calc_params)
-        response["yamlContent"] = get_yaml_content(calc_params)
+    file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
+    data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
+    project.save()
+    response=dict(project=get_project_dict(project))
+    sheet_name=project.data_files[data_file]["val_arr"][0]
+
+    annotations_dir=os.path.join(project.directory, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path=os.path.join(annotations_dir, Path(data_file).stem+"_"+sheet_name+".json")
+
+
+    save_annotations(project, [], os.path.join(annotations_path), data_file, sheet_name)
+    calc_params=CalcParams(project, data_file, sheet_name, None)
+
+    if global_settings.datamart_integration:
+        calc_params.yaml_path=run_annotation(project, calc_params)
+        response["yamlContent"]=get_yaml_content(calc_params)
+    response["table"] = get_table(calc_params)
+    get_layers(response, calc_params)
+
 
     return response, 200
 
@@ -154,8 +217,7 @@ def get_project():
 @app.route('/api/project/entity', methods=['POST'])
 @json_response
 def upload_entities():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     file_path = file_upload_validator({".tsv"})
     project.add_entity_file(file_path, copy_from_elsewhere=True, overwrite=True)
@@ -163,84 +225,10 @@ def upload_entities():
 
     entities_stats = add_entities_from_file(file_path)
     response = dict(entitiesStats= entities_stats, project=get_project_dict(project))
-    calc_params = get_calc_params(project)
+    calc_params = get_calc_params(project, data_required=False)
     if calc_params:
         response["layers"] = get_qnodes_layer(calc_params)
     return response, 200
-
-
-@app.route('/api/data', methods=['POST'])
-@json_response
-def upload_data_file():
-    """
-    This function uploads the data file
-    :return:
-    """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-
-    file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
-    data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
-    project.update_saved_state(current_data_file=data_file)
-    project.save()
-
-    calc_params = get_calc_params(project)
-
-    response=dict(project=get_project_dict(project))
-
-    get_all_layers_and_table(response, calc_params)
-    if calc_params.yaml_path:
-        response["yamlContent"]=get_yaml_content(calc_params)
-    return response, 200
-
-
-@app.route('/api/data/<sheet_name>', methods=['GET'])
-@json_response
-def change_sheet(sheet_name):
-    """
-    This route is used when switching a sheet in an excel data file.
-    :return:
-    """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-
-    project.update_saved_state(current_sheet=sheet_name)
-    project.save()
-    response=dict(project=get_project_dict(project))
-    calc_params = get_calc_params(project)
-
-    if calc_params:
-        response["yamlContent"]=get_yaml_content(calc_params)
-        get_all_layers_and_table(response, calc_params)
-
-    return response, 200
-
-@app.route('/api/data/change_data_file', methods=['GET'])
-@json_response
-def change_data_file():
-    """
-    This route is used when switching a data file in the file tree.
-    :return:
-    """
-    try:
-        data_file = request.args['data_file']
-    except KeyError:
-        raise web_exceptions.InvalidRequestException("data file parameter not specified")
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    response = dict(project=get_project_dict(project))
-
-    project.update_saved_state(current_data_file=data_file)
-    project.save()
-
-    calc_params = get_calc_params(project)
-
-    if calc_params:
-        response["yamlContent"]=get_yaml_content(calc_params)
-        get_all_layers_and_table(response, calc_params)
-
-    return response, 200
-
 
 @app.route('/api/wikifier', methods=['POST'])
 @json_response
@@ -249,16 +237,14 @@ def upload_wikifier_output():
     This function uploads the wikifier output
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     file_path = file_upload_validator({".csv"})
     file_path = project.add_wikifier_file(file_path, copy_from_elsewhere=True, overwrite=True)
-    project.update_saved_state(current_wikifiers=[file_path])
     project.save()
 
     response=dict(project=get_project_dict(project))
-    calc_params = get_calc_params(project)
+    calc_params = get_calc_params(project, data_required=False)
     if calc_params:
         response["layers"]=get_qnodes_layer(calc_params)
     return response, 200
@@ -271,21 +257,15 @@ def call_wikifier_service():
     This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    action = request.get_json()["action"]
+    project=get_project()
     region = request.get_json()["region"]
     context = request.get_json()["context"]
-
-    if not project.current_data_file:
-        raise web_exceptions.WikifyWithoutDataFileException(
-            "Upload data file before wikifying a region")
     calc_params = get_calc_params(project)
+
 
     cell_qnode_map, problem_cells = wikify(calc_params, region, context)
     file_path = save_dataframe(project, cell_qnode_map, "wikify_region_output.csv")
     file_path = project.add_wikifier_file(file_path,  copy_from_elsewhere=True, overwrite=True)
-    project.update_saved_state(current_wikifiers=[file_path])
     project.save()
 
     calc_params = get_calc_params(project)
@@ -300,11 +280,7 @@ def call_wikifier_service():
 @app.route('/api/yaml/rename', methods=['POST'])
 @json_response
 def rename_yaml():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    if not project.current_data_file:
-        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-            "Upload a data file before renaming yaml")
+    project=get_project()
 
     old_name = request.get_json()["old_name"]
     new_name = request.get_json()["new_name"]
@@ -333,45 +309,16 @@ def rename_yaml():
     return response, 200
 
 
-@app.route('/api/yaml/change', methods=['GET'])
-@json_response
-def change_yaml():
-    """
-    This route is used when switching the selected yaml
-    :return:
-    """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    try:
-        yaml_file = request.args['yaml_file']
-    except KeyError:
-        raise web_exceptions.InvalidRequestException("data file parameter not specified")
-    project.update_saved_state(current_yaml=yaml_file)
-    project.save()
-    response=dict(project=get_project_dict(project))
-    calc_params = get_calc_params(project)
-    if calc_params:
-        response["yamlContent"]=get_yaml_content(calc_params)
-        get_all_layers_and_table(response, calc_params)
-
-    return response, 200
-
-
-
 
 @app.route('/api/yaml/save', methods=['POST'])
 @json_response
 def upload_yaml():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-    if not project.current_data_file:
-        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-            "Upload a data file before editing or importing yaml")
-
+    project=get_project()
+    calc_params = get_calc_params(project)
+    sheet_name=calc_params.sheet_name
     yaml_data = request.get_json()["yaml"]
     yaml_title = request.get_json()["title"]
-    sheet_name = request.get_json()["sheetName"]
-    save_yaml(project, yaml_data, yaml_title, sheet_name)
+    save_yaml(project, yaml_data, calc_params.data_path, sheet_name, yaml_title)
     response=dict(project=get_project_dict(project))
     return response, 200
 
@@ -382,32 +329,16 @@ def apply_yaml():
     This function uploads and processes the yaml file
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
-    if not project.current_data_file:
-        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-            "Upload data file before applying YAML.")
-
-    yaml_data = request.get_json()["yaml"]
+    upload_yaml()
     yaml_title = request.get_json()["title"]
-    sheet_name = request.get_json()["sheetName"]
+    yaml_path = Path(project.directory) / yaml_title
+    response=dict(project=get_project_dict(project))
+    calc_response, code = get_mapping(yaml_path, "Yaml")
+    response.update(calc_response)
+    return response, code
 
-    save_yaml(project, yaml_data, yaml_title, sheet_name)
-
-    response=dict(project=get_project_dict(project), layers=get_empty_layers())
-    try:
-        yaml.safe_load(yaml_data)
-    except:
-        response["yamlError"]="YAML file is either empty or not valid"
-        return response
-
-    calc_params = get_calc_params(project)
-    try:
-        response["layers"] = get_yaml_layers(calc_params)
-    except Exception as e:
-        response["yamlError"] = str(e)
-    return response, 200
 
 
 @app.route('/api/project/download/<filetype>', methods=['GET'])
@@ -417,8 +348,7 @@ def download_results(filetype):
     This functions initiates the download
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     calc_params = get_calc_params(project)
     if not calc_params.yaml_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
@@ -430,11 +360,10 @@ def download_results(filetype):
 @app.route('/api/project/datamart', methods=['GET'])
 @json_response
 def load_to_datamart():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     calc_params = get_calc_params(project)
     try:
-        sheet = project.current_sheet
+        sheet = calc_params.sheet_name
     except:
         raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
             "Can't upload to datamart without datafile and sheet")
@@ -442,27 +371,24 @@ def load_to_datamart():
     return data, 201
 
 
-@app.route('/api/annotation', methods=['POST', 'GET'])
+@app.route('/api/annotation', methods=['POST'])
 @json_response
 def upload_annotation():
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
-
+    project=get_project()
+    calc_params=get_calc_params(project)
     #TODO: will be replaced with proper fetching of annotation name and being able to switch between annotations
     annotations_dir=os.path.join(project.directory, "annotations")
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
-    annotations_path=os.path.join(annotations_dir, Path(project.current_data_file).stem+"_"+project.current_sheet+".json")
-    response=dict(project=get_project_dict(project))
-    calc_params=get_calc_params(project)
-    calc_params.annotation_path=annotations_path
-    if request.method == 'POST':
-        annotation = request.get_json()["annotations"]
-        annotation, yamlContent = save_annotations(project, calc_params, annotation, response)
-    else:
-        annotation, yamlContent=get_annotations(calc_params, response)
+    annotations_path=os.path.join(annotations_dir, Path(calc_params.data_path).stem+"_"+calc_params.sheet_name+".json")
+    annotation = request.get_json()["annotations"]
 
-    return response, 200
+
+    save_annotations(project, annotation, annotations_path, calc_params.data_path, calc_params.sheet_name)
+    response = dict(project= get_project_dict(project))
+    calc_response, code = get_mapping(annotations_path, "Annotation")
+    response.update(calc_response)
+    return response, code
 
 @app.route('/api/project', methods=['PUT'])
 @json_response
@@ -472,8 +398,7 @@ def rename_project():
     :return:
     """
     ptitle = request.get_json()["ptitle"]
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
     project.title = ptitle
     project.save()
     response = dict(project= get_project_dict(project))
@@ -487,8 +412,7 @@ def update_settings():
     This function updates the settings from GUI
     :return:
     """
-    project_folder = get_project_folder()
-    project = get_project_instance(project_folder)
+    project=get_project()
 
     if request.method == 'PUT':
         endpoint = request.get_json().get("endpoint", None)

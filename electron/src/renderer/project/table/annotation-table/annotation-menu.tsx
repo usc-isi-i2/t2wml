@@ -19,6 +19,7 @@ interface AnnotationMenuProperties {
   selectedAnnotationBlock?: AnnotationBlock,
 }
 
+
 interface AnnotationMenuState {
   errorMessage: ErrorMessage;
 }
@@ -68,7 +69,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };
 
     // Add all updated values from the annotation form
-    for (const [key, value] of Object.entries(values)) {
+    for ( const [key, value] of Object.entries(values) ) {
       annotation[key] = value;
     }
 
@@ -83,7 +84,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     try {
       await this.requestService.call(this, () => (
         this.requestService.postAnnotationBlocks(
-          wikiStore.projects.current!.folder,
           { 'annotations': annotations }
         )
       ));

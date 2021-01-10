@@ -185,10 +185,9 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
         </table>
       );
 
-      outputDiv.push(errorsDiv);
-
-
     }
+
+    outputDiv.push(errorsDiv);
 
     return outputDiv;
   }
