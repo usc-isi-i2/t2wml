@@ -52,6 +52,10 @@ export const TYPES = [{
 
 
 export const ROLES = [{
+  'label': 'Dependent Variable',
+  'value': 'dependentVar',
+  'children': TYPES,
+}, {
   'label': 'Main Subject',
   'value': 'mainSubject',
 }, {
@@ -60,10 +64,6 @@ export const ROLES = [{
 }, {
   'label': 'Qualifier',
   'value': 'qualifier',
-  'children': TYPES,
-}, {
-  'label': 'Dependent Variable',
-  'value': 'dependentVar',
   'children': TYPES,
 }, {
   'label': 'Metadata',
