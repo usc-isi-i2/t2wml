@@ -4,6 +4,10 @@ annotations:
       selected: annotations/homicide_report_total_and_sex_table-1a.json
       val_arr:
       - annotations/homicide_report_total_and_sex_table-1a.json
+    table-4a:
+      selected: annotations/homicide_report_total_and_sex_table-4a.json
+      val_arr:
+      - annotations/homicide_report_total_and_sex_table-4a.json
 cache_id: 19782724-bde6-469d-a4ce-2491c6da3960
 data_files:
   homicide_report_total_and_sex.xlsx:

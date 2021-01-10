@@ -4,13 +4,14 @@ import React, { ChangeEvent, Component } from 'react';
 
 import './table-component.css';
 
-import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
 import { AnnotationBlock } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
+import { classNames } from '../../common/utils';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
@@ -99,14 +100,14 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    for ( const disposer of this.disposers ) {
+    for (const disposer of this.disposers) {
       disposer();
     }
   }
 
-  uncheckAnnotationifYaml(){
-    if (currentFilesService.currentState.mappingType==="Yaml"){
-      wikiStore.table.mode="Output"
+  uncheckAnnotationifYaml() {
+    if (currentFilesService.currentState.mappingType === "Yaml") {
+      wikiStore.table.mode = "Output"
       this.setState({ mode: 'Output' })
     }
   }
@@ -125,7 +126,7 @@ class TableContainer extends Component<{}, TableState> {
 
     // get table file
     const file = (event.target as HTMLInputElement).files![0];
-    if ( !file ) { return; }
+    if (!file) { return; }
 
     // before sending request
     wikiStore.table.showSpinner = true;
@@ -140,9 +141,9 @@ class TableContainer extends Component<{}, TableState> {
 
       //update in files state
       currentFilesService.changeDataFile(file.name);
-      wikiStore.table.mode="Annotation"
+      wikiStore.table.mode = "Annotation"
 
-    } catch ( error ) {
+    } catch (error) {
       error.errorDescription += "\n\nCannot open file!";
       this.setState({ errorMessage: error });
     } finally {
@@ -186,10 +187,10 @@ class TableContainer extends Component<{}, TableState> {
       currentFilesService.changeSheet(sheetName, currentFilesService.currentState.dataFile);
       await this.requestService.getTable();
 
-      if ( wikiStore.yaml.yamlContent ) {
+      if (wikiStore.yaml.yamlContent) {
         wikiStore.output.isDownloadDisabled = false;
       }
-    } catch ( error ) {
+    } catch (error) {
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
     }
@@ -199,7 +200,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   updateProjectInfo() {
-    if ( wikiStore.project.projectDTO ) {
+    if (wikiStore.project.projectDTO) {
       const project = wikiStore.project.projectDTO;
       const filename = currentFilesService.currentState.dataFile;
       let multipleSheets = false;
@@ -217,11 +218,11 @@ class TableContainer extends Component<{}, TableState> {
 
   async toggleAnnotationMode() {
     if (this.state.mode === 'Output') {
-      if (currentFilesService.currentState.mappingType=="Yaml"){
+      if (currentFilesService.currentState.mappingType == "Yaml") {
         currentFilesService.setMappingFiles(); //try to change to an existing annotation
         //if there wasn't an existing annotation, we need to create it
-        if (currentFilesService.currentState.mappingType === "Yaml"){
-          await this.requestService.postAnnotationBlocks({"annotations":[]});
+        if (currentFilesService.currentState.mappingType === "Yaml") {
+          await this.requestService.postAnnotationBlocks({ "annotations": [] });
           currentFilesService.setMappingFiles();
         }
       }
@@ -244,7 +245,7 @@ class TableContainer extends Component<{}, TableState> {
 
   renderErrorMessage() {
     const { errorMessage } = this.state;
-    if ( errorMessage.errorDescription ) {
+    if (errorMessage.errorDescription) {
       return (
         <ToastMessage message={this.state.errorMessage} />
       )
@@ -264,28 +265,29 @@ class TableContainer extends Component<{}, TableState> {
             </span>
           </span>
         ) : (
-          <span>Table&nbsp;Viewer</span>
-        )}
+            <span>Table&nbsp;Viewer</span>
+          )}
       </div>
     )
   }
 
   renderAnnotationToggle() {
-    const { mode } = this.state;
-    if (this.state.filename){
-    return (
-      <div className="annotation-mode-toggle"
-
-        onClick={() => this.toggleAnnotationMode()}>
-        {mode === 'Annotation' ? (
-          <FontAwesomeIcon icon={faCheckSquare} />
-        ) : (
-          <FontAwesomeIcon icon={faSquare} />
-        )}
-        <p>Annotation Mode</p>
-      </div>
-    )
-        }
+    const annotationMode = this.state.mode === "Annotation";
+    if (this.state.filename) {
+      return (
+        <ButtonGroup aria-label="modes" className="mode-toggle"
+          onClick={() => this.toggleAnnotationMode()}>
+          <Button variant="outline-light"
+            className={classNames('btn-sm py-0 px-2', {
+              'active': !annotationMode,
+            })}>Output</Button>
+          <Button variant="outline-light"
+            className={classNames('btn-sm py-0 px-2', {
+              'active': annotationMode,
+            })}>Annotate</Button>
+        </ButtonGroup>
+      )
+    }
     return <div></div>
   }
 

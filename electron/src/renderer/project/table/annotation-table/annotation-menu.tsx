@@ -19,6 +19,7 @@ interface AnnotationMenuProperties {
   selectedAnnotationBlock?: AnnotationBlock,
 }
 
+
 interface AnnotationMenuState {
   errorMessage: ErrorMessage;
 }
@@ -68,7 +69,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };
 
     // Add all updated values from the annotation form
-    for (const [key, value] of Object.entries(values)) {
+    for ( const [key, value] of Object.entries(values) ) {
       annotation[key] = value;
     }
 
