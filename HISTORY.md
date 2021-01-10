@@ -1,6 +1,31 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.6.0:
+-----------------------
+* t2wml-api version 0.0.21
+* complete revamp of the file sidebar, which is now permanently displayed (but resizable)
+   * file navigation with click
+   * active files bolded
+   * file tree is the only way to navigate between annotation and yaml files, the yaml file switcher has been removed
+   * file tree has icons for file types, hover for full file name, arrow collapsing
+* annotation files are now fully featured mapping files (like yaml files) ie can be used to create output statements etc
+   * note: if an annotation is invalid (no dependent variable + main subject), it will not create any statements or colors in output mode
+* the annotation mode checkbox is now a toggle. it is on annotation mode by default. 
+   * selecting annotation mode while on a yaml file in the tree will switch to most recently used annotation file or create one if there isn't one already
+* various UI tweaks:
+   * download has been renamed "Save to file"
+   * in the table legend, data has been renamed to dependent variable and majorError/minorError now have spaces
+   * added triangle styling for major/minor error cells
+   * don't allow users to select header row cells
+   * fix off by one selection in toaster message
+* some behind the scene code changes:
+   * switch the backend to be stateless, state management of selected files is now in frontend
+   * switch frontend/backend communication to axios
+   * some minor refactoring of store
+
+
+
 Changes in version 2.5.0:
 -----------------------
 * t2wml-api version 0.0.20
