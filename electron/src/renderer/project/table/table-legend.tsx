@@ -19,7 +19,7 @@ const LEGEND = [{
   label: 'qnode',
   className: 'type-qnode',
 }, {
-  label: 'data',
+  label: 'dependent variable',
   className: 'type-data',
 }, {
   label: 'subject',
@@ -34,10 +34,10 @@ const LEGEND = [{
   label: 'property',
   className: 'type-property',
 }, {
-  label: 'minorError',
+  label: 'minor error',
   className: 'type-minorError',
 }, {
-  label: 'majorError',
+  label: 'major error',
   className: 'type-majorError',
 }];
 
