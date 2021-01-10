@@ -255,6 +255,10 @@ class OutputTable extends Component<{}, TableState> {
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
     const element = event.target as any;
+
+    // Don't let users select header cells
+    if (element.nodeName !== 'TD') { return; }
+
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
     this.selectCell(element);
@@ -338,10 +342,10 @@ class OutputTable extends Component<{}, TableState> {
     if (selectedCell && showToast) {
       let text = 'Selected:';
       const selection: CellSelection = {
-        x1: selectedCell.col,
-        x2: selectedCell.col,
-        y1: selectedCell.row,
-        y2: selectedCell.row,
+        x1: selectedCell.col + 1,
+        x2: selectedCell.col + 1,
+        y1: selectedCell.row + 1,
+        y2: selectedCell.row + 1,
       };
       text += ` ${utils.humanReadableSelection(selection)}`;
       const qnode = wikiStore.layers.qnode.find(selectedCell);
