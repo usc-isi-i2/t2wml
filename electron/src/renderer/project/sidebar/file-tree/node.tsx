@@ -40,6 +40,11 @@ class FileNode extends Component<NodeProps, NodeState> {
     }
   }
 
+  UNSAFE_componentWillReceiveProps(nextProps: NodeProps) {
+    if (nextProps.bolded) {
+      this.setState({ expanded: true });
+    }
+  }
 
   onArrowClick() {
     this.setState({ expanded: !this.state.expanded });
