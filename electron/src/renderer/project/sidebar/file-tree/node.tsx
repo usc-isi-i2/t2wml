@@ -46,6 +46,7 @@ class FileNode extends Component<NodeProps, NodeState> {
   }
 
   async onNodeClick() {
+    this.setState({ expanded: true });
     this.props.onClick(this.props);
   }
 
