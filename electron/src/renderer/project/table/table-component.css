@@ -237,12 +237,41 @@
 .table-wrapper table tr td.status-cleaned {
   font-weight: bold;
 }
-.table-wrapper table tr td.status-minorError {
-  background: #FF8000;
+
+.status-minorError {
+  position: relative;
 }
-.table-wrapper table tr td.status-majorError {
-  background: #FF3333;
+.status-minorError:after { /* Magic Happens Here!!! */
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  display: block;
+  border-left: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+
+  border-top: 20px solid  #FF8000;
 }
+
+.status-majorError {
+  position: relative;
+}
+.status-majorError:after { /* Magic Happens Here!!! */
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  display: block;
+  border-left: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+
+  border-top: 20px solid   #FF3333;
+}
+
 
 /* cell roles */
 .table-wrapper table tr td.role-dependentVar {
