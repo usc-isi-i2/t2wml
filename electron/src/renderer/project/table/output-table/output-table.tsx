@@ -104,9 +104,6 @@ class OutputTable extends Component<{}, TableState> {
 
 
     for (const entry of types.entries) {
-      if (["majorError", "minorError"].includes(entry.type)){
-        let hi=1;
-      }
       for (const indexPair of entry.indices) {
         if (["majorError", "minorError"].includes(entry.type)){
           const tableCell = tableData[indexPair[0]][indexPair[1]];
