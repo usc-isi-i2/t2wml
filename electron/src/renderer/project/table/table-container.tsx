@@ -271,8 +271,10 @@ class TableContainer extends Component<{}, TableState> {
 
   renderAnnotationToggle() {
     const { mode } = this.state;
+    if (this.state.filename){
     return (
       <div className="annotation-mode-toggle"
+
         onClick={() => this.toggleAnnotationMode()}>
         {mode === 'Annotation' ? (
           <FontAwesomeIcon icon={faCheckSquare} />
@@ -282,6 +284,8 @@ class TableContainer extends Component<{}, TableState> {
         <p>Annotation Mode</p>
       </div>
     )
+        }
+    return <div></div>
   }
 
   renderUploadTooltip() {
