@@ -95,7 +95,7 @@ class OutputTable extends Component<{}, TableState> {
     if (table) {
       table.querySelectorAll('td').forEach(e => {
         e.classList.forEach(className => {
-          if (className.startsWith('role')) {
+          if (className.startsWith('role') || className.startsWith('status')) {
             e.classList.remove(className);
           }
         });
@@ -104,9 +104,17 @@ class OutputTable extends Component<{}, TableState> {
 
 
     for (const entry of types.entries) {
+      if (["majorError", "minorError"].includes(entry.type)){
+        let hi=1;
+      }
       for (const indexPair of entry.indices) {
+        if (["majorError", "minorError"].includes(entry.type)){
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.classNames.push(`status-${entry.type}`)
+        }else{
         const tableCell = tableData[indexPair[0]][indexPair[1]];
         tableCell.classNames.push(`role-${entry.type}`)
+        }
       }
     }
     this.setState({ tableData });
