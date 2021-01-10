@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {IconDefinition, faChevronDown, faChevronRight, faTable,  faStream, faColumns, faFile, faProjectDiagram, faList} from '@fortawesome/free-solid-svg-icons';
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import './node.css';
 
 
 export type NodeType = "DataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
@@ -51,6 +52,7 @@ class FileNode extends Component<NodeProps, NodeState> {
   }
 
   async onNodeClick() {
+    this.setState({ expanded: true });
     this.props.onClick(this.props);
   }
 
@@ -106,7 +108,7 @@ class FileNode extends Component<NodeProps, NodeState> {
     return (
       <li>
         <OverlayTrigger overlay={logoTooltipHtml} delay={{show: 1000, hide: 0}} placement="top" trigger={["hover", "focus"]}>
-          <label
+          <label className="pointer"
             onContextMenu={(e) => this.onRightClick(e)}
             >
             {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {label}</span>
