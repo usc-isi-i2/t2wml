@@ -10,6 +10,7 @@ interface RenameProperties {
   showSpinner: boolean;
   tempRenameProject: string;
   isTempRenameProjectVaild: boolean;
+  type: string;
 
   handleRenameProject: (name: string) => void;
   cancelRenameProject: () => void;
@@ -43,7 +44,7 @@ class RenameProject extends Component<RenameProperties, RenameState> {
 
         {/* header */}
         <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Rename&nbsp;Project</Modal.Title>
+          <Modal.Title>Rename&nbsp;{this.props.type}</Modal.Title>
         </Modal.Header>
 
         {/* body */}

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import wikiStore from "../../../data/store";
 import './file-tree.css';
 // import { TreeMode } from '@/shared/types'
@@ -6,11 +6,17 @@ import RequestService from "@/renderer/common/service";
 import { currentFilesService } from "../../../common/current-file-service";
 import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
+import { remote } from 'electron';
+import RenameProject from "@/renderer/project-list/rename-project";
+
 
 
 type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
   fileTree: NodeProps;
+  showRenameFile: boolean;
+  clickedNode: NodeProps | null;
+  showSpinner: boolean;
 }
 
 const emptyFunc= (node: NodeProps) => void 0
@@ -30,7 +36,12 @@ class FileTree extends Component<TreeProps, TreeState> {
   constructor(props: TreeProps){
     super(props)
     this.requestService = new RequestService();
-    this.state={fileTree: rootNode}
+    this.state = { 
+      fileTree: rootNode,
+      showRenameFile: false,
+      clickedNode: null,
+      showSpinner: false,
+    };
     this.updateFileTree();
   }
 
@@ -67,7 +78,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     // await this.requestService.getMappingCalculation();
   }
 
-    async changeFile(node: NodeProps) {
+  async changeFile(node: NodeProps) {
     if (node.type === "DataFile") {
         if (node.label !== currentFilesService.currentState.dataFile) {
             await this.changeDataFile(node.label);
@@ -93,10 +104,45 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
+  renameNode() {
+    this.setState({ showRenameFile: true });
+  }
 
   onRightClick(node: NodeProps){
-      console.log("right click", node)
+    this.setState({ clickedNode: node });
+    const { Menu, MenuItem } = remote;
 
+    const menu = new Menu();
+    menu.append(new MenuItem({ label: 'open in filesystem', click: () => this.renameNode() }));
+    menu.append(new MenuItem({ label: 'delete from filesystem', click: () => this.renameNode() }));
+    menu.append(new MenuItem({ type: 'separator' }));
+
+    switch (node.type) {
+      case 'DataFile': {
+        menu.append(new MenuItem({ label: 'rename', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'delete from project', click: () => this.renameNode() }));
+        break;
+      }
+      case 'Sheet': {
+        menu.append(new MenuItem({ label: 'add mapping file', click: () => this.renameNode() }));
+        break;
+      }
+      case 'Yaml': {
+        menu.append(new MenuItem({ label: 'rename', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'delete from project', click: () => this.renameNode() }));
+        break;
+      }
+      case 'Annotation': {
+        menu.append(new MenuItem({ label: 'rename', click:() => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'delete from project', click: () => this.renameNode() }));
+        break;
+      }
+      default: {
+        menu.append(new MenuItem({ type: 'separator' }));
+      }
+    }
+
+    menu.popup({ window: remote.getCurrentWindow() });
   }
 
 
@@ -162,19 +208,56 @@ class FileTree extends Component<TreeProps, TreeState> {
     this.setState({fileTree})
   }
 
+  async handleRenameFile(name: string) {
+    const tmpName = name.trim();
+    if (tmpName === "") {
+      this.cancelRenameFile();
+      return;
+    }
+
+    // before sending request
+    this.setState({ showSpinner: true });
+
+    // send request
+    const data = { "old_name": this.state.clickedNode!.label, new_name: tmpName };
+    try {
+      await this.requestService.renameYaml(wikiStore.project.projectDTO!.directory, data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({ showRenameFile: false, showSpinner: false });
+    }
+  }
+
+  cancelRenameFile() {
+    this.setState({ showRenameFile: false });
+  }
+
   render() {
 
     return (
-      <ul>
-        <FileNode
-          id={this.state.fileTree.id}
-          label={this.state.fileTree.label}
-          childNodes={this.state.fileTree.childNodes}
-          type={this.state.fileTree.type}
-          parentNode={this.state.fileTree.parentNode}
-          rightClick={this.state.fileTree.rightClick}
-          onClick={this.state.fileTree.onClick}/>
-      </ul>
+      <Fragment>
+        {this.state.clickedNode ?
+          <RenameProject
+            showRenameProject={this.state.showRenameFile}
+            showSpinner={this.state.showSpinner}
+            tempRenameProject={this.state.clickedNode.label}
+            type={this.state.clickedNode.type}
+            isTempRenameProjectVaild={true}
+            handleRenameProject={(name) => this.handleRenameFile(name)}
+            cancelRenameProject={() => this.cancelRenameFile()}
+          /> : null }
+        <ul>
+          <FileNode
+            id={this.state.fileTree.id}
+            label={this.state.fileTree.label}
+            childNodes={this.state.fileTree.childNodes}
+            type={this.state.fileTree.type}
+            parentNode={this.state.fileTree.parentNode}
+            rightClick={this.state.fileTree.rightClick}
+            onClick={this.state.fileTree.onClick}/>
+        </ul>
+      </Fragment>
     )
   }
 }

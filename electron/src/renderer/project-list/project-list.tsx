@@ -378,6 +378,7 @@ class ProjectList extends Component<{}, ProjectListState> {
         showSpinner={this.state.showSpinner}
         tempRenameProject={this.state.tempRenameProject}
         isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
+        type="Project"
         handleRenameProject={(name) => this.handleRenameProject(name)}
         cancelRenameProject={() => this.cancelRenameProject()}
       />
