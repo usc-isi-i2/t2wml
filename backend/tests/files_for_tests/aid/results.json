@@ -1991,7 +1991,7 @@
                 "layerType": "type"
             }
         },
-        "yamlContent": "statementMapping:\n  region:\n    - left: F\n      right: H\n      top: 3\n      bottom: 8\n  template:\n    subject: =value[B, $row, \"main subject\"]\n    property: =item[$col, 2, \"property\"]\n    value: =value[$col, $row]\n    unit: =item[$col,1,\"unit\"]\n    qualifier:\n      - property: P585  # point in time\n        value: '=concat(value[C:E,$row],\"-\")'\n        calendar: Q1985727\n        precision: [day, month, year]\n        time_zone: 0\n        format: [\"%Y-%m-%d\", \"%Y-%m\", \"%Y\"]\n      - property: P17  # country\n        value: =item[I,$row]\n"
+        "yamlContent": "statementMapping:\n  region:\n      left: F\n      right: H\n      top: 3\n      bottom: 8\n  template:\n    subject: =value[B, $row, \"main subject\"]\n    property: =item[$col, 2, \"property\"]\n    value: =value[$col, $row]\n    unit: =item[$col,1,\"unit\"]\n    qualifier:\n      - property: P585  # point in time\n        value: '=concat(value[C:E,$row],\"-\")'\n        calendar: Q1985727\n        precision: [day, month, year]\n        time_zone: 0\n        format: [\"%Y-%m-%d\", \"%Y-%m\", \"%Y\"]\n      - property: P17  # country\n        value: =item[I,$row]\n"
     },
     "change_sheet": {
         "layers": {

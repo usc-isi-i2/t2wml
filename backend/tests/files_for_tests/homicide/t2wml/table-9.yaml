@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - left: D
+      left: D
       right: D
       top: 5
       bottom: 23
@@ -21,7 +21,7 @@ statementMapping:
       - property: P6001 # applies to people
         value: =value[A, $row-$n] != "" and value[B:D, $row-$n] == "" -> item[A, $row-$n]
         # value: item[A, $row-$n].instance_of Q48277 -> item[A, $row-$n]
-        # Would be nice to write this as 
+        # Would be nice to write this as
         # value: item[A, $row-$n].instance_of Q48277
         # so when the predicate is true, it keeps the item
       - property: P123 #source

@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - range: D5:H10
+      range: D5:H10
       skip_columns:
         - =value[$col, 4] == "Source"
   template:

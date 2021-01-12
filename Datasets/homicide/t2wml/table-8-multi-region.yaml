@@ -1,8 +1,8 @@
 statementMapping:
   region:
-    - left: C
+      left: C
       right: D
-      # this formula will bind multiple times: top == 4, 8, 12 
+      # this formula will bind multiple times: top == 4, 8, 12
       # bottom is not specified, so the system should set bottom as
       # far bottom as it can without going below the next top.
       # The last bottom will be the last edge of the table

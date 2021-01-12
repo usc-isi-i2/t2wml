@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - left: B
+      left: B
       right: N
       top: 6
       bottom: 60
@@ -13,4 +13,4 @@ statementMapping:
         value: 2016
         calendar: Q1985727
         precision: year
-        time_zone: 0 
+        time_zone: 0

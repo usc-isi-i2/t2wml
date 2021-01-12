@@ -1,7 +1,7 @@
 # Working example to map the complex production data from http://www.csa.gov.et/survey-report/category/58-meher-main-season-agricultural-sample-survey
 statementMapping:
   region:
-    - left: A
+      left: A
       right: AN+1
       top: =value[B, 1+$n] == "2012/13" -> 1+$n
       bottom: 426 #value[A:G, 9+$n] = "" -> 9+$n

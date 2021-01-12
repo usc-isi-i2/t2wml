@@ -2,7 +2,7 @@
 # This example shows how to add a time qualifier for a data variable (Production) when the year and month are in two different cells. In this case, we concatenate the year and month to form a date. The format (%y-%m) tells T2WML how the date is formatted.
 statementMapping:
   region:
-    - range: E9:E14
+      range: E9:E14
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]

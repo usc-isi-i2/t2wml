@@ -3,7 +3,7 @@
 # In this sheet the values are omitted for Country, Crop and Fertilizer
 statementMapping:
   region:
-    - range: F9:F24
+      range: F9:F24
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[F, 8, "property"]

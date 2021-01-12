@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - left: C
+      left: C
       right: I
       top: 5
       bottom: 12
@@ -15,7 +15,7 @@ statementMapping:
         value: =value[A, $row]
         calendar: Q1985727
         precision: year
-        time_zone: 0 
+        time_zone: 0
       - property: P6001 # applies to people
         value: =item[B, $row]
       - property: P123 #source

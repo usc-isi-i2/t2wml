@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - range: C5:H7
+      range: C5:H7
   template:
     subject: =item[A, $row]
     property: P100024 # murder
