@@ -5,7 +5,7 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
-from t2wml_web import (download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
 from utils import (file_upload_validator, save_dataframe, get_yaml_content, save_yaml)
@@ -17,6 +17,9 @@ from global_settings import global_settings
 import path_utils
 
 debug_mode = False
+
+set_web_settings()
+
 
 
 

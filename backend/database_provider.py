@@ -3,7 +3,12 @@ from uuid import uuid4
 from wikidata_models import WikidataEntity
 
 class DatabaseProvider(FallbackSparql):
-    def __init__(self, project):
+    def __init__(self):
+        super().__init__()
+        self.cache_id=None
+        self.project=None
+
+    def change_project(self, project):
         self.project = project
 
         if self.project.cache_id:
@@ -12,7 +17,7 @@ class DatabaseProvider(FallbackSparql):
             self.cache_id = self.project.cache_id = str(uuid4())
             project.save()
 
-        super().__init__(project.sparql_endpoint)
+        self.sparql_endpoint=project.sparql_endpoint
 
     def save_entry(self, wd_id, data_type, from_file=False, **kwargs):
         cache_id = None

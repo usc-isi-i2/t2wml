@@ -38,13 +38,24 @@ def wikify(calc_params, region, context):
     df, problem_cells = ws.wikify_region(region, calc_params.sheet, context)
     return df, problem_cells
 
-
-def update_t2wml_settings(project):
+def set_web_settings():
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
-    t2wml_settings.wikidata_provider = DatabaseProvider(project)
+    t2wml_settings.wikidata_provider = DatabaseProvider()
+
+def update_t2wml_settings(project):
     t2wml_settings.update_from_dict(**project.__dict__)
+
+    #update wikidata provider ONLY if necessary
+
+    if not t2wml_settings.wikidata_provider.project:
+        t2wml_settings.wikidata_provider.change_project(project)
+    elif t2wml_settings.wikidata_provider.project.directory!=project.directory:
+        t2wml_settings.wikidata_provider.change_project(project)
+    elif t2wml_settings.wikidata_provider.sparql_endpoint!=project.sparql_endpoint:
+        t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
+
 
 
 
