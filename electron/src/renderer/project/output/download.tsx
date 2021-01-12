@@ -63,6 +63,7 @@ class Download extends Component<DownloadProperties, DownloadState> {
                 <Form.Control as="select" onChange={(event) => this.setState({ downloadFileType: event.target.value })}>
                   <option value="json">.json</option>
                   <option value="tsv">kgtk (.tsv)</option>
+                  <option value="csv">canonical spreadsheet (.csv)</option>
                 </Form.Control>
               </Col>
             </Form.Group>

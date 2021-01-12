@@ -352,6 +352,19 @@ def download_results(filetype):
     if not calc_params.yaml_path and not calc_params.annotation_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Cannot download report without uploading mapping file first")
+    if filetype=="csv":
+        from t2wml_web import get_kg
+        from t2wml.settings import t2wml_settings
+        t2wml_settings.no_wikification=True
+        kg= get_kg(calc_params)
+        response=dict()
+        response["data"] = kg.get_output("csv")
+        response["error"] = None
+        response["internalErrors"] = kg.errors if kg.errors else None
+        return response, 200
+
+
+
     response = download(calc_params, filetype)
     return response, 200
 
