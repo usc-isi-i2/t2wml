@@ -31,8 +31,10 @@ class DatabaseProvider(FallbackSparql):
         #check for generic wikidata entry
         if not prop or prop.data_type is None or prop.data_type == "Property Not Found":
             prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=None).first()
-        if not prop or prop.data_type == "Property Not Found":
+        if not prop:
             raise ValueError("Not found")
+        if prop.data_type == "Property Not Found":
+            return prop.data_type
         if prop.data_type is None:
             raise ValueError("No datatype defined for that ID")
         return prop.data_type
