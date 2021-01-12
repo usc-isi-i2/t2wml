@@ -135,14 +135,13 @@ def get_mapping(mapping_file=None, mapping_type=None):
     update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type)
 
     response=dict(project=get_project_dict(project))
-    for_annotation=False
+
     if calc_params.annotation_path:
-        for_annotation=True
         response["annotations"], response["yamlContent"]=get_annotations(calc_params)
     elif calc_params.yaml_path:
         response["yamlContent"]=get_yaml_content(calc_params)
         response["annotations"]=[]
-    get_layers(response, calc_params, for_annotation)
+    get_layers(response, calc_params)
 
     return response, 200
 

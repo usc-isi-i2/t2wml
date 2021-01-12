@@ -48,7 +48,8 @@ def update_t2wml_settings(project):
 
 
 
-def get_kg(calc_params, annotation=False):
+def get_kg(calc_params):
+    annotation= calc_params.annotation_path
     if calc_params.cache and not annotation:
         kg = calc_params.cache.load_kg()
         if kg:
@@ -136,7 +137,7 @@ def get_cell_qnodes(statement, qnodes):
                     qnodes[str(outer_value)] = None
 
 
-def get_yaml_layers(calc_params, for_annotation=False):
+def get_yaml_layers(calc_params):
     if calc_params.cache:
         layers=calc_params.cache.get_layers()
         if layers:
@@ -159,8 +160,8 @@ def get_yaml_layers(calc_params, for_annotation=False):
     cleanedLayer=dict(layerType="cleaned", entries=[])
     qnodes={} #passed by reference everywhere, so gets updated simultaneously across all of them
 
-    if calc_params.yaml_path or (calc_params.annotation_path and for_annotation):
-        kg = get_kg(calc_params, annotation=for_annotation)
+    if calc_params.yaml_path or calc_params.annotation_path:
+        kg = get_kg(calc_params)
         statements=kg.statements
         errors=kg.errors
 
@@ -268,12 +269,12 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 
 
-def get_layers(response, calc_params, for_annotation=False):
+def get_layers(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
     response["layers"].update(get_qnodes_layer(calc_params))
     try:
-        response["layers"].update(get_yaml_layers(calc_params, for_annotation=for_annotation))
+        response["layers"].update(get_yaml_layers(calc_params))
     except Exception as e:
         response["yamlError"] = str(e)
 
