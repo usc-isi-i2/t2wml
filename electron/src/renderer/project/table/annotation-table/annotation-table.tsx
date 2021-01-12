@@ -170,8 +170,24 @@ class AnnotationTable extends Component<{}, TableState> {
             } else {
               for ( let row = y1; row <= y2; row++ ) {
                 for ( let col = x2; col <= x1; col++ ) {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
+                  try {
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  } catch {
+                    let rx = row;
+                    while ( rx > tableData.length ) {
+                      const emptyArray = Array.apply({}, new Array(col));
+                      tableData.push(emptyArray);
+                      rx -= 1;
+                    }
+                    let cx = col;
+                    while ( cx > tableData[0].length ) {
+                      tableData.forEach(tableRow => tableRow.push({}));
+                      cx -= 1;
+                    }
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  }
                 }
               }
             }
@@ -179,15 +195,47 @@ class AnnotationTable extends Component<{}, TableState> {
             if ( x1 <= x2 ) {
               for ( let row = y2; row <= y1; row++ ) {
                 for ( let col = x1; col <= x2; col++ ) {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
+                  try {
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  } catch {
+                    let rx = row;
+                    while ( rx > tableData.length ) {
+                      const emptyArray = Array.apply({}, new Array(col));
+                      tableData.push(emptyArray);
+                      rx -= 1;
+                    }
+                    let cx = col;
+                    while ( cx > tableData[0].length ) {
+                      tableData.forEach(tableRow => tableRow.push({}));
+                      cx -= 1;
+                    }
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  }
                 }
               }
             } else {
               for ( let row = y2; row <= y1; row++ ) {
                 for ( let col = x2; col <= x1; col++ ) {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
+                  try {
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  } catch {
+                    let rx = row;
+                    while ( rx > tableData.length ) {
+                      const emptyArray = Array.apply({}, new Array(col));
+                      tableData.push(emptyArray);
+                      rx -= 1;
+                    }
+                    let cx = col;
+                    while ( cx > tableData[0].length ) {
+                      tableData.forEach(tableRow => tableRow.push({}));
+                      cx -= 1;
+                    }
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  }
                 }
               }
             }
