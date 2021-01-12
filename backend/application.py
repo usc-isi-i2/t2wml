@@ -349,7 +349,7 @@ def download_results(filetype):
     """
     project=get_project()
     calc_params = get_calc_params(project)
-    if not calc_params.yaml_path or calc_params.annotation_path:  # the frontend disables this, this is just another layer of checking
+    if not calc_params.yaml_path and not calc_params.annotation_path:  # the frontend disables this, this is just another layer of checking
         raise web_exceptions.CellResolutionWithoutYAMLFileException(
             "Cannot download report without uploading mapping file first")
     response = download(calc_params, filetype)
