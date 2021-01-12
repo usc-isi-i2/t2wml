@@ -151,15 +151,43 @@ class AnnotationTable extends Component<{}, TableState> {
                     const cell = tableData[row - 1][col - 1];
                     cell.classNames = classNames;
                   } catch {
-                    console.log(row, col, tableData, classNames);
+                    let rx = row;
+                    while ( rx > tableData.length ) {
+                      const emptyArray = Array.apply({}, new Array(col));
+                      tableData.push(emptyArray);
+                      rx -= 1;
+                    }
+                    let cx = col;
+                    while ( cx > tableData[0].length ) {
+                      tableData.forEach(tableRow => tableRow.push({}));
+                      cx -= 1;
+                    }
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
                   }
                 }
               }
             } else {
               for ( let row = y1; row <= y2; row++ ) {
                 for ( let col = x2; col <= x1; col++ ) {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
+                  try {
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  } catch {
+                    let rx = row;
+                    while ( rx > tableData.length ) {
+                      const emptyArray = Array.apply({}, new Array(col));
+                      tableData.push(emptyArray);
+                      rx -= 1;
+                    }
+                    let cx = col;
+                    while ( cx > tableData[0].length ) {
+                      tableData.forEach(tableRow => tableRow.push({}));
+                      cx -= 1;
+                    }
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  }
                 }
               }
             }
@@ -167,15 +195,47 @@ class AnnotationTable extends Component<{}, TableState> {
             if ( x1 <= x2 ) {
               for ( let row = y2; row <= y1; row++ ) {
                 for ( let col = x1; col <= x2; col++ ) {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
+                  try {
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  } catch {
+                    let rx = row;
+                    while ( rx > tableData.length ) {
+                      const emptyArray = Array.apply({}, new Array(col));
+                      tableData.push(emptyArray);
+                      rx -= 1;
+                    }
+                    let cx = col;
+                    while ( cx > tableData[0].length ) {
+                      tableData.forEach(tableRow => tableRow.push({}));
+                      cx -= 1;
+                    }
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  }
                 }
               }
             } else {
               for ( let row = y2; row <= y1; row++ ) {
                 for ( let col = x2; col <= x1; col++ ) {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
+                  try {
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  } catch {
+                    let rx = row;
+                    while ( rx > tableData.length ) {
+                      const emptyArray = Array.apply({}, new Array(col));
+                      tableData.push(emptyArray);
+                      rx -= 1;
+                    }
+                    let cx = col;
+                    while ( cx > tableData[0].length ) {
+                      tableData.forEach(tableRow => tableRow.push({}));
+                      cx -= 1;
+                    }
+                    const cell = tableData[row - 1][col - 1];
+                    cell.classNames = classNames;
+                  }
                 }
               }
             }
@@ -225,7 +285,7 @@ class AnnotationTable extends Component<{}, TableState> {
           }
         }
       }
-      this.setState({ tableData });
+      this.setState({ tableData }, () => this.resetSelections());
     }
   }
 
@@ -384,8 +444,8 @@ class AnnotationTable extends Component<{}, TableState> {
 
   openAnnotationMenu(event: React.MouseEvent) {
     let { pageX, pageY } = event;
-    pageX = pageX < 50 ? 50 : pageX + 25;
-    pageY = pageY < 50 ? 50 : pageY + 25;
+    pageX = pageX - 250;
+    pageY = pageY - 10;
     this.setState({
       showAnnotationMenu: true,
       annotationMenuPosition: [pageX, pageY],

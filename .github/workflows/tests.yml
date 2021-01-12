@@ -23,13 +23,13 @@ jobs:
         run: |
           cd backend
           pytest tests
-      - name: Coverage
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
-        run: |
-          pip install coverage coveralls
-          cd backend
-          # coverage run -m pytest tests
-          coverage run --omit tests/**,t2wml-api/** -m pytest tests
-          coverage report
-          coveralls
+      # - name: Coverage
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.github_token }}
+      #   run: |
+      #     pip install coverage coveralls
+      #     cd backend
+      #     # coverage run -m pytest tests
+      #     coverage run --omit tests/**,t2wml-api/** -m pytest tests
+      #     coverage report
+      #     coveralls

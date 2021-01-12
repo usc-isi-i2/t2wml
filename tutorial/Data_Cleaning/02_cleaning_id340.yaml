@@ -2,7 +2,7 @@
 # This tutorial shows how to remove undesired string from text fields. In this case the word "code"
 statementMapping:
   region:
-    - range: E9:E16
+      range: E9:E16
   template:
     subject: =item[B, $row-$n, "main subject"]
     property: =item[E, 8, "property"]

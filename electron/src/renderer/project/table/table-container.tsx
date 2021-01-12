@@ -171,6 +171,8 @@ class TableContainer extends Component<{}, TableState> {
   async handleSelectSheet(event: React.MouseEvent) {
     this.resetTableData();
 
+    const sheetName = (event.target as HTMLInputElement).innerHTML;
+    await wikiStore.yaml.saveYaml();
     // remove current status
     wikiStore.yaml.yamlContent = '';
     wikiStore.output.isDownloadDisabled = true;
@@ -180,7 +182,6 @@ class TableContainer extends Component<{}, TableState> {
     wikiStore.wikifier.showSpinner = true;
 
     // send request
-    const sheetName = (event.target as HTMLInputElement).innerHTML;
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
     try {
       // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
@@ -218,6 +219,7 @@ class TableContainer extends Component<{}, TableState> {
 
   async toggleAnnotationMode() {
     if (this.state.mode === 'Output') {
+      await wikiStore.yaml.saveYaml();
       if (currentFilesService.currentState.mappingType == "Yaml") {
         currentFilesService.setMappingFiles(); //try to change to an existing annotation
         //if there wasn't an existing annotation, we need to create it

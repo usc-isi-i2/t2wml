@@ -2,7 +2,7 @@
 # Solution for the exercise 13_qualifier_exercise. We simply reduce data are in the region and we move the total area under the "qualifier" attribute.
 statementMapping:
   region:
-    - range: D9:D14
+      range: D9:D14
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]

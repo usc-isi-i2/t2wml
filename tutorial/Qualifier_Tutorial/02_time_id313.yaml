@@ -2,7 +2,7 @@
 # Extension of the previous time example (01_time), qualifying the variable Production at a lower granularity (day). Note that the format has been changed to include the day as well, which is specified in column E.
 statementMapping:
   region:
-    - range: F9:F14
+      range: F9:F14
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]

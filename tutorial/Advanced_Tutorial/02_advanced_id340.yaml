@@ -3,7 +3,7 @@
 # T2WML has to lookup those values using iterator variables for column B and C
 statementMapping:
   region:
-    - range: E9:E16
+      range: E9:E16
   template:
     subject: =item[B, $row-$n, "main subject"]
     property: =item[E, 8, "property"]

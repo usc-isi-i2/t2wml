@@ -3,7 +3,7 @@
 # This file shows how to adapt additional variables (columns) in your data
 statementMapping:
   region:
-    - range: D9:E16
+      range: D9:E16
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]

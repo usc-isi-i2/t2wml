@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - range: C6:F8
+      range: C6:F8
   template:
     subject: =value[A, $row]
     property: =item[$col, 5]

@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - left: C
+      left: C
       right: D
       top: 4
       bottom: =$end-2

@@ -3,7 +3,7 @@
 # The T2WML has to lookup for the Country values using the iterator variable $n
 statementMapping:
   region:
-    - range: D9:D12
+      range: D9:D12
   template:
     subject: =item[B, $row-$n, "main subject"]
     property: =item[D, 8, "property"]

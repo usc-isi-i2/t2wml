@@ -2,7 +2,7 @@
 # Solution to the exercise to skip cells with undesired data.
 statementMapping:
   region:
-    - range: D9:E16
+      range: D9:E16
       # Since there was only one cell, we can list it. If there are multiple cells to skip, we can use an expression (example 07)
       skip_cells:
         - D13

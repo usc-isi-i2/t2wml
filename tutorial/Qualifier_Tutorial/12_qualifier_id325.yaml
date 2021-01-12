@@ -2,7 +2,7 @@
 # Add another variable Total area. Both variables are qualified by Crop and Estimated.
 statementMapping:
   region:
-    - range: D9:E14
+      range: D9:E14
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]

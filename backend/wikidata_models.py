@@ -7,7 +7,7 @@ class WikidataEntity(db.Model):
     label = db.Column(db.String(64))
     description = db.Column(db.String(200))
     P31 = db.Column(db.String(64))
-    cache_id = db.Column(db.String(64), nullable=True)
+    cache_id = db.Column(db.String(300), nullable=True)
 
     @staticmethod
     def add_or_update(wd_id, data_type=None, label=None, description=None, P31=None, cache_id=None,

@@ -79,6 +79,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async changeFile(node: NodeProps) {
+    await wikiStore.yaml.saveYaml();
     if (node.type === "DataFile") {
         if (node.label !== currentFilesService.currentState.dataFile) {
             await this.changeDataFile(node.label);

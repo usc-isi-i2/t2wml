@@ -14,27 +14,26 @@ export interface IStateWithError {
 }
 
 
-
 class RequestService {
 
   public getProjectFolder() {
-    return `project_folder=${wikiStore.project.projectDTO!.directory}`
+    return `project_folder=${wikiStore.project.projectDTO!.directory}`;
   }
 
   public getDataFileParams(required = true) {
-    if (!currentFilesService.currentState.dataFile){
-      if (required){
-      console.error("There is no data file") //TODO: actual proper error handling?
+    if ( !currentFilesService.currentState.dataFile ) {
+      if ( required ) {
+        console.error("There is no data file"); //TODO: actual proper error handling?
       }
       return this.getProjectFolder();
     }
-    return this.getProjectFolder()+`&data_file=${currentFilesService.currentState.dataFile}&sheet_name=${currentFilesService.currentState.sheetName}`
+    return this.getProjectFolder() + `&data_file=${currentFilesService.currentState.dataFile}&sheet_name=${currentFilesService.currentState.sheetName}`;
   }
 
   public getMappingParams(required = true){
     let url=this.getDataFileParams();
-    if (currentFilesService.currentState.mappingFile) {
-      url += `&mapping_file=${currentFilesService.currentState.mappingFile}`
+    if ( currentFilesService.currentState.mappingFile ) {
+      url += `&mapping_file=${currentFilesService.currentState.mappingFile}`;
       url += `&mapping_type=${currentFilesService.currentState.mappingType}`;
     }
     return url;
@@ -46,7 +45,7 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
 
     // new project
-    if (!Object.keys(response.project.data_files).length) {
+    if ( !Object.keys(response.project.data_files).length ) {
       this.resetPreProject();
     }
   }
@@ -81,7 +80,6 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-
   public async postAnnotationBlocks(data: any) {
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
     wikiStore.project.projectDTO = response.project;
@@ -104,7 +102,6 @@ class RequestService {
     this.fillTable(response);
   }
 
-
   public async uploadWikifierOutput(data: any) {
     const response = await backendPost(`/wikifier?${this.getDataFileParams(false)}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
@@ -124,8 +121,19 @@ class RequestService {
 
 
   public async getTable() {
+
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try{
     const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
     this.fillTable(response);
+    }
+    finally{
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
   }
 
   public async getMappingCalculation() {
@@ -174,13 +182,15 @@ class RequestService {
 
   public async call<IProp, IState extends IStateWithError, ReturnValue>(
     component: React.Component<IProp, IState>,
-    func: () => Promise<ReturnValue>) {
+    func: () => Promise<ReturnValue> ) {
+
     component.setState({ errorMessage: {} as ErrorMessage });
+
     try {
       return await func();
     } catch (error) {
-      component.setState({ errorMessage: error })
-      throw error
+      component.setState({ errorMessage: error });
+      throw error;
     }
   }
 }

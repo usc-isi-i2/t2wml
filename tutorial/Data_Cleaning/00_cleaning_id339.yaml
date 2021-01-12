@@ -2,7 +2,7 @@
 # Example T2WML YAML mapping crop production by country. The capitalization for the crop changes with a function
 statementMapping:
   region:
-    - range: D9:D12
+      range: D9:D12
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[D, 8, "property"]

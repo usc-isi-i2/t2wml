@@ -2,7 +2,7 @@
 # Exercise to filter out cells with one or multiple values.
 statementMapping:
   region:
-    - range: D9:E16
+      range: D9:E16
       skip_cells:
         - ### fill in value to skip all cells with value "--" ###
         - ### fill in value to skip all cells with value "*" ###
