@@ -25,7 +25,7 @@ def upgrade():
     sa.Column('label', sa.String(length=64), nullable=True),
     sa.Column('description', sa.String(length=200), nullable=True),
     sa.Column('P31', sa.String(length=64), nullable=True),
-    sa.Column('cache_id', sa.String(length=64), nullable=True),
+    sa.Column('cache_id', sa.String(length=300), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_wikidata_entity'))
     )
     with op.batch_alter_table('wikidata_entity', schema=None) as batch_op:
