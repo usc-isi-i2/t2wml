@@ -285,7 +285,7 @@ class AnnotationTable extends Component<{}, TableState> {
           }
         }
       }
-      this.setState({ tableData });
+      this.setState({ tableData }, () => this.resetSelections());
     }
   }
 
