@@ -1,9 +1,9 @@
 # 04_region
-# This example shows how to skip undesired rows. 
+# This example shows how to skip undesired rows.
 # In this case, we do not wish to include rows 18 and 19, which represent aggregations
 statementMapping:
   region:
-    - range: D11:E20
+      range: D11:E20
       skip_rows:
         - 19
         - 20

@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - left: D
+      left: D
       right: F
       top: 5
       bottom: 13 # =value[B:, $] == ""

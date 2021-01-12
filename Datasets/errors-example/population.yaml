@@ -1,7 +1,7 @@
 # simple mapping of country populations
 statementMapping:
   region:
-    - left: B
+      left: B
       right: E
       top: 3
       bottom: 12

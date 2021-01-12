@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - range: D5:F13
+      range: D5:F13
       skip_rows:
         - =value[C, $row] == "Total"
   template:

@@ -3,7 +3,7 @@
 # Use functions: remove_numbers, strip_whitespace
 statementMapping:
   region:
-    - range: D9:D18
+      range: D9:D18
   template:
     subject: =item[B, $row-$n, "main subject"]
     property: =item[D, 8, "property"]

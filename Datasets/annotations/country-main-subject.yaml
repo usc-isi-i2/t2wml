@@ -2,7 +2,7 @@
 ### Replace all #PLACEHOLDER below to start.
 statementMapping:
   region:
-    - range: C4:D11
+      range: C4:D11
   template:
     subject: =item[A, $row]
     property: =item[B, $row]

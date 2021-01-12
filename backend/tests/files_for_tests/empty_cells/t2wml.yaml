@@ -1,11 +1,11 @@
 statementMapping:
   region:
-  - bottom: 20
+    bottom: 20
     left: E
     right: R
     top: 14
     # Have to add the following skip_cells
-    skip_cells: 
+    skip_cells:
       - =contains(value[$col, $row], '*')
       - =contains(value[$col, $row], '‐')
       - =contains(value[$col, $row], '-')

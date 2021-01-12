@@ -1,8 +1,8 @@
 # 05_region
-# This example shows how to skip an undesired column. 
+# This example shows how to skip an undesired column.
 statementMapping:
   region:
-    - range: D9:F16
+      range: D9:F16
       skip_columns:
         - E
   template:

@@ -1,6 +1,6 @@
 statementMapping:
   region:
-    - range: D5:D23
+      range: D5:D23
       skip_rows:
         - =value[A, $row] != "" and value[B:D, $row] == ""
   template:

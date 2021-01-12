@@ -1,9 +1,9 @@
 statementMapping:
   region:
-    - range: D4:F9
+      range: D4:F9
   template:
     # item is the main subject, in this case the country;
-    # when is the cell in $col,$row, the corresponding 
+    # when is the cell in $col,$row, the corresponding
     # country is in column A, and in the same $row
     subject: =item[A, $row]
     property: P100024 # murder

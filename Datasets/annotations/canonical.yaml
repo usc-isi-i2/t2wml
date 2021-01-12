@@ -1,6 +1,6 @@
 statementMapping:
             region:
-                - range: E4:E19
+                  range: E4:E19
             template:
                 subject: =item[C, $row]
                 property: =item[B, $row]

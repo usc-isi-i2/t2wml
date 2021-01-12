@@ -3,7 +3,7 @@
 # This exercise will allow you practicing on setting up the right region for data values
 statementMapping:
   region:
-    - range: ### Fill in the range ###
+      range: ### Fill in the range ###
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 9, "property"]

@@ -2,7 +2,7 @@
 # This example shows how to skip columns. In particular, those columns which have "Comment" as its header
 statementMapping:
   region:
-    - range: D9:F16
+      range: D9:F16
       skip_columns:
         - =value[$col,8]=="Comment"
   template:

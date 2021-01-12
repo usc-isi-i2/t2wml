@@ -2,7 +2,7 @@
 # Solution to iterator variable exercise. Need to add $n to columns B, C and D
 statementMapping:
   region:
-    - range: F9:F24
+      range: F9:F24
   template:
     # Need to add $n here
     subject: =item[B, $row-$n, "main subject"]

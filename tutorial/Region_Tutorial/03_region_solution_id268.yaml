@@ -2,7 +2,7 @@
 # Solution to exercise 03_region_exercise
 statementMapping:
   region:
-    - range: D11:E18
+      range: D11:E18
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 10, "property"]

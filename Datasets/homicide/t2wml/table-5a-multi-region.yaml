@@ -2,7 +2,7 @@ statementMapping:
   region:
     # This example illustrates using variables to define multiple instances of
     # region [a region per country] by binding $left, $right based on a predicate.
-    - left: =value[$col, 3] != "" -> $col
+      left: =value[$col, 3] != "" -> $col
       right: =$left+2
       top: 5
       bottom: 10

@@ -1,8 +1,8 @@
 # 00_time
-# Example showing how to add a time qualifier (years) on the data variable Production. 
+# Example showing how to add a time qualifier (years) on the data variable Production.
 statementMapping:
   region:
-    - range: D9:D14
+      range: D9:D14
   template:
     subject: =item[B, $row, "main subject"]
     property: =item[$col, 8, "property"]

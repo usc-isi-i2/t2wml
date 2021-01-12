@@ -1,6 +1,6 @@
 statementMapping:
             region:
-                - range: B4:C11
+                  range: B4:C11
             template:
                 subject: =item[D, $row]
                 property: =item[$col, 3]
@@ -15,9 +15,9 @@ statementMapping:
                       value: =value[E, $row]
                       precision: year
 
-# q1=ExpandedNode(value_args=ValueArgs(range="A4:A11", item=True), 
+# q1=ExpandedNode(value_args=ValueArgs(range="A4:A11", item=True),
 #                 property=Node(value_args=ValueArgs(cell="A3", item=True)))
-# q2=ExpandedNode(value_args=ValueArgs(range="E4:E11", item=False), 
+# q2=ExpandedNode(value_args=ValueArgs(range="E4:E11", item=False),
 #                 property=Node(value_args=ValueArgs(cell="E3", item=True)),
 #                 optionals={"precision": Node(value_args=ValueArgs(string="year"))})
 
