@@ -12,10 +12,14 @@ import { Spinner } from 'react-bootstrap';
 import { IpcRendererEvent } from 'electron/renderer';
 import * as path from 'path';
 import * as fs from 'fs';
+import GlobalSettings from './project-list/global-settings';
 
 
 interface AppState extends IStateWithError {
   showSpinner: boolean;
+  showSettings: boolean;
+  datamartIntegration: boolean;
+  datamartApi: string;
 }
 
 @observer
@@ -27,7 +31,10 @@ class App extends Component<{}, AppState> {
 
     this.state = {
       showSpinner: false,
-      errorMessage: {} as ErrorMessage
+      errorMessage: {} as ErrorMessage,
+      showSettings: false,
+      datamartIntegration: false,
+      datamartApi: '',
     }
   }
 
@@ -40,6 +47,9 @@ class App extends Component<{}, AppState> {
     });
     ipcRenderer.on('toggle-cleaned', (sender: IpcRendererEvent, checked: boolean) => {
       this.onToggleCleaned(checked);
+    });
+    ipcRenderer.on('global-settings', () => {
+      this.onShowGlobalSettings();
     });
 
     this.checkCommandLineArgs();
@@ -71,6 +81,14 @@ class App extends Component<{}, AppState> {
 
   onToggleCleaned(checked: boolean) {
     wikiStore.table.showCleanedData = checked;
+  }
+
+  onShowGlobalSettings() {
+    this.setState({
+      datamartIntegration: wikiStore.project.projectDTO?.datamart_integration || false,
+      datamartApi: wikiStore.project.projectDTO?.datamart_api || '',
+      showSettings: true
+    });
   }
 
   async onNewProject(folder: string) {
@@ -116,14 +134,37 @@ class App extends Component<{}, AppState> {
       //after request
       this.setState({ showSpinner: false });
     }
+  }
 
+  async handleSaveSettings(datamartIntegration: boolean, datamartApi: string) {
+    // update settings
+    this.setState({ showSettings: false });
 
+    // notify backend
+    const data = { "datamartIntegration": datamartIntegration,
+                   "datamartApi": datamartApi };
+
+    try {
+      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, data));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  cancelSaveSettings() {
+    this.setState({ showSettings: false });
   }
 
   render() {
     return (
       <div>
         { this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
+
+        <GlobalSettings showSettings={this.state.showSettings}
+          datamartIntegration={this.state.datamartIntegration}
+          datamartApi={this.state.datamartApi}
+          handleSaveSettings={this.handleSaveSettings.bind(this)}
+          cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!this.state.showSpinner} style={{ height: "100%" }}>

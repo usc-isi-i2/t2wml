@@ -43,6 +43,13 @@ export default class MainMenuManager {
                     { type: 'separator'},
                     { label: 'Open Recent', submenu: this.recentlyUsed },
                     { type: 'separator'},
+                    { label: 'preferences', submenu: [
+                        {
+                            label: 'Global Settings',
+                            click: () => this.onGlobalSettingsClick()
+                        }
+                    ]},
+                    { type: 'separator'},
                     config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
                 ]
             },
@@ -210,6 +217,10 @@ export default class MainMenuManager {
 
     private onProjectSettingsClick() {
         rendererNotifier.projectSettings();
+    }
+
+    private onGlobalSettingsClick() {
+        rendererNotifier.globalSettings();
     }
 
     private onClearRecentlyOpenedClick() {

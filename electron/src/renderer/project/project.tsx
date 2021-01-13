@@ -20,7 +20,7 @@ import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
-import Settings from './settings';
+import Settings from './project-settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
 import TableContainer from './table/table-container';
@@ -141,7 +141,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.loadProject();
   }
 
-  async onShowSettingsClicked() {
+  onShowSettingsClicked() {
     this.setState({
       endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.project.projectDTO?.warn_for_empty_cells || false,

@@ -9,6 +9,7 @@ import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-boots
 import Config from '@/shared/config';
 
 import { observer } from "mobx-react";
+import wikiStore from '../data/store';
 
 
 interface SettingsProperties {
@@ -16,23 +17,26 @@ interface SettingsProperties {
     endpoint: string;
     warnEmpty: boolean;
     calendar: string;
-    datamartIntegration: boolean;
-    datamartApi: string;
+    title: string;
+    description: string;
+    url: string;
 
     handleSaveSettings: (
       endpoint: string,
       warn: boolean,
       calendar: string,
-      datamartIntegration: boolean,
-      datamartApi: string,
+      title: string,
+      description?: string,
+      url?: string,
     ) => void;
     cancelSaveSettings: () => void;
 }
 
 interface SettingsState {
   tmpWarnEmpty: boolean;
-  datamartIntegration: boolean;
-  datamartApi: string;
+  title: string;
+  description: string | undefined;
+  url: string | undefined;
 }
 
 const calendarOptions = [
@@ -54,8 +58,9 @@ class Settings extends Component<SettingsProperties, SettingsState> {
 
     this.state = {
       tmpWarnEmpty: this.props.warnEmpty,
-      datamartIntegration: this.props.datamartIntegration,
-      datamartApi: this.props.datamartApi,
+      title: this.props.title,
+      description: this.props.description,
+      url: this.props.url,
     }
   }
 
@@ -63,9 +68,10 @@ class Settings extends Component<SettingsProperties, SettingsState> {
     const endpoint = (this.tempSparqlEndpointRef as any).current.value;
     const warn = this.state.tmpWarnEmpty;
     const calendar = (this.tempCalendarRef as any).current.value;
-    const datamartIntegration = this.state.datamartIntegration;
-    const datamartApi = this.state.datamartApi;
-    this.props.handleSaveSettings(endpoint, warn, calendar, datamartIntegration, datamartApi);
+    const title = this.state.title;
+    const description = this.state.description;
+    const url = this.state.url;
+    this.props.handleSaveSettings(endpoint, warn, calendar, title, description, url);
   }
 
   render() {
@@ -81,44 +87,45 @@ class Settings extends Component<SettingsProperties, SettingsState> {
 
         {/* header */}
         <Modal.Header style={{ background: "whitesmoke" }}>
-          <Modal.Title>Settings</Modal.Title>
+          <Modal.Title>Project Settings</Modal.Title>
         </Modal.Header>
 
         {/* body */}
         <Modal.Body>
           <Form className="container">
-
-            Global settings:
-
-                        {/* datamart integration on/off */}
-                        <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+            {/* title */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
-              Turn Datamart Integration ON
+                Title
               </Form.Label>
               <Col sm="12" md="9">
-                <input type="checkbox"
-                  style={{ width: '25px', height: '25px', marginTop: '5px' }}
-                  defaultChecked={this.props.datamartIntegration}
-                  onChange={(event) => this.setState({ datamartIntegration: event?.target.checked })}/>
+                <input
+                  defaultValue={wikiStore.project.projectDTO?.title}
+                  onChange={(event) => this.setState({ tmpWarnEmpty: event?.target.checked })}/>
               </Col>
             </Form.Group>
 
-            {/* datamart url */}
-            <Form.Group as={Row}>
+            {/* description */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
-              Datamart api url
+                Description
               </Form.Label>
               <Col sm="12" md="9">
-                <Form.Control
-                  type="text" size="sm"
-                  defaultValue={this.props.datamartApi}
-                  onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
+                <input
+                  onChange={(event) => this.setState({ description: event?.target.value })}/>
               </Col>
             </Form.Group>
 
-            <hr></hr>
-
-            Project settings:
+            {/* url */}
+            <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+              <Form.Label column sm="12" md="3" className="text-right">
+                URL
+              </Form.Label>
+              <Col sm="12" md="9">
+                <input
+                  onChange={(event) => this.setState({ url: event?.target.value })}/>
+              </Col>
+            </Form.Group>
 
             {/* sparql endpoint */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
@@ -180,8 +187,6 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 </Dropdown>
               </Col>
             </Form.Group>
-
-
           </Form>
 
         </Modal.Body>
