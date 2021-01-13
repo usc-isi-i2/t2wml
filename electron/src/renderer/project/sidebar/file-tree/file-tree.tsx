@@ -6,7 +6,7 @@ import RequestService from "@/renderer/common/service";
 import { currentFilesService } from "../../../common/current-file-service";
 import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
-import { remote } from 'electron';
+import { remote, dialog } from 'electron';
 import RenameProject from "@/renderer/project-list/rename-project";
 
 
@@ -84,7 +84,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         if (node.label !== currentFilesService.currentState.dataFile) {
             await this.changeDataFile(node.label);
         }
-    } else if (node.type === "Sheet") { // TODO- check sheet updates
+    } else if (node.type === "Sheet") {
         if (node.label !== currentFilesService.currentState.sheetName) {
             await this.changeSheet(node.label, node.parentNode!.label);
         }
@@ -109,33 +109,40 @@ class FileTree extends Component<TreeProps, TreeState> {
     this.setState({ showRenameFile: true });
   }
 
+  openFile() {
+    // dialog.showOpenDialog((fileName: string) => {
+    //   if (!fs.existSync(this.state.clickedNode!.label)) {
+    //     alert("This file does not exist");
+    //     return;
+    //   }
+    //   alert("Opened!!")
+    // })
+  }
+
+  deleteFile() {
+
+  }
+
   onRightClick(node: NodeProps){
     this.setState({ clickedNode: node });
     const { Menu, MenuItem } = remote;
 
     const menu = new Menu();
-    menu.append(new MenuItem({ label: 'open in filesystem', click: () => this.renameNode() }));
-    menu.append(new MenuItem({ label: 'delete from filesystem', click: () => this.renameNode() }));
-    menu.append(new MenuItem({ type: 'separator' }));
+    
 
     switch (node.type) {
-      case 'DataFile': {
+      case 'DataFile':
+      case 'Yaml': 
+      case 'Annotation': {
+        menu.append(new MenuItem({ label: 'open in filesystem', click: () => this.openFile() }));
+        menu.append(new MenuItem({ label: 'delete from filesystem', click: () => this.deleteFile() }));
+        menu.append(new MenuItem({ type: 'separator' }));
         menu.append(new MenuItem({ label: 'rename', click: () => this.renameNode() }));
         menu.append(new MenuItem({ label: 'delete from project', click: () => this.renameNode() }));
         break;
       }
       case 'Sheet': {
         menu.append(new MenuItem({ label: 'add mapping file', click: () => this.renameNode() }));
-        break;
-      }
-      case 'Yaml': {
-        menu.append(new MenuItem({ label: 'rename', click: () => this.renameNode() }));
-        menu.append(new MenuItem({ label: 'delete from project', click: () => this.renameNode() }));
-        break;
-      }
-      case 'Annotation': {
-        menu.append(new MenuItem({ label: 'rename', click:() => this.renameNode() }));
-        menu.append(new MenuItem({ label: 'delete from project', click: () => this.renameNode() }));
         break;
       }
       default: {
