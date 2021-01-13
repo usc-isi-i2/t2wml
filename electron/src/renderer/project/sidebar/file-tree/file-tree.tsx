@@ -36,7 +36,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   constructor(props: TreeProps){
     super(props)
     this.requestService = new RequestService();
-    this.state = { 
+    this.state = {
       fileTree: rootNode,
       showRenameFile: false,
       clickedNode: null,
@@ -128,21 +128,22 @@ class FileTree extends Component<TreeProps, TreeState> {
     const { Menu, MenuItem } = remote;
 
     const menu = new Menu();
-    
+
 
     switch (node.type) {
       case 'DataFile':
-      case 'Yaml': 
+      case 'Yaml':
       case 'Annotation': {
-        menu.append(new MenuItem({ label: 'open in filesystem', click: () => this.openFile() }));
-        menu.append(new MenuItem({ label: 'delete from filesystem', click: () => this.deleteFile() }));
+        menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
         menu.append(new MenuItem({ type: 'separator' }));
-        menu.append(new MenuItem({ label: 'rename', click: () => this.renameNode() }));
-        menu.append(new MenuItem({ label: 'delete from project', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'Rename', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'Remove from project', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile() }));
         break;
       }
       case 'Sheet': {
-        menu.append(new MenuItem({ label: 'add mapping file', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'Add annotation file', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'Add yaml file', click: () => this.renameNode() }));
         break;
       }
       default: {
@@ -229,7 +230,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     // send request
     const data = { "old_name": this.state.clickedNode!.label, new_name: tmpName };
     try {
-      await this.requestService.renameYaml(wikiStore.project.projectDTO!.directory, data);
+      await this.requestService.renameFile(wikiStore.project.projectDTO!.directory, data);
     } catch (error) {
       console.log(error);
     } finally {

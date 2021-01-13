@@ -427,7 +427,7 @@ def rename_file():
 
 @app.route('/api/files/delete', methods=['POST'])
 @json_response
-def rename_file():
+def delete_file():
     project=get_project()
 
     file_name = request.get_json()["file_name"]

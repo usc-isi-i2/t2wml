@@ -170,8 +170,8 @@ class RequestService {
     return response;
   }
 
-  public async renameYaml(folder: string, data: any) {
-    const response = await backendPost(`/yaml/rename?project_folder=${folder}`, data) as ResponseWithProjectDTO;
+  public async renameFile(folder: string, data: any) {
+    const response = await backendPost(`/files/rename?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
   }
 
