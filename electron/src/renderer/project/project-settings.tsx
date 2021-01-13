@@ -26,8 +26,8 @@ interface SettingsProperties {
       warn: boolean,
       calendar: string,
       title: string,
-      description?: string,
-      url?: string,
+      description: string,
+      url: string,
     ) => void;
     cancelSaveSettings: () => void;
 }
@@ -69,8 +69,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
     const warn = this.state.tmpWarnEmpty;
     const calendar = (this.tempCalendarRef as any).current.value;
     const title = this.state.title;
-    const description = this.state.description;
-    const url = this.state.url;
+    const description = this.state.description || '';
+    const url = this.state.url || '';
     this.props.handleSaveSettings(endpoint, warn, calendar, title, description, url);
   }
 

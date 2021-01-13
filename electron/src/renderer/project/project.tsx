@@ -32,8 +32,9 @@ interface ProjectState extends IStateWithError {
   endpoint: string;
   warnEmpty: boolean;
   calendar: string;
-  datamartIntegration: boolean;
-  datamartApi: string;
+  title: string;
+  description: string;
+  url: string;
   name: string;
 }
 
@@ -61,8 +62,9 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: '',
       warnEmpty: false,
       calendar: 'leave',
-      datamartIntegration: false,
-      datamartApi: '',
+      title: '',
+      description: '',
+      url: '',
       name: '',
 
       errorMessage: {} as ErrorMessage,
@@ -146,13 +148,14 @@ class Project extends Component<ProjectProps, ProjectState> {
       endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.project.projectDTO?.warn_for_empty_cells || false,
       calendar: wikiStore.project.projectDTO?.handle_calendar || "leave",
-      datamartIntegration: wikiStore.project.projectDTO?.datamart_integration || false,
-      datamartApi: wikiStore.project.projectDTO?.datamart_api || '',
+      title: wikiStore.project.projectDTO?.title || "",
+      description: wikiStore.project.projectDTO?.description || "",
+      url: wikiStore.project.projectDTO?.directory || "",
       showSettings: true
     });
   }
 
-  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, datamartIntegration: boolean, datamartApi: string) {
+  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, title: string, description: string | undefined, url: string | undefined) {
     // update settings
     this.setState({ showSettings: false });
 
@@ -160,8 +163,9 @@ class Project extends Component<ProjectProps, ProjectState> {
     const data = {"endpoint": endpoint,
                   "warnEmpty": warn,
                   "handleCalendar": calendar,
-                  "datamartIntegration": datamartIntegration,
-                  "datamartApi": datamartApi };
+                  "title": title,
+                  "description": description,
+                  "url": url };
 
     try {
       await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, data));
@@ -186,11 +190,12 @@ class Project extends Component<ProjectProps, ProjectState> {
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
 
         <Settings showSettings={this.state.showSettings}
+          title={this.state.title}
+          description={this.state.description}
+          url={this.state.url}
           endpoint={this.state.endpoint}
           warnEmpty={this.state.warnEmpty}
           calendar={this.state.calendar}
-          datamartIntegration={this.state.datamartIntegration}
-          datamartApi={this.state.datamartApi}
           handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
