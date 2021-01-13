@@ -17,15 +17,12 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
-      - name: Checkout t2wml-api
-        run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
+
       - name: Set backend environment
         run: |
           cd $env:GITHUB_WORKSPACE/backend
           pip install --upgrade pip
-          pip install ../t2wml-api
-          pip install -r requirements.txt --extra-index-url https://pypi.fury.io/theresearchsoftwarecompany
-          pip uninstall -y etk  # Uses langdetect which causes issues with pyinstaller
+          pip install -r requirements.txt
           pip install pyinstaller pywin32 semver
       - name: Create installer
         env:  # Replace unicode characters with ?
@@ -44,7 +41,7 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
         shell: bash
       - name: Upload to Release
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -107,7 +104,7 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Upload to Release
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -152,7 +149,7 @@ jobs:
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Upload to Release
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
