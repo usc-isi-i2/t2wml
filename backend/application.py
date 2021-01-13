@@ -279,39 +279,6 @@ def call_wikifier_service():
 
     return response, 200
 
-@app.route('/api/yaml/rename', methods=['POST'])
-@json_response
-def rename_yaml():
-    project=get_project()
-
-    old_name = request.get_json()["old_name"]
-    new_name = request.get_json()["new_name"]
-
-    if old_name not in project.yaml_files:
-        raise web_exceptions.MissingYAMLFileException(
-            "The yaml file you are trying to rename does not exist in project")
-    if new_name in project.yaml_files:
-        raise web_exceptions.MissingYAMLFileException(
-            "The new name you have provided already exists in the project as a yaml file")
-
-    old_path=os.path.join(project.directory, old_name)
-    new_path=os.path.join(project.directory, new_name)
-
-    os.rename(old_path, new_path)
-
-    old_name_index=project.yaml_files.index(old_name)
-    project.yaml_files[old_name_index]=new_name
-    for sheet_name, sheet_arr in project.yaml_sheet_associations.items():
-        if old_name in sheet_arr:
-            old_name_index=sheet_arr.index(old_name)
-            sheet_arr[old_name_index]=new_name
-    project.save()
-
-    response=dict(project=get_project_dict(project))
-    return response, 200
-
-
-
 @app.route('/api/yaml/save', methods=['POST'])
 @json_response
 def upload_yaml():
@@ -440,6 +407,38 @@ def update_settings():
 
     response=dict(project = get_project_dict(project))
     return response, 200
+
+
+
+
+@app.route('/api/files/rename', methods=['POST'])
+@json_response
+def rename_file():
+    project=get_project()
+
+    old_name = request.get_json()["old_name"]
+    new_name = request.get_json()["new_name"]
+
+    project.rename_file_in_project(old_name, new_name, rename_in_fs=True)
+    project.save()
+
+    response=dict(project=get_project_dict(project))
+    return response, 200
+
+@app.route('/api/files/delete', methods=['POST'])
+@json_response
+def rename_file():
+    project=get_project()
+
+    file_name = request.get_json()["file_name"]
+
+    project.delete_file_from_project(file_name, delete_from_fs=True)
+    project.save()
+
+    response=dict(project=get_project_dict(project))
+    return response, 200
+
+
 
 
 @app.route('/api/is-alive')
