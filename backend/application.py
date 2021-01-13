@@ -431,8 +431,9 @@ def delete_file():
     project=get_project()
 
     file_name = request.get_json()["file_name"]
+    delete_from_fs=request.get_json()["delete"]
 
-    project.delete_file_from_project(file_name, delete_from_fs=True)
+    project.delete_file_from_project(file_name, delete_from_fs=delete_from_fs)
     project.save()
 
     response=dict(project=get_project_dict(project))

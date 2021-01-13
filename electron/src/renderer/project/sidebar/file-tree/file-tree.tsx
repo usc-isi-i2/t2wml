@@ -119,7 +119,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     // })
   }
 
-  deleteFile() {
+  deleteFile(deleteFromFs:boolean) {
 
   }
 
@@ -137,8 +137,8 @@ class FileTree extends Component<TreeProps, TreeState> {
         menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
         menu.append(new MenuItem({ type: 'separator' }));
         menu.append(new MenuItem({ label: 'Rename', click: () => this.renameNode() }));
-        menu.append(new MenuItem({ label: 'Remove from project', click: () => this.renameNode() }));
-        menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile() }));
+        menu.append(new MenuItem({ label: 'Remove from project', click:() => this.deleteFile(false)}));
+        menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile(true) }));
         break;
       }
       case 'Sheet': {
