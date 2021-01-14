@@ -97,7 +97,7 @@ class FileNode extends Component<NodeProps, NodeState> {
       typeIcon=<FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
     }
 
-    let label = this.props.bolded ? <b>{this.props.label}</b>: this.props.label
+    const label = this.props.bolded ? <b>{this.props.label}</b>: this.props.label
 
     const logoTooltipHtml = (
       <Tooltip style={{ width: "fit-content" }} id="navbar-tooltip">
