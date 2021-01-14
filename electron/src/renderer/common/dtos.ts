@@ -26,6 +26,7 @@ export interface ProjectDTO {
     datamart_api: string;
     handle_calendar: string;
     cache_id: string;
+    description: string;
 }
 
 export interface TableDTO {

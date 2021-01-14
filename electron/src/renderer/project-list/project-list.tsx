@@ -113,7 +113,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                   "url": url };
 
     try {
-      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, data));
+      await this.requestService.call(this, () => this.requestService.getSettings(wikiStore.project.projectDTO!.directory, data));
     } catch (error) {
       console.log(error);
     }
@@ -177,16 +177,16 @@ class ProjectList extends Component<{}, ProjectListState> {
     return time.toUTCString();
   }
 
-  onShowSettingsClicked(project: ProjectListEntry) {
-    debugger
+  async onShowSettingsClicked(project: ProjectListEntry) {
+    await this.requestService.getSettings(project.folder, {});
+    
     this.setState({
-      title: project.name || "",
-      endpoint: project.sparql_endpoint || "",
-      warnEmpty: project.warn_for_empty_cells || false,
-      calendar: project.handle_calendar || "leave",
-      
-      description: project.description || "",
-      url: project.folder || "",
+      endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
+      warnEmpty: wikiStore.project.projectDTO?.warn_for_empty_cells || false,
+      calendar: wikiStore.project.projectDTO?.handle_calendar || "leave",
+      title: wikiStore.project.projectDTO?.title || "",
+      description: wikiStore.project.projectDTO?.description || "",
+      url: wikiStore.project.projectDTO?.directory || "",
       showProjectSettings: true
     });
   }
