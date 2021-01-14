@@ -15,13 +15,25 @@ export interface IStateWithError {
 
 
 class RequestService {
-
   public getProjectFolder() {
+    let folder: string;
 
-    if (!wikiStore.project?.projectDTO?.directory) {
+    if (wikiStore.project?.projectDTO?.directory) {
+      console.log("Returning project folder from wikiStore.project.projectDTO", wikiStore.project.projectDTO);
+      folder = wikiStore.project.projectDTO.directory;
+    } else {
       console.warn("There is no projectDTO directory", wikiStore.project.projectDTO);
+
+      if (wikiStore.projects.current?.folder) {
+        folder = wikiStore.projects.current.folder;
+        console.log('Reverting to folder for current project', wikiStore.projects.current.folder);
+      } else {
+        console.error("There is no current project either, this is the race condition happening");
+        throw new Error("Can't determine project folder");
+      }
     }
-    return `project_folder=${wikiStore.project.projectDTO!.directory}`;
+
+    return `project_folder=${folder}`;
   }
 
   public getDataFileParams(required = true) {
