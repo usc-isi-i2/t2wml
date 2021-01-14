@@ -17,7 +17,10 @@ export interface IStateWithError {
 class RequestService {
 
   public getProjectFolder() {
-    return `project_folder=${wikiStore.project.projectDTO!.directory}`;
+    if (!wikiStore.projects.current?.folder){
+      console.log("trying to get something with a project directory, but there is no project directory")
+    }
+    return `project_folder=${wikiStore.projects.current!.folder}`;
   }
 
   public getDataFileParams(required = true) {
