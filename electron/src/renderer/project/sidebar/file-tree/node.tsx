@@ -41,8 +41,8 @@ class FileNode extends Component<NodeProps, NodeState> {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: NodeProps) {
-    if (nextProps.bolded) {
+  componentDidUpdate(prevProps: NodeProps) {
+    if ((prevProps.bolded !== this.props.bolded) && this.props.bolded) {
       this.setState({ expanded: true });
     }
   }
