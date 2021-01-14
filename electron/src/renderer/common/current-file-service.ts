@@ -23,7 +23,7 @@ export class CurrentFilesService {
         return CurrentFilesService._instance;
     }
 
-    @observable currentState: CurrentFiles = {} as CurrentFiles;
+    @observable currentState = new CurrentFiles();
     @observable prevSelections = {};
 
     getAnnotationFileFromProject(): string | undefined {
