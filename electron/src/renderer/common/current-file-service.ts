@@ -36,7 +36,7 @@ export class CurrentFilesService {
 
     @action
     getFiles(project: ProjectDTO) {
-        this.currentState = {} as CurrentFiles;
+        this.currentState = new CurrentFiles();
         try {
             const path = `${project.directory}/${filename}`;
             const content = fs.readFileSync(path, { encoding: 'utf8' });

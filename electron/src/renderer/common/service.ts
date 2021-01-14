@@ -17,6 +17,10 @@ export interface IStateWithError {
 class RequestService {
 
   public getProjectFolder() {
+
+    if (!wikiStore.project?.projectDTO?.directory) {
+      console.warn("There is no projectDTO directory", wikiStore.project.projectDTO);
+    }
     return `project_folder=${wikiStore.project.projectDTO!.directory}`;
   }
 
@@ -30,7 +34,7 @@ class RequestService {
     return this.getProjectFolder() + `&data_file=${currentFilesService.currentState.dataFile}&sheet_name=${currentFilesService.currentState.sheetName}`;
   }
 
-  public getMappingParams(required = true){
+  public getMappingParams(){
     let url=this.getDataFileParams();
     if ( currentFilesService.currentState.mappingFile ) {
       url += `&mapping_file=${currentFilesService.currentState.mappingFile}`;
@@ -41,6 +45,7 @@ class RequestService {
 
   @action
   public switchProjectState(response: ResponseWithProjectDTO){
+    console.debug('switchProejctState called');
     currentFilesService.getFiles(response.project);
     wikiStore.project.projectDTO = response.project;
 
@@ -93,7 +98,9 @@ class RequestService {
   }
 
   public async getProject(folder: string) {
+    console.debug('getProject called for ', folder);
     const response = await backendGet(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
+    console.debug('Response returned ', response);
     this.switchProjectState(response);
   }
 
