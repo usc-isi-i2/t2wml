@@ -20,6 +20,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
+import WikifyTable from './wikify-table/wikify-table';
 import { currentFilesService } from '../../common/current-file-service';
 
 
@@ -352,6 +353,8 @@ class TableContainer extends Component<{}, TableState> {
   renderTable() {
     if (this.state.mode === 'Annotation') {
       return <AnnotationTable />;
+    } else if (this.state.mode === 'Wikify') {
+      return <WikifyTable />;
     }
     return <OutputTable />;
   }
