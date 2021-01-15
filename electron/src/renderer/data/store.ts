@@ -17,7 +17,7 @@ class EditorsState {
 
 
 class TableState {
-    @observable public mode: 'Annotation' | 'Output';
+    @observable public mode: 'Annotation' | 'Output' | 'Wikify';
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
     @observable public selectedCell: Cell;
