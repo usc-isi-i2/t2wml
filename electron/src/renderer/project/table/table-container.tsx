@@ -271,18 +271,22 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderAnnotationToggle() {
-    const annotationMode = this.state.mode === "Annotation";
+    const annotationMode = this.state.mode;
     if (this.state.filename) {
       return (
         <ButtonGroup aria-label="modes" className="mode-toggle"
           onClick={() => this.toggleAnnotationMode()}>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': !annotationMode,
+              'active': annotationMode === 'Output',
             })}>Output</Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': annotationMode,
+              'active': annotationMode === 'Wikify',
+            })}>Wikify</Button>
+          <Button variant="outline-light"
+            className={classNames('btn-sm py-0 px-2', {
+              'active': annotationMode === 'Annotation',
             })}>Annotate</Button>
         </ButtonGroup>
       )
