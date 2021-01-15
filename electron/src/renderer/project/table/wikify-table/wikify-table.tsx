@@ -364,6 +364,7 @@ class WikifyTable extends Component<{}, TableState> {
     return (
       <Fragment>
         <Table
+          optionalClassNames={'wikify-table'}
           tableData={this.state.tableData}
           onMouseUp={() => void 0}
           onMouseDown={this.handleOnMouseDown.bind(this)}
