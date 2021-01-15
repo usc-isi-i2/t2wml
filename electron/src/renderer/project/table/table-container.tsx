@@ -110,12 +110,12 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   updateMode() {
-    if (wikiStore.table.mode === 'Annotation') {
-      this.setState({ mode: 'Annotation' });
-      this.fetchAnnotations();
-    } else {
-      this.setState({ mode: 'Output' });
-    }
+    const { mode } = wikiStore.table;
+    this.setState({ mode }, () => {
+      if (mode === 'Annotation') {
+        this.fetchAnnotations();
+      }
+    });
   }
 
   async handleOpenTableFile(event: ChangeEvent) {
