@@ -5,7 +5,6 @@ import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
 import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
-import TableToast from '../table-toast';
 import * as utils from '../table-utils';
 
 
@@ -355,32 +354,9 @@ class WikifyTable extends Component<{}, TableState> {
     this.setState({ showToast: false });
   }
 
-  renderToast() {
-    const { selectedCell, showToast } = this.state;
-    if (selectedCell && showToast) {
-      let text = 'Selected:';
-      const selection: CellSelection = {
-        x1: selectedCell.col + 1,
-        x2: selectedCell.col + 1,
-        y1: selectedCell.row + 1,
-        y2: selectedCell.row + 1,
-      };
-      text += ` ${utils.humanReadableSelection(selection)}`;
-      const qnode = wikiStore.layers.qnode.find(selectedCell);
-      return (
-        <TableToast
-          text={text}
-          qnode={qnode as QNode}
-          onClose={() => this.onCloseToast()}
-        />
-      )
-    }
-  }
-
   render() {
     return (
       <Fragment>
-        {this.renderToast()}
         <Table
           tableData={this.state.tableData}
           onMouseUp={() => void 0}
