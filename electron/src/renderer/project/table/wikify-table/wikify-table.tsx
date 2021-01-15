@@ -146,6 +146,8 @@ class WikifyTable extends Component<{}, TableState> {
     if ( qnode ) {
       return (
         <span>
+          {cell}
+          <br />
           <strong>{qnode.label}</strong> ({qnode.url ? (
             <a target="_blank"
               rel="noopener noreferrer"
