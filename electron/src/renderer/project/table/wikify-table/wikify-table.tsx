@@ -157,7 +157,6 @@ class WikifyTable extends Component<{}, TableState> {
             <span>{qnode.id}</span>
           )})
           <br />
-          <br />
           {qnode.description}
         </span>
       );
