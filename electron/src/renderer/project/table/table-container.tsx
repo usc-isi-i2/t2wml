@@ -111,11 +111,7 @@ class TableContainer extends Component<{}, TableState> {
 
   updateMode() {
     const { mode } = wikiStore.table;
-    this.setState({ mode }, () => {
-      if (mode === 'Annotation') {
-        this.fetchAnnotations();
-      }
-    });
+    this.setState({ mode });
   }
 
   async handleOpenTableFile(event: ChangeEvent) {
@@ -214,8 +210,14 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
-  async toggleAnnotationMode() {
-    if (this.state.mode === 'Output') {
+  async toggleAnnotationMode(mode) {
+    this.setState({ mode }, () => {
+      wikiStore.table.mode = mode;
+    });
+
+    if (mode === 'Annotation') {
+      this.fetchAnnotations();
+    } else {
       await wikiStore.yaml.saveYaml();
       if (currentFilesService.currentState.mappingType == "Yaml") {
         currentFilesService.setMappingFiles(); //try to change to an existing annotation
@@ -225,9 +227,6 @@ class TableContainer extends Component<{}, TableState> {
           currentFilesService.setMappingFiles();
         }
       }
-      wikiStore.table.mode = 'Annotation';
-    } else {
-      wikiStore.table.mode = 'Output';
     }
   }
 
@@ -274,20 +273,28 @@ class TableContainer extends Component<{}, TableState> {
     const annotationMode = this.state.mode;
     if (this.state.filename) {
       return (
-        <ButtonGroup aria-label="modes" className="mode-toggle"
-          onClick={() => this.toggleAnnotationMode()}>
+        <ButtonGroup aria-label="modes" className="mode-toggle">
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': annotationMode === 'Output',
-            })}>Output</Button>
+            })}
+            onClick={(event) => this.toggleAnnotationMode('Output')}>
+            Output
+          </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': annotationMode === 'Wikify',
-            })}>Wikify</Button>
+            })}
+            onClick={(event) => this.toggleAnnotationMode('Wikify')}>
+            Wikify
+          </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': annotationMode === 'Annotation',
-            })}>Annotate</Button>
+            })}
+            onClick={(event) => this.toggleAnnotationMode('Annotation')}>
+            Annotate
+          </Button>
         </ButtonGroup>
       )
     }
