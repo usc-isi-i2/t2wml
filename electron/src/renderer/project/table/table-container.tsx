@@ -105,8 +105,9 @@ class TableContainer extends Component<{}, TableState> {
 
   uncheckAnnotationifYaml() {
     if (currentFilesService.currentState.mappingType === "Yaml") {
-      wikiStore.table.mode = "Output"
-      this.setState({ mode: 'Output' })
+      this.setState({ mode: 'Output' }, () => {
+        wikiStore.table.mode = 'Output';
+      });
     }
   }
 
