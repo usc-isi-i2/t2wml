@@ -32,7 +32,7 @@ class Table extends React.Component<TableProperties>{
       optionalClassNames,
     } = this.props;
     return (
-      <div className={`table-wrapper ${optionalClassNames}`}>
+      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
         <table ref={setTableReference}
           onMouseUp={onMouseUp.bind(this)}
           onMouseDown={onMouseDown.bind(this)}
@@ -77,7 +77,7 @@ class Table extends React.Component<TableProperties>{
     const cols = [...Array(Math.max(tableData[0].length, 26))];
 
     return (
-      <div className={`table-wrapper ${optionalClassNames}`}>
+      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
         <table ref={setTableReference}
           onMouseUp={onMouseUp.bind(this)}
           onMouseDown={onMouseDown.bind(this)}
