@@ -177,14 +177,16 @@ export default class MainMenuManager {
     }
 
     public async onNewProjectClick() {
-        const result = await dialog.showOpenDialog( this.mainWindow!, {
-                title: "Open Project Folder",
-                properties: ['openDirectory', 'createDirectory']
-            });
+        // const result = await dialog.showOpenDialog( this.mainWindow!, {
+        //         title: "Open Project Folder",
+        //         properties: ['openDirectory', 'createDirectory']
+        //     });
 
-        if (!result.canceled && result.filePaths) {
-            rendererNotifier.newProject(result.filePaths[0]);
-        }
+        // if (!result.canceled && result.filePaths) {
+        //     rendererNotifier.newProject(result.filePaths[0]);
+        // }
+        rendererNotifier.newProject();
+
     }
 
     public async onOpenProjectClick() {
