@@ -392,20 +392,6 @@ def upload_annotation():
     response.update(calc_response)
     return response, code
 
-@app.route('/api/project', methods=['PUT'])
-@json_response
-def rename_project():
-    """
-    This route is used to rename a project.
-    :return:
-    """
-    ptitle = request.get_json()["ptitle"]
-    project=get_project()
-    project.title = ptitle
-    project.save()
-    response = dict(project= get_project_dict(project))
-    return response, 200
-
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
 @json_response
 def update_global_settings():
