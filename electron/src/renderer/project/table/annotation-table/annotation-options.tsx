@@ -42,7 +42,7 @@ export const TYPES = [{
     'value': 'property',
   }],
 }, {
-  'label': 'Q-Node',
+  'label': 'Wikidata Item',
   'value': 'qNode',
   'children': [{
     'label': 'Property',
