@@ -176,12 +176,14 @@ export class CurrentFilesService {
     }
 
     saveCurrentFileSelections() {
-        const project = wikiStore.project.projectDTO!;
+        const project = wikiStore.project.projectDTO;
+        if (project){
         const path = `${project.directory}/${filename}`;
         fs.writeFileSync(path, JSON.stringify({
             'currentState': this.currentState,
             // 'previousSelections': this.prevSelections,
         }));
+        }
     }
 
     fillCurrents() {
