@@ -51,7 +51,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     // init global variables
     if (wikiStore.project.projectDTO) {
-      wikiStore.project.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+      wikiStore.project.projectDTO.sparql_endpoint = Config.defaultSparqlEndpoint;
     }
     // init state
     this.state = {
@@ -114,17 +114,19 @@ class Project extends Component<ProjectProps, ProjectState> {
         await this.requestService.call(this, () => this.requestService.getTable());
       }
 
-      document.title = 't2wml: ' + wikiStore.project.projectDTO!.title;
-      this.setState({ name: wikiStore.project.projectDTO!.title });
+      if (wikiStore.project.projectDTO){
+      document.title = 't2wml: ' + wikiStore.project.projectDTO.title;
+      this.setState({ name: wikiStore.project.projectDTO.title });
 
       if (wikiStore.yaml.yamlContent !== null) {
         wikiStore.output.isDownloadDisabled = false;
       }
 
       // load settings
-      if (!wikiStore.project.projectDTO!.sparql_endpoint) {
-        wikiStore.project.projectDTO!.sparql_endpoint = Config.defaultSparqlEndpoint;
+      if (!wikiStore.project.projectDTO.sparql_endpoint) {
+        wikiStore.project.projectDTO.sparql_endpoint = Config.defaultSparqlEndpoint;
       }
+    }
 
     } catch (error) {
       console.log(error);

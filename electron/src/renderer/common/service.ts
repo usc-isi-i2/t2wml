@@ -57,9 +57,9 @@ class RequestService {
 
   @action
   public switchProjectState(response: ResponseWithProjectDTO){
-    console.debug('switchProejctState called');
-    currentFilesService.getFiles(response.project);
+    console.debug('switchProjectState called');
     wikiStore.project.projectDTO = response.project;
+    currentFilesService.getFiles(response.project);
 
     // new project
     if ( !Object.keys(response.project.data_files).length ) {
