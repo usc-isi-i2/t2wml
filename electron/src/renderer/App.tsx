@@ -83,10 +83,11 @@ class App extends Component<{}, AppState> {
     wikiStore.table.showCleanedData = checked;
   }
 
-  onShowGlobalSettings() {
+  async onShowGlobalSettings() {
+    await this.requestService.getGlobalSettings();
     this.setState({
-      datamartIntegration: wikiStore.project.projectDTO?.datamart_integration || false,
-      datamartApi: wikiStore.project.projectDTO?.datamart_api || '',
+      datamartIntegration: wikiStore.globalSettings.datamart_integration,
+      datamartApi: wikiStore.globalSettings.datamart_api,
       showSettings: true
     });
   }
@@ -145,7 +146,7 @@ class App extends Component<{}, AppState> {
                    "datamartApi": datamartApi };
 
     try {
-      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, data));
+      await this.requestService.call(this, () => this.requestService.putGlobalSettings(data));
     } catch (error) {
       console.log(error);
     }

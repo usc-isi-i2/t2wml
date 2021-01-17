@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -148,9 +148,25 @@ class RequestService {
   }
 
   public async getSettings(folder: string, data: any) {
-    //returns endpoint, warnEmpty
+    const response = await backendGet(`/project/settings?project_folder=${folder}`) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
+  }
+
+  public async putSettings(folder: string, data: any) {
     const response = await backendPut(`/project/settings?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
+  }
+
+  public async getGlobalSettings() {
+    const response = await backendGet(`/project/globalsettings`) as GlobalSettingsDTO;
+    wikiStore.globalSettings.datamart_api=response.datamart_api
+    wikiStore.globalSettings.datamart_integration=response.datamart_integration
+  }
+
+  public async putGlobalSettings(data: any) {
+    const response = await backendPut(`/project/globalsettings`, data) as GlobalSettingsDTO;
+    wikiStore.globalSettings.datamart_api=response.datamart_api
+    wikiStore.globalSettings.datamart_integration=response.datamart_integration
   }
 
   public async uploadEntities(data: any) {

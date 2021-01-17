@@ -100,8 +100,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
               </Form.Label>
               <Col sm="12" md="9">
                 <input
-                  defaultValue={wikiStore.project.projectDTO?.title}
-                  onChange={(event) => this.setState({ tmpWarnEmpty: event?.target.checked })}/>
+                  onChange={(event) => this.setState({ title: event?.target.value })}/>
               </Col>
             </Form.Group>
 
