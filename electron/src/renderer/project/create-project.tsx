@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
+import { dialog } from 'electron';
 
 
 interface CreateProperties {
@@ -43,19 +44,16 @@ class CreateProject extends Component<CreateProperties, CreateState> {
       this.props.createProject(this.state.path, this.state.title, this.state.description, this.state.url);
   }
 
-  openFile() {
-      debugger
-    // const result = await dialog.showOpenDialog( this.mainWindow!, {
-    //         title: "Open Project Folder",
-    //         properties: ['openDirectory', 'createDirectory']
-    // });
+  async openFile() { 
+    const result = await dialog.showOpenDialog(this.mainWindow!,  {
+            title: "Open Project Folder",
+            properties: ['openDirectory', 'createDirectory']
+    });
 
-    // if (!result.canceled && result.filePaths) {
-    //     console.log(")))))))", result.filePaths[0]);
-        
-    //     this.setState({ path: result.filePaths[0] });
-    // }
-    
+    if (!result.canceled && result.filePaths) {
+        console.log("path=", result.filePaths[0]);
+        this.setState({ path: result.filePaths[0] });
+    }
   }
 
 
@@ -73,12 +71,9 @@ class CreateProject extends Component<CreateProperties, CreateState> {
           <Form className="container">
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Col xs="9" md="9" className="pr-0">
-                <Form.Label>
-                  Choose a folder
-                </Form.Label>
                 <button
                   onClick={this.openFile()}
-                />
+                >Choose a folder</button>
               </Col>
             </Form.Group>
 

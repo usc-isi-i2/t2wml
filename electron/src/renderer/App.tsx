@@ -164,21 +164,17 @@ class App extends Component<{}, AppState> {
   }
   
   async createProject(path: string, title: string, description: string, url: string) {
-    // update settings
-    console.log(title)
-    debugger
     this.setState({ showCreateProjectModal: false });
 
-    // notify backend
-    // TODO!!!!!!
-    // const data = { "datamartIntegration": datamartIntegration,
-    //                "datamartApi": datamartApi };
+    const data = {  "title": title,
+                    "description": description,
+                    "data_source_url": url };
 
-    // try {
-    //   await this.requestService.call(this, () => this.requestService.getSettings(wikiStore.project.projectDTO!.directory, data));
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      await this.requestService.call(this, () => this.requestService.createProject(path, data));
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   cancelCreateProject() {
