@@ -113,7 +113,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                   "url": url };
 
     try {
-      await this.requestService.call(this, () => this.requestService.getSettings(wikiStore.project.projectDTO!.directory, data));
+      await this.requestService.call(this, () => this.requestService.putSettings(wikiStore.project.projectDTO!.directory, data));
     } catch (error) {
       console.log(error);
     }
@@ -179,7 +179,7 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   async onShowSettingsClicked(project: ProjectListEntry) {
     await this.requestService.getSettings(project.folder, {});
-    
+
     this.setState({
       endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.project.projectDTO?.warn_for_empty_cells || false,

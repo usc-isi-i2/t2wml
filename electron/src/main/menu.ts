@@ -43,7 +43,7 @@ export default class MainMenuManager {
                     { type: 'separator'},
                     { label: 'Open Recent', submenu: this.recentlyUsed },
                     { type: 'separator'},
-                    { label: 'preferences', submenu: [
+                    { label: 'Preferences', submenu: [
                         {
                             label: 'Global Settings',
                             click: () => this.onGlobalSettingsClick()
@@ -83,11 +83,11 @@ export default class MainMenuManager {
 
                 ]
             },
-            { 
+            {
                 label: 'Help',
                 submenu: [
                     //{ //TODO:
-                    //    label: 'Usage Guide',   
+                    //    label: 'Usage Guide',
                     //},
                     {
                         label: 'Syntax Guide',
@@ -154,7 +154,7 @@ export default class MainMenuManager {
 
     private fillProjectSubMenu() {
         //electron will not allow disabling/hiding top level menu item, so we can only disable within the sub menu when not in project
-        const enabled = uiState.displayMode === 'project'; 
+        const enabled = uiState.displayMode === 'project';
         this.projectSubMenu = [{
             label: 'Refresh',
             accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',

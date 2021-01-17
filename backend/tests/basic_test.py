@@ -34,30 +34,19 @@ class TestBasicWorkflow(BaseClass):
 
     def test_01a_clear_annotation_settings(self, client):
         #get old settings:
-        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+        url='/api/project/globalsettings'
         response=client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
         global datamart_integration_switch
-        datamart_integration_switch=data["project"]["datamart_integration"]
+        datamart_integration_switch=data["datamart_integration"]
 
         #set new settings
-        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+        url='/api/project/globalsettings'
         response=client.put(url,
                 json=dict(
                 datamartIntegration=False
             ))
-
-    def test_01b_change_project_name(self, client):
-        url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
-        ptitle="Unit test"
-        response=client.put(url,
-                json=dict(
-                ptitle=ptitle
-            ))
-        data = response.data.decode("utf-8")
-        data = get_data(data)
-        assert data['project']['title']==ptitle
 
     def test_02_get_project(self, client):
         url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
@@ -166,7 +155,7 @@ class TestBasicWorkflow(BaseClass):
 
     def test_998_reset_global_settings(self, client):
         #reset to old settings:
-        url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+        url='/api/project/globalsettings'.format(project_folder=project_folder)
         response=client.put(url,
                 json=dict(
                 datamartIntegration=datamart_integration_switch

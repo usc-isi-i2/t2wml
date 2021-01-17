@@ -22,11 +22,14 @@ export interface ProjectDTO {
     annotations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
-    datamart_integration: boolean;
-    datamart_api: string;
     handle_calendar: string;
     cache_id: string;
     description: string;
+}
+
+export interface GlobalSettingsDTO {
+    datamart_integration: boolean;
+    datamart_api: string;
 }
 
 export interface TableDTO {

@@ -168,7 +168,7 @@ class Project extends Component<ProjectProps, ProjectState> {
                   "url": url };
 
     try {
-      await this.requestService.call(this, () => this.requestService.getSettings(this.props.path, data));
+      await this.requestService.call(this, () => this.requestService.putSettings(this.props.path, data));
     } catch (error) {
       console.log(error);
     }

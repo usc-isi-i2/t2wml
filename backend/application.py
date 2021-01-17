@@ -392,20 +392,21 @@ def upload_annotation():
     response.update(calc_response)
     return response, code
 
-@app.route('/api/project', methods=['PUT'])
+@app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
 @json_response
-def rename_project():
-    """
-    This route is used to rename a project.
-    :return:
-    """
-    ptitle = request.get_json()["ptitle"]
-    project=get_project()
-    project.title = ptitle
-    project.save()
-    response = dict(project= get_project_dict(project))
-    return response, 200
+def update_global_settings():
+    if request.method == 'PUT':
+        new_global_settings=dict()
+        datamart = request.get_json().get("datamartIntegration", None)
+        if datamart is not None:
+            new_global_settings["datamart_integration"] = datamart
+        datamart_api = request.get_json().get("datamartApi", None)
+        if datamart_api is not None:
+            new_global_settings["datamart_api"] = datamart_api
+        global_settings.update(**new_global_settings)
 
+    response=global_settings.__dict__
+    return response, 200
 
 @app.route('/api/project/settings', methods=['PUT', 'GET'])
 @json_response
@@ -417,26 +418,27 @@ def update_settings():
     project=get_project()
 
     if request.method == 'PUT':
-        endpoint = request.get_json().get("endpoint", None)
+        request_json=request.get_json()
+        title = request_json.get("title", None)
+        if title:
+            project.title = title
+        description = request_json.get("description", None)
+        if description is not None:
+            project.description = description
+        url = request_json.get("url", None)
+        if url is not None:
+            project.url = url
+        endpoint = request_json.get("endpoint", None)
         if endpoint:
             project.sparql_endpoint = endpoint
-        warn = request.get_json().get("warnEmpty", None)
+        warn = request_json.get("warnEmpty", None)
         if warn is not None:
             project.warn_for_empty_cells = warn
-        calendar=request.get_json().get("handleCalendar", None)
+        calendar=request_json.get("handleCalendar", None)
         if calendar:
             project.handle_calendar=calendar
         project.save()
         update_t2wml_settings(project)
-
-        new_global_settings=dict()
-        datamart = request.get_json().get("datamartIntegration", None)
-        if datamart is not None:
-            new_global_settings["datamart_integration"] = datamart
-        datamart_api = request.get_json().get("datamartApi", None)
-        if datamart_api is not None:
-            new_global_settings["datamart_api"] = datamart_api
-        global_settings.update(**new_global_settings)
 
     response=dict(project = get_project_dict(project))
     return response, 200
