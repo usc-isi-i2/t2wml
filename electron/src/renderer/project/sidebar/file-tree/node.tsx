@@ -43,7 +43,7 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   componentDidUpdate(prevProps: NodeProps) {
     if ((prevProps.bolded !== this.props.bolded) && this.props.bolded) {
-      this.setState({ expanded: true });
+      this.setState({ expanded: true }); 
     }
   }
 
@@ -97,7 +97,7 @@ class FileNode extends Component<NodeProps, NodeState> {
       typeIcon=<FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
     }
 
-    let label = this.props.bolded ? <b>{this.props.label}</b>: this.props.label
+    const label = this.props.bolded ? <b>{this.props.label}</b>: this.props.label
 
     const logoTooltipHtml = (
       <Tooltip style={{ width: "fit-content" }} id="navbar-tooltip">

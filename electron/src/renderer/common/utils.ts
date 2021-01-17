@@ -253,7 +253,7 @@ export const typeStyles = new Map<string, any>([
 ])
 
 
-export function classNames(classNames='', conditionalClassNames={}) {
+export function classNames(classNames='', conditionalClassNames: {[key: string]: boolean}={}) {
   return `${classNames} `.concat(Object.keys(conditionalClassNames).filter((key) => {
     return conditionalClassNames[key];
   }).join(' '));
