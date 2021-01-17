@@ -13,7 +13,7 @@ interface TreeState {
   fileTree: NodeProps;
 }
 
-const emptyFunc= (node: NodeProps) => void 0
+const emptyFunc= (node: NodeProps) => void 0;
 const rootNode = {id: "Root00000123943875",
                   label: "Files",
                   childNodes: [],

@@ -9,7 +9,6 @@ import { Card, Spinner } from 'react-bootstrap';
 import { currentFilesService } from '../../common/current-file-service';
 import FileTree from './file-tree/file-tree';
 import { t2wmlColors } from '@/renderer/common/general';
-import SheetSelector from '../sheet-selector/sheet-selector';
 
 
 // interface SidebarProperties {

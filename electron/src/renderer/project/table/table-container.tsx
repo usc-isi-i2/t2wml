@@ -5,9 +5,6 @@ import React, { ChangeEvent, Component } from 'react';
 import './table-component.css';
 
 import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
-import { faSquare } from '@fortawesome/free-solid-svg-icons';
 
 import { AnnotationBlock } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';

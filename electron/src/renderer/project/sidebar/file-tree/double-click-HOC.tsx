@@ -5,7 +5,7 @@ interface funcProps {
   onClick: any,
   onDoubleClick: any,
   children: any,
-};
+}
 
 
 export default class DoubleClick extends Component<funcProps> {
