@@ -172,7 +172,7 @@ class RequestService {
     wikiStore.project.projectDTO = response.project; // not necessary
   }
 
-  public async getSettings(folder: string, data: any) {
+  public async getSettings(folder: string) {
     const response = await backendGet(`/project/settings?project_folder=${folder}`) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
   }

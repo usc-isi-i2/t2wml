@@ -25,7 +25,7 @@ export class ProjectListEntry {
     public get valid() { return this._valid; }  // False if the project doesn't exist
 
     private _description = '';
-    public get description() { return this._description; }  // False if the project doesn't exist
+    public get description() { return this._description; }
 
     private _watcher?: fs.FSWatcher;
 

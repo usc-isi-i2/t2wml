@@ -215,8 +215,8 @@ export class ProjectState{
 }
 
 export class GlobalSettings{
-    @observable datamart_integration: boolean = false;
-    @observable datamart_api: string = "";
+    @observable datamart_integration = false;
+    @observable datamart_api = "";
 }
 
 class WikiStore {

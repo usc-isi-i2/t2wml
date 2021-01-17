@@ -99,7 +99,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 Title
               </Form.Label>
               <Col sm="12" md="9">
-                <input
+                <Form.Control
+                  defaultValue={this.props.title}
                   onChange={(event) => this.setState({ title: event?.target.value })}/>
               </Col>
             </Form.Group>
@@ -110,7 +111,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 Description
               </Form.Label>
               <Col sm="12" md="9">
-                <input
+                <Form.Control
+                  defaultValue={this.props.description}
                   onChange={(event) => this.setState({ description: event?.target.value })}/>
               </Col>
             </Form.Group>
@@ -121,7 +123,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 URL
               </Form.Label>
               <Col sm="12" md="9">
-                <input
+                <Form.Control
+                  defaultValue={this.props.url}
                   onChange={(event) => this.setState({ url: event?.target.value })}/>
               </Col>
             </Form.Group>
@@ -170,7 +173,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={Object.keys(calendarOptions).find(key => (calendarOptions as any)[key] === this.props.calendar)}
+                    defaultValue={calendarOptions.find(c => c.value === this.props.calendar)!.text}
                     ref={this.tempCalendarRef}
                     onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
