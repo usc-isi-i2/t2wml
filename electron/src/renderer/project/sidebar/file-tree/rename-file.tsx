@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 
-import * as utils from '../common/utils'
+import * as utils from '../../../common/utils'
 
 import { Button, Col, Form, Modal, Row, Spinner } from 'react-bootstrap';
 
 interface RenameProperties {
   // pid: number; Is it needed?
-  showRenameProject: boolean;
+  showRenameFile: boolean;
   showSpinner: boolean;
-  tempRenameProject: string;
-  isTempRenameProjectVaild: boolean;
+  tempRenameFile: string;
+  isTempRenameFileVaild: boolean;
   type: string;
 
-  handleRenameProject: (name: string) => void;
-  cancelRenameProject: () => void;
+  handleRenameFile: (name: string) => void;
+  cancelRenameFile: () => void;
 }
 
 interface RenameState {
@@ -21,21 +21,21 @@ interface RenameState {
   isNameVaild: boolean;
 }
 
-class RenameProject extends Component<RenameProperties, RenameState> {
+class RenameFile extends Component<RenameProperties, RenameState> {
   private input: React.RefObject<HTMLInputElement>;
   constructor(props: RenameProperties) {
     super(props);
     this.input = React.createRef();
 
     this.state = {
-      name: this.props.tempRenameProject,
-      isNameVaild: this.props.isTempRenameProjectVaild
+      name: this.props.tempRenameFile,
+      isNameVaild: this.props.isTempRenameFileVaild
     } as RenameState;
   }
 
   render() {
     return (
-      <Modal show={this.props.showRenameProject} onHide={() => { /* do nothing */ }}>
+      <Modal show={this.props.showRenameFile} onHide={() => { /* do nothing */ }}>
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!this.props.showSpinner}>
@@ -62,7 +62,7 @@ class RenameProject extends Component<RenameProperties, RenameState> {
                 <Form.Control
                   ref={this.input}
                   type="text"
-                  defaultValue={this.props.tempRenameProject}
+                  defaultValue={this.props.tempRenameFile}
                   placeholder="Untitled project"
                   autoFocus={true}
                   style={this.state.isNameVaild ? {} : { border: "1px solid red" }}
@@ -70,7 +70,7 @@ class RenameProject extends Component<RenameProperties, RenameState> {
                     if (event.key === "Enter") {
                       // if press enter (13), then do create new project
                       event.preventDefault();
-                      this.props.handleRenameProject(event.target.value);
+                      this.props.handleRenameFile(event.target.value);
                     }
                   }}
                 />
@@ -86,10 +86,10 @@ class RenameProject extends Component<RenameProperties, RenameState> {
 
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.props.cancelRenameProject()} >
+          <Button variant="outline-dark" onClick={() => this.props.cancelRenameFile()} >
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => { this.input.current ? this.props.handleRenameProject(this.input.current?.value) : this.props.handleRenameProject('') }} disabled={!(this.state.isNameVaild)}>
+          <Button variant="dark" onClick={() => { this.input.current ? this.props.handleRenameFile(this.input.current?.value) : this.props.handleRenameFile('') }} disabled={!(this.state.isNameVaild)}>
             Rename
           </Button>
         </Modal.Footer>
@@ -99,4 +99,4 @@ class RenameProject extends Component<RenameProperties, RenameState> {
   }
 }
 
-export default RenameProject;
+export default RenameFile;

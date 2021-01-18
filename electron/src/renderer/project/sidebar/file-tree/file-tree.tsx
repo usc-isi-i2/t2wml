@@ -7,7 +7,7 @@ import { currentFilesService } from "../../../common/current-file-service";
 import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
 import { remote, dialog } from 'electron';
-import RenameProject from "@/renderer/project-list/rename-project";
+import RenameFile from "@/renderer/project/sidebar/file-tree/rename-file";
 
 
 
@@ -247,14 +247,14 @@ class FileTree extends Component<TreeProps, TreeState> {
     return (
       <Fragment>
         {this.state.clickedNode ?
-          <RenameProject
-            showRenameProject={this.state.showRenameFile}
+          <RenameFile
+            showRenameFile={this.state.showRenameFile}
             showSpinner={this.state.showSpinner}
-            tempRenameProject={this.state.clickedNode.label}
+            tempRenameFile={this.state.clickedNode.label}
             type={this.state.clickedNode.type}
-            isTempRenameProjectVaild={true}
-            handleRenameProject={(name) => this.handleRenameFile(name)}
-            cancelRenameProject={() => this.cancelRenameFile()}
+            isTempRenameFileVaild={true}
+            handleRenameFile={(name) => this.handleRenameFile(name)}
+            cancelRenameFile={() => this.cancelRenameFile()}
           /> : null }
         <ul>
           <FileNode
