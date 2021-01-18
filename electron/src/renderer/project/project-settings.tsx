@@ -173,7 +173,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={calendarOptions.find(c => c.value === this.props.calendar)!.text}
+                    defaultValue={calendarOptions.find(c => c.value === this.props.calendar)?.text || "leave (Leave Untouched)"}
                     ref={this.tempCalendarRef}
                     onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
