@@ -168,7 +168,7 @@ class App extends Component<{}, AppState> {
 
     const data = {  "title": title,
                     "description": description,
-                    "data_source_url": url };
+                    "url": url };
 
     try {
       await this.requestService.call(this, () => this.requestService.createProject(path, data));

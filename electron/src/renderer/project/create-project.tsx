@@ -42,6 +42,12 @@ class CreateProject extends Component<CreateProperties, CreateState> {
 
   createProject() {
       this.props.createProject(this.state.path, this.state.title, this.state.description, this.state.url);
+      this.setState({
+        path: '',
+        title: '',
+        description: '',
+        url: '',
+      });
   }
 
   async openFile() { 
