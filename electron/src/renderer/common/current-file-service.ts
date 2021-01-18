@@ -23,7 +23,7 @@ export class CurrentFilesService {
         return CurrentFilesService._instance;
     }
 
-    @observable currentState: CurrentFiles = {} as CurrentFiles;
+    @observable currentState = new CurrentFiles();
     @observable prevSelections = {};
 
     getAnnotationFileFromProject(): string | undefined {
@@ -36,7 +36,7 @@ export class CurrentFilesService {
 
     @action
     getFiles(project: ProjectDTO) {
-        this.currentState = {} as CurrentFiles;
+        this.currentState = new CurrentFiles();
         try {
             const path = `${project.directory}/${filename}`;
             const content = fs.readFileSync(path, { encoding: 'utf8' });
@@ -52,9 +52,12 @@ export class CurrentFilesService {
                 if (contentObj.prevSelections) {
                     this.prevSelections = contentObj.prevSelections;
                 }
+            } else{
+                throw("No content")
             }
-        } catch {
-            // If the file doen't exist, first files are the defaults
+        } catch (exception) {
+            console.log(exception)
+            // If the file doen't exist, or is invalid, default to the first files
             if (Object.keys(project.data_files).length) {
                 this.currentState.dataFile = Object.keys(project.data_files)[0];
                 this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
@@ -176,57 +179,19 @@ export class CurrentFilesService {
     }
 
     saveCurrentFileSelections() {
-        const project = wikiStore.project.projectDTO!;
+        const project = wikiStore.project.projectDTO;
+        if (project){
         const path = `${project.directory}/${filename}`;
+        try{
         fs.writeFileSync(path, JSON.stringify({
             'currentState': this.currentState,
             // 'previousSelections': this.prevSelections,
         }));
+    }catch (exception){
+        console.error(exception) //do not break the entire frontend over saving the selected files
     }
-
-    fillCurrents() {
-        // this.currentState = {
-        //     dataFile: "string",
-        //     sheetName: "string",
-        //     yamlFile: "string",
-        //     annotationFile: "string | null"
-        // };
+        }
     }
-
-    // fillPrevSelections(project: ProjectDTO) {
-    //     const dataFiles = [];
-    //     if (project && project.data_files) {
-    //         for (const file of Object.keys(project.data_files).sort()) {
-    //             const sheets = [];
-    //             for (const sheet of project.data_files[file]["val_arr"]) {
-    //                 const yamls = [];
-    //                 if (project.yaml_sheet_associations[file] && project.yaml_sheet_associations[file][sheet]) {
-    //                     for (const yaml of project.yaml_sheet_associations[file][sheet].val_arr) {
-    //                         yamls.push({ name: yaml, type: "yaml" });
-    //                     }
-    //                 }
-    //                 if (project.annotations[file] && project.annotations[file][sheet]) {
-    //                     for (const annotation of project.annotations[file][sheet].val_arr) {
-    //                         yamls.push({ name: annotation, type: "annotation" });
-    //                     }
-    //                 }
-    //                 sheets.push({ name: sheet, type: "sheet", YamlsAndAnnotoions: yamls });
-    //             }
-    //             dataFiles.push({ name: file, type: "datafile", Sheets: sheets });
-    //         }
-    //     }
-    //     this.prevSelections = {
-    //         name: project.title,
-    //         DataFiles: dataFiles
-    //     }
-    // }
-
-    // fillFilesData() {
-    //     const project = wikiStore.project.projectDTO!;
-    //     this.fillCurrents();
-    //     this.fillPrevSelections(project);
-    //     this.saveCurrentFileSelections(project.directory);
-    // }
 }
 
 export const currentFilesService = CurrentFilesService.instance;

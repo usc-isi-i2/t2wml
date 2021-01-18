@@ -16,15 +16,11 @@ const instance = axios.create({
 
 function getResponse(response: Response, method: string): Promise<any> {
   if (response.statusText !== "OK" && response.statusText !== "CREATED") {
-    if (response.status === 401) {
-      // Unauthorized
       throw {
         errorCode: response.status,
-        errorTitle: response.statusText,
-        errorDescription: `${method} failed`,
+        errorTitle: `${method} failed. ${(response as any).data.error.errorTitle}`,
+        errorDescription: (response as any).data.error.errorDescription,
       } as ErrorMessage;
-    }
-    throw (response as any).error; // Error class from backend (code, title, description)
   }
   return (response as any).data;
 }
@@ -35,14 +31,10 @@ export async function backendGet(url: string): Promise<any> {
   try {
     response = await instance.get(url);
   } catch (error) {
-    // no connection error
-    throw {
-      errorTitle: error.message,
-      errorDescription: "Connection error.",
-    } as ErrorMessage;
+    return getResponse(error.response, "Get");
   }
 
-  return await getResponse(response, "Get");
+  return getResponse(response, "Get");
 }
 
 
@@ -54,13 +46,10 @@ export async function backendPost(
   try {
     response = await instance.post(url, data);
   } catch (error) {
-    throw {
-      errorTitle: error.message,
-      errorDescription: "Connection error.",
-    } as ErrorMessage;
+    return getResponse(error.response, "Post");
   }
 
-  return await getResponse(response, "Post");
+  return getResponse(response, "Post");
 }
 
 
@@ -72,11 +61,8 @@ export async function backendPut(
   try {
     response = await instance.put(url, data);
   } catch (error) {
-    throw {
-      errorTitle: error.message,
-      errorDescription: "Connection error.",
-    } as ErrorMessage;
+    return getResponse(error.response, "Put");
   }
 
-  return await getResponse(response, "Put");
+  return getResponse(response, "Put");
 }
