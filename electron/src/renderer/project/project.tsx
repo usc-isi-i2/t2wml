@@ -152,7 +152,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       calendar: wikiStore.project.projectDTO?.handle_calendar || "leave",
       title: wikiStore.project.projectDTO?.title || "",
       description: wikiStore.project.projectDTO?.description || "",
-      url: wikiStore.project.projectDTO?.directory || "",
+      url: wikiStore.project.projectDTO?.url || "",
       showSettings: true
     });
   }

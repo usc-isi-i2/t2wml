@@ -188,7 +188,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       calendar: wikiStore.project.projectDTO?.handle_calendar || "leave",
       title: wikiStore.project.projectDTO?.title || "",
       description: wikiStore.project.projectDTO?.description || "",
-      url: wikiStore.project.projectDTO?.directory || "",
+      url: wikiStore.project.projectDTO?.url || "",
       showProjectSettings: true
     });
   }

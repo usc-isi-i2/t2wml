@@ -120,7 +120,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
             {/* url */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
-                URL
+                Data source URL
               </Form.Label>
               <Col sm="12" md="9">
                 <Form.Control
