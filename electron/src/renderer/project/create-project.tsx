@@ -50,7 +50,7 @@ class CreateProject extends Component<CreateProperties, CreateState> {
       });
   }
 
-  async openFile() { 
+  async openFile() {
     const result = await remote.dialog.showOpenDialog({
             title: "Open Project Folder",
             properties: ['openDirectory', 'createDirectory']
@@ -76,6 +76,7 @@ class CreateProject extends Component<CreateProperties, CreateState> {
           <Form className="container">
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Col xs="9" md="9" className="pr-0">
+                <label>Choose a folder for the project. It must not contain an existing project. We recommend an empty folder.</label>
                 <Button onClick={() => this.openFile()}
                 >Choose a folder</Button>
                 <Form.Label>{this.state.path}</Form.Label>
@@ -92,9 +93,10 @@ class CreateProject extends Component<CreateProperties, CreateState> {
                   defaultValue={this.state.title}
                   onChange={(event) => this.setState({ title: event.target?.value })}
                 />
+                {this.state.title ? null : <label style={{ "color": "#FF0000"}}>Title cannot be left blank</label>}
               </Col>
             </Form.Group>
-            
+
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Col xs="9" md="9" className="pr-0">
                 <Form.Label>
@@ -107,7 +109,7 @@ class CreateProject extends Component<CreateProperties, CreateState> {
                 />
               </Col>
             </Form.Group>
-            
+
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Col xs="9" md="9" className="pr-0">
                 <Form.Label>
@@ -137,7 +139,7 @@ class CreateProject extends Component<CreateProperties, CreateState> {
               </Tooltip>
             }
           >
-            <Button variant="dark" onClick={() => this.createProject()}>
+            <Button variant="dark" onClick={() => this.createProject()} disabled={!this.state.title || !this.state.path}>
               OK
             </Button>
           </OverlayTrigger>

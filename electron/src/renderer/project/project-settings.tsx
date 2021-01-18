@@ -110,6 +110,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 <Form.Control
                   defaultValue={this.props.title}
                   onChange={(event) => this.setState({ title: event?.target.value })}/>
+                  {this.state.title ? null : <label style={{ "color": "#FF0000"}}>Title cannot be left blank</label>}
               </Col>
             </Form.Group>
 
@@ -206,7 +207,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
           <Button variant="outline-dark" onClick={() => this.props.cancelSaveSettings() }>
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => this.handleSaveSettings()}>
+          <Button variant="dark" onClick={() => this.handleSaveSettings()} disabled={!this.state.title}>
             Save
           </Button>
         </Modal.Footer>
