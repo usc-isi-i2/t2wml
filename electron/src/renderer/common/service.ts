@@ -103,12 +103,6 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  // public async createProject(folder: string) {
-  //   const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
-  //   wikiStore.project.projectDTO = response.project; // not necessary?
-  //   wikiStore.changeWindowDisplayMode(folder);
-  // }
-
   public async createProject(folder:string, data: any) {
     const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
@@ -164,12 +158,6 @@ class RequestService {
   public async getMappingCalculation() {
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
     this.fillMapping(response);
-  }
-
-  public async renameProject(folder: string, data: any) {
-    //returns project
-    const response = await backendPut(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
-    wikiStore.project.projectDTO = response.project; // not necessary
   }
 
   public async getSettings(folder: string) {
