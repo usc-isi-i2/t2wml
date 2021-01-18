@@ -64,6 +64,17 @@ class Settings extends Component<SettingsProperties, SettingsState> {
     }
   }
 
+  componentDidUpdate(prevProps: SettingsProperties) {
+    if (prevProps.title !== this.props.title) {
+      this.setState({
+        tmpWarnEmpty: this.props.warnEmpty,
+        title: this.props.title,
+        description: this.props.description,
+        url: this.props.url,
+      });
+    }
+  }
+
   handleSaveSettings() {
     const endpoint = (this.tempSparqlEndpointRef as any).current.value;
     const warn = this.state.tmpWarnEmpty;
