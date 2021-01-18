@@ -449,7 +449,18 @@ def update_settings():
             project.warn_for_empty_cells = warn
         calendar=request_json.get("handleCalendar", None)
         if calendar:
-            project.handle_calendar=calendar
+            calendar_dict={
+                "Replace with Gregorian": "replace",
+                "Leave Unotuched": "leave",
+                "Add Gregorian": "add",
+                "replace": "replace",
+                "add":"add",
+                "leave":"leave"
+            }
+            try:
+                project.handle_calendar=calendar_dict[calendar]
+            except KeyError:
+                raise web_exceptions.InvalidRequestException("No such calendar option")
         project.save()
         update_t2wml_settings(project)
 
