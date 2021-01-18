@@ -116,6 +116,8 @@ class ProjectList extends Component<{}, ProjectListState> {
       await this.requestService.call(this, () => this.requestService.putSettings(wikiStore.project.projectDTO!.directory, data));
     } catch (error) {
       console.log(error);
+    } finally {
+      wikiStore.projects.refreshList();
     }
   }
 
