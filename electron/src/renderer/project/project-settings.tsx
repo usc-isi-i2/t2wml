@@ -40,9 +40,9 @@ interface SettingsState {
 }
 
 const calendarOptions = [
-  "Leave Untouched",
-  "Replace with Gregorian",
-  "Add Gregorian"
+  {text: "Leave Untouched", value: "leave"},
+  {text: "Replace with Gregorian", value: "replace"},
+  {text: "Add Gregorian", value: "add"}
 ];
 
 @observer
@@ -78,7 +78,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
   handleSaveSettings() {
     const endpoint = (this.tempSparqlEndpointRef as any).current.value;
     const warn = this.state.tmpWarnEmpty;
-    const calendar = (this.tempCalendarRef as any).current.value;
+    const calendar = calendarOptions.find(c => c.text === (this.tempCalendarRef as any).current.value)!.value;
     const title = this.state.title;
     const description = this.state.description || '';
     const url = this.state.url || '';
@@ -181,7 +181,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={this.props.calendar}
+                    defaultValue={calendarOptions.find(c => c.value === this.props.calendar)!.text}
                     ref={this.tempCalendarRef}
                     onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
@@ -189,8 +189,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   <Dropdown.Menu style={{ width: "100%" }}>
                     {calendarOptions.map((option, index) => (
                       <Dropdown.Item key={index}
-                        onClick={() => (this.tempCalendarRef as any).current.value = option}>
-                        {option}
+                        onClick={() => (this.tempCalendarRef as any).current.value = option.text}>
+                        {option.text}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
