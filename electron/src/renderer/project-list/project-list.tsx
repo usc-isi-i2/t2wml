@@ -33,7 +33,7 @@ interface ProjectListState extends IStateWithError {
   // user
   userData: any,
 
-  // project settings
+  // project settings window
   endpoint: string;
   warnEmpty: boolean;
   calendar: string;
@@ -67,7 +67,7 @@ class ProjectList extends Component<{}, ProjectListState> {
       // user
       userData: {},
 
-      // settings
+      // project settings window
       showProjectSettings: false,
       endpoint: '',
       warnEmpty: false,

@@ -160,12 +160,6 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async renameProject(folder: string, data: any) {
-    //returns project
-    const response = await backendPut(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
-    wikiStore.project.projectDTO = response.project; // not necessary
-  }
-
   public async getSettings(folder: string, data: any) {
     const response = await backendGet(`/project/settings?project_folder=${folder}`) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
