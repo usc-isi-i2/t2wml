@@ -175,8 +175,11 @@ def create_project():
     project_file = Path(project_folder) / "project.t2wml"
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(project_folder)
+    title = request.get_json()["title"]
+    description = request.get_json()["description"]
+    url=request.get_json()["url"]
     # create project
-    project=create_api_project(project_folder)
+    project=create_api_project(project_folder, title, description, url)
     response = dict(project=get_project_dict(project))
     return response, 201
 
