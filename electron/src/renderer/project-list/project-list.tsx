@@ -206,8 +206,8 @@ class ProjectList extends Component<{}, ProjectListState> {
 
             {/* title */}
             <td>
-              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(project.folder)}>
-                {project.name}
+              <span >
+                <label style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer'}} onClick={() => this.projectClicked(project.folder)}>{project.name}</label>
                 <br></br>
                 <label>{project.description}</label>
               </span>
@@ -223,14 +223,14 @@ class ProjectList extends Component<{}, ProjectListState> {
 
             {/* last modified */}
             <td>
-              <span className="text-left small">
+              <span className="text-left">
                 {this.formatTime(project.modified)}
               </span>
             </td>
 
             {/* date created */}
             <td>
-              <span className="text-left small">
+              <span className="text-left">
                 {this.formatTime(project.created)}
               </span>
             </td>
