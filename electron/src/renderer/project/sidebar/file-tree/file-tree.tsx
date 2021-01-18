@@ -6,7 +6,7 @@ import RequestService from "@/renderer/common/service";
 import { currentFilesService } from "../../../common/current-file-service";
 import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
-import { remote, dialog } from 'electron';
+import { remote, shell } from 'electron';
 import RenameFile from "@/renderer/project/sidebar/file-tree/rename-file";
 
 
@@ -110,16 +110,22 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   openFile() {
-    // dialog.showOpenDialog((fileName: string) => {
-    //   if (!fs.existSync(this.state.clickedNode!.label)) {
-    //     alert("This file does not exist");
-    //     return;
-    //   }
-    //   alert("Opened!!")
-    // })
+    let filePath = this.state.clickedNode!.label;
+    filePath = filePath.replace('/', '\\');
+
+    const directory = wikiStore.project.projectDTO!.directory + '\\' + filePath;
+    shell.showItemInFolder(directory);
   }
 
   deleteFile(deleteFromFs:boolean) {
+
+  }
+
+  addYaml() {
+
+  }
+  
+  addAnnotation() {
 
   }
 
@@ -142,8 +148,8 @@ class FileTree extends Component<TreeProps, TreeState> {
         break;
       }
       case 'Sheet': {
-        menu.append(new MenuItem({ label: 'Add annotation file', click: () => this.renameNode() }));
-        menu.append(new MenuItem({ label: 'Add yaml file', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'Add annotation file', click: () => this.addAnnotation() }));
+        menu.append(new MenuItem({ label: 'Add yaml file', click: () => this.addYaml() }));
         break;
       }
       default: {
