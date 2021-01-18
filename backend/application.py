@@ -176,8 +176,10 @@ def create_project():
     if project_file.is_file():
         raise web_exceptions.ProjectAlreadyExistsException(project_folder)
     title = request.get_json()["title"]
-    description = request.get_json()["description"]
-    url=request.get_json()["url"]
+    if not title:
+        raise web_exceptions.InvalidRequestException("title required to create project")
+    description = request.get_json().get("description", "")
+    url=request.get_json().get("url", "")
     # create project
     project=create_api_project(project_folder, title, description, url)
     response = dict(project=get_project_dict(project))
