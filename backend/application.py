@@ -451,7 +451,7 @@ def update_settings():
         if calendar:
             calendar_dict={
                 "Replace with Gregorian": "replace",
-                "Leave Unotuched": "leave",
+                "Leave Untouched": "leave",
                 "Add Gregorian": "add",
                 "replace": "replace",
                 "add":"add",
