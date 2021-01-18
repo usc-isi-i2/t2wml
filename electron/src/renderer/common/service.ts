@@ -103,8 +103,14 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async createProject(folder: string) {
-    const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
+  // public async createProject(folder: string) {
+  //   const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
+  //   wikiStore.project.projectDTO = response.project; // not necessary?
+  //   wikiStore.changeWindowDisplayMode(folder);
+  // }
+
+  public async createProject(folder:string, data: any) {
+    const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
     wikiStore.changeWindowDisplayMode(folder);
   }
@@ -160,7 +166,7 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async getSettings(folder: string, data: any) {
+  public async getSettings(folder: string) {
     const response = await backendGet(`/project/settings?project_folder=${folder}`) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
   }

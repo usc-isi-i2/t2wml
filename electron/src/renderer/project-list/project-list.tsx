@@ -178,7 +178,7 @@ class ProjectList extends Component<{}, ProjectListState> {
   }
 
   async onShowSettingsClicked(project: ProjectListEntry) {
-    await this.requestService.getSettings(project.folder, {});
+    await this.requestService.getSettings(project.folder);
 
     this.setState({
       endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
