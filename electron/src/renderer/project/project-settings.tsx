@@ -40,9 +40,9 @@ interface SettingsState {
 }
 
 const calendarOptions = [
-  {text: "leave (Leave Untouched)", value: "leave"},
-  {text: "replace (Replace with Gregorian)", value: "replace"},
-  {text: "add (Add Gregorian)", value: "add"}
+  "Leave Untouched",
+  "Replace with Gregorian",
+  "Add Gregorian"
 ];
 
 @observer
@@ -79,9 +79,6 @@ class Settings extends Component<SettingsProperties, SettingsState> {
       Config.defaultSparqlEndpoint,
       "https://query.wikidata.org/sparql"
     ];
-    Object.keys(calendarOptions).map((choice) => (
-      <Dropdown.Item key="choice.name" onClick={() => (this.tempCalendarRef as any).current.value = choice}>{choice}</Dropdown.Item>
-    ));
     return (
       <Modal show={this.props.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
 
@@ -173,7 +170,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                 <Dropdown as={InputGroup} alignRight>
                   <Form.Control
                     type="text"
-                    defaultValue={calendarOptions.find(c => c.value === this.props.calendar)?.text || "leave (Leave Untouched)"}
+                    defaultValue={this.props.calendar}
                     ref={this.tempCalendarRef}
                     onKeyDown={(event: any) => event.stopPropagation()} // or Dropdown would get error
                   />
@@ -181,8 +178,8 @@ class Settings extends Component<SettingsProperties, SettingsState> {
                   <Dropdown.Menu style={{ width: "100%" }}>
                     {calendarOptions.map((option, index) => (
                       <Dropdown.Item key={index}
-                        onClick={() => (this.tempCalendarRef as any).current.value = option.value}>
-                        {option.text}
+                        onClick={() => (this.tempCalendarRef as any).current.value = option}>
+                        {option}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>

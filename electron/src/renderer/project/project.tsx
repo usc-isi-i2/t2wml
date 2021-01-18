@@ -61,7 +61,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       showSettings: false,
       endpoint: '',
       warnEmpty: false,
-      calendar: 'leave',
+      calendar: 'Leave Untouched',
       title: '',
       description: '',
       url: '',
@@ -149,7 +149,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({
       endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
       warnEmpty: wikiStore.project.projectDTO?.warn_for_empty_cells || false,
-      calendar: wikiStore.project.projectDTO?.handle_calendar || "leave",
+      calendar: wikiStore.project.projectDTO?.handle_calendar || "Leave Untouched",
       title: wikiStore.project.projectDTO?.title || "",
       description: wikiStore.project.projectDTO?.description || "",
       url: wikiStore.project.projectDTO?.url || "",
