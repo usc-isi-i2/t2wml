@@ -82,7 +82,9 @@ def create_project(client):
     url = '/api/project?project_folder={project_folder}'.format(project_folder=path)
     response=client.post(url,
         json=dict(
-            path=path
+            title="test",
+            description="",
+            url=""
         )
     )
     assert response.status_code==201

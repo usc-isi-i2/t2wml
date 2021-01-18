@@ -12,11 +12,10 @@ import { faPencilAlt, faSearch, faSortUp, faSortDown, faTimes, faFolderOpen } fr
 // App
 import { Button, Card, FormControl, InputGroup, OverlayTrigger, Spinner, Table, Tooltip } from 'react-bootstrap';
 
-import RenameProject from './rename-project'
 import ToastMessage from '../common/toast';
 
 // console.log
-import { LOG, ErrorMessage } from '../common/general';
+import { ErrorMessage } from '../common/general';
 import RequestService, { IStateWithError } from '../common/service';
 
 import { observer } from "mobx-react";
@@ -24,19 +23,24 @@ import wikiStore from '../data/store';
 import { ProjectListEntry } from './project-entry';
 
 import { shell } from 'electron';
+import Settings from '../project/project-settings';
 
 interface ProjectListState extends IStateWithError {
   showSpinner: boolean;
-  showRenameProject: boolean;
+  showProjectSettings: boolean;
   deletingProjectPath: string;
 
   // user
   userData: any,
 
-  // temp in form
-  tempRenameProjectPath: string | null;
-  tempRenameProject: string;
-  isTempRenameProjectVaild: boolean;
+  // project settings window
+  endpoint: string;
+  warnEmpty: boolean;
+  calendar: string;
+  title: string;
+  description: string;
+  url: string;
+
   tempSearch: string;
 
   // projects
@@ -58,16 +62,20 @@ class ProjectList extends Component<{}, ProjectListState> {
 
       // appearance
       showSpinner: false,
-      showRenameProject: false,
       deletingProjectPath: "",
 
       // user
       userData: {},
 
-      // temp in form
-      tempRenameProjectPath: null,
-      tempRenameProject: "",
-      isTempRenameProjectVaild: true,
+      // project settings window
+      showProjectSettings: false,
+      endpoint: '',
+      warnEmpty: false,
+      calendar: 'leave',
+      title: '',
+      description: '',
+      url: '',
+
       tempSearch: "",
 
       // projects
@@ -92,31 +100,29 @@ class ProjectList extends Component<{}, ProjectListState> {
     wikiStore.projects.refreshList();
   }
 
-  async handleRenameProject(name: string) {
-    const path = this.state.tempRenameProjectPath;
-    let ptitle = name.trim();
-    if (ptitle === "") ptitle = "Untitled project";
+  async handleEditSettings(endpoint: string, warn: boolean, calendar:string, title: string, description: string, url: string) {
+    // update settings
+    this.setState({ showProjectSettings: false });
 
-    if (!path) { return; }
+    // notify backend
+    const data = {"endpoint": endpoint,
+                  "warnEmpty": warn,
+                  "handleCalendar": calendar,
+                  "title": title,
+                  "description": description,
+                  "url": url };
 
-    // before sending request
-    this.setState({ showSpinner: true });
-
-    // send request
-    console.log("<App> -> %c/rename_project%c to rename project %c" + path + "%c as %c" + ptitle, LOG.link, LOG.default, LOG.highlight, LOG.default, LOG.highlight);
-    const data = { "ptitle": ptitle };
     try {
-      await this.requestService.call(this, () => this.requestService.renameProject(path, data));
-      wikiStore.projects.refreshList();
+      await this.requestService.call(this, () => this.requestService.putSettings(wikiStore.project.projectDTO!.directory, data));
     } catch (error) {
       console.log(error);
     } finally {
-      this.setState({ showRenameProject: false, showSpinner: false });
+      wikiStore.projects.refreshList();
     }
   }
 
-  cancelRenameProject() {
-    this.setState({ showRenameProject: false });
+  cancelEditSettings() {
+    this.setState({ showProjectSettings: false });
   }
 
   handleApplySort(willSortBy: SortByField, willBeAscending: boolean | null = null) {
@@ -173,6 +179,20 @@ class ProjectList extends Component<{}, ProjectListState> {
     return time.toUTCString();
   }
 
+  async onShowSettingsClicked(project: ProjectListEntry) {
+    await this.requestService.getSettings(project.folder);
+
+    this.setState({
+      endpoint: wikiStore.project.projectDTO?.sparql_endpoint || "",
+      warnEmpty: wikiStore.project.projectDTO?.warn_for_empty_cells || false,
+      calendar: wikiStore.project.projectDTO?.handle_calendar || "leave",
+      title: wikiStore.project.projectDTO?.title || "",
+      description: wikiStore.project.projectDTO?.description || "",
+      url: wikiStore.project.projectDTO?.url || "",
+      showProjectSettings: true
+    });
+  }
+
   renderProjects() {
     const { tempSearch } = this.state;
     const keywords = tempSearch.toLowerCase().split(/ +/);
@@ -186,8 +206,10 @@ class ProjectList extends Component<{}, ProjectListState> {
 
             {/* title */}
             <td>
-              <span style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer' }} onClick={() => this.projectClicked(project.folder)}>
-                {project.name}
+              <span >
+                <label style={{ "color": "hsl(200, 100%, 30%)", cursor: 'pointer'}} onClick={() => this.projectClicked(project.folder)}>{project.name}</label>
+                <br></br>
+                <label>{project.description}</label>
               </span>
               {/* <span className="text-muted small">&nbsp;[{pid}]</span> */}
             </td>
@@ -201,14 +223,14 @@ class ProjectList extends Component<{}, ProjectListState> {
 
             {/* last modified */}
             <td>
-              <span className="text-left small">
+              <span className="text-left">
                 {this.formatTime(project.modified)}
               </span>
             </td>
 
             {/* date created */}
             <td>
-              <span className="text-left small">
+              <span className="text-left">
                 {this.formatTime(project.created)}
               </span>
             </td>
@@ -222,14 +244,14 @@ class ProjectList extends Component<{}, ProjectListState> {
                 trigger={["hover", "focus"]}
                 overlay={
                   <Tooltip style={{ width: "fit-content" }} id="rename">
-                    <span className="text-left small">Rename</span>
+                    <span className="text-left small">Edit project settings</span>
                   </Tooltip>
                 }
               >
                 <span
                   className="action-duplicate"
                   style={{ display: "inline-block", width: "33%", cursor: "pointer", textAlign: "center" }}
-                  onClick={() => this.setState({ showRenameProject: true, tempRenameProjectPath: project.folder, tempRenameProject: project.name })}
+                  onClick={() => this.onShowSettingsClicked(project) }
                 >
                   <FontAwesomeIcon icon={faPencilAlt} />
                 </span>
@@ -373,14 +395,15 @@ class ProjectList extends Component<{}, ProjectListState> {
 
   renderModals() {
     return (
-      <RenameProject
-        showRenameProject={this.state.showRenameProject}
-        showSpinner={this.state.showSpinner}
-        tempRenameProject={this.state.tempRenameProject}
-        isTempRenameProjectVaild={this.state.isTempRenameProjectVaild}
-        handleRenameProject={(name) => this.handleRenameProject(name)}
-        cancelRenameProject={() => this.cancelRenameProject()}
-      />
+      <Settings showSettings={this.state.showProjectSettings}
+          endpoint={this.state.endpoint}
+          warnEmpty={this.state.warnEmpty}
+          calendar={this.state.calendar}
+          title={this.state.title}
+          description={this.state.description}
+          url={this.state.url}
+          handleSaveSettings={this.handleEditSettings.bind(this)}
+          cancelSaveSettings={() => this.cancelEditSettings()} />
     );
   }
 

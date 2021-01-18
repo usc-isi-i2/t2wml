@@ -23,12 +23,12 @@ class RendererNotifier {
         this.mainWindow.webContents.send('open-project', folder);
     }
 
-    public newProject(folder: string) {
+    public newProject() {
         if(!this.mainWindow) {
             console.warn("mainWindow not set on RendererNotifier");
             return;
         }
-        this.mainWindow.webContents.send('new-project', folder);
+        this.mainWindow.webContents.send('new-project');
     }
 
     public refreshProject() {
@@ -46,6 +46,14 @@ class RendererNotifier {
         }
         this.mainWindow.webContents.send('project-settings');
 
+    }
+
+    public globalSettings() {
+        if(!this.mainWindow) {
+            console.warn("mainWindow not set on RendererNotifier");
+            return;
+        }
+        this.mainWindow.webContents.send('global-settings');
     }
 
     public toggleShowCleanedData(checked: boolean){

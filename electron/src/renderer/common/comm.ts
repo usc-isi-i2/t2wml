@@ -16,15 +16,11 @@ const instance = axios.create({
 
 function getResponse(response: Response, method: string): Promise<any> {
   if (response.statusText !== "OK" && response.statusText !== "CREATED") {
-    // if (response.status === 401) {
-      // Unauthorized
       throw {
         errorCode: response.status,
-        errorTitle: `${method} failed`,
-        errorDescription: (response as any).data.error.errorTitle,
+        errorTitle: `${method} failed. ${(response as any).data.error.errorTitle}`,
+        errorDescription: (response as any).data.error.errorDescription,
       } as ErrorMessage;
-    // }
-    // throw (response as any).error; // Error class from backend (code, title, description)
   }
   return (response as any).data;
 }

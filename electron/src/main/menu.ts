@@ -43,6 +43,13 @@ export default class MainMenuManager {
                     { type: 'separator'},
                     { label: 'Open Recent', submenu: this.recentlyUsed },
                     { type: 'separator'},
+                    { label: 'Preferences', submenu: [
+                        {
+                            label: 'Global Settings',
+                            click: () => this.onGlobalSettingsClick()
+                        }
+                    ]},
+                    { type: 'separator'},
                     config.platform === 'mac' ? { role: 'close' } : { role: 'quit' }
                 ]
             },
@@ -76,11 +83,11 @@ export default class MainMenuManager {
 
                 ]
             },
-            { 
+            {
                 label: 'Help',
                 submenu: [
                     //{ //TODO:
-                    //    label: 'Usage Guide',   
+                    //    label: 'Usage Guide',
                     //},
                     {
                         label: 'Syntax Guide',
@@ -147,7 +154,7 @@ export default class MainMenuManager {
 
     private fillProjectSubMenu() {
         //electron will not allow disabling/hiding top level menu item, so we can only disable within the sub menu when not in project
-        const enabled = uiState.displayMode === 'project'; 
+        const enabled = uiState.displayMode === 'project';
         this.projectSubMenu = [{
             label: 'Refresh',
             accelerator: config.platform === 'mac' ? 'Cmd+R' : 'F5',
@@ -170,14 +177,7 @@ export default class MainMenuManager {
     }
 
     public async onNewProjectClick() {
-        const result = await dialog.showOpenDialog( this.mainWindow!, {
-                title: "Open Project Folder",
-                properties: ['openDirectory', 'createDirectory']
-            });
-
-        if (!result.canceled && result.filePaths) {
-            rendererNotifier.newProject(result.filePaths[0]);
-        }
+        rendererNotifier.newProject();
     }
 
     public async onOpenProjectClick() {
@@ -210,6 +210,10 @@ export default class MainMenuManager {
 
     private onProjectSettingsClick() {
         rendererNotifier.projectSettings();
+    }
+
+    private onGlobalSettingsClick() {
+        rendererNotifier.globalSettings();
     }
 
     private onClearRecentlyOpenedClick() {

@@ -22,9 +22,8 @@ def add_entities_from_project(project):
 def add_entities_from_file(file_path):
     return api_add_entities_from_file(file_path)
 
-def create_api_project(project_folder):
-    api_proj = Project(project_folder)
-    api_proj.title = Path(project_folder).stem
+def create_api_project(project_folder, title, description, url):
+    api_proj = Project(project_folder, title=title, description=description, url=url)
     api_proj.save()
     return api_proj
 

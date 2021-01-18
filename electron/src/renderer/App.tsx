@@ -12,10 +12,16 @@ import { Spinner } from 'react-bootstrap';
 import { IpcRendererEvent } from 'electron/renderer';
 import * as path from 'path';
 import * as fs from 'fs';
+import GlobalSettings from './project-list/global-settings';
+import CreateProject from './project/create-project';
 
 
 interface AppState extends IStateWithError {
   showSpinner: boolean;
+  showSettings: boolean;
+  datamartIntegration: boolean;
+  datamartApi: string;
+  showCreateProjectModal: boolean;
 }
 
 @observer
@@ -27,7 +33,11 @@ class App extends Component<{}, AppState> {
 
     this.state = {
       showSpinner: false,
-      errorMessage: {} as ErrorMessage
+      errorMessage: {} as ErrorMessage,
+      showSettings: false,
+      datamartIntegration: false,
+      datamartApi: '',
+      showCreateProjectModal: false,
     }
   }
 
@@ -35,11 +45,14 @@ class App extends Component<{}, AppState> {
     ipcRenderer.on('open-project', (sender: IpcRendererEvent, folder: string) => {
       this.onOpenProject(folder);
     });
-    ipcRenderer.on('new-project', (sender: IpcRendererEvent, folder: string) => {
-      this.onNewProject(folder);
+    ipcRenderer.on('new-project', () => {
+      this.onNewProject();
     });
     ipcRenderer.on('toggle-cleaned', (sender: IpcRendererEvent, checked: boolean) => {
       this.onToggleCleaned(checked);
+    });
+    ipcRenderer.on('global-settings', () => {
+      this.onShowGlobalSettings();
     });
 
     this.checkCommandLineArgs();
@@ -61,7 +74,8 @@ class App extends Component<{}, AppState> {
         return;
       }
       else {
-        this.onNewProject(projectDir)
+        this.onNewProject()
+        // this.onNewProject(projectDir)
         return;
       }
     }
@@ -73,9 +87,21 @@ class App extends Component<{}, AppState> {
     wikiStore.table.showCleanedData = checked;
   }
 
-  async onNewProject(folder: string) {
-    console.log('Creating project in folder ', folder);
-    await this.handleNewProject(folder);
+  async onShowGlobalSettings() {
+    await this.requestService.getGlobalSettings();
+    this.setState({
+      datamartIntegration: wikiStore.globalSettings.datamart_integration,
+      datamartApi: wikiStore.globalSettings.datamart_api,
+      showSettings: true
+    });
+  }
+
+  async onNewProject() {
+    // console.log('Creating project in folder ', folder);
+    // await this.handleNewProject(folder);
+    // Open create project modal.
+    this.setState({ showCreateProjectModal :true });
+
   }
 
   async onOpenProject(folder: string) {
@@ -116,14 +142,61 @@ class App extends Component<{}, AppState> {
       //after request
       this.setState({ showSpinner: false });
     }
+  }
 
+  async handleSaveSettings(datamartIntegration: boolean, datamartApi: string) {
+    // update settings
+    this.setState({ showSettings: false });
 
+    // notify backend
+    const data = { "datamartIntegration": datamartIntegration,
+                   "datamartApi": datamartApi };
+
+    try {
+      await this.requestService.call(this, () => this.requestService.putGlobalSettings(data));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
+  cancelSaveSettings() {
+    this.setState({ showSettings: false });
+  }
+  
+  async createProject(path: string, title: string, description: string, url: string) {
+    this.setState({ showCreateProjectModal: false });
+
+    const data = {  "title": title,
+                    "description": description,
+                    "url": url };
+
+    try {
+      await this.requestService.call(this, () => this.requestService.createProject(path, data));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  cancelCreateProject() {
+    this.setState({ showCreateProjectModal: false });
   }
 
   render() {
     return (
       <div>
         { this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
+
+        <GlobalSettings showSettings={this.state.showSettings}
+          datamartIntegration={this.state.datamartIntegration}
+          datamartApi={this.state.datamartApi}
+          handleSaveSettings={this.handleSaveSettings.bind(this)}
+          cancelSaveSettings={() => this.cancelSaveSettings()} />
+
+        <CreateProject 
+          showCreateProjectModal={this.state.showCreateProjectModal}
+          createProject={this.createProject.bind(this)}
+          cancelCreateProject={() => this.cancelCreateProject()}
+        />
 
         {/* loading spinner */}
         <div className="mySpinner" hidden={!this.state.showSpinner} style={{ height: "100%" }}>

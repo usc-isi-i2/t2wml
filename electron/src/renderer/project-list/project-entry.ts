@@ -24,6 +24,8 @@ export class ProjectListEntry {
     private _valid = false;
     public get valid() { return this._valid; }  // False if the project doesn't exist
 
+    public get description() { return this._yaml.description; }
+
     private _watcher?: fs.FSWatcher;
 
     public constructor(folder: string) {
