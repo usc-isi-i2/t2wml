@@ -214,6 +214,11 @@ export class ProjectState{
     }
 }
 
+export class GlobalSettings{
+    @observable datamart_integration = false;
+    @observable datamart_api = "";
+}
+
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
@@ -226,6 +231,8 @@ class WikiStore {
     @observable public displayMode: DisplayMode = 'project-list';
     @observable public projects = new ProjectList();
     @observable public project = new ProjectState();
+    @observable public globalSettings = new GlobalSettings();
+
 
     @action
     public changeWindowDisplayMode(path?: string) {

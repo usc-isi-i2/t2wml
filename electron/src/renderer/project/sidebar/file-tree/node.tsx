@@ -41,11 +41,9 @@ class FileNode extends Component<NodeProps, NodeState> {
     }
   }
 
-  static getDerivedStateFromProps(nextProps:NodeProps) {
-    if (nextProps.bolded) {
-      return {
-        expanded: true
-      };
+  componentDidUpdate(prevProps: NodeProps) {
+    if ((prevProps.bolded !== this.props.bolded) && this.props.bolded) {
+      this.setState({ expanded: true }); 
     }
   }
 

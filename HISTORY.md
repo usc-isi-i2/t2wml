@@ -1,6 +1,23 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.6.1:
+-----------------------
+* major bug fix: the race condition that sometimes broke opening or creating projects
+* t2wml-api version 0.1.0, and future builds will use t2wml-api by pypi version and not from repo
+* additional changes to pip install instructions in build workflow
+* split global settings (now available under File>Preferences>Global Settings) and project settings (still accessible from Project>Settings, but now also available from edit button in project list-- was previously rename project but is now "Edit project settings")
+* add title, url, and description to project settings window. title is required.
+* add description to display in project list
+* add a new dialogue window when creating a new project, which explains to the user about choosing a folder, and enables choice of title (required), url, and description.
+* preliminary support for csv results download
+* restored yaml saving ability
+* fix to bug that blocked downloading results from annotation
+* fix to performance bug in previous version
+* changes to entity database- use sparql_endpoint as an id for non-file definitions
+* some small tweaks/fixes to annotation UX
+
+
 Changes in version 2.6.0:
 -----------------------
 * t2wml-api version 0.0.21

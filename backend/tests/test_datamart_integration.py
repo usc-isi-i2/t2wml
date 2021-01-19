@@ -8,14 +8,14 @@ def test_datamart_integration(client):
     project_folder=create_project(client)
 
     #get old settings:
-    url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+    url='/api/project/globalsettings'
     response=client.get(url)
     data = response.data.decode("utf-8")
     data = json.loads(data)
-    old_global_settings=data["project"]
+    old_global_settings=data
 
     #set new settings
-    url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+    url='/api/project/globalsettings'
     endpoint='https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
     response=client.put(url,
             json=dict(
@@ -30,7 +30,7 @@ def test_datamart_integration(client):
     data = json.loads(data)
 
     #reset to old settings:
-    url='/api/project/settings?project_folder={project_folder}'.format(project_folder=project_folder)
+    url='/api/project/globalsettings'
     endpoint='https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api'  #'https://datamart:datamart-api-789@dsbox02.isi.edu:8888/datamart-api-wm'
     response=client.put(url,
             json=dict(

@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -57,9 +57,9 @@ class RequestService {
 
   @action
   public switchProjectState(response: ResponseWithProjectDTO){
-    console.debug('switchProejctState called');
-    currentFilesService.getFiles(response.project);
+    console.debug('switchProjectState called');
     wikiStore.project.projectDTO = response.project;
+    currentFilesService.getFiles(response.project);
 
     // new project
     if ( !Object.keys(response.project.data_files).length ) {
@@ -103,8 +103,8 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async createProject(folder: string) {
-    const response = await backendPost(`/project?project_folder=${folder}`) as ResponseWithProjectDTO;
+  public async createProject(folder:string, data: any) {
+    const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
     wikiStore.changeWindowDisplayMode(folder);
   }
@@ -160,16 +160,26 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async renameProject(folder: string, data: any) {
-    //returns project
-    const response = await backendPut(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
-    wikiStore.project.projectDTO = response.project; // not necessary
+  public async getSettings(folder: string) {
+    const response = await backendGet(`/project/settings?project_folder=${folder}`) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
   }
 
-  public async getSettings(folder: string, data: any) {
-    //returns endpoint, warnEmpty
+  public async putSettings(folder: string, data: any) {
     const response = await backendPut(`/project/settings?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
+  }
+
+  public async getGlobalSettings() {
+    const response = await backendGet(`/project/globalsettings`) as GlobalSettingsDTO;
+    wikiStore.globalSettings.datamart_api=response.datamart_api
+    wikiStore.globalSettings.datamart_integration=response.datamart_integration
+  }
+
+  public async putGlobalSettings(data: any) {
+    const response = await backendPut(`/project/globalsettings`, data) as GlobalSettingsDTO;
+    wikiStore.globalSettings.datamart_api=response.datamart_api
+    wikiStore.globalSettings.datamart_integration=response.datamart_integration
   }
 
   public async uploadEntities(data: any) {
