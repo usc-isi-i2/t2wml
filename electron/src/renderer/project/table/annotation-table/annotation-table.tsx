@@ -552,6 +552,11 @@ class AnnotationTable extends Component<{}, TableState> {
     const element = event.target as any;
     if (element === this.prevElement) { return; }
 
+    // Don't allow out-of-bounds resizing
+    if ( element.nodeName !== 'TD' ) {
+      return;
+    }
+
     if (this.selecting && !event.shiftKey) {
 
       // Show the updated selection while moving
