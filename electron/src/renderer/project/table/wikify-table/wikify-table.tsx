@@ -5,18 +5,24 @@ import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
 import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
+import WikifyMenu from './wikify-menu';
 import * as utils from '../table-utils';
+import { settings } from '../../../../main/settings';
 
 
 interface TableState {
   tableData: TableCell[][] | undefined;
   selectedCell: Cell | null;
+  showWikifyMenu: boolean,
+  wikifyMenuPosition?: Array<number>,
 }
 
 
 @observer
 class WikifyTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
+  private selections: CellSelection[] = [];
+
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
     this.tableRef = reference;
@@ -29,6 +35,8 @@ class WikifyTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       selectedCell: new Cell(),
+      showAnnotationMenu: false,
+      annotationMenuPosition: [50, 70],
     };
   }
 
@@ -268,6 +276,26 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
+  openWikifyMenu(event: React.MouseEvent) {
+    let { pageX, pageY } = event;
+    pageX = pageX - 250;
+    if ( settings.window.height - pageY <= 275 ) {
+      pageY -= 275;
+    } else {
+      pageY = pageY - 10;
+    }
+    this.setState({
+      showWikifyMenu: true,
+      wikifyMenuPosition: [pageX, pageY],
+    });
+  }
+
+  handleOnMouseUp(event: React.MouseEvent) {
+    if (this.selections) {
+      this.openWikifyMenu(event);
+    }
+  }
+
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
 
@@ -281,8 +309,13 @@ class WikifyTable extends Component<{}, TableState> {
       counter += 1;
     }
 
+    this.setState({
+      showWikifyMenu: false,
+    });
+
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
+    this.selections = [{ x1, x1, y1, y1 }];
     this.selectCell(element);
 
     // Activate the element on click
@@ -311,9 +344,12 @@ class WikifyTable extends Component<{}, TableState> {
     if (!selectedCell) { return; }
 
     if (event.keyCode == 27) {
+      this.closeWikifyMenu();
     }
 
     if ([37, 38, 39, 40].includes(event.keyCode)) {
+      this.setState({ showWikifyMenu: true });
+
       event.preventDefault();
 
       const table: any = this.tableRef;
@@ -351,6 +387,27 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
+  closeWikifyMenu() {
+    this.setState({
+      showWikifyMenu: false,
+    });
+  }
+
+  renderWikifyMenu() {
+    const {
+      showWikifyMenu,
+      wikifyMenuPosition,
+    } = this.state;
+    if (showWikifyMenu) {
+      return (
+        <WikifyMenu
+          selections={this.selections}
+          position={wikifyMenuPosition}
+          onClose={() => this.closeWikifyMenu()} />
+      )
+    }
+  }
+
   renderTable() {
     return (
       <Table
@@ -368,6 +425,7 @@ class WikifyTable extends Component<{}, TableState> {
     return (
       <Fragment>
         {this.renderTable()}
+        {this.renderWikifyMenu()}
       </Fragment>
     )
   }
