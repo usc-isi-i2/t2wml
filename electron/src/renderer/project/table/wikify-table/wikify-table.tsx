@@ -11,7 +11,6 @@ import * as utils from '../table-utils';
 interface TableState {
   tableData: TableCell[][] | undefined;
   selectedCell: Cell | null;
-  showToast: boolean;
 }
 
 
@@ -30,7 +29,6 @@ class WikifyTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       selectedCell: new Cell(),
-      showToast: false,
     };
   }
 
@@ -219,7 +217,7 @@ class WikifyTable extends Component<{}, TableState> {
   selectRelatedCells(row: number, col: number) {
     const selectedCell = new Cell(col - 1, row - 1);
 
-    this.setState({ selectedCell, showToast: true });
+    this.setState({ selectedCell });
 
     // Update selected cell in the data store
     wikiStore.table.selectedCell = selectedCell;
@@ -312,11 +310,7 @@ class WikifyTable extends Component<{}, TableState> {
     const { selectedCell } = this.state;
     if (!selectedCell) { return; }
 
-    // Hide table toast with ESC key
     if (event.keyCode == 27) {
-      this.setState({ showToast: false }, () => {
-        this.resetSelections();
-      });
     }
 
     if ([37, 38, 39, 40].includes(event.keyCode)) {
@@ -355,10 +349,6 @@ class WikifyTable extends Component<{}, TableState> {
       this.selectCell(nextElement);
       this.selectRelatedCells(row + 1, col + 1);
     }
-  }
-
-  onCloseToast() {
-    this.setState({ showToast: false });
   }
 
   renderTable() {
