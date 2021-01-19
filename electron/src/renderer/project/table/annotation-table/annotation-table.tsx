@@ -10,6 +10,7 @@ import { CellSelection } from '../../../common/general';
 import { config } from '../../../../main/config';
 import AnnotationMenu from './annotation-menu';
 import RequestService from '@/renderer/common/service';
+import { settings } from '../../../../main/settings';
 
 
 interface TableState {
@@ -445,7 +446,11 @@ class AnnotationTable extends Component<{}, TableState> {
   openAnnotationMenu(event: React.MouseEvent) {
     let { pageX, pageY } = event;
     pageX = pageX - 250;
-    pageY = pageY - 10;
+    if ( settings.window.height - pageY <= 275 ) {
+      pageY -= 275;
+    } else {
+      pageY = pageY - 10;
+    }
     this.setState({
       showAnnotationMenu: true,
       annotationMenuPosition: [pageX, pageY],
