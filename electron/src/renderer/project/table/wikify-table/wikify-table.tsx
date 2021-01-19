@@ -361,17 +361,23 @@ class WikifyTable extends Component<{}, TableState> {
     this.setState({ showToast: false });
   }
 
+  renderTable() {
+    return (
+      <Table
+        optionalClassNames={'wikify-table'}
+        tableData={this.state.tableData}
+        onMouseUp={this.handleOnMouseUp.bind(this)}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={() => void 0}
+        onClickHeader={this.handleOnClickHeader.bind(this)}
+        setTableReference={this.setTableReference.bind(this)} />
+    )
+  }
+
   render() {
     return (
       <Fragment>
-        <Table
-          optionalClassNames={'wikify-table'}
-          tableData={this.state.tableData}
-          onMouseUp={() => void 0}
-          onMouseDown={this.handleOnMouseDown.bind(this)}
-          onMouseMove={() => void 0}
-          onClickHeader={this.handleOnClickHeader.bind(this)}
-          setTableReference={this.setTableReference.bind(this)} />
+        {this.renderTable()}
       </Fragment>
     )
   }
