@@ -221,7 +221,7 @@ def upload_data_file():
     return response, 200
 
 
-@app.route('/api/project/entity', methods=['POST'])
+@app.route('/api/project/entities', methods=['POST'])
 @json_response
 def upload_entities():
     project=get_project()
@@ -243,6 +243,14 @@ def upload_entities():
 def get_project_files():
     project=get_project()
     response=get_entities(project)
+    return response, 200
+
+@app.route('/api/project/entities', methods=['PUT'])
+@json_response
+def get_project_files():
+    project=get_project()
+    #TODO
+    response=dict()
     return response, 200
 
 

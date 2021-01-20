@@ -183,7 +183,7 @@ class RequestService {
   }
 
   public async uploadEntities(data: any) {
-    const response = await backendPost(`/project/entity?${this.getDataFileParams(false)}`, data) as ResponseUploadEntitiesDTO;
+    const response = await backendPost(`/project/entities?${this.getDataFileParams(false)}`, data) as ResponseUploadEntitiesDTO;
     this.updateProjectandQnode(response);
     wikiStore.wikifier.entitiesStats = response.entitiesStats;
   }
