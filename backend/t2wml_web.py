@@ -3,8 +3,9 @@ import os
 import json
 import numpy as np
 from pathlib import Path
+from numpy.core.numeric import full
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
-from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper
+from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper, kgtk_to_dict
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
@@ -309,3 +310,12 @@ def save_annotations(project, annotation, annotations_path, data_path, sheet_nam
     dga.save(annotations_path)
     project.add_annotation_file(annotations_path, data_path, sheet_name)
     project.save()
+
+
+
+def get_entities(project: Project):
+    entity_dict={}
+    for file in project.entity_files:
+        full_path=project._get_full_path(file)
+        entity_dict.update(kgtk_to_dict(full_path))
+    return entity_dict

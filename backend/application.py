@@ -7,7 +7,7 @@ import web_exceptions
 from app_config import app
 from t2wml_web import (set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
-                        add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
+                        add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, save_dataframe, get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
@@ -236,6 +236,15 @@ def upload_entities():
     if calc_params:
         response["layers"] = get_qnodes_layer(calc_params)
     return response, 200
+
+
+@app.route('/api/project/entities', methods=['GET'])
+@json_response
+def get_project_files():
+    project=get_project()
+    response=get_entities(project)
+    return response, 200
+
 
 @app.route('/api/wikifier', methods=['POST'])
 @json_response
@@ -471,6 +480,11 @@ def update_settings():
 
     response=dict(project = get_project_dict(project))
     return response, 200
+
+
+
+
+
 
 
 @app.route('/api/is-alive')
