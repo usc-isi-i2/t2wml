@@ -7,7 +7,7 @@ export const TYPES = [{
   }],
 }, {
   'label': 'Monolingual String',
-  'value': 'monolingualString',
+  'value': 'monolingualtext',
   'children': [{
     'label': 'Language',
     'value': 'language',
@@ -43,7 +43,7 @@ export const TYPES = [{
   }],
 }, {
   'label': 'Wikidata Item',
-  'value': 'qNode',
+  'value': 'wikibaseitem',
   'children': [{
     'label': 'Property',
     'value': 'property',
