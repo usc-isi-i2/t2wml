@@ -188,6 +188,11 @@ class RequestService {
     wikiStore.wikifier.entitiesStats = response.entitiesStats;
   }
 
+  public async getEntities() {
+    const response = await backendGet(`/project/entities?${this.getDataFileParams(false)}`) as ResponseUploadEntitiesDTO;
+    debugger
+  }
+
   public async downloadResults(fileType: string) {
     //returns "data" (the download), "error": None, and "internalErrors"
     const response = await backendGet(`/project/download/${fileType}?${this.getMappingParams()}`);

@@ -167,6 +167,11 @@ export default class MainMenuManager {
             enabled,
         },
         {
+            label: 'Entities',
+            click: () => this.onProjectEntitiesClick(),
+            enabled,
+        },
+        {
             label: 'Show Cleaned Data',
             type: 'checkbox',
             checked: uiState.showCleanedData,
@@ -210,6 +215,10 @@ export default class MainMenuManager {
 
     private onProjectSettingsClick() {
         rendererNotifier.projectSettings();
+    }
+
+    private onProjectEntitiesClick() {
+        rendererNotifier.projectEntities();
     }
 
     private onGlobalSettingsClick() {

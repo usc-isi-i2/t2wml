@@ -13,7 +13,7 @@ import { IpcRendererEvent } from 'electron/renderer';
 import * as path from 'path';
 import * as fs from 'fs';
 import GlobalSettings from './project-list/global-settings';
-import CreateProject from './project/create-project';
+import CreateProject from './project/modals/create-project';
 
 
 interface AppState extends IStateWithError {

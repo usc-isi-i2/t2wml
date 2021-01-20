@@ -20,15 +20,17 @@ import ToastMessage from '../common/toast';
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
-import Settings from './project-settings';
+import Settings from './modals/project-settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
 import TableContainer from './table/table-container';
 import { currentFilesService } from '../common/current-file-service';
+import Entities from './modals/entities';
 
 
 interface ProjectState extends IStateWithError {
   showSettings: boolean;
+  showEntities: boolean;
   endpoint: string;
   warnEmpty: boolean;
   calendar: string;
@@ -59,6 +61,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
       // appearance
       showSettings: false,
+      showEntities: false,
       endpoint: '',
       warnEmpty: false,
       calendar: 'leave',
@@ -84,6 +87,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
+    ipcRenderer.on('project-entities', this.onShowEntitiesClicked);
   }
 
   async componentWillUnmount() {
@@ -92,6 +96,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
+    ipcRenderer.removeListener('project-entities', this.onShowEntitiesClicked);
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -157,6 +162,10 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
+  onShowEntitiesClicked() {
+    this.setState({ showEntities: true });
+  }
+
   async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, title: string, description: string | undefined, url: string | undefined) {
     // update settings
     this.setState({ showSettings: false });
@@ -180,6 +189,13 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({ showSettings: false });
   }
 
+  handleSaveEntities() {
+    this.setState({ showEntities: false });
+  }
+
+  cancelSaveEntities() {
+    this.setState({ showEntities: false });
+  }
 
   render() {
     return (
@@ -200,6 +216,10 @@ class Project extends Component<ProjectProps, ProjectState> {
           calendar={this.state.calendar}
           handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
+
+        <Entities showEntities={this.state.showEntities}
+          handleSaveEntities={() => this.handleSaveEntities()}
+          cancelSaveEntities={() => this.cancelSaveEntities()} />
 
         {/* content */}
         <div style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
