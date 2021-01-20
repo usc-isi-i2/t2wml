@@ -317,5 +317,5 @@ def get_entities(project: Project):
     entity_dict={}
     for file in project.entity_files:
         full_path=project._get_full_path(file)
-        entity_dict.update(kgtk_to_dict(full_path))
+        entity_dict[file]=kgtk_to_dict(full_path)
     return entity_dict
