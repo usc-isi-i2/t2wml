@@ -38,6 +38,7 @@ interface ProjectState extends IStateWithError {
   description: string;
   url: string;
   name: string;
+  entityProperties: any; // TODO: add type
 }
 
 interface ProjectProps {
@@ -69,6 +70,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       description: '',
       url: '',
       name: '',
+      entityProperties: [],
 
       errorMessage: {} as ErrorMessage,
     };
@@ -87,7 +89,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
-    ipcRenderer.on('project-entities', this.onShowEntitiesClicked);
+    ipcRenderer.on('project-entities', () => this.onShowEntitiesClicked());
   }
 
   async componentWillUnmount() {
@@ -96,7 +98,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
-    ipcRenderer.removeListener('project-entities', this.onShowEntitiesClicked);
+    ipcRenderer.removeListener('project-entities', () => this.onShowEntitiesClicked());
   }
 
   componentDidUpdate(prevProps: ProjectProps) {
@@ -162,8 +164,12 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
-  onShowEntitiesClicked() {
-    this.setState({ showEntities: true });
+  async onShowEntitiesClicked() {
+    // await this.requestService.getEntities();
+    this.setState({ 
+      entityProperties: [], //TODO: take it from the store
+      showEntities: true
+    });
   }
 
   async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, title: string, description: string | undefined, url: string | undefined) {
@@ -218,6 +224,7 @@ class Project extends Component<ProjectProps, ProjectState> {
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
         <Entities showEntities={this.state.showEntities}
+          properties={this.state.entityProperties}
           handleSaveEntities={() => this.handleSaveEntities()}
           cancelSaveEntities={() => this.cancelSaveEntities()} />
 

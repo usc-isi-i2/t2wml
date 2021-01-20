@@ -190,6 +190,7 @@ class RequestService {
 
   public async getEntities() {
     const response = await backendGet(`/project/entities?${this.getDataFileParams(false)}`) as ResponseUploadEntitiesDTO;
+    // TODO: update store here
     debugger
   }
 

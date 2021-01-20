@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../project.css';
-import './ag-grid.css';
-import './ag-theme-balham.css';
+import '../ag-grid.css';
+import '../ag-theme-balham.css';
 
 // App
 import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-bootstrap';
