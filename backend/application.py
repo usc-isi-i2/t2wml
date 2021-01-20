@@ -7,7 +7,7 @@ import web_exceptions
 from app_config import app
 from t2wml_web import (set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
-                        add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify, get_entities)
+                        add_entities_from_file, get_qnodes_layer, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, save_dataframe, get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
@@ -249,8 +249,9 @@ def get_project_files():
 @json_response
 def get_project_files():
     project=get_project()
-    #TODO
-    response=dict()
+    entity_file = request.get_json()["entity_file"]
+    updated_entries = request.get_json()["updated_entries"]
+    response=update_entities(project, entity_file, updated_entries)
     return response, 200
 
 
