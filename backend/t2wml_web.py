@@ -324,7 +324,7 @@ def get_entities(project: Project):
 def update_entities(project, entity_file, updated_entries):
 
     entities=get_entities(project)[entity_file]
-    updated_content=entities.update(updated_entries)
+    entities.update(updated_entries)
     full_path=project.get_full_path(entity_file)
-    dict_to_kgtk(updated_content, full_path)
+    dict_to_kgtk(entities, full_path)
     return get_entities(project)

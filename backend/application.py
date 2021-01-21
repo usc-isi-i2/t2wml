@@ -452,7 +452,6 @@ def update_settings():
     :return:
     """
     project=get_project()
-
     if request.method == 'PUT':
         request_json=request.get_json()
         title = request_json.get("title", None)
