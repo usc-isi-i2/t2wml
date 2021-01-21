@@ -165,9 +165,10 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   async onShowEntitiesClicked() {
-    // await this.requestService.getEntities();
+    await this.requestService.getEntities();
+    
     this.setState({ 
-      entityProperties: [], //TODO: take it from the store
+      entityProperties: wikiStore.entitiesData.entities,
       showEntities: true
     });
   }
@@ -195,8 +196,18 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({ showSettings: false });
   }
 
-  handleSaveEntities() {
-    this.setState({ showEntities: false });
+  async handleSaveEntities(file: string, property: string, propertyVals: any) {
+    const data = {
+      entity_file: file,
+      updated_entries: {[property]: propertyVals},
+    }
+    try {
+      await this.requestService.saveEntities(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({ showEntities: false });
+    }
   }
 
   cancelSaveEntities() {
@@ -225,7 +236,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
         <Entities showEntities={this.state.showEntities}
           properties={this.state.entityProperties}
-          handleSaveEntities={() => this.handleSaveEntities()}
+          handleSaveEntities={this.handleSaveEntities.bind(this)}
           cancelSaveEntities={() => this.cancelSaveEntities()} />
 
         {/* content */}

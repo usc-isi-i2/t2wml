@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -189,9 +189,13 @@ class RequestService {
   }
 
   public async getEntities() {
-    const response = await backendGet(`/project/entities?${this.getDataFileParams(false)}`) as ResponseUploadEntitiesDTO;
-    // TODO: update store here
-    debugger
+    const response = await backendGet(`/project/entities?${this.getDataFileParams()}`) as ResponseEntitiesPropertiesDTO; // TODO- check the type
+    wikiStore.entitiesData.entities = response;
+  }
+
+  public async saveEntities(data: any) {
+    const response = await backendPut(`/project/entities?${this.getDataFileParams()}`, data) as ResponseEntitiesPropertiesDTO;
+    wikiStore.entitiesData.entities = response;
   }
 
   public async downloadResults(fileType: string) {
