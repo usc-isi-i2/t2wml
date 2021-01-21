@@ -240,14 +240,14 @@ def upload_entities():
 
 @app.route('/api/project/entities', methods=['GET'])
 @json_response
-def get_project_files():
+def get_entities():
     project=get_project()
     response=get_entities(project)
     return response, 200
 
 @app.route('/api/project/entities', methods=['PUT'])
 @json_response
-def get_project_files():
+def edit_entities():
     project=get_project()
     entity_file = request.get_json()["entity_file"]
     updated_entries = request.get_json()["updated_entries"]
