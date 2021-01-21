@@ -240,7 +240,7 @@ def upload_entities():
 
 @app.route('/api/project/entities', methods=['GET'])
 @json_response
-def get_entities():
+def get_project_entities():
     project=get_project()
     response=get_entities(project)
     return response, 200
