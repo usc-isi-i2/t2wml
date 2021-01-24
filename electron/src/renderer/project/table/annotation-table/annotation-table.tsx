@@ -597,11 +597,19 @@ class AnnotationTable extends Component<{}, TableState> {
 
       // Update the last x coordinate of the selection
       const x2 = element.cellIndex;
-      selection.x2 = x2;
+      if ( selection.x1 < selection.x2 ) {
+        selection.x2 = x2;
+      } else {
+        selection.x1 = x2;
+      }
 
       // Update the last y coordinate of the selection
       const y2 = element.parentElement.rowIndex;
-      selection.y2 = y2;
+      if ( selection.y1 < selection.y2 ) {
+        selection.y2 = y2;
+      } else {
+        selection.y1 = y2;
+      }
 
       if ( this.prevElement.nodeName === 'TD' ) {
         const x1 = this.prevElement.cellIndex;
