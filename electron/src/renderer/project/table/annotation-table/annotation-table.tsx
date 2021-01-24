@@ -630,7 +630,6 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'up';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1, 'x2': x1, 'y1': y1 - 1, 'y2': y1 - 1 }];
           this.selectCell(nextElement, y1 - 1, x1, y1 - 1, x1, x1, y1 - 1);
@@ -640,10 +639,13 @@ class AnnotationTable extends Component<{}, TableState> {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
 
       // arrow down
@@ -662,7 +664,6 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'down';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1, 'x2': x1, 'y1': y1 + 1, 'y2': y1 + 1 }];
           this.selectCell(nextElement, y1 + 1, x1, y1 + 1, x1, x1, y1 + 1);
@@ -672,10 +673,13 @@ class AnnotationTable extends Component<{}, TableState> {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
 
       // arrow left
@@ -694,7 +698,6 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'left';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1 - 1, 'x2': x1 - 1, 'y1': y1, 'y2': y1 }];
           this.selectCell(nextElement, y1, x1 - 1, y1, x1 - 1, x1 - 1, y1);
@@ -704,10 +707,13 @@ class AnnotationTable extends Component<{}, TableState> {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
 
       // arrow right
@@ -726,7 +732,6 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'right';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1 + 1, 'x2': x1 + 1, 'y1': y1, 'y2': y1 }];
           this.selectCell(nextElement, y1, x1 + 1, y1, x1 + 1, x1 + 1, y1);
@@ -736,10 +741,13 @@ class AnnotationTable extends Component<{}, TableState> {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
     }
   }
