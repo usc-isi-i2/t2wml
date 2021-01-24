@@ -293,6 +293,7 @@ class AnnotationTable extends Component<{}, TableState> {
   resetSelections() {
     const table = this.tableRef;
     if ( table ) {
+      table.classList.remove('active');
       table.querySelectorAll('td[class*="active"]').forEach(e => {
         e.classList.forEach(className => {
           if (className.startsWith('active')) {
@@ -367,6 +368,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // Reset selections before update
     this.resetSelections();
+    table.classList.add('active');
 
     const classNames: string[] = [];
     if ( selectedBlock ) {
