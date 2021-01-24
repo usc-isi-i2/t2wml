@@ -68,7 +68,7 @@ class OutputTable extends Component<{}, TableState> {
     if (table) {
       table.querySelectorAll('td').forEach(e => {
         e.classList.forEach(className => {
-          if (className.startsWith('type-qNode')) {
+          if (className.startsWith('type-wikibaseitem')) {
             e.classList.remove(className);
           }
         });
@@ -78,7 +78,7 @@ class OutputTable extends Component<{}, TableState> {
     for (const entry of qnodes.entries) {
       for (const indexPair of entry.indices) {
         const tableCell = tableData[indexPair[0]][indexPair[1]];
-        tableCell.classNames.push(`type-qNode`)
+        tableCell.classNames.push(`type-wikibaseitem`)
       }
     }
     this.setState({ tableData });

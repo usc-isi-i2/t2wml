@@ -7,7 +7,7 @@ export const TYPES = [{
   }],
 }, {
   'label': 'Monolingual String',
-  'value': 'monolingualString',
+  'value': 'monolingualtext',
   'children': [{
     'label': 'Language',
     'value': 'language',
@@ -43,7 +43,7 @@ export const TYPES = [{
   }],
 }, {
   'label': 'Wikidata Item',
-  'value': 'qNode',
+  'value': 'wikibaseitem',
   'children': [{
     'label': 'Property',
     'value': 'property',
@@ -55,20 +55,26 @@ export const ROLES = [{
   'label': 'Dependent Variable',
   'value': 'dependentVar',
   'children': TYPES,
+  'multiple': false,
 }, {
   'label': 'Main Subject',
   'value': 'mainSubject',
+  'multiple': false,
 }, {
   'label': 'Property',
   'value': 'property',
+  'multiple': true,
 }, {
   'label': 'Qualifier',
   'value': 'qualifier',
   'children': TYPES,
+  'multiple': true,
 }, {
   'label': 'Metadata',
   'value': 'metadata',
+  'multiple': true,
 }, {
   'label': 'Unit',
   'value': 'unit',
+  'multiple': true,
 }];

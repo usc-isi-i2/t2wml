@@ -213,6 +213,9 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async toggleAnnotationMode(mode) {
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+
     this.setState({ mode }, () => {
       wikiStore.table.mode = mode;
     });
@@ -230,6 +233,9 @@ class TableContainer extends Component<{}, TableState> {
         }
       }
     }
+
+    wikiStore.table.showSpinner = false;
+    wikiStore.yaml.showSpinner = false;
   }
 
   async fetchAnnotations() {
