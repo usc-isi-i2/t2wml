@@ -470,7 +470,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // Allow users to select the resize-corner of the cell
     if ( element.className === 'cell-resize-corner' ) {
-      this.prevElement = element;
+      this.prevElement = element.parentElement;
       this.selecting = true;
       return;
     } else if ( element.nodeName !== 'TD' ) { return; }
