@@ -569,9 +569,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
         if ( this.prevElement.nodeName === 'TD' ) {
           const x1 = this.prevElement.cellIndex;
-          const y1 = this.prevElement.rowIndex;
-          if ( x1 <= x2 || y1 <= y2 ) {
-            this.resetSelections();
+          const y1 = this.prevElement.parentElement.rowIndex;
+          if ( x2 <= x1 || y2 <= y1 ) {
+            this.resetEmptyCells(x1, x2, y1, y2);
           }
         }
 
