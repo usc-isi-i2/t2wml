@@ -405,6 +405,22 @@ class AnnotationTable extends Component<{}, TableState> {
     });
   }
 
+  standardizeSelections() {
+    this.selections.map(selection => {
+      let temp;
+      if ( selection.x2 < selection.x1 ) {
+        temp = selection.x1;
+        selection.x1 = selection.x2;
+        selection.x2 = temp;
+      }
+      if ( selection.y2 < selection.y1 ) {
+        temp = selection.y1;
+        selection.y1 = selection.y2;
+        selection.y2 = temp;
+      }
+    });
+  }
+
   checkSelectionOverlaps() {
     this.selections.map((selection, i) => {
       const { x1, y1, x2, y2 } = selection;
@@ -510,6 +526,7 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnMouseUp(event: React.MouseEvent) {
     this.selecting = false;
     if (this.selections) {
+      this.standardizeSelections();
       this.checkSelectionOverlaps();
       this.openAnnotationMenu(event);
     }
