@@ -560,9 +560,6 @@ class AnnotationTable extends Component<{}, TableState> {
 
     if (this.selecting && !event.shiftKey) {
 
-      // Show the updated selection while moving
-      this.setState({showToast: element.nodeName === 'TD'});
-
       // Update the last x coordinate of the selection
       const x2 = element.cellIndex;
       this.selections[this.selections.length - 1]['x2'] = x2;
