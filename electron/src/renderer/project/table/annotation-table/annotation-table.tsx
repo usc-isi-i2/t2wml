@@ -316,12 +316,23 @@ class AnnotationTable extends Component<{}, TableState> {
     const table: any = this.tableRef;
     const rows = table!.querySelectorAll('tr');
     rows.forEach((row: any, index) => {
-      if ( index >= selection.y1 && index <= selection.y2 ) {
-        // reset cell class names on the vertical axes
-        let colIndex = x1;
-        while ( colIndex > x2 ) {
-          row.children[colIndex].className = '';
-          colIndex = colIndex - 1;
+      if ( selection.y1 < selection.y2 ) {
+        if ( index >= selection.y1 && index <= selection.y2 ) {
+          // reset cell class names on the vertical axes
+          let colIndex = x1;
+          while ( colIndex > x2 ) {
+            row.children[colIndex].className = '';
+            colIndex = colIndex - 1;
+          }
+        }
+      } else {
+        if ( index >= selection.y2 && index <= selection.y1 ) {
+          // reset cell class names on the vertical axes
+          let colIndex = x1;
+          while ( colIndex > x2 ) {
+            row.children[colIndex].className = '';
+            colIndex = colIndex - 1;
+          }
         }
       }
     });
@@ -330,10 +341,18 @@ class AnnotationTable extends Component<{}, TableState> {
     let rowIndex = y1;
     while ( rowIndex > y2 ) {
       let row = rows[rowIndex];
-      let colIndex = selection.x1;
-      while ( colIndex <= selection.x2 ) {
-        row.children[colIndex].className = '';
-        colIndex = colIndex + 1;
+      if ( selection.x1 < selection.x2 ) {
+        let colIndex = selection.x1;
+        while ( colIndex <= selection.x2 ) {
+          row.children[colIndex].className = '';
+          colIndex = colIndex + 1;
+        }
+      } else {
+        let colIndex = selection.x2;
+        while ( colIndex <= selection.x1 ) {
+          row.children[colIndex].className = '';
+          colIndex = colIndex + 1;
+        }
       }
       rowIndex = rowIndex - 1;
     }
