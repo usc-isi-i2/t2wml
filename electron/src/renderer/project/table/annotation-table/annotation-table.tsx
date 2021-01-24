@@ -604,10 +604,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     if ([37, 38, 39, 40].includes(event.keyCode) && !!this.selections.length) {
-      this.setState({
-        showAnnotationMenu: true,
-        selectedAnnotationBlock: undefined,
-      });
+      this.setState({ selectedAnnotationBlock: undefined });
 
       event.preventDefault();
       const { x1, x2, y1, y2 } = this.selections[0];
@@ -749,6 +746,9 @@ class AnnotationTable extends Component<{}, TableState> {
         this.prevElement = nextElement;
         this.updateSelections();
       }
+
+      // Trigger a render of the annotation menu
+      this.setState({ showAnnotationMenu: true });
     }
   }
 
