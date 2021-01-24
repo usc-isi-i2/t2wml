@@ -308,6 +308,56 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  resetEmptyCells(x1, x2, y1, y2) {
+    // Get a reference to the last selection area
+    const selection = this.selections[this.selections.length - 1];
+    if ( !selection ) { return; }
+
+    const table: any = this.tableRef;
+    const rows = table!.querySelectorAll('tr');
+    rows.forEach((row: any, index) => {
+      if ( selection.y1 < selection.y2 ) {
+        if ( index >= selection.y1 && index <= selection.y2 ) {
+          // reset cell class names on the vertical axes
+          let colIndex = x1;
+          while ( colIndex > x2 ) {
+            row.children[colIndex].className = '';
+            colIndex = colIndex - 1;
+          }
+        }
+      } else {
+        if ( index >= selection.y2 && index <= selection.y1 ) {
+          // reset cell class names on the vertical axes
+          let colIndex = x1;
+          while ( colIndex > x2 ) {
+            row.children[colIndex].className = '';
+            colIndex = colIndex - 1;
+          }
+        }
+      }
+    });
+
+    // reset cell class names on the horizontal axes
+    let rowIndex = y1;
+    while ( rowIndex > y2 ) {
+      let row = rows[rowIndex];
+      if ( selection.x1 < selection.x2 ) {
+        let colIndex = selection.x1;
+        while ( colIndex <= selection.x2 ) {
+          row.children[colIndex].className = '';
+          colIndex = colIndex + 1;
+        }
+      } else {
+        let colIndex = selection.x2;
+        while ( colIndex <= selection.x1 ) {
+          row.children[colIndex].className = '';
+          colIndex = colIndex + 1;
+        }
+      }
+      rowIndex = rowIndex - 1;
+    }
+  }
+
   updateSelections(selectedBlock?: AnnotationBlock) {
     if ( !selectedBlock ) {
       selectedBlock = this.state.selectedAnnotationBlock;
@@ -351,6 +401,22 @@ class AnnotationTable extends Component<{}, TableState> {
           colIndex += 1;
         }
         rowIndex += 1;
+      }
+    });
+  }
+
+  standardizeSelections() {
+    this.selections.map(selection => {
+      let temp;
+      if ( selection.x2 < selection.x1 ) {
+        temp = selection.x1;
+        selection.x1 = selection.x2;
+        selection.x2 = temp;
+      }
+      if ( selection.y2 < selection.y1 ) {
+        temp = selection.y1;
+        selection.y1 = selection.y2;
+        selection.y2 = temp;
       }
     });
   }
@@ -460,6 +526,7 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnMouseUp(event: React.MouseEvent) {
     this.selecting = false;
     if (this.selections) {
+      this.standardizeSelections();
       this.checkSelectionOverlaps();
       this.openAnnotationMenu(event);
     }
@@ -470,7 +537,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // Allow users to select the resize-corner of the cell
     if ( element.className === 'cell-resize-corner' ) {
-      this.prevElement = element;
+      this.prevElement = element.parentElement;
       this.selecting = true;
       return;
     } else if ( element.nodeName !== 'TD' ) { return; }
@@ -560,16 +627,25 @@ class AnnotationTable extends Component<{}, TableState> {
 
     if (this.selecting && !event.shiftKey) {
 
-      // Show the updated selection while moving
-      this.setState({showToast: element.nodeName === 'TD'});
+      // Get a reference to the last available selection
+      const selection = this.selections[this.selections.length - 1];
+      if ( !selection ) { return; }
 
       // Update the last x coordinate of the selection
-      const x2 = element.cellIndex;
-      this.selections[this.selections.length - 1]['x2'] = x2;
+      const newCellIndex = element.cellIndex;
+      selection.x2 = newCellIndex;
 
       // Update the last y coordinate of the selection
-      const y2 = element.parentElement.rowIndex;
-      this.selections[this.selections.length - 1]['y2'] = y2;
+      const newRowIndex = element.parentElement.rowIndex;
+      selection.y2 = newRowIndex;
+
+      if ( this.prevElement.nodeName === 'TD' ) {
+        const oldCellIndex = this.prevElement.cellIndex;
+        const oldRowIndex = this.prevElement.parentElement.rowIndex;
+        if ( newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex ) {
+          this.resetEmptyCells(oldCellIndex, newCellIndex, oldRowIndex, newRowIndex);
+        }
+      }
 
       // Update selections
       this.updateSelections();

@@ -109,16 +109,10 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
   render() {
     const { position, onClose } = this.props;
-    let style = {};
-    if (position) {
-      style = {
-        'left': position[0],
-        'top': position[1],
-      };
-    }
     return (
-      <div className="annotation-menu" style={style}>
-        <Draggable handle=".handle">
+      <Draggable handle=".handle"
+        defaultPosition={{x: position[0], y: position[1]}}>
+        <div className="annotation-menu">
           <Toast onClose={onClose}>
             <Toast.Header className="handle">
               <strong className="mr-auto">Annotate selected areas</strong>
@@ -127,8 +121,8 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
               {this.renderAnnotationForms()}
             </Toast.Body>
           </Toast>
-        </Draggable>
-      </div>
+        </div>
+      </Draggable>
     )
   }
 }
