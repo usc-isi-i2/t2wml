@@ -308,6 +308,37 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  resetEmptyCells(x1, x2, y1, y2) {
+    // Get a reference to the last selection area
+    const selection = this.selections[this.selections.length - 1];
+    if ( !selection ) { return; }
+
+    const table: any = this.tableRef;
+    const rows = table!.querySelectorAll('tr');
+    rows.forEach((row: any, index) => {
+      if ( index >= selection.y1 && index <= selection.y2 ) {
+        // reset cell class names on the vertical axes
+        let colIndex = x1;
+        while ( colIndex > x2 ) {
+          row.children[colIndex].className = '';
+          colIndex = colIndex - 1;
+        }
+      }
+    });
+
+    // reset cell class names on the horizontal axes
+    let rowIndex = y1;
+    while ( rowIndex > y2 ) {
+      let row = rows[rowIndex];
+      let colIndex = selection.x1;
+      while ( colIndex <= selection.x2 ) {
+        row.children[colIndex].className = '';
+        colIndex = colIndex + 1;
+      }
+      rowIndex = rowIndex - 1;
+    }
+  }
+
   updateSelections(selectedBlock?: AnnotationBlock) {
     if ( !selectedBlock ) {
       selectedBlock = this.state.selectedAnnotationBlock;
