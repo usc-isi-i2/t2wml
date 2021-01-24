@@ -652,6 +652,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
       // Update reference to the previous element
       this.prevElement = element;
+
+      // Trigger a render of the annotation menu
+      this.setState({ showAnnotationMenu: true });
     }
   }
 
