@@ -78,7 +78,7 @@ def get_kg(calc_params):
 def download(calc_params, filetype):
     response = dict()
     kg = get_kg(calc_params)
-    response["data"] = kg.get_output(filetype)
+    response["data"] = kg.get_output(filetype, calc_params.project)
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response

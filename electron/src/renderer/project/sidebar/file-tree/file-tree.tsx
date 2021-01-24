@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import wikiStore from "../../../data/store";
 import './file-tree.css';
 // import { TreeMode } from '@/shared/types'
@@ -6,11 +6,13 @@ import RequestService from "@/renderer/common/service";
 import { currentFilesService } from "../../../common/current-file-service";
 import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
+import { Spinner } from "react-bootstrap";
 
 
 type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
   fileTree: NodeProps;
+  showSpinner: boolean;
 }
 
 const emptyFunc= (node: NodeProps) => void 0;
@@ -30,13 +32,17 @@ class FileTree extends Component<TreeProps, TreeState> {
   constructor(props: TreeProps){
     super(props)
     this.requestService = new RequestService();
-    this.state={fileTree: rootNode}
+    this.state = {
+      fileTree: rootNode,
+      showSpinner: wikiStore.table.showSpinner,
+    };
     this.updateFileTree();
   }
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
+    this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({showSpinner: show}) ));
   }
 
   componentWillUnmount() {
@@ -68,7 +74,10 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async changeFile(node: NodeProps) {
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
     await wikiStore.yaml.saveYaml();
+
     if (node.type === "DataFile") {
         if (node.label !== currentFilesService.currentState.dataFile) {
             await this.changeDataFile(node.label);
@@ -92,6 +101,9 @@ class FileTree extends Component<TreeProps, TreeState> {
           await this.changeAnnotation(node.label, sheet.label, dataFile);
       }
     }
+
+    wikiStore.table.showSpinner = false;
+    wikiStore.yaml.showSpinner = false;
   }
 
 
@@ -166,16 +178,23 @@ class FileTree extends Component<TreeProps, TreeState> {
   render() {
 
     return (
-      <ul>
-        <FileNode
-          id={this.state.fileTree.id}
-          label={this.state.fileTree.label}
-          childNodes={this.state.fileTree.childNodes}
-          type={this.state.fileTree.type}
-          parentNode={this.state.fileTree.parentNode}
-          rightClick={this.state.fileTree.rightClick}
-          onClick={this.state.fileTree.onClick}/>
-      </ul>
+      <Fragment>
+        {/* loading spinner */}
+        <div className="mySpinner" hidden={!this.state.showSpinner}>
+          <Spinner animation="border" />
+        </div>
+      
+        <ul>
+          <FileNode
+            id={this.state.fileTree.id}
+            label={this.state.fileTree.label}
+            childNodes={this.state.fileTree.childNodes}
+            type={this.state.fileTree.type}
+            parentNode={this.state.fileTree.parentNode}
+            rightClick={this.state.fileTree.rightClick}
+            onClick={this.state.fileTree.onClick}/>
+        </ul>
+      </Fragment>
     )
   }
 }
