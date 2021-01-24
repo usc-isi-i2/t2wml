@@ -483,11 +483,6 @@ class AnnotationTable extends Component<{}, TableState> {
     const selection: CellSelection = { x1, x2, y1, y2 };
 
     // check if the user is selecting an annotation block
-    this.setState({
-      showAnnotationMenu: false,
-      selectedAnnotationBlock: undefined,
-    });
-
     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
     if (selectedBlock) {
       this.resetSelections();
@@ -501,9 +496,9 @@ class AnnotationTable extends Component<{}, TableState> {
     this.selecting = true;
 
     // Update selection coordinates
-    if ((config.platform === 'mac' && event.metaKey) ||
-      (config.platform === 'linux' && event.ctrlKey) ||
-      (config.platform === 'windows' && event.ctrlKey)) {
+    if ( ( config.platform === 'mac' && event.metaKey ) ||
+         ( config.platform === 'linux' && event.ctrlKey ) ||
+         ( config.platform === 'windows' && event.ctrlKey ) ) {
 
       // Add a new selection separately
       this.selections.push({ x1, x2, y1, y2 });
@@ -511,6 +506,12 @@ class AnnotationTable extends Component<{}, TableState> {
       // Activate the element on click
       this.selectCell(element, y1, x1, y1, x1, x1, y1);
     } else {
+
+      // Hide the annotation menu
+      this.setState({
+        showAnnotationMenu: false,
+        selectedAnnotationBlock: undefined,
+      });
 
       // Extend the previous selection if user is holding down Shift key
       if (event.shiftKey && !!this.selections.length) {
