@@ -675,6 +675,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnKeyDown(event: KeyboardEvent) {
+    const { showAnnotationMenu } = this.state;
 
     // Close annotation menu with ESC key
     if (event.keyCode == 27) {
@@ -682,9 +683,14 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     if ([37, 38, 39, 40].includes(event.keyCode) && !!this.selections.length) {
-      this.setState({ selectedAnnotationBlock: undefined });
+
+      // Don't allow moving around when annotation menu is open
+      if ( showAnnotationMenu ) { return; }
 
       event.preventDefault();
+
+      this.setState({ selectedAnnotationBlock: undefined });
+
       const { x1, x2, y1, y2 } = this.selections[0];
       const table: any = this.tableRef;
       const rows = table!.querySelectorAll('tr');
