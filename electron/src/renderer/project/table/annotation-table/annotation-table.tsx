@@ -559,20 +559,27 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     if (this.selecting && !event.shiftKey) {
+        // Update the last x coordinate of the selection
+        const x2 = element.cellIndex;
+        this.selections[this.selections.length - 1]['x2'] = x2;
 
-      // Update the last x coordinate of the selection
-      const x2 = element.cellIndex;
-      this.selections[this.selections.length - 1]['x2'] = x2;
+        // Update the last y coordinate of the selection
+        const y2 = element.parentElement.rowIndex;
+        this.selections[this.selections.length - 1]['y2'] = y2;
 
-      // Update the last y coordinate of the selection
-      const y2 = element.parentElement.rowIndex;
-      this.selections[this.selections.length - 1]['y2'] = y2;
+        if ( this.prevElement.nodeName === 'TD' ) {
+          const x1 = this.prevElement.cellIndex;
+          const y1 = this.prevElement.rowIndex;
+          if ( x1 <= x2 || y1 <= y2 ) {
+            this.resetSelections();
+          }
+        }
 
-      // Update selections
-      this.updateSelections();
+        // Update selections
+        this.updateSelections();
 
-      // Update reference to the previous element
-      this.prevElement = element;
+        // Update reference to the previous element
+        this.prevElement = element;
     }
   }
 
