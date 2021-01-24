@@ -131,46 +131,53 @@
 .table-wrapper table tr td.active div.cell-border-top,
 .table-wrapper table tr td.active div.cell-border-left,
 .table-wrapper table tr td.active div.cell-border-right,
-.table-wrapper table tr td.active div.cell-border-bottom {
+.table-wrapper table tr td.active div.cell-border-bottom,
+.table-wrapper table tr td.active div.cell-resize-corner {
   background: #555;
   z-index: 5;
 }
 .table-wrapper table tr td.active.role-property div.cell-border-top,
 .table-wrapper table tr td.active.role-property div.cell-border-left,
 .table-wrapper table tr td.active.role-property div.cell-border-right,
-.table-wrapper table tr td.active.role-property div.cell-border-bottom {
+.table-wrapper table tr td.active.role-property div.cell-border-bottom,
+.table-wrapper table tr td.active.role-property div.cell-resize-corner {
   background: #f1a655;
 }
 .table-wrapper table tr td.active.role-qualifier div.cell-border-top,
 .table-wrapper table tr td.active.role-qualifier div.cell-border-left,
 .table-wrapper table tr td.active.role-qualifier div.cell-border-right,
-.table-wrapper table tr td.active.role-qualifier div.cell-border-bottom {
+.table-wrapper table tr td.active.role-qualifier div.cell-border-bottom,
+.table-wrapper table tr td.active.role-qualifier div.cell-resize-corner {
   background: #8867cb;
 }
 .table-wrapper table tr td.active.role-mainSubject div.cell-border-top,
 .table-wrapper table tr td.active.role-mainSubject div.cell-border-left,
 .table-wrapper table tr td.active.role-mainSubject div.cell-border-right,
-.table-wrapper table tr td.active.role-mainSubject div.cell-border-bottom {
+.table-wrapper table tr td.active.role-mainSubject div.cell-border-bottom,
+.table-wrapper table tr td.active.role-mainSubject div.cell-resize-corner {
   background: #499bc1;
 }
 
 .table-wrapper table tr td.active.role-dependentVar div.cell-border-top,
 .table-wrapper table tr td.active.role-dependentVar div.cell-border-left,
 .table-wrapper table tr td.active.role-dependentVar div.cell-border-right,
-.table-wrapper table tr td.active.role-dependentVar div.cell-border-bottom {
+.table-wrapper table tr td.active.role-dependentVar div.cell-border-bottom,
+.table-wrapper table tr td.active.role-dependentVar div.cell-resize-corner {
   background:#3bab75;
 }
 .table-wrapper table tr td.active.role-metadata div.cell-border-top,
 .table-wrapper table tr td.active.role-metadata div.cell-border-left,
 .table-wrapper table tr td.active.role-metadata div.cell-border-right,
-.table-wrapper table tr td.active.role-metadata div.cell-border-bottom {
+.table-wrapper table tr td.active.role-metadata div.cell-border-bottom,
+.table-wrapper table tr td.active.role-metadata div.cell-resize-corner {
   background: #556e8b;
   z-index: 10;
 }
 .table-wrapper table tr td.active.role-unit div.cell-border-top,
 .table-wrapper table tr td.active.role-unit div.cell-border-left,
 .table-wrapper table tr td.active.role-unit div.cell-border-right,
-.table-wrapper table tr td.active.role-unit div.cell-border-bottom {
+.table-wrapper table tr td.active.role-unit div.cell-border-bottom,
+.table-wrapper table tr td.active.role-unit div.cell-resize-corner {
   background: #ffca38;
   z-index: 15;
 }
