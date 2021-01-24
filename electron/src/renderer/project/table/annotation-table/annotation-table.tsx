@@ -552,7 +552,6 @@ class AnnotationTable extends Component<{}, TableState> {
     // check if the user is selecting an annotation block
     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
     if (selectedBlock) {
-      this.resetSelections();
       this.selections = selectedBlock.selections;
       this.setState({ selectedAnnotationBlock: selectedBlock });
       this.updateSelections(selectedBlock);
