@@ -263,9 +263,13 @@
   width: 0;
   height: 0;
   display: block;
-  border-left: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  border-top: 20px solid #FF8000;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF8000;
+}
+.table-wrapper table tr td.active.status-minorError::after {
+  top: 2px;
+  right: 2px;
 }
 
 /* cell major error status */
@@ -280,9 +284,13 @@
   width: 0;
   height: 0;
   display: block;
-  border-left: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  border-top: 20px solid #FF3333;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF3333;
+}
+.table-wrapper table tr td.active.status-majorError::after {
+  top: 2px;
+  right: 2px;
 }
 
 /* cell roles */
