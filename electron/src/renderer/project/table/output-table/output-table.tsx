@@ -161,10 +161,7 @@ class OutputTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-    this.setState({ tableData }, () => {
-      this.colorCellsByType(wikiStore.layers.type);
-      this.colorQnodeCells(wikiStore.layers.qnode);
-    });
+    this.setState({ tableData });
   }
 
   selectCell(cell: Element, classNames: string[] = []) {
