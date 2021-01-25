@@ -252,10 +252,10 @@
 }
 
 /* cell minor error status */
-.status-minorError {
+.table-wrapper table tr td.status-minorError {
   position: relative;
 }
-.status-minorError::after {
+.table-wrapper table tr td.status-minorError::after {
   content: '';
   position: absolute;
   top: 0;
@@ -269,10 +269,10 @@
 }
 
 /* cell major error status */
-.status-majorError {
+.table-wrapper table tr td.status-majorError {
   position: relative;
 }
-.status-majorError::after {
+.table-wrapper table tr td.status-majorError::after {
   content: '';
   position: absolute;
   top: 0;
