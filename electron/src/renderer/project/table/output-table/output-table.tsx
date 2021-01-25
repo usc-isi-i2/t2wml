@@ -90,18 +90,6 @@ class OutputTable extends Component<{}, TableState> {
       return;
     }
 
-    // clear any existing type coloration
-    const table = this.tableRef;
-    if (table) {
-      table.querySelectorAll('td').forEach(e => {
-        e.classList.forEach(className => {
-          if (className.startsWith('role') || className.startsWith('status')) {
-            e.classList.remove(className);
-          }
-        });
-      });
-    }
-
     for (const entry of types.entries) {
       for (const indexPair of entry.indices) {
         if (['majorError', 'minorError'].includes(entry.type)) {
