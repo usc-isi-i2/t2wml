@@ -90,7 +90,7 @@ class OutputTable extends Component<{}, TableState> {
       return;
     }
 
-    //clear any existing type coloration
+    // clear any existing type coloration
     const table = this.tableRef;
     if (table) {
       table.querySelectorAll('td').forEach(e => {
@@ -102,15 +102,14 @@ class OutputTable extends Component<{}, TableState> {
       });
     }
 
-
     for (const entry of types.entries) {
       for (const indexPair of entry.indices) {
-        if (["majorError", "minorError"].includes(entry.type)){
+        if (['majorError', 'minorError'].includes(entry.type)) {
           const tableCell = tableData[indexPair[0]][indexPair[1]];
           tableCell.classNames.push(`status-${entry.type}`)
-        }else{
-        const tableCell = tableData[indexPair[0]][indexPair[1]];
-        tableCell.classNames.push(`role-${entry.type}`)
+        } else {
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.classNames.push(`role-${entry.type}`)
         }
       }
     }
@@ -133,7 +132,6 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     //replace cleaned entries if showCleanedData
-
     if (wikiStore.table.showCleanedData) {
       for (const entry of cleaned.entries) {
         for (const indexPair of entry.indices) {
@@ -222,8 +220,8 @@ class OutputTable extends Component<{}, TableState> {
       });
     }
 
-    for (const key in statement.cells){
-      if (key=="qualifiers"){continue;}
+    for (const key in statement.cells) {
+      if ( key === 'qualifiers' ) { continue; }
       const y = statement.cells[key][0];
       const x = statement.cells[key][1];
       const cell = rows[y + 1].children[x + 1];
