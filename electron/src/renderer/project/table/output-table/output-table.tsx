@@ -339,17 +339,23 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
+  renderTable() {
+    return (
+      <Table
+        tableData={this.state.tableData}
+        onMouseUp={() => void 0}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={() => void 0}
+        onClickHeader={this.handleOnClickHeader.bind(this)}
+        setTableReference={this.setTableReference.bind(this)} />
+    )
+  }
+
   render() {
     return (
       <Fragment>
         {this.renderToast()}
-        <Table
-          tableData={this.state.tableData}
-          onMouseUp={() => void 0}
-          onMouseDown={this.handleOnMouseDown.bind(this)}
-          onMouseMove={() => void 0}
-          onClickHeader={this.handleOnClickHeader.bind(this)}
-          setTableReference={this.setTableReference.bind(this)} />
+        {this.renderTable()}
       </Fragment>
     )
   }
