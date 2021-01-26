@@ -51,6 +51,13 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
     )
   }
 
+  renderBody() {
+    return (
+      <Toast.Body>
+      </Toast.Body>
+    )
+  }
+
   render() {
     const { position, onClose } = this.props;
     return (
@@ -59,8 +66,7 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
         <div className="output-menu">
           <Toast onClose={onClose}>
             {this.renderHeader()}
-            <Toast.Body>
-            </Toast.Body>
+            {this.renderBody()}
           </Toast>
         </div>
       </Draggable>
