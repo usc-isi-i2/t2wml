@@ -11,7 +11,7 @@
             },
             "qnode": {
                 "entries": [],
-                "layerType": "qNode"
+                "layerType": "wikibaseitem"
             },
             "statement": {
                 "entries": [],
@@ -402,7 +402,7 @@
                         "value": "Aruba"
                     }
                 ],
-                "layerType": "qNode"
+                "layerType": "wikibaseitem"
             }
         }
     },
@@ -573,7 +573,7 @@
                         "value": "Aruba"
                     }
                 ],
-                "layerType": "qNode"
+                "layerType": "wikibaseitem"
             }
         }
     },
@@ -979,7 +979,7 @@
                         "value": "Aruba"
                     }
                 ],
-                "layerType": "qNode"
+                "layerType": "wikibaseitem"
             },
             "statement": {
                 "entries": [
@@ -2154,7 +2154,7 @@
                         "value": "Aruba"
                     }
                 ],
-                "layerType": "qNode"
+                "layerType": "wikibaseitem"
             },
             "statement": {
                 "entries": [],
@@ -2391,7 +2391,7 @@
                         "value": "bad qualifier"
                     }
                 ],
-                "layerType": "qNode"
+                "layerType": "wikibaseitem"
             }
         },
         "wikifierError": "Failed to wikify: I5"

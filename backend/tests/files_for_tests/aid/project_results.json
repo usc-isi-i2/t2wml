@@ -401,7 +401,7 @@
                         "value": "Aruba"
                     }
                 ],
-                "layerType": "qNode"
+                "layerType": "wikibaseitem"
             },
             "statement": {
                 "entries": [

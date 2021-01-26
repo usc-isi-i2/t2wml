@@ -101,19 +101,19 @@ def get_qnodes_layer(calc_params):
                         qnode_entries[id]["indices"].append([row, col])
                     else:
                         qnode_entries[id]=dict(
-                            qNode= QNode(id, value, context),
+                            wikibaseitem= QNode(id, value, context),
                             indices=[[row, col]])
 
         labels_and_descriptions = get_labels_and_descriptions(list(ids_to_get), calc_params.sparql_endpoint)
         for id in qnode_entries:
             if id in labels_and_descriptions:
-                qnode_entries[id]['qNode'].update(**labels_and_descriptions[id])
+                qnode_entries[id]['wikibaseitem'].update(**labels_and_descriptions[id])
 
         for id in qnode_entries:
-            qNode=qnode_entries[id].pop("qNode")
-            qnode_entries[id].update(qNode.__dict__)
+            wikibaseitem=qnode_entries[id].pop("wikibaseitem")
+            qnode_entries[id].update(wikibaseitem.__dict__)
 
-    return {"qnode": dict(layerType="qNode", entries=list(qnode_entries.values()))}
+    return {"qnode": dict(layerType="wikibaseitem", entries=list(qnode_entries.values()))}
 
 
 
