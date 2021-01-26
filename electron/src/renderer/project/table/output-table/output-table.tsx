@@ -9,14 +9,16 @@ import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
 import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
-import TableToast from '../table-toast';
+import OutputMenu from './output-menu';
 import * as utils from '../table-utils';
+import { settings } from '../../../../main/settings';
 
 
 interface TableState {
   tableData: TableCell[][] | undefined;
   selectedCell: Cell | null;
-  showToast: boolean;
+  showOutputMenu: boolean,
+  outputMenuPosition?: Array<number>,
 }
 
 
@@ -35,115 +37,27 @@ class OutputTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       selectedCell: new Cell(),
-      showToast: false,
+      showOutputMenu: false,
+      outputMenuPosition: [50, 70],
     };
+
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-    this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)))
-    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.colorQnodeCells(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }
-  }
-
-  colorQnodeCells(qnodes: Layer<QNodeEntry>) {
-    const { tableData } = this.state;
-    if (!tableData) {
-      return;
-    }
-
-    //clear any existing qnode coloration
-    const table = this.tableRef;
-    if (table) {
-      table.querySelectorAll('td').forEach(e => {
-        e.classList.forEach(className => {
-          if (className.startsWith('type-wikibaseitem')) {
-            e.classList.remove(className);
-          }
-        });
-      });
-    }
-
-    for (const entry of qnodes.entries) {
-      for (const indexPair of entry.indices) {
-        const tableCell = tableData[indexPair[0]][indexPair[1]];
-        tableCell.classNames.push(`type-wikibaseitem`)
-      }
-    }
-    this.setState({ tableData });
-  }
-
-  colorCellsByType(types: Layer<TypeEntry>) {
-    const { tableData } = this.state;
-    if (!tableData) {
-      return;
-    }
-
-    //clear any existing type coloration
-    const table = this.tableRef;
-    if (table) {
-      table.querySelectorAll('td').forEach(e => {
-        e.classList.forEach(className => {
-          if (className.startsWith('role') || className.startsWith('status')) {
-            e.classList.remove(className);
-          }
-        });
-      });
-    }
-
-
-    for (const entry of types.entries) {
-      for (const indexPair of entry.indices) {
-        if (["majorError", "minorError"].includes(entry.type)){
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`status-${entry.type}`)
-        }else{
-        const tableCell = tableData[indexPair[0]][indexPair[1]];
-        tableCell.classNames.push(`role-${entry.type}`)
-        }
-      }
-    }
-    this.setState({ tableData });
-  }
-
-  toggleCleanedData() {
-    const { tableData } = this.state;
-    if (!tableData) {
-      return;
-    }
-
-    const cleaned = wikiStore.layers.cleaned;
-
-    //reset everything to raw
-    for (let i = 0; i < tableData.length; i++) {
-      for (let j = 0; j < tableData[0].length; j++) {
-        tableData[i][j].content = wikiStore.table.table.cells[i][j]
-      }
-    }
-
-    //replace cleaned entries if showCleanedData
-
-    if (wikiStore.table.showCleanedData) {
-      for (const entry of cleaned.entries) {
-        for (const indexPair of entry.indices) {
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.content = entry.cleaned;
-        }
-      }
-    }
-
-    this.setState({ tableData })
   }
 
   updateTableData(table?: TableDTO) {
@@ -151,6 +65,7 @@ class OutputTable extends Component<{}, TableState> {
       this.setState({ tableData: undefined });
       return;
     }
+
     const tableData = [];
     for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
@@ -163,10 +78,60 @@ class OutputTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-    this.setState({ tableData }, () => {
-      this.colorCellsByType(wikiStore.layers.type);
-      this.colorQnodeCells(wikiStore.layers.qnode);
-    });
+
+    this.updateCells(tableData);
+  }
+
+  updateCells(tableData) {
+    const types = wikiStore.layers.type;
+    for (const entry of types.entries) {
+      for (const indexPair of entry.indices) {
+        if (['majorError', 'minorError'].includes(entry.type)) {
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.classNames.push(`status-${entry.type}`);
+        } else {
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.classNames.push(`role-${entry.type}`);
+        }
+      }
+    }
+
+    const qnodes = wikiStore.layers.qnode;
+    for (const entry of qnodes.entries) {
+      for (const indexPair of entry.indices) {
+        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.classNames.push(`type-wikibaseitem`);
+      }
+    }
+
+    this.setState({ tableData });
+  }
+
+  toggleCleanedData() {
+    const { tableData } = this.state;
+    if (!tableData) {
+      return;
+    }
+
+    //reset everything to raw
+    for (let i = 0; i < tableData.length; i++) {
+      for (let j = 0; j < tableData[0].length; j++) {
+        tableData[i][j].content = wikiStore.table.table.cells[i][j]
+      }
+    }
+
+    //replace cleaned entries if showCleanedData
+    const cleaned = wikiStore.layers.cleaned;
+    if (wikiStore.table.showCleanedData) {
+      for (const entry of cleaned.entries) {
+        for (const indexPair of entry.indices) {
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.content = entry.cleaned;
+        }
+      }
+    }
+
+    this.setState({ tableData })
   }
 
   selectCell(cell: Element, classNames: string[] = []) {
@@ -195,11 +160,7 @@ class OutputTable extends Component<{}, TableState> {
     cell.appendChild(borderBottom);
   }
 
-  selectRelatedCells(row: number, col: number) {
-    const selectedCell = new Cell(col - 1, row - 1);
-
-    this.setState({ selectedCell, showToast: true });
-
+  selectRelatedCells(selectedCell: Cell) {
     // Update selected cell in the data store
     wikiStore.table.selectedCell = selectedCell;
 
@@ -222,8 +183,8 @@ class OutputTable extends Component<{}, TableState> {
       });
     }
 
-    for (const key in statement.cells){
-      if (key=="qualifiers"){continue;}
+    for (const key in statement.cells) {
+      if ( key === 'qualifiers' ) { continue; }
       const y = statement.cells[key][0];
       const x = statement.cells[key][1];
       const cell = rows[y + 1].children[x + 1];
@@ -249,6 +210,33 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
+  openOutputMenu(event: React.MouseEvent) {
+    let { pageX, pageY } = event;
+    pageX = pageX - 300;
+    if ( settings.window.height - pageY <= 375 ) {
+      pageY -= 375;
+    } else {
+      pageY = pageY - 100;
+    }
+    this.setState({
+      showOutputMenu: true,
+      outputMenuPosition: [pageX, pageY],
+    });
+  }
+
+  handleOnMouseUp(event: React.MouseEvent) {
+    const { selectedCell, tableData } = this.state;
+    if (!selectedCell) { return; }
+
+    const { row, col } = selectedCell;
+    const tableCell = tableData[row][col];
+
+    // Only open the output menu if there's content
+    if ( tableCell.content ) {
+      this.openOutputMenu(event);
+    }
+  }
+
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
     const element = event.target as any;
@@ -256,12 +244,22 @@ class OutputTable extends Component<{}, TableState> {
     // Don't let users select header cells
     if (element.nodeName !== 'TD') { return; }
 
+    this.setState({
+      showOutputMenu: false,
+    });
+
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
-    this.selectCell(element);
+    this.selections = [{ x1, x1, y1, y1 }];
 
     // Activate the element on click
-    this.selectRelatedCells(y1, x1);
+    this.selectCell(element);
+
+    // Activate related cells
+    const selectedCell = new Cell(x1 - 1, y1 - 1);
+    this.setState({ selectedCell }, () => {
+      this.selectRelatedCells(selectedCell);
+    });
   }
 
   handleOnClickHeader(event: React.MouseEvent) {
@@ -282,12 +280,12 @@ class OutputTable extends Component<{}, TableState> {
   }
 
   handleOnKeyDown(event: KeyboardEvent) {
-    const { selectedCell } = this.state;
+    const { selectedCell, tableData } = this.state;
     if (!selectedCell) { return; }
 
-    // Hide table toast with ESC key
+    // Hide the output menu with ESC key
     if (event.keyCode == 27) {
-      this.setState({ showToast: false }, () => {
+      this.setState({ showOutputMenu: false }, () => {
         this.resetSelections();
       });
     }
@@ -324,49 +322,62 @@ class OutputTable extends Component<{}, TableState> {
       }
 
       this.resetSelections();
+
+      // Activate the element on click
       const nextElement = rows[row + 1].children[col + 1];
       this.selectCell(nextElement);
-      this.selectRelatedCells(row + 1, col + 1);
+
+      // Activate related cells
+      const newSelectedCell = new Cell(col, row);
+      this.setState({ selectedCell: newSelectedCell }, () => {
+        this.selectRelatedCells(selectedCell);
+
+        // Only open the output menu if there's content
+        const tableCell = tableData[row][col];
+        this.setState({ showOutputMenu: tableCell && tableCell.content });
+      });
     }
   }
 
-  onCloseToast() {
-    this.setState({ showToast: false });
+  closeOutputMenu() {
+    this.setState({
+      showOutputMenu: false,
+    });
   }
 
-  renderToast() {
-    const { selectedCell, showToast } = this.state;
-    if (selectedCell && showToast) {
-      let text = 'Selected:';
-      const selection: CellSelection = {
-        x1: selectedCell.col + 1,
-        x2: selectedCell.col + 1,
-        y1: selectedCell.row + 1,
-        y2: selectedCell.row + 1,
-      };
-      text += ` ${utils.humanReadableSelection(selection)}`;
-      const qnode = wikiStore.layers.qnode.find(selectedCell);
+  renderOutputMenu() {
+    const {
+      selectedCell,
+      showOutputMenu,
+      outputMenuPosition,
+    } = this.state;
+    if (selectedCell && showOutputMenu) {
       return (
-        <TableToast
-          text={text}
-          qnode={qnode as QNode}
-          onClose={() => this.onCloseToast()}
-        />
+        <OutputMenu
+          selectedCell={selectedCell}
+          position={outputMenuPosition}
+          onClose={() => this.closeOutputMenu()} />
       )
     }
+  }
+
+  renderTable() {
+    return (
+      <Table
+        tableData={this.state.tableData}
+        onMouseUp={this.handleOnMouseUp.bind(this)}
+        onMouseDown={this.handleOnMouseDown.bind(this)}
+        onMouseMove={() => void 0}
+        onClickHeader={this.handleOnClickHeader.bind(this)}
+        setTableReference={this.setTableReference.bind(this)} />
+    )
   }
 
   render() {
     return (
       <Fragment>
-        {this.renderToast()}
-        <Table
-          tableData={this.state.tableData}
-          onMouseUp={() => void 0}
-          onMouseDown={this.handleOnMouseDown.bind(this)}
-          onMouseMove={() => void 0}
-          onClickHeader={this.handleOnClickHeader.bind(this)}
-          setTableReference={this.setTableReference.bind(this)} />
+        {this.renderTable()}
+        {this.renderOutputMenu()}
       </Fragment>
     )
   }

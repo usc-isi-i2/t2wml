@@ -69,7 +69,7 @@
   top: -1px;
 }
 .table-wrapper table thead tr th::after {
-  content: "";
+  content: '';
   display: block;
   left: 0;
   right: 0;
@@ -101,7 +101,7 @@
   pointer-events: none;
 }
 .table-wrapper table tr td:nth-child(1)::after {
-  content: "";
+  content: '';
   display: block;
   top: 0;
   right: 0;
@@ -128,49 +128,61 @@
 
 
 /* active cell */
-.table-wrapper table tr td.active div.cell-border-top,
-.table-wrapper table tr td.active div.cell-border-left,
-.table-wrapper table tr td.active div.cell-border-right,
-.table-wrapper table tr td.active div.cell-border-bottom {
+.table-wrapper table.active tr td {
+  opacity: 0.5;
+}
+.table-wrapper table.active tr td.active {
+  opacity: 1;
+}
+.table-wrapper table tr td div.cell-border-top,
+.table-wrapper table tr td div.cell-border-left,
+.table-wrapper table tr td div.cell-border-right,
+.table-wrapper table tr td div.cell-border-bottom,
+.table-wrapper table tr td div.cell-resize-corner {
   background: #555;
   z-index: 5;
 }
-.table-wrapper table tr td.active.role-property div.cell-border-top,
-.table-wrapper table tr td.active.role-property div.cell-border-left,
-.table-wrapper table tr td.active.role-property div.cell-border-right,
-.table-wrapper table tr td.active.role-property div.cell-border-bottom {
+.table-wrapper table tr td.role-property div.cell-border-top,
+.table-wrapper table tr td.role-property div.cell-border-left,
+.table-wrapper table tr td.role-property div.cell-border-right,
+.table-wrapper table tr td.role-property div.cell-border-bottom,
+.table-wrapper table tr td.role-property div.cell-resize-corner {
   background: #f1a655;
 }
-.table-wrapper table tr td.active.role-qualifier div.cell-border-top,
-.table-wrapper table tr td.active.role-qualifier div.cell-border-left,
-.table-wrapper table tr td.active.role-qualifier div.cell-border-right,
-.table-wrapper table tr td.active.role-qualifier div.cell-border-bottom {
+.table-wrapper table tr td.role-qualifier div.cell-border-top,
+.table-wrapper table tr td.role-qualifier div.cell-border-left,
+.table-wrapper table tr td.role-qualifier div.cell-border-right,
+.table-wrapper table tr td.role-qualifier div.cell-border-bottom,
+.table-wrapper table tr td.role-qualifier div.cell-resize-corner {
   background: #8867cb;
 }
-.table-wrapper table tr td.active.role-mainSubject div.cell-border-top,
-.table-wrapper table tr td.active.role-mainSubject div.cell-border-left,
-.table-wrapper table tr td.active.role-mainSubject div.cell-border-right,
-.table-wrapper table tr td.active.role-mainSubject div.cell-border-bottom {
+.table-wrapper table tr td.role-mainSubject div.cell-border-top,
+.table-wrapper table tr td.role-mainSubject div.cell-border-left,
+.table-wrapper table tr td.role-mainSubject div.cell-border-right,
+.table-wrapper table tr td.role-mainSubject div.cell-border-bottom,
+.table-wrapper table tr td.role-mainSubject div.cell-resize-corner {
   background: #499bc1;
 }
-
-.table-wrapper table tr td.active.role-dependentVar div.cell-border-top,
-.table-wrapper table tr td.active.role-dependentVar div.cell-border-left,
-.table-wrapper table tr td.active.role-dependentVar div.cell-border-right,
-.table-wrapper table tr td.active.role-dependentVar div.cell-border-bottom {
-  background:#3bab75;
+.table-wrapper table tr td.role-dependentVar div.cell-border-top,
+.table-wrapper table tr td.role-dependentVar div.cell-border-left,
+.table-wrapper table tr td.role-dependentVar div.cell-border-right,
+.table-wrapper table tr td.role-dependentVar div.cell-border-bottom,
+.table-wrapper table tr td.role-dependentVar div.cell-resize-corner {
+  background: #3bab75;
 }
-.table-wrapper table tr td.active.role-metadata div.cell-border-top,
-.table-wrapper table tr td.active.role-metadata div.cell-border-left,
-.table-wrapper table tr td.active.role-metadata div.cell-border-right,
-.table-wrapper table tr td.active.role-metadata div.cell-border-bottom {
+.table-wrapper table tr td.role-metadata div.cell-border-top,
+.table-wrapper table tr td.role-metadata div.cell-border-left,
+.table-wrapper table tr td.role-metadata div.cell-border-right,
+.table-wrapper table tr td.role-metadata div.cell-border-bottom,
+.table-wrapper table tr td.role-metadata div.cell-resize-corner {
   background: #556e8b;
   z-index: 10;
 }
-.table-wrapper table tr td.active.role-unit div.cell-border-top,
-.table-wrapper table tr td.active.role-unit div.cell-border-left,
-.table-wrapper table tr td.active.role-unit div.cell-border-right,
-.table-wrapper table tr td.active.role-unit div.cell-border-bottom {
+.table-wrapper table tr td.role-unit div.cell-border-top,
+.table-wrapper table tr td.role-unit div.cell-border-left,
+.table-wrapper table tr td.role-unit div.cell-border-right,
+.table-wrapper table tr td.role-unit div.cell-border-bottom,
+.table-wrapper table tr td.role-unit div.cell-resize-corner {
   background: #ffca38;
   z-index: 15;
 }
@@ -182,8 +194,11 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 1px;
   pointer-events: none;
+}
+.table-wrapper table tr td.active div.cell-border-top {
+  height: 2px;
 }
 
 /* left border */
@@ -193,8 +208,11 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: 2px;
+  width: 1px;
   pointer-events: none;
+}
+.table-wrapper table tr td.active div.cell-border-left {
+  width: 2px;
 }
 
 /* right border */
@@ -204,8 +222,11 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: 2px;
+  width: 1px;
   pointer-events: none;
+}
+.table-wrapper table tr td.active div.cell-border-right {
+  width: 2px;
 }
 
 /* bottom border */
@@ -215,8 +236,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 2px;
+  height: 1px;
   pointer-events: none;
+}
+.table-wrapper table tr td.active div.cell-border-bottom {
+  height: 2px;
 }
 
 /* resize corner piece */
@@ -233,47 +257,52 @@
   border: 1px solid whitesmoke;
 }
 
-/*cell statuses - may eventually become triangles etc*/
+/* cell cleaned data status */
 .table-wrapper table tr td.status-cleaned {
   font-weight: bold;
 }
 
-/*https://stackoverflow.com/questions/14499048/how-to-add-triangle-in-table-cell*/
-
-.status-minorError {
+/* cell minor error status */
+.table-wrapper table tr td.status-minorError {
   position: relative;
 }
-.status-minorError:after { /* Magic Happens Here!!! */
-  content: "";
+.table-wrapper table tr td.status-minorError::after {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   width: 0;
   height: 0;
   display: block;
-  border-left: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-
-  border-top: 20px solid  #FF8000;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF8000;
+}
+.table-wrapper table tr td.active.status-minorError::after {
+  top: 2px;
+  right: 2px;
 }
 
-.status-majorError {
+/* cell major error status */
+.table-wrapper table tr td.status-majorError {
   position: relative;
 }
-.status-majorError:after { /* Magic Happens Here!!! */
-  content: "";
+.table-wrapper table tr td.status-majorError::after {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   width: 0;
   height: 0;
   display: block;
-  border-left: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-
-  border-top: 20px solid   #FF3333;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF3333;
 }
-
+.table-wrapper table tr td.active.status-majorError::after {
+  top: 2px;
+  right: 2px;
+}
 
 /* cell roles */
 .table-wrapper table tr td.role-dependentVar {

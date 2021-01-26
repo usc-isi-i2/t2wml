@@ -145,10 +145,9 @@ class RequestService {
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
     try{
-    const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-    this.fillTable(response);
-    }
-    finally{
+      const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
+      this.fillTable(response);
+    } finally{
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
@@ -172,14 +171,14 @@ class RequestService {
 
   public async getGlobalSettings() {
     const response = await backendGet(`/project/globalsettings`) as GlobalSettingsDTO;
-    wikiStore.globalSettings.datamart_api=response.datamart_api
-    wikiStore.globalSettings.datamart_integration=response.datamart_integration
+    wikiStore.globalSettings.datamart_api=response.datamart_api;
+    wikiStore.globalSettings.datamart_integration=response.datamart_integration;
   }
 
   public async putGlobalSettings(data: any) {
     const response = await backendPut(`/project/globalsettings`, data) as GlobalSettingsDTO;
-    wikiStore.globalSettings.datamart_api=response.datamart_api
-    wikiStore.globalSettings.datamart_integration=response.datamart_integration
+    wikiStore.globalSettings.datamart_api=response.datamart_api;
+    wikiStore.globalSettings.datamart_integration=response.datamart_integration;
   }
 
   public async uploadEntities(data: any) {

@@ -44,13 +44,15 @@ class AnnotationTable extends Component<{}, TableState> {
       annotationMenuPosition: [50, 70],
       selectedAnnotationBlock: undefined,
     };
+
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.addEventListener('keydown', this.handleOnKeyDown);
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
@@ -58,7 +60,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }
@@ -132,7 +134,12 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( !tableData ) {
       tableData = this.state.tableData;
     }
+
+    const table: any = this.tableRef;
+    if ( !table ) { return; }
+
     if ( wikiStore.annotations.blocks && tableData ) {
+
       for ( const block of wikiStore.annotations.blocks ) {
         const { role, type, selections } = block;
         const classNames: string[] = [];
@@ -144,6 +151,29 @@ class AnnotationTable extends Component<{}, TableState> {
         }
         for ( const selection of selections ) {
           const { x1, y1, x2, y2 } = selection;
+          const rows = table.querySelectorAll('tr');
+          const leftCol = Math.min(x1, x2);
+          const rightCol = Math.max(x1, x2);
+          const topRow = Math.min(y1, y2);
+          const bottomRow = Math.max(y1, y2);
+          let rowIndex = topRow;
+          while ( rowIndex <= bottomRow ) {
+            let colIndex = leftCol;
+            while ( colIndex <= rightCol ) {
+              this.selectCell(
+                rows[rowIndex].children[colIndex],
+                rowIndex,
+                colIndex,
+                topRow,
+                leftCol,
+                rightCol,
+                bottomRow,
+                classNames,
+              );
+              colIndex += 1;
+            }
+            rowIndex += 1;
+          }
           if ( y1 <= y2 ) {
             if ( x1 <= x2 ) {
               for ( let row = y1; row <= y2; row++ ) {
@@ -293,6 +323,7 @@ class AnnotationTable extends Component<{}, TableState> {
   resetSelections() {
     const table = this.tableRef;
     if ( table ) {
+      table.classList.remove('active');
       table.querySelectorAll('td[class*="active"]').forEach(e => {
         e.classList.forEach(className => {
           if (className.startsWith('active')) {
@@ -305,6 +336,59 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+
+      // Add borders to the annotation blocks
+      this.updateAnnotationBlocks();
+    }
+  }
+
+  resetEmptyCells(x1, x2, y1, y2) {
+    // Get a reference to the last selection area
+    const selection = this.selections[this.selections.length - 1];
+    if ( !selection ) { return; }
+
+    const table: any = this.tableRef;
+    const rows = table!.querySelectorAll('tr');
+    rows.forEach((row: any, index) => {
+      if ( selection.y1 < selection.y2 ) {
+        if ( index >= selection.y1 && index <= selection.y2 ) {
+          // reset cell class names on the vertical axes
+          let colIndex = x1;
+          while ( colIndex > x2 ) {
+            row.children[colIndex].className = '';
+            colIndex = colIndex - 1;
+          }
+        }
+      } else {
+        if ( index >= selection.y2 && index <= selection.y1 ) {
+          // reset cell class names on the vertical axes
+          let colIndex = x1;
+          while ( colIndex > x2 ) {
+            row.children[colIndex].className = '';
+            colIndex = colIndex - 1;
+          }
+        }
+      }
+    });
+
+    // reset cell class names on the horizontal axes
+    let rowIndex = y1;
+    while ( rowIndex > y2 ) {
+      let row = rows[rowIndex];
+      if ( selection.x1 < selection.x2 ) {
+        let colIndex = selection.x1;
+        while ( colIndex <= selection.x2 ) {
+          row.children[colIndex].className = '';
+          colIndex = colIndex + 1;
+        }
+      } else {
+        let colIndex = selection.x2;
+        while ( colIndex <= selection.x1 ) {
+          row.children[colIndex].className = '';
+          colIndex = colIndex + 1;
+        }
+      }
+      rowIndex = rowIndex - 1;
     }
   }
 
@@ -317,8 +401,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // Reset selections before update
     this.resetSelections();
+    table.classList.add('active');
 
-    const classNames: string[] = [];
+    const classNames: string[] = ['active'];
     if ( selectedBlock ) {
       const { role } = selectedBlock;
       classNames.push(`active`);
@@ -351,6 +436,22 @@ class AnnotationTable extends Component<{}, TableState> {
           colIndex += 1;
         }
         rowIndex += 1;
+      }
+    });
+  }
+
+  standardizeSelections() {
+    this.selections.map(selection => {
+      let temp;
+      if ( selection.x2 < selection.x1 ) {
+        temp = selection.x1;
+        selection.x1 = selection.x2;
+        selection.x2 = temp;
+      }
+      if ( selection.y2 < selection.y1 ) {
+        temp = selection.y1;
+        selection.y1 = selection.y2;
+        selection.y2 = temp;
       }
     });
   }
@@ -404,8 +505,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
-    // Activate the current cell
-    cell.classList.add('active');
+    // Apply class names to the selected cell
     classNames.map(className => cell.classList.add(className));
 
     // Add a top border to the cells at the top of the selection
@@ -436,10 +536,13 @@ class AnnotationTable extends Component<{}, TableState> {
       cell.appendChild(borderBottom);
     }
 
-    if (rowIndex === bottomRow && colIndex === rightCol) {
-      const resizeCorner = document.createElement('div');
-      resizeCorner.classList.add('cell-resize-corner');
-      cell.appendChild(resizeCorner);
+    // Add resize corner to the active selection areas
+    if ( classNames.includes('active') ) {
+      if (rowIndex === bottomRow && colIndex === rightCol) {
+        const resizeCorner = document.createElement('div');
+        resizeCorner.classList.add('cell-resize-corner');
+        cell.appendChild(resizeCorner);
+      }
     }
   }
 
@@ -460,6 +563,7 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnMouseUp(event: React.MouseEvent) {
     this.selecting = false;
     if (this.selections) {
+      this.standardizeSelections();
       this.checkSelectionOverlaps();
       this.openAnnotationMenu(event);
     }
@@ -470,7 +574,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // Allow users to select the resize-corner of the cell
     if ( element.className === 'cell-resize-corner' ) {
-      this.prevElement = element;
+      this.prevElement = element.parentElement;
       this.selecting = true;
       return;
     } else if ( element.nodeName !== 'TD' ) { return; }
@@ -483,14 +587,8 @@ class AnnotationTable extends Component<{}, TableState> {
     const selection: CellSelection = { x1, x2, y1, y2 };
 
     // check if the user is selecting an annotation block
-    this.setState({
-      showAnnotationMenu: false,
-      selectedAnnotationBlock: undefined,
-    });
-
     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
     if (selectedBlock) {
-      this.resetSelections();
       this.selections = selectedBlock.selections;
       this.setState({ selectedAnnotationBlock: selectedBlock });
       this.updateSelections(selectedBlock);
@@ -501,16 +599,22 @@ class AnnotationTable extends Component<{}, TableState> {
     this.selecting = true;
 
     // Update selection coordinates
-    if ((config.platform === 'mac' && event.metaKey) ||
-      (config.platform === 'linux' && event.ctrlKey) ||
-      (config.platform === 'windows' && event.ctrlKey)) {
+    if ( ( config.platform === 'mac' && event.metaKey ) ||
+         ( config.platform === 'linux' && event.ctrlKey ) ||
+         ( config.platform === 'windows' && event.ctrlKey ) ) {
 
       // Add a new selection separately
       this.selections.push({ x1, x2, y1, y2 });
 
       // Activate the element on click
-      this.selectCell(element, y1, x1, y1, x1, x1, y1);
+      this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
     } else {
+
+      // Hide the annotation menu
+      this.setState({
+        showAnnotationMenu: false,
+        selectedAnnotationBlock: undefined,
+      });
 
       // Extend the previous selection if user is holding down Shift key
       if (event.shiftKey && !!this.selections.length) {
@@ -539,7 +643,7 @@ class AnnotationTable extends Component<{}, TableState> {
         this.resetSelections();
 
         // Activate the element on click
-        this.selectCell(element, y1, x1, y1, x1, x1, y1);
+        this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
         this.selections = [{ x1, x2, y1, y2 }];
       }
     }
@@ -559,22 +663,34 @@ class AnnotationTable extends Component<{}, TableState> {
 
     if (this.selecting && !event.shiftKey) {
 
-      // Show the updated selection while moving
-      this.setState({showToast: element.nodeName === 'TD'});
+      // Get a reference to the last available selection
+      const selection = this.selections[this.selections.length - 1];
+      if ( !selection ) { return; }
 
       // Update the last x coordinate of the selection
-      const x2 = element.cellIndex;
-      this.selections[this.selections.length - 1]['x2'] = x2;
+      const newCellIndex = element.cellIndex;
+      selection.x2 = newCellIndex;
 
       // Update the last y coordinate of the selection
-      const y2 = element.parentElement.rowIndex;
-      this.selections[this.selections.length - 1]['y2'] = y2;
+      const newRowIndex = element.parentElement.rowIndex;
+      selection.y2 = newRowIndex;
+
+      if ( this.prevElement.nodeName === 'TD' ) {
+        const oldCellIndex = this.prevElement.cellIndex;
+        const oldRowIndex = this.prevElement.parentElement.rowIndex;
+        if ( newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex ) {
+          this.resetEmptyCells(oldCellIndex, newCellIndex, oldRowIndex, newRowIndex);
+        }
+      }
 
       // Update selections
       this.updateSelections();
 
       // Update reference to the previous element
       this.prevElement = element;
+
+      // Trigger a render of the annotation menu
+      this.setState({ showAnnotationMenu: true });
     }
   }
 
@@ -603,9 +719,14 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     if ([37, 38, 39, 40].includes(event.keyCode) && !!this.selections.length) {
-      this.setState({ showAnnotationMenu: true });
+
+      // Don't allow moving around when users are typing
+      if ( event.target.nodeName === 'INPUT' ) { return; }
 
       event.preventDefault();
+
+      this.setState({ selectedAnnotationBlock: undefined });
+
       const { x1, x2, y1, y2 } = this.selections[0];
       const table: any = this.tableRef;
       const rows = table!.querySelectorAll('tr');
@@ -626,20 +747,22 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'up';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1, 'x2': x1, 'y1': y1 - 1, 'y2': y1 - 1 }];
-          this.selectCell(nextElement, y1 - 1, x1, y1 - 1, x1, x1, y1 - 1);
+          this.selectCell(nextElement, y1 - 1, x1, y1 - 1, x1, x1, y1 - 1, ['active']);
           const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 - 1, 'y2': y1 - 1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
 
       // arrow down
@@ -658,20 +781,22 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'down';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1, 'x2': x1, 'y1': y1 + 1, 'y2': y1 + 1 }];
-          this.selectCell(nextElement, y1 + 1, x1, y1 + 1, x1, x1, y1 + 1);
+          this.selectCell(nextElement, y1 + 1, x1, y1 + 1, x1, x1, y1 + 1, ['active']);
           const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 + 1, 'y2': y1 + 1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
 
       // arrow left
@@ -690,20 +815,22 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'left';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1 - 1, 'x2': x1 - 1, 'y1': y1, 'y2': y1 }];
-          this.selectCell(nextElement, y1, x1 - 1, y1, x1 - 1, x1 - 1, y1);
+          this.selectCell(nextElement, y1, x1 - 1, y1, x1 - 1, x1 - 1, y1, ['active']);
           const selection: CellSelection = { 'x1': x1 - 1, 'x2': x1 - 1, 'y1': y1, 'y2': y1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
 
       // arrow right
@@ -722,21 +849,26 @@ class AnnotationTable extends Component<{}, TableState> {
               this.prevDirection = 'right';
             }
           }
-          this.updateSelections();
         } else {
           this.selections = [{ 'x1': x1 + 1, 'x2': x1 + 1, 'y1': y1, 'y2': y1 }];
-          this.selectCell(nextElement, y1, x1 + 1, y1, x1 + 1, x1 + 1, y1);
+          this.selectCell(nextElement, y1, x1 + 1, y1, x1 + 1, x1 + 1, y1, ['active']);
           const selection: CellSelection = { 'x1': x1 + 1, 'x2': x1 + 1, 'y1': y1, 'y2': y1 };
           const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
+            }, () => {
+              this.selections = selectedBlock.selections;
             });
           }
         }
         this.prevElement = nextElement;
+        this.updateSelections();
       }
+
+      // Trigger a render of the annotation menu
+      this.setState({ showAnnotationMenu: true });
     }
   }
 
