@@ -168,8 +168,15 @@ export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
     entitiesStats: EntitiesStatsDTO;
 }
 
+export interface Entity{
+    label: string;
+    description: string;
+    data_type?: string;
+    tags?: string[];
+}
+
 export interface ResponseEntitiesPropertiesDTO {
-    [file: string]: { [property: string] : {[key: string]: {val: string} } };
+    [file: string]: { [property: string] : Entity };
 }
 
 export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {

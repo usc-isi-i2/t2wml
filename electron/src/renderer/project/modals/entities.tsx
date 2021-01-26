@@ -31,7 +31,7 @@ interface EntitiesState {
 class Entities extends Component<EntitiesProperties, EntitiesState> {
   constructor(props: EntitiesProperties) {
     super(props);
-    
+
     this.state = {
       selectedProperty: undefined,
       entityFile: '',
@@ -52,19 +52,46 @@ class Entities extends Component<EntitiesProperties, EntitiesState> {
     });
 
     this.setState({ data: [] });
-    const tmp = [];
-    for (const p in propertyData) {
-      tmp.push(
+    const data = [
+            <li>
+            <Form.Group>
+              <Form.Label>Label</Form.Label><br></br>
+              <Form.Control defaultValue={propertyData.label} />
+            </Form.Group>
+          </li>,
+            <li>
+            <Form.Group>
+              <Form.Label>Description</Form.Label><br></br>
+              <Form.Control defaultValue={propertyData.description} />
+            </Form.Group>
+          </li>
+    ];
+    if (propertyData.data_type){
+      data.push(
         <li>
-          <Form.Group>
-            <Form.Label>{p}</Form.Label><br></br>
-            <Form.Label>{propertyData[p]} </Form.Label>
-            <Form.Control defaultValue={propertyData[p]} />
-          </Form.Group>
-        </li>
+        <Form.Group>
+          <Form.Label>Data type</Form.Label><br></br>
+          <Form.Control defaultValue={propertyData.data_type} />
+        </Form.Group>
+      </li>
       )
     }
-    this.setState({ data: tmp });
+
+    if (propertyData.tags){
+      let index=1;
+      for (const tag in propertyData.tags){
+        data.push(
+          <li>
+          <Form.Group>
+            <Form.Label>Tag {index}</Form.Label><br></br>
+            <Form.Control defaultValue={tag} />
+          </Form.Group>
+        </li>)
+        index=index+1;
+      }
+    }
+
+    this.setState({data});
   }
 
   handleSaveEntities() {
@@ -74,7 +101,7 @@ class Entities extends Component<EntitiesProperties, EntitiesState> {
     this.props.handleSaveEntities(file, property, propertyVals);
   }
 
-  
+
   render() {
     const properties = [];
     for (const f in wikiStore.entitiesData.entities) {
@@ -101,10 +128,6 @@ class Entities extends Component<EntitiesProperties, EntitiesState> {
         {/* body */}
         <Modal.Body>
           <Form className="container">
-            {!this.state.selectedProperty ?
-            <Form.Label>
-              select a property to see its details
-            </Form.Label> : null }
 
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Col sm="12" md="4">
@@ -113,9 +136,13 @@ class Entities extends Component<EntitiesProperties, EntitiesState> {
                 </ul>
               </Col>
               <Col sm="12" md="8">
+              {!this.state.selectedProperty ?
+                      <Form.Label>
+                        Select a property to see its details
+                      </Form.Label> :
                 <ul>
                   {this.state.data}
-                </ul>
+                </ul>}
               </Col>
             </Form.Group>
 
