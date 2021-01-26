@@ -78,6 +78,7 @@ class RequestService {
 
   @action
   public fillMapping(response: ResponseWithMappingDTO){
+    console.log("mapping", response)
     wikiStore.project.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlContent = response.yamlContent;
@@ -93,6 +94,7 @@ class RequestService {
 
   @action
   public updateProjectandQnode(response: ResponseWithQNodeLayerDTO){
+    console.log("qnode", response)
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.project.projectDTO = response.project;
   }

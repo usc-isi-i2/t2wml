@@ -331,6 +331,6 @@
 
 
 /* cell types*/
-.table-wrapper table tr td.type-wikibaseitem {
+.table-wrapper table tr td.type-qNode {
   color: #006699;
 }
