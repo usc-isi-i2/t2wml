@@ -40,19 +40,21 @@ class OutputTable extends Component<{}, TableState> {
       showOutputMenu: false,
       outputMenuPosition: [50, 70],
     };
+
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }
