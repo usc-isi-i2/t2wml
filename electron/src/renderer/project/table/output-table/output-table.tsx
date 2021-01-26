@@ -383,13 +383,14 @@ class OutputTable extends Component<{}, TableState> {
 
   renderOutputMenu() {
     const {
+      selectedCell,
       showOutputMenu,
       outputMenuPosition,
     } = this.state;
-    if (showOutputMenu) {
+    if (selectedCell && showOutputMenu) {
       return (
         <OutputMenu
-          selections={this.selections}
+          selectedCell={selectedCell}
           position={outputMenuPosition}
           onClose={() => this.closeOutputMenu()} />
       )
