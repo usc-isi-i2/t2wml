@@ -184,11 +184,7 @@ class OutputTable extends Component<{}, TableState> {
     cell.appendChild(borderBottom);
   }
 
-  selectRelatedCells(row: number, col: number) {
-    const selectedCell = new Cell(col - 1, row - 1);
-
-    this.setState({ selectedCell, showToast: true });
-
+  selectRelatedCells(selectedCell: Cell) {
     // Update selected cell in the data store
     wikiStore.table.selectedCell = selectedCell;
 
@@ -272,10 +268,15 @@ class OutputTable extends Component<{}, TableState> {
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
     this.selections = [{ x1, x1, y1, y1 }];
-    this.selectCell(element);
 
     // Activate the element on click
-    this.selectRelatedCells(y1, x1);
+    this.selectCell(element);
+
+    // Activate related cells
+    const selectedCell = new Cell(x1 - 1, y1 - 1);
+    this.setState({ selectedCell }, () => {
+      this.selectRelatedCells(selectedCell);
+    });
   }
 
   handleOnClickHeader(event: React.MouseEvent) {
@@ -343,9 +344,16 @@ class OutputTable extends Component<{}, TableState> {
       }
 
       this.resetSelections();
+
+      // Activate the element on click
       const nextElement = rows[row + 1].children[col + 1];
       this.selectCell(nextElement);
-      this.selectRelatedCells(row + 1, col + 1);
+
+      // Activate related cells
+      const newSelectedCell = new Cell(col, row);
+      this.setState({ selectedCell: newSelectedCell }, () => {
+        this.selectRelatedCells(selectedCell);
+      });
     }
   }
 
