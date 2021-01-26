@@ -249,7 +249,14 @@ class OutputTable extends Component<{}, TableState> {
   }
 
   handleOnMouseUp(event: React.MouseEvent) {
-    if (this.selections) {
+    const { selectedCell, tableData } = this.state;
+    if (!selectedCell) { return; }
+
+    const { row, col } = selectedCell;
+    const tableCell = tableData[row][col];
+
+    // Only open the output menu if there's content
+    if ( tableCell.content ) {
       this.openOutputMenu(event);
     }
   }
