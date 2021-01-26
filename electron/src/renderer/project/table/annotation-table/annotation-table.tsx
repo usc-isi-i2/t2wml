@@ -132,7 +132,12 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( !tableData ) {
       tableData = this.state.tableData;
     }
+
+    const table: any = this.tableRef;
+    if ( !table ) { return; }
+
     if ( wikiStore.annotations.blocks && tableData ) {
+
       for ( const block of wikiStore.annotations.blocks ) {
         const { role, type, selections } = block;
         const classNames: string[] = [];
@@ -144,6 +149,29 @@ class AnnotationTable extends Component<{}, TableState> {
         }
         for ( const selection of selections ) {
           const { x1, y1, x2, y2 } = selection;
+          const rows = table.querySelectorAll('tr');
+          const leftCol = Math.min(x1, x2);
+          const rightCol = Math.max(x1, x2);
+          const topRow = Math.min(y1, y2);
+          const bottomRow = Math.max(y1, y2);
+          let rowIndex = topRow;
+          while ( rowIndex <= bottomRow ) {
+            let colIndex = leftCol;
+            while ( colIndex <= rightCol ) {
+              this.selectCell(
+                rows[rowIndex].children[colIndex],
+                rowIndex,
+                colIndex,
+                topRow,
+                leftCol,
+                rightCol,
+                bottomRow,
+                classNames,
+              );
+              colIndex += 1;
+            }
+            rowIndex += 1;
+          }
           if ( y1 <= y2 ) {
             if ( x1 <= x2 ) {
               for ( let row = y1; row <= y2; row++ ) {
