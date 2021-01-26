@@ -9,7 +9,6 @@ import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
 import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
-import TableToast from '../table-toast';
 import OutputMenu from './output-menu';
 import * as utils from '../table-utils';
 import { settings } from '../../../../main/settings';
@@ -20,7 +19,6 @@ interface TableState {
   selectedCell: Cell | null;
   showOutputMenu: boolean,
   outputMenuPosition?: Array<number>,
-  showToast: boolean;
 }
 
 
@@ -41,7 +39,6 @@ class OutputTable extends Component<{}, TableState> {
       selectedCell: new Cell(),
       showOutputMenu: false,
       outputMenuPosition: [50, 70],
-      showToast: false,
     };
   }
 
@@ -307,12 +304,9 @@ class OutputTable extends Component<{}, TableState> {
     const { selectedCell, tableData } = this.state;
     if (!selectedCell) { return; }
 
-    // Hide table toast with ESC key
+    // Hide the output menu with ESC key
     if (event.keyCode == 27) {
-      this.setState({
-        showToast: false,
-        showOutputMenu: false,
-      }, () => {
+      this.setState({ showOutputMenu: false }, () => {
         this.resetSelections();
       });
     }
@@ -366,32 +360,6 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
-  onCloseToast() {
-    this.setState({ showToast: false });
-  }
-
-  renderToast() {
-    const { selectedCell, showToast } = this.state;
-    if (selectedCell && showToast) {
-      let text = 'Selected:';
-      const selection: CellSelection = {
-        x1: selectedCell.col + 1,
-        x2: selectedCell.col + 1,
-        y1: selectedCell.row + 1,
-        y2: selectedCell.row + 1,
-      };
-      text += ` ${utils.humanReadableSelection(selection)}`;
-      const qnode = wikiStore.layers.qnode.find(selectedCell);
-      return (
-        <TableToast
-          text={text}
-          qnode={qnode as QNode}
-          onClose={() => this.onCloseToast()}
-        />
-      )
-    }
-  }
-
   closeOutputMenu() {
     this.setState({
       showOutputMenu: false,
@@ -429,7 +397,6 @@ class OutputTable extends Component<{}, TableState> {
   render() {
     return (
       <Fragment>
-        {this.renderToast()}
         {this.renderTable()}
         {this.renderOutputMenu()}
       </Fragment>
