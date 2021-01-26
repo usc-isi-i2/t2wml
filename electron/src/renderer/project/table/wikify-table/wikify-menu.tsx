@@ -55,16 +55,10 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
 
   render() {
     const { position, onClose } = this.props;
-    let style = {};
-    if (position) {
-      style = {
-        'left': position[0],
-        'top': position[1],
-      };
-    }
     return (
-      <div className="wikify-menu" style={style}>
-        <Draggable handle=".handle">
+      <Draggable handle=".handle"
+        defaultPosition={{x: position[0], y: position[1]}}>
+        <div className="wikify-menu">
           <Toast onClose={onClose}>
             <Toast.Header className="handle">
               <strong className="mr-auto">Update Qnode</strong>
@@ -73,8 +67,8 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
               {this.renderWikifyForms()}
             </Toast.Body>
           </Toast>
-        </Draggable>
-      </div>
+        </div>
+      </Draggable>
     )
   }
 }
