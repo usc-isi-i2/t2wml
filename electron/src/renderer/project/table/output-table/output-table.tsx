@@ -45,7 +45,7 @@ class OutputTable extends Component<{}, TableState> {
     this.updateTableData(wikiStore.table.table);
     document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-    this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)))
+    this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)));
     this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.colorQnodeCells(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
@@ -78,7 +78,7 @@ class OutputTable extends Component<{}, TableState> {
     for (const entry of qnodes.entries) {
       for (const indexPair of entry.indices) {
         const tableCell = tableData[indexPair[0]][indexPair[1]];
-        tableCell.classNames.push(`type-wikibaseitem`)
+        tableCell.classNames.push(`type-wikibaseitem`);
       }
     }
     this.setState({ tableData });
@@ -94,10 +94,10 @@ class OutputTable extends Component<{}, TableState> {
       for (const indexPair of entry.indices) {
         if (['majorError', 'minorError'].includes(entry.type)) {
           const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`status-${entry.type}`)
+          tableCell.classNames.push(`status-${entry.type}`);
         } else {
           const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`role-${entry.type}`)
+          tableCell.classNames.push(`role-${entry.type}`);
         }
       }
     }
