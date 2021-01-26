@@ -52,9 +52,7 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
     )
   }
 
-  renderQnode() {
-    const { selectedCell } = this.props;
-    const qnode = wikiStore.layers.qnode.find(selectedCell);
+  renderQnode(qnode) {
     if ( qnode ) {
       return (
         <div className="qnode">
@@ -75,9 +73,7 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
     }
   }
 
-  renderError() {
-    const { selectedCell } = this.props;
-    const error = wikiStore.layers.error.find(selectedCell);
+  renderError(error) {
     if ( error ) {
       return (
         <p className="error">{error.error.property}</p>
@@ -86,12 +82,17 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
   }
 
   renderBody() {
-    return (
-      <Toast.Body>
-        {this.renderQnode()}
-        {this.renderError()}
-      </Toast.Body>
-    )
+    const { selectedCell } = this.props;
+    const qnode = wikiStore.layers.qnode.find(selectedCell);
+    const error = wikiStore.layers.error.find(selectedCell);
+    if ( qnode || error ) {
+      return (
+        <Toast.Body>
+          {this.renderQnode(qnode)}
+          {this.renderError(error)}
+        </Toast.Body>
+      )
+    }
   }
 
   render() {
