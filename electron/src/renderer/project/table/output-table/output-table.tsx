@@ -10,12 +10,16 @@ import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
 import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
 import TableToast from '../table-toast';
+import OutputMenu from './output-menu';
 import * as utils from '../table-utils';
+import { settings } from '../../../../main/settings';
 
 
 interface TableState {
   tableData: TableCell[][] | undefined;
   selectedCell: Cell | null;
+  showOutputMenu: boolean,
+  outputMenuPosition?: Array<number>,
   showToast: boolean;
 }
 
@@ -35,6 +39,8 @@ class OutputTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       selectedCell: new Cell(),
+      showOutputMenu: false,
+      outputMenuPosition: [50, 70],
       showToast: false,
     };
   }
@@ -232,6 +238,26 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
+  openOutputMenu(event: React.MouseEvent) {
+    let { pageX, pageY } = event;
+    pageX = pageX - 300;
+    if ( settings.window.height - pageY <= 375 ) {
+      pageY -= 375;
+    } else {
+      pageY = pageY - 100;
+    }
+    this.setState({
+      showOutputMenu: true,
+      outputMenuPosition: [pageX, pageY],
+    });
+  }
+
+  handleOnMouseUp(event: React.MouseEvent) {
+    if (this.selections) {
+      this.openOutputMenu(event);
+    }
+  }
+
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
     const element = event.target as any;
@@ -239,8 +265,13 @@ class OutputTable extends Component<{}, TableState> {
     // Don't let users select header cells
     if (element.nodeName !== 'TD') { return; }
 
+    this.setState({
+      showOutputMenu: false,
+    });
+
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
+    this.selections = [{ x1, x1, y1, y1 }];
     this.selectCell(element);
 
     // Activate the element on click
@@ -270,12 +301,17 @@ class OutputTable extends Component<{}, TableState> {
 
     // Hide table toast with ESC key
     if (event.keyCode == 27) {
-      this.setState({ showToast: false }, () => {
+      this.setState({
+        showToast: false,
+        showOutputMenu: false,
+      }, () => {
         this.resetSelections();
       });
     }
 
     if ([37, 38, 39, 40].includes(event.keyCode)) {
+      this.setState({ showOutputMenu: false });
+
       event.preventDefault();
 
       const table: any = this.tableRef;
@@ -339,11 +375,32 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
+  closeOutputMenu() {
+    this.setState({
+      showOutputMenu: false,
+    });
+  }
+
+  renderOutputMenu() {
+    const {
+      showOutputMenu,
+      outputMenuPosition,
+    } = this.state;
+    if (showOutputMenu) {
+      return (
+        <OutputMenu
+          selections={this.selections}
+          position={outputMenuPosition}
+          onClose={() => this.closeOutputMenu()} />
+      )
+    }
+  }
+
   renderTable() {
     return (
       <Table
         tableData={this.state.tableData}
-        onMouseUp={() => void 0}
+        onMouseUp={this.handleOnMouseUp.bind(this)}
         onMouseDown={this.handleOnMouseDown.bind(this)}
         onMouseMove={() => void 0}
         onClickHeader={this.handleOnClickHeader.bind(this)}
@@ -356,6 +413,7 @@ class OutputTable extends Component<{}, TableState> {
       <Fragment>
         {this.renderToast()}
         {this.renderTable()}
+        {this.renderOutputMenu()}
       </Fragment>
     )
   }
