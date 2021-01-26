@@ -35,8 +35,8 @@ class WikifyTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       selectedCell: new Cell(),
-      showAnnotationMenu: false,
-      annotationMenuPosition: [50, 70],
+      showWikifyMenu: false,
+      wikifyMenuPosition: [50, 70],
     };
   }
 
