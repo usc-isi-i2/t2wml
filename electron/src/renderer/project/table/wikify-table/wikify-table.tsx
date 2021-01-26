@@ -291,7 +291,8 @@ class WikifyTable extends Component<{}, TableState> {
   }
 
   handleOnMouseUp(event: React.MouseEvent) {
-    if (this.selections) {
+    const { selectedCell } = this.state;
+    if ( selectedCell ) {
       this.openWikifyMenu(event);
     }
   }
@@ -315,7 +316,6 @@ class WikifyTable extends Component<{}, TableState> {
 
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
-    this.selections = [{ x1, x1, y1, y1 }];
     this.selectCell(element);
 
     // Activate the element on click
@@ -395,13 +395,14 @@ class WikifyTable extends Component<{}, TableState> {
 
   renderWikifyMenu() {
     const {
+      selectedCell,
       showWikifyMenu,
       wikifyMenuPosition,
     } = this.state;
     if (showWikifyMenu) {
       return (
         <WikifyMenu
-          selections={this.selections}
+          selectedCell={selectedCell}
           position={wikifyMenuPosition}
           onClose={() => this.closeWikifyMenu()} />
       )

@@ -9,7 +9,7 @@ import { ErrorMessage } from '../../../common/general';
 
 
 interface WikifyMenuProperties {
-  selections?: Array<any>,
+  selectedCell: Cell | null;
   position?: Array<number>,
   onDelete: any | null,
   onClose: any | null,
@@ -36,14 +36,14 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   }
 
   handleOnSubmit(values: { [key: string]: string }) {
-    console.log('WikifyMenu OnSubmit triggered for -> ', selections, values);
+    console.log('WikifyMenu OnSubmit triggered for -> ', values);
   }
 
   renderWikifyForms() {
-    const { selections } = this.props;
+    const { selectedCell } = this.props;
     return (
       <WikifyForm
-        selections={selections}
+        selectedCell={selectedCell}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
     )

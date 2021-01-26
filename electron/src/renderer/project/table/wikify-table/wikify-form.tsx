@@ -5,7 +5,7 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
 interface WikifyFormProperties {
-  selections?: Array<any>,
+  selectedCell: Cell | null;
   onChange: any | null, // Use the actual function type: (arg: argType) => returnType
   onSubmit: any | null,
 }
