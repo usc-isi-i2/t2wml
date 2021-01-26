@@ -5,6 +5,7 @@ import './output-menu.css';
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import * as utils from '../table-utils';
+import wikiStore from '../../../data/store';
 import { ErrorMessage } from '../../../common/general';
 
 
@@ -51,9 +52,20 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
     )
   }
 
+  renderError() {
+    const { selectedCell } = this.props;
+    const error = wikiStore.layers.error.find(selectedCell);
+    if ( error ) {
+      return (
+        <p>{error.error.property}</p>
+      )
+    }
+  }
+
   renderBody() {
     return (
       <Toast.Body>
+        {this.renderError()}
       </Toast.Body>
     )
   }
