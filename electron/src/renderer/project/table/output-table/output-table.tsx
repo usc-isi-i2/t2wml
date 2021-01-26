@@ -48,8 +48,6 @@ class OutputTable extends Component<{}, TableState> {
     this.updateTableData(wikiStore.table.table);
     document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-    this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)));
-    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.colorQnodeCells(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
 
@@ -60,86 +58,12 @@ class OutputTable extends Component<{}, TableState> {
     }
   }
 
-  colorQnodeCells(qnodes: Layer<QNodeEntry>) {
-    const { tableData } = this.state;
-    if (!tableData) {
-      return;
-    }
-
-    //clear any existing qnode coloration
-    const table = this.tableRef;
-    if (table) {
-      table.querySelectorAll('td').forEach(e => {
-        e.classList.forEach(className => {
-          if (className.startsWith('type-wikibaseitem')) {
-            e.classList.remove(className);
-          }
-        });
-      });
-    }
-
-    for (const entry of qnodes.entries) {
-      for (const indexPair of entry.indices) {
-        const tableCell = tableData[indexPair[0]][indexPair[1]];
-        tableCell.classNames.push(`type-wikibaseitem`);
-      }
-    }
-    this.setState({ tableData });
-  }
-
-  colorCellsByType(types: Layer<TypeEntry>) {
-    const { tableData } = this.state;
-    if (!tableData) {
-      return;
-    }
-
-    for (const entry of types.entries) {
-      for (const indexPair of entry.indices) {
-        if (['majorError', 'minorError'].includes(entry.type)) {
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`status-${entry.type}`);
-        } else {
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`role-${entry.type}`);
-        }
-      }
-    }
-    this.setState({ tableData });
-  }
-
-  toggleCleanedData() {
-    const { tableData } = this.state;
-    if (!tableData) {
-      return;
-    }
-
-    const cleaned = wikiStore.layers.cleaned;
-
-    //reset everything to raw
-    for (let i = 0; i < tableData.length; i++) {
-      for (let j = 0; j < tableData[0].length; j++) {
-        tableData[i][j].content = wikiStore.table.table.cells[i][j]
-      }
-    }
-
-    //replace cleaned entries if showCleanedData
-    if (wikiStore.table.showCleanedData) {
-      for (const entry of cleaned.entries) {
-        for (const indexPair of entry.indices) {
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.content = entry.cleaned;
-        }
-      }
-    }
-
-    this.setState({ tableData })
-  }
-
   updateTableData(table?: TableDTO) {
     if (!table || !table.cells) {
       this.setState({ tableData: undefined });
       return;
     }
+
     const tableData = [];
     for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
@@ -152,7 +76,60 @@ class OutputTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
+
+    this.updateCells(tableData);
+  }
+
+  updateCells(tableData) {
+    const types = wikiStore.layers.type;
+    for (const entry of types.entries) {
+      for (const indexPair of entry.indices) {
+        if (['majorError', 'minorError'].includes(entry.type)) {
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.classNames.push(`status-${entry.type}`);
+        } else {
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.classNames.push(`role-${entry.type}`);
+        }
+      }
+    }
+
+    const qnodes = wikiStore.layers.qnode;
+    for (const entry of qnodes.entries) {
+      for (const indexPair of entry.indices) {
+        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.classNames.push(`type-wikibaseitem`);
+      }
+    }
+
     this.setState({ tableData });
+  }
+
+  toggleCleanedData() {
+    const { tableData } = this.state;
+    if (!tableData) {
+      return;
+    }
+
+    //reset everything to raw
+    for (let i = 0; i < tableData.length; i++) {
+      for (let j = 0; j < tableData[0].length; j++) {
+        tableData[i][j].content = wikiStore.table.table.cells[i][j]
+      }
+    }
+
+    //replace cleaned entries if showCleanedData
+    const cleaned = wikiStore.layers.cleaned;
+    if (wikiStore.table.showCleanedData) {
+      for (const entry of cleaned.entries) {
+        for (const indexPair of entry.indices) {
+          const tableCell = tableData[indexPair[0]][indexPair[1]];
+          tableCell.content = entry.cleaned;
+        }
+      }
+    }
+
+    this.setState({ tableData })
   }
 
   selectCell(cell: Element, classNames: string[] = []) {
