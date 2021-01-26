@@ -334,7 +334,7 @@ class OutputTable extends Component<{}, TableState> {
 
         // Only open the output menu if there's content
         const tableCell = tableData[row][col];
-        this.setState({ showOutputMenu: tableCell.content });
+        this.setState({ showOutputMenu: tableCell && tableCell.content });
       });
     }
   }
