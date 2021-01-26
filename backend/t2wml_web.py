@@ -7,6 +7,7 @@ from numpy.core.numeric import full
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
+from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
@@ -61,6 +62,7 @@ def update_t2wml_settings(project):
 
 
 def get_kg(calc_params):
+    wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
     if calc_params.cache and not annotation:
         kg = calc_params.cache.load_kg()
@@ -68,9 +70,12 @@ def get_kg(calc_params):
             return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
+        if cell_mapper.annotation.potentially_enough_annotation_information:
+            ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
+            ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
     db.session.commit()  # save any queried properties
     return kg
 
