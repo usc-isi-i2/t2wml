@@ -74,7 +74,7 @@
   min-width: 175px;
 }
 .table-wrapper table thead tr th::after {
-  content: "";
+  content: '';
   display: block;
   left: 0;
   right: 0;
@@ -111,7 +111,7 @@
 }
 .table-wrapper table tr td:nth-child(1)::after,
 .table-wrapper.wikify-table table tr td:nth-child(1)::after {
-  content: "";
+  content: '';
   display: block;
   top: 0;
   right: 0;
@@ -261,47 +261,52 @@
   border: 1px solid whitesmoke;
 }
 
-/*cell statuses - may eventually become triangles etc*/
+/* cell cleaned data status */
 .table-wrapper table tr td.status-cleaned {
   font-weight: bold;
 }
 
-/*https://stackoverflow.com/questions/14499048/how-to-add-triangle-in-table-cell*/
-
-.status-minorError {
+/* cell minor error status */
+.table-wrapper table tr td.status-minorError {
   position: relative;
 }
-.status-minorError:after { /* Magic Happens Here!!! */
-  content: "";
+.table-wrapper table tr td.status-minorError::after {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   width: 0;
   height: 0;
   display: block;
-  border-left: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-
-  border-top: 20px solid  #FF8000;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF8000;
+}
+.table-wrapper table tr td.active.status-minorError::after {
+  top: 2px;
+  right: 2px;
 }
 
-.status-majorError {
+/* cell major error status */
+.table-wrapper table tr td.status-majorError {
   position: relative;
 }
-.status-majorError:after { /* Magic Happens Here!!! */
-  content: "";
+.table-wrapper table tr td.status-majorError::after {
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
   width: 0;
   height: 0;
   display: block;
-  border-left: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-
-  border-top: 20px solid   #FF3333;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF3333;
 }
-
+.table-wrapper table tr td.active.status-majorError::after {
+  top: 2px;
+  right: 2px;
+}
 
 /* cell roles */
 .table-wrapper table tr td.role-dependentVar {

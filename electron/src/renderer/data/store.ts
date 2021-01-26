@@ -27,14 +27,14 @@ class TableState {
         this.mode = 'Annotation';
         this.table = {} as TableDTO;
         this.showSpinner = false;
-        this.selectedCell = new Cell()
+        this.selectedCell = new Cell();
         this.showCleanedData = false;
     }
 
 
     updateTable(table: TableDTO){
         this.table=table;
-        this.selectedCell=new Cell()
+        this.selectedCell=new Cell();
     }
 }
 
@@ -110,13 +110,13 @@ export class Layer<T extends Entry> {
     constructor(responseLayer?: LayerDTO<T>) {
         this.entryMap = new Map<string, T>();
         if (!responseLayer) {
-            this.entries = []
+            this.entries = [];
         }
         else {
             this.entries = responseLayer.entries;
             for (const entry of this.entries) {
                 for (const index_pair of entry.indices) {
-                    this.entryMap.set(`${index_pair[0]},${index_pair[1]}`, entry)
+                    this.entryMap.set(`${index_pair[0]},${index_pair[1]}`, entry);
                 }
 
             }
@@ -128,7 +128,7 @@ export class Layer<T extends Entry> {
             const index = `${cell.row},${cell.col}`;
             return this.entryMap.get(index);
         }
-        return undefined
+        return undefined;
     }
 }
 
@@ -239,7 +239,7 @@ class WikiStore {
         if (path) {
             this.displayMode = 'project';
             if (path) {
-                ipcRenderer.send('show-project', path)
+                ipcRenderer.send('show-project', path);
             }
             this.projects.setCurrent(path);
         } else {

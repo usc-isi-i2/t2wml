@@ -7,8 +7,8 @@ import { CellSelection } from "./general";
 /* base types*/
 
  interface CurrentAndArrayDTO{
-     selected: string,
-     val_arr: string[]
+     selected: string;
+     val_arr: string[];
  }
 
 export interface ProjectDTO {
@@ -62,9 +62,9 @@ export interface LayerDTO<T extends Entry> {
 }
 
 export interface QNode{
-    label: string
-    description: string
-    id: string
+    label: string;
+    description: string;
+    id: string;
     url?: string;
 }
 
@@ -99,13 +99,13 @@ export interface ErrorEntry extends Entry {
 }
 
 export interface StatementEntry extends Entry{
-    subject: string
-    property: string
-    cells: any
-    value: string
-    qnodes: any
-    qualifier?: any
-    unit?: string
+    subject: string;
+    property: string;
+    cells: any;
+    value: string;
+    qnodes: any;
+    qualifier?: any;
+    unit?: string;
 }
 
 
