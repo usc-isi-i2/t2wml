@@ -8,7 +8,7 @@ import { ErrorMessage } from '../../../common/general';
 
 
 interface OutputMenuProperties {
-  selections?: Array<any>,
+  selectedCell: Cell | null;
   position?: Array<number>,
   onDelete: any | null,
   onClose: any | null,
