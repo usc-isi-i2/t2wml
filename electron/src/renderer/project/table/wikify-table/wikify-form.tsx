@@ -41,13 +41,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSelectionAreas() {
-    const { selections } = this.props;
-    if (!selections) { return null; }
-    return selections.map((selection: any, index: number) => (
-      <p className="area" key={index}>
-        Selected: {utils.columnToLetter(selection.x1)}{selection.y1}
+    const { selectedCell } = this.props;
+    if (!selectedCell) { return null; }
+    const { col, row } = selectedCell;
+    return (
+      <p className="area">
+        Selected: {utils.columnToLetter(col + 1)}{row + 1}
       </p>
-    ));
+    )
   }
 
   renderTextInput() {
