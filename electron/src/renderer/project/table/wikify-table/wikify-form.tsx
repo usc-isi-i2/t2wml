@@ -1,11 +1,9 @@
 import React from 'react';
 
-import * as utils from '../table-utils';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
 
 interface WikifyFormProperties {
-  selectedCell: Cell | null;
   onChange: any | null, // Use the actual function type: (arg: argType) => returnType
   onSubmit: any | null,
 }
@@ -40,17 +38,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     onSubmit(this.state);
   }
 
-  renderSelectionAreas() {
-    const { selectedCell } = this.props;
-    if (!selectedCell) { return null; }
-    const { col, row } = selectedCell;
-    return (
-      <p className="area">
-        Selected: {utils.columnToLetter(col + 1)}{row + 1}
-      </p>
-    )
-  }
-
   renderTextInput() {
     return (
       <Form.Group as={Row}
@@ -82,7 +69,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return (
       <Form className="container wikify-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
-        {this.renderSelectionAreas()}
         {this.renderTextInput()}
         {this.renderSubmitButton()}
       </Form>

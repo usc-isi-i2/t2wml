@@ -10,14 +10,3 @@
   background: whitesmoke;
   cursor: pointer;
 }
-
-.wikify-menu form.wikify-form p.area {
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-.wikify-menu form.wikify-form button.delete {
-  cursor: pointer;
-  padding: 0px;
-  color: red;
-}

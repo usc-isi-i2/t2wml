@@ -6,6 +6,7 @@ import WikifyForm from './wikify-form';
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
+import * as utils from '../table-utils';
 
 
 interface WikifyMenuProperties {
@@ -39,11 +40,22 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     console.log('WikifyMenu OnSubmit triggered for -> ', values);
   }
 
-  renderWikifyForms() {
+  renderHeader() {
     const { selectedCell } = this.props;
+    if (!selectedCell) { return null; }
+    const { col, row } = selectedCell;
+    return (
+      <Toast.Header className="handle">
+        <strong className="mr-auto">
+          Selected: {utils.columnToLetter(col + 1)}{row + 1}
+        </strong>
+      </Toast.Header>
+    )
+  }
+
+  renderWikifyForms() {
     return (
       <WikifyForm
-        selectedCell={selectedCell}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
     )
@@ -56,9 +68,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         defaultPosition={{x: position[0], y: position[1]}}>
         <div className="wikify-menu">
           <Toast onClose={onClose}>
-            <Toast.Header className="handle">
-              <strong className="mr-auto">Update Qnode</strong>
-            </Toast.Header>
+            {this.renderHeader()}
             <Toast.Body>
               {this.renderWikifyForms()}
             </Toast.Body>
