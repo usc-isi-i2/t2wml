@@ -304,7 +304,7 @@ class OutputTable extends Component<{}, TableState> {
   }
 
   handleOnKeyDown(event: KeyboardEvent) {
-    const { selectedCell } = this.state;
+    const { selectedCell, tableData } = this.state;
     if (!selectedCell) { return; }
 
     // Hide table toast with ESC key
@@ -318,8 +318,6 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     if ([37, 38, 39, 40].includes(event.keyCode)) {
-      this.setState({ showOutputMenu: false });
-
       event.preventDefault();
 
       const table: any = this.tableRef;
@@ -360,6 +358,10 @@ class OutputTable extends Component<{}, TableState> {
       const newSelectedCell = new Cell(col, row);
       this.setState({ selectedCell: newSelectedCell }, () => {
         this.selectRelatedCells(selectedCell);
+
+        // Only open the output menu if there's content
+        const tableCell = tableData[row][col];
+        this.setState({ showOutputMenu: tableCell.content });
       });
     }
   }
