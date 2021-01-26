@@ -11,13 +11,8 @@
   cursor: pointer;
 }
 
-.output-menu form.output-form p.area {
+.output-menu p.error {
   margin-bottom: 10px;
   font-weight: bold;
-}
-
-.output-menu form.output-form button.delete {
-  cursor: pointer;
-  padding: 0px;
   color: red;
 }

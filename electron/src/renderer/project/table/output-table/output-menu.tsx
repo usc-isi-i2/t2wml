@@ -57,7 +57,7 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
     const error = wikiStore.layers.error.find(selectedCell);
     if ( error ) {
       return (
-        <p>{error.error.property}</p>
+        <p className="error">{error.error.property}</p>
       )
     }
   }
