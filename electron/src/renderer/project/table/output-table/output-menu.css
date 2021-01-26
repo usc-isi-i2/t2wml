@@ -16,3 +16,7 @@
   font-weight: bold;
   color: red;
 }
+
+.output-menu p.qnode a {
+  color: #006699;
+}
