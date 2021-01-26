@@ -531,10 +531,13 @@ class AnnotationTable extends Component<{}, TableState> {
       cell.appendChild(borderBottom);
     }
 
-    if (rowIndex === bottomRow && colIndex === rightCol) {
-      const resizeCorner = document.createElement('div');
-      resizeCorner.classList.add('cell-resize-corner');
-      cell.appendChild(resizeCorner);
+    // Add resize corner to the active selection areas
+    if ( classNames.includes('active') ) {
+      if (rowIndex === bottomRow && colIndex === rightCol) {
+        const resizeCorner = document.createElement('div');
+        resizeCorner.classList.add('cell-resize-corner');
+        cell.appendChild(resizeCorner);
+      }
     }
   }
 
