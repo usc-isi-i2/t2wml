@@ -38,13 +38,15 @@ class WikifyTable extends Component<{}, TableState> {
       showWikifyMenu: false,
       wikifyMenuPosition: [50, 70],
     };
+
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)))
     this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.colorQnodeCells(qnodes)));
@@ -52,7 +54,7 @@ class WikifyTable extends Component<{}, TableState> {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', (event) => this.handleOnKeyDown(event));
+    document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }
