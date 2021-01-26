@@ -336,9 +336,6 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
-
-      // Add borders to the annotation blocks
-      this.updateAnnotationBlocks();
     }
   }
 
@@ -876,7 +873,10 @@ class AnnotationTable extends Component<{}, TableState> {
     this.setState({
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
-    }, () => this.resetSelections());
+    }, () => {
+      this.resetSelections();
+      this.updateAnnotationBlocks();
+    });
   }
 
   renderAnnotationMenu() {
