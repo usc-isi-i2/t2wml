@@ -159,9 +159,10 @@ class AnnotationTable extends Component<{}, TableState> {
           let rowIndex = topRow;
           while ( rowIndex <= bottomRow ) {
             let colIndex = leftCol;
-            while ( colIndex <= rightCol ) {
+            const row = rows[rowIndex];
+            while ( row && colIndex <= rightCol ) {
               this.selectCell(
-                rows[rowIndex].children[colIndex],
+                row.children[colIndex],
                 rowIndex,
                 colIndex,
                 topRow,
