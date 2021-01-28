@@ -166,8 +166,8 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   async onShowEntitiesClicked() {
     await this.requestService.getEntities();
-    
-    this.setState({ 
+
+    this.setState({
       entityProperties: wikiStore.entitiesData.entities,
       showEntities: true
     });
@@ -206,7 +206,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     } catch (error) {
       console.log(error);
     } finally {
-      this.setState({ showEntities: false });
+      //this.setState({ showEntities: false });
     }
   }
 
