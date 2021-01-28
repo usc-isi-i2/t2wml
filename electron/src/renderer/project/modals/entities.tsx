@@ -18,6 +18,7 @@ interface EntitiesProperties {
     cancelSaveEntities: () => void;
 }
 
+
 interface EntitiesState {
 
   selectedProperty: string | undefined;
@@ -27,10 +28,15 @@ interface EntitiesState {
 }
 
 
+
+
 @observer
 class Entities extends Component<EntitiesProperties, EntitiesState> {
+  formArgs: any;
+
   constructor(props: EntitiesProperties) {
     super(props);
+    this.formArgs={};
 
     this.state = {
       selectedProperty: undefined,
@@ -50,46 +56,61 @@ class Entities extends Component<EntitiesProperties, EntitiesState> {
     this.setState({
       propertyData
     });
+    this.formArgs=propertyData;
 
     this.setState({ data: [] });
     const data = [
-            <li>
+            <li key={"label"+property}>
             <Form.Group>
               <Form.Label>Label</Form.Label><br></br>
-              <Form.Control defaultValue={propertyData.label} />
+              <Form.Control defaultValue={propertyData.label || ""}
+              onChange={(event) => (this.formArgs["label"]= event.target?.value)}
+              />
             </Form.Group>
           </li>,
-            <li>
+            <li key={"description"+property}>
             <Form.Group>
               <Form.Label>Description</Form.Label><br></br>
-              <Form.Control defaultValue={propertyData.description} />
+              <Form.Control defaultValue={propertyData.description || ""}
+              onChange={(event) => (this.formArgs["description"]= event.target?.value)}
+              />
             </Form.Group>
           </li>
     ];
     if (propertyData.data_type){
       data.push(
-        <li>
+        <li key={"datatype"+property}>
         <Form.Group>
           <Form.Label>Data type</Form.Label><br></br>
-          <Form.Control defaultValue={propertyData.data_type} />
+          <Form.Control as="select"
+          defaultValue={propertyData.data_type}
+          onChange={(event) => (this.formArgs["data_type"]= event.target?.value)}>
+                  <option>quantity</option>
+                  <option>time</option>
+                  <option>monolingualtext</option>
+                  <option>string</option>
+                  <option>wikibaseitem</option>
+          </Form.Control>
         </Form.Group>
       </li>
       )
-    }
 
-    if (propertyData.tags){
-      let index=1;
-      for (const tag in propertyData.tags){
-        data.push(
-          <li>
-          <Form.Group>
-            <Form.Label>Tag {index}</Form.Label><br></br>
-            <Form.Control defaultValue={tag} />
-          </Form.Group>
-        </li>)
-        index=index+1;
+      if (propertyData.tags){
+        let index=1;
+        for (const tag in propertyData.tags){
+          data.push(
+            <li key={"tag"+property+index}>
+            <Form.Group>
+              <Form.Label>Tag {index}</Form.Label><br></br>
+              <Form.Control defaultValue={tag}
+              onChange={(event) => (this.formArgs["tags"][index-1]= event.target?.value)}/>
+            </Form.Group>
+          </li>)
+          index=index+1;
+        }
       }
     }
+
 
     this.setState({data});
   }
@@ -97,7 +118,7 @@ class Entities extends Component<EntitiesProperties, EntitiesState> {
   handleSaveEntities() {
     const file = this.state.entityFile;
     const property = this.state.selectedProperty!;
-    const propertyVals = this.state.propertyData
+    const propertyVals = this.formArgs;
     this.props.handleSaveEntities(file, property, propertyVals);
   }
 

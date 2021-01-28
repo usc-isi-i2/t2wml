@@ -329,6 +329,9 @@ def get_entities(project: Project):
 def update_entities(project, entity_file, updated_entries):
 
     entities=get_entities(project)[entity_file]
+    for entry, new_vals in updated_entries.items():
+        entities[entry].update(new_vals)
+
     entities.update(updated_entries)
     full_path=project.get_full_path(entity_file)
     dict_to_kgtk(entities, full_path)
