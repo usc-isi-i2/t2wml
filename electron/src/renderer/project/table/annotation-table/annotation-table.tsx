@@ -159,9 +159,10 @@ class AnnotationTable extends Component<{}, TableState> {
           let rowIndex = topRow;
           while ( rowIndex <= bottomRow ) {
             let colIndex = leftCol;
-            while ( colIndex <= rightCol ) {
+            const row = rows[rowIndex];
+            while ( row && colIndex <= rightCol ) {
               this.selectCell(
-                rows[rowIndex].children[colIndex],
+                row.children[colIndex],
                 rowIndex,
                 colIndex,
                 topRow,
@@ -336,9 +337,6 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
-
-      // Add borders to the annotation blocks
-      this.updateAnnotationBlocks();
     }
   }
 
@@ -876,7 +874,10 @@ class AnnotationTable extends Component<{}, TableState> {
     this.setState({
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
-    }, () => this.resetSelections());
+    }, () => {
+      this.resetSelections();
+      this.updateAnnotationBlocks();
+    });
   }
 
   renderAnnotationMenu() {

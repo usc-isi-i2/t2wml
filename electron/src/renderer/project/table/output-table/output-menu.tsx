@@ -75,9 +75,12 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
 
   renderError(error) {
     if ( error ) {
-      return (
-        <p className="error">{error.error.property}</p>
-      )
+      error = error.error;
+      if ( error ) {
+        return Object.keys(error).map((key, i) => {
+          return <p className="error" key={i}>{error[key].toString()}</p>
+        });
+      }
     }
   }
 
