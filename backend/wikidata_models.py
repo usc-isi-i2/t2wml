@@ -1,4 +1,16 @@
 from app_config import db
+from datetime import datetime
+
+# class WikidataPropertiesUpdated(db.Model):
+#     timestamp = db.Column(db.DateTime, nullable=True)
+
+#     @staticmethod
+#     def update_time():
+#         entry=WikidataPropertiesUpdated.query.first()
+#         if entry is None:
+#             entry=WikidataPropertiesUpdated()
+#         entry.timestamp = datetime.utcnow()
+#         db.session.commit()
 
 class WikidataEntity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
