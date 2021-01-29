@@ -137,15 +137,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { selectedAnnotationBlock: selected, selections } = this.props;
     const selectedAnnotationRole = selected ? selected.role : '';
 
-    let roles = ROLES;
-    if ( selections.length > 1 ) {
-      roles = ROLES.filter(role => role.multiple)
-    } else {
-      roles = ROLES.filter(
-        role => role.multiple || ( !role.multiple && selections.length === 1 )
-      );
-    }
-
     return (
       <Form.Group as={Row}
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
@@ -153,7 +144,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Form.Label className="text-muted">Role</Form.Label>
           <Form.Control size="sm" as="select">
             <option disabled selected>--</option>
-            {roles.map((role, i) => (
+            {ROLES.map((role, i) => (
               <option key={i}
                 value={role.value}
                 selected={role.value === selectedAnnotationRole}>
