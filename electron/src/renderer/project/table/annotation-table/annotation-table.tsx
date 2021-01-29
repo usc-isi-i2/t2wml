@@ -568,6 +568,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
+    const { selectedAnnotationBlock } = this.state;
     const element = event.target as any;
 
     // Allow users to select the resize-corner of the cell
@@ -609,10 +610,12 @@ class AnnotationTable extends Component<{}, TableState> {
     } else {
 
       // Hide the annotation menu
-      this.setState({
-        showAnnotationMenu: false,
-        selectedAnnotationBlock: undefined,
-      });
+      if ( !selectedAnnotationBlock ) {
+        this.setState({
+          showAnnotationMenu: false,
+          selectedAnnotationBlock: undefined,
+        });
+      }
 
       // Extend the previous selection if user is holding down Shift key
       if (event.shiftKey && !!this.selections.length) {
