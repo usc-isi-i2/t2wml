@@ -55,26 +55,20 @@ export const ROLES = [{
   'label': 'Dependent Variable',
   'value': 'dependentVar',
   'children': TYPES,
-  'multiple': false,
 }, {
   'label': 'Main Subject',
   'value': 'mainSubject',
-  'multiple': false,
 }, {
   'label': 'Property',
   'value': 'property',
-  'multiple': true,
 }, {
   'label': 'Qualifier',
   'value': 'qualifier',
   'children': TYPES,
-  'multiple': true,
 }, {
   'label': 'Metadata',
   'value': 'metadata',
-  'multiple': true,
 }, {
   'label': 'Unit',
   'value': 'unit',
-  'multiple': true,
 }];
