@@ -621,11 +621,11 @@ class AnnotationTable extends Component<{}, TableState> {
         selectedAnnotationBlock: undefined,
       }, () => {
         this.resetSelections();
-      });
 
-      // Activate the element on click
-      this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
-      this.selection = { x1, x2, y1, y2 };
+        // Activate the element on click
+        this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
+        this.selection = { x1, x2, y1, y2 };
+      });
     }
 
     // Initialize the previous element with the one selected
