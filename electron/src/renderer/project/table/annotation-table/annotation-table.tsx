@@ -591,14 +591,6 @@ class AnnotationTable extends Component<{}, TableState> {
     // Activate the selection mode
     this.selecting = true;
 
-    // Hide the annotation menu
-    if ( !selectedAnnotationBlock ) {
-      this.setState({
-        showAnnotationMenu: false,
-        selectedAnnotationBlock: undefined,
-      });
-    }
-
     // Extend the previous selection if user is holding down Shift key
     if (event.shiftKey && this.selection) {
 
@@ -622,7 +614,14 @@ class AnnotationTable extends Component<{}, TableState> {
 
       this.updateSelections();
     } else {
-      this.resetSelections();
+
+      // Reset annotation menu
+      this.setState({
+        showAnnotationMenu: false,
+        selectedAnnotationBlock: undefined,
+      }, () => {
+        this.resetSelections();
+      });
 
       // Activate the element on click
       this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
