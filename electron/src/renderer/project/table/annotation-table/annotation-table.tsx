@@ -597,56 +597,43 @@ class AnnotationTable extends Component<{}, TableState> {
     // Activate the selection mode
     this.selecting = true;
 
-    // Update selection coordinates
-    if ( ( config.platform === 'mac' && event.metaKey ) ||
-         ( config.platform === 'linux' && event.ctrlKey ) ||
-         ( config.platform === 'windows' && event.ctrlKey ) ) {
+    // Hide the annotation menu
+    if ( !selectedAnnotationBlock ) {
+      this.setState({
+        showAnnotationMenu: false,
+        selectedAnnotationBlock: undefined,
+      });
+    }
 
-      // Add a new selection separately
-      this.selections.push({ x1, x2, y1, y2 });
+    // Extend the previous selection if user is holding down Shift key
+    if (event.shiftKey && !!this.selections.length) {
+      const prevSelection = this.selections[this.selections.length - 1];
+
+      // Extend the previous selection left or right
+      if (x1 !== prevSelection['x1']) {
+        if (x1 < prevSelection['x1']) {
+          prevSelection['x1'] = x1;
+        } else {
+          prevSelection['x2'] = x1;
+        }
+      }
+
+      // Extend the previous selection up or down
+      if (y1 !== prevSelection['y1']) {
+        if (y1 < prevSelection['y1']) {
+          prevSelection['y1'] = y1;
+        } else {
+          prevSelection['y2'] = y1;
+        }
+      }
+
+      this.updateSelections();
+    } else {
+      this.resetSelections();
 
       // Activate the element on click
       this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
-    } else {
-
-      // Hide the annotation menu
-      if ( !selectedAnnotationBlock ) {
-        this.setState({
-          showAnnotationMenu: false,
-          selectedAnnotationBlock: undefined,
-        });
-      }
-
-      // Extend the previous selection if user is holding down Shift key
-      if (event.shiftKey && !!this.selections.length) {
-        const prevSelection = this.selections[this.selections.length - 1];
-
-        // Extend the previous selection left or right
-        if (x1 !== prevSelection['x1']) {
-          if (x1 < prevSelection['x1']) {
-            prevSelection['x1'] = x1;
-          } else {
-            prevSelection['x2'] = x1;
-          }
-        }
-
-        // Extend the previous selection up or down
-        if (y1 !== prevSelection['y1']) {
-          if (y1 < prevSelection['y1']) {
-            prevSelection['y1'] = y1;
-          } else {
-            prevSelection['y2'] = y1;
-          }
-        }
-
-        this.updateSelections();
-      } else {
-        this.resetSelections();
-
-        // Activate the element on click
-        this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
-        this.selections = [{ x1, x2, y1, y2 }];
-      }
+      this.selections = [{ x1, x2, y1, y2 }];
     }
 
     // Initialize the previous element with the one selected
