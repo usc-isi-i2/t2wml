@@ -12,7 +12,7 @@ import { AnnotationBlock } from '../../../common/dtos';
 
 
 interface AnnotationMenuProperties {
-  selections?: Array<any>,
+  selection?: CellSelection,
   position?: Array<number>,
   onDelete: any | null,
   onClose: any | null,
@@ -44,8 +44,8 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   handleOnDelete() {
-    const { selectedAnnotationBlock, selections, onDelete } = this.props;
-    console.log('AnnotationMenu OnDelete triggered for -> ', selections);
+    const { selectedAnnotationBlock, selection, onDelete } = this.props;
+    console.log('AnnotationMenu OnDelete triggered for -> ', selection);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedAnnotationBlock;
@@ -57,15 +57,15 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   handleOnSubmit(values: { [key: string]: string }) {
-    const { selectedAnnotationBlock, selections } = this.props;
-    console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
+    const { selectedAnnotationBlock, selection } = this.props;
+    console.log('AnnotationMenu OnSubmit triggered for -> ', selection, values);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedAnnotationBlock;
     });
 
     const annotation: any = {
-      'selections': selections,
+      'selections': [selection],
     };
 
     // Add all updated values from the annotation form
@@ -96,10 +96,10 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   renderAnnotationForms() {
-    const { selections, selectedAnnotationBlock } = this.props;
+    const { selection, selectedAnnotationBlock } = this.props;
     return (
       <AnnotationForm
-        selections={selections}
+        selection={selection}
         selectedAnnotationBlock={selectedAnnotationBlock}
         onChange={this.handleOnChange.bind(this)}
         onDelete={this.handleOnDelete.bind(this)}

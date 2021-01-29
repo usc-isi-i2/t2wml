@@ -8,7 +8,7 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 
 interface AnnotationFormProperties {
   selectedAnnotationBlock?: AnnotationBlock,
-  selections?: Array<any>,
+  selection?: CellSelection,
   onChange: any | null, // Use the actual function type: (arg: argType) => returnType
   onDelete: any | null,
   onSubmit: any | null,
@@ -54,13 +54,13 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderSelectionAreas() {
-    const { selections } = this.props;
-    if (!selections) { return null; }
-    return selections.map((selection: any, index: number) => (
-      <p className="area" key={index}>
+    const { selection } = this.props;
+    if (!selection) { return null; }
+    return (
+      <p className="area">
         {utils.humanReadableSelection(selection)}
       </p>
-    ));
+    )
   }
 
   renderNestedOptionsDropdown() {
@@ -134,7 +134,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderOptionsDropdown() {
-    const { selectedAnnotationBlock: selected, selections } = this.props;
+    const { selectedAnnotationBlock: selected } = this.props;
     const selectedAnnotationRole = selected ? selected.role : '';
 
     return (
