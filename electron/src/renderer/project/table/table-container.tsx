@@ -220,6 +220,8 @@ class TableContainer extends Component<{}, TableState> {
       wikiStore.table.mode = mode;
     });
 
+    this.resetTableData();
+
     if (mode === 'Annotation') {
       this.fetchAnnotations();
     } else {
