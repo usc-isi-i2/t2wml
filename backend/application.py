@@ -405,9 +405,6 @@ def load_to_datamart():
     download_output, variables = get_kgtk_download_and_variables(calc_params)
     files={"edges.tsv":download_output}
     datamart_api_endpoint=global_settings.datamart_api
-    if datamart_api_endpoint != r"http://localhost:12543":
-        return {'description': r"please use http://localhost:12543 and a docker image as the datamart endpoint while testing the new load to datamart endpoint"}, 201
-
     dataset_id=project.dataset_id
     response_from_docker = requests.post(f'{datamart_api_endpoint}/datasets/{dataset_id}/t2wml', files=files)
     if response_from_docker.status_code == 204:
