@@ -254,7 +254,6 @@ class OutputTable extends Component<{}, TableState> {
 
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
-    this.selections = [{ x1, x1, y1, y1 }];
 
     // Activate the element on click
     this.selectCell(element);
