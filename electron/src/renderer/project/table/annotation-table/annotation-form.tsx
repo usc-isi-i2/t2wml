@@ -42,6 +42,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const updatedState: { [key: string]: string; } = {};
     updatedState[key] = value;
     updatedState['changed'] = true;
+
+    // Reset the role if the type has changed
+    if ( key === 'role' ) {
+      updatedState['type'] = null;
+    }
+
     this.setState({ ...updatedState }, () => onChange(key, value));
   }
 
