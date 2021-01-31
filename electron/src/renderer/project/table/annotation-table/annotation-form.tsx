@@ -18,6 +18,7 @@ interface AnnotationFormProperties {
 interface AnnotationFormState {
   role?: string,
   type?: string,
+  changed: boolean,
 }
 
 
@@ -28,6 +29,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
     const { selectedAnnotationBlock: selectedBlock } = this.props;
     this.state = {
+      changed: false,
       ...selectedBlock,
       role: selectedBlock?.role,
       type: selectedBlock?.type,
@@ -39,6 +41,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const value = (event.target as HTMLInputElement).value;
     const updatedState: { [key: string]: string; } = {};
     updatedState[key] = value;
+    updatedState['changed'] = true;
     this.setState({ ...updatedState }, () => onChange(key, value));
   }
 
@@ -64,10 +67,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderNestedOptionsDropdown() {
-    const { role, type } = this.state;
+    const { role, type, changed } = this.state;
     const { selectedAnnotationBlock: selectedBlock } = this.props;
-    const selectedAnnotationRole = selectedBlock ? selectedBlock.role : role;
-    const selectedAnnotationType = selectedBlock ? selectedBlock.type : type;
+    const selectedAnnotationRole = selectedBlock && !changed ? selectedBlock.role : role;
+    const selectedAnnotationType = selectedBlock && !changed ? selectedBlock.type : type;
     let selectedOption = null;
     if (selectedAnnotationRole) {
       selectedOption = ROLES.find(option => (
