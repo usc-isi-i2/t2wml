@@ -1,6 +1,8 @@
 import json
+import re
 import os
 import sys
+import requests
 from pathlib import Path
 from flask import request
 import web_exceptions
@@ -398,15 +400,33 @@ def download_results(filetype):
 @app.route('/api/project/datamart', methods=['GET'])
 @json_response
 def load_to_datamart():
+    def clean_id(input):
+        '''
+        remove non alphanumeric characters and lowercase
+        replace whitespace by _ (underscore)
+        '''
+        input = re.sub(r'[^A-Za-z0-9\s]+', '', input)
+        input = re.sub("\s", "_", input)
+        return input
+
     project=get_project()
-    calc_params = get_calc_params(project)
-    try:
-        sheet = calc_params.sheet_name
-    except:
-        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-            "Can't upload to datamart without datafile and sheet")
-    data = upload_to_datamart(calc_params)
-    return data, 201
+    download_response=download_results("tsv")[0]
+    files={"edges.tsv":download_response["data"]}
+    datamart_api_endpoint=r"http://localhost:12543"
+    dataset_id=clean_id(project.title)
+    response_from_docker = requests.post(f'{datamart_api_endpoint}/datasets/{dataset_id}/t2wml', files=files)
+
+    response={}
+
+    # project=get_project()
+    # calc_params = get_calc_params(project)
+    # try:
+    #     sheet = calc_params.sheet_name
+    # except:
+    #     raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
+    #         "Can't upload to datamart without datafile and sheet")
+    # response = upload_to_datamart(calc_params)
+    return response, 201
 
 
 @app.route('/api/annotation', methods=['POST'])
