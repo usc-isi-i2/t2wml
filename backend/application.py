@@ -7,7 +7,7 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
-from t2wml_web import (set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
                         add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, save_dataframe, get_yaml_content, save_yaml)
@@ -400,33 +400,27 @@ def download_results(filetype):
 @app.route('/api/project/datamart', methods=['GET'])
 @json_response
 def load_to_datamart():
-    def clean_id(input):
-        '''
-        remove non alphanumeric characters and lowercase
-        replace whitespace by _ (underscore)
-        '''
-        input = re.sub(r'[^A-Za-z0-9\s]+', '', input)
-        input = re.sub("\s", "_", input)
-        return input
-
     project=get_project()
-    download_response=download_results("tsv")[0]
-    files={"edges.tsv":download_response["data"]}
-    datamart_api_endpoint=r"http://localhost:12543"
-    dataset_id=clean_id(project.title)
+    calc_params = get_calc_params(project)
+    download_output, variables = get_kgtk_download_and_variables(calc_params)
+    files={"edges.tsv":download_output}
+    datamart_api_endpoint=global_settings.datamart_api
+    if datamart_api_endpoint != r"http://localhost:12543":
+        return {'description': r"please use http://localhost:12543 and a docker image as the datamart endpoint while testing the new load to datamart endpoint"}, 201
+
+    dataset_id=project.dataset_id
     response_from_docker = requests.post(f'{datamart_api_endpoint}/datasets/{dataset_id}/t2wml', files=files)
+    if response_from_docker.status_code == 204:
+        var_params="?"
+        for variable in variables:
+            var_params+=f'variable={variable}&'
+        var_params=var_params[:-1]
+        data={'datamart_get_url': f'{datamart_api_endpoint}/datasets/{dataset_id}/variables{var_params}'}
+    else:
+        data = {'description': response_from_docker.text}
 
-    response={}
 
-    # project=get_project()
-    # calc_params = get_calc_params(project)
-    # try:
-    #     sheet = calc_params.sheet_name
-    # except:
-    #     raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-    #         "Can't upload to datamart without datafile and sheet")
-    # response = upload_to_datamart(calc_params)
-    return response, 201
+    return data, 201
 
 
 @app.route('/api/annotation', methods=['POST'])

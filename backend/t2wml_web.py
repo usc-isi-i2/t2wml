@@ -7,6 +7,7 @@ from numpy.core.numeric import full
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
+from t2wml.mapping.kgtk import get_all_variables
 from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
@@ -80,6 +81,8 @@ def get_kg(calc_params):
     return kg
 
 
+
+
 def download(calc_params, filetype):
     response = dict()
     kg = get_kg(calc_params)
@@ -87,6 +90,12 @@ def download(calc_params, filetype):
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
+
+def get_kgtk_download_and_variables(calc_params):
+    kg = get_kg(calc_params)
+    download_output = kg.get_output("tsv", calc_params.project)
+    variables=get_all_variables(calc_params.project, kg.statements)
+    return download_output, variables
 
 
 
