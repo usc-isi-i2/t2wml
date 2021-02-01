@@ -91,7 +91,6 @@ class TableContainer extends Component<{}, TableState> {
     this.uncheckAnnotationifYaml();
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
-    this.disposers.push(reaction(() => wikiStore.table.mode, () => this.updateMode()));
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, () => this.uncheckAnnotationifYaml()));
   }
 
@@ -105,15 +104,6 @@ class TableContainer extends Component<{}, TableState> {
     if (currentFilesService.currentState.mappingType === "Yaml") {
       wikiStore.table.mode = "Output"
       this.setState({ mode: 'Output' })
-    }
-  }
-
-  updateMode() {
-    if (wikiStore.table.mode === 'Annotation') {
-      this.setState({ mode: 'Annotation' });
-      this.fetchAnnotations();
-    } else {
-      this.setState({ mode: 'Output' });
     }
   }
 
@@ -227,9 +217,14 @@ class TableContainer extends Component<{}, TableState> {
           currentFilesService.setMappingFiles();
         }
       }
-      wikiStore.table.mode = 'Annotation';
+      this.setState({ mode: 'Annotation' }, () => {
+        this.fetchAnnotations();
+        wikiStore.table.mode = 'Annotation';
+      });
     } else {
-      wikiStore.table.mode = 'Output';
+      this.setState({ mode: 'Output' }, () => {
+        wikiStore.table.mode = 'Output';
+      });
     }
 
     wikiStore.table.showSpinner = false;
