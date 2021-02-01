@@ -91,7 +91,7 @@ class AnnotationTable extends Component<{}, TableState> {
     //if so, returns the annotation block
     const { x1, x2, y1, y2 } = selection;
     for (const block of wikiStore.annotations.blocks) {
-      for (const selection of block.selection) {
+      const selection=block.selection;
         if (selection['y1'] <= selection['y2']) {
           if (selection['x1'] <= selection['x2']) {
             if (x1 >= selection['x1'] &&
@@ -125,7 +125,6 @@ class AnnotationTable extends Component<{}, TableState> {
             }
           }
         }
-      }
     }
     return null;
   }
@@ -279,7 +278,7 @@ class AnnotationTable extends Component<{}, TableState> {
   deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
     if ( tableData ) {
-      for ( const selection of block.selection ) {
+      const selection = block.selection;
         const { x1, y1, x2, y2 } = selection;
         if ( y1 <= y2 ) {
           if ( x1 <= x2 ) {
@@ -322,7 +321,6 @@ class AnnotationTable extends Component<{}, TableState> {
             }
           }
         }
-      }
 
       // Update the table data and reset all selections made
       this.setState({ tableData }, () => this.resetSelections());

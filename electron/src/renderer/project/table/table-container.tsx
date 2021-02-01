@@ -50,7 +50,6 @@ interface TableState {
 @observer
 class TableContainer extends Component<{}, TableState> {
   private selecting = false;
-  private selections: CellSelection[] = [];
 
   private requestService: RequestService;
 
@@ -151,8 +150,6 @@ class TableContainer extends Component<{}, TableState> {
 
   resetTableData() { // ?
     this.selecting = false;
-    this.selections = [];
-    // this.resetSelections();
     this.setState({
       errorMessage: {} as ErrorMessage,
       showToast: false,
@@ -234,7 +231,7 @@ class TableContainer extends Component<{}, TableState> {
     } else {
       wikiStore.table.mode = 'Output';
     }
-    
+
     wikiStore.table.showSpinner = false;
     wikiStore.yaml.showSpinner = false;
   }
