@@ -56,7 +56,6 @@ class AnnotationTable extends Component<{}, TableState> {
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
-
   }
 
   componentWillUnmount() {
@@ -87,44 +86,43 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | null {
-    //checks if a given selection is part of an annotation block
-    //if so, returns the annotation block
+    // checks if a given selection is part of an annotation block
+    // if so, returns the annotation block
     const { x1, x2, y1, y2 } = selection;
     for (const block of wikiStore.annotations.blocks) {
-      const selection=block.selection;
-        if (selection['y1'] <= selection['y2']) {
-          if (selection['x1'] <= selection['x2']) {
-            if (x1 >= selection['x1'] &&
-              x2 <= selection['x2'] &&
-              y1 >= selection['y1'] &&
-              y2 <= selection['y2']) {
-              return block;
-            }
-          } else {
-            if (x1 <= selection['x1'] &&
-              x2 >= selection['x2'] &&
-              y1 >= selection['y1'] &&
-              y2 <= selection['y2']) {
-              return block;
-            }
+      if (block.selection['y1'] <= block.selection['y2']) {
+        if (block.selection['x1'] <= block.selection['x2']) {
+          if (x1 >= block.selection['x1'] &&
+            x2 <= block.selection['x2'] &&
+            y1 >= block.selection['y1'] &&
+            y2 <= block.selection['y2']) {
+            return block;
           }
         } else {
-          if (selection['x1'] <= selection['x2']) {
-            if (x1 >= selection['x1'] &&
-              x2 <= selection['x2'] &&
-              y1 <= selection['y1'] &&
-              y2 >= selection['y2']) {
-              return block;
-            }
-          } else {
-            if (x1 <= selection['x1'] &&
-              x2 >= selection['x2'] &&
-              y1 <= selection['y1'] &&
-              y2 >= selection['y2']) {
-              return block;
-            }
+          if (x1 <= block.selection['x1'] &&
+            x2 >= block.selection['x2'] &&
+            y1 >= block.selection['y1'] &&
+            y2 <= block.selection['y2']) {
+            return block;
           }
         }
+      } else {
+        if (block.selection['x1'] <= block.selection['x2']) {
+          if (x1 >= block.selection['x1'] &&
+            x2 <= block.selection['x2'] &&
+            y1 <= block.selection['y1'] &&
+            y2 >= block.selection['y2']) {
+            return block;
+          }
+        } else {
+          if (x1 <= block.selection['x1'] &&
+            x2 >= block.selection['x2'] &&
+            y1 <= block.selection['y1'] &&
+            y2 >= block.selection['y2']) {
+            return block;
+          }
+        }
+      }
     }
     return null;
   }
@@ -278,49 +276,48 @@ class AnnotationTable extends Component<{}, TableState> {
   deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
     if ( tableData ) {
-      const selection = block.selection;
-        const { x1, y1, x2, y2 } = selection;
-        if ( y1 <= y2 ) {
-          if ( x1 <= x2 ) {
-            for ( let row = y1 - 1; row < y2; row++ ) {
-              for ( let col = x1 - 1; col < x2; col++ ) {
-                const cell = tableData[row][col];
-                if ( cell ) {
-                  cell.classNames = [];
-                }
-              }
-            }
-          } else {
-            for ( let row = y1 - 1; row < y2; row++ ) {
-              for ( let col = x2 - 1; col < x1; col++ ) {
-                const cell = tableData[row][col];
-                if ( cell ) {
-                  cell.classNames = [];
-                }
+      const { x1, y1, x2, y2 } = block.selection;
+      if ( y1 <= y2 ) {
+        if ( x1 <= x2 ) {
+          for ( let row = y1 - 1; row < y2; row++ ) {
+            for ( let col = x1 - 1; col < x2; col++ ) {
+              const cell = tableData[row][col];
+              if ( cell ) {
+                cell.classNames = [];
               }
             }
           }
         } else {
-          if ( x1 <= x2 ) {
-            for ( let row = y2 - 1; row < y1; row++ ) {
-              for ( let col = x1 - 1; col < x2; col++ ) {
-                const cell = tableData[row][col];
-                if ( cell ) {
-                  cell.classNames = [];
-                }
-              }
-            }
-          } else {
-            for ( let row = y2 - 1; row < y1; row++ ) {
-              for ( let col = x2 - 1; col < x1; col++ ) {
-                const cell = tableData[row][col];
-                if ( cell ) {
-                  cell.classNames = [];
-                }
+          for ( let row = y1 - 1; row < y2; row++ ) {
+            for ( let col = x2 - 1; col < x1; col++ ) {
+              const cell = tableData[row][col];
+              if ( cell ) {
+                cell.classNames = [];
               }
             }
           }
         }
+      } else {
+        if ( x1 <= x2 ) {
+          for ( let row = y2 - 1; row < y1; row++ ) {
+            for ( let col = x1 - 1; col < x2; col++ ) {
+              const cell = tableData[row][col];
+              if ( cell ) {
+                cell.classNames = [];
+              }
+            }
+          }
+        } else {
+          for ( let row = y2 - 1; row < y1; row++ ) {
+            for ( let col = x2 - 1; col < x1; col++ ) {
+              const cell = tableData[row][col];
+              if ( cell ) {
+                cell.classNames = [];
+              }
+            }
+          }
+        }
+      }
 
       // Update the table data and reset all selections made
       this.setState({ tableData }, () => this.resetSelections());

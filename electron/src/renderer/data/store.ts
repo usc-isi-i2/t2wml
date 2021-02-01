@@ -31,7 +31,6 @@ class TableState {
         this.showCleanedData = false;
     }
 
-
     updateTable(table: TableDTO){
         this.table=table;
         this.selectedCell=new Cell();
