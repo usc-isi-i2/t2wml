@@ -22,6 +22,7 @@ jobs:
         run: |
           cd $env:GITHUB_WORKSPACE/backend
           pip install --upgrade pip
+          pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller pywin32 semver
       - name: Create installer
@@ -81,6 +82,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/backend
           pip install --upgrade setuptools pip
+          pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
       - name: Create executable
@@ -126,6 +128,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/backend
           pip install --upgrade setuptools pip
+          pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
       - name: Create executable
