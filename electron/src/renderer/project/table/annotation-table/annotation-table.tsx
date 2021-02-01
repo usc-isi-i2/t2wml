@@ -288,7 +288,6 @@ class AnnotationTable extends Component<{}, TableState> {
             for ( let row = y1 - 1; row < y2; row++ ) {
               for ( let col = x1 - 1; col < x2; col++ ) {
                 const cell = tableData[row][col];
-                console.log(row, col)
                 if ( cell ) {
                   cell.classNames = [];
                 }
