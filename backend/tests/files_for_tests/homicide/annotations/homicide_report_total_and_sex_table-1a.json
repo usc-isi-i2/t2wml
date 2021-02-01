@@ -1,1 +1,32 @@
-[{"selection": {"x1": 4, "x2": 6, "y1": 4, "y2": 9}, "role": "dependentVar", "type": "quantity"}, {"selection": {"x1": 1, "x2": 1, "y1": 4, "y2": 9}], "role": "mainSubject"}, {"selection": {"x1": 4, "x2": 6, "y1": 3, "y2": 3}], "role": "qualifier", "type": "time", "format": "\"%Y\""}]
+[
+    {
+        "selection": {
+            "x1": 4,
+            "x2": 6,
+            "y1": 4,
+            "y2": 9
+        },
+        "role": "dependentVar",
+        "type": "quantity"
+    },
+    {
+        "selection": {
+            "x1": 1,
+            "x2": 1,
+            "y1": 4,
+            "y2": 9
+        },
+        "role": "mainSubject"
+    },
+    {
+        "selection": {
+            "x1": 4,
+            "x2": 6,
+            "y1": 3,
+            "y2": 3
+        },
+        "role": "qualifier",
+        "type": "time",
+        "format": "\"%Y\""
+    }
+]
