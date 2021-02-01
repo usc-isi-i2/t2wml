@@ -1,1 +1,66 @@
-[{"role": "dependentVar", "selections": [{"x1": 10, "x2": 10, "y1": 2, "y2": 20}], "type": "quantity"}, {"role": "unit", "selections": [{"x1": 9, "x2": 9, "y1": 2, "y2": 20}]}, {"format": "\"%Y\"", "role": "qualifier", "selections": [{"x1": 8, "x2": 8, "y1": 2, "y2": 20}], "type": "time"}, {"role": "mainSubject", "selections": [{"x1": 2, "x2": 2, "y1": 2, "y2": 20}]}, {"role": "metadata", "selections": [{"x1": 1, "x2": 1, "y1": 2, "y2": 20}]}, {"selections": [{"x1": 7, "x2": 7, "y1": 2, "y2": 20}], "role": "property"}]
+[
+    {
+        "role": "dependentVar",
+        "selection": 
+            {
+                "x1": 10,
+                "x2": 10,
+                "y1": 2,
+                "y2": 20
+            },
+        "type": "quantity"
+    },
+    {
+        "role": "unit",
+        "selection": 
+            {
+                "x1": 9,
+                "x2": 9,
+                "y1": 2,
+                "y2": 20
+            }
+
+    },
+    {
+        "format": "\"%Y\"",
+        "role": "qualifier",
+        "selection": 
+            {
+                "x1": 8,
+                "x2": 8,
+                "y1": 2,
+                "y2": 20
+            },
+        "type": "time"
+    },
+    {
+        "role": "mainSubject",
+        "selection": 
+            {
+                "x1": 2,
+                "x2": 2,
+                "y1": 2,
+                "y2": 20
+            }
+    },
+    {
+        "role": "metadata",
+        "selection": 
+            {
+                "x1": 1,
+                "x2": 1,
+                "y1": 2,
+                "y2": 20
+            }
+    },
+    {
+        "selection": 
+            {
+                "x1": 7,
+                "x2": 7,
+                "y1": 2,
+                "y2": 20
+            },
+        "role": "property"
+    }
+]
