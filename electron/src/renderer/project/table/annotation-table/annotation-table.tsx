@@ -185,7 +185,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
@@ -208,7 +208,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
@@ -233,7 +233,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
@@ -256,7 +256,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
