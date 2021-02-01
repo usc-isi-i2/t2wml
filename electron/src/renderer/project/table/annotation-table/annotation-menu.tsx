@@ -65,7 +65,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     });
 
     const annotation: any = {
-      'selections': [selection],
+      'selection': selection,
     };
 
     // Add all updated values from the annotation form

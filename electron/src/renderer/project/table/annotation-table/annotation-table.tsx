@@ -91,7 +91,7 @@ class AnnotationTable extends Component<{}, TableState> {
     //if so, returns the annotation block
     const { x1, x2, y1, y2 } = selection;
     for (const block of wikiStore.annotations.blocks) {
-      for (const selection of block.selections) {
+      const selection=block.selection;
         if (selection['y1'] <= selection['y2']) {
           if (selection['x1'] <= selection['x2']) {
             if (x1 >= selection['x1'] &&
@@ -125,7 +125,6 @@ class AnnotationTable extends Component<{}, TableState> {
             }
           }
         }
-      }
     }
     return null;
   }
@@ -141,7 +140,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( wikiStore.annotations.blocks && tableData ) {
 
       for ( const block of wikiStore.annotations.blocks ) {
-        const { role, type, selections } = block;
+        const { role, type, selection } = block;
         const classNames: string[] = [];
         if ( role ) {
           classNames.push(`role-${role}`);
@@ -149,125 +148,123 @@ class AnnotationTable extends Component<{}, TableState> {
         if ( type ) {
           classNames.push(`type-${type}`);
         }
-        for ( const selection of selections ) {
-          const { x1, y1, x2, y2 } = selection;
-          const rows = table.querySelectorAll('tr');
-          const leftCol = Math.min(x1, x2);
-          const rightCol = Math.max(x1, x2);
-          const topRow = Math.min(y1, y2);
-          const bottomRow = Math.max(y1, y2);
-          let rowIndex = topRow;
-          while ( rowIndex <= bottomRow ) {
-            let colIndex = leftCol;
-            const row = rows[rowIndex];
-            while ( row && colIndex <= rightCol ) {
-              this.selectCell(
-                row.children[colIndex],
-                rowIndex,
-                colIndex,
-                topRow,
-                leftCol,
-                rightCol,
-                bottomRow,
-                classNames,
-              );
-              colIndex += 1;
-            }
-            rowIndex += 1;
+        const { x1, y1, x2, y2 } = selection;
+        const rows = table.querySelectorAll('tr');
+        const leftCol = Math.min(x1, x2);
+        const rightCol = Math.max(x1, x2);
+        const topRow = Math.min(y1, y2);
+        const bottomRow = Math.max(y1, y2);
+        let rowIndex = topRow;
+        while ( rowIndex <= bottomRow ) {
+          let colIndex = leftCol;
+          const row = rows[rowIndex];
+          while ( row && colIndex <= rightCol ) {
+            this.selectCell(
+              row.children[colIndex],
+              rowIndex,
+              colIndex,
+              topRow,
+              leftCol,
+              rightCol,
+              bottomRow,
+              classNames,
+            );
+            colIndex += 1;
           }
-          if ( y1 <= y2 ) {
-            if ( x1 <= x2 ) {
-              for ( let row = y1; row <= y2; row++ ) {
-                for ( let col = x1; col <= x2; col++ ) {
-                  try {
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
-                  } catch {
-                    let rx = row;
-                    while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                      tableData.push(emptyArray);
-                      rx -= 1;
-                    }
-                    let cx = col;
-                    while ( cx > tableData[0].length ) {
-                      tableData.forEach(tableRow => tableRow.push({}));
-                      cx -= 1;
-                    }
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
+          rowIndex += 1;
+        }
+        if ( y1 <= y2 ) {
+          if ( x1 <= x2 ) {
+            for ( let row = y1; row <= y2; row++ ) {
+              for ( let col = x1; col <= x2; col++ ) {
+                try {
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
+                } catch {
+                  let rx = row;
+                  while ( rx > tableData.length ) {
+                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
+                    tableData.push(emptyArray);
+                    rx -= 1;
                   }
-                }
-              }
-            } else {
-              for ( let row = y1; row <= y2; row++ ) {
-                for ( let col = x2; col <= x1; col++ ) {
-                  try {
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
-                  } catch {
-                    let rx = row;
-                    while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                      tableData.push(emptyArray);
-                      rx -= 1;
-                    }
-                    let cx = col;
-                    while ( cx > tableData[0].length ) {
-                      tableData.forEach(tableRow => tableRow.push({}));
-                      cx -= 1;
-                    }
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
+                  let cx = col;
+                  while ( cx > tableData[0].length ) {
+                    tableData.forEach(tableRow => tableRow.push({}));
+                    cx -= 1;
                   }
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
                 }
               }
             }
           } else {
-            if ( x1 <= x2 ) {
-              for ( let row = y2; row <= y1; row++ ) {
-                for ( let col = x1; col <= x2; col++ ) {
-                  try {
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
-                  } catch {
-                    let rx = row;
-                    while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                      tableData.push(emptyArray);
-                      rx -= 1;
-                    }
-                    let cx = col;
-                    while ( cx > tableData[0].length ) {
-                      tableData.forEach(tableRow => tableRow.push({}));
-                      cx -= 1;
-                    }
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
+            for ( let row = y1; row <= y2; row++ ) {
+              for ( let col = x2; col <= x1; col++ ) {
+                try {
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
+                } catch {
+                  let rx = row;
+                  while ( rx > tableData.length ) {
+                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
+                    tableData.push(emptyArray);
+                    rx -= 1;
                   }
+                  let cx = col;
+                  while ( cx > tableData[0].length ) {
+                    tableData.forEach(tableRow => tableRow.push({}));
+                    cx -= 1;
+                  }
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
                 }
               }
-            } else {
-              for ( let row = y2; row <= y1; row++ ) {
-                for ( let col = x2; col <= x1; col++ ) {
-                  try {
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
-                  } catch {
-                    let rx = row;
-                    while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                      tableData.push(emptyArray);
-                      rx -= 1;
-                    }
-                    let cx = col;
-                    while ( cx > tableData[0].length ) {
-                      tableData.forEach(tableRow => tableRow.push({}));
-                      cx -= 1;
-                    }
-                    const cell = tableData[row - 1][col - 1];
-                    cell.classNames = classNames;
+            }
+          }
+        } else {
+          if ( x1 <= x2 ) {
+            for ( let row = y2; row <= y1; row++ ) {
+              for ( let col = x1; col <= x2; col++ ) {
+                try {
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
+                } catch {
+                  let rx = row;
+                  while ( rx > tableData.length ) {
+                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
+                    tableData.push(emptyArray);
+                    rx -= 1;
                   }
+                  let cx = col;
+                  while ( cx > tableData[0].length ) {
+                    tableData.forEach(tableRow => tableRow.push({}));
+                    cx -= 1;
+                  }
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
+                }
+              }
+            }
+          } else {
+            for ( let row = y2; row <= y1; row++ ) {
+              for ( let col = x2; col <= x1; col++ ) {
+                try {
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
+                } catch {
+                  let rx = row;
+                  while ( rx > tableData.length ) {
+                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
+                    tableData.push(emptyArray);
+                    rx -= 1;
+                  }
+                  let cx = col;
+                  while ( cx > tableData[0].length ) {
+                    tableData.forEach(tableRow => tableRow.push({}));
+                    cx -= 1;
+                  }
+                  const cell = tableData[row - 1][col - 1];
+                  cell.classNames = classNames;
                 }
               }
             }
@@ -281,7 +278,7 @@ class AnnotationTable extends Component<{}, TableState> {
   deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
     if ( tableData ) {
-      for ( const selection of block.selections ) {
+      const selection = block.selection;
         const { x1, y1, x2, y2 } = selection;
         if ( y1 <= y2 ) {
           if ( x1 <= x2 ) {
@@ -324,7 +321,6 @@ class AnnotationTable extends Component<{}, TableState> {
             }
           }
         }
-      }
 
       // Update the table data and reset all selections made
       this.setState({ tableData }, () => this.resetSelections());
@@ -543,7 +539,7 @@ class AnnotationTable extends Component<{}, TableState> {
     // check if the user is selecting an annotation block
     const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
     if (selectedBlock) {
-      this.selection = selectedBlock.selections[0];
+      this.selection = selectedBlock.selection;
       this.setState({ selectedAnnotationBlock: selectedBlock });
       this.updateSelections(selectedBlock);
       return;
@@ -695,7 +691,7 @@ class AnnotationTable extends Component<{}, TableState> {
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
             }, () => {
-              this.selection = selectedBlock.selections[0];
+              this.selection = selectedBlock.selection;
             });
           }
         }
@@ -729,7 +725,7 @@ class AnnotationTable extends Component<{}, TableState> {
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
             }, () => {
-              this.selection = selectedBlock.selections[0];
+              this.selection = selectedBlock.selection;
             });
           }
         }
@@ -763,7 +759,7 @@ class AnnotationTable extends Component<{}, TableState> {
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
             }, () => {
-              this.selection = selectedBlock.selections[0];
+              this.selection = selectedBlock.selection;
             });
           }
         }
@@ -797,7 +793,7 @@ class AnnotationTable extends Component<{}, TableState> {
               showAnnotationMenu: true,
               selectedAnnotationBlock: selectedBlock,
             }, () => {
-              this.selection = selectedBlock.selections;
+              this.selection = selectedBlock.selection;
             });
           }
         }
