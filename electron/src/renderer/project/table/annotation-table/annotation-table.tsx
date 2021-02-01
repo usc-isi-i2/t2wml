@@ -296,14 +296,18 @@ class AnnotationTable extends Component<{}, TableState> {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
                 const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           } else {
             for ( let row = y1; row <= y2; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
                 const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           }
@@ -312,14 +316,18 @@ class AnnotationTable extends Component<{}, TableState> {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x1; col <= x2; col++ ) {
                 const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           } else {
             for ( let row = y2; row <= y1; row++ ) {
               for ( let col = x2; col <= x1; col++ ) {
                 const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           }
