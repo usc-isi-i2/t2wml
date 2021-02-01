@@ -24,13 +24,12 @@ class TableState {
     @observable public showCleanedData: boolean;
 
     constructor() {
-        this.mode = 'Annotation';
+        this.mode = 'Output';
         this.table = {} as TableDTO;
         this.showSpinner = false;
         this.selectedCell = new Cell();
         this.showCleanedData = false;
     }
-
 
     updateTable(table: TableDTO){
         this.table=table;

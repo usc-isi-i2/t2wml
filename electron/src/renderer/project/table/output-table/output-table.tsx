@@ -50,8 +50,6 @@ class OutputTable extends Component<{}, TableState> {
     this.updateTableData(wikiStore.table.table);
     document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-    this.disposers.push(reaction(() => wikiStore.layers.type, (type) => this.updateCellTypes(type)));
-    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.updateQnodes(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
 
@@ -79,12 +77,13 @@ class OutputTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-    this.setState({ tableData });
+    this.updateCells(tableData);
   }
 
-  updateCellTypes(types: Layer<TypeEntry>) {
-    const { tableData } = this.state;
+  updateCells(tableData) {
     if (!tableData) { return; }
+
+    const types = wikiStore.layers.type;
     for (const entry of types.entries) {
       for (const indexPair of entry.indices) {
         if (['majorError', 'minorError'].includes(entry.type)) {
@@ -96,11 +95,8 @@ class OutputTable extends Component<{}, TableState> {
         }
       }
     }
-    this.setState({ tableData });
-  }
 
-  updateQnodes(qnodes: Layer<QNodeEntry>) {
-    const { tableData } = this.state;
+    const qnodes = wikiStore.layers.qnode;
     if (!tableData) { return; }
     for (const entry of qnodes.entries) {
       for (const indexPair of entry.indices) {
@@ -108,6 +104,7 @@ class OutputTable extends Component<{}, TableState> {
         tableCell.classNames.push(`type-wikibaseitem`);
       }
     }
+
     this.setState({ tableData });
   }
 
@@ -254,7 +251,6 @@ class OutputTable extends Component<{}, TableState> {
 
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
-    this.selections = [{ x1, x1, y1, y1 }];
 
     // Activate the element on click
     this.selectCell(element);

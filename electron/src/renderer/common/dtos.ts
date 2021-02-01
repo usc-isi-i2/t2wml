@@ -113,7 +113,7 @@ export type AnnotationBlockRole = "Dependent Variable" | "Qualifier" | "Metadata
 export type AnnotationBlockType = "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
 
 export interface AnnotationBlock{
-    selections: CellSelection[];
+    selection: CellSelection;
     role: AnnotationBlockRole;
     type?: AnnotationBlockType;
 
