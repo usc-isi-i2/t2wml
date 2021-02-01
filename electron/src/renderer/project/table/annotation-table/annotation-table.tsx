@@ -185,7 +185,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
@@ -208,7 +208,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
@@ -233,7 +233,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
@@ -256,7 +256,7 @@ class AnnotationTable extends Component<{}, TableState> {
                   } catch {
                     let rx = row;
                     while ( rx > tableData.length ) {
-                      const emptyArray = Array.apply({}, new Array(col));
+                      const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
                       tableData.push(emptyArray);
                       rx -= 1;
                     }
@@ -285,38 +285,48 @@ class AnnotationTable extends Component<{}, TableState> {
         const { x1, y1, x2, y2 } = selection;
         if ( y1 <= y2 ) {
           if ( x1 <= x2 ) {
-            for ( let row = y1; row <= y2; row++ ) {
-              for ( let col = x1; col <= x2; col++ ) {
-                const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+            for ( let row = y1 - 1; row < y2; row++ ) {
+              for ( let col = x1 - 1; col < x2; col++ ) {
+                const cell = tableData[row][col];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           } else {
-            for ( let row = y1; row <= y2; row++ ) {
-              for ( let col = x2; col <= x1; col++ ) {
-                const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+            for ( let row = y1 - 1; row < y2; row++ ) {
+              for ( let col = x2 - 1; col < x1; col++ ) {
+                const cell = tableData[row][col];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           }
         } else {
           if ( x1 <= x2 ) {
-            for ( let row = y2; row <= y1; row++ ) {
-              for ( let col = x1; col <= x2; col++ ) {
-                const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+            for ( let row = y2 - 1; row < y1; row++ ) {
+              for ( let col = x1 - 1; col < x2; col++ ) {
+                const cell = tableData[row][col];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           } else {
-            for ( let row = y2; row <= y1; row++ ) {
-              for ( let col = x2; col <= x1; col++ ) {
-                const cell = tableData[row - 1][col - 1];
-                cell.classNames = [];
+            for ( let row = y2 - 1; row < y1; row++ ) {
+              for ( let col = x2 - 1; col < x1; col++ ) {
+                const cell = tableData[row][col];
+                if ( cell ) {
+                  cell.classNames = [];
+                }
               }
             }
           }
         }
       }
+
+      // Update the table data and reset all selections made
       this.setState({ tableData }, () => this.resetSelections());
     }
   }
@@ -448,54 +458,6 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  checkSelectionOverlaps() {
-    this.selections.map((selection, i) => {
-      const { x1, y1, x2, y2 } = selection;
-
-      // Get the coordinates of the sides
-      const aTop = y1 <= y2 ? y1 : y2;
-      const aLeft = x1 <= x2 ? x1 : x2;
-      const aRight = x2 >= x1 ? x2 : x1;
-      const aBottom = y2 >= y1 ? y2 : y1;
-
-      for ( let j = 0; j < this.selections.length; j++ ) {
-        if ( j !== i ) {
-          const area = this.selections[j];
-
-          // Get the coordinates of the sides
-          const bTop = area.y1 <= area.y2 ? area.y1 : area.y2;
-          const bLeft = area.x1 <= area.x2 ? area.x1 : area.x2;
-          const bRight = area.x2 >= area.x1 ? area.x2 : area.x1;
-          const bBottom = area.y2 >= area.y1 ? area.y2 : area.y1;
-
-          // check for no-collisions between area A and B
-          if (aTop > bBottom) {
-            continue;
-          }
-          if (aBottom < bTop) {
-            continue;
-          }
-          if (aLeft > bRight) {
-            continue;
-          }
-          if (aRight < bLeft) {
-            continue;
-          }
-
-          if (bTop <= aTop &&
-            bLeft <= aLeft &&
-            bRight >= aRight &&
-            bBottom >= aBottom) {
-            this.selections.splice(i, 1);
-          } else {
-            this.selections.splice(j, 1);
-          }
-          break;
-        }
-      }
-    });
-  }
-
   selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
     // Apply class names to the selected cell
     classNames.map(className => cell.classList.add(className));
@@ -556,7 +518,6 @@ class AnnotationTable extends Component<{}, TableState> {
     this.selecting = false;
     if ( this.selection ) {
       this.standardizeSelections();
-      this.checkSelectionOverlaps();
       this.openAnnotationMenu(event);
     }
   }
