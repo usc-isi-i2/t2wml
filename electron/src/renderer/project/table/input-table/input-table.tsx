@@ -50,6 +50,16 @@ class InputTable extends Component<{}, TableState> {
     document.removeEventListener('keydown', this.handleOnKeyDown);
   }
 
+  getElementStyles(element) {
+    const styles = {};
+
+    for ( let i = 0; i < element.style.length; i++ ) {
+      styles[element.style[i]] = element.style[element.style[i]];
+    }
+
+    return styles;
+  }
+
   getClipboardData(event) {
     const data = (event.clipboardData || window.clipboardData).getData('text/html');
     this.setState({ clipboardData: data });
