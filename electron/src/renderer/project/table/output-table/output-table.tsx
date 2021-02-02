@@ -42,22 +42,30 @@ class OutputTable extends Component<{}, TableState> {
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+    this.getClipboardData = this.getClipboardData.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
+    document.addEventListener('paste', this.getClipboardData);
     document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
 
   componentWillUnmount() {
+    document.removeEventListener('paste', this.getClipboardData);
     document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }
+  }
+
+  getClipboardData(event) {
+    const data = (event.clipboardData || window.clipboardData).getData('text/html');
+    console.log(data);
   }
 
   updateTableData(table?: TableDTO) {
