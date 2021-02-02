@@ -6,14 +6,22 @@
     "error": {
         "entries": [
             {
-                "error": {
-                    "qualifier": {
-                        "0": {
-                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
-                        }
+                "error": [
+                    {
+                        "field": "unit",
+                        "level": "Minor",
+                        "message": "Error parsing unit (=item[$col, 6, \"unit\"]): Search for cell item failed. (No values defined for context: unit)",
+                        "qualifier_index": -1,
+                        "role": "unit"
                     },
-                    "unit": "No values defined for context: unit"
-                },
+                    {
+                        "field": "value",
+                        "level": "Minor",
+                        "message": "Invalid datetime: 1900-01-01  # FIX ME",
+                        "qualifier_index": 0,
+                        "role": "qualifier"
+                    }
+                ],
                 "indices": [
                     [
                         8,
@@ -22,14 +30,22 @@
                 ]
             },
             {
-                "error": {
-                    "qualifier": {
-                        "0": {
-                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
-                        }
+                "error": [
+                    {
+                        "field": "unit",
+                        "level": "Minor",
+                        "message": "Error parsing unit (=item[$col, 6, \"unit\"]): Search for cell item failed. (No values defined for context: unit)",
+                        "qualifier_index": -1,
+                        "role": "unit"
                     },
-                    "unit": "No values defined for context: unit"
-                },
+                    {
+                        "field": "value",
+                        "level": "Minor",
+                        "message": "Invalid datetime: 1900-01-01  # FIX ME",
+                        "qualifier_index": 0,
+                        "role": "qualifier"
+                    }
+                ],
                 "indices": [
                     [
                         9,
@@ -38,14 +54,22 @@
                 ]
             },
             {
-                "error": {
-                    "qualifier": {
-                        "0": {
-                            "value": "Invalid datetime: 1900-01-01  # FIX ME"
-                        }
+                "error": [
+                    {
+                        "field": "unit",
+                        "level": "Minor",
+                        "message": "Error parsing unit (=item[$col, 6, \"unit\"]): Search for cell item failed. (No values defined for context: unit)",
+                        "qualifier_index": -1,
+                        "role": "unit"
                     },
-                    "unit": "No values defined for context: unit"
-                },
+                    {
+                        "field": "value",
+                        "level": "Minor",
+                        "message": "Invalid datetime: 1900-01-01  # FIX ME",
+                        "qualifier_index": 0,
+                        "role": "qualifier"
+                    }
+                ],
                 "indices": [
                     [
                         10,
@@ -449,20 +473,7 @@
                 "type": "majorError"
             },
             {
-                "indices": [
-                    [
-                        8,
-                        3
-                    ],
-                    [
-                        9,
-                        3
-                    ],
-                    [
-                        10,
-                        3
-                    ]
-                ],
+                "indices": [],
                 "type": "minorError"
             },
             {
