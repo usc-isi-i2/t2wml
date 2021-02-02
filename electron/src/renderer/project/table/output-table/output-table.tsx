@@ -19,6 +19,7 @@ interface TableState {
   selectedCell: Cell | null;
   showOutputMenu: boolean,
   outputMenuPosition?: Array<number>,
+  clipboardData: string | '',
 }
 
 
@@ -39,6 +40,7 @@ class OutputTable extends Component<{}, TableState> {
       selectedCell: new Cell(),
       showOutputMenu: false,
       outputMenuPosition: [50, 70],
+      clibboardData: '',
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
@@ -65,7 +67,7 @@ class OutputTable extends Component<{}, TableState> {
 
   getClipboardData(event) {
     const data = (event.clipboardData || window.clipboardData).getData('text/html');
-    console.log(data);
+    this.setState({ clipboardData: data });
   }
 
   updateTableData(table?: TableDTO) {
