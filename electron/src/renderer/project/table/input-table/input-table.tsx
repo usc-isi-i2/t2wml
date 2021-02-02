@@ -81,6 +81,10 @@ class InputTable extends Component<{}, TableState> {
           <span dangerouslySetInnerHTML={{ __html: td.innerHTML }} />
         )
         const style = this.getElementStyles(td);
+        if ( rowIndex === 0 ) {
+          style['width'] = '100%';
+        }
+        style['max-width'] = '1%';
         const cell: TableCell = {
           style,
           content,
