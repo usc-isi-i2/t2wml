@@ -19,7 +19,6 @@ interface TableState {
   selectedCell: Cell | null;
   showOutputMenu: boolean,
   outputMenuPosition?: Array<number>,
-  clipboardData: string | '',
 }
 
 
@@ -44,30 +43,22 @@ class OutputTable extends Component<{}, TableState> {
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
-    this.getClipboardData = this.getClipboardData.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
-    document.addEventListener('paste', this.getClipboardData);
     document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
 
   componentWillUnmount() {
-    document.removeEventListener('paste', this.getClipboardData);
     document.removeEventListener('keydown', this.handleOnKeyDown);
     for (const disposer of this.disposers) {
       disposer();
     }
-  }
-
-  getClipboardData(event) {
-    const data = (event.clipboardData || window.clipboardData).getData('text/html');
-    this.setState({ clipboardData: data });
   }
 
   updateTableData(table?: TableDTO) {
@@ -372,13 +363,6 @@ class OutputTable extends Component<{}, TableState> {
   }
 
   renderTable() {
-    const { clipboardData } = this.state;
-    if ( clipboardData ) {
-      return (
-        <div className="table-wrapper"
-          dangerouslySetInnerHTML={{ __html: clipboardData }} />
-      )
-    }
     return (
       <Table
         tableData={this.state.tableData}
