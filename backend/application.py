@@ -408,11 +408,12 @@ def load_to_datamart():
     dataset_id=project.dataset_id
     response_from_docker = requests.post(f'{datamart_api_endpoint}/datasets/{dataset_id}/t2wml', files=files)
     if response_from_docker.status_code == 204:
-        var_params="?"
-        for variable in variables:
-            var_params+=f'variable={variable}&'
-        var_params=var_params[:-1]
-        data={'datamart_get_url': f'{datamart_api_endpoint}/datasets/{dataset_id}/variables{var_params}'}
+        # var_params="?"
+        # for variable in variables:
+        #     var_params+=f'variable={variable}&'
+        # var_params=var_params[:-1]
+        data={'datamart_get_url': f'{datamart_api_endpoint}/datasets/{dataset_id}/variables',
+                'variables':list(variables)}
     else:
         data = {'description': response_from_docker.text}
 
