@@ -62,7 +62,35 @@ class InputTable extends Component<{}, TableState> {
 
   getClipboardData(event) {
     const data = (event.clipboardData || window.clipboardData).getData('text/html');
-    this.setState({ clipboardData: data });
+    if ( !data ) { return; }
+
+    // Initialize an empty table data array
+    const tableData = [];
+
+    // Parse our copy-pasted html
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data, 'text/html');
+
+    // Fill in the table data with
+    const rows = doc.querySelectorAll('tr');
+    rows.forEach((row: any, rowIndex: number) => {
+      tableData.push([]);
+      for ( let colIndex = 0; colIndex < row.children.length; colIndex++ ) {
+        const td = row.children[colIndex];
+        const content = (
+          <span dangerouslySetInnerHTML={{ __html: td.innerHTML }} />
+        )
+        const style = this.getElementStyles(td);
+        const cell: TableCell = {
+          style,
+          content,
+          classNames: [],
+        };
+        tableData[rowIndex].push(cell);
+      }
+    });
+
+    this.setState({ tableData });
   }
 
   selectCell(cell: Element, classNames: string[] = []) {
