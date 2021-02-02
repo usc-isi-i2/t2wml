@@ -587,13 +587,15 @@
             "error": {
                 "entries": [
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 2,
@@ -602,13 +604,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 4,
@@ -617,13 +621,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 5,
@@ -632,13 +638,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 6,
@@ -647,13 +655,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 7,
@@ -662,13 +672,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 2,
@@ -677,13 +689,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 4,
@@ -692,13 +706,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 5,
@@ -707,13 +723,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 6,
@@ -722,13 +740,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 7,
@@ -737,13 +757,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 2,
@@ -752,13 +774,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 4,
@@ -767,13 +791,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 5,
@@ -782,13 +808,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 6,
@@ -797,13 +825,15 @@
                         ]
                     },
                     {
-                        "error": {
-                            "qualifier": {
-                                "1": {
-                                    "value": "Failed to resolve"
-                                }
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
                             }
-                        },
+                        ],
                         "indices": [
                             [
                                 7,
@@ -1885,68 +1915,7 @@
                         "type": "majorError"
                     },
                     {
-                        "indices": [
-                            [
-                                2,
-                                5
-                            ],
-                            [
-                                4,
-                                5
-                            ],
-                            [
-                                5,
-                                5
-                            ],
-                            [
-                                6,
-                                5
-                            ],
-                            [
-                                7,
-                                5
-                            ],
-                            [
-                                2,
-                                6
-                            ],
-                            [
-                                4,
-                                6
-                            ],
-                            [
-                                5,
-                                6
-                            ],
-                            [
-                                6,
-                                6
-                            ],
-                            [
-                                7,
-                                6
-                            ],
-                            [
-                                2,
-                                7
-                            ],
-                            [
-                                4,
-                                7
-                            ],
-                            [
-                                5,
-                                7
-                            ],
-                            [
-                                6,
-                                7
-                            ],
-                            [
-                                7,
-                                7
-                            ]
-                        ],
+                        "indices": [],
                         "type": "minorError"
                     },
                     {
@@ -2341,6 +2310,140 @@
             "qnode": {
                 "entries": [
                     {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-22",
+                        "indices": [
+                            [
+                                2,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 22",
+                        "url": "",
+                        "value": "22"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-73",
+                        "indices": [
+                            [
+                                4,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 73",
+                        "url": "",
+                        "value": "73"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-103",
+                        "indices": [
+                            [
+                                5,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 103",
+                        "url": "",
+                        "value": "103"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-475",
+                        "indices": [
+                            [
+                                6,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 475",
+                        "url": "",
+                        "value": "475"
+                    },
+                    {
+                        "context": "main subject",
+                        "description": "incident related to aid worker security",
+                        "id": "Qaid-security-782",
+                        "indices": [
+                            [
+                                7,
+                                1
+                            ]
+                        ],
+                        "label": "Incident ID 782",
+                        "url": "",
+                        "value": "782"
+                    },
+                    {
+                        "context": "unit",
+                        "description": "",
+                        "id": "Qaid-security-U002",
+                        "indices": [
+                            [
+                                0,
+                                5
+                            ],
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                0,
+                                7
+                            ]
+                        ],
+                        "label": "",
+                        "url": "",
+                        "value": "person"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-002",
+                        "indices": [
+                            [
+                                1,
+                                5
+                            ]
+                        ],
+                        "label": "UN",
+                        "url": "",
+                        "value": "UN"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-003",
+                        "indices": [
+                            [
+                                1,
+                                6
+                            ]
+                        ],
+                        "label": "INGO",
+                        "url": "",
+                        "value": "INGO"
+                    },
+                    {
+                        "context": "property",
+                        "description": "",
+                        "id": "Paid-security-004",
+                        "indices": [
+                            [
+                                1,
+                                7
+                            ]
+                        ],
+                        "label": "LNGO/NRCS",
+                        "url": "",
+                        "value": "LNGO/NRCS"
+                    },
+                    {
                         "context": "wikifier test",
                         "description": "country in East Africa",
                         "id": "Q115",
@@ -2363,7 +2466,7 @@
                         "value": "Ethiopia"
                     },
                     {
-                        "context": "wikifier test",
+                        "context": "",
                         "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
                         "id": "Q21203",
                         "indices": [
