@@ -20,6 +20,7 @@ import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
+import InputTable from './input-table/input-table';
 import { currentFilesService } from '../../common/current-file-service';
 
 
@@ -353,7 +354,10 @@ class TableContainer extends Component<{}, TableState> {
     if (this.state.mode === 'Annotation') {
       return <AnnotationTable />;
     }
-    return <OutputTable />;
+    if (this.state.mode === 'Output') {
+      return <OutputTable />;
+    }
+    return <InputTable />;
   }
 
   renderLegend() {
