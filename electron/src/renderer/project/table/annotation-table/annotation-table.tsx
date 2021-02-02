@@ -41,7 +41,7 @@ class AnnotationTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       showAnnotationMenu: false,
-      annotationMenuPosition: [750, 100],
+      annotationMenuPosition: [50, 70],
       selectedAnnotationBlock: undefined,
     };
 
@@ -494,8 +494,13 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   openAnnotationMenu(event: React.MouseEvent) {
-    const pageX =  1000;
-    const pageY = 100;
+    let { pageX, pageY } = event;
+    pageX = pageX - 250;
+    if ( settings.window.height - pageY <= 275 ) {
+      pageY -= 275;
+    } else {
+      pageY = pageY - 10;
+    }
     this.setState({
       showAnnotationMenu: true,
       annotationMenuPosition: [pageX, pageY],
