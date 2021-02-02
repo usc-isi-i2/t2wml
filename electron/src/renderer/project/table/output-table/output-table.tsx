@@ -372,6 +372,13 @@ class OutputTable extends Component<{}, TableState> {
   }
 
   renderTable() {
+    const { clipboardData } = this.state;
+    if ( clipboardData ) {
+      return (
+        <div className="table-wrapper"
+          dangerouslySetInnerHTML={{ __html: clipboardData }} />
+      )
+    }
     return (
       <Table
         tableData={this.state.tableData}
