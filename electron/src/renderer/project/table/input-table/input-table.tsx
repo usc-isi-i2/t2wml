@@ -146,10 +146,16 @@ class InputTable extends Component<{}, TableState> {
 
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
-    const element = event.target as any;
 
-    // Don't let users select header cells
-    if (element.nodeName !== 'TD') { return; }
+    // Find the table cell element
+    let counter = 0;
+    let maxDepth = 3;
+    let element = event.target as any;
+    while (element.nodeName !== 'TD') {
+      if ( counter >= maxDepth ) { return; }
+      element = element.parentNode;
+      counter += 1;
+    }
 
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
