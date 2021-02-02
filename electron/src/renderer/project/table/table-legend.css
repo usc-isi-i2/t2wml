@@ -33,7 +33,7 @@
 }
 
 /* different types of cells */
-.legend-wrapper span.type-qnode {
+.legend-wrapper span.type-wikibaseitem {
   color: #006699;
   border-top: none;
   border-left: none;
