@@ -136,6 +136,7 @@ export interface AnnotationBlock{
 export interface TableCell {
   content: string;
   classNames: string[];
+  style: any | {};
 }
 
 
