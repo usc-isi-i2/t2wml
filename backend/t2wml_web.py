@@ -182,11 +182,6 @@ def get_yaml_layers(calc_params):
             errorEntry=dict(indices=[cell_index], error=errors[cell_name])
             errorLayer["entries"].append(errorEntry)
 
-            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell_name].keys())):
-                cell_type_indices["majorError"][cell_name]=True
-            else:
-                cell_type_indices["minorError"][cell_name]=True
-
 
         for cell_name in statements:
             cell_type_indices["dependentVar"][cell_name]=True

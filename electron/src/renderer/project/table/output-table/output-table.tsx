@@ -84,16 +84,19 @@ class OutputTable extends Component<{}, TableState> {
   updateCells(tableData) {
     if (!tableData) { return; }
 
+    const errors = wikiStore.layers.error;
+    for (const entry of errors.entries) {
+      for (const indexPair of entry.indices) {
+        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.classNames.push('error');
+      }
+    }
+
     const types = wikiStore.layers.type;
     for (const entry of types.entries) {
       for (const indexPair of entry.indices) {
-        if (['majorError', 'minorError'].includes(entry.type)) {
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`status-${entry.type}`);
-        } else {
-          const tableCell = tableData[indexPair[0]][indexPair[1]];
-          tableCell.classNames.push(`role-${entry.type}`);
-        }
+        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.classNames.push(`role-${entry.type}`);
       }
     }
 
