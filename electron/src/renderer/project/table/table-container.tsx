@@ -201,13 +201,19 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
-  async toggleAnnotationMode() {
+  async toggleAnnotationMode(mode) {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
+    this.setState({ mode }, () => {
+      wikiStore.table.mode = mode;
+    });
+
     this.resetTableData();
 
-    if (this.state.mode === 'Output') {
+    if (mode === 'Annotation') {
+      this.fetchAnnotations();
+    } else {
       await wikiStore.yaml.saveYaml();
       if (currentFilesService.currentState.mappingType == "Yaml") {
         currentFilesService.setMappingFiles(); //try to change to an existing annotation
@@ -217,14 +223,6 @@ class TableContainer extends Component<{}, TableState> {
           currentFilesService.setMappingFiles();
         }
       }
-      this.setState({ mode: 'Annotation' }, () => {
-        this.fetchAnnotations();
-        wikiStore.table.mode = 'Annotation';
-      });
-    } else {
-      this.setState({ mode: 'Output' }, () => {
-        wikiStore.table.mode = 'Output';
-      });
     }
 
     wikiStore.table.showSpinner = false;
@@ -271,19 +269,25 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderAnnotationToggle() {
+    const { mode } = this.state;
     const annotationMode = this.state.mode === "Annotation";
     if (this.state.filename) {
       return (
-        <ButtonGroup aria-label="modes" className="mode-toggle"
-          onClick={() => this.toggleAnnotationMode()}>
+        <ButtonGroup aria-label="modes" className="mode-toggle">
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': !annotationMode,
-            })}>Output</Button>
+              'active': mode === 'Output',
+            })}
+            onClick={(event) => this.toggleAnnotationMode('Output')}>
+            Output
+          </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': annotationMode,
-            })}>Annotate</Button>
+              'active': mode === 'Annotation',
+            })}
+            onClick={(event) => this.toggleAnnotationMode('Annotation')}>
+            Annotate
+          </Button>
         </ButtonGroup>
       )
     }
