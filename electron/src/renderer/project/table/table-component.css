@@ -262,32 +262,11 @@
   font-weight: bold;
 }
 
-/* cell minor error status */
-.table-wrapper table tr td.status-minorError {
+/* cell error status */
+.table-wrapper table tr td.error {
   position: relative;
 }
-.table-wrapper table tr td.status-minorError::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  display: block;
-  border-left: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-top: 10px solid #FF8000;
-}
-.table-wrapper table tr td.active.status-minorError::after {
-  top: 2px;
-  right: 2px;
-}
-
-/* cell major error status */
-.table-wrapper table tr td.status-majorError {
-  position: relative;
-}
-.table-wrapper table tr td.status-majorError::after {
+.table-wrapper table tr td.error::after {
   content: '';
   position: absolute;
   top: 0;
@@ -299,7 +278,7 @@
   border-bottom: 10px solid transparent;
   border-top: 10px solid #FF3333;
 }
-.table-wrapper table tr td.active.status-majorError::after {
+.table-wrapper table tr td.active.error::after {
   top: 2px;
   right: 2px;
 }
@@ -331,6 +310,6 @@
 
 
 /* cell types*/
-.table-wrapper table tr td.type-qNode {
+.table-wrapper table tr td.type-wikibaseitem {
   color: #006699;
 }
