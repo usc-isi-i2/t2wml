@@ -16,8 +16,8 @@ interface LegendEntry {
 
 
 const LEGEND = [{
-  label: 'qnode',
-  className: 'type-qnode',
+  label: 'wikibase item/property',
+  className: 'type-wikibaseitem',
 }, {
   label: 'dependent variable',
   className: 'type-data',
