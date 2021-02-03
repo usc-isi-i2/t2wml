@@ -4,6 +4,7 @@ import { AnnotationBlock } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import { CellSelection } from '@/renderer/common/general';
 
 
 interface AnnotationFormProperties {
@@ -34,6 +35,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       role: selectedBlock?.role,
       type: selectedBlock?.type,
     };
+    this.changed = false;
   }
 
   handleOnChange(event: any, key: string) {

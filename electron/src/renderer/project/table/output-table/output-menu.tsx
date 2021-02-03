@@ -6,7 +6,7 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import * as utils from '../table-utils';
 import wikiStore from '../../../data/store';
-import { ErrorMessage } from '../../../common/general';
+import { Cell, CellSelection, ErrorMessage } from '../../../common/general';
 
 
 interface OutputMenuProperties {

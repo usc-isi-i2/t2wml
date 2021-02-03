@@ -105,7 +105,7 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async createProject(folder:string, data: any) {
+  public async createProject(folder:string, data?: any) {
     const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
     wikiStore.changeWindowDisplayMode(folder);

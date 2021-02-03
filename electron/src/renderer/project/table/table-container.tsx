@@ -201,7 +201,7 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
-  async toggleAnnotationMode(mode) {
+  async toggleAnnotationMode(mode: string) {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
