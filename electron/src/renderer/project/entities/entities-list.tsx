@@ -41,7 +41,7 @@ class EntitiesList extends Component<EntitiesProperties, EntitiesState> {
         for (const f in wikiStore.entitiesData.entities) {
             for (const prop in wikiStore.entitiesData.entities[f]) {
                 properties.push(
-                    <li id={prop} onClick={() => this.handleSelectEntity(f, prop)}>
+                    <li key={prop} onClick={() => this.handleSelectEntity(f, prop)}>
                         <span style={prop === this.props.selectedProperty ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>
                             {prop}
                         </span>

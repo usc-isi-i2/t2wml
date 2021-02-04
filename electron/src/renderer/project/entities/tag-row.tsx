@@ -13,14 +13,16 @@ import wikiStore from '@/renderer/data/store';
 
 
 
-export interface Tag{
+export interface Tag {
     part1: string;
     part2: string;
+    index: number;
 }
 
 interface EntitiesProperties {
     tag: Tag;
-    updateField: (key: string, value:string) => void;
+    updateField: (index:number, part: "part1"|"part2", value: string) => void;
+    minusClick: (index: number) => void;
 }
 
 
@@ -36,19 +38,20 @@ class TagRow extends Component<EntitiesProperties, EntitiesState> {
 
 
     render() {
+        const tag=this.props.tag;
         return (
             <Form.Group>
-            <Row>
+                <Col>
 
-                        <Form.Control defaultValue={this.props.tag.part1 || ""}
-                            onChange={(event) => (this.props.tag.part1= event.target?.value)}
-                        />
+                    <Form.Control defaultValue={tag.part1 || ""}
+                        onChange={(event) => (this.props.updateField(tag.index, "part1", event.target?.value))}
+                    />
 
-                        <Form.Control defaultValue={this.props.tag.part1 || ""}
-                            onChange={(event) => (this.props.tag.part2= event.target?.value)}
-                        />
-            <FontAwesomeIcon icon={faMinusSquare} onClick={()=>null}/>
-            </Row>
+                    <Form.Control defaultValue={tag.part2 || ""}
+                        onChange={(event) => (this.props.updateField(tag.index, "part2", event.target?.value))}
+                    />
+                    <FontAwesomeIcon icon={faMinusSquare} onClick={() => this.props.minusClick(this.props.tag.index)} />
+                </Col>
             </Form.Group>
 
         );

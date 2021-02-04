@@ -17,66 +17,93 @@ import TagRow, { Tag } from './tag-row';
 interface EntitiesProperties {
     property: string;
     propertyData: any;
-    updateField: (key: string, value: string) => void;
+    updateTags: (tags: string[]) => void;
+    updateTag: (index:number, value:string) => void;
 }
 
 
 interface EntitiesState {
-    tags: Tag[]
 }
 
 
 @observer
 class Tags extends Component<EntitiesProperties, EntitiesState> {
+    liKey=0;
     constructor(props: EntitiesProperties) {
         super(props);
         let isProperty = false;
-        const interfaceTags = [];
 
         if (isProperty) {
-            const backendTags = props.propertyData["tags"]
 
-            if (backendTags) {
-                for (const backTag of backendTags) {
-                    const splitParts = backTag.split(":")
-                    interfaceTags.push({ part1: splitParts[0], part2: splitParts[-1] })
-                }
-            }
-        }
-
-        this.state = {
-            tags: interfaceTags
         }
     }
 
     onPlusClick() {
-        console.log("clicked plus");
+        let tagArr = [] as string[];
+        if (this.props.propertyData["tags"]) {
+            tagArr = [...this.props.propertyData["tags"]];
+        }
+        tagArr.push("")
+        this.props.updateTags(tagArr)
+    }
+
+    onMinusClick(index: number) {
+        const tagArr = [...this.props.propertyData["tags"]];
+        tagArr.splice(index, 1)
+        this.liKey+=1
+        this.props.updateTags(tagArr)
+    }
+
+    onEditField(index: number, part: "part1" | "part2", value: string) {
+        debugger
+        const tag = this.backTagtoTag(index, this.props.propertyData["tags"][index])
+        tag[part] = value
+       this.props.updateTag(index, tag.part1 + ":" + tag.part2);
+    }
+
+    backTagtoTag(index:number, backTag:string): Tag{
+        let tag;
+        if (backTag == "") {
+            tag = { part1: "", part2: "", index: index }
+        } else {
+            const splitParts = backTag.split(":")
+            const part1= splitParts[0] || "";
+            const part2= splitParts[splitParts.length-1] || "";
+            tag = { part1: part1, part2: part2, index: index }
+        }
+        return tag
+
     }
 
 
     render() {
-
-        if (this.props.propertyData["data_type"]==undefined){
+        if (this.props.propertyData["data_type"] == undefined) {
             return null;
         }
-
-
-
         const renderedTags = [];
-        for (const [index, element] of this.state.tags.entries()) {
-            renderedTags.push(
-                <li id={this.props.property + index}>
-                    <TagRow
-                        tag={element}
-                        updateField={() => null}
-                    />
-                </li>
-            );
+
+        const backendTags = this.props.propertyData["tags"];
+        if (backendTags) {
+            for (const [index, backTag] of backendTags.entries()) {
+
+                const tag = this.backTagtoTag(index, backTag)
+                const test=index+"_"+this.liKey
+
+                renderedTags.push(
+                    <li key={index+"_"+this.liKey}>
+                        <TagRow
+                            tag={tag}
+                            updateField={(index, part, value) => this.onEditField(index, part, value)}
+                            minusClick={(index) => this.onMinusClick(index)}
+                        />
+                    </li>
+                );
+            }
         }
+
         return (
             <Row>
-                <label>Tags:</label>
-                <FontAwesomeIcon icon={faPlusSquare} onClick={() => this.onPlusClick()} />
+                <label>Tags:  <FontAwesomeIcon icon={faPlusSquare} onClick={() => this.onPlusClick()} /></label>
                 <ul>{renderedTags}</ul>
             </Row>
         );
