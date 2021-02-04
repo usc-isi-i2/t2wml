@@ -16,24 +16,24 @@ class EditorsState {
 }
 
 
+export type TableMode = 'Annotation' | 'Output';
 class TableState {
-    @observable public mode: 'Annotation' | 'Output';
+    @observable public mode: TableMode;
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
-    @observable public selectedCell: Cell;
+    @observable public selectedCell?: Cell;
     @observable public showCleanedData: boolean;
 
     constructor() {
         this.mode = 'Output';
         this.table = {} as TableDTO;
         this.showSpinner = false;
-        this.selectedCell = new Cell();
         this.showCleanedData = false;
     }
 
     updateTable(table: TableDTO){
         this.table=table;
-        this.selectedCell=new Cell();
+        this.selectedCell = undefined;
     }
 }
 

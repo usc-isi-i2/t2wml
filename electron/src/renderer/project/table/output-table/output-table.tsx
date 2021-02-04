@@ -16,9 +16,9 @@ import { settings } from '../../../../main/settings';
 
 interface TableState {
   tableData: TableCell[][] | undefined;
-  selectedCell: Cell | null;
-  showOutputMenu: boolean,
-  outputMenuPosition?: Array<number>,
+  selectedCell?: Cell;
+  showOutputMenu: boolean;
+  outputMenuPosition?: Array<number>;
 }
 
 
@@ -36,7 +36,7 @@ class OutputTable extends Component<{}, TableState> {
     // init state
     this.state = {
       tableData: undefined,
-      selectedCell: new Cell(),
+      selectedCell: undefined,
       showOutputMenu: false,
       outputMenuPosition: [50, 70],
     };

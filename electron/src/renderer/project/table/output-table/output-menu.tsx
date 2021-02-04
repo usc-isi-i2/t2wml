@@ -10,10 +10,9 @@ import { Cell, CellSelection, ErrorMessage } from '../../../common/general';
 
 
 interface OutputMenuProperties {
-  selectedCell: Cell | null;
+  selectedCell?: Cell;
   position?: Array<number>,
-  onDelete: any | null,
-  onClose: any | null,
+  onClose?: () => void,
 }
 
 
