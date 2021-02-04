@@ -231,6 +231,10 @@ class OutputTable extends Component<{}, TableState> {
     if (!selectedCell || !tableData) { return; }
 
     const { row, col } = selectedCell;
+    if (row < 0 || row >= tableData.length || col < 0 || col >= tableData[row].length) {
+      // There is no such cell, do nothing
+      return;
+    }
     const tableCell = tableData[row][col];
 
     // Only open the output menu if there's content

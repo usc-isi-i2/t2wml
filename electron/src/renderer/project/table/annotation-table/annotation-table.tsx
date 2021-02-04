@@ -486,7 +486,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( selectedBlock ) {
 
       // Reset annotation menu
-      if ( selectedBlock !== selectedAnnotationBlock ) {
+      if ( selectedBlock !== this.state.selectedAnnotationBlock ) {
         this.setState({
           showAnnotationMenu: false,
           selectedAnnotationBlock: undefined,
