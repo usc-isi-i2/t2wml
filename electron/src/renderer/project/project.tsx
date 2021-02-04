@@ -25,7 +25,7 @@ import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
 import TableContainer from './table/table-container';
 import { currentFilesService } from '../common/current-file-service';
-import Entities from './modals/entities';
+import EntitiesWindow from './entities/entities-window';
 
 
 interface ProjectState extends IStateWithError {
@@ -234,7 +234,7 @@ class Project extends Component<ProjectProps, ProjectState> {
           handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
-        <Entities showEntities={this.state.showEntities}
+        <EntitiesWindow showEntities={this.state.showEntities}
           properties={this.state.entityProperties}
           handleSaveEntities={this.handleSaveEntities.bind(this)}
           cancelSaveEntities={() => this.cancelSaveEntities()} />
