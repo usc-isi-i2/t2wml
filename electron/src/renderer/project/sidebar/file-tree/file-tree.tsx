@@ -15,7 +15,7 @@ interface TreeState {
   showSpinner: boolean;
 }
 
-const emptyFunc= (node: NodeProps) => void 0;
+function emptyFunc() { /* NO-OP */ }
 const rootNode = {id: "Root00000123943875",
                   label: "Files",
                   childNodes: [],
@@ -183,7 +183,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         <div className="mySpinner" hidden={!this.state.showSpinner}>
           <Spinner animation="border" />
         </div>
-      
+
         <ul>
           <FileNode
             id={this.state.fileTree.id}

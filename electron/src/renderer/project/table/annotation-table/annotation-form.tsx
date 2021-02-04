@@ -39,15 +39,20 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   handleOnChange(event: any, key: string) {
+
+    if (key !== 'type' && key !== 'role') {
+      throw new Error(`Can't handle change if key ${key} - it is not 'type' or 'role'`);
+    }
+
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    const updatedState: { [key: string]: string; } = {};
+    const updatedState: AnnotationFormState = {};
     updatedState[key] = value;
     this.changed = true;
 
     // Reset the role if the type has changed
     if ( key === 'role' ) {
-      updatedState['type'] = null;
+      updatedState['type'] = undefined;
     }
 
     this.setState({ ...updatedState }, () => onChange(key, value));

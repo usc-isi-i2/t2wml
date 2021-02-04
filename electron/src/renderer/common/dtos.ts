@@ -138,6 +138,8 @@ export interface TableCell {
   classNames: string[];
 }
 
+export type TableData = TableCell[][];
+
 
 /* responses: */
 
