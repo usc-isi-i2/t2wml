@@ -4,7 +4,7 @@ import '../ag-grid.css';
 import '../ag-theme-balham.css';
 
 // App
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinusSquare } from '@fortawesome/free-solid-svg-icons'
 
@@ -40,19 +40,15 @@ class TagRow extends Component<EntitiesProperties, EntitiesState> {
     render() {
         const tag=this.props.tag;
         return (
-            <Form.Group>
-                <Col>
-
+            <InputGroup>
                     <Form.Control defaultValue={tag.part1 || ""}
                         onChange={(event) => (this.props.updateField(tag.index, "part1", event.target?.value))}
                     />
-
+                    {":"}
                     <Form.Control defaultValue={tag.part2 || ""}
                         onChange={(event) => (this.props.updateField(tag.index, "part2", event.target?.value))}
-                    />
-                    <FontAwesomeIcon icon={faMinusSquare} onClick={() => this.props.minusClick(this.props.tag.index)} />
-                </Col>
-            </Form.Group>
+                    /><FontAwesomeIcon icon={faMinusSquare} onClick={() => this.props.minusClick(this.props.tag.index)} />
+            </InputGroup>
 
         );
     }

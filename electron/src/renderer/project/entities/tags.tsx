@@ -102,10 +102,10 @@ class Tags extends Component<EntitiesProperties, EntitiesState> {
         }
 
         return (
-            <Row>
+                <ul>
                 <label>Tags:  <FontAwesomeIcon icon={faPlusSquare} onClick={() => this.onPlusClick()} /></label>
-                <ul>{renderedTags}</ul>
-            </Row>
+                    {renderedTags}
+                </ul>
         );
     }
 }
