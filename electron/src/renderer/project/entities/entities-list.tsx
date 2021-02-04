@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import '../project.css';
 import '../ag-grid.css';
 import '../ag-theme-balham.css';
-
-// App
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-
 import { observer } from "mobx-react";
 import wikiStore from '@/renderer/data/store';
 
@@ -16,13 +12,8 @@ interface EntitiesProperties {
     handleSelectEntity: (file: string, property: string) => void;
 }
 
-interface EntitiesState {
-
-}
-
-
 @observer
-class EntitiesList extends Component<EntitiesProperties, EntitiesState> {
+class EntitiesList extends Component<EntitiesProperties, {}> {
     formArgs: any;
 
     constructor(props: EntitiesProperties) {

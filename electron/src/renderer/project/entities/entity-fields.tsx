@@ -3,11 +3,9 @@ import '../project.css';
 import '../ag-grid.css';
 import '../ag-theme-balham.css';
 
-// App
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
-import wikiStore from '@/renderer/data/store';
 
 
 
@@ -18,14 +16,8 @@ interface EntitiesProperties {
 }
 
 
-interface EntitiesState {
-}
-
-
-
-
 @observer
-class EntityFields extends Component<EntitiesProperties, EntitiesState> {
+class EntityFields extends Component<EntitiesProperties, {}> {
     constructor(props: EntitiesProperties) {
         super(props);
     }

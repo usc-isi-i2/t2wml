@@ -4,14 +4,11 @@ import '../ag-grid.css';
 import '../ag-theme-balham.css';
 
 // App
-import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinusSquare } from '@fortawesome/free-solid-svg-icons'
 
 import { observer } from "mobx-react";
-import wikiStore from '@/renderer/data/store';
-
-
 
 export interface Tag {
     part1: string;
@@ -26,12 +23,8 @@ interface EntitiesProperties {
 }
 
 
-interface EntitiesState {
-}
-
-
 @observer
-class TagRow extends Component<EntitiesProperties, EntitiesState> {
+class TagRow extends Component<EntitiesProperties, {}> {
     constructor(props: EntitiesProperties) {
         super(props);
     }

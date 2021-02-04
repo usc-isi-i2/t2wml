@@ -3,9 +3,6 @@ import '../project.css';
 import '../ag-grid.css';
 import '../ag-theme-balham.css';
 
-// App
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 
@@ -22,20 +19,16 @@ interface EntitiesProperties {
 }
 
 
-interface EntitiesState {
-}
-
-
 @observer
-class Tags extends Component<EntitiesProperties, EntitiesState> {
-    liKey=0;
+class Tags extends Component<EntitiesProperties, {}> {
+    private listItemKey = 0; // list-item key - for making sure each <li> has a specific key
     constructor(props: EntitiesProperties) {
         super(props);
-        let isProperty = false;
+        /*let isProperty = false;
 
         if (isProperty) {
 
-        }
+        } */
     }
 
     onPlusClick() {
@@ -50,7 +43,7 @@ class Tags extends Component<EntitiesProperties, EntitiesState> {
     onMinusClick(index: number) {
         const tagArr = [...this.props.propertyData["tags"]];
         tagArr.splice(index, 1)
-        this.liKey+=1
+        this.listItemKey+=1
         this.props.updateTags(tagArr)
     }
 
@@ -87,10 +80,10 @@ class Tags extends Component<EntitiesProperties, EntitiesState> {
             for (const [index, backTag] of backendTags.entries()) {
 
                 const tag = this.backTagtoTag(index, backTag)
-                const test=index+"_"+this.liKey
+                const key = `${index}_${this.listItemKey}`;
 
                 renderedTags.push(
-                    <li key={index+"_"+this.liKey}>
+                    <li key={key}>
                         <TagRow
                             tag={tag}
                             updateField={(index, part, value) => this.onEditField(index, part, value)}
