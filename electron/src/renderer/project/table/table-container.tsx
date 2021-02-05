@@ -201,7 +201,7 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
-  async toggleAnnotationMode(mode: TableMode) {
+  async switchMode(mode: TableMode) {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
@@ -277,14 +277,14 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'Output',
             })}
-            onClick={() => this.toggleAnnotationMode('Output')}>
+            onClick={() => this.switchMode('Output')}>
             Output
           </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'Annotation',
             })}
-            onClick={() => this.toggleAnnotationMode('Annotation')}>
+            onClick={() => this.switchMode('Annotation')}>
             Annotate
           </Button>
         </ButtonGroup>
