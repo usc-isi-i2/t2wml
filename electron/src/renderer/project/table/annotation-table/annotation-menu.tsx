@@ -11,11 +11,11 @@ import wikiStore from '../../../data/store';
 import { AnnotationBlock } from '../../../common/dtos';
 
 interface AnnotationMenuProperties {
-  selection?: CellSelection,
-  position: Array<number>, // We will eliminate this once we figure out how to calculate the window width
-  onDelete: any | null,
-  onClose: any | null,
-  selectedAnnotationBlock?: AnnotationBlock,
+  selection?: CellSelection;
+  position: Array<number>; // We will eliminate this once we figure out how to calculate the window width
+  onDelete: any | null;
+  onClose: any | null;
+  selectedAnnotationBlock?: AnnotationBlock;
 }
 
 
