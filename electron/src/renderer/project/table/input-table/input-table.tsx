@@ -58,7 +58,7 @@ class InputTable extends Component<{}, TableState> {
 
   getClipboardData(event: ClipboardEvent) {
     if ( !event.clipboardData ) { return; }
-    const data = (event.clipboardData as any).clipboardData.getData('text/html');
+    const data = (event.clipboardData as any).getData('text/html');
     if ( !data ) { return; }
 
     // Initialize an empty table data array
