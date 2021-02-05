@@ -603,11 +603,12 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnKeyDown(event: KeyboardEvent) {
 
     // Close annotation menu with ESC key
-    if (event.code == 27) {
+    if (event.code === 'Escape' ) {
       this.closeAnnotationMenu();
     }
 
-    if ( [37, 38, 39, 40].includes(event.code) && this.selection ) {
+    const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    if ( arrowCodes.includes(event.code) && this.selection ) {
 
       // Don't allow moving around when users are typing
       if ( (event.target as any).nodeName === 'INPUT' ) { return; }
@@ -621,7 +622,7 @@ class AnnotationTable extends Component<{}, TableState> {
       const rows = table!.querySelectorAll('tr');
 
       // arrow up
-      if (event.code == 38 && y1 > 1) {
+      if (event.code === 'ArrowUp' && y1 > 1) {
         this.resetSelections();
         const nextElement = rows[y1 - 1].children[x1];
         if (event.shiftKey) {
@@ -655,7 +656,7 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow down
-      if (event.code == 40 && y1 < rows.length - 1) {
+      if (event.code === 'ArrowDown' && y1 < rows.length - 1) {
         this.resetSelections();
         const nextElement = rows[y1 + 1].children[x1];
         if (event.shiftKey) {
@@ -689,7 +690,7 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow left
-      if (event.code == 37 && x1 > 1) {
+      if (event.code === 'ArrowLeft' && x1 > 1) {
         this.resetSelections();
         const nextElement = rows[y1].children[x1 - 1];
         if (event.shiftKey) {
@@ -723,7 +724,7 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow right
-      if (event.code == 39 && x1 < rows[y1].children.length - 1) {
+      if (event.code === 'ArrowRight' && x1 < rows[y1].children.length - 1) {
         this.resetSelections();
         const nextElement = rows[y1].children[x1 + 1];
         if (event.shiftKey) {
