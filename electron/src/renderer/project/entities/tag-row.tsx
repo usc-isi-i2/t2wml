@@ -57,7 +57,7 @@ class TagRow extends Component<TagProperties, TagState> {
         }else{
             part2=value;
         }
-        let errorMsg= this.checkForError(part1, part2);
+        const errorMsg= this.checkForError(part1, part2);
         this.props.updateField(index, part, value, errorMsg)
         this.setState({errorMsg})
     }

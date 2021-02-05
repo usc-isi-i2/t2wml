@@ -69,19 +69,19 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
 
 
     updatePropertyData(key: "label"|"description"|"data_type", value: string, hasError:boolean) {
-        let propertyData={...this.state.propertyData!};
+        const propertyData={...this.state.propertyData!};
         propertyData[key]=value;
         this.setState({propertyData, hasError, labelContent: ""})
     }
 
     updateTags(tags: string[]) {
-        let propertyData={...this.state.propertyData!};
+        const propertyData={...this.state.propertyData!};
         propertyData["tags"]=tags;
         this.setState({propertyData, labelContent: ""})
     }
 
     updateTag (index:number, value:string, hasError:boolean){
-        let propertyData={...this.state.propertyData!};
+        const propertyData={...this.state.propertyData!};
         if (propertyData["tags"]==undefined || propertyData["tags"][index]==undefined){
             console.log("editing tag that doesn't exist");
             return;
