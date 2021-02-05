@@ -286,7 +286,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'Wikify',
             })}
-            onClick={(event) => this.toggleAnnotationMode('Wikify')}>
+            onClick={() => this.toggleAnnotationMode('Wikify')}>
             Wikify
           </Button>
           <Button variant="outline-light"

@@ -6,6 +6,7 @@ import WikifyForm from './wikify-form';
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
+import { Cell } from '../../../common/general';
 import * as utils from '../table-utils';
 
 

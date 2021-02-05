@@ -4,9 +4,8 @@ import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
-import { QNode, QNodeEntry, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
+import { QNodeEntry, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
 import WikifyMenu from './wikify-menu';
-import * as utils from '../table-utils';
 import { settings } from '../../../../main/settings';
 
 
@@ -14,7 +13,7 @@ interface TableState {
   tableData?: TableData;
   selectedCell?: Cell;
   showWikifyMenu: boolean,
-  wikifyMenuPosition?: Array<number>,
+  wikifyMenuPosition: Array<number>,
 }
 
 
@@ -304,7 +303,7 @@ class WikifyTable extends Component<{}, TableState> {
 
     // Find the table cell element
     let counter = 0;
-    let maxDepth = 3;
+    const maxDepth = 3;
     let element = event.target as any;
     while (element.nodeName !== 'TD') {
       if ( counter >= maxDepth ) { return; }
@@ -401,7 +400,7 @@ class WikifyTable extends Component<{}, TableState> {
       showWikifyMenu,
       wikifyMenuPosition,
     } = this.state;
-    if (showWikifyMenu) {
+    if ( selectedCell && showWikifyMenu ) {
       return (
         <WikifyMenu
           selectedCell={selectedCell}
