@@ -107,7 +107,11 @@ class OutputTable extends Component<{}, TableState> {
       }
     }
 
-    this.setState({ tableData });
+    this.setState({
+      tableData,
+      showOutputMenu: false,
+      selectedCell: undefined,
+    });
   }
 
   toggleCleanedData() {
