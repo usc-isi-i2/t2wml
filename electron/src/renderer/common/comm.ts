@@ -16,11 +16,18 @@ const instance = axios.create({
 
 function getResponse(response: Response, method: string): Promise<any> {
   if (response.statusText !== "OK" && response.statusText !== "CREATED") {
+    if (response.status === 404) {
       throw {
         errorCode: response.status,
-        errorTitle: `${method} failed. ${(response as any).data.error.errorTitle}`,
-        errorDescription: (response as any).data.error.errorDescription,
+        errorTitle: `${method} failed.`,
+        errorDescription: 'NOT FOUND Error'
       } as ErrorMessage;
+    }
+    throw {
+      errorCode: response.status,
+      errorTitle: `${method} failed. ${(response as any).data.error.errorTitle}`,
+      errorDescription: (response as any).data.error.errorDescription,
+    } as ErrorMessage;
   }
   return (response as any).data;
 }

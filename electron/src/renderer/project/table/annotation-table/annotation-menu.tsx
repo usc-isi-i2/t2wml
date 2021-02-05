@@ -5,15 +5,14 @@ import AnnotationForm from './annotation-form';
 
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
-import { ErrorMessage } from '../../../common/general';
+import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
 import { AnnotationBlock } from '../../../common/dtos';
 
-
 interface AnnotationMenuProperties {
   selection?: CellSelection,
-  position?: Array<number>,
+  position: Array<number>, // We will eliminate this once we figure out how to calculate the window width
   onDelete: any | null,
   onClose: any | null,
   selectedAnnotationBlock?: AnnotationBlock,

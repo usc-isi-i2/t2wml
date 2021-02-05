@@ -7,16 +7,14 @@ import { IReactionDisposer, reaction } from 'mobx';
 import wikiStore from '@/renderer/data/store';
 import { AnnotationBlock, TableCell, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
-import { config } from '../../../../main/config';
 import AnnotationMenu from './annotation-menu';
-import RequestService from '@/renderer/common/service';
 import { settings } from '../../../../main/settings';
 
 
 interface TableState {
   tableData: TableCell[][] | undefined;
   showAnnotationMenu: boolean,
-  annotationMenuPosition?: Array<number>,
+  annotationMenuPosition: Array<number>,
   selectedAnnotationBlock?: AnnotationBlock,
 }
 
@@ -24,7 +22,7 @@ interface TableState {
 @observer
 class AnnotationTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
-  private prevElement?: EventTarget;
+  private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
   private prevDirection?: 'up' | 'down' | 'left' | 'right';
   private selecting = false;
   private selection: CellSelection | undefined;
@@ -132,6 +130,13 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData = this.state.tableData;
     }
 
+    function emptyTableCell(): TableCell {
+      return {
+        content: '',
+        classNames: [],
+      };
+    }
+
     const table: any = this.tableRef;
     if ( !table ) { return; }
 
@@ -171,100 +176,28 @@ class AnnotationTable extends Component<{}, TableState> {
           }
           rowIndex += 1;
         }
-        if ( y1 <= y2 ) {
-          if ( x1 <= x2 ) {
-            for ( let row = y1; row <= y2; row++ ) {
-              for ( let col = x1; col <= x2; col++ ) {
-                try {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                } catch {
-                  let rx = row;
-                  while ( rx > tableData.length ) {
-                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                    tableData.push(emptyArray);
-                    rx -= 1;
-                  }
-                  let cx = col;
-                  while ( cx > tableData[0].length ) {
-                    tableData.forEach(tableRow => tableRow.push({}));
-                    cx -= 1;
-                  }
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                }
+        for ( let row = topRow; row <= bottomRow; row++ ) {
+          for ( let col = leftCol; col <= rightCol; col++ ) {
+            try {
+              const cell = tableData[row - 1][col - 1];
+              cell.classNames = classNames;
+            } catch {
+              let rx = row;
+              while ( rx > tableData.length ) {
+                // We use Array.apply because new Array(col).map does not work
+                // The result is an array with col empty table cells
+                // eslint-disable-next-line
+                const emptyArray: TableCell[] = Array.apply(null, new Array(col)).map(() => emptyTableCell());
+                tableData.push(emptyArray);
+                rx -= 1;
               }
-            }
-          } else {
-            for ( let row = y1; row <= y2; row++ ) {
-              for ( let col = x2; col <= x1; col++ ) {
-                try {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                } catch {
-                  let rx = row;
-                  while ( rx > tableData.length ) {
-                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                    tableData.push(emptyArray);
-                    rx -= 1;
-                  }
-                  let cx = col;
-                  while ( cx > tableData[0].length ) {
-                    tableData.forEach(tableRow => tableRow.push({}));
-                    cx -= 1;
-                  }
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                }
+              let cx = col;
+              while ( cx > tableData[0].length ) {
+                tableData.forEach(tableRow => tableRow.push(emptyTableCell()));
+                cx -= 1;
               }
-            }
-          }
-        } else {
-          if ( x1 <= x2 ) {
-            for ( let row = y2; row <= y1; row++ ) {
-              for ( let col = x1; col <= x2; col++ ) {
-                try {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                } catch {
-                  let rx = row;
-                  while ( rx > tableData.length ) {
-                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                    tableData.push(emptyArray);
-                    rx -= 1;
-                  }
-                  let cx = col;
-                  while ( cx > tableData[0].length ) {
-                    tableData.forEach(tableRow => tableRow.push({}));
-                    cx -= 1;
-                  }
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                }
-              }
-            }
-          } else {
-            for ( let row = y2; row <= y1; row++ ) {
-              for ( let col = x2; col <= x1; col++ ) {
-                try {
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                } catch {
-                  let rx = row;
-                  while ( rx > tableData.length ) {
-                    const emptyArray = Array.apply(null, new Array(col)).map(() => new Object());
-                    tableData.push(emptyArray);
-                    rx -= 1;
-                  }
-                  let cx = col;
-                  while ( cx > tableData[0].length ) {
-                    tableData.forEach(tableRow => tableRow.push({}));
-                    cx -= 1;
-                  }
-                  const cell = tableData[row - 1][col - 1];
-                  cell.classNames = classNames;
-                }
-              }
+              const cell = tableData[row - 1][col - 1];
+              cell.classNames = classNames;
             }
           }
         }
@@ -343,14 +276,17 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  resetEmptyCells(x1, x2, y1, y2) {
+  resetEmptyCells(x1: number, x2: number, y1: number, y2: number) {
     if ( !this.selection ) { return; }
 
+    // Typescript and HTML Element types do not play nicely, so we use 'any'
     const table: any = this.tableRef;
     const rows = table!.querySelectorAll('tr');
-    rows.forEach((row: any, index) => {
-      if ( this.selection.y1 < this.selection.y2 ) {
-        if ( index >= this.selection.y1 && index <= this.selection.y2 ) {
+    rows.forEach((row: any, index: number) => {
+      // We know this.selection is defined, byt Typescript misses it in this nested
+      // function
+      if ( this.selection!.y1 < this.selection!.y2 ) {
+        if ( index >= this.selection!.y1 && index <= this.selection!.y2 ) {
           // reset cell class names on the vertical axes
           let colIndex = x1;
           while ( colIndex > x2 ) {
@@ -359,7 +295,7 @@ class AnnotationTable extends Component<{}, TableState> {
           }
         }
       } else {
-        if ( index >= this.selection.y2 && index <= this.selection.y1 ) {
+        if ( index >= this.selection!.y2 && index <= this.selection!.y1 ) {
           // reset cell class names on the vertical axes
           let colIndex = x1;
           while ( colIndex > x2 ) {
@@ -373,7 +309,7 @@ class AnnotationTable extends Component<{}, TableState> {
     // reset cell class names on the horizontal axes
     let rowIndex = y1;
     while ( rowIndex > y2 ) {
-      let row = rows[rowIndex];
+      const row = rows[rowIndex];
       if ( this.selection.x1 < this.selection.x2 ) {
         let colIndex = this.selection.x1;
         while ( colIndex <= this.selection.x2 ) {
@@ -395,6 +331,15 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( !selectedBlock ) {
       selectedBlock = this.state.selectedAnnotationBlock;
     }
+
+    if (!this.selection) {
+      console.warn("updateSelections should probably not be called without an existing selection");
+      // If this warning shows up, you need to figure out whether it is actually OK for this function
+      // to be called without an existing selection. If it is, remove the warning.
+
+      return;
+    }
+
     const table: any = this.tableRef;
     if ( !table ) { return; }
 
@@ -438,6 +383,10 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   standardizeSelections() {
+    if (!this.selection) {
+      return;
+    }
+
     let temp;
     if ( this.selection.x2 < this.selection.x1 ) {
       temp = this.selection.x1;
@@ -516,7 +465,6 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
-    const { selectedAnnotationBlock } = this.state;
     const element = event.target as any;
 
     // Allow users to select the resize-corner of the cell
@@ -538,7 +486,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( selectedBlock ) {
 
       // Reset annotation menu
-      if ( selectedBlock !== selectedAnnotationBlock ) {
+      if ( selectedBlock !== this.state.selectedAnnotationBlock ) {
         this.setState({
           showAnnotationMenu: false,
           selectedAnnotationBlock: undefined,
@@ -662,7 +610,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( [37, 38, 39, 40].includes(event.keyCode) && this.selection ) {
 
       // Don't allow moving around when users are typing
-      if ( event.target.nodeName === 'INPUT' ) { return; }
+      if ( (event.target as any).nodeName === 'INPUT' ) { return; }
 
       event.preventDefault();
 
