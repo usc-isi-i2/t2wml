@@ -9,10 +9,10 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUp
 
 interface TableProperties {
   tableData?: TableData;
-  onMouseUp?: any;
-  onMouseDown: any;
-  onMouseMove: any;
-  onClickHeader: any;
+  onMouseUp?: () => void;
+  onMouseDown?: () => void;
+  onMouseMove?: () => void;
+  onClickHeader?: () => void;
   setTableReference: any;
 }
 
