@@ -44,6 +44,7 @@ class AnnotationTable extends Component<{}, TableState> {
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+    this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -51,6 +52,7 @@ class AnnotationTable extends Component<{}, TableState> {
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
     document.addEventListener('keydown', this.handleOnKeyDown);
+    document.addEventListener('mouseup', this.handleOnMouseUp);
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
@@ -58,6 +60,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleOnKeyDown);
+    document.removeEventListener('mouseup', this.handleOnMouseUp);
     for (const disposer of this.disposers) {
       disposer();
     }
@@ -453,7 +456,7 @@ class AnnotationTable extends Component<{}, TableState> {
     });
   }
 
-  handleOnMouseUp(event: React.MouseEvent) {
+  handleOnMouseUp(event: MouseEvent) {
     this.selecting = false;
     if ( this.selection ) {
       this.standardizeSelections();
@@ -790,7 +793,6 @@ class AnnotationTable extends Component<{}, TableState> {
     return (
       <Table
         tableData={this.state.tableData}
-        onMouseUp={this.handleOnMouseUp.bind(this)}
         onMouseDown={this.handleOnMouseDown.bind(this)}
         onMouseMove={this.handleOnMouseMove.bind(this)}
         onClickHeader={this.handleOnClickHeader.bind(this)}
