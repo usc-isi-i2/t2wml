@@ -26,6 +26,8 @@ interface EntitiesState {
     selectedProperty: string | undefined;
     entityFile: string;
     propertyData?: Entity;
+    labelContent: string;
+    hasError: boolean;
 }
 
 
@@ -33,27 +35,32 @@ interface EntitiesState {
 
 @observer
 class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
-    formArgs: any;
 
     constructor(props: EntitiesProperties) {
         super(props);
-        this.formArgs = {};
 
         this.state = {
             selectedProperty: undefined,
             entityFile: '',
             propertyData: undefined,
+            labelContent: "",
+            hasError: false
         }
+    }
+
+    setErrorToTrue(){
+        this.setState({hasError: true})
     }
 
     getPropertyData(file: string, property: string) {
         this.setState({
             entityFile: file,
             selectedProperty: property,
+            labelContent: "",
+            hasError: false
         });
 
         const propertyData = wikiStore.entitiesData.entities[file][property];
-        this.formArgs = propertyData;
 
         this.setState({
             propertyData
@@ -61,45 +68,58 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
     }
 
 
-    updateFormArgs(key: string, value: string) {
-        this.formArgs[key] = value;
+    updatePropertyData(key: "label"|"description"|"data_type", value: string, hasError:boolean) {
+        const propertyData={...this.state.propertyData!};
+        propertyData[key]=value;
+        this.setState({propertyData, hasError, labelContent: ""})
     }
 
     updateTags(tags: string[]) {
-        this.formArgs["tags"] = tags;
-        this.setState({
-            propertyData: this.formArgs
-        })
+        const propertyData={...this.state.propertyData!};
+        propertyData["tags"]=tags;
+        this.setState({propertyData, labelContent: ""})
     }
 
-    updateTag (index:number, value:string){
-        this.formArgs["tags"][index] = value;
-
+    updateTag (index:number, value:string, hasError:boolean){
+        const propertyData={...this.state.propertyData!};
+        if (propertyData["tags"]==undefined || propertyData["tags"][index]==undefined){
+            console.log("editing tag that doesn't exist");
+            return;
+        }
+        propertyData["tags"][index] = value;
+        this.setState({propertyData, hasError, labelContent: ""});
     }
-
 
     handleSaveEntities() {
-        debugger
+        if (!this.state.propertyData){
+            return;
+        }
         const file = this.state.entityFile;
         const property = this.state.selectedProperty!;
-        const propertyVals = this.formArgs;
-        let tags = this.formArgs["tags"] as string[];
+        const propertyVals = {...this.state.propertyData};
+        let tags = propertyVals["tags"];
         if (tags) {
             tags = tags.filter(tag => tag.length > 0);
-            this.formArgs["tags"] = tags;
+            propertyVals["tags"] = tags;
         }
         this.props.handleSaveEntities(file, property, propertyVals);
+
+        this.setState({
+                labelContent: "Entity fields have been updated. Refresh the project to see changes."
+            })
+
     }
 
 
     render() {
-
+        const handleClose= ()=>this.props.cancelSaveEntities()
+        const enabled = !this.state.hasError && this.state.selectedProperty!=undefined;
 
         return (
-            <Modal show={this.props.showEntities} size="lg" onHide={() => { /* do nothing */ }}>
+            <Modal show={this.props.showEntities} size="lg" onHide={handleClose}>
 
                 {/* header */}
-                <Modal.Header style={{ background: "whitesmoke" }}>
+                <Modal.Header closeButton style={{ background: "whitesmoke" }}>
                     <Modal.Title>Entities</Modal.Title>
                 </Modal.Header>
 
@@ -121,7 +141,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                                         <EntityFields
                                             property={this.state.selectedProperty}
                                             propertyData={this.state.propertyData}
-                                            updateField={(key: string, value: string) => this.updateFormArgs(key, value)}
+                                            updateField={(key, value, hasError) => this.updatePropertyData(key, value, hasError)}
                                         />
                                     }
                                 </Row>
@@ -131,7 +151,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                                             property={this.state.selectedProperty}
                                             propertyData={this.state.propertyData}
                                             updateTags={(tags) => this.updateTags(tags)}
-                                            updateTag={(index, value) => this.updateTag(index, value)}
+                                            updateTag={(index, value, hasError) => this.updateTag(index, value, hasError)}
                                         />}
                                 </Row>
                             </Col>
@@ -143,10 +163,11 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
 
                 {/* footer */}
                 <Modal.Footer style={{ background: "whitesmoke" }}>
-                    <Button variant="outline-dark" onClick={() => this.props.cancelSaveEntities()}>
-                        Cancel
-          </Button>
-                    <Button variant="dark" onClick={() => this.handleSaveEntities()}>
+                    <Form.Label>{this.state.labelContent}</Form.Label>
+                    <Button variant="outline-dark" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="dark" disabled={!enabled} onClick={() => this.handleSaveEntities()}>
                         Save
           </Button>
                 </Modal.Footer>
