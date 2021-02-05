@@ -6,14 +6,14 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import * as utils from '../table-utils';
 import wikiStore from '../../../data/store';
-import { ErrorMessage } from '../../../common/general';
+import { Cell, CellSelection, ErrorMessage } from '../../../common/general';
+import { ErrorEntry, QNodeEntry } from '@/renderer/common/dtos';
 
 
 interface OutputMenuProperties {
-  selectedCell: Cell | null;
-  position?: Array<number>,
-  onDelete: any | null,
-  onClose: any | null,
+  selectedCell: Cell;
+  position: Array<number>;
+  onClose?: () => void;
 }
 
 
@@ -52,7 +52,7 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
     )
   }
 
-  renderQnode(qnode) {
+  renderQnode(qnode?: QNodeEntry) {
     if ( qnode ) {
       return (
         <div className="qnode">
@@ -73,12 +73,12 @@ class OutputMenu extends React.Component<OutputMenuProperties, OutputMenuState> 
     }
   }
 
-  renderError(error) {
+  renderError(error?: ErrorEntry) {
     if ( error ) {
       error = error.error;
       if ( error ) {
         return Object.keys(error).map((key, i) => {
-          return <p className="error" key={i}>{error[key].message}</p>
+          return <p className="error" key={i}>{(error as any)[key].message}</p>
         });
       }
     }

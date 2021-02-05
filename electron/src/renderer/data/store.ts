@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
 import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
-        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO} from '../common/dtos';
+        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
@@ -16,24 +16,24 @@ class EditorsState {
 }
 
 
+export type TableMode = 'Annotation' | 'Output' | 'Input';
 class TableState {
-    @observable public mode: 'Annotation' | 'Output' | 'Input';
+    @observable public mode: TableMode;
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
-    @observable public selectedCell: Cell;
+    @observable public selectedCell?: Cell;
     @observable public showCleanedData: boolean;
 
     constructor() {
         this.mode = 'Output';
         this.table = {} as TableDTO;
         this.showSpinner = false;
-        this.selectedCell = new Cell();
         this.showCleanedData = false;
     }
 
     updateTable(table: TableDTO){
         this.table=table;
-        this.selectedCell=new Cell();
+        this.selectedCell = undefined;
     }
 }
 
@@ -218,6 +218,10 @@ export class GlobalSettings{
     @observable datamart_api = "";
 }
 
+export class EntitiesData {
+    @observable entities: ResponseEntitiesPropertiesDTO = {}; //TODO- add type
+}
+
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
@@ -231,6 +235,7 @@ class WikiStore {
     @observable public projects = new ProjectList();
     @observable public project = new ProjectState();
     @observable public globalSettings = new GlobalSettings();
+    @observable public entitiesData = new EntitiesData();
 
 
     @action

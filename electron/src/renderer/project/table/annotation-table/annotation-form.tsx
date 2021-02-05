@@ -4,6 +4,7 @@ import { AnnotationBlock } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import { CellSelection } from '@/renderer/common/general';
 
 
 interface AnnotationFormProperties {
@@ -34,18 +35,24 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       role: selectedBlock?.role,
       type: selectedBlock?.type,
     };
+    this.changed = false;
   }
 
   handleOnChange(event: any, key: string) {
+
+    if (key !== 'type' && key !== 'role') {
+      throw new Error(`Can't handle change if key ${key} - it is not 'type' or 'role'`);
+    }
+
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    const updatedState: { [key: string]: string; } = {};
+    const updatedState: AnnotationFormState = {};
     updatedState[key] = value;
     this.changed = true;
 
     // Reset the role if the type has changed
     if ( key === 'role' ) {
-      updatedState['type'] = null;
+      updatedState['type'] = undefined;
     }
 
     this.setState({ ...updatedState }, () => onChange(key, value));
@@ -122,7 +129,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           {optionsDropdown}
           {selectedType?.children?.map((type, i) => {
             let defaultValue = '';
-            if (selectedBlock) {
+            if ( selectedBlock && (selectedBlock as any)[type.value] ) {
               defaultValue = (selectedBlock as any)[type.value];
             }
             return (

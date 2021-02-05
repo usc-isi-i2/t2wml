@@ -35,9 +35,9 @@ class CalcParams:
     def wikifier(self):
         project = self.project
         if project.wikifier_files:
-            wikifier_files = [Path(self.project_path) /wf
+            wikifier_files = [project.get_full_path(wf)
                               for wf in project.wikifier_files]
-            wikifier_files= [wikifier_files[-1]] #temporary solution where we only use the last-added wikifier
+            #wikifier_files= [wikifier_files[-1]] #temporary solution where we only use the last-added wikifier
         else:
             wikifier_files = []
         wikifier = Wikifier()

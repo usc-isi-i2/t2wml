@@ -139,6 +139,8 @@ export interface TableCell {
   style: any | {};
 }
 
+export type TableData = TableCell[][];
+
 
 /* responses: */
 
@@ -167,6 +169,17 @@ export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO{
 
 export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
     entitiesStats: EntitiesStatsDTO;
+}
+
+export interface Entity{
+    label: string;
+    description: string;
+    data_type?: string;
+    tags?: string[];
+}
+
+export interface ResponseEntitiesPropertiesDTO {
+    [file: string]: { [property: string] : Entity };
 }
 
 export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {

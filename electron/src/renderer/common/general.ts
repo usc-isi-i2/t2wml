@@ -18,30 +18,8 @@ export interface ErrorMessage {
 
 
 export class Cell {
-    col: number | null = null;
-    row: number | null = null;
-    value: string | null = null;
-
-    constructor(col?: number | null, row?: number | null, value?: string | null) {
-        if (col!=null && row!=null) {
-            this.col = col;
-            this.row = row;
-        }
-        if (value == undefined) {
-            this.value = null;
-        }
-        else {
-            this.value = value
-        }
+    constructor(public col: number, public row: number, public value?: string) {
     }
-
-    get isCell(): boolean{
-        if (this.col!=null && this.row!=null){
-            return true;
-        }
-        return false;
-    }
-
 }
 
 export enum t2wmlColors {
