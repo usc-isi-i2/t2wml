@@ -12,6 +12,7 @@ import { TableCell, TableData, TableDTO } from '../../../common/dtos';
 import OutputMenu from './output-menu';
 import { settings } from '../../../../main/settings';
 
+
 interface TableState {
   tableData?: TableData;
   selectedCell?: Cell;

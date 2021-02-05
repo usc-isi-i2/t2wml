@@ -1,6 +1,6 @@
 import React from 'react';
 import * as utils from './table-utils';
-import { TableCell } from '../../common/dtos';
+import { TableData } from '../../common/dtos';
 
 
 const MIN_NUM_ROWS = 100;
@@ -8,7 +8,7 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUp
 
 
 interface TableProperties {
-  tableData: TableCell[][] | undefined;
+  tableData?: TableData;
   onMouseUp?: any;
   onMouseDown: any;
   onMouseMove: any;

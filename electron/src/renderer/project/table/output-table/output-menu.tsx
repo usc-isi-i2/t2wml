@@ -12,8 +12,8 @@ import { ErrorEntry, QNodeEntry } from '@/renderer/common/dtos';
 
 interface OutputMenuProperties {
   selectedCell: Cell;
-  position: Array<number>,
-  onClose?: () => void,
+  position: Array<number>;
+  onClose?: () => void;
 }
 
 

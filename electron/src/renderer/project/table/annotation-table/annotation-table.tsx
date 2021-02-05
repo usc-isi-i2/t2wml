@@ -5,17 +5,17 @@ import { observer } from 'mobx-react';
 import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
 import wikiStore from '@/renderer/data/store';
-import { AnnotationBlock, TableCell, TableDTO } from '../../../common/dtos';
+import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
 import { settings } from '../../../../main/settings';
 
 
 interface TableState {
-  tableData: TableCell[][] | undefined;
-  showAnnotationMenu: boolean,
-  annotationMenuPosition: Array<number>,
-  selectedAnnotationBlock?: AnnotationBlock,
+  tableData?: TableData;
+  showAnnotationMenu: boolean;
+  annotationMenuPosition: Array<number>;
+  selectedAnnotationBlock?: AnnotationBlock;
 }
 
 
