@@ -33,7 +33,7 @@ class InputTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       selectedCell: new Cell(),
-      clibboardData: '',
+      clipboardData: '',
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
