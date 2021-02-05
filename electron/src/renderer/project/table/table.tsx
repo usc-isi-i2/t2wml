@@ -33,9 +33,9 @@ class Table extends React.Component<TableProperties>{
     return (
       <div className="table-wrapper">
         <table ref={setTableReference}
-          onMouseUp={onMouseUp.bind(this)}
-          onMouseDown={onMouseDown.bind(this)}
-          onMouseMove={onMouseMove.bind(this)}>
+          onMouseUp={(event) => onMouseUp(event)}
+          onMouseDown={(event) => onMouseDown(event)}
+          onMouseMove={(event) => onMouseMove(event)}>
           <thead>
             <tr>
               <th></th>
@@ -77,9 +77,9 @@ class Table extends React.Component<TableProperties>{
     return (
       <div className="table-wrapper">
         <table ref={setTableReference}
-          onMouseUp={onMouseUp.bind(this)}
-          onMouseDown={onMouseDown.bind(this)}
-          onMouseMove={onMouseMove.bind(this)}>
+          onMouseUp={(event) => onMouseUp(event)}
+          onMouseDown={(event) => onMouseDown(event)}
+          onMouseMove={(event) => onMouseMove(event)}>
           <thead>
             <tr>
               <th></th>
