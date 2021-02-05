@@ -33,11 +33,9 @@ interface EntitiesState {
 
 @observer
 class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
-    formArgs: any;
 
     constructor(props: EntitiesProperties) {
         super(props);
-        this.formArgs = {};
 
         this.state = {
             selectedProperty: undefined,
@@ -53,7 +51,6 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
         });
 
         const propertyData = wikiStore.entitiesData.entities[file][property];
-        this.formArgs = propertyData;
 
         this.setState({
             propertyData
@@ -61,32 +58,40 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
     }
 
 
-    updateFormArgs(key: string, value: string) {
-        this.formArgs[key] = value;
+    updatePropertyData(key: "label"|"description"|"data_type", value: string) {
+        let propertyData={...this.state.propertyData!};
+        propertyData[key]=value;
+        this.setState({propertyData})
     }
 
     updateTags(tags: string[]) {
-        this.formArgs["tags"] = tags;
-        this.setState({
-            propertyData: this.formArgs
-        })
+        let propertyData={...this.state.propertyData!};
+        propertyData["tags"]=tags;
+        this.setState({propertyData})
     }
 
     updateTag (index:number, value:string){
-        this.formArgs["tags"][index] = value;
-
+        let propertyData={...this.state.propertyData!};
+        if (propertyData["tags"]==undefined || propertyData["tags"][index]==undefined){
+            console.log("editing tag that doesn't exist");
+            return;
+        }
+        propertyData["tags"][index] = value;
+        this.setState({propertyData});
     }
 
 
     handleSaveEntities() {
-        debugger
+        if (!this.state.propertyData){
+            return;
+        }
         const file = this.state.entityFile;
         const property = this.state.selectedProperty!;
-        const propertyVals = this.formArgs;
-        let tags = this.formArgs["tags"] as string[];
+        const propertyVals = {...this.state.propertyData};
+        let tags = propertyVals["tags"];
         if (tags) {
             tags = tags.filter(tag => tag.length > 0);
-            this.formArgs["tags"] = tags;
+            propertyVals["tags"] = tags;
         }
         this.props.handleSaveEntities(file, property, propertyVals);
     }
@@ -121,7 +126,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                                         <EntityFields
                                             property={this.state.selectedProperty}
                                             propertyData={this.state.propertyData}
-                                            updateField={(key: string, value: string) => this.updateFormArgs(key, value)}
+                                            updateField={(key, value) => this.updatePropertyData(key, value)}
                                         />
                                     }
                                 </Row>

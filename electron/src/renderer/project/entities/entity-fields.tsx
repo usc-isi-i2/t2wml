@@ -12,7 +12,7 @@ import { observer } from "mobx-react";
 interface EntitiesProperties {
     property: string;
     propertyData: any;
-    updateField: (key: string, value:string) => void;
+    updateField: (key: "label"|"description"|"data_type", value:string) => void;
 }
 
 
