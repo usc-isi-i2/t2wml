@@ -16,7 +16,7 @@ class EditorsState {
 }
 
 
-export type TableMode = 'Annotation' | 'Output';
+export type TableMode = 'annotation' | 'output';
 class TableState {
     @observable public mode: TableMode;
     @observable public table: TableDTO;
@@ -25,7 +25,7 @@ class TableState {
     @observable public showCleanedData: boolean;
 
     constructor() {
-        this.mode = 'Output';
+        this.mode = 'output';
         this.table = {} as TableDTO;
         this.showSpinner = false;
         this.showCleanedData = false;

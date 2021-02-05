@@ -102,8 +102,8 @@ class TableContainer extends Component<{}, TableState> {
 
   uncheckAnnotationifYaml() {
     if (currentFilesService.currentState.mappingType === "Yaml") {
-      wikiStore.table.mode = "Output"
-      this.setState({ mode: 'Output' })
+      wikiStore.table.mode = 'output';
+      this.setState({ mode: 'output' });
     }
   }
 
@@ -127,7 +127,7 @@ class TableContainer extends Component<{}, TableState> {
 
       //update in files state
       currentFilesService.changeDataFile(file.name);
-      wikiStore.table.mode = "Annotation"
+      wikiStore.table.mode = 'annotation';
 
     } catch (error) {
       error.errorDescription += "\n\nCannot open file!";
@@ -211,7 +211,7 @@ class TableContainer extends Component<{}, TableState> {
 
     this.resetTableData();
 
-    if (mode === 'Annotation') {
+    if ( mode === 'annotation' ) {
       this.fetchAnnotations();
     } else {
       await wikiStore.yaml.saveYaml();
@@ -275,16 +275,16 @@ class TableContainer extends Component<{}, TableState> {
         <ButtonGroup aria-label="modes" className="mode-toggle">
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': mode === 'Output',
+              'active': mode === 'output',
             })}
-            onClick={() => this.switchMode('Output')}>
+            onClick={() => this.switchMode('output')}>
             Output
           </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': mode === 'Annotation',
+              'active': mode === 'annotation',
             })}
-            onClick={() => this.switchMode('Annotation')}>
+            onClick={() => this.switchMode('annotation')}>
             Annotate
           </Button>
         </ButtonGroup>
@@ -342,7 +342,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderTable() {
-    if (this.state.mode === 'Annotation') {
+    if (this.state.mode === 'annotation') {
       return <AnnotationTable />;
     }
     return <OutputTable />;
