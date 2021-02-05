@@ -44,6 +44,7 @@ class AnnotationTable extends Component<{}, TableState> {
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+    this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -51,6 +52,7 @@ class AnnotationTable extends Component<{}, TableState> {
   componentDidMount() {
     this.updateTableData(wikiStore.table.table);
     document.addEventListener('keydown', this.handleOnKeyDown);
+    document.addEventListener('mouseup', this.handleOnMouseUp);
 
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.updateAnnotationBlocks()));
@@ -58,6 +60,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleOnKeyDown);
+    document.removeEventListener('mouseup', this.handleOnMouseUp);
     for (const disposer of this.disposers) {
       disposer();
     }
@@ -125,7 +128,7 @@ class AnnotationTable extends Component<{}, TableState> {
     return null;
   }
 
-  updateAnnotationBlocks(tableData?: TableCell[][]) {
+  updateAnnotationBlocks(tableData?: TableData) {
     if ( !tableData ) {
       tableData = this.state.tableData;
     }
@@ -439,7 +442,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  openAnnotationMenu(event: React.MouseEvent) {
+  openAnnotationMenu(event: MouseEvent) {
     let { pageX, pageY } = event;
     pageX = pageX - 250;
     if ( settings.window.height - pageY <= 275 ) {
@@ -453,7 +456,7 @@ class AnnotationTable extends Component<{}, TableState> {
     });
   }
 
-  handleOnMouseUp(event: React.MouseEvent) {
+  handleOnMouseUp(event: MouseEvent) {
     this.selecting = false;
     if ( this.selection ) {
       this.standardizeSelections();
@@ -600,11 +603,12 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnKeyDown(event: KeyboardEvent) {
 
     // Close annotation menu with ESC key
-    if (event.keyCode == 27) {
+    if (event.code === 'Escape' ) {
       this.closeAnnotationMenu();
     }
 
-    if ( [37, 38, 39, 40].includes(event.keyCode) && this.selection ) {
+    const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    if ( arrowCodes.includes(event.code) && this.selection ) {
 
       // Don't allow moving around when users are typing
       if ( (event.target as any).nodeName === 'INPUT' ) { return; }
@@ -618,7 +622,7 @@ class AnnotationTable extends Component<{}, TableState> {
       const rows = table!.querySelectorAll('tr');
 
       // arrow up
-      if (event.keyCode == 38 && y1 > 1) {
+      if (event.code === 'ArrowUp' && y1 > 1) {
         this.resetSelections();
         const nextElement = rows[y1 - 1].children[x1];
         if (event.shiftKey) {
@@ -652,7 +656,7 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow down
-      if (event.keyCode == 40 && y1 < rows.length - 1) {
+      if (event.code === 'ArrowDown' && y1 < rows.length - 1) {
         this.resetSelections();
         const nextElement = rows[y1 + 1].children[x1];
         if (event.shiftKey) {
@@ -686,7 +690,7 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow left
-      if (event.keyCode == 37 && x1 > 1) {
+      if (event.code === 'ArrowLeft' && x1 > 1) {
         this.resetSelections();
         const nextElement = rows[y1].children[x1 - 1];
         if (event.shiftKey) {
@@ -720,7 +724,7 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // arrow right
-      if (event.keyCode == 39 && x1 < rows[y1].children.length - 1) {
+      if (event.code === 'ArrowRight' && x1 < rows[y1].children.length - 1) {
         this.resetSelections();
         const nextElement = rows[y1].children[x1 + 1];
         if (event.shiftKey) {
@@ -790,7 +794,6 @@ class AnnotationTable extends Component<{}, TableState> {
     return (
       <Table
         tableData={this.state.tableData}
-        onMouseUp={this.handleOnMouseUp.bind(this)}
         onMouseDown={this.handleOnMouseDown.bind(this)}
         onMouseMove={this.handleOnMouseMove.bind(this)}
         onClickHeader={this.handleOnClickHeader.bind(this)}

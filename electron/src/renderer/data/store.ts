@@ -16,7 +16,7 @@ class EditorsState {
 }
 
 
-export type TableMode = 'Annotation' | 'Output' | 'Wikify';
+export type TableMode = 'annotation' | 'output' | 'wikify';
 class TableState {
 
     @observable public mode: TableMode;
@@ -26,7 +26,7 @@ class TableState {
     @observable public showCleanedData: boolean;
 
     constructor() {
-        this.mode = 'Output';
+        this.mode = 'output';
         this.table = {} as TableDTO;
         this.showSpinner = false;
         this.showCleanedData = false;
