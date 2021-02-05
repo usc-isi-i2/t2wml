@@ -47,7 +47,7 @@ class InputTable extends Component<{}, TableState> {
   }
 
   getElementStyles(element: any) {
-    const styles: any = {};
+    const styles: {[key : string] : string} = {};
 
     for ( let i = 0; i < element.style.length; i++ ) {
       styles[element.style[i]] = element.style[element.style[i]];
