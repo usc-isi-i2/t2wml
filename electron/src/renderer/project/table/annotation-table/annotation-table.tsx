@@ -442,7 +442,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  openAnnotationMenu(event: React.MouseEvent) {
+  openAnnotationMenu(event: MouseEvent) {
     let { pageX, pageY } = event;
     pageX = pageX - 250;
     if ( settings.window.height - pageY <= 275 ) {
