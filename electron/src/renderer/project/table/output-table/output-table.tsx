@@ -38,7 +38,6 @@ class OutputTable extends Component<{}, TableState> {
       selectedCell: undefined,
       showOutputMenu: false,
       outputMenuPosition: [50, 70],
-      clibboardData: '',
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
