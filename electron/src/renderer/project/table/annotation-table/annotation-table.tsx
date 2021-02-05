@@ -125,7 +125,7 @@ class AnnotationTable extends Component<{}, TableState> {
     return null;
   }
 
-  updateAnnotationBlocks(tableData?: TableCell[][]) {
+  updateAnnotationBlocks(tableData?: TableData) {
     if ( !tableData ) {
       tableData = this.state.tableData;
     }
