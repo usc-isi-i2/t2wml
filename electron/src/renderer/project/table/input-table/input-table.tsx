@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
+import { Cell } from '../../../common/general';
+import { TableCell, TableData } from '../../../common/dtos';
 
 
 interface TableState {
-  tableData: TableCell[][] | undefined;
-  selectedCell: Cell | null;
+  tableData?: TableData;
+  selectedCell?: Cell;
   clipboardData: string | '',
 }
 
@@ -26,7 +28,7 @@ class InputTable extends Component<{}, TableState> {
     // init state
     this.state = {
       tableData: undefined,
-      selectedCell: new Cell(),
+      selectedCell: undefined,
       clipboardData: '',
     };
 
@@ -44,7 +46,7 @@ class InputTable extends Component<{}, TableState> {
     document.removeEventListener('keydown', this.handleOnKeyDown);
   }
 
-  getElementStyles(element) {
+  getElementStyles(element: any) {
     const styles = {};
 
     for ( let i = 0; i < element.style.length; i++ ) {
@@ -54,12 +56,12 @@ class InputTable extends Component<{}, TableState> {
     return styles;
   }
 
-  getClipboardData(event) {
+  getClipboardData(event: ClipboardEvent) {
     const data = (event.clipboardData || window.clipboardData).getData('text/html');
     if ( !data ) { return; }
 
     // Initialize an empty table data array
-    const tableData = [];
+    const tableData: TableData = [];
 
     // Parse our copy-pasted html
     const parser = new DOMParser();
@@ -135,15 +137,12 @@ class InputTable extends Component<{}, TableState> {
     }
   }
 
-  handleOnMouseUp(event: React.MouseEvent) {
-  }
-
   handleOnMouseDown(event: React.MouseEvent) {
     this.resetSelections();
 
     // Find the table cell element
     let counter = 0;
-    let maxDepth = 3;
+    const maxDepth = 3;
     let element = event.target as any;
     while (element.nodeName !== 'TD') {
       if ( counter >= maxDepth ) { return; }
@@ -180,7 +179,7 @@ class InputTable extends Component<{}, TableState> {
   }
 
   handleOnKeyDown(event: KeyboardEvent) {
-    const { selectedCell, tableData } = this.state;
+    const { selectedCell } = this.state;
     if (!selectedCell) { return; }
 
     if ([37, 38, 39, 40].includes(event.keyCode)) {
@@ -237,7 +236,6 @@ class InputTable extends Component<{}, TableState> {
     return (
       <Table
         tableData={this.state.tableData}
-        onMouseUp={this.handleOnMouseUp.bind(this)}
         onMouseDown={this.handleOnMouseDown.bind(this)}
         onMouseMove={() => void 0}
         onClickHeader={this.handleOnClickHeader.bind(this)}
