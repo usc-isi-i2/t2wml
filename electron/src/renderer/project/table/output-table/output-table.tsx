@@ -107,7 +107,11 @@ class OutputTable extends Component<{}, TableState> {
       }
     }
 
-    this.setState({ tableData });
+    this.setState({
+      tableData,
+      showOutputMenu: false,
+      selectedCell: undefined,
+    });
   }
 
   toggleCleanedData() {
@@ -290,13 +294,15 @@ class OutputTable extends Component<{}, TableState> {
     if (!selectedCell || !tableData) { return; }
 
     // Hide the output menu with ESC key
-    if (event.keyCode == 27) {
+    if (event.code === 'Escape' ) {
       this.setState({ showOutputMenu: false }, () => {
         this.resetSelections();
       });
     }
 
-    if ([37, 38, 39, 40].includes(event.keyCode)) {
+    const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    if ( arrowCodes.includes(event.code) ) {
+
       event.preventDefault();
 
       const table: any = this.tableRef;
@@ -304,25 +310,25 @@ class OutputTable extends Component<{}, TableState> {
       let { row, col } = selectedCell;
 
       // arrow up
-      if (event.keyCode == 38) {
+      if (event.code === 'ArrowUp' ) {
         row = row - 1;
         if (row < 0) { return; }
       }
 
       // arrow down
-      if (event.keyCode == 40) {
+      if (event.code === 'ArrowDown' ) {
         row = row + 1;
         if (row >= rows.length - 1) { return; }
       }
 
       // arrow left
-      if (event.keyCode == 37) {
+      if (event.code === 'ArrowLeft' ) {
         col = col - 1;
         if (col < 0) { return; }
       }
 
       // arrow right
-      if (event.keyCode == 39) {
+      if (event.code === 'ArrowRight' ) {
         col = col + 1;
         if (col >= rows[row].children.length - 1) { return; }
       }
