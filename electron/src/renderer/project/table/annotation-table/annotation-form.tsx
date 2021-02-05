@@ -8,17 +8,23 @@ import { CellSelection } from '@/renderer/common/general';
 
 
 interface AnnotationFormProperties {
-  selectedAnnotationBlock?: AnnotationBlock,
-  selection?: CellSelection,
-  onChange: any | null, // Use the actual function type: (arg: argType) => returnType
-  onDelete: any | null,
-  onSubmit: any | null,
+  selectedAnnotationBlock?: AnnotationBlock;
+  selection?: CellSelection;
+  onChange: any | null; // Use the actual function type: (arg: argType) => returnType
+  onDelete: any | null;
+  onSubmit: any | null;
 }
 
 
 interface AnnotationFormState {
-  role?: string,
-  type?: string,
+  role?: string;
+  type?: string;
+  unit?: string;
+  format?: string;
+  calendar?: string;
+  property?: string;
+  language?: string;
+  precision?: string;
 }
 
 
@@ -39,15 +45,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   handleOnChange(event: any, key: string) {
-
-    if (key !== 'type' && key !== 'role') {
-      throw new Error(`Can't handle change if key ${key} - it is not 'type' or 'role'`);
-    }
-
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
     const updatedState: AnnotationFormState = {};
-    updatedState[key] = value;
+    updatedState[key as keyof AnnotationFormState] = value;
     this.changed = true;
 
     // Reset the role if the type has changed
