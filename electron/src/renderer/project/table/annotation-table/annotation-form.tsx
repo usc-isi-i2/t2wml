@@ -129,7 +129,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           {optionsDropdown}
           {selectedType?.children?.map((type, i) => {
             let defaultValue = '';
-            if ( selectedBlock && selectedBlock[type.value] ) {
+            if ( selectedBlock && (selectedBlock as any)[type.value] ) {
               defaultValue = (selectedBlock as any)[type.value];
             }
             return (
