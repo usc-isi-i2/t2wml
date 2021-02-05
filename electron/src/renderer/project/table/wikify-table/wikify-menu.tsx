@@ -12,7 +12,6 @@ import * as utils from '../table-utils';
 interface WikifyMenuProperties {
   selectedCell: Cell | null;
   position?: Array<number>,
-  onDelete: any | null,
   onClose: any | null,
 }
 
