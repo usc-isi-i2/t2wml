@@ -26,6 +26,7 @@ interface EntitiesState {
     selectedProperty: string | undefined;
     entityFile: string;
     propertyData?: Entity;
+    labelContent: string;
 }
 
 
@@ -41,6 +42,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
             selectedProperty: undefined,
             entityFile: '',
             propertyData: undefined,
+            labelContent: ""
         }
     }
 
@@ -48,6 +50,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
         this.setState({
             entityFile: file,
             selectedProperty: property,
+            labelContent: ""
         });
 
         const propertyData = wikiStore.entitiesData.entities[file][property];
@@ -61,13 +64,13 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
     updatePropertyData(key: "label"|"description"|"data_type", value: string) {
         let propertyData={...this.state.propertyData!};
         propertyData[key]=value;
-        this.setState({propertyData})
+        this.setState({propertyData, labelContent: ""})
     }
 
     updateTags(tags: string[]) {
         let propertyData={...this.state.propertyData!};
         propertyData["tags"]=tags;
-        this.setState({propertyData})
+        this.setState({propertyData, labelContent: ""})
     }
 
     updateTag (index:number, value:string){
@@ -77,7 +80,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
             return;
         }
         propertyData["tags"][index] = value;
-        this.setState({propertyData});
+        this.setState({propertyData, labelContent: ""});
     }
 
 
@@ -94,6 +97,11 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
             propertyVals["tags"] = tags;
         }
         this.props.handleSaveEntities(file, property, propertyVals);
+
+        this.setState({
+                labelContent: "Entity fields have been updated. Refresh the project to see changes."
+            })
+
     }
 
 
@@ -148,6 +156,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
 
                 {/* footer */}
                 <Modal.Footer style={{ background: "whitesmoke" }}>
+                    <Form.Label>{this.state.labelContent}</Form.Label>
                     <Button variant="outline-dark" onClick={() => this.props.cancelSaveEntities()}>
                         Cancel
           </Button>
