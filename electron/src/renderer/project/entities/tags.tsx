@@ -104,7 +104,7 @@ class Tags extends Component <TagsProperties, {}> {
 
         return (
                 <ul>
-                <label>Tags:  <FontAwesomeIcon icon={faPlusSquare} onClick={() => this.onPlusClick()} /></label>
+                <label>Tags:  <FontAwesomeIcon icon={faPlusSquare} size="lg" onClick={() => this.onPlusClick()} /></label>
                     {renderedTags}
                 </ul>
         );

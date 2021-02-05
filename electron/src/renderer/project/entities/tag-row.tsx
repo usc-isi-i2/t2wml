@@ -73,7 +73,7 @@ class TagRow extends Component<TagProperties, TagState> {
                     {":"}
                     <Form.Control defaultValue={tag.part2 || ""}
                         onChange={(event) => (this.updateField(tag.index, "part2", event.target?.value))}
-                    /><FontAwesomeIcon icon={faMinusSquare} onClick={() => this.props.minusClick(this.props.tag.index)} />
+                    /><FontAwesomeIcon icon={faMinusSquare} size="lg" onClick={() => this.props.minusClick(this.props.tag.index)} />
             </InputGroup>
                             <Form.Label style={{ color: 'red' }}>
                             {this.state.errorMsg}
