@@ -11,18 +11,18 @@ import TagRow, { Tag } from './tag-row';
 
 
 
-interface EntitiesProperties {
+interface TagsProperties {
     property: string;
     propertyData: any;
     updateTags: (tags: string[]) => void;
-    updateTag: (index:number, value:string) => void;
+    updateTag: (index:number, value:string, hasError:boolean) => void;
 }
 
 
 @observer
-class Tags extends Component<EntitiesProperties, {}> {
+class Tags extends Component <TagsProperties, {}> {
     private listItemKey = 0; // list-item key - for making sure each <li> has a specific key
-    constructor(props: EntitiesProperties) {
+    constructor(props: TagsProperties) {
         super(props);
         /*let isProperty = false;
 
@@ -47,11 +47,19 @@ class Tags extends Component<EntitiesProperties, {}> {
         this.props.updateTags(tagArr)
     }
 
-    onEditField(index: number, part: "part1" | "part2", value: string) {
-        debugger
+    onEditField(index: number, part: "part1" | "part2", value: string, errorMsg:string) {
+        let hasError=false;
+        if (errorMsg){
+            hasError=true;
+        }
+        if (errorMsg.includes("colon")){
+            //we can't split it properly, we don't send updated value at all
+            this.props.updateTag(index, this.props.propertyData["tags"][index], hasError);
+            return;
+        }
         const tag = this.backTagtoTag(index, this.props.propertyData["tags"][index])
         tag[part] = value
-       this.props.updateTag(index, tag.part1 + ":" + tag.part2);
+        this.props.updateTag(index, tag.part1 + ":" + tag.part2, hasError);
     }
 
     backTagtoTag(index:number, backTag:string): Tag{
@@ -86,7 +94,7 @@ class Tags extends Component<EntitiesProperties, {}> {
                     <li key={key}>
                         <TagRow
                             tag={tag}
-                            updateField={(index, part, value) => this.onEditField(index, part, value)}
+                            updateField={(index, part, value, errorMsg) => this.onEditField(index, part, value, errorMsg)}
                             minusClick={(index) => this.onMinusClick(index)}
                         />
                     </li>

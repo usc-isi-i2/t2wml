@@ -27,6 +27,7 @@ interface EntitiesState {
     entityFile: string;
     propertyData?: Entity;
     labelContent: string;
+    hasError: boolean;
 }
 
 
@@ -42,15 +43,21 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
             selectedProperty: undefined,
             entityFile: '',
             propertyData: undefined,
-            labelContent: ""
+            labelContent: "",
+            hasError: false
         }
+    }
+
+    setErrorToTrue(){
+        this.setState({hasError: true})
     }
 
     getPropertyData(file: string, property: string) {
         this.setState({
             entityFile: file,
             selectedProperty: property,
-            labelContent: ""
+            labelContent: "",
+            hasError: false
         });
 
         const propertyData = wikiStore.entitiesData.entities[file][property];
@@ -61,10 +68,10 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
     }
 
 
-    updatePropertyData(key: "label"|"description"|"data_type", value: string) {
+    updatePropertyData(key: "label"|"description"|"data_type", value: string, hasError:boolean) {
         let propertyData={...this.state.propertyData!};
         propertyData[key]=value;
-        this.setState({propertyData, labelContent: ""})
+        this.setState({propertyData, hasError, labelContent: ""})
     }
 
     updateTags(tags: string[]) {
@@ -73,16 +80,15 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
         this.setState({propertyData, labelContent: ""})
     }
 
-    updateTag (index:number, value:string){
+    updateTag (index:number, value:string, hasError:boolean){
         let propertyData={...this.state.propertyData!};
         if (propertyData["tags"]==undefined || propertyData["tags"][index]==undefined){
             console.log("editing tag that doesn't exist");
             return;
         }
         propertyData["tags"][index] = value;
-        this.setState({propertyData, labelContent: ""});
+        this.setState({propertyData, hasError, labelContent: ""});
     }
-
 
     handleSaveEntities() {
         if (!this.state.propertyData){
@@ -106,13 +112,14 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
 
 
     render() {
-
+        const handleClose= ()=>this.props.cancelSaveEntities()
+        const enabled = !this.state.hasError && this.state.selectedProperty!=undefined;
 
         return (
-            <Modal show={this.props.showEntities} size="lg" onHide={() => { /* do nothing */ }}>
+            <Modal show={this.props.showEntities} size="lg" onHide={handleClose}>
 
                 {/* header */}
-                <Modal.Header style={{ background: "whitesmoke" }}>
+                <Modal.Header closeButton style={{ background: "whitesmoke" }}>
                     <Modal.Title>Entities</Modal.Title>
                 </Modal.Header>
 
@@ -134,7 +141,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                                         <EntityFields
                                             property={this.state.selectedProperty}
                                             propertyData={this.state.propertyData}
-                                            updateField={(key, value) => this.updatePropertyData(key, value)}
+                                            updateField={(key, value, hasError) => this.updatePropertyData(key, value, hasError)}
                                         />
                                     }
                                 </Row>
@@ -144,7 +151,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                                             property={this.state.selectedProperty}
                                             propertyData={this.state.propertyData}
                                             updateTags={(tags) => this.updateTags(tags)}
-                                            updateTag={(index, value) => this.updateTag(index, value)}
+                                            updateTag={(index, value, hasError) => this.updateTag(index, value, hasError)}
                                         />}
                                 </Row>
                             </Col>
@@ -157,10 +164,10 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                 {/* footer */}
                 <Modal.Footer style={{ background: "whitesmoke" }}>
                     <Form.Label>{this.state.labelContent}</Form.Label>
-                    <Button variant="outline-dark" onClick={() => this.props.cancelSaveEntities()}>
-                        Cancel
-          </Button>
-                    <Button variant="dark" onClick={() => this.handleSaveEntities()}>
+                    <Button variant="outline-dark" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="dark" disabled={!enabled} onClick={() => this.handleSaveEntities()}>
                         Save
           </Button>
                 </Modal.Footer>
