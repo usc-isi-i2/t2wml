@@ -39,7 +39,7 @@ interface TableState {
   selectedMainSubject?: Cell;
   selectedProperty?: Cell;
 
-  mode: 'Annotation' | 'Output' | 'Wikify',
+  mode: TableMode,
   showCleanedData: boolean;
   showAnnotationMenu: boolean;
   annotationMenuPosition?: Array<number>;
