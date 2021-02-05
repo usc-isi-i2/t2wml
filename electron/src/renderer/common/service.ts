@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -78,6 +78,7 @@ class RequestService {
 
   @action
   public fillMapping(response: ResponseWithMappingDTO){
+    console.log("mapping", response)
     wikiStore.project.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlContent = response.yamlContent;
@@ -93,6 +94,7 @@ class RequestService {
 
   @action
   public updateProjectandQnode(response: ResponseWithQNodeLayerDTO){
+    console.log("qnode", response)
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.project.projectDTO = response.project;
   }
@@ -103,7 +105,7 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async createProject(folder:string, data: any) {
+  public async createProject(folder:string, data?: any) {
     const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
     wikiStore.changeWindowDisplayMode(folder);
@@ -182,9 +184,19 @@ class RequestService {
   }
 
   public async uploadEntities(data: any) {
-    const response = await backendPost(`/project/entity?${this.getDataFileParams(false)}`, data) as ResponseUploadEntitiesDTO;
+    const response = await backendPost(`/project/entities?${this.getDataFileParams(false)}`, data) as ResponseUploadEntitiesDTO;
     this.updateProjectandQnode(response);
     wikiStore.wikifier.entitiesStats = response.entitiesStats;
+  }
+
+  public async getEntities() {
+    const response = await backendGet(`/project/entities?${this.getDataFileParams()}`) as ResponseEntitiesPropertiesDTO; // TODO- check the type
+    wikiStore.entitiesData.entities = response;
+  }
+
+  public async saveEntities(data: any) {
+    const response = await backendPut(`/project/entities?${this.getDataFileParams()}`, data) as ResponseEntitiesPropertiesDTO;
+    wikiStore.entitiesData.entities = response;
   }
 
   public async downloadResults(fileType: string) {

@@ -7,7 +7,7 @@ import './table-component.css';
 import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { AnnotationBlock } from '../../common/dtos';
-import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
+import { LOG, ErrorMessage, Cell } from '../../common/general';
 import { classNames } from '../../common/utils';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -16,7 +16,7 @@ import TableLegend from './table-legend';
 
 
 import { observer } from 'mobx-react';
-import wikiStore from '../../data/store';
+import wikiStore, { TableMode } from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
@@ -29,23 +29,23 @@ interface TableState {
   showToast: boolean;
 
   // table data
-  filename: string | null, // if null, show "Table Viewer"
-  multipleSheets: boolean,
-  sheetNames: Array<string> | null,
-  currSheetName: string | null,
+  filename: string | null; // if null, show "Table Viewer"
+  multipleSheets: boolean;
+  sheetNames: Array<string> | null;
+  currSheetName: string | null;
 
-  selectedCell: Cell | null;
-  selectedQualifiers: Array<Cell> | null,
-  selectedMainSubject: Cell | null,
-  selectedProperty: Cell | null,
+  selectedCell?: Cell;
+  selectedQualifiers?: Array<Cell>;
+  selectedMainSubject?: Cell;
+  selectedProperty?: Cell;
 
   mode: 'Annotation' | 'Output' | 'Wikify',
-  showCleanedData: boolean,
-  showAnnotationMenu: boolean,
-  annotationMenuPosition?: Array<number>,
-  selectedAnnotationBlock?: AnnotationBlock,
+  showCleanedData: boolean;
+  showAnnotationMenu: boolean;
+  annotationMenuPosition?: Array<number>;
+  selectedAnnotationBlock?: AnnotationBlock;
 
-  errorMessage: ErrorMessage,
+  errorMessage: ErrorMessage;
 }
 
 @observer
@@ -71,10 +71,10 @@ class TableContainer extends Component<{}, TableState> {
       currSheetName: null,
       multipleSheets: false,
 
-      selectedCell: new Cell(),
+      selectedCell: undefined,
       selectedQualifiers: [],
-      selectedMainSubject: new Cell(),
-      selectedProperty: new Cell(),
+      selectedMainSubject: undefined,
+      selectedProperty: undefined,
 
       mode: wikiStore.table.mode,
       showCleanedData: false,
@@ -145,10 +145,10 @@ class TableContainer extends Component<{}, TableState> {
     this.setState({
       errorMessage: {} as ErrorMessage,
       showToast: false,
-      selectedCell: null,
-      selectedProperty: null,
-      selectedQualifiers: null,
-      selectedMainSubject: null,
+      selectedCell: undefined,
+      selectedProperty: undefined,
+      selectedQualifiers: undefined,
+      selectedMainSubject: undefined,
       selectedAnnotationBlock: undefined,
       showAnnotationMenu: false,
     });
@@ -203,7 +203,7 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
-  async toggleAnnotationMode(mode) {
+  async toggleAnnotationMode(mode: TableMode) {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
@@ -279,7 +279,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'Output',
             })}
-            onClick={(event) => this.toggleAnnotationMode('Output')}>
+            onClick={() => this.toggleAnnotationMode('Output')}>
             Output
           </Button>
           <Button variant="outline-light"
@@ -293,7 +293,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'Annotation',
             })}
-            onClick={(event) => this.toggleAnnotationMode('Annotation')}>
+            onClick={() => this.toggleAnnotationMode('Annotation')}>
             Annotate
           </Button>
         </ButtonGroup>

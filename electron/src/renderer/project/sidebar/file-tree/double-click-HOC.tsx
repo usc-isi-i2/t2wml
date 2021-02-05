@@ -36,6 +36,7 @@ export default class DoubleClick extends Component<funcProps> {
   }
 
   render() {
+    // eslint-disable-next-line
     const { onClick, onDoubleClick, children, ...childProps } = this.props;
     const props = Object.assign(childProps, { onClick: this.onClick, onDoubleClick: this.onDoubleClick });
     return React.cloneElement(children, props);

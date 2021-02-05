@@ -6,19 +6,17 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
-import wikiStore, { Layer } from '../../../data/store';
-import { Cell, CellSelection } from '../../../common/general';
-import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
+import wikiStore from '../../../data/store';
+import { Cell } from '../../../common/general';
+import { TableCell, TableData, TableDTO } from '../../../common/dtos';
 import OutputMenu from './output-menu';
-import * as utils from '../table-utils';
 import { settings } from '../../../../main/settings';
 
-
 interface TableState {
-  tableData: TableCell[][] | undefined;
-  selectedCell: Cell | null;
-  showOutputMenu: boolean,
-  outputMenuPosition?: Array<number>,
+  tableData?: TableData;
+  selectedCell?: Cell;
+  showOutputMenu: boolean;
+  outputMenuPosition: Array<number>;
 }
 
 
@@ -36,7 +34,7 @@ class OutputTable extends Component<{}, TableState> {
     // init state
     this.state = {
       tableData: undefined,
-      selectedCell: new Cell(),
+      selectedCell: undefined,
       showOutputMenu: false,
       outputMenuPosition: [50, 70],
     };
@@ -65,9 +63,9 @@ class OutputTable extends Component<{}, TableState> {
       this.setState({ tableData: undefined });
       return;
     }
-    const tableData = [];
+    const tableData: TableData = [];
     for (let i = 0; i < table.cells.length; i++) {
-      const rowData = [];
+      const rowData: TableCell[] = [];
       for (let j = 0; j < table.cells[i].length; j++) {
         const cell: TableCell = {
           content: table.cells[i][j],
@@ -80,7 +78,7 @@ class OutputTable extends Component<{}, TableState> {
     this.updateCells(tableData);
   }
 
-  updateCells(tableData) {
+  updateCells(tableData: TableData) {
     if (!tableData) { return; }
 
     const errors = wikiStore.layers.error;
@@ -230,9 +228,13 @@ class OutputTable extends Component<{}, TableState> {
 
   handleOnMouseUp(event: React.MouseEvent) {
     const { selectedCell, tableData } = this.state;
-    if (!selectedCell) { return; }
+    if (!selectedCell || !tableData) { return; }
 
     const { row, col } = selectedCell;
+    if (row < 0 || row >= tableData.length || col < 0 || col >= tableData[row].length) {
+      // There is no such cell, do nothing
+      return;
+    }
     const tableCell = tableData[row][col];
 
     // Only open the output menu if there's content
@@ -284,7 +286,7 @@ class OutputTable extends Component<{}, TableState> {
 
   handleOnKeyDown(event: KeyboardEvent) {
     const { selectedCell, tableData } = this.state;
-    if (!selectedCell) { return; }
+    if (!selectedCell || !tableData) { return; }
 
     // Hide the output menu with ESC key
     if (event.keyCode == 27) {
@@ -337,7 +339,7 @@ class OutputTable extends Component<{}, TableState> {
 
         // Only open the output menu if there's content
         const tableCell = tableData[row][col];
-        this.setState({ showOutputMenu: tableCell && tableCell.content });
+        this.setState({ showOutputMenu: !!tableCell.content });
       });
     }
   }
