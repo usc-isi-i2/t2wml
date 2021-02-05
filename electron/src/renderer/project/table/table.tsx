@@ -9,10 +9,10 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUp
 
 interface TableProperties {
   tableData?: TableData;
-  onMouseUp?: () => void;
-  onMouseDown?: () => void;
-  onMouseMove?: () => void;
-  onClickHeader?: () => void;
+  onMouseUp?: (event: React.MouseEvent) => void;
+  onMouseDown?: (event: React.MouseEvent) => void;
+  onMouseMove?: (event: React.MouseEvent) => void;
+  onClickHeader?: (event: React.MouseEvent) => void;
   setTableReference: any;
 }
 
@@ -33,9 +33,9 @@ class Table extends React.Component<TableProperties>{
     return (
       <div className="table-wrapper">
         <table ref={setTableReference}
-          onMouseUp={(event) => onMouseUp(event)}
-          onMouseDown={(event) => onMouseDown(event)}
-          onMouseMove={(event) => onMouseMove(event)}>
+          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
           <thead>
             <tr>
               <th></th>
@@ -77,15 +77,15 @@ class Table extends React.Component<TableProperties>{
     return (
       <div className="table-wrapper">
         <table ref={setTableReference}
-          onMouseUp={(event) => onMouseUp(event)}
-          onMouseDown={(event) => onMouseDown(event)}
-          onMouseMove={(event) => onMouseMove(event)}>
+          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
           <thead>
             <tr>
               <th></th>
               {cols.map((r, i) => (
                 <th key={i}>
-                  <div onDoubleClick={onClickHeader.bind(this)}>
+                  <div onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
                     {utils.columnToLetter(i + 1)}
                   </div>
                 </th>
