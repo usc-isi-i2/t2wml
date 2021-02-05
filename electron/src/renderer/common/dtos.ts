@@ -94,8 +94,19 @@ export interface TypeEntry extends Entry {
     type: string;
 }
 
+export type ErrorRole= "value"|"qualifier"|"property"|"subject"|"unit"
+
+export interface Error{
+    role: ErrorRole;
+    message: string;
+    qualifier_index: number;
+    level: "Major"|"Minor";
+    field: string; //can be role, but could also be "calendar" or any other yaml key
+}
+
+
 export interface ErrorEntry extends Entry {
-    error: any;
+    error: Error[];
 }
 
 export interface StatementEntry extends Entry{
