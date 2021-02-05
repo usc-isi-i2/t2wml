@@ -1,12 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
-import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
-import wikiStore, { Layer } from '../../../data/store';
-import { Cell, CellSelection } from '../../../common/general';
-import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
-import * as utils from '../table-utils';
-import { settings } from '../../../../main/settings';
 
 
 interface TableState {
