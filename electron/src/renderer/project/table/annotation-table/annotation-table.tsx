@@ -184,10 +184,7 @@ class AnnotationTable extends Component<{}, TableState> {
             } catch {
               let rx = row;
               while ( rx > tableData.length ) {
-                // We use Array.apply because new Array(col).map does not work
-                // The result is an array with col empty table cells
-                // eslint-disable-next-line
-                const emptyArray: TableCell[] = Array.apply(null, new Array(col)).map(() => emptyTableCell());
+                const emptyArray: TableCell[] = [...Array(col)].map(() => emptyTableCell());
                 tableData.push(emptyArray);
                 rx -= 1;
               }
