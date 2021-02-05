@@ -10,9 +10,9 @@ import * as utils from '../table-utils';
 
 
 interface WikifyMenuProperties {
-  selectedCell: Cell | null;
-  position?: Array<number>,
-  onClose: any | null,
+  selectedCell: Cell;
+  position: Array<number>;
+  onClose: () => void;
 }
 
 

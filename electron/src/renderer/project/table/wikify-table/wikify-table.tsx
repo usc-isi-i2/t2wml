@@ -4,15 +4,15 @@ import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
-import { QNode, QNodeEntry, TableCell, TableDTO, TypeEntry } from '../../../common/dtos';
+import { QNode, QNodeEntry, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
 import WikifyMenu from './wikify-menu';
 import * as utils from '../table-utils';
 import { settings } from '../../../../main/settings';
 
 
 interface TableState {
-  tableData: TableCell[][] | undefined;
-  selectedCell: Cell | null;
+  tableData?: TableData;
+  selectedCell?: Cell;
   showWikifyMenu: boolean,
   wikifyMenuPosition?: Array<number>,
 }
@@ -34,7 +34,7 @@ class WikifyTable extends Component<{}, TableState> {
     // init state
     this.state = {
       tableData: undefined,
-      selectedCell: new Cell(),
+      selectedCell: undefined,
       showWikifyMenu: false,
       wikifyMenuPosition: [50, 70],
     };
@@ -149,7 +149,7 @@ class WikifyTable extends Component<{}, TableState> {
     this.setState({ tableData })
   }
 
-  getCellContent(cell, col, row) {
+  getCellContent(cell: string, col: number, row: number) {
     const qnode = wikiStore.layers.qnode.find(new Cell(col, row));
     if ( qnode ) {
       return (
@@ -181,9 +181,9 @@ class WikifyTable extends Component<{}, TableState> {
     }
     const tableData = [];
     for (let i = 0; i < table.cells.length; i++) {
-      const rowData = [];
+      const rowData: TableCell[] = [];
       for (let j = 0; j < table.cells[i].length; j++) {
-        const content = this.getCellContent(table.cells[i][j], j, i);
+        const content: any = this.getCellContent(table.cells[i][j], j, i);
         const cell: TableCell = {
           classNames: [],
           content,
