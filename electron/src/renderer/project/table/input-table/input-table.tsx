@@ -47,7 +47,7 @@ class InputTable extends Component<{}, TableState> {
   }
 
   getElementStyles(element: any) {
-    const styles = {};
+    const styles: any = {};
 
     for ( let i = 0; i < element.style.length; i++ ) {
       styles[element.style[i]] = element.style[element.style[i]];
@@ -57,7 +57,8 @@ class InputTable extends Component<{}, TableState> {
   }
 
   getClipboardData(event: ClipboardEvent) {
-    const data = (event.clipboardData || window.clipboardData).getData('text/html');
+    if ( !event.clipboardData ) { return; }
+    const data = (event.clipboardData as any).clipboardData.getData('text/html');
     if ( !data ) { return; }
 
     // Initialize an empty table data array
@@ -76,7 +77,7 @@ class InputTable extends Component<{}, TableState> {
         const content = (
           <span dangerouslySetInnerHTML={{ __html: td.innerHTML }} />
         )
-        const style = this.getElementStyles(td);
+        const style: any = this.getElementStyles(td);
         if ( rowIndex === 0 ) {
           style['width'] = '100%';
         }

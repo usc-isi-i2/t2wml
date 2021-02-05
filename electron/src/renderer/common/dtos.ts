@@ -134,9 +134,9 @@ export interface AnnotationBlock{
 }
 
 export interface TableCell {
-  content: string;
+  content: string | JSX.Element;
   classNames: string[];
-  style: any | {};
+  style?: any | {};
 }
 
 export type TableData = TableCell[][];
