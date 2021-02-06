@@ -284,6 +284,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'annotation',
             })}
+            disabled={currentFilesService.currentState.mappingType === 'Yaml'}
             onClick={() => this.switchMode('annotation')}>
             Annotate
           </Button>
