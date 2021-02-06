@@ -12,9 +12,10 @@ import { AnnotationBlock } from '../../../common/dtos';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
+  onSelectionChange: (selection: CellSelection) => void;
+  selectedAnnotationBlock?: AnnotationBlock;
   onDelete: any | null;
   onClose: any | null;
-  selectedAnnotationBlock?: AnnotationBlock;
 }
 
 
@@ -94,10 +95,15 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   renderAnnotationForms() {
-    const { selection, selectedAnnotationBlock } = this.props;
+    const {
+      selection,
+      onSelectionChange,
+      selectedAnnotationBlock,
+    } = this.props;
     return (
       <AnnotationForm
         selection={selection}
+        onSelectionChange={onSelectionChange}
         selectedAnnotationBlock={selectedAnnotationBlock}
         onChange={this.handleOnChange.bind(this)}
         onDelete={this.handleOnDelete.bind(this)}
