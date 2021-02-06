@@ -502,15 +502,15 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnMouseUp(event: MouseEvent) {
-    this.selecting = false;
     if ( this.selection ) {
       this.standardizeSelection();
-      if ( this.checkOverlaps() ) {
+      if ( this.selecting && this.checkOverlaps() ) {
         this.closeAnnotationMenu();
       } else {
         this.openAnnotationMenu(event);
       }
     }
+    this.selecting = false;
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
