@@ -8,13 +8,11 @@ import wikiStore from '@/renderer/data/store';
 import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
-import { settings } from '../../../../main/settings';
 
 
 interface TableState {
   tableData?: TableData;
   showAnnotationMenu: boolean;
-  annotationMenuPosition: Array<number>;
   selectedAnnotationBlock?: AnnotationBlock;
 }
 
@@ -42,7 +40,6 @@ class AnnotationTable extends Component<{}, TableState> {
     this.state = {
       tableData: undefined,
       showAnnotationMenu: false,
-      annotationMenuPosition: [50, 70],
       selectedAnnotationBlock: undefined,
     };
 
@@ -445,18 +442,8 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  openAnnotationMenu(event: MouseEvent) {
-    let { pageX, pageY } = event;
-    pageX = pageX - 250;
-    if ( settings.window.height - pageY <= 275 ) {
-      pageY -= 275;
-    } else {
-      pageY = pageY - 10;
-    }
-    this.setState({
-      showAnnotationMenu: true,
-      annotationMenuPosition: [pageX, pageY],
-    });
+  openAnnotationMenu() {
+    this.setState({showAnnotationMenu: true});
   }
 
   checkOverlaps() {
@@ -501,13 +488,13 @@ class AnnotationTable extends Component<{}, TableState> {
     return false;
   }
 
-  handleOnMouseUp(event: MouseEvent) {
+  handleOnMouseUp() {
     if ( this.selection ) {
       this.standardizeSelection();
       if ( this.selecting && this.checkOverlaps() ) {
         this.closeAnnotationMenu();
       } else {
-        this.openAnnotationMenu(event);
+        this.openAnnotationMenu();
       }
     }
     this.selecting = false;
@@ -827,15 +814,13 @@ class AnnotationTable extends Component<{}, TableState> {
   renderAnnotationMenu() {
     const {
       showAnnotationMenu,
-      annotationMenuPosition,
       selectedAnnotationBlock,
     } = this.state;
     if (showAnnotationMenu) {
       return (
         <AnnotationMenu
-          selectedAnnotationBlock={selectedAnnotationBlock}
           selection={this.selection}
-          position={annotationMenuPosition}
+          selectedAnnotationBlock={selectedAnnotationBlock}
           onClose={() => this.closeAnnotationMenu()}
           onDelete={this.deleteAnnotationBlock.bind(this)} />
       )
