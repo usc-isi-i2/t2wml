@@ -28,7 +28,7 @@ class AnnotationTable extends Component<{}, TableState> {
   private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
   private prevDirection?: Direction;
   private selecting = false;
-  private selection: CellSelection | undefined;
+  private selection?: CellSelection;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -460,6 +460,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   checkOverlaps() {
+    if ( !this.selection ) { return; }
     const { x1, y1, x2, y2 } = this.selection;
 
     // Get the coordinates of the sides
