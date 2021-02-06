@@ -385,7 +385,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  standardizeSelections() {
+  standardizeSelection() {
     if (!this.selection) {
       return;
     }
@@ -462,7 +462,7 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnMouseUp(event: MouseEvent) {
     this.selecting = false;
     if ( this.selection ) {
-      this.standardizeSelections();
+      this.standardizeSelection();
       this.openAnnotationMenu(event);
     }
   }
