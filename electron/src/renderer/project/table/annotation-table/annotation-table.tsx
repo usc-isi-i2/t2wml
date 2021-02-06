@@ -801,6 +801,15 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  onSelectionChange(selection: CellSelection) {
+    if ( selection ) {
+      this.selection = selection;
+      this.standardizeSelection();
+      this.resetSelections();
+      this.updateAnnotationBlocks();
+    }
+  }
+
   closeAnnotationMenu() {
     this.setState({
       showAnnotationMenu: false,
@@ -820,6 +829,7 @@ class AnnotationTable extends Component<{}, TableState> {
       return (
         <AnnotationMenu
           selection={this.selection}
+          onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}
           onClose={() => this.closeAnnotationMenu()}
           onDelete={this.deleteAnnotationBlock.bind(this)} />

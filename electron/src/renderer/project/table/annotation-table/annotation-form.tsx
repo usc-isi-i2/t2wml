@@ -8,8 +8,9 @@ import { CellSelection } from '@/renderer/common/general';
 
 
 interface AnnotationFormProperties {
-  selectedAnnotationBlock?: AnnotationBlock;
   selection?: CellSelection;
+  onSelectionChange: (selection: CellSelection) => void;
+  selectedAnnotationBlock?: AnnotationBlock;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onDelete: any | null;
   onSubmit: any | null;
