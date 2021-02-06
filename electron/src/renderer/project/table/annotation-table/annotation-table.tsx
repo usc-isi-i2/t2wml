@@ -802,11 +802,10 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   onSelectionChange(selection: CellSelection) {
-    if ( selection ) {
+    const { selectedAnnotationBlock } = this.state;
+    if ( selection && !selectedAnnotationBlock ) {
       this.selection = selection;
-      this.standardizeSelection();
-      this.resetSelections();
-      this.updateAnnotationBlocks();
+      this.updateSelections();
     }
   }
 
