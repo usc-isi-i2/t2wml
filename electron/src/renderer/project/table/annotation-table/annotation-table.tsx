@@ -19,13 +19,16 @@ interface TableState {
 }
 
 
+type Direction = 'up' | 'down' | 'left' | 'right';
+
+
 @observer
 class AnnotationTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
   private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
-  private prevDirection?: 'up' | 'down' | 'left' | 'right';
+  private prevDirection?: Direction;
   private selecting = false;
-  private selection: CellSelection | undefined;
+  private selection?: CellSelection;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -382,7 +385,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  standardizeSelections() {
+  standardizeSelection() {
     if (!this.selection) {
       return;
     }
@@ -456,12 +459,58 @@ class AnnotationTable extends Component<{}, TableState> {
     });
   }
 
-  handleOnMouseUp(event: MouseEvent) {
-    this.selecting = false;
-    if ( this.selection ) {
-      this.standardizeSelections();
-      this.openAnnotationMenu(event);
+  checkOverlaps() {
+    if ( !this.selection ) { return; }
+    const { x1, y1, x2, y2 } = this.selection;
+
+    // Get the coordinates of the sides
+    const aTop = y1 <= y2 ? y1 : y2;
+    const aLeft = x1 <= x2 ? x1 : x2;
+    const aRight = x2 >= x1 ? x2 : x1;
+    const aBottom = y2 >= y1 ? y2 : y1;
+
+    const { blocks } = wikiStore.annotations;
+    for (let i = 0; i < blocks.length; i++ ) {
+      const other = blocks[i].selection;
+
+      // Get the coordinates of the sides
+      const bTop = other.y1 <= other.y2 ? other.y1 : other.y2;
+      const bLeft = other.x1 <= other.x2 ? other.x1 : other.x2;
+      const bRight = other.x2 >= other.x1 ? other.x2 : other.x1;
+      const bBottom = other.y2 >= other.y1 ? other.y2 : other.y1;
+
+      // check for collisions between area A and B
+      if (aTop > bBottom) {
+        continue;
+      }
+      if (aBottom < bTop) {
+        continue;
+      }
+      if (aLeft > bRight) {
+        continue;
+      }
+      if (aRight < bLeft) {
+        continue;
+      }
+
+      // collision detected
+      return true;
     }
+
+    // no collisions detected
+    return false;
+  }
+
+  handleOnMouseUp(event: MouseEvent) {
+    if ( this.selection ) {
+      this.standardizeSelection();
+      if ( this.selecting && this.checkOverlaps() ) {
+        this.closeAnnotationMenu();
+      } else {
+        this.openAnnotationMenu(event);
+      }
+    }
+    this.selecting = false;
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
@@ -545,6 +594,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnMouseMove(event: React.MouseEvent) {
+    const { selectedAnnotationBlock } = this.state;
     const element = event.target as any;
     if (element === this.prevElement) { return; }
 
@@ -567,8 +617,10 @@ class AnnotationTable extends Component<{}, TableState> {
       if ( this.prevElement.nodeName === 'TD' ) {
         const oldCellIndex = this.prevElement.cellIndex;
         const oldRowIndex = this.prevElement.parentElement.rowIndex;
-        if ( newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex ) {
-          this.resetEmptyCells(oldCellIndex, newCellIndex, oldRowIndex, newRowIndex);
+        if ( selectedAnnotationBlock ) {
+          if ( newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex ) {
+            this.resetEmptyCells(oldCellIndex, newCellIndex, oldRowIndex, newRowIndex);
+          }
         }
       }
 
