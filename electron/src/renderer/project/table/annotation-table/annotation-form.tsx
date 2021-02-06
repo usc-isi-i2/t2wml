@@ -74,10 +74,16 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderSelectionAreas() {
     const { selection } = this.props;
     if (!selection) { return null; }
+    const defaultValue = utils.humanReadableSelection(selection);
     return (
-      <p className="area">
-        {utils.humanReadableSelection(selection)}
-      </p>
+      <Form.Group as={Row} onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'area')}>
+        <Col sm="12" md="12">
+          <Form.Label className="text-muted">Selected area</Form.Label>
+          <Form.Control
+            type="text" size="sm"
+            defaultValue={defaultValue} />
+        </Col>
+      </Form.Group>
     )
   }
 
