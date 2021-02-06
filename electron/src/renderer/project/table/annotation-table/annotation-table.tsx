@@ -594,6 +594,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnMouseMove(event: React.MouseEvent) {
+    const { selectedAnnotationBlock } = this.state;
     const element = event.target as any;
     if (element === this.prevElement) { return; }
 
@@ -616,8 +617,10 @@ class AnnotationTable extends Component<{}, TableState> {
       if ( this.prevElement.nodeName === 'TD' ) {
         const oldCellIndex = this.prevElement.cellIndex;
         const oldRowIndex = this.prevElement.parentElement.rowIndex;
-        if ( newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex ) {
-          this.resetEmptyCells(oldCellIndex, newCellIndex, oldRowIndex, newRowIndex);
+        if ( selectedAnnotationBlock ) {
+          if ( newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex ) {
+            this.resetEmptyCells(oldCellIndex, newCellIndex, oldRowIndex, newRowIndex);
+          }
         }
       }
 
