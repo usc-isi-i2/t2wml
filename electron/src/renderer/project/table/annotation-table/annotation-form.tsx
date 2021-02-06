@@ -8,8 +8,9 @@ import { CellSelection } from '@/renderer/common/general';
 
 
 interface AnnotationFormProperties {
-  selectedAnnotationBlock?: AnnotationBlock;
   selection?: CellSelection;
+  onSelectionChange: (selection: CellSelection) => void;
+  selectedAnnotationBlock?: AnnotationBlock;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onDelete: any | null;
   onSubmit: any | null;
@@ -25,6 +26,7 @@ interface AnnotationFormState {
   property?: string;
   language?: string;
   precision?: string;
+  selectedArea?: string;
 }
 
 
@@ -40,6 +42,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       ...selectedBlock,
       role: selectedBlock?.role,
       type: selectedBlock?.type,
+      selectedArea: undefined,
     };
     this.changed = false;
   }
@@ -59,6 +62,25 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     this.setState({ ...updatedState }, () => onChange(key, value));
   }
 
+  handleOnSelectionChange(event) {
+    const { onSelectionChange } = this.props;
+    const value = (event.target as HTMLInputElement).value;
+    this.setState({
+      selectedArea: value,
+    });
+    const regex = /^.?([a-z]+)([0-9]+):([a-z]+)([0-9]+).?$/gmi;
+    const groups = regex.exec(value);
+    if ( groups && groups[1] && groups[2] && groups[3] && groups[4] ) {
+      const selection: CellSelection = {
+        x1: utils.letterToColumn(groups[1]),
+        x2: utils.letterToColumn(groups[3]),
+        y1: parseInt(groups[2]),
+        y2: parseInt(groups[4]),
+      };
+      onSelectionChange(selection);
+    }
+  }
+
   handleOnSubmit(event: any) {
     event.preventDefault();
     const { onSubmit } = this.props;
@@ -71,12 +93,20 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderSelectionAreas() {
+    const { selectedArea } = this.state;
     const { selection } = this.props;
     if (!selection) { return null; }
+    const defaultValue = utils.humanReadableSelection(selection);
     return (
-      <p className="area">
-        {utils.humanReadableSelection(selection)}
-      </p>
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <Form.Label className="text-muted">Selected area</Form.Label>
+          <Form.Control
+            type="text" size="sm"
+            value={this.state.selectedArea || defaultValue}
+            onChange={(event: React.KeyboardEvent) => this.handleOnSelectionChange(event)} />
+        </Col>
+      </Form.Group>
     )
   }
 
