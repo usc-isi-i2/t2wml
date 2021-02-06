@@ -19,11 +19,14 @@ interface TableState {
 }
 
 
+type Direction = 'up' | 'down' | 'left' | 'right';
+
+
 @observer
 class AnnotationTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
   private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
-  private prevDirection?: 'up' | 'down' | 'left' | 'right';
+  private prevDirection?: Direction;
   private selecting = false;
   private selection: CellSelection | undefined;
 
