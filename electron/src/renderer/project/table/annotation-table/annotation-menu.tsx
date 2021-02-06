@@ -12,7 +12,6 @@ import { AnnotationBlock } from '../../../common/dtos';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
-  position: Array<number>; // We will eliminate this once we figure out how to calculate the window width
   onDelete: any | null;
   onClose: any | null;
   selectedAnnotationBlock?: AnnotationBlock;
@@ -107,10 +106,10 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   render() {
-    const { position, onClose } = this.props;
+    const { onClose } = this.props;
+    const position = {x: window.innerWidth / 2, y: 100};
     return (
-      <Draggable handle=".handle"
-        defaultPosition={{x: position[0], y: position[1]}}>
+      <Draggable handle=".handle" defaultPosition={position}>
         <div className="annotation-menu">
           <Toast onClose={onClose}>
             <Toast.Header className="handle">
