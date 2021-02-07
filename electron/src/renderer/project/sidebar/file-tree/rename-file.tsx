@@ -9,7 +9,7 @@ interface RenameProperties {
   showRenameFile: boolean;
   showSpinner: boolean;
   tempRenameFile: string;
-  isTempRenameFileVaild: boolean;
+  isTempRenameFileValid: boolean;
   type: string;
 
   handleRenameFile: (name: string) => void;
@@ -18,7 +18,7 @@ interface RenameProperties {
 
 interface RenameState {
   name: string;
-  isNameVaild: boolean;
+  isNameValid: boolean;
 }
 
 class RenameFile extends Component<RenameProperties, RenameState> {
@@ -29,7 +29,7 @@ class RenameFile extends Component<RenameProperties, RenameState> {
 
     this.state = {
       name: this.props.tempRenameFile,
-      isNameVaild: this.props.isTempRenameFileVaild
+      isNameValid: this.props.isTempRenameFileValid
     } as RenameState;
   }
 
@@ -55,7 +55,7 @@ class RenameFile extends Component<RenameProperties, RenameState> {
             <Form.Group as={Row} style={{ marginTop: "1rem" }} onChange={(event: Event) => {
               this.setState({
                 name: (event.target as HTMLInputElement).value,
-                isNameVaild: utils.isValidTitle((event.target as HTMLInputElement).value)
+                isNameValid: utils.isValidTitle((event.target as HTMLInputElement).value)
               })
             }}>
               <Col sm="12" md="12">
@@ -65,7 +65,7 @@ class RenameFile extends Component<RenameProperties, RenameState> {
                   defaultValue={this.props.tempRenameFile}
                   placeholder="Untitled project"
                   autoFocus={true}
-                  style={this.state.isNameVaild ? {} : { border: "1px solid red" }}
+                  style={this.state.isNameValid ? {} : { border: "1px solid red" }}
                   onKeyPress={(event: any) => {
                     if (event.key === "Enter") {
                       // if press enter (13), then do create new project
@@ -74,9 +74,9 @@ class RenameFile extends Component<RenameProperties, RenameState> {
                     }
                   }}
                 />
-                <div className="small" style={this.state.isNameVaild ? { display: "none" } : { color: "red" }}>
+                <div className="small" style={this.state.isNameValid ? { display: "none" } : { color: "red" }}>
                   <span>*&nbsp;Cannot contain any of the following characters:&nbsp;</span>
-                  <code>&#92;&nbsp;&#47;&nbsp;&#58;&nbsp;&#42;&nbsp;&#63;&nbsp;&#34;&nbsp;&#60;&nbsp;&#62;&nbsp;&#124;</code>
+                  <code>&#92;&nbsp;&#58;&nbsp;&#42;&nbsp;&#63;&nbsp;&#34;&nbsp;&#60;&nbsp;&#62;&nbsp;&#124;</code>
                 </div>
               </Col>
             </Form.Group>
@@ -89,7 +89,7 @@ class RenameFile extends Component<RenameProperties, RenameState> {
           <Button variant="outline-dark" onClick={() => this.props.cancelRenameFile()} >
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => { this.input.current ? this.props.handleRenameFile(this.input.current?.value) : this.props.handleRenameFile('') }} disabled={!(this.state.isNameVaild)}>
+          <Button variant="dark" onClick={() => { this.input.current ? this.props.handleRenameFile(this.input.current?.value) : this.props.handleRenameFile('') }} disabled={!(this.state.isNameValid)}>
             Rename
           </Button>
         </Modal.Footer>

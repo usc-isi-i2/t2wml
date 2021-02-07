@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import wikiStore from "../../../data/store";
 import './file-tree.css';
 // import { TreeMode } from '@/shared/types'
+import * as path from 'path';
 import RequestService from "@/renderer/common/service";
 import { currentFilesService } from "../../../common/current-file-service";
 import FileNode, { NodeProps, NodeType } from "./node";
@@ -118,14 +119,27 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   openFile() {
     let filePath = this.state.clickedNode!.label;
-    filePath = filePath.replace('/', '\\');
-
-    const directory = wikiStore.project.projectDTO!.directory + '\\' + filePath;
+    const directory = path.join(wikiStore.project.projectDTO!.directory, filePath);
     shell.showItemInFolder(directory);
   }
 
-  deleteFile(deleteFromFs:boolean) {
+  async deleteFile(deleteFromFs:boolean) {
+    const filename = this.state.clickedNode!.label;
+    if (currentFilesService.currentState.dataFile==filename || currentFilesService.currentState.mappingFile==filename){
+      alert("Cannot delete or remove a file that is currently open");
+      return;
+    }
 
+    this.setState({ showSpinner: true });
+    // send request
+    const data = { "file_name": filename, "delete":deleteFromFs };
+    try {
+      await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({showSpinner: false });
+    }
   }
 
   addYaml() {
@@ -265,7 +279,7 @@ class FileTree extends Component<TreeProps, TreeState> {
             showSpinner={this.state.showSpinner}
             tempRenameFile={this.state.clickedNode.label}
             type={this.state.clickedNode.type}
-            isTempRenameFileVaild={true}
+            isTempRenameFileValid={true}
             handleRenameFile={(name) => this.handleRenameFile(name)}
             cancelRenameFile={() => this.cancelRenameFile()}
           /> : null }

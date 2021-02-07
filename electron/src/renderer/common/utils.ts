@@ -237,7 +237,7 @@ export function isValidTitle(title: string) {
   if (title.length > 255) {
     return false;
   }
-  return /^[^\\/:*?"<>|]*$/.test(title) && ! /^ +$/.test(title);
+  return /^[^\\:*?"<>|]*$/.test(title) && ! /^ +$/.test(title);
 }
 
 

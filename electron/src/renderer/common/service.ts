@@ -215,6 +215,11 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
+  public async removeOrDeleteFile(folder: string, data: any) {
+    const response = await backendPost(`/files/delete?project_folder=${folder}`, data) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
+  }
+
   public async saveYaml(data: any) {
     const response = await backendPost(`/yaml/save?${this.getDataFileParams()}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
