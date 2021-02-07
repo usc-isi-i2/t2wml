@@ -21,20 +21,22 @@ interface TreeState {
 }
 
 function emptyFunc() { /* NO-OP */ }
-const rootNode = {id: "Root00000123943875",
-                  label: "Files",
-                  childNodes: [],
-                  type: "Label",
-                  parentNode: null,
-                  rightClick: emptyFunc,
-                  onClick: emptyFunc } as NodeProps;
+const rootNode = {
+  id: "Root00000123943875",
+  label: "Files",
+  childNodes: [],
+  type: "Label",
+  parentNode: null,
+  rightClick: emptyFunc,
+  onClick: emptyFunc
+} as NodeProps;
 
 
 class FileTree extends Component<TreeProps, TreeState> {
   private requestService: RequestService;
   private disposers: IReactionDisposer[] = [];
 
-  constructor(props: TreeProps){
+  constructor(props: TreeProps) {
     super(props)
     this.requestService = new RequestService();
     this.state = {
@@ -49,7 +51,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
-    this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({showSpinner: show}) ));
+    this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
   }
 
   componentWillUnmount() {
@@ -86,26 +88,26 @@ class FileTree extends Component<TreeProps, TreeState> {
     await wikiStore.yaml.saveYaml();
 
     if (node.type === "DataFile") {
-        if (node.label !== currentFilesService.currentState.dataFile) {
-            await this.changeDataFile(node.label);
-        }
+      if (node.label !== currentFilesService.currentState.dataFile) {
+        await this.changeDataFile(node.label);
+      }
     } else if (node.type === "Sheet") {
-        if (node.label !== currentFilesService.currentState.sheetName) {
-            await this.changeSheet(node.label, node.parentNode!.label);
-        }
+      if (node.label !== currentFilesService.currentState.sheetName) {
+        await this.changeSheet(node.label, node.parentNode!.label);
+      }
     } else if (node.type === "Yaml") {
-        const sheet = node.parentNode!;
-        const dataFile = sheet.parentNode!.label;
+      const sheet = node.parentNode!;
+      const dataFile = sheet.parentNode!.label;
 
-        if (node.label !== currentFilesService.currentState.mappingFile) {
-            await this.changeYaml(node.label, sheet.label, dataFile);
-        }
+      if (node.label !== currentFilesService.currentState.mappingFile) {
+        await this.changeYaml(node.label, sheet.label, dataFile);
+      }
     } else if (node.type === "Annotation") {
       const sheet = node.parentNode!;
       const dataFile = sheet.parentNode!.label;
 
       if (node.label !== currentFilesService.currentState.mappingFile) {
-          await this.changeAnnotation(node.label, sheet.label, dataFile);
+        await this.changeAnnotation(node.label, sheet.label, dataFile);
       }
     }
 
@@ -123,34 +125,67 @@ class FileTree extends Component<TreeProps, TreeState> {
     shell.showItemInFolder(directory);
   }
 
-  async deleteFile(deleteFromFs:boolean) {
+  async deleteFile(deleteFromFs: boolean) {
     const filename = this.state.clickedNode!.label;
-    if (currentFilesService.currentState.dataFile==filename || currentFilesService.currentState.mappingFile==filename){
+    if (currentFilesService.currentState.dataFile == filename || currentFilesService.currentState.mappingFile == filename) {
       alert("Cannot delete or remove a file that is currently open");
       return;
     }
 
     this.setState({ showSpinner: true });
     // send request
-    const data = { "file_name": filename, "delete":deleteFromFs };
+    const data = { "file_name": filename, "delete": deleteFromFs };
     try {
       await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
     } catch (error) {
       console.log(error);
     } finally {
-      this.setState({showSpinner: false });
+      this.setState({ showSpinner: false });
     }
   }
 
-  addYaml() {
-
+  async addYaml() {
+    const result = await remote.dialog.showSaveDialog({
+      title: "Add or Create Yaml File",
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['createDirectory'],
+      filters: [
+        { name: "Yaml", extensions: ["yaml"] }
+      ],
+    });
+    if (!result.canceled && result.filePath) {
+      try {
+        //await this.requestService
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.setState({ showSpinner: false });
+      }
+  }
   }
 
-  addAnnotation() {
-
+  async addAnnotation() {
+    const result = await remote.dialog.showSaveDialog({
+      title: "Add or Create Annotation File",
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['createDirectory'],
+      filters: [
+        { name: "annotation", extensions: ["annotation", "json"] }
+      ],
+    });
+    if (!result.canceled && result.filePath) {
+      try {
+        //await this.requestService
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.setState({ showSpinner: false });
+      }
+  }
   }
 
-  onRightClick(node: NodeProps){
+
+  onRightClick(node: NodeProps) {
     this.setState({ clickedNode: node });
     const { Menu, MenuItem } = remote;
 
@@ -164,7 +199,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
         menu.append(new MenuItem({ type: 'separator' }));
         menu.append(new MenuItem({ label: 'Rename', click: () => this.renameNode() }));
-        menu.append(new MenuItem({ label: 'Remove from project', click:() => this.deleteFile(false)}));
+        menu.append(new MenuItem({ label: 'Remove from project', click: () => this.deleteFile(false) }));
         menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile(true) }));
         break;
       }
@@ -189,7 +224,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     for (const filename of projDict[df][sheetName]["val_arr"]) {
       parentNode.childNodes.push(
         {
-          id: filename+parentNode.id,
+          id: filename + parentNode.id,
           label: filename,
           childNodes: [] as NodeProps[],
           type: type,
@@ -205,7 +240,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   buildFileTree(): NodeProps {
     const project = wikiStore.project.projectDTO;
-    rootNode.childNodes=[];
+    rootNode.childNodes = [];
     if (!project || !project.data_files) { return rootNode; }
     for (const df of Object.keys(project.data_files).sort()) {
       const dataNode = {
@@ -221,7 +256,7 @@ class FileTree extends Component<TreeProps, TreeState> {
       const sheet_arr = project.data_files[df].val_arr;
       for (const sheetName of sheet_arr) {
         const sheetNode = {
-          id: sheetName+df,
+          id: sheetName + df,
           label: sheetName,
           childNodes: [],
           type: "Sheet",
@@ -231,7 +266,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           bolded: currentFilesService.currentState.sheetName == sheetName
         } as NodeProps;
         this.buildSubFileTree(project.annotations, df, sheetName, "Annotation", sheetNode)
-        this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName,  "Yaml", sheetNode)
+        this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName, "Yaml", sheetNode)
         dataNode.childNodes.push(sheetNode)
       }
       rootNode.childNodes.push(dataNode)
@@ -239,9 +274,9 @@ class FileTree extends Component<TreeProps, TreeState> {
     return rootNode;
   }
 
-  updateFileTree(){
+  updateFileTree() {
     const fileTree = this.buildFileTree()
-    this.setState({fileTree})
+    this.setState({ fileTree })
   }
 
   async handleRenameFile(name: string) {
@@ -282,7 +317,7 @@ class FileTree extends Component<TreeProps, TreeState> {
             isTempRenameFileValid={true}
             handleRenameFile={(name) => this.handleRenameFile(name)}
             cancelRenameFile={() => this.cancelRenameFile()}
-          /> : null }
+          /> : null}
         {/* loading spinner */}
         <div className="mySpinner" hidden={!this.state.showSpinner}>
           <Spinner animation="border" />
@@ -296,7 +331,7 @@ class FileTree extends Component<TreeProps, TreeState> {
             type={this.state.fileTree.type}
             parentNode={this.state.fileTree.parentNode}
             rightClick={this.state.fileTree.rightClick}
-            onClick={this.state.fileTree.onClick}/>
+            onClick={this.state.fileTree.onClick} />
         </ul>
       </Fragment>
     )
