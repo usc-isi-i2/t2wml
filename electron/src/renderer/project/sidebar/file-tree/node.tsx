@@ -43,7 +43,7 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   componentDidUpdate(prevProps: NodeProps) {
     if ((prevProps.bolded !== this.props.bolded) && this.props.bolded) {
-      this.setState({ expanded: true }); 
+      this.setState({ expanded: true });
     }
   }
 

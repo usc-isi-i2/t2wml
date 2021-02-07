@@ -8,7 +8,7 @@ import FileNode, { NodeProps, NodeType } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
 import { remote, shell } from 'electron';
 import RenameFile from "@/renderer/project/sidebar/file-tree/rename-file";
-
+import { Spinner } from "react-bootstrap";
 
 
 type TreeProps = {}; // An empty interfaces causes an error
@@ -19,7 +19,7 @@ interface TreeState {
   showSpinner: boolean;
 }
 
-const emptyFunc= (node: NodeProps) => void 0;
+function emptyFunc() { /* NO-OP */ }
 const rootNode = {id: "Root00000123943875",
                   label: "Files",
                   childNodes: [],
@@ -48,6 +48,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
+    this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({showSpinner: show}) ));
   }
 
   componentWillUnmount() {
@@ -79,7 +80,10 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async changeFile(node: NodeProps) {
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
     await wikiStore.yaml.saveYaml();
+
     if (node.type === "DataFile") {
         if (node.label !== currentFilesService.currentState.dataFile) {
             await this.changeDataFile(node.label);
@@ -103,6 +107,9 @@ class FileTree extends Component<TreeProps, TreeState> {
           await this.changeAnnotation(node.label, sheet.label, dataFile);
       }
     }
+
+    wikiStore.table.showSpinner = false;
+    wikiStore.yaml.showSpinner = false;
   }
 
   renameNode() {
@@ -124,7 +131,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   addYaml() {
 
   }
-  
+
   addAnnotation() {
 
   }
@@ -262,6 +269,11 @@ class FileTree extends Component<TreeProps, TreeState> {
             handleRenameFile={(name) => this.handleRenameFile(name)}
             cancelRenameFile={() => this.cancelRenameFile()}
           /> : null }
+        {/* loading spinner */}
+        <div className="mySpinner" hidden={!this.state.showSpinner}>
+          <Spinner animation="border" />
+        </div>
+
         <ul>
           <FileNode
             id={this.state.fileTree.id}

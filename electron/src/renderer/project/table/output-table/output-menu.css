@@ -1,0 +1,22 @@
+.output-menu {
+  position: absolute;
+  min-width: 300px;
+  z-index: 250;
+  left: 50px;
+  top: 70px;
+}
+
+.output-menu .handle {
+  background: whitesmoke;
+  cursor: pointer;
+}
+
+.output-menu p.error {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: red;
+}
+
+.output-menu p.wikibaseitem a {
+  color: #006699;
+}

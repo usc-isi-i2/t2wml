@@ -56,6 +56,14 @@ class RendererNotifier {
         this.mainWindow.webContents.send('global-settings');
     }
 
+    public projectEntities() {
+        if(!this.mainWindow) {
+            console.warn("mainWindow not set on RendererNotifier");
+            return;
+        }
+        this.mainWindow.webContents.send('project-entities');
+    }
+
     public toggleShowCleanedData(checked: boolean){
         if(!this.mainWindow) {
             console.warn("mainWindow not set on RendererNotifier");

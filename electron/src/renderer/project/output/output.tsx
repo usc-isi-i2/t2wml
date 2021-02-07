@@ -147,9 +147,10 @@ class Output extends Component<{}, OutputComponentState> {
     try {
       const json = await this.requestService.call(this, () => this.requestService.loadToDatamart())
       console.log(json);
-      const { datamart_get_url, description } = json;
+      const { datamart_get_url, variables, description } = json;
       if (datamart_get_url !== undefined) {
-        alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url)
+        alert("Success! To download the data in canonical format use this url:\n" + datamart_get_url +"\n"
+        +"And add the name of the variable at the end. Your variables are: \n"+variables)
         // prompt('Success! Use this url to download the data in canonical format:', datamart_get_url)
       } else {
         alert("Failed to load to Datamart\nError: " + description)

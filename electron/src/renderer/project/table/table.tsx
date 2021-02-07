@@ -1,6 +1,6 @@
 import React from 'react';
 import * as utils from './table-utils';
-import { TableCell } from '../../common/dtos';
+import { TableData } from '../../common/dtos';
 
 
 const MIN_NUM_ROWS = 100;
@@ -8,11 +8,11 @@ const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUp
 
 
 interface TableProperties {
-  tableData: TableCell[][] | undefined;
-  onMouseUp?: any;
-  onMouseDown: any;
-  onMouseMove: any;
-  onClickHeader: any;
+  tableData?: TableData;
+  onMouseUp?: (event: React.MouseEvent) => void;
+  onMouseDown?: (event: React.MouseEvent) => void;
+  onMouseMove?: (event: React.MouseEvent) => void;
+  onClickHeader?: (event: React.MouseEvent) => void;
   setTableReference: any;
 }
 
@@ -33,9 +33,9 @@ class Table extends React.Component<TableProperties>{
     return (
       <div className="table-wrapper">
         <table ref={setTableReference}
-          onMouseUp={onMouseUp.bind(this)}
-          onMouseDown={onMouseDown.bind(this)}
-          onMouseMove={onMouseMove.bind(this)}>
+          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
           <thead>
             <tr>
               <th></th>
@@ -77,15 +77,15 @@ class Table extends React.Component<TableProperties>{
     return (
       <div className="table-wrapper">
         <table ref={setTableReference}
-          onMouseUp={onMouseUp.bind(this)}
-          onMouseDown={onMouseDown.bind(this)}
-          onMouseMove={onMouseMove.bind(this)}>
+          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
           <thead>
             <tr>
               <th></th>
               {cols.map((r, i) => (
                 <th key={i}>
-                  <div onDoubleClick={onClickHeader.bind(this)}>
+                  <div onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
                     {utils.columnToLetter(i + 1)}
                   </div>
                 </th>
@@ -97,7 +97,7 @@ class Table extends React.Component<TableProperties>{
               <tr key={`row-${i}`}>
                 <td>{i + 1}</td>
                 {cols.map((r, j) => {
-                  if (i < tableData.length && j < tableData[i].length) {
+                  if ( i < tableData.length && j < tableData[i].length && tableData[i][j] ) {
                     const { content, classNames } = tableData[i][j];
                     return (
                       <td key={`cell-${j}`}

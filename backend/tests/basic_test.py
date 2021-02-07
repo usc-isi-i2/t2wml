@@ -153,6 +153,32 @@ class TestBasicWorkflow(BaseClass):
         assert project["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert project["warn_for_empty_cells"]==False
 
+    def test_get_entities(self, client):
+        url='/api/project/entities?project_folder={project_folder}'.format(project_folder=project_folder)
+        response=client.get(url)
+        data = response.data.decode("utf-8")
+        data = get_data(data)
+        assert data["kgtk_item_defs.tsv"]["P2006020002"]['description']=='Qualifiers used to describe a variable. E.g., FertilizerType, Source, etc.'
+
+
+    def test_get_entities(self, client):
+        url='/api/project/entities?project_folder={project_folder}'.format(project_folder=project_folder)
+        response=client.put(url,
+            json=dict(
+                entity_file="kgtk_item_defs.tsv",
+                updated_entries={"P2006020002":{'data_type': 'WikibaseProperty', 'description': 'Qualifiers used to describe a variable. E.g., FertilizerType, Source, etc...', 'label': 'qualifier'}}
+            ))
+        data = response.data.decode("utf-8")
+        data = get_data(data)
+        assert data["kgtk_item_defs.tsv"]["P2006020002"]['description']=='Qualifiers used to describe a variable. E.g., FertilizerType, Source, etc...'
+        response=client.put(url,
+            json=dict(
+                entity_file="kgtk_item_defs.tsv",
+                updated_entries={"P2006020002":{'data_type': 'WikibaseProperty', 'description': 'Qualifiers used to describe a variable. E.g., FertilizerType, Source, etc.', 'label': 'qualifier'}}
+            ))
+
+
+
     def test_998_reset_global_settings(self, client):
         #reset to old settings:
         url='/api/project/globalsettings'.format(project_folder=project_folder)

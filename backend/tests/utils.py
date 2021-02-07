@@ -124,7 +124,7 @@ def load_wikifier_file(client, project_folder, filename, data_file=None, sheet_n
     return response
 
 def load_item_file(client, project_folder, filename, data_file=None, sheet_name=None):
-    url=url_builder('/api/project/entity', project_folder, data_file, sheet_name)
+    url=url_builder('/api/project/entities', project_folder, data_file, sheet_name)
     response=client.post(url,
             json=dict(
             filepath=filename

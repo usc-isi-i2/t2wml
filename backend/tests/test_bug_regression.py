@@ -29,7 +29,6 @@ def test_empty_cells(client):
     data2 = response.data.decode("utf-8")
     data2 = json.loads(data2)
 
-    #once again, this is cheating
-    error_cells_1=data["layers"]["type"]["entries"][4]["indices"]
-    error_cells_2=data2["layers"]["type"]["entries"][4]["indices"]
+    error_cells_1=data["layers"]["error"]
+    error_cells_2=data2["layers"]["error"]
     assert error_cells_1!=error_cells_2

@@ -4,24 +4,35 @@ import { AnnotationBlock } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import { CellSelection } from '@/renderer/common/general';
 
 
 interface AnnotationFormProperties {
-  selectedAnnotationBlock?: AnnotationBlock,
-  selections?: Array<any>,
-  onChange: any | null, // Use the actual function type: (arg: argType) => returnType
-  onDelete: any | null,
-  onSubmit: any | null,
+  selection?: CellSelection;
+  onSelectionChange: (selection: CellSelection) => void;
+  selectedAnnotationBlock?: AnnotationBlock;
+  onChange: any | null; // Use the actual function type: (arg: argType) => returnType
+  onDelete: any | null;
+  onSubmit: any | null;
 }
 
 
 interface AnnotationFormState {
-  role?: string,
-  type?: string,
+  role?: string;
+  type?: string;
+  unit?: string;
+  format?: string;
+  calendar?: string;
+  property?: string;
+  language?: string;
+  precision?: string;
+  selectedArea?: string;
 }
 
 
 class AnnotationForm extends React.Component<AnnotationFormProperties, AnnotationFormState> {
+
+  private changed: boolean;
 
   constructor(props: AnnotationFormProperties) {
     super(props);
@@ -31,15 +42,43 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       ...selectedBlock,
       role: selectedBlock?.role,
       type: selectedBlock?.type,
+      selectedArea: undefined,
     };
+    this.changed = false;
   }
 
   handleOnChange(event: any, key: string) {
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    const updatedState: { [key: string]: string; } = {};
-    updatedState[key] = value;
+    const updatedState: AnnotationFormState = {};
+    updatedState[key as keyof AnnotationFormState] = value;
+    this.changed = true;
+
+    // Reset the role if the type has changed
+    if ( key === 'role' ) {
+      updatedState['type'] = undefined;
+    }
+
     this.setState({ ...updatedState }, () => onChange(key, value));
+  }
+
+  handleOnSelectionChange(event) {
+    const { onSelectionChange } = this.props;
+    const value = (event.target as HTMLInputElement).value;
+    this.setState({
+      selectedArea: value,
+    });
+    const regex = /^.?([a-z]+)([0-9]+):([a-z]+)([0-9]+).?$/gmi;
+    const groups = regex.exec(value);
+    if ( groups && groups[1] && groups[2] && groups[3] && groups[4] ) {
+      const selection: CellSelection = {
+        x1: utils.letterToColumn(groups[1]),
+        x2: utils.letterToColumn(groups[3]),
+        y1: parseInt(groups[2]),
+        y2: parseInt(groups[4]),
+      };
+      onSelectionChange(selection);
+    }
   }
 
   handleOnSubmit(event: any) {
@@ -54,20 +93,49 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderSelectionAreas() {
-    const { selections } = this.props;
-    if (!selections) { return null; }
-    return selections.map((selection: any, index: number) => (
-      <p className="area" key={index}>
-        {utils.humanReadableSelection(selection)}
-      </p>
-    ));
+    const { selectedArea } = this.state;
+    const { selection } = this.props;
+    if (!selection) { return null; }
+    const defaultValue = utils.humanReadableSelection(selection);
+    return (
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <Form.Label className="text-muted">Selected area</Form.Label>
+          <Form.Control
+            type="text" size="sm"
+            value={this.state.selectedArea || defaultValue}
+            onChange={(event: React.KeyboardEvent) => this.handleOnSelectionChange(event)} />
+        </Col>
+      </Form.Group>
+    )
   }
 
-  renderNestedOptionsDropdown() {
+  renderNestedOptionsChildren(type: any) {
+    const { selectedAnnotationBlock: selectedBlock } = this.props;
+
+    let defaultValue = '';
+    if ( selectedBlock && (selectedBlock as any)[type.value] ) {
+      defaultValue = (selectedBlock as any)[type.value];
+    }
+
+    return (
+      <Form.Group as={Row} key={type.value}
+        onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, type.value)}>
+        <Col sm="12" md="12">
+          <Form.Label className="text-muted">{type.label}</Form.Label>
+          <Form.Control
+            type="text" size="sm"
+            defaultValue={defaultValue} />
+        </Col>
+      </Form.Group>
+    )
+  }
+
+  renderNestedOptions() {
     const { role, type } = this.state;
     const { selectedAnnotationBlock: selectedBlock } = this.props;
-    const selectedAnnotationRole = selectedBlock ? selectedBlock.role : role;
-    const selectedAnnotationType = selectedBlock ? selectedBlock.type : type;
+    const selectedAnnotationRole = selectedBlock && !this.changed ? selectedBlock.role : role;
+    const selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
     let selectedOption = null;
     if (selectedAnnotationRole) {
       selectedOption = ROLES.find(option => (
@@ -111,22 +179,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       return (
         <React.Fragment>
           {optionsDropdown}
-          {selectedType?.children?.map((type, i) => {
-            let defaultValue = '';
-            if (selectedBlock) {
-              defaultValue = (selectedBlock as any)[type.value];
-            }
-            return (
-              <Form.Group as={Row} key={i}
-                onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, type.value)}>
-                <Col sm="12" md="12">
-                  <Form.Label className="text-muted">{type.label}</Form.Label>
-                  <Form.Control
-                    type="text" size="sm"
-                    defaultValue={defaultValue} />
-                </Col>
-              </Form.Group>
-            )
+          {selectedType?.children?.map(type => {
+            return this.renderNestedOptionsChildren(type);
           })}
         </React.Fragment>
       )
@@ -136,6 +190,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderOptionsDropdown() {
     const { selectedAnnotationBlock: selected } = this.props;
     const selectedAnnotationRole = selected ? selected.role : '';
+
     return (
       <Form.Group as={Row}
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
@@ -197,7 +252,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onSubmit={this.handleOnSubmit.bind(this)}>
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
-        {this.renderNestedOptionsDropdown()}
+        {this.renderNestedOptions()}
         {this.renderSubmitButton()}
         {this.renderDeleteButton()}
       </Form>

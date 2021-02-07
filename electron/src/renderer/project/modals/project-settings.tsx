@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import './project.css';
-import './ag-grid.css';
-import './ag-theme-balham.css';
+import '../project.css';
+import '../ag-grid.css';
+import '../ag-theme-balham.css';
 
 // App
 import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-bootstrap';
@@ -9,7 +9,6 @@ import { Button, Col, Dropdown, Form, Modal, Row, InputGroup } from 'react-boots
 import Config from '@/shared/config';
 
 import { observer } from "mobx-react";
-import wikiStore from '../data/store';
 
 
 interface SettingsProperties {

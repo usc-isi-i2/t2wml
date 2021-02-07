@@ -5,18 +5,17 @@ import AnnotationForm from './annotation-form';
 
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
-import { ErrorMessage } from '../../../common/general';
+import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
 import { AnnotationBlock } from '../../../common/dtos';
 
-
 interface AnnotationMenuProperties {
-  selections?: Array<any>,
-  position?: Array<number>,
-  onDelete: any | null,
-  onClose: any | null,
-  selectedAnnotationBlock?: AnnotationBlock,
+  selection?: CellSelection;
+  onSelectionChange: (selection: CellSelection) => void;
+  selectedAnnotationBlock?: AnnotationBlock;
+  onDelete: any | null;
+  onClose: any | null;
 }
 
 
@@ -44,8 +43,8 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   handleOnDelete() {
-    const { selectedAnnotationBlock, selections, onDelete } = this.props;
-    console.log('AnnotationMenu OnDelete triggered for -> ', selections);
+    const { selectedAnnotationBlock, selection, onDelete } = this.props;
+    console.log('AnnotationMenu OnDelete triggered for -> ', selection);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedAnnotationBlock;
@@ -57,15 +56,15 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   handleOnSubmit(values: { [key: string]: string }) {
-    const { selectedAnnotationBlock, selections } = this.props;
-    console.log('AnnotationMenu OnSubmit triggered for -> ', selections, values);
+    const { selectedAnnotationBlock, selection } = this.props;
+    console.log('AnnotationMenu OnSubmit triggered for -> ', selection, values);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedAnnotationBlock;
     });
 
     const annotation: any = {
-      'selections': selections,
+      'selection': selection,
     };
 
     // Add all updated values from the annotation form
@@ -96,10 +95,15 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   renderAnnotationForms() {
-    const { selections, selectedAnnotationBlock } = this.props;
+    const {
+      selection,
+      onSelectionChange,
+      selectedAnnotationBlock,
+    } = this.props;
     return (
       <AnnotationForm
-        selections={selections}
+        selection={selection}
+        onSelectionChange={onSelectionChange}
         selectedAnnotationBlock={selectedAnnotationBlock}
         onChange={this.handleOnChange.bind(this)}
         onDelete={this.handleOnDelete.bind(this)}
@@ -108,17 +112,11 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   render() {
-    const { position, onClose } = this.props;
-    let style = {};
-    if (position) {
-      style = {
-        'left': position[0],
-        'top': position[1],
-      };
-    }
+    const { onClose } = this.props;
+    const position = {x: window.innerWidth / 2, y: 100};
     return (
-      <div className="annotation-menu" style={style}>
-        <Draggable handle=".handle">
+      <Draggable handle=".handle" defaultPosition={position}>
+        <div className="annotation-menu">
           <Toast onClose={onClose}>
             <Toast.Header className="handle">
               <strong className="mr-auto">Annotate selected areas</strong>
@@ -127,8 +125,8 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
               {this.renderAnnotationForms()}
             </Toast.Body>
           </Toast>
-        </Draggable>
-      </div>
+        </div>
+      </Draggable>
     )
   }
 }

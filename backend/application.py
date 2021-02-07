@@ -1,13 +1,15 @@
 import json
+import re
 import os
 import sys
+import requests
 from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
-from t2wml_web import (set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                         get_project_instance, create_api_project, add_entities_from_project,
-                        add_entities_from_file, get_qnodes_layer, update_t2wml_settings, wikify)
+                        add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, save_dataframe, get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
@@ -221,7 +223,7 @@ def upload_data_file():
     return response, 200
 
 
-@app.route('/api/project/entity', methods=['POST'])
+@app.route('/api/project/entities', methods=['POST'])
 @json_response
 def upload_entities():
     project=get_project()
@@ -236,6 +238,24 @@ def upload_entities():
     if calc_params:
         response["layers"] = get_qnodes_layer(calc_params)
     return response, 200
+
+
+@app.route('/api/project/entities', methods=['GET'])
+@json_response
+def get_project_entities():
+    project=get_project()
+    response=get_entities(project)
+    return response, 200
+
+@app.route('/api/project/entities', methods=['PUT'])
+@json_response
+def edit_entities():
+    project=get_project()
+    entity_file = request.get_json()["entity_file"]
+    updated_entries = request.get_json()["updated_entries"]
+    response=update_entities(project, entity_file, updated_entries)
+    return response, 200
+
 
 @app.route('/api/wikifier', methods=['POST'])
 @json_response
@@ -349,12 +369,22 @@ def download_results(filetype):
 def load_to_datamart():
     project=get_project()
     calc_params = get_calc_params(project)
-    try:
-        sheet = calc_params.sheet_name
-    except:
-        raise web_exceptions.YAMLEvaluatedWithoutDataFileException(
-            "Can't upload to datamart without datafile and sheet")
-    data = upload_to_datamart(calc_params)
+    download_output, variables = get_kgtk_download_and_variables(calc_params)
+    files={"edges.tsv":download_output}
+    datamart_api_endpoint=global_settings.datamart_api
+    dataset_id=project.dataset_id
+    response_from_docker = requests.post(f'{datamart_api_endpoint}/datasets/{dataset_id}/t2wml', files=files)
+    if response_from_docker.status_code == 204:
+        # var_params="?"
+        # for variable in variables:
+        #     var_params+=f'variable={variable}&'
+        # var_params=var_params[:-1]
+        data={'datamart_get_url': f'{datamart_api_endpoint}/datasets/{dataset_id}/variables',
+                'variables':list(variables)}
+    else:
+        data = {'description': response_from_docker.text}
+
+
     return data, 201
 
 
@@ -401,7 +431,6 @@ def update_settings():
     :return:
     """
     project=get_project()
-
     if request.method == 'PUT':
         request_json=request.get_json()
         title = request_json.get("title", None)

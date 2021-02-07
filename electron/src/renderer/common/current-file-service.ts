@@ -26,7 +26,7 @@ export class CurrentFilesService {
     @observable currentState = new CurrentFiles();
     @observable prevSelections = {};
 
-    getAnnotationFileFromProject(): string | undefined {
+    getAnnotationFileFromProject() {
         const project = wikiStore.project.projectDTO!;
         if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
             return project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];

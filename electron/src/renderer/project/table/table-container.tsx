@@ -7,7 +7,7 @@ import './table-component.css';
 import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { AnnotationBlock } from '../../common/dtos';
-import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
+import { LOG, ErrorMessage, Cell } from '../../common/general';
 import { classNames } from '../../common/utils';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -16,7 +16,7 @@ import TableLegend from './table-legend';
 
 
 import { observer } from 'mobx-react';
-import wikiStore from '../../data/store';
+import wikiStore, { TableMode } from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
@@ -28,29 +28,28 @@ interface TableState {
   showToast: boolean;
 
   // table data
-  filename: string | null, // if null, show "Table Viewer"
-  multipleSheets: boolean,
-  sheetNames: Array<string> | null,
-  currSheetName: string | null,
+  filename: string | null; // if null, show "Table Viewer"
+  multipleSheets: boolean;
+  sheetNames: Array<string> | null;
+  currSheetName: string | null;
 
-  selectedCell: Cell | null;
-  selectedQualifiers: Array<Cell> | null,
-  selectedMainSubject: Cell | null,
-  selectedProperty: Cell | null,
+  selectedCell?: Cell;
+  selectedQualifiers?: Array<Cell>;
+  selectedMainSubject?: Cell;
+  selectedProperty?: Cell;
 
-  mode: 'Annotation' | 'Output',
-  showCleanedData: boolean,
-  showAnnotationMenu: boolean,
-  annotationMenuPosition?: Array<number>,
-  selectedAnnotationBlock?: AnnotationBlock,
+  mode: TableMode,
+  showCleanedData: boolean;
+  showAnnotationMenu: boolean;
+  annotationMenuPosition?: Array<number>;
+  selectedAnnotationBlock?: AnnotationBlock;
 
-  errorMessage: ErrorMessage,
+  errorMessage: ErrorMessage;
 }
 
 @observer
 class TableContainer extends Component<{}, TableState> {
   private selecting = false;
-  private selections: CellSelection[] = [];
 
   private requestService: RequestService;
 
@@ -71,10 +70,10 @@ class TableContainer extends Component<{}, TableState> {
       currSheetName: null,
       multipleSheets: false,
 
-      selectedCell: new Cell(),
+      selectedCell: undefined,
       selectedQualifiers: [],
-      selectedMainSubject: new Cell(),
-      selectedProperty: new Cell(),
+      selectedMainSubject: undefined,
+      selectedProperty: undefined,
 
       mode: wikiStore.table.mode,
       showCleanedData: false,
@@ -92,7 +91,6 @@ class TableContainer extends Component<{}, TableState> {
     this.uncheckAnnotationifYaml();
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
-    this.disposers.push(reaction(() => wikiStore.table.mode, () => this.updateMode()));
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, () => this.uncheckAnnotationifYaml()));
   }
 
@@ -104,17 +102,8 @@ class TableContainer extends Component<{}, TableState> {
 
   uncheckAnnotationifYaml() {
     if (currentFilesService.currentState.mappingType === "Yaml") {
-      wikiStore.table.mode = "Output"
-      this.setState({ mode: 'Output' })
-    }
-  }
-
-  updateMode() {
-    if (wikiStore.table.mode === 'Annotation') {
-      this.setState({ mode: 'Annotation' });
-      this.fetchAnnotations();
-    } else {
-      this.setState({ mode: 'Output' });
+      wikiStore.table.mode = 'output';
+      this.setState({ mode: 'output' });
     }
   }
 
@@ -138,7 +127,7 @@ class TableContainer extends Component<{}, TableState> {
 
       //update in files state
       currentFilesService.changeDataFile(file.name);
-      wikiStore.table.mode = "Annotation"
+      wikiStore.table.mode = 'annotation';
 
     } catch (error) {
       error.errorDescription += "\n\nCannot open file!";
@@ -151,15 +140,13 @@ class TableContainer extends Component<{}, TableState> {
 
   resetTableData() { // ?
     this.selecting = false;
-    this.selections = [];
-    // this.resetSelections();
     this.setState({
       errorMessage: {} as ErrorMessage,
       showToast: false,
-      selectedCell: null,
-      selectedProperty: null,
-      selectedQualifiers: null,
-      selectedMainSubject: null,
+      selectedCell: undefined,
+      selectedProperty: undefined,
+      selectedQualifiers: undefined,
+      selectedMainSubject: undefined,
       selectedAnnotationBlock: undefined,
       showAnnotationMenu: false,
     });
@@ -214,8 +201,19 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
-  async toggleAnnotationMode() {
-    if (this.state.mode === 'Output') {
+  async switchMode(mode: TableMode) {
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+
+    this.setState({ mode }, () => {
+      wikiStore.table.mode = mode;
+    });
+
+    this.resetTableData();
+
+    if ( mode === 'annotation' ) {
+      this.fetchAnnotations();
+    } else {
       await wikiStore.yaml.saveYaml();
       if (currentFilesService.currentState.mappingType == "Yaml") {
         currentFilesService.setMappingFiles(); //try to change to an existing annotation
@@ -225,10 +223,10 @@ class TableContainer extends Component<{}, TableState> {
           currentFilesService.setMappingFiles();
         }
       }
-      wikiStore.table.mode = 'Annotation';
-    } else {
-      wikiStore.table.mode = 'Output';
     }
+
+    wikiStore.table.showSpinner = false;
+    wikiStore.yaml.showSpinner = false;
   }
 
   async fetchAnnotations() {
@@ -271,19 +269,24 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderAnnotationToggle() {
-    const annotationMode = this.state.mode === "Annotation";
+    const { mode } = this.state;
     if (this.state.filename) {
       return (
-        <ButtonGroup aria-label="modes" className="mode-toggle"
-          onClick={() => this.toggleAnnotationMode()}>
+        <ButtonGroup aria-label="modes" className="mode-toggle">
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': !annotationMode,
-            })}>Output</Button>
+              'active': mode === 'output',
+            })}
+            onClick={() => this.switchMode('output')}>
+            Output
+          </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': annotationMode,
-            })}>Annotate</Button>
+              'active': mode === 'annotation',
+            })}
+            onClick={() => this.switchMode('annotation')}>
+            Annotate
+          </Button>
         </ButtonGroup>
       )
     }
@@ -339,7 +342,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   renderTable() {
-    if (this.state.mode === 'Annotation') {
+    if (this.state.mode === 'annotation') {
       return <AnnotationTable />;
     }
     return <OutputTable />;

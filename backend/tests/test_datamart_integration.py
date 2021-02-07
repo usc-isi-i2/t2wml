@@ -3,7 +3,7 @@ import json
 from tests.utils import (client, create_project, load_data_file)
 
 
-def test_datamart_integration(client):
+def xtest_datamart_integration(client):
     #create project:
     project_folder=create_project(client)
 

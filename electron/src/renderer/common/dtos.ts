@@ -7,8 +7,8 @@ import { CellSelection } from "./general";
 /* base types*/
 
  interface CurrentAndArrayDTO{
-     selected: string,
-     val_arr: string[]
+     selected: string;
+     val_arr: string[];
  }
 
 export interface ProjectDTO {
@@ -62,9 +62,9 @@ export interface LayerDTO<T extends Entry> {
 }
 
 export interface QNode{
-    label: string
-    description: string
-    id: string
+    label: string;
+    description: string;
+    id: string;
     url?: string;
 }
 
@@ -94,18 +94,29 @@ export interface TypeEntry extends Entry {
     type: string;
 }
 
+export type ErrorRole= "value"|"qualifier"|"property"|"subject"|"unit"
+
+export interface Error{
+    role: ErrorRole;
+    message: string;
+    qualifier_index: number;
+    level: "Major"|"Minor";
+    field: string; //can be role, but could also be "calendar" or any other yaml key
+}
+
+
 export interface ErrorEntry extends Entry {
-    error: any;
+    error: Error[];
 }
 
 export interface StatementEntry extends Entry{
-    subject: string
-    property: string
-    cells: any
-    value: string
-    qnodes: any
-    qualifier?: any
-    unit?: string
+    subject: string;
+    property: string;
+    cells: any;
+    value: string;
+    qnodes: any;
+    qualifier?: any;
+    unit?: string;
 }
 
 
@@ -113,7 +124,7 @@ export type AnnotationBlockRole = "Dependent Variable" | "Qualifier" | "Metadata
 export type AnnotationBlockType = "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
 
 export interface AnnotationBlock{
-    selections: CellSelection[];
+    selection: CellSelection;
     role: AnnotationBlockRole;
     type?: AnnotationBlockType;
 
@@ -137,6 +148,8 @@ export interface TableCell {
   content: string;
   classNames: string[];
 }
+
+export type TableData = TableCell[][];
 
 
 /* responses: */
@@ -166,6 +179,17 @@ export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO{
 
 export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
     entitiesStats: EntitiesStatsDTO;
+}
+
+export interface Entity{
+    label: string;
+    description: string;
+    data_type?: string;
+    tags?: string[];
+}
+
+export interface ResponseEntitiesPropertiesDTO {
+    [file: string]: { [property: string] : Entity };
 }
 
 export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {

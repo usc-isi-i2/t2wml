@@ -3,8 +3,12 @@ import os
 import json
 import numpy as np
 from pathlib import Path
+from numpy.core.numeric import full
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
-from t2wml.api import WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper
+from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
+                        kgtk_to_dict, dict_to_kgtk)
+from t2wml.mapping.kgtk import get_all_variables
+from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
@@ -59,6 +63,7 @@ def update_t2wml_settings(project):
 
 
 def get_kg(calc_params):
+    wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
     if calc_params.cache and not annotation:
         kg = calc_params.cache.load_kg()
@@ -66,20 +71,31 @@ def get_kg(calc_params):
             return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
+        if cell_mapper.annotation.potentially_enough_annotation_information:
+            ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
+            ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
     db.session.commit()  # save any queried properties
     return kg
+
+
 
 
 def download(calc_params, filetype):
     response = dict()
     kg = get_kg(calc_params)
-    response["data"] = kg.get_output(filetype)
+    response["data"] = kg.get_output(filetype, calc_params.project)
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
+
+def get_kgtk_download_and_variables(calc_params):
+    kg = get_kg(calc_params)
+    download_output = kg.get_output("tsv", calc_params.project)
+    variables=get_all_variables(calc_params.project, kg.statements)
+    return download_output, variables
 
 
 
@@ -181,11 +197,6 @@ def get_yaml_layers(calc_params):
             cell_index=indexer(cell_name)
             errorEntry=dict(indices=[cell_index], error=errors[cell_name])
             errorLayer["entries"].append(errorEntry)
-
-            if len(set(["property", "value", "subject", "fatal"]).intersection(errors[cell_name].keys())):
-                cell_type_indices["majorError"][cell_name]=True
-            else:
-                cell_type_indices["minorError"][cell_name]=True
 
 
         for cell_name in statements:
@@ -309,3 +320,23 @@ def save_annotations(project, annotation, annotations_path, data_path, sheet_nam
     dga.save(annotations_path)
     project.add_annotation_file(annotations_path, data_path, sheet_name)
     project.save()
+
+
+
+def get_entities(project: Project):
+    entity_dict={}
+    for file in project.entity_files:
+        full_path=project.get_full_path(file)
+        entity_dict[file]=kgtk_to_dict(full_path)
+    return entity_dict
+
+def update_entities(project, entity_file, updated_entries):
+
+    entities=get_entities(project)[entity_file]
+    for entry, new_vals in updated_entries.items():
+        entities[entry].update(new_vals)
+
+    entities.update(updated_entries)
+    full_path=project.get_full_path(entity_file)
+    dict_to_kgtk(entities, full_path)
+    return get_entities(project)

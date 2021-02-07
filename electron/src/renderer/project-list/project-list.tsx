@@ -23,7 +23,7 @@ import wikiStore from '../data/store';
 import { ProjectListEntry } from './project-entry';
 
 import { shell } from 'electron';
-import Settings from '../project/project-settings';
+import Settings from '../project/modals/project-settings';
 
 interface ProjectListState extends IStateWithError {
   showSpinner: boolean;
