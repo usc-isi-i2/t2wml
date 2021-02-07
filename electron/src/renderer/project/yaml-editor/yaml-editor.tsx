@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-
+import * as path from 'path';
 // YAML
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import MonacoEditor from 'react-monaco-editor';
@@ -19,8 +19,7 @@ import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
 // import SheetSelector from './sheet-selector/sheet-selector';
 import { currentFilesService } from '../../common/current-file-service';
-import CreateYaml from './create-yaml';
-
+import { remote } from 'electron';
 
 interface yamlProperties {
   isShowing: boolean;
@@ -35,7 +34,6 @@ interface yamlState extends IStateWithError {
   isImportFile: boolean;
   disableYaml: boolean;
   isAddedYaml: boolean;
-  showCreateYamlModal: boolean;
 }
 
 
@@ -62,7 +60,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       isImportFile: false,
       disableYaml: false,
       isAddedYaml: false,
-      showCreateYamlModal: false,
     };
 
     // init functions
@@ -72,7 +69,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
   componentDidMount() {
     if (!wikiStore.project.projectDTO || !currentFilesService.currentState.dataFile) {
-      this.setState({disableYaml: true});
+      this.setState({ disableYaml: true });
     }
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
@@ -93,16 +90,33 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  openCreateYamlModal() {
-    // convert to yaml file
-    this.setState({showCreateYamlModal: true});
-  }
+  async createYaml() {
+    const result = await remote.dialog.showSaveDialog({
+      title: "Create Yaml File",
+      defaultPath: path.join(wikiStore.project.projectDTO!.directory, currentFilesService.currentState.sheetName+".yaml"),
+      properties: ['createDirectory'],
+      filters: [
+        { name: "Yaml", extensions: ["yaml"] }
+      ],
+    });
+    if (!result.canceled && result.filePath) {
+      try {
+        // send request
+        console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
+        const data = {
+          "yaml": wikiStore.yaml.yamlContent,
+          "title": result.filePath,
+          "sheetName": currentFilesService.currentState.sheetName
+        };
 
-  createYaml() {
-    console.log("create yaml ");
-    this.setState({ showCreateYamlModal: false });
+        await this.requestService.call(this, () => this.requestService.uploadYaml(data));
+        // follow-ups (success)
+        wikiStore.output.isDownloadDisabled = false;
+      } catch (error) {
+        console.log(error);
+      }
 
-    this.handleApplyYaml();
+    }
   }
 
   async handleApplyYaml() {
@@ -114,9 +128,11 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
     // send request
     console.log("<YamlEditor> -> %c/upload_yaml%c for yaml regions", LOG.link, LOG.default);
-    const data = {"yaml": wikiStore.yaml.yamlContent,
-                  "title": currentFilesService.currentState.mappingFile,
-                  "sheetName": currentFilesService.currentState.sheetName};
+    const data = {
+      "yaml": wikiStore.yaml.yamlContent,
+      "title": currentFilesService.currentState.mappingFile,
+      "sheetName": currentFilesService.currentState.sheetName
+    };
 
     try {
       await this.requestService.call(this, () => this.requestService.uploadYaml(data));
@@ -127,7 +143,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       wikiStore.output.isDownloadDisabled = false;
 
 
-    } catch(error) {
+    } catch (error) {
       console.log(error);
     } finally {
       wikiStore.table.showSpinner = false;
@@ -178,7 +194,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // upload local yaml
     const reader = new FileReader();
     reader.readAsText(file);
-    reader.onloadend = (async() => {
+    reader.onloadend = (async () => {
       const yamlContent = reader.result as string;
       wikiStore.yaml.yamlContent = yamlContent;
       // wikiStore.yaml.yamlName = yamlName;
@@ -236,9 +252,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     }
   }
 
-  updateErrorFromStore(){
+  updateErrorFromStore() {
     const yamlError = wikiStore.yaml.yamlError;
-    if (yamlError && yamlError!="") {
+    if (yamlError && yamlError != "") {
       console.log("Errors while applying yaml:")
       console.log(yamlError);
       console.log(wikiStore.layers.error);
@@ -261,7 +277,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       colors: {
         'editor.background': '#CBCBCB',
       },
-});
+    });
 
     // render upload tooltip
     const uploadToolTipHtml = (
@@ -276,9 +292,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     return (
       <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
-        <CreateYaml showCreateYamlModal={this.state.showCreateYamlModal}
-          handleDoCreateYaml={() => this.createYaml()}
-          cancelCreateYaml={() => {this.setState({showCreateYamlModal: false});}} />
         <Card
           className="w-100 shadow-sm"
           style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
@@ -326,7 +339,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
           {/* loading spinner */}
           <div className="mySpinner" hidden={!wikiStore.yaml.showSpinner}>
-              <Spinner animation="border" />
+            <Spinner animation="border" />
           </div>
 
           {/* yaml editor */}
@@ -334,39 +347,39 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             className="w-100 h-100 p-0"
             style={(this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }}
           >
-            { ! this.state.disableYaml ?
-            <MonacoEditor ref={this.monacoRef}
-              width="100%"
-              height="100%"
-              language="yaml"
-              theme= {currentFilesService.currentState.mappingType !== 'Yaml'? 'disabled-theme':'vs'}
-              value={yamlContent}
-              options={{
-                // All options for construction of monaco editor:
-                // https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ieditorconstructionoptions.html
-                automaticLayout: false,
-                lineNumbersMinChars: 4,
-                // minimap: { enabled: false, },
-                // mouseWheelZoom: true,
-                renderLineHighlight: "all", // "none" | "gutter" | "line" | "all"
-                renderWhitespace: "all", // "none" | "boundary" | "all"
-                scrollbar: {
-                  horizontalScrollbarSize: 10,
-                  horizontalSliderSize: 6,
-                  verticalScrollbarSize: 10,
-                  verticalSliderSize: 6
-                },
-                showFoldingControls: 'always',
-                readOnly: currentFilesService.currentState.mappingType !== 'Yaml',
-              }}
-              onChange={() => this.handleEditYaml()}
-              editorDidMount={(editor) => {
-                editor.getModel()?.updateOptions({ tabSize: 2 });
-                setInterval(() => { editor.layout(); }, 200);  // automaticLayout above misses trigger opening, so we've replaced it
-                // This is better done by catching the trigger event and calling editor.layout there,
-                // once we figure out how to catch the trigger event.
-              }}
-            /> : null }
+            {!this.state.disableYaml ?
+              <MonacoEditor ref={this.monacoRef}
+                width="100%"
+                height="100%"
+                language="yaml"
+                theme={currentFilesService.currentState.mappingType !== 'Yaml' ? 'disabled-theme' : 'vs'}
+                value={yamlContent}
+                options={{
+                  // All options for construction of monaco editor:
+                  // https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ieditorconstructionoptions.html
+                  automaticLayout: false,
+                  lineNumbersMinChars: 4,
+                  // minimap: { enabled: false, },
+                  // mouseWheelZoom: true,
+                  renderLineHighlight: "all", // "none" | "gutter" | "line" | "all"
+                  renderWhitespace: "all", // "none" | "boundary" | "all"
+                  scrollbar: {
+                    horizontalScrollbarSize: 10,
+                    horizontalSliderSize: 6,
+                    verticalScrollbarSize: 10,
+                    verticalSliderSize: 6
+                  },
+                  showFoldingControls: 'always',
+                  readOnly: currentFilesService.currentState.mappingType !== 'Yaml',
+                }}
+                onChange={() => this.handleEditYaml()}
+                editorDidMount={(editor) => {
+                  editor.getModel()?.updateOptions({ tabSize: 2 });
+                  setInterval(() => { editor.layout(); }, 200);  // automaticLayout above misses trigger opening, so we've replaced it
+                  // This is better done by catching the trigger event and calling editor.layout there,
+                  // once we figure out how to catch the trigger event.
+                }}
+              /> : null}
           </Card.Body>
 
           {/* card footer */}
@@ -392,7 +405,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
             </div>
 
             {/* apply button */}
-            {currentFilesService.currentState.mappingType === 'Yaml'?
+            {currentFilesService.currentState.mappingType === 'Yaml' ?
               <Button
                 className="d-inline-block float-right"
                 size="sm"
@@ -406,7 +419,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 className="d-inline-block float-right"
                 size="sm"
                 style={{ borderColor: t2wmlColors.YAML, background: t2wmlColors.YAML, padding: "0rem 0.5rem" }}
-                onClick={() => this.openCreateYamlModal()}
+                onClick={() => this.createYaml()}
                 disabled={this.state.disableYaml}
               >
                 Create Yaml
@@ -425,7 +438,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 whiteSpace: "nowrap"
               }}
             > */}
-              {/* <SheetSelector
+            {/* <SheetSelector
                 sheetNames={wikiStore.yaml.yamlList}
                 currSheetName={wikiStore.yaml.yamlName}
                 itemType="file"
