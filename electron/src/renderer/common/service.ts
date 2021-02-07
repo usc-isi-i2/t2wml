@@ -99,6 +99,16 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
+  public async addExistingMapping(data: any){
+    const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
+  }
+
+  public async createAnnotation(data: any){
+    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
+  }
+
   public async postAnnotationBlocks(data: any) {
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
     wikiStore.project.projectDTO = response.project;
@@ -221,7 +231,7 @@ class RequestService {
   }
 
   public async saveYaml(data: any) {
-    const response = await backendPost(`/yaml/save?${this.getDataFileParams()}`, data) as ResponseWithProjectDTO;
+    const response = await backendPost(`/yaml/save?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
   }
 

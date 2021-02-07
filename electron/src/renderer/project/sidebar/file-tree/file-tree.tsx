@@ -147,7 +147,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async addYaml() {
     const result = await remote.dialog.showSaveDialog({
-      title: "Add or Create Yaml File",
+      title: "Add Empty Yaml File",
       defaultPath: wikiStore.project.projectDTO!.directory,
       properties: ['createDirectory'],
       filters: [
@@ -160,7 +160,8 @@ class FileTree extends Component<TreeProps, TreeState> {
         const data = {
           "yaml": defaultYamlContent,
           "title": result.filePath,
-          "sheetName": currentFilesService.currentState.sheetName
+          "sheetName": this.state.clickedNode!.label,
+          "dataFile": this.state.clickedNode!.parentNode!.label
         };
 
         await this.requestService.saveYaml(data);
@@ -173,7 +174,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async addAnnotation() {
     const result = await remote.dialog.showSaveDialog({
-      title: "Add or Create Annotation File",
+      title: "Add Empty Annotation File",
       defaultPath: wikiStore.project.projectDTO!.directory,
       properties: ['createDirectory'],
       filters: [
@@ -182,7 +183,13 @@ class FileTree extends Component<TreeProps, TreeState> {
     });
     if (!result.canceled && result.filePath) {
       try {
-        //await this.requestService
+        const data = {
+          "title":result.filePath,
+          "sheetName": this.state.clickedNode!.label,
+          "dataFile": this.state.clickedNode!.parentNode!.label
+        };
+
+        await this.requestService.createAnnotation(data)
       } catch (error) {
         console.log(error);
       } finally {
@@ -190,6 +197,61 @@ class FileTree extends Component<TreeProps, TreeState> {
       }
   }
   }
+
+  async addExistingYaml() {
+    const result = await remote.dialog.showOpenDialog({
+      title: "Add Empty Yaml File",
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['createDirectory'],
+      filters: [
+        { name: "Yaml", extensions: ["yaml"] }
+      ],
+    });
+    if (!result.canceled && result.filePaths) {
+      try {
+        // send request
+        const data = {
+          "title": result.filePaths[0],
+          "sheetName": this.state.clickedNode!.label,
+          "dataFile": this.state.clickedNode!.parentNode!.label,
+          "type":"yaml"
+        };
+
+        await this.requestService.addExistingMapping(data);
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+  }
+
+  async addExistingAnnotation() {
+    const result = await remote.dialog.showOpenDialog({
+      title: "Add Empty Annotation File",
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['createDirectory'],
+      filters: [
+        { name: "annotation", extensions: ["annotation", "json"] }
+      ],
+    });
+    if (!result.canceled && result.filePaths) {
+      try {
+        const data = {
+          "title":result.filePaths[0],
+          "sheetName": this.state.clickedNode!.label,
+          "dataFile": this.state.clickedNode!.parentNode!.label,
+          "type":"annotation"
+        };
+
+        await this.requestService.addExistingMapping(data)
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.setState({ showSpinner: false });
+      }
+  }
+  }
+
 
 
   onRightClick(node: NodeProps) {
@@ -211,8 +273,10 @@ class FileTree extends Component<TreeProps, TreeState> {
         break;
       }
       case 'Sheet': {
-        menu.append(new MenuItem({ label: 'Add annotation file', click: () => this.addAnnotation() }));
-        menu.append(new MenuItem({ label: 'Add yaml file', click: () => this.addYaml() }));
+        menu.append(new MenuItem({ label: 'Add new annotation file', click: () => this.addAnnotation() }));
+        menu.append(new MenuItem({ label: 'Add new yaml file', click: () => this.addYaml() }));
+        menu.append(new MenuItem({ label: 'Add existing annotation file', click: () => this.addExistingAnnotation() }));
+        menu.append(new MenuItem({ label: 'Add existing yaml file', click: () => this.addExistingYaml() }));
         break;
       }
       default: {

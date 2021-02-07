@@ -9,6 +9,7 @@ import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
 import { AnnotationBlock } from '../../../common/dtos';
+import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
@@ -83,7 +84,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     try {
       await this.requestService.call(this, () => (
         this.requestService.postAnnotationBlocks(
-          { 'annotations': annotations }
+          {'annotations': annotations, "title":currentFilesService.currentState.mappingFile}
         )
       ));
     } catch (error) {

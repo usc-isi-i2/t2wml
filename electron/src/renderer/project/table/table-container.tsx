@@ -1,7 +1,7 @@
 ///header, footer (with sheet switcher), switcher between different table components
 
 import React, { ChangeEvent, Component } from 'react';
-
+import * as path from 'path';
 import './table-component.css';
 
 import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
@@ -220,6 +220,18 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async fetchAnnotations() {
+    if (!currentFilesService.currentState.mappingFile){
+      //create a mapping file
+      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name+"-"+currentFilesService.currentState.sheetName+".annotation");
+      const data = {
+        "title":title,
+        "sheetName": currentFilesService.currentState.sheetName,
+        "dataFile": currentFilesService.currentState.dataFile
+      };
+
+      await this.requestService.createAnnotation(data)
+      currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
+    }
     try {
       await this.requestService.call(this, () => (
         this.requestService.getMappingCalculation()
