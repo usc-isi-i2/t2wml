@@ -109,7 +109,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           "sheetName": currentFilesService.currentState.sheetName
         };
 
-        await this.requestService.call(this, () => this.requestService.uploadYaml(data));
+        await this.requestService.call(this, () => this.requestService.saveYaml(data));
         // follow-ups (success)
         wikiStore.output.isDownloadDisabled = false;
       } catch (error) {

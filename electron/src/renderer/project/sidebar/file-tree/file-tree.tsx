@@ -10,6 +10,7 @@ import { IReactionDisposer, reaction } from "mobx";
 import { remote, shell } from 'electron';
 import RenameFile from "@/renderer/project/sidebar/file-tree/rename-file";
 import { Spinner } from "react-bootstrap";
+import { defaultYamlContent } from "../../default-values";
 
 
 type TreeProps = {}; // An empty interfaces causes an error
@@ -155,13 +156,19 @@ class FileTree extends Component<TreeProps, TreeState> {
     });
     if (!result.canceled && result.filePath) {
       try {
-        //await this.requestService
+        // send request
+        const data = {
+          "yaml": defaultYamlContent,
+          "title": result.filePath,
+          "sheetName": currentFilesService.currentState.sheetName
+        };
+
+        await this.requestService.saveYaml(data);
       } catch (error) {
         console.log(error);
-      } finally {
-        this.setState({ showSpinner: false });
       }
-  }
+
+    }
   }
 
   async addAnnotation() {
