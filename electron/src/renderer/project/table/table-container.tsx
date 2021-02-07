@@ -213,16 +213,6 @@ class TableContainer extends Component<{}, TableState> {
 
     if ( mode === 'annotation' ) {
       this.fetchAnnotations();
-    } else {
-      await wikiStore.yaml.saveYaml();
-      if (currentFilesService.currentState.mappingType == "Yaml") {
-        currentFilesService.setMappingFiles(); //try to change to an existing annotation
-        //if there wasn't an existing annotation, we need to create it
-        if (currentFilesService.currentState.mappingType === "Yaml") {
-          await this.requestService.postAnnotationBlocks({ "annotations": [] });
-          currentFilesService.setMappingFiles();
-        }
-      }
     }
 
     wikiStore.table.showSpinner = false;
@@ -380,7 +370,7 @@ class TableContainer extends Component<{}, TableState> {
             style={{ height: "40px", background: "#339966" }}>
             {this.renderTitle()}
             {this.renderUploadButton()}
-            {this.renderAnnotationToggle()}
+            {currentFilesService.currentState.mappingType != "Yaml" ? this.renderAnnotationToggle(): null}
           </Card.Header>
 
           <Card.Body className="ag-theme-balham w-100 h-100 p-0">
