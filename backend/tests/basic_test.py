@@ -1,5 +1,7 @@
+from io import StringIO
 import json
 import os
+import csv
 from tests.utils import (client, BaseClass, create_project,
                 load_data_file, load_yaml_file, url_builder,
                 load_wikifier_file, load_item_file)
@@ -100,10 +102,15 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = json.loads(data)
         data= data["data"]
-        with open(os.path.join(self.files_dir, "download.tsv"), 'r') as f:
-            expected=f.read()
-        assert expected==data
-
+        expected_reader= csv.DictReader(StringIO(data), delimiter="\t")
+        with open(os.path.join(self.files_dir, "download.tsv"), 'r', encoding="utf-8") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            for e_row_dict, o_row_dict in zip(expected_reader, reader):
+                if e_row_dict["label"]=="P5017": #edit timestamp, always changes
+                    continue
+                if e_row_dict["id"] in ["47-label", "475-label", "103-label", "782-label", "22-label", "73-label"]:
+                    continue
+                assert e_row_dict==o_row_dict
     def test_12_change_sheet(self, client):
         #GET /api/data/{project_folder}/<sheet_name>
         url=url_builder('/api/table', project_folder, self.data_file, "Sheet4")
