@@ -502,6 +502,30 @@ def update_settings():
     return response, 200
 
 
+@app.route('/api/qnodes', methods=['GET'])
+@json_response
+def get_qnodes():
+    q = request.args.get('q')
+    if not q:
+        raise web_exceptions.InvalidRequestException("No search parameter set")
+
+    # construct the url with correct parameters for kgtk search
+    url = 'https://kgtk.isi.edu/api/{}'.format(q)
+    url += '?extra_info=true&language=en&type=ngram&instance_of='
+
+    try:
+        response = requests.get(url, verify=False)
+    except requests.exceptions.RequestException as error:
+        raise web_exceptions.InvalidRequestException(error)
+    else:
+        qnodes = [{
+            'qnode': item['qnode'],
+            'label': item['label'],
+            'description': item['description'],
+        } for item in response.json()]
+
+    return {'qnodes': qnodes}, 200
+
 
 
 
