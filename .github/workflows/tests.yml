@@ -33,3 +33,19 @@ jobs:
       #     coverage run --omit tests/**,t2wml-api/** -m pytest tests
       #     coverage report
       #     coveralls
+
+  check-typescript:
+    runs-on: ubuntu-latest
+    name: Check Typescript Code
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+      - name: Check Typescript
+        run: |
+          cd $GITHUB_WORKSPACE/electron
+          yarn install
+          npx tsc --project .\tsconfig.json --noEmit
+          npx esw --ext .ts --ext .tsx src --max-warnings 0
+
