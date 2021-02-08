@@ -121,7 +121,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   openFile() {
-    let filePath = this.state.clickedNode!.label;
+    const filePath = this.state.clickedNode!.label;
     const directory = path.join(wikiStore.project.projectDTO!.directory, filePath);
     shell.showItemInFolder(directory);
   }
