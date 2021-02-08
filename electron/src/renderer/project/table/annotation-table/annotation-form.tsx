@@ -103,7 +103,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Form.Label className="text-muted">Selected area</Form.Label>
           <Form.Control
             type="text" size="sm"
-            value={this.state.selectedArea || defaultValue}
+            value={selectedArea || defaultValue}
             onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)} />
         </Col>
       </Form.Group>
