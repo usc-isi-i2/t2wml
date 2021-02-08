@@ -46,6 +46,6 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/electron
           yarn install
-          npx tsc --project .\tsconfig.json --noEmit
+          npx tsc --project ./tsconfig.json --noEmit
           npx esw --ext .ts --ext .tsx src --max-warnings 0
 
