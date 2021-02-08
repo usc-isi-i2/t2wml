@@ -342,7 +342,7 @@ class OutputTable extends Component<{}, TableState> {
       // Activate related cells
       const newSelectedCell = new Cell(col, row);
       this.setState({ selectedCell: newSelectedCell }, () => {
-        this.selectRelatedCells(selectedCell);
+        this.selectRelatedCells(newSelectedCell);
 
         // Only open the output menu if there's content
         const tableCell = tableData[row][col];
