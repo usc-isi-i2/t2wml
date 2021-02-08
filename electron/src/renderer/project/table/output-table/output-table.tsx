@@ -232,7 +232,6 @@ class OutputTable extends Component<{}, TableState> {
   }
 
   handleOnMouseUp(event: React.MouseEvent) {
-    this.handleOnMouseUp(12);
     const { selectedCell, tableData } = this.state;
     if (!selectedCell || !tableData) { return; }
 
