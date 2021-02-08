@@ -800,6 +800,7 @@ class AnnotationTable extends Component<{}, TableState> {
       selectedAnnotationBlock: undefined,
     }, () => {
       this.resetSelections();
+      this.selection = undefined;
       this.updateAnnotationBlocks();
     });
   }
