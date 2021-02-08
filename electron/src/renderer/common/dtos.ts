@@ -203,3 +203,13 @@ export interface ResponseWithProjectAndMappingDTO extends ResponseWithProjectDTO
 export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO{
 
 }
+
+export interface QNodeDTO {
+    qnode: string;
+    label: string[];
+    description: string[];
+}
+
+export interface ResponseWithQNodeDTO {
+    qnodes: QNodeDTO[];
+}
