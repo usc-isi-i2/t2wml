@@ -6,6 +6,7 @@ import WikifyForm from './wikify-form';
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
+import RequestService from '../../../common/service';
 import { Cell } from '../../../common/general';
 import * as utils from '../table-utils';
 
@@ -24,8 +25,12 @@ interface WikifyMenuState {
 
 class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> {
 
+  private requestService: RequestService;
+
   constructor(props: WikifyMenuProperties) {
     super(props);
+
+    this.requestService = new RequestService();
 
     this.state = {
       errorMessage: {} as ErrorMessage,
