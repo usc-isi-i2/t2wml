@@ -11,11 +11,6 @@
   cursor: pointer;
 }
 
-.annotation-menu form.annotation-form p.area {
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
 .annotation-menu form.annotation-form button.delete {
   cursor: pointer;
   padding: 0px;
