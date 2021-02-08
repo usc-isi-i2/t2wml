@@ -256,11 +256,11 @@ class AnnotationTable extends Component<{}, TableState> {
       }
 
       // Update the table data and reset all selections made
-      this.setState({ tableData }, () => this.resetSelections());
+      this.setState({ tableData }, () => this.resetSelection());
     }
   }
 
-  resetSelections() {
+  resetSelection() {
     const table = this.tableRef;
     if ( table ) {
       table.classList.remove('active');
@@ -347,7 +347,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( !table ) { return; }
 
     // Reset selections before update
-    this.resetSelections();
+    this.resetSelection();
     table.classList.add('active');
 
     const classNames: string[] = ['active'];
@@ -553,7 +553,7 @@ class AnnotationTable extends Component<{}, TableState> {
         showAnnotationMenu: false,
         selectedAnnotationBlock: undefined,
       }, () => {
-        this.resetSelections();
+        this.resetSelection();
 
         // Activate the element on click
         this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
@@ -647,7 +647,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
       // arrow up
       if (event.code === 'ArrowUp' && y1 > 1) {
-        this.resetSelections();
+        this.resetSelection();
         const nextElement = rows[y1 - 1].children[x1];
         if (event.shiftKey) {
           if (y1 === y2) {
@@ -681,7 +681,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
       // arrow down
       if (event.code === 'ArrowDown' && y1 < rows.length - 1) {
-        this.resetSelections();
+        this.resetSelection();
         const nextElement = rows[y1 + 1].children[x1];
         if (event.shiftKey) {
           if (y1 === y2) {
@@ -715,7 +715,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
       // arrow left
       if (event.code === 'ArrowLeft' && x1 > 1) {
-        this.resetSelections();
+        this.resetSelection();
         const nextElement = rows[y1].children[x1 - 1];
         if (event.shiftKey) {
           if (x1 === x2) {
@@ -749,7 +749,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
       // arrow right
       if (event.code === 'ArrowRight' && x1 < rows[y1].children.length - 1) {
-        this.resetSelections();
+        this.resetSelection();
         const nextElement = rows[y1].children[x1 + 1];
         if (event.shiftKey) {
           if (x1 === x2) {
@@ -799,7 +799,7 @@ class AnnotationTable extends Component<{}, TableState> {
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
     }, () => {
-      this.resetSelections();
+      this.resetSelection();
       this.selection = undefined;
       this.updateAnnotationBlocks();
     });
