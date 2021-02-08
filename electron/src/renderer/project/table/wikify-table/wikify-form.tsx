@@ -3,6 +3,7 @@ import React from 'react';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
+import { QNodeDTO } from '@/renderer/common/dtos';
 
 
 interface WikifyFormProperties {
@@ -13,6 +14,7 @@ interface WikifyFormProperties {
 
 interface WikifyFormState {
   qnode?: string,
+  qnodes: QNodeDTO[]
 }
 
 
@@ -23,14 +25,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
     this.state = {
       qnode: '',
-      qNodes: [],
+      qnodes: [],
     };
   }
 
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.wikifyQNodes.qnodes, (qnodes) => this.updateQNodes(qNodes)));
+    this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
   }
 
   componentWillUnmount() {
@@ -39,8 +41,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
-  updateQNodes(qNodes) {
-    this.setState({qNodes});
+  updateQNodes(qnodes: QNodeDTO[]) {
+    this.setState({qnodes});
   }
 
   handleOnChange(event: any, key: string) {
@@ -70,8 +72,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderQNodeResults() {
-    const { qNodes } = this.state;
-    console.log(qNodes)
+    const { qnodes } = this.state;
+    console.log(qnodes)
   }
 
   renderSubmitButton() {
