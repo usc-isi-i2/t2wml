@@ -8,6 +8,7 @@ import wikiStore from '@/renderer/data/store';
 import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
+import * as utils from '../table-utils';
 
 
 interface TableState {
@@ -382,24 +383,6 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  standardizeSelection() {
-    if (!this.selection) {
-      return;
-    }
-
-    let temp;
-    if ( this.selection.x2 < this.selection.x1 ) {
-      temp = this.selection.x1;
-      this.selection.x1 = this.selection.x2;
-      this.selection.x2 = temp;
-    }
-    if ( this.selection.y2 < this.selection.y1 ) {
-      temp = this.selection.y1;
-      this.selection.y1 = this.selection.y2;
-      this.selection.y2 = temp;
-    }
-  }
-
   selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
     // Apply class names to the selected cell
     classNames.map(className => cell.classList.add(className));
@@ -490,7 +473,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
   handleOnMouseUp() {
     if ( this.selection ) {
-      this.standardizeSelection();
+      this.selection = utils.standardizeSelection(this.selection);
       if ( this.selecting && this.checkOverlaps() ) {
         this.closeAnnotationMenu();
       } else {

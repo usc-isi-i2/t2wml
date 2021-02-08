@@ -35,3 +35,18 @@ export function humanReadableSelection(selection: CellSelection) {
   }
   return text;
 }
+
+export function standardizeSelection(selection: CellSelection): CellSelection {
+  let temp;
+  if ( selection.x2 < selection.x1 ) {
+    temp = selection.x1;
+    selection.x1 = selection.x2;
+    selection.x2 = temp;
+  }
+  if ( selection.y2 < selection.y1 ) {
+    temp = selection.y1;
+    selection.y1 = selection.y2;
+    selection.y2 = temp;
+  }
+  return selection;
+}
