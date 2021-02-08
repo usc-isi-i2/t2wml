@@ -37,8 +37,21 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     };
   }
 
-  handleOnChange(key: string, value: string) {
+  async handleOnChange(key: string, value: string) {
     console.log('WikifyMenu OnChange triggered for -> ', key, value);
+
+    if ( value.length < 4 ) { return; }
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.getQNodes(value)
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot submit annotations!";
+      this.setState({ errorMessage: error });
+    } finally {
+      console.log('request finished');
+    }
+
   }
 
   handleOnSubmit(values: { [key: string]: string }) {
