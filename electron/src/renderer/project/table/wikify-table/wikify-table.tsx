@@ -20,7 +20,7 @@ interface TableState {
 @observer
 class WikifyTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
-  private selections: CellSelection[] = [];
+  private selection?: CellSelection;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -259,7 +259,7 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
-  resetSelections() {
+  resetSelection() {
     const table = this.tableRef;
     if (table) {
       table.querySelectorAll('td[class*="active"]').forEach(e => {
@@ -299,7 +299,7 @@ class WikifyTable extends Component<{}, TableState> {
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
-    this.resetSelections();
+    this.resetSelection();
 
     // Find the table cell element
     let counter = 0;
@@ -381,7 +381,7 @@ class WikifyTable extends Component<{}, TableState> {
         if (col >= rows[row].children.length - 1) { return; }
       }
 
-      this.resetSelections();
+      this.resetSelection();
       const nextElement = rows[row + 1].children[col + 1];
       this.selectCell(nextElement);
       this.selectRelatedCells(row + 1, col + 1);
