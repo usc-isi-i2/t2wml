@@ -1,6 +1,8 @@
 import React from 'react';
 
+import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import wikiStore from '../../../data/store';
 
 
 interface WikifyFormProperties {
@@ -21,7 +23,24 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
     this.state = {
       qnode: '',
+      qNodes: [],
     };
+  }
+
+  private disposers: IReactionDisposer[] = [];
+
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.wikifyQNodes.qnodes, (qnodes) => this.updateQNodes(qNodes)));
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
+  }
+
+  updateQNodes(qNodes) {
+    this.setState({qNodes});
   }
 
   handleOnChange(event: any, key: string) {
