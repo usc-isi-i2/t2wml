@@ -69,6 +69,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     )
   }
 
+  renderQNodeResults() {
+    const { qNodes } = this.state;
+    console.log(qNodes)
+  }
+
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
@@ -89,6 +94,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
         {this.renderTextInput()}
+        {this.renderQNodeResults()}
         {this.renderSubmitButton()}
       </Form>
     )
