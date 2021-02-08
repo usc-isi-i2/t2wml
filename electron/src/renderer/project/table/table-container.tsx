@@ -1,7 +1,7 @@
 ///header, footer (with sheet switcher), switcher between different table components
 
 import React, { ChangeEvent, Component } from 'react';
-
+import * as path from 'path';
 import './table-component.css';
 
 import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
@@ -214,16 +214,6 @@ class TableContainer extends Component<{}, TableState> {
 
     if ( mode === 'annotation' ) {
       this.fetchAnnotations();
-    } else {
-      await wikiStore.yaml.saveYaml();
-      if (currentFilesService.currentState.mappingType == "Yaml") {
-        currentFilesService.setMappingFiles(); //try to change to an existing annotation
-        //if there wasn't an existing annotation, we need to create it
-        if (currentFilesService.currentState.mappingType === "Yaml") {
-          await this.requestService.postAnnotationBlocks({ "annotations": [] });
-          currentFilesService.setMappingFiles();
-        }
-      }
     }
 
     wikiStore.table.showSpinner = false;
@@ -231,6 +221,18 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async fetchAnnotations() {
+    if (!currentFilesService.currentState.mappingFile){
+      //create a mapping file
+      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name+"-"+currentFilesService.currentState.sheetName+".annotation");
+      const data = {
+        "title":title,
+        "sheetName": currentFilesService.currentState.sheetName,
+        "dataFile": currentFilesService.currentState.dataFile
+      };
+
+      await this.requestService.createAnnotation(data)
+      currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
+    }
     try {
       await this.requestService.call(this, () => (
         this.requestService.getMappingCalculation()
@@ -292,6 +294,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'annotation',
             })}
+            disabled={currentFilesService.currentState.mappingType === 'Yaml'}
             onClick={() => this.switchMode('annotation')}>
             Annotate
           </Button>

@@ -104,6 +104,16 @@ class RequestService {
     wikiStore.wikifyQnodes.qnodes = response.qnodes;
   }
 
+  public async addExistingMapping(data: any){
+    const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
+  }
+
+  public async createAnnotation(data: any){
+    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
+  }
+
   public async postAnnotationBlocks(data: any) {
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
     wikiStore.project.projectDTO = response.project;
@@ -215,13 +225,18 @@ class RequestService {
     return response;
   }
 
-  public async renameYaml(folder: string, data: any) {
-    const response = await backendPost(`/yaml/rename?project_folder=${folder}`, data) as ResponseWithProjectDTO;
+  public async renameFile(folder: string, data: any) {
+    const response = await backendPost(`/files/rename?project_folder=${folder}`, data) as ResponseWithProjectDTO;
+    wikiStore.project.projectDTO = response.project;
+  }
+
+  public async removeOrDeleteFile(folder: string, data: any) {
+    const response = await backendPost(`/files/delete?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
   }
 
   public async saveYaml(data: any) {
-    const response = await backendPost(`/yaml/save?${this.getDataFileParams()}`, data) as ResponseWithProjectDTO;
+    const response = await backendPost(`/yaml/save?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
   }
 

@@ -110,9 +110,21 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
 
     }
 
+    handleClose(){
+        //reset window when closing:
+        this.setState({
+            selectedProperty: undefined,
+            entityFile: '',
+            propertyData: undefined,
+            labelContent: "",
+            hasError: false
+        })
+        this.props.cancelSaveEntities()
+    }
+
 
     render() {
-        const handleClose= ()=>this.props.cancelSaveEntities()
+        const handleClose= ()=>this.handleClose()
         const enabled = !this.state.hasError && this.state.selectedProperty!=undefined;
 
         return (

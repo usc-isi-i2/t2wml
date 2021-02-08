@@ -85,6 +85,7 @@ class YamlEditorState {
         // send request
         const data = {"yaml": this.yamlContent!,
                       "title": currentFilesService.currentState.mappingFile!,
+                      "dataFile": currentFilesService.currentState.dataFile,
                       "sheetName": currentFilesService.currentState.sheetName};
 
         try {

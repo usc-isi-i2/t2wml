@@ -198,7 +198,9 @@ class AnnotationTable extends Component<{}, TableState> {
                 cx -= 1;
               }
               const cell = tableData[row - 1][col - 1];
-              cell.classNames = classNames;
+              if ( cell ) {
+                cell.classNames = classNames;
+              }
             }
           }
         }

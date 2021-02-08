@@ -47,7 +47,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     this.changed = false;
   }
 
-  handleOnChange(event: any, key: string) {
+  handleOnChange(event: React.KeyboardEvent, key: string) {
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
     const updatedState: AnnotationFormState = {};
