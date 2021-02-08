@@ -62,7 +62,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     this.setState({ ...updatedState }, () => onChange(key, value));
   }
 
-  handleOnSelectionChange(event) {
+  handleOnSelectionChange(event: React.ChangeEvent) {
     const { onSelectionChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
     this.setState({
@@ -104,7 +104,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Form.Control
             type="text" size="sm"
             value={this.state.selectedArea || defaultValue}
-            onChange={(event: React.KeyboardEvent) => this.handleOnSelectionChange(event)} />
+            onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)} />
         </Col>
       </Form.Group>
     )
