@@ -286,6 +286,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'annotation',
             })}
+            disabled={currentFilesService.currentState.mappingType === 'Yaml'}
             onClick={() => this.switchMode('annotation')}>
             Annotate
           </Button>
@@ -382,7 +383,7 @@ class TableContainer extends Component<{}, TableState> {
             style={{ height: "40px", background: "#339966" }}>
             {this.renderTitle()}
             {this.renderUploadButton()}
-            {currentFilesService.currentState.mappingType != "Yaml" ? this.renderAnnotationToggle(): null}
+            {this.renderAnnotationToggle()}
           </Card.Header>
 
           <Card.Body className="ag-theme-balham w-100 h-100 p-0">
