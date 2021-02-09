@@ -184,9 +184,11 @@ class WikifyTable extends Component<{}, TableState> {
     for (let i = 0; i < table.cells.length; i++) {
       const rowData: TableCell[] = [];
       for (let j = 0; j < table.cells[i].length; j++) {
-        const content: any = this.getCellContent(table.cells[i][j], j, i);
+        const rawContent: string = table.cells[i][j];
+        const content: any = this.getCellContent(rawContent, j, i);
         const cell: TableCell = {
           classNames: [],
+          rawContent,
           content,
         };
         rowData.push(cell);

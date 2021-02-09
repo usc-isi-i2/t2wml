@@ -145,6 +145,7 @@ export interface AnnotationBlock{
 }
 
 export interface TableCell {
+  rawContent?: string;
   content: string | Element;
   classNames: string[];
 }
