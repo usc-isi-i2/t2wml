@@ -11,6 +11,30 @@
   cursor: pointer;
 }
 
+.wikify-menu .qnode {
+  user-select: none;
+  padding: 5px 0;
+}
+
+.wikify-menu .qnode:hover {
+  cursor: pointer;
+  background: #f9f9f9;
+}
+
+.wikify-menu .qnode .label {
+  display: block;
+  font-weight: bold;
+  width: 100%;
+}
+
+.wikify-menu .qnode .description {
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
 .wikify-menu .toast .toast-body {
   background: #fefefe;
 }
