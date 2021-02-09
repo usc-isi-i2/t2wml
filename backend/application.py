@@ -1,5 +1,5 @@
 import json
-import csv
+import pandas as pd
 import re
 import os
 import sys
@@ -536,33 +536,20 @@ def set_qnode():
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
     qnode_id=qnode_dict["qnode"]
-    col = request.get_json()['col']
-    row = request.get_json()['row']
+    col = request.get_json().get('col', "")
+    row = request.get_json().get('row', "")
     value = request.get_json()['value']
-    #also need to get cell value
-    #can also add optional context
+    context = request.get_json().get("context", "")
+    df=pd.DataFrame([[col, row, value, context, qnode_id]], columns=["column","row","value","context","item"])
 
-    # try to open user_input_qnode_wikification.csv
-    # if it doesn't exist, create it, and add it to the projet
     filepath=os.path.join(project.directory, "user-input-wikification.csv")
-    try:
-        with open(filepath, 'a') as f:
-            writer=csv.writer(f)
-            writer.writerow([col, row, value, "", qnode_id])
-    except:
-        with open(filepath, 'w') as f:
-            writer=csv.writer(f)
-            writer.writerow(["col", "row", "value", "context", "item"])
-            writer.writerow([col, row, value, "", qnode_id])
+    if os.path.exists(filepath):
+        df.to_csv(filepath, mode='a', index=False, header=False)
+    else:
+        df.to_csv(filepath, index=False, header=True)
 
     project.add_wikifier_file(filepath)
     project.save()
-
-    # append the row for this qnode to that file
-    #column,row,value,context,item
-    #col, row, cell value, nothing, qnode_id
-    # save file
-    # already added to project so don't need to deal with that again
 
     #build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
