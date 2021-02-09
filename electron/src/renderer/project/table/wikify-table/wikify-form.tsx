@@ -85,7 +85,9 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return (
       <Form className="container wikify-form">
         {this.renderTextInput()}
-        {this.renderQNodeResults()}
+        <div className="results">
+          {this.renderQNodeResults()}
+        </div>
       </Form>
     )
   }
