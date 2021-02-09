@@ -10,3 +10,7 @@
   background: whitesmoke;
   cursor: pointer;
 }
+
+.wikify-menu .toast .toast-body {
+  background: #fefefe;
+}
