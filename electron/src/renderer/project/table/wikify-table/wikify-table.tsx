@@ -13,7 +13,7 @@ interface TableState {
   tableData?: TableData;
   selectedCell?: Cell;
   showWikifyMenu: boolean,
-  wikifyCellContent: string | Element,
+  wikifyCellContent?: string,
   wikifyMenuPosition: Array<number>,
 }
 
@@ -36,7 +36,7 @@ class WikifyTable extends Component<{}, TableState> {
       tableData: undefined,
       selectedCell: undefined,
       showWikifyMenu: false,
-      wikifyCellContent: '',
+      wikifyCellContent: undefined,
       wikifyMenuPosition: [50, 70],
     };
 
@@ -281,7 +281,7 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
-  openWikifyMenu(event: React.MouseEvent, cellContent: string | Element) {
+  openWikifyMenu(event: React.MouseEvent, rawContent?: string) {
     let { pageX, pageY } = event;
     pageX = pageX - 250;
     if ( settings.window.height - pageY <= 275 ) {
@@ -291,7 +291,7 @@ class WikifyTable extends Component<{}, TableState> {
     }
     this.setState({
       showWikifyMenu: true,
-      wikifyCellContent: cellContent,
+      wikifyCellContent: rawContent,
       wikifyMenuPosition: [pageX, pageY],
     });
   }
@@ -309,7 +309,7 @@ class WikifyTable extends Component<{}, TableState> {
 
     // Only open the output menu if there's content
     if ( tableCell.content ) {
-      this.openWikifyMenu(event, tableCell.content);
+      this.openWikifyMenu(event, tableCell.rawContent);
     }
   }
 
