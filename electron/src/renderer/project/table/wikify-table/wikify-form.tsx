@@ -51,12 +51,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({qnode: value}, () => onChange(key, value));
   }
 
-  handleOnSubmit(event: any) {
-    event.preventDefault();
-    const { onSubmit } = this.props;
-    onSubmit(this.state);
-  }
-
   handleOnClick(qnode: QNodeDTO) {
     const { onSubmit } = this.props;
     onSubmit({qnode});
@@ -87,28 +81,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     ));
   }
 
-  renderSubmitButton() {
-    return (
-      <Form.Group as={Row}>
-        <Col sm="12" md="12">
-          <Button
-            size="sm"
-            type="submit"
-            variant="outline-dark">
-            Submit
-          </Button>
-        </Col>
-      </Form.Group>
-    )
-  }
-
   render() {
     return (
-      <Form className="container wikify-form"
-        onSubmit={this.handleOnSubmit.bind(this)}>
+      <Form className="container wikify-form">
         {this.renderTextInput()}
         {this.renderQNodeResults()}
-        {this.renderSubmitButton()}
       </Form>
     )
   }
