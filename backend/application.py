@@ -537,6 +537,7 @@ def set_qnode():
     qnode_id=qnode_dict["qnode"]
     col = request.get_json()['col']
     row = request.get_json()['row']
+    value = request.get_json()['value']
     #also need to get cell value
     #can also add optional context
 
