@@ -57,6 +57,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     onSubmit(this.state);
   }
 
+  handleOnClick(qnode: QNodeDTO) {
+    const { onSubmit } = this.props;
+    onSubmit({qnode});
+  }
+
   renderTextInput() {
     return (
       <Form.Group as={Row}
@@ -72,7 +77,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   renderQNodeResults() {
     const { qnodes } = this.state;
     return qnodes.map((item, index) => (
-      <Row className={"qnode"} key={index}>
+      <Row className={"qnode"} key={index}
+        onClick={() => this.handleOnClick(item)}>
         <Col sm="12" md="12">
           <div className="label">{item.label[0]} ({item.qnode})</div>
           <div className="description">{item.description[0]}</div>
