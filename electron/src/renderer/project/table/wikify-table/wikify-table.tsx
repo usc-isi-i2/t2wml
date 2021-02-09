@@ -13,6 +13,7 @@ interface TableState {
   tableData?: TableData;
   selectedCell?: Cell;
   showWikifyMenu: boolean,
+  wikifyCellContent: string | Element,
   wikifyMenuPosition: Array<number>,
 }
 
@@ -35,6 +36,7 @@ class WikifyTable extends Component<{}, TableState> {
       tableData: undefined,
       selectedCell: undefined,
       showWikifyMenu: false,
+      wikifyCellContent: '',
       wikifyMenuPosition: [50, 70],
     };
 
@@ -277,7 +279,7 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
-  openWikifyMenu(event: React.MouseEvent) {
+  openWikifyMenu(event: React.MouseEvent, cellContent: string | Element) {
     let { pageX, pageY } = event;
     pageX = pageX - 250;
     if ( settings.window.height - pageY <= 275 ) {
@@ -287,14 +289,25 @@ class WikifyTable extends Component<{}, TableState> {
     }
     this.setState({
       showWikifyMenu: true,
+      wikifyCellContent: cellContent,
       wikifyMenuPosition: [pageX, pageY],
     });
   }
 
   handleOnMouseUp(event: React.MouseEvent) {
-    const { selectedCell } = this.state;
-    if ( selectedCell ) {
-      this.openWikifyMenu(event);
+    const { selectedCell, tableData } = this.state;
+    if (!selectedCell || !tableData) { return; }
+
+    const { row, col } = selectedCell;
+    if (row < 0 || row >= tableData.length || col < 0 || col >= tableData[row].length) {
+      // There is no such cell, do nothing
+      return;
+    }
+    const tableCell = tableData[row][col];
+
+    // Only open the output menu if there's content
+    if ( tableCell.content ) {
+      this.openWikifyMenu(event, tableCell.content);
     }
   }
 
