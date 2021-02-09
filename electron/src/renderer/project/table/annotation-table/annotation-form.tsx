@@ -135,7 +135,11 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { role, type } = this.state;
     const { selectedAnnotationBlock: selectedBlock } = this.props;
     const selectedAnnotationRole = selectedBlock && !this.changed ? selectedBlock.role : role;
-    const selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
+    let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
+    if (!selectedAnnotationType){
+      //default to string:
+      selectedAnnotationType="string";
+    }
     let selectedOption = null;
     if (selectedAnnotationRole) {
       selectedOption = ROLES.find(option => (
@@ -151,7 +155,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Type</Form.Label>
           <Form.Control size="sm" as="select">
-            <option disabled selected>--</option>
             {selectedOption?.children?.map((type, i) => (
               <option key={i}
                 value={type.value}

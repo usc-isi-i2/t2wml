@@ -16,3 +16,7 @@
   padding: 0px;
   color: red;
 }
+
+.annotation-menu .toast .toast-body {
+  background: #fefefe;
+}

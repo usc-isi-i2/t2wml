@@ -20,3 +20,7 @@
 .output-menu p.wikibaseitem a {
   color: #006699;
 }
+
+.output-menu .toast .toast-body {
+  background: #fefefe;
+}
