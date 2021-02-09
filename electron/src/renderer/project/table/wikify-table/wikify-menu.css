@@ -4,6 +4,8 @@
   z-index: 250;
   left: 50px;
   top: 70px;
+  max-height: 500px;
+  overflow: scroll;
 }
 
 .wikify-menu .handle {
