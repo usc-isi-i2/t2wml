@@ -57,9 +57,16 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   async handleOnSubmit(values: { [key: string]: string }) {
     console.log('WikifyMenu OnSubmit triggered for -> ', values);
 
+    const { selectedCell } = this.props;
+    const { col, row } = selectedCell;
+
     try {
       await this.requestService.call(this, () => (
-        this.requestService.postQNodes(values)
+        this.requestService.postQNodes({
+          col,
+          row,
+          ...values,
+        })
       ));
     } catch (error) {
       error.errorDescription += "\n\nCannot submit qnodes!";
