@@ -104,6 +104,10 @@ class RequestService {
     wikiStore.wikifyQnodes.qnodes = response.qnodes;
   }
 
+  public async postQNodes(qnode: QNodeDTO) {
+    const response = await backendPost(`/set_qnode`, qnode) as ResponseWithQNodeDTO;
+  }
+
   public async addExistingMapping(data: any){
     const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;

@@ -46,16 +46,28 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         this.requestService.getQNodes(value)
       ));
     } catch (error) {
-      error.errorDescription += "\n\nCannot submit annotations!";
+      error.errorDescription += "\n\nCannot fetch qnodes!";
       this.setState({ errorMessage: error });
     } finally {
-      console.log('request finished');
+      console.log('qnodes request finished');
     }
 
   }
 
-  handleOnSubmit(values: { [key: string]: string }) {
+  async handleOnSubmit(values: { [key: string]: string }) {
     console.log('WikifyMenu OnSubmit triggered for -> ', values);
+
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.postQNodes(values)
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot submit qnodes!";
+      this.setState({ errorMessage: error });
+    } finally {
+      console.log('qnodes request finished');
+    }
+
   }
 
   renderHeader() {
