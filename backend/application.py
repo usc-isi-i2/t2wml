@@ -530,14 +530,32 @@ def get_qnodes():
 @app.route('/api/set_qnode', methods=['POST'])
 @json_response
 def set_qnode():
-    qnode = request.get_json()['qnode']
-    if not qnode:
+    project = get_project()
+    qnode_dict = request.get_json()['qnode']
+    if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
-
+    qnode_id=qnode_dict["qnode"]
     col = request.get_json()['col']
     row = request.get_json()['row']
+    #also need to get cell value
+    #can also add optional context
 
-    return {'status': 'ok'}, 200
+    # try to open user_input_qnode_wikification.csv
+    # if it doesn't exist, create it, and add it to the project
+
+    # append the row for this qnode to that file
+    #column,row,value,context,item
+    #col, row, cell value, nothing, qnode_id
+    # save file
+    # already added to project so don't need to deal with that again
+
+    #build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
+    # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
+    #calc_params = get_calc_params(project)
+    response= dict(project=get_project_dict(project))
+    #response.update(get_qnodes_layer(calc_params))
+
+    return response, 200
 
 
 @app.route('/api/files/rename', methods=['POST'])
