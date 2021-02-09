@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { IReactionDisposer, reaction } from 'mobx';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { QNodeDTO } from '@/renderer/common/dtos';
 

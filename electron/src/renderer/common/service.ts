@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodeDTO, QNodeDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodeDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -104,8 +104,9 @@ class RequestService {
     wikiStore.wikifyQnodes.qnodes = response.qnodes;
   }
 
-  public async postQNodes(qnode: QNodeDTO) {
-    const response = await backendPost(`/set_qnode`, qnode) as ResponseWithQNodeDTO;
+  public async postQNodes(values: any) {
+    const response = await backendPost(`/set_qnode`, values) as ResponseWithQNodeDTO;
+    console.log(response)
   }
 
   public async addExistingMapping(data: any){
