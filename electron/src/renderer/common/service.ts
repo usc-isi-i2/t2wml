@@ -105,7 +105,7 @@ class RequestService {
   }
 
   public async postQNodes(values: any) {
-    const response = await backendPost(`/set_qnode`, values) as ResponseWithQNodeDTO;
+    const response = await backendPost(`/set_qnode?${this.getProjectFolder()}`, values) as ResponseWithQNodeDTO;
     console.log(response)
   }
 
