@@ -8,6 +8,7 @@ import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import { Cell } from '../../../common/general';
+import wikiStore from '../../../data/store';
 import * as utils from '../table-utils';
 
 
@@ -58,6 +59,10 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   async handleOnSubmit(values: { [key: string]: string }) {
     console.log('WikifyMenu OnSubmit triggered for -> ', values);
 
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+
     const { selectedCell, wikifyCellContent } = this.props;
     const { col, row } = selectedCell;
 
@@ -75,6 +80,11 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
       this.setState({ errorMessage: error });
     } finally {
       console.log('qnodes request finished');
+
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+
     }
 
   }
