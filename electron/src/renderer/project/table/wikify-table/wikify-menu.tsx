@@ -14,6 +14,7 @@ import * as utils from '../table-utils';
 interface WikifyMenuProperties {
   selectedCell: Cell;
   position: Array<number>;
+  wikifyCellContent?: string;
   onClose: () => void;
 }
 
@@ -57,7 +58,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   async handleOnSubmit(values: { [key: string]: string }) {
     console.log('WikifyMenu OnSubmit triggered for -> ', values);
 
-    const { selectedCell } = this.props;
+    const { selectedCell, wikifyCellContent } = this.props;
     const { col, row } = selectedCell;
 
     try {
@@ -65,6 +66,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         this.requestService.postQNodes({
           col,
           row,
+          value: wikifyCellContent,
           ...values,
         })
       ));

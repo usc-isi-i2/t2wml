@@ -413,12 +413,14 @@ class WikifyTable extends Component<{}, TableState> {
     const {
       selectedCell,
       showWikifyMenu,
+      wikifyCellContent,
       wikifyMenuPosition,
     } = this.state;
     if ( selectedCell && showWikifyMenu ) {
       return (
         <WikifyMenu
           selectedCell={selectedCell}
+          wikifyCellContent={wikifyCellContent}
           position={wikifyMenuPosition}
           onClose={() => this.closeWikifyMenu()} />
       )
