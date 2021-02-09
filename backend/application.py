@@ -527,6 +527,19 @@ def get_qnodes():
     return {'qnodes': qnodes}, 200
 
 
+@app.route('/api/set_qnode', methods=['POST'])
+@json_response
+def set_qnode():
+    qnode = request.get_json()['qnode']
+    if not qnode:
+        raise web_exceptions.InvalidRequestException('No qnode provided')
+
+    col = request.get_json()['col']
+    row = request.get_json()['row']
+
+    return {'status': 'ok'}, 200
+
+
 @app.route('/api/files/rename', methods=['POST'])
 @json_response
 def rename_file():
