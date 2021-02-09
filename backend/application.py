@@ -1,4 +1,5 @@
 import json
+import csv
 import re
 import os
 import sys
@@ -542,7 +543,20 @@ def set_qnode():
     #can also add optional context
 
     # try to open user_input_qnode_wikification.csv
-    # if it doesn't exist, create it, and add it to the project
+    # if it doesn't exist, create it, and add it to the projet
+    filepath=os.path.join(project.directory, "user-input-wikification.csv")
+    try:
+        with open(filepath, 'a') as f:
+            writer=csv.writer(f)
+            writer.writerow([col, row, value, "", qnode_id])
+    except:
+        with open(filepath, 'w') as f:
+            writer=csv.writer(f)
+            writer.writerow(["col", "row", "value", "context", "item"])
+            writer.writerow([col, row, value, "", qnode_id])
+
+    project.add_wikifier_file(filepath)
+    project.save()
 
     # append the row for this qnode to that file
     #column,row,value,context,item
