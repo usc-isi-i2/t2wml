@@ -82,7 +82,7 @@ class WikifyTable extends Component<{}, TableState> {
     for (const entry of qnodes.entries) {
       for (const indexPair of entry.indices) {
         const tableCell = tableData[indexPair[0]][indexPair[1]];
-        tableCell.classNames.push(`type-qNode`)
+        tableCell.classNames.push('type-qNode');
       }
     }
     this.setState({ tableData });
