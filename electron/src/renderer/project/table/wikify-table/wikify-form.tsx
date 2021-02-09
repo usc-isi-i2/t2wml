@@ -71,7 +71,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   renderQNodeResults() {
     const { qnodes } = this.state;
-    console.log(qnodes)
+    return qnodes.map((item, index) => (
+      <Row className={"qnode"} key={index}>
+        <Col sm="12" md="12">
+          <div className="label">{item.label[0]} ({item.qnode})</div>
+          <div className="description">{item.description[0]}</div>
+        </Col>
+      </Row>
+    ));
   }
 
   renderSubmitButton() {
