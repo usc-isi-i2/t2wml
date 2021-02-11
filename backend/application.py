@@ -521,8 +521,9 @@ def get_qnodes():
     else:
         items = response.json()
         if type(items) != list:
-            raise web_exceptions.InvalidRequestException("KGTK did not return a
-                    valid list of qnodes")
+            raise web_exceptions.InvalidRequestException(
+                "KGTK did not return a valid list of qnodes"
+            )
         qnodes = [{
             'id': item['qnode'],
             'label': item['label'][0],
