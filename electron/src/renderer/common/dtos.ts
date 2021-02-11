@@ -146,7 +146,7 @@ export interface AnnotationBlock{
 
 export interface TableCell {
   rawContent?: string;
-  content: string | Element;
+  content: string | JSX.Element;
   classNames: string[];
 }
 
