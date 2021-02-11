@@ -3,18 +3,18 @@ import React from 'react';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
-import { QNodeDTO } from '@/renderer/common/dtos';
+import { QNode } from '@/renderer/common/dtos';
 
 
 interface WikifyFormProperties {
-  onChange: any | null, // Use the actual function type: (arg: argType) => returnType
-  onSubmit: any | null,
+  onChange: any | null; // Use the actual function type: (arg: argType) => returnType
+  onSubmit: any | null;
 }
 
 
 interface WikifyFormState {
-  qnode?: string,
-  qnodes: QNodeDTO[]
+  qnode?: string;
+  qnodes: QNode[];
 }
 
 
@@ -41,7 +41,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
-  updateQNodes(qnodes: QNodeDTO[]) {
+  updateQNodes(qnodes: QNode[]) {
     this.setState({qnodes});
   }
 
@@ -51,7 +51,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({qnode: value}, () => onChange(key, value));
   }
 
-  handleOnClick(qnode: QNodeDTO) {
+  handleOnClick(qnode: QNode) {
     const { onSubmit } = this.props;
     onSubmit({qnode});
   }
