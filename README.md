@@ -71,6 +71,22 @@ cd t2wml-root/t2wml/backend
 python t2wml-server.py
 ```
 
+### Running backend tests
+
+```
+cd t2wml-root/t2wml/backend
+pytest tests
+```
+
+### Generating a self-contained tests report
+
+```
+cd t2wml-root/t2wml/backend
+pytest --cov=. --cov-report html:htmlcov tests
+open htmlcov/index.html
+```
+
+
 #### Running the frontend GUI
 Since we're using Electron, you need to run two scripts to run the GUI on development:
 
