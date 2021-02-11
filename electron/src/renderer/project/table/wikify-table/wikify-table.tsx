@@ -4,7 +4,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
-import { QNodeEntry, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
+import { QNodeEntry, QNode, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
 import WikifyMenu from './wikify-menu';
 import { settings } from '../../../../main/settings';
 
@@ -61,29 +61,25 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
-  getCellContent(cell: string, col: number, row: number) {
-    const qnode = wikiStore.layers.qnode.find(new Cell(col, row));
-    if ( qnode ) {
-      return (
-        <span>
-          {cell}
-          <br />
-          <strong>{qnode.label}</strong> ({qnode.url ? (
-            <a target="_blank"
-              rel="noopener noreferrer"
-              className="type-qnode"
-              href={qnode.url}>
-              {qnode.id}
-            </a>
-          ) : (
-            <span>{qnode.id}</span>
-          )})
-          <br />
-          {qnode.description}
-        </span>
-      );
-    }
-    return cell;
+  getCellContent(qnode: QNode, rawContent?: string) {
+    return (
+      <span>
+        {rawContent}
+        <br />
+        <strong>{qnode.label}</strong> ({qnode.url ? (
+          <a target="_blank"
+            rel="noopener noreferrer"
+            className="type-qnode"
+            href={qnode.url}>
+            {qnode.id}
+          </a>
+        ) : (
+          <span>{qnode.id}</span>
+        )})
+        <br />
+        {qnode.description}
+      </span>
+    );
   }
 
   updateTableData(table?: TableDTO) {
@@ -96,11 +92,10 @@ class WikifyTable extends Component<{}, TableState> {
       const rowData: TableCell[] = [];
       for (let j = 0; j < table.cells[i].length; j++) {
         const rawContent: string = table.cells[i][j];
-        const content: any = this.getCellContent(rawContent, j, i);
         const cell: TableCell = {
           classNames: [],
+          content: rawContent,
           rawContent,
-          content,
         };
         rowData.push(cell);
       }
@@ -108,7 +103,7 @@ class WikifyTable extends Component<{}, TableState> {
     }
     this.setState({ tableData }, () => {
       this.colorCellsByType(wikiStore.layers.type);
-      this.colorQnodeCells(wikiStore.layers.qnode);
+      this.updateQnodeCells(wikiStore.layers.qnode);
     });
   }
 
@@ -133,6 +128,7 @@ class WikifyTable extends Component<{}, TableState> {
     for (const entry of qnodes.entries) {
       for (const indexPair of entry.indices) {
         const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.content = this.getCellContent(entry, tableCell.rawContent);
         tableCell.classNames.push('type-qNode');
       }
     }
