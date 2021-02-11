@@ -50,7 +50,7 @@ class WikifyTable extends Component<{}, TableState> {
     document.addEventListener('keydown', this.handleOnKeyDown);
     this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
     this.disposers.push(reaction(() => wikiStore.layers.type, (types) => this.colorCellsByType(types)))
-    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.colorQnodeCells(qnodes)));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.updateQnodeCells(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.showCleanedData, () => this.toggleCleanedData()));
   }
 
@@ -112,7 +112,7 @@ class WikifyTable extends Component<{}, TableState> {
     });
   }
 
-  colorQnodeCells(qnodes: Layer<QNodeEntry>) {
+  updateQnodeCells(qnodes: Layer<QNodeEntry>) {
     const { tableData } = this.state;
     if (!tableData) {
       return;
