@@ -526,8 +526,8 @@ def get_qnodes():
             )
         qnodes = [{
             'id': item['qnode'],
-            'label': item['label'][0],
-            'description': item['description'][0],
+            'label': item['label'][0] if item['label'] else '',
+            'description': item['description'][0] if item['description'] else '',
         } for item in items]
 
     return {'qnodes': qnodes}, 200
