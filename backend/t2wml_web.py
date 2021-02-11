@@ -316,6 +316,12 @@ def get_annotations(calc_params):
     return dga.annotation_block_array, yamlContent
 
 def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
+    #temporary fix until we fix in frontend:
+    for block in annotation:
+        if block["role"] in ["qualifier", "dependentVar"]:
+            if not block.get("type"):
+                block["type"]="string"
+
     dga=Annotation(annotation)
     dga.save(annotations_path)
     project.add_annotation_file(annotations_path, data_path, sheet_name)

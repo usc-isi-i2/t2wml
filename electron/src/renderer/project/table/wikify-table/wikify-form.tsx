@@ -74,8 +74,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Row className={"qnode"} key={index}
         onClick={() => this.handleOnClick(item)}>
         <Col sm="12" md="12">
-          <div className="label">{item.label[0]} ({item.qnode})</div>
-          <div className="description">{item.description[0]}</div>
+          <div className="label">{item.label} ({item.id})</div>
+          <div className="description">{item.description}</div>
         </Col>
       </Row>
     ));

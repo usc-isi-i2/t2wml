@@ -520,9 +520,9 @@ def get_qnodes():
         raise web_exceptions.InvalidRequestException(error)
     else:
         qnodes = [{
-            'qnode': item['qnode'],
-            'label': item['label'],
-            'description': item['description'],
+            'id': item['qnode'],
+            'label': item['label'][0],
+            'description': item['description'][0],
         } for item in response.json()]
 
     return {'qnodes': qnodes}, 200
@@ -535,7 +535,7 @@ def set_qnode():
     qnode_dict = request.get_json()['qnode']
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
-    qnode_id=qnode_dict["qnode"]
+    qnode_id=qnode_dict["id"]
     col = request.get_json().get('col', "")
     row = request.get_json().get('row', "")
     value = request.get_json()['value']
@@ -553,9 +553,9 @@ def set_qnode():
 
     #build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
-    #calc_params = get_calc_params(project)
+    calc_params = get_calc_params(project)
     response= dict(project=get_project_dict(project))
-    #response.update(get_qnodes_layer(calc_params))
+    response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200
 

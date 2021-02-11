@@ -175,7 +175,6 @@ export interface ResponseWithTableDTO extends ResponseWithMappingDTO{
 
 export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO{
     layers: LayersDTO; //only contains the qnode layer, but leaving it like this for now
-
 }
 
 export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
@@ -205,12 +204,6 @@ export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, Respo
 
 }
 
-export interface QNodeDTO {
-    qnode: string;
-    label: string[];
-    description: string[];
-}
-
-export interface ResponseWithQNodeDTO {
-    qnodes: QNodeDTO[];
+export interface ResponseWithQNodesDTO {
+    qnodes: QNode[];
 }
