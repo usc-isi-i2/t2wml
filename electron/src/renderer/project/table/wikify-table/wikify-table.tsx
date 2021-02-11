@@ -61,6 +61,57 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
+  getCellContent(cell: string, col: number, row: number) {
+    const qnode = wikiStore.layers.qnode.find(new Cell(col, row));
+    if ( qnode ) {
+      return (
+        <span>
+          {cell}
+          <br />
+          <strong>{qnode.label}</strong> ({qnode.url ? (
+            <a target="_blank"
+              rel="noopener noreferrer"
+              className="type-qnode"
+              href={qnode.url}>
+              {qnode.id}
+            </a>
+          ) : (
+            <span>{qnode.id}</span>
+          )})
+          <br />
+          {qnode.description}
+        </span>
+      );
+    }
+    return cell;
+  }
+
+  updateTableData(table?: TableDTO) {
+    if (!table || !table.cells) {
+      this.setState({ tableData: undefined });
+      return;
+    }
+    const tableData = [];
+    for (let i = 0; i < table.cells.length; i++) {
+      const rowData: TableCell[] = [];
+      for (let j = 0; j < table.cells[i].length; j++) {
+        const rawContent: string = table.cells[i][j];
+        const content: any = this.getCellContent(rawContent, j, i);
+        const cell: TableCell = {
+          classNames: [],
+          rawContent,
+          content,
+        };
+        rowData.push(cell);
+      }
+      tableData.push(rowData);
+    }
+    this.setState({ tableData }, () => {
+      this.colorCellsByType(wikiStore.layers.type);
+      this.colorQnodeCells(wikiStore.layers.qnode);
+    });
+  }
+
   colorQnodeCells(qnodes: Layer<QNodeEntry>) {
     const { tableData } = this.state;
     if (!tableData) {
@@ -148,57 +199,6 @@ class WikifyTable extends Component<{}, TableState> {
     }
 
     this.setState({ tableData })
-  }
-
-  getCellContent(cell: string, col: number, row: number) {
-    const qnode = wikiStore.layers.qnode.find(new Cell(col, row));
-    if ( qnode ) {
-      return (
-        <span>
-          {cell}
-          <br />
-          <strong>{qnode.label}</strong> ({qnode.url ? (
-            <a target="_blank"
-              rel="noopener noreferrer"
-              className="type-qnode"
-              href={qnode.url}>
-              {qnode.id}
-            </a>
-          ) : (
-            <span>{qnode.id}</span>
-          )})
-          <br />
-          {qnode.description}
-        </span>
-      );
-    }
-    return cell;
-  }
-
-  updateTableData(table?: TableDTO) {
-    if (!table || !table.cells) {
-      this.setState({ tableData: undefined });
-      return;
-    }
-    const tableData = [];
-    for (let i = 0; i < table.cells.length; i++) {
-      const rowData: TableCell[] = [];
-      for (let j = 0; j < table.cells[i].length; j++) {
-        const rawContent: string = table.cells[i][j];
-        const content: any = this.getCellContent(rawContent, j, i);
-        const cell: TableCell = {
-          classNames: [],
-          rawContent,
-          content,
-        };
-        rowData.push(cell);
-      }
-      tableData.push(rowData);
-    }
-    this.setState({ tableData }, () => {
-      this.colorCellsByType(wikiStore.layers.type);
-      this.colorQnodeCells(wikiStore.layers.qnode);
-    });
   }
 
   selectCell(cell: Element, classNames: string[] = []) {
