@@ -48,6 +48,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   handleOnChange(event: React.KeyboardEvent, key: string) {
+    const { onSubmit } = this.props;
+    if (event.code === 'Enter' ) {
+      event.preventDefault();
+      onSubmit(this.state);
+    }
+
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
     const updatedState: AnnotationFormState = {};
