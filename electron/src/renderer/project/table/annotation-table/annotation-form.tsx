@@ -47,7 +47,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     this.changed = false;
   }
 
-  handleOnChange(event: React.KeyboardEvent, key: string) {
+  handleOnChange(event: KeyboardEvent, key: string) {
     const { onSubmit } = this.props;
     if (event.code === 'Enter' ) {
       event.preventDefault();
@@ -126,7 +126,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
     return (
       <Form.Group as={Row} key={type.value}
-        onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, type.value)}>
+        onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">{type.label}</Form.Label>
           <Form.Control
@@ -157,7 +157,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     if (!selectedOption || !('children' in selectedOption)) { return null; }
     const optionsDropdown = (
       <Form.Group as={Row}
-        onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'type')}>
+        onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'type')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Type</Form.Label>
           <Form.Control size="sm" as="select">
@@ -202,7 +202,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
     return (
       <Form.Group as={Row}
-        onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'role')}>
+        onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'role')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Role</Form.Label>
           <Form.Control size="sm" as="select">
