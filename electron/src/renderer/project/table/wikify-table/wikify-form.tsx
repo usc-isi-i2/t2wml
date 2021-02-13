@@ -53,6 +53,15 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({qnode: value}, () => onChange(key, value));
   }
 
+  handleOnSubmit(event: any) {
+    event.preventDefault();
+    const { onSubmit } = this.props;
+    const { qnodes } = this.state;
+    if ( qnodes[0] ) {
+      onSubmit({qnode: qnodes[0]});
+    }
+  }
+
   handleOnClick(qnode: QNode) {
     const { onSubmit } = this.props;
     onSubmit({qnode});
@@ -98,7 +107,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   render() {
     return (
-      <Form className="container wikify-form">
+      <Form className="container wikify-form"
+        onSubmit={(event: any) => this.handleOnSubmit(event)}>
         {this.renderTextInput()}
         <div className="results">
           {this.renderQNodeResults()}
