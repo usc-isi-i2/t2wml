@@ -362,6 +362,9 @@ class WikifyTable extends Component<{}, TableState> {
     if ([37, 38, 39, 40].includes(event.keyCode)) {
       this.setState({ showWikifyMenu: true });
 
+      // Don't allow moving around when users are typing
+      if ( (event.target as any).nodeName === 'INPUT' ) { return; }
+
       event.preventDefault();
 
       const table: any = this.tableRef;
