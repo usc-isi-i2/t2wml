@@ -427,10 +427,6 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  openAnnotationMenu() {
-    this.setState({showAnnotationMenu: true});
-  }
-
   checkOverlaps() {
     if ( !this.selection ) { return; }
     const { x1, y1, x2, y2 } = this.selection;
@@ -479,7 +475,7 @@ class AnnotationTable extends Component<{}, TableState> {
       if ( this.selecting && this.checkOverlaps() ) {
         this.closeAnnotationMenu();
       } else {
-        this.openAnnotationMenu();
+        this.setState({showAnnotationMenu: true});
       }
     }
     this.selecting = false;
