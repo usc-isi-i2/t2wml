@@ -472,7 +472,8 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnMouseUp() {
     if ( this.selection ) {
       this.selection = utils.standardizeSelection(this.selection);
-      if ( this.selecting && this.checkOverlaps() ) {
+      const { selectedAnnotationBlock } = this.state;
+      if ( !selectedAnnotationBlock && this.selecting && this.checkOverlaps() ) {
         this.closeAnnotationMenu();
       } else {
         this.setState({showAnnotationMenu: true});
