@@ -26,7 +26,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     super(props);
 
     this.state = {
-      qnode: '',
+      qnode: undefined,
       qnodes: [],
     };
   }
@@ -68,6 +68,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderTextInput() {
+    const { qnode } = this.state;
     return (
       <Form.Group as={Row}>
         <Col sm="12" md="12">
@@ -75,7 +76,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <Form.Control
             type="text" size="sm"
             placeholder="search qnodes"
-            value={this.state.qnode || this.getQnodeValue()}
+            value={qnode === undefined ? this.getQnodeValue() : qnode}
             onChange={(event: any) => this.handleOnChange(event, 'qnode')} />
         </Col>
       </Form.Group>
