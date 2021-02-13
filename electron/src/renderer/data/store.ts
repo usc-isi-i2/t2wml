@@ -174,6 +174,8 @@ export class LayerState {
     @action
     public updateFromDTO(dto: LayersDTO) {
         console.debug('Updating layers: ', dto);
+        if ( !dto ) { return; }
+
         if (dto.qnode) {
             this.qnode = new Layer(dto.qnode);
         }

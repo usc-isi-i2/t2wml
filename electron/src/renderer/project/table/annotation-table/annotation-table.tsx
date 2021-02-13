@@ -427,10 +427,6 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  openAnnotationMenu() {
-    this.setState({showAnnotationMenu: true});
-  }
-
   checkOverlaps() {
     if ( !this.selection ) { return; }
     const { x1, y1, x2, y2 } = this.selection;
@@ -476,10 +472,11 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnMouseUp() {
     if ( this.selection ) {
       this.selection = utils.standardizeSelection(this.selection);
-      if ( this.selecting && this.checkOverlaps() ) {
+      const { selectedAnnotationBlock } = this.state;
+      if ( !selectedAnnotationBlock && this.selecting && this.checkOverlaps() ) {
         this.closeAnnotationMenu();
       } else {
-        this.openAnnotationMenu();
+        this.setState({showAnnotationMenu: true});
       }
     }
     this.selecting = false;

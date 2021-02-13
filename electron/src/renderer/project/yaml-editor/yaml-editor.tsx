@@ -17,7 +17,6 @@ import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
-// import SheetSelector from './sheet-selector/sheet-selector';
 import { currentFilesService } from '../../common/current-file-service';
 import { remote } from 'electron';
 
@@ -61,10 +60,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       disableYaml: false,
       isAddedYaml: false,
     };
-
-    // init functions
-    this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
-    // this.handleChangeFile = this.handleChangeFile.bind(this);
   }
 
   componentDidMount() {
@@ -74,6 +69,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
     this.disposeReaction = reaction(() => wikiStore.table.table, () => { this.updateDisableYaml() });
+
+    // init functions
+    this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
   }
 
   componentWillUnmount() {
@@ -157,7 +155,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     const yamlContent = (this.monacoRef.current as any).editor.getModel().getValue();
     wikiStore.yaml.yamlContent = yamlContent;
     wikiStore.yaml.yamlhasChanged = true;
-    // this.setState({ isYamlContentChanged: true });
     try {
       const yamlJson = (yaml.safeLoad(yamlContent) as JSON);
       this.setState({
@@ -197,7 +194,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     reader.onloadend = (async () => {
       const yamlContent = reader.result as string;
       wikiStore.yaml.yamlContent = yamlContent;
-      // wikiStore.yaml.yamlName = yamlName;
       wikiStore.yaml.yamlhasChanged = true;
       try {
         const yamlJson = (yaml.safeLoad((yamlContent as string))) as JSON;
@@ -265,7 +261,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       }
     }
   }
-
 
   render() {
     const yamlContent = wikiStore.yaml.yamlContent;
@@ -425,29 +420,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
                 Create Yaml
               </Button>
             }
-
-            {/* <div
-              id="yamlSelector" // apply custom scroll bar
-              style={{
-                height: "55px",
-                padding: "0.5rem 0.75rem",
-                background: "whitesmoke",
-                // overflow: "scroll hidden", // safari does not support this
-                overflowX: "scroll",
-                overflowY: "hidden",
-                whiteSpace: "nowrap"
-              }}
-            > */}
-            {/* <SheetSelector
-                sheetNames={wikiStore.yaml.yamlList}
-                currSheetName={wikiStore.yaml.yamlName}
-                itemType="file"
-                handleSelectSheet={(event) => this.handleChangeFile(event)}
-                handleAddItem={() => this.addYaml()}
-                disableAdd={wikiStore.yaml.yamlContent === defaultYamlContent}
-                handleDoubleClickItem={(val, index) => this.renameYaml(val, index)}
-              /> */}
-            {/* </div> */}
           </Card.Footer>
         </Card>
       </Fragment>
