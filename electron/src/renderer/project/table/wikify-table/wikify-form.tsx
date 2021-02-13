@@ -3,10 +3,12 @@ import React from 'react';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
+import { Cell } from '../../../common/general';
 import { QNode } from '@/renderer/common/dtos';
 
 
 interface WikifyFormProperties {
+  selectedCell: Cell;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onSubmit: any | null;
 }

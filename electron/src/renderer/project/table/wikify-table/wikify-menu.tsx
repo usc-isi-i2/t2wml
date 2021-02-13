@@ -99,8 +99,10 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   }
 
   renderWikifyForms() {
+    const { selectedCell } = this.props;
     return (
       <WikifyForm
+        selectedCell={selectedCell}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
     )
