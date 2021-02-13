@@ -59,12 +59,21 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderTextInput() {
+    const { selectedCell } = this.props;
+    const qnode = wikiStore.layers.qnode.find(selectedCell);
+    let defaultValue = 'search qnodes';
+    if ( qnode ) {
+      defaultValue = qnode.id;
+    }
     return (
       <Form.Group as={Row}
         onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'qnode')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">qnode</Form.Label>
-          <Form.Control type="text" placeholder="qnode" size="sm" />
+          <Form.Control
+            type="text" size="sm"
+            placeholder="search qnodes"
+            defaultValue={defaultValue} />
         </Col>
       </Form.Group>
     )
