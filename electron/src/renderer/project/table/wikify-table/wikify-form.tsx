@@ -121,6 +121,19 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     ));
   }
 
+  renderInstanceOf() {
+    return (
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <Form.Label className="text-muted">Instance Of</Form.Label>
+          <Form.Control
+            type="text" size="sm"
+            placeholder="instance of" />
+        </Col>
+      </Form.Group>
+    )
+  }
+
   render() {
     return (
       <Form className="container wikify-form"
@@ -129,6 +142,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         <div className="results">
           {this.renderQNodeResults()}
         </div>
+        {this.renderInstanceOf()}
       </Form>
     )
   }
