@@ -46,6 +46,9 @@ class FileTree extends Component<TreeProps, TreeState> {
       clickedNode: null,
       showSpinner: false,
     };
+  }
+
+  componentWillMount() {
     this.updateFileTree();
   }
 
