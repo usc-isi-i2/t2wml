@@ -79,6 +79,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return 'search qnodes';
   }
 
+  clearSearch() {
+    this.setState({
+      qnode: undefined,
+      qnodes: [],
+    });
+  }
+
   renderTextInput() {
     const { qnode, qnodes } = this.state;
     return (
@@ -91,7 +98,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             value={qnode === undefined ? this.getQnodeValue() : qnode}
             onChange={(event: any) => this.handleOnChange(event, 'qnode')} />
             {qnode || qnodes.length ? (
-              <FontAwesomeIcon icon={faTimes} className="clear-button" />
+              <FontAwesomeIcon
+                icon={faTimes}
+                className="clear-button"
+                onClick={this.clearSearch.bind(this)} />
             ) : null}
         </Col>
       </Form.Group>
