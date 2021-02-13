@@ -53,3 +53,15 @@
   overflow: hidden;
   margin-bottom: 15px;
 }
+
+/* Apply Option checkboxes */
+.wikify-menu .wikify-form .apply-options input {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  vertical-align: bottom;
+}
+.wikify-menu .wikify-form .apply-options label {
+  user-select: none;
+  cursor: pointer;
+}
