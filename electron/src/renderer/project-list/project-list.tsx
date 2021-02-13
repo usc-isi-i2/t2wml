@@ -302,7 +302,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     if (projectListDiv.length === 0) {
       projectListDiv.push(
         <tr key={-1}>
-          <td colSpan={4} style={{ textAlign: "center" }}>No projects</td>
+          <td colSpan={5} style={{ textAlign: "center" }}>No projects</td>
         </tr>
       );
     }
