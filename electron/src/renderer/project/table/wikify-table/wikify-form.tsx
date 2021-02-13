@@ -58,22 +58,25 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     onSubmit({qnode});
   }
 
-  renderTextInput() {
+  getQnodeValue() {
     const { selectedCell } = this.props;
     const qnode = wikiStore.layers.qnode.find(selectedCell);
-    let defaultValue = 'search qnodes';
     if ( qnode ) {
-      defaultValue = qnode.id;
+      return qnode.id;
     }
+    return 'search qnodes';
+  }
+
+  renderTextInput() {
     return (
-      <Form.Group as={Row}
-        onChange={(event: React.KeyboardEvent) => this.handleOnChange(event, 'qnode')}>
+      <Form.Group as={Row}>
         <Col sm="12" md="12">
-          <Form.Label className="text-muted">qnode</Form.Label>
+          <Form.Label className="text-muted">QNode</Form.Label>
           <Form.Control
             type="text" size="sm"
             placeholder="search qnodes"
-            defaultValue={defaultValue} />
+            value={this.state.qnode || this.getQnodeValue()}
+            onChange={(event: any) => this.handleOnChange(event, 'qnode')} />
         </Col>
       </Form.Group>
     )
