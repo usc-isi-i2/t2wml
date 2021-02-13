@@ -11,7 +11,12 @@
   cursor: pointer;
 }
 
-.wikify-menu .clear-button {
+.wikify-menu .toast .toast-body {
+  background: #fefefe;
+}
+
+/* Input field clear button */
+.wikify-menu .wikify-form .clear-button {
   position: absolute;
   top: 25px;
   right: 25px;
@@ -19,39 +24,32 @@
   cursor: pointer;
   z-index: 125;
 }
-.wikify-menu .clear-button:hover {
+.wikify-menu .wikify-form .clear-button:hover {
   color: #000;
 }
 
+ /* Wikify Menu Qnode results */
 .wikify-menu .wikify-form .results {
   max-height: 500px;
   overflow: scroll;
 }
-
-.wikify-menu .qnode {
+.wikify-menu .wikify-form .results .qnode {
   user-select: none;
   padding: 5px 0;
 }
-
-.wikify-menu .qnode:hover {
+.wikify-menu .wikify-form .results .qnode:hover {
   cursor: pointer;
   background: #f9f9f9;
 }
-
-.wikify-menu .qnode .label {
+.wikify-menu .wikify-form .results .qnode .label {
   display: block;
   font-weight: bold;
   width: 100%;
 }
-
-.wikify-menu .qnode .description {
+.wikify-menu .wikify-form .results .qnode .description {
   display: block;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   margin-bottom: 15px;
-}
-
-.wikify-menu .toast .toast-body {
-  background: #fefefe;
 }
