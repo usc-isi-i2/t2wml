@@ -6,6 +6,9 @@ import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
 import { QNode } from '@/renderer/common/dtos';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+
 
 interface WikifyFormProperties {
   selectedCell: Cell;
@@ -87,6 +90,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             placeholder="search qnodes"
             value={qnode === undefined ? this.getQnodeValue() : qnode}
             onChange={(event: any) => this.handleOnChange(event, 'qnode')} />
+            <FontAwesomeIcon icon={faTimes} className="clear-button" />
         </Col>
       </Form.Group>
     )
