@@ -79,14 +79,10 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
       error.errorDescription += "\n\nCannot submit qnodes!";
       this.setState({ errorMessage: error });
     } finally {
-      console.log('qnodes request finished');
-
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
-
     }
-
   }
 
   renderHeader() {
