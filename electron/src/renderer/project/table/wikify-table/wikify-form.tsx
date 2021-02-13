@@ -134,6 +134,29 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     )
   }
 
+  renderApplyOptions() {
+    const style = {
+      width: '15px',
+      height: '15px',
+      marginRight: '5px',
+      verticalAlign: 'bottom',
+    }
+    return (
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <input id="check-cell" type="checkbox" style={style} defaultChecked={true} />
+          <Form.Label for="check-cell" className="text-muted" style={{cursor: 'pointer'}}>Apply to cell</Form.Label>
+        </Col>
+        <br />
+        <br />
+        <Col sm="12" md="12">
+          <input id="check-block" type="checkbox" style={style} defaultChecked={false} />
+          <Form.Label for="check-block" className="text-muted" style={{cursor: 'pointer'}}>Apply to block</Form.Label>
+        </Col>
+      </Form.Group>
+    )
+  }
+
   render() {
     return (
       <Form className="container wikify-form"
@@ -143,6 +166,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           {this.renderQNodeResults()}
         </div>
         {this.renderInstanceOf()}
+        {this.renderApplyOptions()}
       </Form>
     )
   }
