@@ -60,9 +60,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       disableYaml: false,
       isAddedYaml: false,
     };
-
-    // init functions
-    this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
   }
 
   componentDidMount() {
@@ -72,6 +69,9 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlContent, (newYamlContent) => this.updateYamlContent(newYamlContent));
     this.disposeReaction = reaction(() => wikiStore.yaml.yamlError, () => this.updateErrorFromStore());
     this.disposeReaction = reaction(() => wikiStore.table.table, () => { this.updateDisableYaml() });
+
+    // init functions
+    this.handleOpenYamlFile = this.handleOpenYamlFile.bind(this);
   }
 
   componentWillUnmount() {
