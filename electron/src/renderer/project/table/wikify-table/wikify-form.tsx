@@ -139,13 +139,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form.Group as={Row} className="apply-options">
         <Col sm="12" md="12">
           <input id="check-cell" type="checkbox" defaultChecked={true} />
-          <Form.Label for="check-cell" className="text-muted">Apply to cell</Form.Label>
+          <Form.Label htmlFor="check-cell" className="text-muted">Apply to cell</Form.Label>
         </Col>
         <br />
         <br />
         <Col sm="12" md="12">
           <input id="check-block" type="checkbox" defaultChecked={false} />
-          <Form.Label for="check-block" className="text-muted">Apply to block</Form.Label>
+          <Form.Label htmlFor="check-block" className="text-muted">Apply to block</Form.Label>
         </Col>
       </Form.Group>
     )
