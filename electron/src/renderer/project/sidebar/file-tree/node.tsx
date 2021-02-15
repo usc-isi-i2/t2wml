@@ -61,13 +61,6 @@ class FileNode extends Component<NodeProps, NodeState> {
       this.props.rightClick(this.props);
   }
 
-  getDataFile(node: NodeProps): string{
-    if (node.type !== "DataFile" && node.type !== "Label") {
-      return this.getDataFile(node.parentNode!);
-    }
-    return node.label;
-  }
-
   render() {
     let childrenNodes = null;
     if (this.props.childNodes.length && this.state.expanded) {
@@ -101,7 +94,7 @@ class FileNode extends Component<NodeProps, NodeState> {
 
     const logoTooltipHtml = (
       <Tooltip style={{ width: "fit-content" }} id="navbar-tooltip">
-          {this.getDataFile(this.props)}
+          {this.props.label}
       </Tooltip>
     );
 
