@@ -9,6 +9,8 @@ import { Card, Spinner } from 'react-bootstrap';
 import { currentFilesService } from '../../common/current-file-service';
 import FileTree from './file-tree/file-tree';
 import { t2wmlColors } from '@/renderer/common/general';
+import EntitiesTree from './file-tree/entities-tree';
+import SheetSelector from '../sheet-selector/sheet-selector';
 
 
 // interface SidebarProperties {
@@ -22,7 +24,7 @@ interface SidebarState {
     currFiles: string,
 }
 
-const filesTypes = ["Data Files", "Mapping", "Wikifiers"];
+const filesTypes = ["Data Files", "Entities"];
 
 @observer
 class Sidebar extends Component<{}, SidebarState> {
@@ -111,8 +113,8 @@ class Sidebar extends Component<{}, SidebarState> {
         let currentFileTree;
         if (this.state.currFiles === filesTypes[0]) {
             currentFileTree = <FileTree />; // <DataFiles />
-        } else if (this.state.currFiles === filesTypes[1]) { // mapping (yamls)
-            currentFileTree = <FileTree />; // <Mapping />
+        } else if (this.state.currFiles === filesTypes[1]) { // entities
+            currentFileTree = <EntitiesTree />;
         } else { // wikifiers
             currentFileTree = <FileTree /> ;// <Wikifiers />
         }
@@ -136,16 +138,15 @@ class Sidebar extends Component<{}, SidebarState> {
                         </Card.Header>
 
                         {/* card body */}
-                        {/* height: ... -150px */}
-                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)", display: "flex", overflow: "auto" }}>
-                            {currentFileTree}
-                        </Card.Body>
-                        {/* <Card.Footer style={{ height: "50px" }}>
+                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)", overflow: "auto" }}>
                             <SheetSelector
                                 sheetNames={filesTypes}
                                 currSheetName={this.state.currFiles}
+                                disabled={wikiStore.yaml.showSpinner}
                                 handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/>
-                        </Card.Footer> */}
+
+                            {currentFileTree}
+                        </Card.Body>
                     </Card>
             </div>
         );
