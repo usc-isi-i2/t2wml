@@ -200,7 +200,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async addExistingYaml() {
     const result = await remote.dialog.showOpenDialog({
-      title: "Add Empty Yaml File",
+      title: "Open Existing Yaml File",
       defaultPath: wikiStore.project.projectDTO!.directory,
       properties: ['createDirectory'],
       filters: [
@@ -227,7 +227,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async addExistingAnnotation() {
     const result = await remote.dialog.showOpenDialog({
-      title: "Add Empty Annotation File",
+      title: "Open Existing Annotation File",
       defaultPath: wikiStore.project.projectDTO!.directory,
       properties: ['createDirectory'],
       filters: [
@@ -273,10 +273,11 @@ class FileTree extends Component<TreeProps, TreeState> {
         break;
       }
       case 'Sheet': {
-        menu.append(new MenuItem({ label: 'Add new annotation file', click: () => this.addAnnotation() }));
-        menu.append(new MenuItem({ label: 'Add new yaml file', click: () => this.addYaml() }));
-        menu.append(new MenuItem({ label: 'Add existing annotation file', click: () => this.addExistingAnnotation() }));
-        menu.append(new MenuItem({ label: 'Add existing yaml file', click: () => this.addExistingYaml() }));
+        menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation() }));
+        menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml() }));
+        menu.append(new MenuItem({ type: 'separator' }));
+        menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation() }));
+        menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml() }));
         break;
       }
       default: {
