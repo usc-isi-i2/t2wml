@@ -385,16 +385,16 @@ class FileTree extends Component<TreeProps, TreeState> {
         </div>
 
         <ul style={{width: "100%"}}>
-          {this.state.files.map((fileNode)=>
-          <FileNode
-          id={fileNode.id}
-          label={fileNode.label}
-          childNodes={fileNode.childNodes}
-          type={fileNode.type}
-          parentNode={fileNode.parentNode}
-          rightClick={fileNode.rightClick}
-          onClick={fileNode.onClick} />
-          )}
+          {this.state.files.map((fileNode, index) => (
+            <FileNode key={index}
+              id={fileNode.id}
+              label={fileNode.label}
+              childNodes={fileNode.childNodes}
+              type={fileNode.type}
+              parentNode={fileNode.parentNode}
+              rightClick={fileNode.rightClick}
+              onClick={fileNode.onClick} />
+          ))}
 
         </ul>
       </Fragment>
