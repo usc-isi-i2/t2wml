@@ -71,15 +71,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     onSubmit({qnode});
   }
 
-  getQnodeValue() {
-    const { selectedCell } = this.props;
-    const qnode = wikiStore.layers.qnode.find(selectedCell);
-    if ( qnode ) {
-      return qnode.id;
-    }
-    return 'search qnodes';
-  }
-
   clearSearch() {
     this.setState({
       search: undefined,
@@ -92,11 +83,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return (
       <Form.Group as={Row}>
         <Col sm="12" md="8">
-          <Form.Label className="text-muted">Search QNodes</Form.Label>
+          <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder="search"
-            value={search === undefined ? this.getQnodeValue() : search}
+            placeholder="qnode"
+            value={search}
             onChange={(event: any) => this.handleOnChange(event, 'qnode')} />
             {search || qnodes.length ? (
               <FontAwesomeIcon
