@@ -1,3 +1,10 @@
 .pointer {
     cursor: pointer;
 }
+
+.ellipsis {
+    width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
