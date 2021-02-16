@@ -1,12 +1,16 @@
 .wikify-menu {
   position: absolute;
-  min-width: 500px;
   z-index: 250;
   left: 50px;
   top: 70px;
 }
 
-.wikify-menu .handle {
+.wikify-menu .toast {
+  max-width: 500px;
+  min-width: 500px;
+}
+
+.wikify-menu .toast .handle {
   background: whitesmoke;
   cursor: pointer;
 }
