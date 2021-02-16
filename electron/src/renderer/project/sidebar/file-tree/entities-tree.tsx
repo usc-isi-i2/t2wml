@@ -124,7 +124,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     entitiesNode.childNodes = [];
     wikifiersNode.childNodes = [];
 
-    if (!project || (!project.entity_files && !project.wikifier_files)) { return rootNode; }
+    if (!project || (!project.entity_files && !project.wikifier_files)) { return []; }
     for (const ef of project.entity_files.sort()) {
       const entityNode = {
         id: ef,
