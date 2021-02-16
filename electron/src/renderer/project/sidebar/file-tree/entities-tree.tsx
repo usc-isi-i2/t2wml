@@ -12,27 +12,18 @@ import { Spinner } from "react-bootstrap";
 
 type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
-  fileTree: NodeProps;
+  files: NodeProps[];
   clickedNode: NodeProps | null;
   showSpinner: boolean;
 }
 
 function emptyFunc() { /* NO-OP */ }
-const rootNode = {
-  id: "Root00000123943875",
-  label: "Files",
-  childNodes: [],
-  type: "Label",
-  parentNode: null,
-  rightClick: emptyFunc,
-  onClick: emptyFunc
-} as NodeProps;
 const entitiesNode = {
   id: "Root000001",
   label: "Entities",
   childNodes: [],
   type: "Label",
-  parentNode: rootNode,
+  parentNode: null,
   rightClick: emptyFunc,
   onClick: emptyFunc
 } as NodeProps;
@@ -41,7 +32,7 @@ const wikifiersNode = {
   label: "Wikifiers",
   childNodes: [],
   type: "Label",
-  parentNode: rootNode,
+  parentNode: null,
   rightClick: emptyFunc,
   onClick: emptyFunc
 } as NodeProps;
@@ -55,7 +46,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     super(props)
     this.requestService = new RequestService();
     this.state = {
-      fileTree: rootNode,
+      files: [entitiesNode, wikifiersNode],
       clickedNode: null,
       showSpinner: false,
     };
@@ -128,11 +119,10 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     menu.popup({ window: remote.getCurrentWindow() });
   }
 
-  buildFileTree(): NodeProps {
+  buildFileTree(): NodeProps[] {
     const project = wikiStore.project.projectDTO;
     entitiesNode.childNodes = [];
     wikifiersNode.childNodes = [];
-    rootNode.childNodes = [entitiesNode, wikifiersNode];
 
     if (!project || (!project.entity_files && !project.wikifier_files)) { return rootNode; }
     for (const ef of project.entity_files.sort()) {
@@ -162,12 +152,12 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
       } as NodeProps;
       wikifiersNode.childNodes.push(wikifierNode);
     }
-    return rootNode;
+    return [entitiesNode, wikifiersNode];
   }
 
   updateFileTree() {
-    const fileTree = this.buildFileTree()
-    this.setState({ fileTree });
+    const files = this.buildFileTree()
+    this.setState({ files });
   }
 
   render() {
@@ -178,15 +168,18 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
           <Spinner animation="border" />
         </div>
 
-        <ul>
+        <ul style={{width: "100%"}}>
+          {this.state.files.map((fileNode)=>
           <FileNode
-            id={this.state.fileTree.id}
-            label={this.state.fileTree.label}
-            childNodes={this.state.fileTree.childNodes}
-            type={this.state.fileTree.type}
-            parentNode={this.state.fileTree.parentNode}
-            rightClick={this.state.fileTree.rightClick}
-            onClick={this.state.fileTree.onClick} />
+          id={fileNode.id}
+          label={fileNode.label}
+          childNodes={fileNode.childNodes}
+          type={fileNode.type}
+          parentNode={fileNode.parentNode}
+          rightClick={fileNode.rightClick}
+          onClick={fileNode.onClick} />
+          )}
+
         </ul>
       </Fragment>
     )
