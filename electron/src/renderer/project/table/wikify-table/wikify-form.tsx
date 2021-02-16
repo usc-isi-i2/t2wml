@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { IReactionDisposer, reaction } from 'mobx';
-import { Col, Form, Row } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
 import { QNode } from '@/renderer/common/dtos';
@@ -151,6 +151,21 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     )
   }
 
+  renderSubmitButton() {
+    return (
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <Button
+            size="sm"
+            type="submit"
+            variant="outline-dark">
+            Submit
+          </Button>
+        </Col>
+      </Form.Group>
+    )
+  }
+
   render() {
     return (
       <Form className="container wikify-form"
@@ -161,6 +176,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </div>
         {this.renderInstanceOf()}
         {this.renderApplyOptions()}
+        {this.renderSubmitButton()}
       </Form>
     )
   }
