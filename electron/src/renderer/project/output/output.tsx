@@ -194,7 +194,7 @@ class Output extends Component<{}, OutputComponentState> {
               style={{ padding: "0rem 0.5rem" }}
               onClick={() => this.loadToDatamart()}
             >
-              {this.state.isLoadDatamart ? <Spinner as="span" animation="border" size="sm" /> : "Load to Datamart"}
+              {this.state.isLoadDatamart ? <Spinner as="span" animation="border" size="sm" /> : "Load to Datamart (Beta)"}
             </Button>
 
             {/* button to download */}
