@@ -18,6 +18,7 @@ interface WikifyFormProperties {
 
 
 interface WikifyFormState {
+  search?: string;
   qnode?: string;
   qnodes: QNode[];
 }
@@ -29,7 +30,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     super(props);
 
     this.state = {
-      qnode: undefined,
+      search: undefined,
       qnodes: [],
     };
   }
@@ -53,7 +54,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   handleOnChange(event: any, key: string) {
     const { onChange } = this.props;
     const value: string = (event.target as HTMLInputElement).value;
-    this.setState({qnode: value}, () => onChange(key, value));
+    this.setState({search: value}, () => onChange(key, value));
   }
 
   handleOnSubmit(event: any) {
@@ -81,23 +82,23 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   clearSearch() {
     this.setState({
-      qnode: undefined,
+      search: undefined,
       qnodes: [],
     });
   }
 
   renderSearchInputs() {
-    const { qnode, qnodes } = this.state;
+    const { search, qnodes } = this.state;
     return (
       <Form.Group as={Row}>
         <Col sm="12" md="8">
-          <Form.Label className="text-muted">QNode</Form.Label>
+          <Form.Label className="text-muted">Search QNodes</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder="search qnodes"
-            value={qnode === undefined ? this.getQnodeValue() : qnode}
+            placeholder="search"
+            value={search === undefined ? this.getQnodeValue() : search}
             onChange={(event: any) => this.handleOnChange(event, 'qnode')} />
-            {qnode || qnodes.length ? (
+            {search || qnodes.length ? (
               <FontAwesomeIcon
                 icon={faTimes}
                 className="clear-button"
