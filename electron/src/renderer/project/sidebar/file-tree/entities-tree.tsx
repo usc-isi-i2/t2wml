@@ -4,7 +4,7 @@ import './file-tree.css';
 import * as path from 'path';
 import RequestService from "@/renderer/common/service";
 import { currentFilesService } from "../../../common/current-file-service";
-import FileNode, { NodeProps, NodeType } from "./node";
+import FileNode, { NodeProps } from "./node";
 import { IReactionDisposer, reaction } from "mobx";
 import { remote, shell } from 'electron';
 import { Spinner } from "react-bootstrap";
@@ -65,7 +65,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  async changeFile(node: NodeProps) {
+  async changeFile() {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
     await wikiStore.yaml.saveYaml();
@@ -133,7 +133,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
         type: "Entity",
         parentNode: entitiesNode,
         rightClick: (node: NodeProps) => this.onRightClick(node),
-        onClick: (node: NodeProps) => this.changeFile(node),
+        onClick: () => this.changeFile(),
         bolded: currentFilesService.currentState.dataFile == ef // TODO: add entity file to state ?
       } as NodeProps;
       entitiesNode.childNodes.push(entityNode);
@@ -147,7 +147,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
         type: "Wikifier",
         parentNode: wikifiersNode,
         rightClick: (node: NodeProps) => this.onRightClick(node),
-        onClick: (node: NodeProps) => this.changeFile(node),
+        onClick: () => this.changeFile(),
         bolded: currentFilesService.currentState.dataFile == wf // TODO: add wikifier file to state ?
       } as NodeProps;
       wikifiersNode.childNodes.push(wikifierNode);

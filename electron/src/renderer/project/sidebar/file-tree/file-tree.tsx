@@ -21,8 +21,6 @@ interface TreeState {
   showSpinner: boolean;
 }
 
-function emptyFunc() { /* NO-OP */ }
-
 
 class FileTree extends Component<TreeProps, TreeState> {
   private requestService: RequestService;
