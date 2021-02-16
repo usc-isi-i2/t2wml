@@ -48,7 +48,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         this.requestService.getQNodes(value)
       ));
     } catch (error) {
-      error.errorDescription += "\n\nCannot fetch qnodes!";
+      error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
       this.setState({ errorMessage: error });
     } finally {
       console.log('qnodes request finished');
@@ -76,7 +76,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         })
       ));
     } catch (error) {
-      error.errorDescription += "\n\nCannot submit qnodes!";
+      error.errorDescription += `\nWasn't able to submit the qnode!`;
       this.setState({ errorMessage: error });
     } finally {
       wikiStore.table.showSpinner = false;
