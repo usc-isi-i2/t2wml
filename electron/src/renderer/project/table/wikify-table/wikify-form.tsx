@@ -19,7 +19,7 @@ interface WikifyFormProperties {
 
 interface WikifyFormState {
   search?: string;
-  qnode?: string;
+  selected?: QNode;
   qnodes: QNode[];
 }
 
@@ -31,6 +31,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
     this.state = {
       search: undefined,
+      selected: undefined,
       qnodes: [],
     };
   }
@@ -60,15 +61,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   handleOnSubmit(event: any) {
     event.preventDefault();
     const { onSubmit } = this.props;
-    const { qnodes } = this.state;
-    if ( qnodes[0] ) {
-      onSubmit({qnode: qnodes[0]});
-    }
+    const { selected } = this.state;
+    onSubmit({qnode: selected});
   }
 
   handleOnClick(qnode: QNode) {
     const { onSubmit } = this.props;
-    onSubmit({qnode});
+    this.setState({selected: qnode, qnodes: []});
   }
 
   clearSearch() {
