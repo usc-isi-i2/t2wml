@@ -86,11 +86,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     });
   }
 
-  renderTextInput() {
+  renderSearchInputs() {
     const { qnode, qnodes } = this.state;
     return (
       <Form.Group as={Row}>
-        <Col sm="12" md="12">
+        <Col sm="12" md="8">
           <Form.Label className="text-muted">QNode</Form.Label>
           <Form.Control
             type="text" size="sm"
@@ -103,6 +103,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
                 className="clear-button"
                 onClick={this.clearSearch.bind(this)} />
             ) : null}
+        </Col>
+        <Col sm="12" md="4">
+          <Form.Label className="text-muted">Instance Of</Form.Label>
+          <Form.Control
+            type="text" size="sm"
+            placeholder="qnode" />
         </Col>
       </Form.Group>
     )
@@ -119,19 +125,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </Col>
       </Row>
     ));
-  }
-
-  renderInstanceOf() {
-    return (
-      <Form.Group as={Row}>
-        <Col sm="12" md="12">
-          <Form.Label className="text-muted">Instance Of</Form.Label>
-          <Form.Control
-            type="text" size="sm"
-            placeholder="instance of" />
-        </Col>
-      </Form.Group>
-    )
   }
 
   renderApplyOptions() {
@@ -170,11 +163,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return (
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
-        {this.renderTextInput()}
+        {this.renderSearchInputs()}
         <div className="results">
           {this.renderQNodeResults()}
         </div>
-        {this.renderInstanceOf()}
         {this.renderApplyOptions()}
         {this.renderSubmitButton()}
       </Form>
