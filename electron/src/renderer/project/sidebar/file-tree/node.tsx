@@ -60,58 +60,53 @@ class FileNode extends Component<NodeProps, NodeState> {
       event.preventDefault();
       this.props.rightClick(this.props);
   }
-
-  getDataFile(node: NodeProps): string{
-    if (node.type !== "DataFile" && node.type !== "Label") {
-      return this.getDataFile(node.parentNode!);
-    }
-    return node.label;
-  }
-
   render() {
     let childrenNodes = null;
     if (this.props.childNodes.length && this.state.expanded) {
       childrenNodes = (<ul>
         {this.props.childNodes.map((n: NodeProps) =>
-        <FileNode key={n.id}
-          id={n.id}
-          label={n.label}
-          bolded={n.bolded}
-          childNodes={n.childNodes}
-          parentNode={n.parentNode}
-          type={n.type}
-          rightClick={n.rightClick}
-          onClick={n.onClick} />)}
+          <FileNode key={n.id}
+            id={n.id}
+            label={n.label}
+            bolded={n.bolded}
+            childNodes={n.childNodes}
+            parentNode={n.parentNode}
+            type={n.type}
+            rightClick={n.rightClick}
+            onClick={n.onClick} />)}
       </ul>)
     }
 
-    let arrowIcon=<em>{'\u00A0\u00A0'}</em> //align with entries that do have an arrow icon
-    if (this.props.childNodes.length){
-      arrowIcon=(<span
-        onClick={() => this.onArrowClick()}
-      >{this.state.expanded ? <FontAwesomeIcon icon={faChevronDown} size="xs"/>:<FontAwesomeIcon icon={faChevronRight} size="xs"/>}</span>)
+    let arrowIcon = <em>{'\u00A0\u00A0'}</em> //align with entries that do have an arrow icon
+    if (this.props.childNodes.length) {
+      if (this.state.expanded) {
+        arrowIcon = <FontAwesomeIcon icon={faChevronDown} size="xs" onClick={() => this.onArrowClick()} />
+      } else {
+        arrowIcon = <FontAwesomeIcon icon={faChevronRight} size="xs" onClick={() => this.onArrowClick()} />
+      }
     }
 
-    let typeIcon=null;
-    if (nodeToIconMapping[this.props.type]){
-      typeIcon=<FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
+    let typeIcon = null;
+    if (nodeToIconMapping[this.props.type]) {
+      typeIcon = <FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
     }
 
-    const label = this.props.bolded ? <b>{this.props.label}</b>: this.props.label
+    const labelText = this.props.bolded ? <b>{this.props.label}</b> : this.props.label
 
     const logoTooltipHtml = (
-      <Tooltip style={{ width: "fit-content" }} id="navbar-tooltip">
-          {this.getDataFile(this.props)}
+      <Tooltip /*style={{ width: "fit-content" }}*/ id="navbar-tooltip">
+        {this.props.label}
       </Tooltip>
     );
 
     return (
       <li>
         <OverlayTrigger overlay={logoTooltipHtml} delay={{show: 1000, hide: 0}} placement="top" trigger={["hover", "focus"]}>
-          <label className="pointer"
+          <label className="pointer ellipsis"
             onContextMenu={(e) => this.onRightClick(e)}
+
             >
-            {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {label}</span>
+            {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {labelText}</span>
           </label>
         </OverlayTrigger>
         {childrenNodes}
@@ -119,5 +114,4 @@ class FileNode extends Component<NodeProps, NodeState> {
     )
   }
 }
-
 export default FileNode;
