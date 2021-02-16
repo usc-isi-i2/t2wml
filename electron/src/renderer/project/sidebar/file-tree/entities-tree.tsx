@@ -123,8 +123,8 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
     menu.append(new MenuItem({ type: 'separator' }));
     menu.append(new MenuItem({ label: 'Remove from project', click: () => this.removeFile() }));
-    menu.append(new MenuItem({ label: 'delete from filesystem and project', click: () => this.deleteFile() }));
-    
+    menu.append(new MenuItem({ label: 'Delete from filesystem and project', click: () => this.deleteFile() }));
+
     menu.popup({ window: remote.getCurrentWindow() });
   }
 
@@ -169,7 +169,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     const fileTree = this.buildFileTree()
     this.setState({ fileTree });
   }
-  
+
   render() {
     return (
       <Fragment>

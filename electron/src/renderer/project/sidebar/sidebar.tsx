@@ -138,7 +138,7 @@ class Sidebar extends Component<{}, SidebarState> {
                         </Card.Header>
 
                         {/* card body */}
-                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)"}}>
                             <SheetSelector
                                 sheetNames={filesTypes}
                                 currSheetName={this.state.currFiles}
