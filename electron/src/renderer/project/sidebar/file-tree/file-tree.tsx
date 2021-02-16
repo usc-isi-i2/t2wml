@@ -15,22 +15,13 @@ import { defaultYamlContent } from "../../default-values";
 
 type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
-  fileTree: NodeProps;
+  files: NodeProps[];
   showRenameFile: boolean;
   clickedNode: NodeProps | null;
   showSpinner: boolean;
 }
 
 function emptyFunc() { /* NO-OP */ }
-const rootNode = {
-  id: "Root00000123943875",
-  label: "Files",
-  childNodes: [],
-  type: "Label",
-  parentNode: null,
-  rightClick: emptyFunc,
-  onClick: emptyFunc
-} as NodeProps;
 
 
 class FileTree extends Component<TreeProps, TreeState> {
@@ -41,7 +32,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     super(props)
     this.requestService = new RequestService();
     this.state = {
-      fileTree: rootNode,
+      files: [],
       showRenameFile: false,
       clickedNode: null,
       showSpinner: false,
@@ -310,17 +301,17 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  buildFileTree(): NodeProps {
+  buildFileTree(): NodeProps[] {
     const project = wikiStore.project.projectDTO;
-    rootNode.childNodes = [];
-    if (!project || !project.data_files) { return rootNode; }
+    const files = [] as NodeProps[]
+    if (!project || !project.data_files) { return files; }
     for (const df of Object.keys(project.data_files).sort()) {
       const dataNode = {
         id: df,
         label: df,
         childNodes: [],
         type: "DataFile",
-        parentNode: rootNode,
+        parentNode: null,
         rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: (node: NodeProps) => this.changeFile(node),
         bolded: currentFilesService.currentState.dataFile == df
@@ -341,14 +332,14 @@ class FileTree extends Component<TreeProps, TreeState> {
         this.buildSubFileTree(project.yaml_sheet_associations, df, sheetName, "Yaml", sheetNode)
         dataNode.childNodes.push(sheetNode)
       }
-      rootNode.childNodes.push(dataNode)
+      files.push(dataNode)
     }
-    return rootNode;
+    return files;
   }
 
   updateFileTree() {
-    const fileTree = this.buildFileTree()
-    this.setState({ fileTree })
+    const files = this.buildFileTree()
+    this.setState({ files })
   }
 
   async handleRenameFile(name: string) {
@@ -391,19 +382,22 @@ class FileTree extends Component<TreeProps, TreeState> {
             cancelRenameFile={() => this.cancelRenameFile()}
           /> : null}
         {/* loading spinner */}
-        <div className="mySpinner" hidden={!this.state.showSpinner}>
+        <div className="mySpinner truncate" hidden={!this.state.showSpinner}>
           <Spinner animation="border" />
         </div>
 
         <ul>
+          {this.state.files.map((fileNode)=>
           <FileNode
-            id={this.state.fileTree.id}
-            label={this.state.fileTree.label}
-            childNodes={this.state.fileTree.childNodes}
-            type={this.state.fileTree.type}
-            parentNode={this.state.fileTree.parentNode}
-            rightClick={this.state.fileTree.rightClick}
-            onClick={this.state.fileTree.onClick} />
+          id={fileNode.id}
+          label={fileNode.label}
+          childNodes={fileNode.childNodes}
+          type={fileNode.type}
+          parentNode={fileNode.parentNode}
+          rightClick={fileNode.rightClick}
+          onClick={fileNode.onClick} />
+          )}
+
         </ul>
       </Fragment>
     )
