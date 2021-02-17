@@ -63,7 +63,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   handleOnChange(event: any, key: string) {
     const value: string = (event.target as HTMLInputElement).value;
     const updated: WikifyFormState = {};
-    updated[key] = value;
+    updated[key as keyof WikifyFormState] = value;
     this.setState({...updated}, () => {
       if ( !value ) {
         this.clearSearch();
