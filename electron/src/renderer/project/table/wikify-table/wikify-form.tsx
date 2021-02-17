@@ -100,6 +100,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     });
   }
 
+  clearInstanceOfSearch() {
+    this.setState({
+      instanceOfSearch: undefined,
+      qnodes: [],
+    });
+  }
+
   renderSearchInputs() {
     const { search, instanceOfSearch, qnodes } = this.state;
     return (
@@ -127,6 +134,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             onChange={(event: any) => {
               this.handleOnChangeInstanceOfSearch(event)
             }} />
+            {instanceOfSearch && qnodes.length ? (
+              <FontAwesomeIcon
+                icon={faTimes}
+                className="clear-button"
+                onClick={this.clearInstanceOfSearch.bind(this)} />
+            ) : null}
         </Col>
       </Form.Group>
     )
