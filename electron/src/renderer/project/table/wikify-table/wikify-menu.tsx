@@ -7,6 +7,7 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
+import { QNode } from '@/renderer/common/dtos';
 import { Cell } from '../../../common/general';
 import wikiStore from '../../../data/store';
 import * as utils from '../table-utils';
@@ -53,11 +54,10 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     } finally {
       console.log('qnodes request finished');
     }
-
   }
 
-  async handleOnSubmit(values: { [key: string]: string }) {
-    console.log('WikifyMenu OnSubmit triggered for -> ', values);
+  async handleOnSubmit(qnode: QNode) {
+    console.log('WikifyMenu OnSubmit triggered for -> ', qnode);
 
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
@@ -72,7 +72,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
           col,
           row,
           value: wikifyCellContent,
-          ...values,
+          ...qnode,
         })
       ));
     } catch (error) {
