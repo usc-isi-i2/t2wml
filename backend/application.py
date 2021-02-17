@@ -544,6 +544,7 @@ def set_qnode():
     col = request.get_json().get('col', "")
     row = request.get_json().get('row', "")
     value = request.get_json()['value']
+    selection = request.get_json()['selection']
     context = request.get_json().get("context", "")
     df=pd.DataFrame([[col, row, value, context, qnode_id]], columns=["column","row","value","context","item"])
 
