@@ -128,6 +128,15 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     });
   }
 
+  removeInstanceOf() {
+    const { search } = this.state;
+    this.setState({
+      instanceOf: undefined,
+    }, () => {
+      this.props.onChange('search', search);
+    });
+  }
+
   renderSearchInputs() {
     const { search, instanceOfSearch, qnodes } = this.state;
     return (
@@ -196,7 +205,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       return (
         <div className="instance-of">
           Results shown are limited to instances of <strong>{instanceOf.label} ({instanceOf.id})</strong>
-          <span className="remove-instance-of-button">Remove</span>
+          <span className="remove-instance-of-button"
+            onClick={this.removeInstanceOf.bind(this)}>Remove</span>
         </div>
       )
     }
