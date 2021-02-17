@@ -173,7 +173,7 @@ def get_data():
     response["table"] = get_table(calc_params)
     calc_response, code = get_mapping()
     response.update(calc_response)
-    return response, 200
+    return response, code
 
 
 @app.route('/api/project', methods=['POST'])
