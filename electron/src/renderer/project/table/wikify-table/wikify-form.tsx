@@ -66,7 +66,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       if ( !value ) {
         this.clearSearch();
       } else {
-       this.props.onChange(key, value);
+       this.props.onChange('search', value);
       }
     });
   }
@@ -77,7 +77,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       if ( !value ) {
         this.clearInstanceOfSearch();
       } else {
-       this.props.onChange(key, value);
+       this.props.onChange('instanceOfSearch', value);
       }
     });
   }
