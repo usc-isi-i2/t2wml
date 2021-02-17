@@ -87,48 +87,6 @@ class AnnotationTable extends Component<{}, TableState> {
     this.updateAnnotationBlocks(tableData);
   }
 
-  checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | null {
-    // checks if a given selection is part of an annotation block
-    // if so, returns the annotation block
-    const { x1, x2, y1, y2 } = selection;
-    for (const block of wikiStore.annotations.blocks) {
-      if (block.selection['y1'] <= block.selection['y2']) {
-        if (block.selection['x1'] <= block.selection['x2']) {
-          if (x1 >= block.selection['x1'] &&
-            x2 <= block.selection['x2'] &&
-            y1 >= block.selection['y1'] &&
-            y2 <= block.selection['y2']) {
-            return block;
-          }
-        } else {
-          if (x1 <= block.selection['x1'] &&
-            x2 >= block.selection['x2'] &&
-            y1 >= block.selection['y1'] &&
-            y2 <= block.selection['y2']) {
-            return block;
-          }
-        }
-      } else {
-        if (block.selection['x1'] <= block.selection['x2']) {
-          if (x1 >= block.selection['x1'] &&
-            x2 <= block.selection['x2'] &&
-            y1 <= block.selection['y1'] &&
-            y2 >= block.selection['y2']) {
-            return block;
-          }
-        } else {
-          if (x1 <= block.selection['x1'] &&
-            x2 >= block.selection['x2'] &&
-            y1 <= block.selection['y1'] &&
-            y2 >= block.selection['y2']) {
-            return block;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
   updateAnnotationBlocks(tableData?: TableData) {
     if ( !tableData ) {
       tableData = this.state.tableData;
@@ -500,7 +458,7 @@ class AnnotationTable extends Component<{}, TableState> {
     const selection: CellSelection = { x1, x2, y1, y2 };
 
     // check if the user is selecting an annotation block
-    const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+    const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
     if ( selectedBlock ) {
 
       // Reset annotation menu
@@ -662,7 +620,7 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selection = { 'x1': x1, 'x2': x1, 'y1': y1 - 1, 'y2': y1 - 1 };
           this.selectCell(nextElement, y1 - 1, x1, y1 - 1, x1, x1, y1 - 1, ['active']);
           const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 - 1, 'y2': y1 - 1 };
-          const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+          const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
@@ -696,7 +654,7 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selection = { 'x1': x1, 'x2': x1, 'y1': y1 + 1, 'y2': y1 + 1 };
           this.selectCell(nextElement, y1 + 1, x1, y1 + 1, x1, x1, y1 + 1, ['active']);
           const selection: CellSelection = { 'x1': x1, 'x2': x1, 'y1': y1 + 1, 'y2': y1 + 1 };
-          const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+          const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
@@ -730,7 +688,7 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selection = { 'x1': x1 - 1, 'x2': x1 - 1, 'y1': y1, 'y2': y1 };
           this.selectCell(nextElement, y1, x1 - 1, y1, x1 - 1, x1 - 1, y1, ['active']);
           const selection: CellSelection = { 'x1': x1 - 1, 'x2': x1 - 1, 'y1': y1, 'y2': y1 };
-          const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+          const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
@@ -764,7 +722,7 @@ class AnnotationTable extends Component<{}, TableState> {
           this.selection = { 'x1': x1 + 1, 'x2': x1 + 1, 'y1': y1, 'y2': y1 };
           this.selectCell(nextElement, y1, x1 + 1, y1, x1 + 1, x1 + 1, y1, ['active']);
           const selection: CellSelection = { 'x1': x1 + 1, 'x2': x1 + 1, 'y1': y1, 'y2': y1 };
-          const selectedBlock = this.checkSelectedAnnotationBlocks(selection);
+          const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
           if (selectedBlock) {
             this.setState({
               showAnnotationMenu: true,
