@@ -65,14 +65,14 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
 
     const { selectedCell, wikifyCellContent } = this.props;
     const { col, row } = selectedCell;
+    const selection = [[col, row], [col, row]];
 
     try {
       await this.requestService.call(this, () => (
         this.requestService.postQNodes({
-          col,
-          row,
           value: wikifyCellContent,
           applyToBlock,
+          selection,
           ...qnode,
         })
       ));
