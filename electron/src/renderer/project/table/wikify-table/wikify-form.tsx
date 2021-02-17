@@ -191,8 +191,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSelectedNode() {
-    const { selected } = this.state;
-    if ( selected ) {
+    const { qnodes, selected } = this.state;
+    if ( !qnodes.length && selected ) {
       return (
         <div className="selected-node">
           <strong>{selected.label}</strong>&nbsp;
@@ -210,33 +210,38 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderApplyOptions() {
-    const { applyToBlock } = this.state;
-    return (
-      <Form.Group as={Row} className="apply-options">
-        <Col sm="12" md="12">
-          <input id="check-block"
-            type="checkbox"
-            defaultChecked={applyToBlock}
-            onChange={this.toggleApplyToBlock.bind(this)} />
-          <Form.Label htmlFor="check-block" className="text-muted">Apply to block</Form.Label>
-        </Col>
-      </Form.Group>
-    )
+    const { qnodes, applyToBlock } = this.state;
+    if ( !qnodes.length ) {
+      return (
+        <Form.Group as={Row} className="apply-options">
+          <Col sm="12" md="12">
+            <input id="check-block"
+              type="checkbox"
+              defaultChecked={applyToBlock}
+              onChange={this.toggleApplyToBlock.bind(this)} />
+            <Form.Label htmlFor="check-block" className="text-muted">Apply to block</Form.Label>
+          </Col>
+        </Form.Group>
+      )
+    }
   }
 
   renderSubmitButton() {
-    return (
-      <Form.Group as={Row}>
-        <Col sm="12" md="12">
-          <Button
-            size="sm"
-            type="submit"
-            variant="outline-dark">
-            Submit
-          </Button>
-        </Col>
-      </Form.Group>
-    )
+    const { qnodes } = this.state;
+    if ( !qnodes.length ) {
+      return (
+        <Form.Group as={Row}>
+          <Col sm="12" md="12">
+            <Button
+              size="sm"
+              type="submit"
+              variant="outline-dark">
+              Submit
+            </Button>
+          </Col>
+        </Form.Group>
+      )
+    }
   }
 
   render() {
