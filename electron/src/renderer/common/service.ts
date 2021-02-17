@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodesDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodesDTO, QNode
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -99,10 +99,13 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async getQNodes(search: string, isClass=false) {
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode) {
     let url = `/qnodes?q=${search}`;
     if ( isClass ) {
       url += `&is_class=true`;
+    }
+    if ( instanceOf ) {
+      url += `&instance_of=${instanceOf.id}`;
     }
     const response = await backendGet(url) as ResponseWithQNodesDTO;
     wikiStore.wikifyQnodes.qnodes = response.qnodes;

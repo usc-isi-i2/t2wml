@@ -40,7 +40,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     };
   }
 
-  async handleOnChange(key: string, value: string) {
+  async handleOnChange(key: string, value: string, instanceOf?: QNode) {
     console.log('WikifyMenu OnChange triggered for -> ', key, value);
 
     if ( value.length < 4 ) { return; }
@@ -48,7 +48,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     const isClass = key === 'instanceOfSearch';
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getQNodes(value, isClass)
+        this.requestService.getQNodes(value, isClass, instanceOf)
       ));
     } catch (error) {
       error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
