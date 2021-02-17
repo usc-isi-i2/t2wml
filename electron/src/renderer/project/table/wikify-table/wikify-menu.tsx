@@ -82,6 +82,9 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
+
+      // Close the wikify menu on submit
+      this.props.onClose();
     }
   }
 
