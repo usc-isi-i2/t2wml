@@ -58,6 +58,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
+  toggleApplyToBlock() {
+    const { applyToBlock } = this.state;
+    this.setState({applyToBlock: !applyToBlock});
+  }
+
   updateQNodes(qnodes: QNode[]) {
     this.setState({qnodes});
   }
@@ -193,7 +198,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         <Col sm="12" md="12">
           <input id="check-block"
             type="checkbox"
-            defaultChecked={applyToBlock} />
+            defaultChecked={applyToBlock}
+            onChange={this.toggleApplyToBlock.bind(this)} />
           <Form.Label htmlFor="check-block" className="text-muted">Apply to block</Form.Label>
         </Col>
       </Form.Group>
