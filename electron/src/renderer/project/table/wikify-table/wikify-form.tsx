@@ -118,7 +118,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             placeholder="qnode"
             value={search}
             onChange={(event: any) => this.handleOnChangeSearch(event)} />
-            {search || qnodes.length ? (
+            {search && qnodes.length ? (
               <FontAwesomeIcon
                 icon={faTimes}
                 className="clear-button"
