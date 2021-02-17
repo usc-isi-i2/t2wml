@@ -512,7 +512,14 @@ def get_qnodes():
 
     # construct the url with correct parameters for kgtk search
     url = 'https://kgtk.isi.edu/api/{}'.format(q)
-    url += '?extra_info=true&language=en&type=ngram&instance_of='
+
+    # get the optional parameters for the url
+    is_class = request.args.get('is_class')
+    url += '?extra_info=true&language=en'
+    if is_class:
+        url += '&is_class=true&type=exact&size=5'
+    else:
+        url += '&is_class=false&type=ngram&size=10'
 
     try:
         response = requests.get(url, verify=False)
