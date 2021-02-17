@@ -8,7 +8,7 @@ import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import { QNode } from '@/renderer/common/dtos';
-import { Cell } from '../../../common/general';
+import { Cell, CellSelection } from '../../../common/general';
 import wikiStore from '../../../data/store';
 import * as utils from '../table-utils';
 
@@ -65,13 +65,23 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
 
     const { selectedCell, wikifyCellContent } = this.props;
     const { col, row } = selectedCell;
-    const selection = [[col, row], [col, row]];
+
+    let selection = [[col, row], [col, row]];
+    if ( applyToBlock ) {
+      const cellSelection: CellSelection = {x1: col+1, x2: col+1, y1: row+1, y2: row+1};
+      const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
+      if ( selectedBlock ) {
+        selection = [
+          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
+          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+        ];
+      }
+    }
 
     try {
       await this.requestService.call(this, () => (
         this.requestService.postQNodes({
           value: wikifyCellContent,
-          applyToBlock,
           selection,
           ...qnode,
         })
