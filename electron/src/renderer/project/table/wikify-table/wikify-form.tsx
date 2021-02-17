@@ -40,6 +40,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
+
+    const { selectedCell } = this.props;
+    const qnode = wikiStore.layers.qnode.find(selectedCell);
+    if ( qnode ) {
+      this.setState({selected: qnode});
+    }
   }
 
   componentWillUnmount() {
@@ -114,23 +120,21 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </div>
       )
     }
-    const { selectedCell } = this.props;
-    const qnode = wikiStore.layers.qnode.find(selectedCell);
-    if ( qnode ) {
+    if ( selected ) {
       return (
         <div className="selected-node">
-          <strong>{qnode.label}</strong> ({qnode.url ? (
+          <strong>{selected.label}</strong> ({selected.url ? (
             <a target="_blank"
               rel="noopener noreferrer"
               className="type-qnode"
-              href={qnode.url}>
-              {qnode.id}
+              href={selected.url}>
+              {selected.id}
             </a>
           ) : (
-            <span>{qnode.id}</span>
+            <span>{selected.id}</span>
           )})
           <br />
-          {qnode.description}
+          {selected.description}
         </div>
       )
     }
