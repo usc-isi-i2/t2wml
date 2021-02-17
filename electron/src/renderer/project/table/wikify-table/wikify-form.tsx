@@ -179,8 +179,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     ));
   }
 
-  renderSelectedNode() {
-    const { selected, qnodes } = this.state;
+  renderResults() {
+    const { qnodes } = this.state;
     if ( qnodes.length ) {
       return (
         <div className="results">
@@ -188,6 +188,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </div>
       )
     }
+  }
+
+  renderSelectedNode() {
+    const { selected } = this.state;
     if ( selected ) {
       return (
         <div className="selected-node">
@@ -240,6 +244,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         {this.renderSearchInputs()}
+        {this.renderResults()}
         {this.renderSelectedNode()}
         {this.renderApplyOptions()}
         {this.renderSubmitButton()}
