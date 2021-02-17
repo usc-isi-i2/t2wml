@@ -60,11 +60,9 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({qnodes});
   }
 
-  handleOnChange(event: any, key: string) {
+  handleOnChangeSearch(event: any) {
     const value: string = (event.target as HTMLInputElement).value;
-    const updated: WikifyFormState = {};
-    updated[key as 'search' | 'instanceOfSearch'] = value;
-    this.setState({...updated}, () => {
+    this.setState({search: value}, () => {
       if ( !value ) {
         this.clearSearch();
       } else {
@@ -101,7 +99,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             type="text" size="sm"
             placeholder="qnode"
             value={search}
-            onChange={(event: any) => this.handleOnChange(event, 'qnode')} />
+            onChange={(event: any) => this.handleOnChangeSearch(event)} />
             {search || qnodes.length ? (
               <FontAwesomeIcon
                 icon={faTimes}
