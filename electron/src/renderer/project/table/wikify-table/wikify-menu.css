@@ -32,6 +32,11 @@
   color: #000;
 }
 
+/* Wikify Menu - Instance OF node */
+.wikify-menu .wikify-form .instance-of {
+  margin-bottom: 1em;
+}
+
 /* Wikify Menu - Selected node */
 .wikify-menu .wikify-form .selected-node {
   margin-bottom: 1em;

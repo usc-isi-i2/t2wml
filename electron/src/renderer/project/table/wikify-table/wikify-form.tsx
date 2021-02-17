@@ -190,6 +190,17 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
+  renderInstanceOf() {
+    const { instanceOf } = this.state;
+    if ( instanceOf ) {
+      return (
+        <div className="instance-of">
+          Results shown are limited to instances of <strong>{instanceOf.label} ({instanceOf.id})</strong>
+        </div>
+      )
+    }
+  }
+
   renderSelectedNode() {
     const { qnodes, selected } = this.state;
     if ( !qnodes.length && selected ) {
@@ -250,6 +261,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         {this.renderSearchInputs()}
         {this.renderQNodeResults()}
+        {this.renderInstanceOf()}
         {this.renderSelectedNode()}
         {this.renderApplyOptions()}
         {this.renderSubmitButton()}
