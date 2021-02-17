@@ -95,14 +95,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   clearSearch() {
     this.setState({
-      search: undefined,
+      search: '',
       qnodes: [],
     });
   }
 
   clearInstanceOfSearch() {
     this.setState({
-      instanceOfSearch: undefined,
+      instanceOfSearch: '',
       qnodes: [],
     });
   }
