@@ -71,6 +71,17 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     });
   }
 
+  handleOnChangeInstanceOfSearch(event: any) {
+    const value: string = (event.target as HTMLInputElement).value;
+    this.setState({instanceOfSearch: value}, () => {
+      if ( !value ) {
+        this.clearInstanceOfSearch();
+      } else {
+       this.props.onChange(key, value);
+      }
+    });
+  }
+
   handleOnSubmit(event: any) {
     event.preventDefault();
     const { onSubmit } = this.props;
@@ -114,7 +125,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             placeholder="qnode"
             value={instanceOfSearch}
             onChange={(event: any) => {
-              this.handleOnChange(event, 'instanceOfSearch')
+              this.handleOnChangeInstanceOfSearch(event)
             }} />
         </Col>
       </Form.Group>
