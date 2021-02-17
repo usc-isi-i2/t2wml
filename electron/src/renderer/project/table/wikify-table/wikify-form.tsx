@@ -105,6 +105,37 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     )
   }
 
+  renderSelectedNode() {
+    const { selected, qnodes } = this.state;
+    if ( qnodes.length ) {
+      return (
+        <div className="results">
+          {this.renderQNodeResults()}
+        </div>
+      )
+    }
+    const { selectedCell } = this.props;
+    const qnode = wikiStore.layers.qnode.find(selectedCell);
+    if ( qnode ) {
+      return (
+        <div className="selected-node">
+          <strong>{qnode.label}</strong> ({qnode.url ? (
+            <a target="_blank"
+              rel="noopener noreferrer"
+              className="type-qnode"
+              href={qnode.url}>
+              {qnode.id}
+            </a>
+          ) : (
+            <span>{qnode.id}</span>
+          )})
+          <br />
+          {qnode.description}
+        </div>
+      )
+    }
+  }
+
   renderQNodeResults() {
     const { qnodes } = this.state;
     return qnodes.map((item, index) => (
@@ -149,9 +180,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         {this.renderSearchInputs()}
-        <div className="results">
-          {this.renderQNodeResults()}
-        </div>
+        {this.renderSelectedNode()}
         {this.renderApplyOptions()}
         {this.renderSubmitButton()}
       </Form>
