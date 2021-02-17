@@ -44,9 +44,11 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     console.log('WikifyMenu OnChange triggered for -> ', key, value);
 
     if ( value.length < 4 ) { return; }
+
+    const isClass = key === 'instanceOfSearch';
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getQNodes(value)
+        this.requestService.getQNodes(value, isClass)
       ));
     } catch (error) {
       error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;

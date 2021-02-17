@@ -99,8 +99,14 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async getQNodes(search: string) {
-    const response = await backendGet(`/qnodes?q=${search}`) as ResponseWithQNodesDTO;
+  public async getQNodes(search: string, isClass=false) {
+    let url = `/qnodes?q=${search}`;
+    if ( isClass ) {
+      url += `&is_class=true`;
+      url += `&type=exact`;
+      url += `&size=5`
+    }
+    const response = await backendGet(url) as ResponseWithQNodesDTO;
     wikiStore.wikifyQnodes.qnodes = response.qnodes;
   }
 
