@@ -110,6 +110,19 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     )
   }
 
+  renderQNodeResults() {
+    const { qnodes } = this.state;
+    return qnodes.map((item, index) => (
+      <Row className={"qnode"} key={index}
+        onClick={() => this.handleOnClick(item)}>
+        <Col sm="12" md="12">
+          <div className="label">{item.label} ({item.id})</div>
+          <div className="description">{item.description}</div>
+        </Col>
+      </Row>
+    ));
+  }
+
   renderSelectedNode() {
     const { selected, qnodes } = this.state;
     if ( qnodes.length ) {
@@ -137,19 +150,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </div>
       )
     }
-  }
-
-  renderQNodeResults() {
-    const { qnodes } = this.state;
-    return qnodes.map((item, index) => (
-      <Row className={"qnode"} key={index}
-        onClick={() => this.handleOnClick(item)}>
-        <Col sm="12" md="12">
-          <div className="label">{item.label} ({item.id})</div>
-          <div className="description">{item.description}</div>
-        </Col>
-      </Row>
-    ));
   }
 
   renderApplyOptions() {
