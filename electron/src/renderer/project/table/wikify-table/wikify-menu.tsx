@@ -56,7 +56,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     }
   }
 
-  async handleOnSubmit(qnode: QNode) {
+  async handleOnSubmit(qnode: QNode, applyToBlock: boolean) {
     console.log('WikifyMenu OnSubmit triggered for -> ', qnode);
 
     wikiStore.table.showSpinner = true;
@@ -72,6 +72,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
           col,
           row,
           value: wikifyCellContent,
+          applyToBlock,
           ...qnode,
         })
       ));

@@ -92,8 +92,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   handleOnSubmit(event: any) {
     event.preventDefault();
     const { onSubmit } = this.props;
-    const { selected } = this.state;
-    onSubmit({qnode: selected});
+    const { selected, applyToBlock } = this.state;
+    onSubmit({qnode: selected, applyToBlock});
   }
 
   handleOnClick(qnode: QNode) {
