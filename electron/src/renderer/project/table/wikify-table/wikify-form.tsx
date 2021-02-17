@@ -72,7 +72,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnClick(qnode: QNode) {
-    const { onSubmit } = this.props;
     this.setState({selected: qnode, qnodes: []});
   }
 
