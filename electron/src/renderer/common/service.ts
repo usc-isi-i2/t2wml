@@ -103,8 +103,6 @@ class RequestService {
     let url = `/qnodes?q=${search}`;
     if ( isClass ) {
       url += `&is_class=true`;
-      url += `&type=exact`;
-      url += `&size=5`
     }
     const response = await backendGet(url) as ResponseWithQNodesDTO;
     wikiStore.wikifyQnodes.qnodes = response.qnodes;
