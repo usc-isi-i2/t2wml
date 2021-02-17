@@ -102,8 +102,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { instanceOfSearch } = this.state;
     if ( instanceOfSearch ) {
       this.setState({
+        instanceOfSearch: undefined,
         instanceOf: qnode,
-        selected: qnode,
         qnodes: [],
       });
     } else {
