@@ -196,6 +196,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       return (
         <div className="instance-of">
           Results shown are limited to instances of <strong>{instanceOf.label} ({instanceOf.id})</strong>
+          <span className="remove-instance-of-button">Remove</span>
         </div>
       )
     }
