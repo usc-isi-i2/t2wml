@@ -19,6 +19,7 @@ interface WikifyFormProperties {
 
 interface WikifyFormState {
   search?: string;
+  instanceOf?: QNode;
   instanceOfSearch?: string;
   applyToBlock: boolean;
   selected?: QNode;
@@ -33,6 +34,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
     this.state = {
       search: undefined,
+      instanceOf: undefined,
       instanceOfSearch: undefined,
       applyToBlock: false,
       selected: undefined,
@@ -97,7 +99,19 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnClick(qnode: QNode) {
-    this.setState({selected: qnode, qnodes: []});
+    const { instanceOfSearch } = this.state;
+    if ( instanceOfSearch ) {
+      this.setState({
+        instanceOf: qnode,
+        selected: qnode,
+        qnodes: [],
+      });
+    } else {
+      this.setState({
+        selected: qnode,
+        qnodes: [],
+      });
+    }
   }
 
   clearSearch() {
