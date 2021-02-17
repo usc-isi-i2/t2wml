@@ -83,7 +83,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         this.requestService.postQNodes({
           value: wikifyCellContent,
           selection,
-          ...qnode,
+          qnode,
         })
       ));
     } catch (error) {
