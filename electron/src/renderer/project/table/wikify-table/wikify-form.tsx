@@ -70,12 +70,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnChangeSearch(event: any) {
+    const { instanceOf } = this.state;
     const value: string = (event.target as HTMLInputElement).value;
     this.setState({search: value}, () => {
       if ( !value ) {
         this.clearSearch();
       } else {
-       this.props.onChange('search', value);
+        this.props.onChange('search', value, instanceOf);
       }
     });
   }
@@ -102,7 +103,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { instanceOfSearch } = this.state;
     if ( instanceOfSearch ) {
       this.setState({
-        instanceOfSearch: undefined,
+        instanceOfSearch: '',
         instanceOf: qnode,
         qnodes: [],
       });
