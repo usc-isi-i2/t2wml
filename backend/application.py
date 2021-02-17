@@ -520,6 +520,9 @@ def get_qnodes():
         url += '&is_class=true&type=exact&size=5'
     else:
         url += '&is_class=false&type=ngram&size=10'
+        instance_of = request.args.get('instance_of')
+        if instance_of:
+            url += '&instance_of={}'.format(instance_of)
 
     try:
         response = requests.get(url, verify=False)
