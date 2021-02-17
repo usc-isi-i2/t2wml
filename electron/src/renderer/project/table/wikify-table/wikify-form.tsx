@@ -20,6 +20,7 @@ interface WikifyFormProperties {
 interface WikifyFormState {
   search?: string;
   instanceOfSearch?: string;
+  applyToBlock: boolean;
   selected?: QNode;
   qnodes: QNode[];
 }
@@ -33,6 +34,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.state = {
       search: undefined,
       instanceOfSearch: undefined,
+      applyToBlock: false,
       selected: undefined,
       qnodes: [],
     };
@@ -185,10 +187,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderApplyOptions() {
+    const { applyToBlock } = this.state;
     return (
       <Form.Group as={Row} className="apply-options">
         <Col sm="12" md="12">
-          <input id="check-block" type="checkbox" defaultChecked={false} />
+          <input id="check-block"
+            type="checkbox"
+            defaultChecked={applyToBlock} />
           <Form.Label htmlFor="check-block" className="text-muted">Apply to block</Form.Label>
         </Col>
       </Form.Group>
