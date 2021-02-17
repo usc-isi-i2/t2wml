@@ -19,6 +19,7 @@ interface WikifyFormProperties {
 
 interface WikifyFormState {
   search?: string;
+  instanceOfSearch?: string;
   selected?: QNode;
   qnodes: QNode[];
 }
@@ -31,6 +32,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
     this.state = {
       search: undefined,
+      instanceOfSearch: undefined,
       selected: undefined,
       qnodes: [],
     };
@@ -88,7 +90,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSearchInputs() {
-    const { search, qnodes } = this.state;
+    const { search, instanceOfSearch, qnodes } = this.state;
     return (
       <Form.Group as={Row}>
         <Col sm="12" md="8">
@@ -109,7 +111,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <Form.Label className="text-muted">Instance Of</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder="qnode" />
+            placeholder="qnode"
+            value={instanceOfSearch}
+            onChange={(event: any) => {
+              this.handleOnChange(event, 'instanceOfSearch')
+            }} />
         </Col>
       </Form.Group>
     )
