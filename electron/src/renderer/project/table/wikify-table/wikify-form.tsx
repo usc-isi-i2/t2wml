@@ -135,16 +135,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     if ( selected ) {
       return (
         <div className="selected-node">
-          <strong>{selected.label}</strong> ({selected.url ? (
-            <a target="_blank"
-              rel="noopener noreferrer"
-              className="type-qnode"
-              href={selected.url}>
-              {selected.id}
-            </a>
-          ) : (
-            <span>{selected.id}</span>
-          )})
+          <strong>{selected.label}</strong>&nbsp;
+          <a target="_blank"
+            rel="noopener noreferrer"
+            className="type-qnode"
+            href={`https://www.wikidata.org/wiki/${selected.id}`}>
+            {selected.id}
+          </a>
           <br />
           {selected.description}
         </div>
