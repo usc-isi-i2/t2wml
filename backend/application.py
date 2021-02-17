@@ -541,11 +541,13 @@ def set_qnode():
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
     qnode_id=qnode_dict["id"]
-    col = request.get_json().get('col', "")
-    row = request.get_json().get('row', "")
     value = request.get_json()['value']
-    selection = request.get_json()['selection']
     context = request.get_json().get("context", "")
+    selection = request.get_json()['selection']
+    if not selection:
+        raise web_exceptions.InvalidRequestException('No selection provided')
+    col = selection[0][0]
+    row = selection[0][1]
     df=pd.DataFrame([[col, row, value, context, qnode_id]], columns=["column","row","value","context","item"])
 
     filepath=os.path.join(project.directory, "user-input-wikification.csv")
