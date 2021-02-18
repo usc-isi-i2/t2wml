@@ -45,7 +45,7 @@ export interface EntitiesStatsDTO {
     failed: string[];
 }
 
-export type CellIndex = [number, number];
+export type CellIndex = [number, number]; //row, col
 
 
 //layers:
