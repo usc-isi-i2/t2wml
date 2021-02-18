@@ -547,18 +547,28 @@ def get_qnodes():
 @json_response
 def set_qnode():
     project = get_project()
+    calc_params = get_calc_params(project)
+    sheet_name=calc_params.sheet.name
+    data_file_name=calc_params.sheet.data_file_name
     qnode_dict = request.get_json()['qnode']
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
-    qnode_id=qnode_dict["id"]
+    item=qnode_dict["id"]
     value = request.get_json()['value']
     context = request.get_json().get("context", "")
     selection = request.get_json()['selection']
+
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
-    col = selection[0][0]
-    row = selection[0][1]
-    df=pd.DataFrame([[col, row, value, context, qnode_id]], columns=["column","row","value","context","item"])
+    top_left, bottom_right=selection
+    col1, row1 = top_left
+    col2, row2 = bottom_right
+
+    df_rows=[]
+    for col in range(col1, col2+1):
+        for row in range(row1, row2+1):
+            df_rows.append([col, row, value, context, item, data_file_name, sheet_name])
+    df=pd.DataFrame(df_rows, columns=["column","row","value","context","item", "file", "sheet"])
 
     filepath=os.path.join(project.directory, "user-input-wikification.csv")
     if os.path.exists(filepath):
@@ -571,7 +581,7 @@ def set_qnode():
 
     #build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
-    calc_params = get_calc_params(project)
+
     response= dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
