@@ -7,7 +7,8 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
-import { Cell } from '../../../common/general';
+import { QNode } from '@/renderer/common/dtos';
+import { Cell, CellSelection } from '../../../common/general';
 import wikiStore from '../../../data/store';
 import * as utils from '../table-utils';
 
@@ -39,25 +40,26 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     };
   }
 
-  async handleOnChange(key: string, value: string) {
+  async handleOnChange(key: string, value: string, instanceOf?: QNode) {
     console.log('WikifyMenu OnChange triggered for -> ', key, value);
 
-    if ( value.length < 4 ) { return; }
+    if ( !value ) { return; }
+
+    const isClass = key === 'instanceOfSearch';
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getQNodes(value)
+        this.requestService.getQNodes(value, isClass, instanceOf)
       ));
     } catch (error) {
-      error.errorDescription += "\n\nCannot fetch qnodes!";
+      error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
       this.setState({ errorMessage: error });
     } finally {
       console.log('qnodes request finished');
     }
-
   }
 
-  async handleOnSubmit(values: { [key: string]: string }) {
-    console.log('WikifyMenu OnSubmit triggered for -> ', values);
+  async handleOnSubmit(qnode: QNode, applyToBlock: boolean) {
+    console.log('WikifyMenu OnSubmit triggered for -> ', qnode);
 
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
@@ -66,22 +68,36 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     const { selectedCell, wikifyCellContent } = this.props;
     const { col, row } = selectedCell;
 
+    let selection = [[col, row], [col, row]];
+    if ( applyToBlock ) {
+      const cellSelection: CellSelection = {x1: col+1, x2: col+1, y1: row+1, y2: row+1};
+      const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
+      if ( selectedBlock ) {
+        selection = [
+          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
+          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+        ];
+      }
+    }
+
     try {
       await this.requestService.call(this, () => (
         this.requestService.postQNodes({
-          col,
-          row,
           value: wikifyCellContent,
-          ...values,
+          selection,
+          qnode,
         })
       ));
     } catch (error) {
-      error.errorDescription += "\n\nCannot submit qnodes!";
+      error.errorDescription += `\nWasn't able to submit the qnode!`;
       this.setState({ errorMessage: error });
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
+
+      // Close the wikify menu on submit
+      this.props.onClose();
     }
   }
 

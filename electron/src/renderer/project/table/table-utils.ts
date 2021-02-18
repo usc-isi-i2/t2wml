@@ -1,4 +1,6 @@
+import { AnnotationBlock } from '../../common/dtos';
 import { CellSelection } from '../../common/general';
+import wikiStore from '@/renderer/data/store';
 
 export function columnToLetter(column: number) {
   let temp, letter = '';
@@ -49,4 +51,46 @@ export function standardizeSelection(selection: CellSelection): CellSelection {
     selection.y2 = temp;
   }
   return selection;
+}
+
+export function checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | null {
+  // checks if a given selection is part of an annotation block
+  // if so, returns the annotation block
+  const { x1, x2, y1, y2 } = selection;
+  for (const block of wikiStore.annotations.blocks) {
+    if (block.selection['y1'] <= block.selection['y2']) {
+      if (block.selection['x1'] <= block.selection['x2']) {
+        if (x1 >= block.selection['x1'] &&
+          x2 <= block.selection['x2'] &&
+          y1 >= block.selection['y1'] &&
+          y2 <= block.selection['y2']) {
+          return block;
+        }
+      } else {
+        if (x1 <= block.selection['x1'] &&
+          x2 >= block.selection['x2'] &&
+          y1 >= block.selection['y1'] &&
+          y2 <= block.selection['y2']) {
+          return block;
+        }
+      }
+    } else {
+      if (block.selection['x1'] <= block.selection['x2']) {
+        if (x1 >= block.selection['x1'] &&
+          x2 <= block.selection['x2'] &&
+          y1 <= block.selection['y1'] &&
+          y2 >= block.selection['y2']) {
+          return block;
+        }
+      } else {
+        if (x1 <= block.selection['x1'] &&
+          x2 >= block.selection['x2'] &&
+          y1 <= block.selection['y1'] &&
+          y2 >= block.selection['y2']) {
+          return block;
+        }
+      }
+    }
+  }
+  return null;
 }

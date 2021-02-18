@@ -512,7 +512,17 @@ def get_qnodes():
 
     # construct the url with correct parameters for kgtk search
     url = 'https://kgtk.isi.edu/api/{}'.format(q)
-    url += '?extra_info=true&language=en&type=ngram&instance_of='
+
+    # get the optional parameters for the url
+    is_class = request.args.get('is_class')
+    url += '?extra_info=true&language=en'
+    if is_class:
+        url += '&is_class=true&type=exact&size=5'
+    else:
+        url += '&is_class=false&type=ngram&size=10'
+        instance_of = request.args.get('instance_of')
+        if instance_of:
+            url += '&instance_of={}'.format(instance_of)
 
     try:
         response = requests.get(url, verify=False)
@@ -541,10 +551,13 @@ def set_qnode():
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
     qnode_id=qnode_dict["id"]
-    col = request.get_json().get('col', "")
-    row = request.get_json().get('row', "")
     value = request.get_json()['value']
     context = request.get_json().get("context", "")
+    selection = request.get_json()['selection']
+    if not selection:
+        raise web_exceptions.InvalidRequestException('No selection provided')
+    col = selection[0][0]
+    row = selection[0][1]
     df=pd.DataFrame([[col, row, value, context, qnode_id]], columns=["column","row","value","context","item"])
 
     filepath=os.path.join(project.directory, "user-input-wikification.csv")
