@@ -283,8 +283,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         {this.renderSearchInputs()}
-        {this.renderQNodeResults()}
         {this.renderInstanceOf()}
+        {this.renderQNodeResults()}
         {this.renderSelectedNode()}
         {this.renderApplyOptions()}
         {this.renderSubmitButton()}
