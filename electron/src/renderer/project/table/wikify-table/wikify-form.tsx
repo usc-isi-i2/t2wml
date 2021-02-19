@@ -164,7 +164,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             type="text" size="sm"
             placeholder="qnode"
             value={search}
-            onFocus={() => this.handleOnFocusSearch()}
+            onFocus={this.handleOnFocusSearch.bind(this)}
             onChange={(event: any) => this.handleOnChangeSearch(event)} />
             {search && qnodes.length ? (
               <FontAwesomeIcon
