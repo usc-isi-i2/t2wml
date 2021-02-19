@@ -73,6 +73,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({qnodes});
   }
 
+  handleOnFocusSearch() {
+    const { search, instanceOf } = this.state;
+    this.props.onChange('search', search, instanceOf);
+  }
+
   handleOnChangeSearch(event: any) {
     const { instanceOf } = this.state;
     const value: string = (event.target as HTMLInputElement).value;
@@ -159,6 +164,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             type="text" size="sm"
             placeholder="qnode"
             value={search}
+            onFocus={() => this.handleOnFocusSearch()}
             onChange={(event: any) => this.handleOnChangeSearch(event)} />
             {search && qnodes.length ? (
               <FontAwesomeIcon
