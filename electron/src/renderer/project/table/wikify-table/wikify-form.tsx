@@ -31,7 +31,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   // This should be number instead of any, or ReturnType<typeof setTimeout>
   // TS complains: Type 'Timeout' is not assignable to type 'number'.
-  private timeoutID?: any;
+  private timeoutId?: number;
 
   constructor(props: WikifyFormProperties) {
     super(props);
@@ -86,8 +86,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       if ( !value ) {
         this.clearSearch();
       } else {
-        clearTimeout(this.timeoutID);
-        this.timeoutID = setTimeout(() => {
+        if (this.timeoutId) {
+          window.clearTimeout(this.timeoutId);
+        }
+        this.timeoutId = window.setTimeout(() => {
           this.props.onChange('search', value, instanceOf);
         }, 300);
       }
@@ -100,8 +102,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       if ( !value ) {
         this.clearInstanceOfSearch();
       } else {
-        clearTimeout(this.timeoutID);
-        this.timeoutID = setTimeout(() => {
+        if (this.timeoutId) {
+          window.clearTimeout(this.timeoutId);
+        }
+        this.timeoutId = window.setTimeout(() => {
           this.props.onChange('instanceOfSearch', value);
         }, 300);
       }

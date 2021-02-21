@@ -93,7 +93,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     onSubmit(this.state);
   }
 
-  handleOnDelete(event: any) {
+  handleOnDelete(event: React.MouseEvent) {
     event.preventDefault();
     this.props.onDelete();
   }
@@ -246,7 +246,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
               type="button"
               variant="link"
               className="delete"
-              onClick={(event) => this.handleOnDelete(event)}>
+              onClick={(event: React.MouseEvent) => this.handleOnDelete(event)}>
               delete this annotation block
             </Button>
           </Col>
