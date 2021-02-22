@@ -1,6 +1,6 @@
 {
   "name": "t2wml",
-  "version": "2.6.1-pre.1",
+  "version": "2.7.1-pre.4",
   "description": "A Cell-Based Language To Map Tables Into Wikidata Records",
   "main": "./dist/main.bundle.js",
   "scripts": {
@@ -23,7 +23,7 @@
     },
     "extends": null,
     "mac": {
-      "target": "pkg",
+      "target": ["dmg", "pkg"],
       "extraResources": [
         {
           "from": "../backend/dist/t2wml-server",
@@ -34,6 +34,8 @@
           "to": "t2wml-on-mac.sh"
         }
       ],
+      "hardenedRuntime": true,
+      "entitlements": "./entitlements.mac.inherit.plist",
       "icon": "icons/t2wml-mac.icns"
     },
     "linux": {
@@ -96,7 +98,7 @@
     "cross-env": "^5.2.1",
     "css-loader": "^1.0.1",
     "electron": "^10.1.1",
-    "electron-builder": "^22.2.0",
+    "electron-builder": "^22.9.1",
     "eslint": "^7.7.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-import-resolver-webpack": "^0.11.1",
