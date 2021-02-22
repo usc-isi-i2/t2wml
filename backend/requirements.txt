@@ -3,9 +3,9 @@ Flask-Cors==3.0.8
 Flask-SQLAlchemy==2.4.1
 Flask-Migrate==2.5.3
 numpy==1.19.1
-pandas==1.1.0
+pandas==1.2.2
 pytest==6.0.1
-pyinstaller==4.0
+pyinstaller==4.2
 semver==2.13.0
 openpyxl==3.0.5
 xlrd==1.2.0
