@@ -4,6 +4,10 @@ on:
     tags:
       - v*
 
+# For Code Signing please make sure the following secrets are defined in the repository:
+# WINDOWS_CERTIFICATE_BASE64 - The Windows code signing certificate, base64 encoded
+# WINDOWS_CERTIFICATE_PASSWORD - The password for Windows the certificate
+
 jobs:
   windows:
     name: Create the Windows Installation
@@ -18,24 +22,32 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2-beta
 
-      - name: Set backend environment
+      - name: Extract Code Signing Certificate
+        shell: bash
+        working-directory: electron
         run: |
-          cd $env:GITHUB_WORKSPACE/backend
+          echo "${{secrets.WINDOWS_CERTIFICATE_BASE64}}" > certificate.pfx.base64
+          cat certificate.pfx.base64 | base64 -d > certificate.pfx
+      - name: Set backend environment
+        working-directory: backend
+        run: |
           pip install --upgrade pip
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller pywin32 semver
       - name: Create installer
+        working-directory: backend
         env:  # Replace unicode characters with ?
-           PYTHONIOENCODING: :replace
-           PYTHONLEGACYWINDOWSIOENCODING: true
-           CI: false   # Otherwise React stops on warnings
+          PYTHONIOENCODING: :replace
+          PYTHONLEGACYWINDOWSIOENCODING: true
+          CI: false   # Otherwise React stops on warnings
+          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         run: |
-          cd $env:GITHUB_WORKSPACE/backend
+          $env:CSC_LINK="$env:GITHUB_WORKSPACE/electron/certificate.pfx"
           python packaging/prepare_installation.py --version ${{ github.ref }}
       - name: Rename installer to canonical name
+        working-directory: electron/out
         run: |
-          cd $env:GITHUB_WORKSPACE/electron/out
           copy "t2wml Setup*.exe" t2wml-setup.exe
       - name: Get the version
         id: get_version
