@@ -65,7 +65,7 @@ jobs:
           body: "Windows Executable"
   mac:
     name: Create the Mac OS Installation
-    runs-on: macos-latest
+    runs-on: macos-10.15
     steps:
       - name: Checkout
         uses: actions/checkout@v2

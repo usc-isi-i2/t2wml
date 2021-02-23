@@ -1,7 +1,8 @@
 {
   "name": "t2wml",
-  "version": "2.7.1-pre.4",
+  "version": "2.7.1-pre.2",
   "description": "A Cell-Based Language To Map Tables Into Wikidata Records",
+  "author": "USC Viterbi ISI",
   "main": "./dist/main.bundle.js",
   "scripts": {
     "start": "electron ./dist/main.bundle.js",
@@ -23,7 +24,7 @@
     },
     "extends": null,
     "mac": {
-      "target": ["dmg", "pkg"],
+      "target": ["pkg"],
       "extraResources": [
         {
           "from": "../backend/dist/t2wml-server",
@@ -49,7 +50,7 @@
       "icon": "icons/t2wml-mac.icns"
     },
     "win": {
-      "target": "nsis",
+      "target": "msi",
       "asar": false,
       "extraResources": [
         {
