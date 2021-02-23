@@ -41,11 +41,12 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
   }
 
   render() {
+    const handleClose= () => this.props.cancelSaveSettings()
     return (
-      <Modal show={this.props.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
+      <Modal show={this.props.showSettings} size="lg" onHide={handleClose}>
 
         {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
+        <Modal.Header  closeButton style={{ background: "whitesmoke" }}>
           <Modal.Title>Global Settings</Modal.Title>
         </Modal.Header>
 
@@ -83,7 +84,7 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
 
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.props.cancelSaveSettings() }>
+          <Button variant="outline-dark" onClick={handleClose}>
             Cancel
           </Button>
           <Button variant="dark" onClick={() => this.handleSaveSettings()}>
