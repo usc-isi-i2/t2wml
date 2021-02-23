@@ -29,8 +29,6 @@ interface WikifyFormState {
 
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
 
-  // This should be number instead of any, or ReturnType<typeof setTimeout>
-  // TS complains: Type 'Timeout' is not assignable to type 'number'.
   private timeoutId?: number;
 
   constructor(props: WikifyFormProperties) {
