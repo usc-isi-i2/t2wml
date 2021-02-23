@@ -48,7 +48,7 @@ jobs:
       - name: Rename installer to canonical name
         working-directory: electron/out
         run: |
-          copy "t2wml Setup*.exe" t2wml-setup.exe
+          copy "t2wml*.msi" t2wml.msi
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
@@ -58,11 +58,11 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: electron/out/t2wml-setup.exe
-          asset_name: t2wml-setup-${{ steps.get_version.outputs.VERSION }}.exe
+          file: electron/out/t2wml.msi
+          asset_name: t2wml-${{ steps.get_version.outputs.VERSION }}.msi
           tag: ${{ github.ref }}
           overwrite: true
-          body: "Windows Executable"
+          body: "Windows Setup"
   mac:
     name: Create the Mac OS Installation
     runs-on: macos-10.15
