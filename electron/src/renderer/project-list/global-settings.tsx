@@ -36,6 +36,9 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
 
   handleSaveSettings(event:any) {
     if (event) { event.preventDefault() } //otherwise app reloads
+    if (this.state.datamartIntegration && !this.state.datamartApi){
+      return;
+    }
     const datamartIntegration = this.state.datamartIntegration;
     const datamartApi = this.state.datamartApi;
     this.props.handleSaveSettings(datamartIntegration, datamartApi);
@@ -78,6 +81,9 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
                   type="text" size="sm"
                   defaultValue={this.props.datamartApi}
                   onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
+                   <Form.Label style={{ color: 'red' }}>
+                      {this.state.datamartIntegration && !this.state.datamartApi ?  "Url cannot be empty if datamrt integration is checked":""}
+                          </Form.Label>
               </Col>
             </Form.Group>
           </Form>
@@ -89,7 +95,7 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
           <Button variant="outline-dark" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="dark" onClick={handleSave}>
+          <Button variant="dark" onClick={handleSave} disabled ={this.state.datamartIntegration && !this.state.datamartApi}>
             Save
           </Button>
         </Modal.Footer>
