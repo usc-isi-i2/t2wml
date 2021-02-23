@@ -34,7 +34,8 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
     }
   }
 
-  handleSaveSettings() {
+  handleSaveSettings(event:any) {
+    if (event) { event.preventDefault() } //otherwise app reloads
     const datamartIntegration = this.state.datamartIntegration;
     const datamartApi = this.state.datamartApi;
     this.props.handleSaveSettings(datamartIntegration, datamartApi);
@@ -42,6 +43,7 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
 
   render() {
     const handleClose= () => this.props.cancelSaveSettings()
+    const handleSave = (event:any) => this.handleSaveSettings(event)
     return (
       <Modal show={this.props.showSettings} size="lg" onHide={handleClose}>
 
@@ -52,7 +54,7 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
 
         {/* body */}
         <Modal.Body>
-          <Form className="container">
+          <Form className="container" onSubmit={handleSave}>
             {/* datamart integration on/off */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
@@ -87,7 +89,7 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
           <Button variant="outline-dark" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => this.handleSaveSettings()}>
+          <Button variant="dark" onClick={handleSave}>
             Save
           </Button>
         </Modal.Footer>
