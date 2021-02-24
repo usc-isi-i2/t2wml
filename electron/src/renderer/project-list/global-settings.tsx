@@ -34,24 +34,30 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
     }
   }
 
-  handleSaveSettings() {
+  handleSaveSettings(event:any) {
+    if (event) { event.preventDefault() } //otherwise app reloads
+    if (this.state.datamartIntegration && !this.state.datamartApi){
+      return;
+    }
     const datamartIntegration = this.state.datamartIntegration;
     const datamartApi = this.state.datamartApi;
     this.props.handleSaveSettings(datamartIntegration, datamartApi);
   }
 
   render() {
+    const handleClose= () => this.props.cancelSaveSettings()
+    const handleSave = (event:any) => this.handleSaveSettings(event)
     return (
-      <Modal show={this.props.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
+      <Modal show={this.props.showSettings} size="lg" onHide={handleClose}>
 
         {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
+        <Modal.Header  closeButton style={{ background: "whitesmoke" }}>
           <Modal.Title>Global Settings</Modal.Title>
         </Modal.Header>
 
         {/* body */}
         <Modal.Body>
-          <Form className="container">
+          <Form className="container" onSubmit={handleSave}>
             {/* datamart integration on/off */}
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
               <Form.Label column sm="12" md="3" className="text-right">
@@ -75,6 +81,9 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
                   type="text" size="sm"
                   defaultValue={this.props.datamartApi}
                   onChange={(event) => this.setState({ datamartApi: event?.target.value })}/>
+                   <Form.Label style={{ color: 'red' }}>
+                      {this.state.datamartIntegration && !this.state.datamartApi ?  "Url cannot be empty if datamrt integration is checked":""}
+                          </Form.Label>
               </Col>
             </Form.Group>
           </Form>
@@ -83,10 +92,10 @@ class GlobalSettings extends Component<SettingsProperties, SettingsState> {
 
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.props.cancelSaveSettings() }>
+          <Button variant="outline-dark" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="dark" onClick={() => this.handleSaveSettings()}>
+          <Button variant="dark" onClick={handleSave} disabled ={this.state.datamartIntegration && !this.state.datamartApi}>
             Save
           </Button>
         </Modal.Footer>
