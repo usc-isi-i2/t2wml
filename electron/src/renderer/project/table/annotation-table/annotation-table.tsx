@@ -164,6 +164,16 @@ class AnnotationTable extends Component<{}, TableState> {
         }
       }
     }
+
+    const qnodes = wikiStore.layers.qnode;
+    if (!tableData) { return; }
+    for (const entry of qnodes.entries) {
+      for (const indexPair of entry.indices) {
+        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        tableCell.classNames.push(`type-wikibaseitem`);
+      }
+    }
+
     this.setState({ tableData });
   }
 
