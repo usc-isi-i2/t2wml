@@ -40,6 +40,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
         run: |
+          export CSC_LINK=$GITHUB_WORKSPACE/electron/certificate.pfx
           cd $GITHUB_WORKSPACE/backend
           python packaging/prepare_installation.py --version 2.7.1-pre.5 # ${{ github.ref }}
       - name: Rename installer to canonical name
