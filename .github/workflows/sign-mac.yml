@@ -37,6 +37,9 @@ jobs:
           python packaging/prepare_installation.py --skip-electron-build --version 2.7.1-pre.5 # ${{ github.ref }}
       - name: Build electron package
         uses: samuelmeuli/action-electron-builder@v1
+        env:
+          APPLE_ID: ${{secrets.APPLE_ID}}
+          APPLE_ID_PASSWORD: ${{secrets.APPLE_ID_PASSWORD}}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           package_root: electron
