@@ -38,6 +38,7 @@ jobs:
       - name: Build electron packaging/prepare_installation.py
         uses: samuelmeuli/action-electron-builder@v1
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           package_root: electron
           build_script_name: build:mac
           mac_certs: ${{secrets.MAC_CERTIFICATE_BASE64}}
