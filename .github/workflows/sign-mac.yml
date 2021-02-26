@@ -25,9 +25,9 @@ jobs:
         shell: bash
         working-directory: electron
         env:
-          KEYCHAIN_PASS: keychainpass
+          KEYCHAIN_PASS: "keychainpass"
           CERTIFICATE_PASSWORD: "${{secrets.MAC_CERTIFICATE_PASSWORD}}"
-          CERTIFICATE: "${{secrets.MAC_CERTIFICATE_BASE64"
+          CERTIFICATE: "${{secrets.MAC_CERTIFICATE_BASE64}}"
         run: |
           echo $CERTIFICATE | base64 -d > certificate.p12
           security create-keychain -p $KEYCHAIN_PASS build.keychain
