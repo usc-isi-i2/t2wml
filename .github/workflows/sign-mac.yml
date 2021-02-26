@@ -34,7 +34,7 @@ jobs:
           CI: false   # Otherwise React stops on warnings
           CSC_IDENTITY_AUTO_DISCOVERY: true
         run: |
-          python packaging/prepare_installation.py --version 2.7.1-pre.5 # ${{ github.ref }} --skip-electron-build
+          python packaging/prepare_installation.py --skip-electron-build --version 2.7.1-pre.5 # ${{ github.ref }}
       - name: Build electron package
         uses: samuelmeuli/action-electron-builder@v1
         with:
