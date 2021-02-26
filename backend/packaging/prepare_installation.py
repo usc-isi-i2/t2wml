@@ -13,7 +13,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--version', type=str, default=None, help='Version number for deployment')
     # parser.add_argument('--skip-frontend', action="store_true", default=False, help='Skip building the frontend')
-    parser.add_argument('--skip-electron', action="store_true", default=False, help='Skip packaging electron')
+    parser.add_argument('--skip-electron-build', action="store_true", default=False, help='Skip packaging electron')
     # parser.add_argument('--zip', type=str, default=None, help='Zip file name for output')
     return parser.parse_args()
 
@@ -93,7 +93,7 @@ def build_installer():
     finally:
         os.chdir(cwd)
 
-def build_electron():
+def build_electron(skip_electron_build=False):
     global electron_path
     print('Building electron...')
     cwd = os.getcwd()
@@ -110,7 +110,11 @@ def build_electron():
 
         if (os_name == 'mac'):
             os.system('chmod ugo+x t2wml-on-mac.sh')  # Make sure it is an executable.
-        os.system(f'yarn build:{os_name}')
+
+        if not skip_electron_build:
+            os.system(f'yarn build:{os_name}')
+        else:
+            print("Skipping electron build")
     finally:
         os.chdir(cwd)
 
@@ -127,8 +131,7 @@ def run():
     build_help_docs()
     build_installer()
 
-    if not args.skip_electron:
-        build_electron()
+    build_electron(args.skip_electron_build)
 
     print("Done, look in the ", os.path.join(electron_path, 'out'), ' directory')
 

@@ -21,24 +21,6 @@ jobs:
           python-version: '3.7'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
-      - name: Setup Code Signing Certificate
-        shell: bash
-        working-directory: electron
-        env:
-          KEYCHAIN_PASS: "keychainpass"
-          CERTIFICATE_PASSWORD: "${{secrets.MAC_CERTIFICATE_PASSWORD}}"
-          CERTIFICATE: "${{secrets.MAC_CERTIFICATE_BASE64}}"
-        run: |
-          echo $CERTIFICATE | base64 -d > certificate.p12
-          security create-keychain -p $KEYCHAIN_PASS build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p $KEYCHAIN_PASS build.keychain
-          security import certificate.p12 -k build.keychain -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign
-
-          security find-identity -v
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEYCHAIN_PASS build.keychain
-
-          security find-identity -v
       - name: Set backend environment
         working-directory: backend
         run: |
@@ -46,13 +28,20 @@ jobs:
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
-      - name: Create executable
+      - name: Compile Code
         working-directory: backend
         env:
           CI: false   # Otherwise React stops on warnings
           CSC_IDENTITY_AUTO_DISCOVERY: true
         run: |
-          python packaging/prepare_installation.py --version 2.7.1-pre.5 # ${{ github.ref }}
+          python packaging/prepare_installation.py --version 2.7.1-pre.5 # ${{ github.ref }} --skip-electron-build
+      - name: Build electron packaging/prepare_installation.py
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          package_root: electron
+          build_script_name: build:mac
+          mac_certs: ${{secrets.MAC_CERTIFICATE_BASE64}}
+          mac_certs_password: ${{secrets.MAC_CERTIFICATE_PASSWORD}}
       - name: Rename installer to canonical name
         working-directory: electron/out
         run: |
