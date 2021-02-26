@@ -1,6 +1,6 @@
 {
   "name": "t2wml",
-  "version": "2.7.1-pre.2",
+  "version": "2.7.1-pre.4",
   "description": "A Cell-Based Language To Map Tables Into Wikidata Records",
   "author": "USC Viterbi ISI",
   "main": "./dist/main.bundle.js",

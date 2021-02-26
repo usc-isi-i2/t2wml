@@ -35,7 +35,7 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: true
         run: |
           python packaging/prepare_installation.py --version 2.7.1-pre.5 # ${{ github.ref }} --skip-electron-build
-      - name: Build electron packaging/prepare_installation.py
+      - name: Build electron package
         uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
