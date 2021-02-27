@@ -23,9 +23,10 @@
       "output": "./out/"
     },
     "extends": null,
+    "afterSign": "electron-builder-notarize",
     "mac": {
       "target": [
-        "pkg"
+        "pkg", "dmg"
       ],
       "extraResources": [
         {
