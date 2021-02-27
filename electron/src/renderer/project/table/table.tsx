@@ -14,6 +14,7 @@ interface TableProperties {
   onMouseMove?: (event: React.MouseEvent) => void;
   onClickHeader?: (event: React.MouseEvent) => void;
   setTableReference: any;
+  optionalClassNames?: string;
 }
 
 
@@ -29,9 +30,10 @@ class Table extends React.Component<TableProperties>{
       onMouseDown,
       onMouseMove,
       setTableReference,
+      optionalClassNames,
     } = this.props;
     return (
-      <div className="table-wrapper">
+      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
         <table ref={setTableReference}
           onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
           onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
@@ -65,6 +67,7 @@ class Table extends React.Component<TableProperties>{
       onMouseMove,
       onClickHeader,
       setTableReference,
+      optionalClassNames,
     } = this.props;
 
     if (!tableData) {
@@ -75,7 +78,7 @@ class Table extends React.Component<TableProperties>{
     const cols = [...Array(Math.max(tableData[0].length, 26))];
 
     return (
-      <div className="table-wrapper">
+      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
         <table ref={setTableReference}
           onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
           onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}

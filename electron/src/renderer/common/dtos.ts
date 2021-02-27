@@ -145,7 +145,8 @@ export interface AnnotationBlock{
 }
 
 export interface TableCell {
-  content: string;
+  rawContent?: string;
+  content: string | JSX.Element;
   classNames: string[];
 }
 
@@ -174,7 +175,6 @@ export interface ResponseWithTableDTO extends ResponseWithMappingDTO{
 
 export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO{
     layers: LayersDTO; //only contains the qnode layer, but leaving it like this for now
-
 }
 
 export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
@@ -202,4 +202,8 @@ export interface ResponseWithProjectAndMappingDTO extends ResponseWithProjectDTO
 
 export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO{
 
+}
+
+export interface ResponseWithQNodesDTO {
+    qnodes: QNode[];
 }

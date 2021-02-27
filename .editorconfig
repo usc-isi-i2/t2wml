@@ -10,6 +10,8 @@ max_line_length = 80
 trim_trailing_whitespace = true
 
 [*.tsx, *.ts, *.js, *.jsx, *.json]
+spaces_around_operators = true
+spaces_around_brackets = true
 indent_size = 2
 
 [*.py]

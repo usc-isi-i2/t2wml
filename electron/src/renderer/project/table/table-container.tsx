@@ -20,6 +20,7 @@ import wikiStore, { TableMode } from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import AnnotationTable from './annotation-table/annotation-table';
 import OutputTable from './output-table/output-table';
+import WikifyTable from './wikify-table/wikify-table';
 import { currentFilesService } from '../../common/current-file-service';
 
 
@@ -284,6 +285,13 @@ class TableContainer extends Component<{}, TableState> {
           </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
+              'active': mode === 'wikify',
+            })}
+            onClick={() => this.switchMode('wikify')}>
+            Wikify
+          </Button>
+          <Button variant="outline-light"
+            className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'annotation',
             })}
             disabled={currentFilesService.currentState.mappingType === 'Yaml'}
@@ -347,6 +355,8 @@ class TableContainer extends Component<{}, TableState> {
   renderTable() {
     if (this.state.mode === 'annotation') {
       return <AnnotationTable />;
+    } else if (this.state.mode === 'wikify') {
+      return <WikifyTable />;
     }
     return <OutputTable />;
   }

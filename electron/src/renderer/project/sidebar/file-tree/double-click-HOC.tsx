@@ -9,7 +9,7 @@ interface funcProps {
 
 
 export default class DoubleClick extends Component<funcProps> {
-  timeout: any;
+  timeout: number | null;
 
   constructor(props: funcProps) {
     super(props);
@@ -30,7 +30,10 @@ export default class DoubleClick extends Component<funcProps> {
 
   onDoubleClick(e: React.MouseEvent) {
     e.preventDefault();
-    window.clearTimeout(this.timeout);
+
+    if (this.timeout) {
+      window.clearTimeout(this.timeout);
+    }
     this.timeout = null;
     this.props.onDoubleClick(e);
   }

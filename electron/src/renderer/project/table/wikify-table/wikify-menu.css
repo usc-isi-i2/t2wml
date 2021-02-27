@@ -1,0 +1,89 @@
+.wikify-menu {
+  position: absolute;
+  z-index: 250;
+  left: 50px;
+  top: 70px;
+}
+
+.wikify-menu .toast {
+  max-width: 500px;
+  min-width: 500px;
+}
+
+.wikify-menu .toast .handle {
+  background: whitesmoke;
+  cursor: pointer;
+}
+
+.wikify-menu .toast .toast-body {
+  background: #fefefe;
+}
+
+/* Input field clear button */
+.wikify-menu .wikify-form .clear-button {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  color: #555;
+  cursor: pointer;
+  z-index: 125;
+}
+.wikify-menu .wikify-form .clear-button:hover {
+  color: #000;
+}
+
+/* Wikify Menu - Instance OF node */
+.wikify-menu .wikify-form .instance-of {
+  margin-bottom: 1em;
+}
+.wikify-menu .wikify-form .instance-of .remove-instance-of-button {
+  margin-left: 5px;
+  color: red;
+}
+.wikify-menu .wikify-form .instance-of .remove-instance-of-button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Wikify Menu - Selected node */
+.wikify-menu .wikify-form .selected-node {
+  margin-bottom: 1em;
+}
+
+ /* Wikify Menu Qnode results */
+.wikify-menu .wikify-form .results {
+  max-height: 500px;
+  overflow: scroll;
+}
+.wikify-menu .wikify-form .results .qnode {
+  user-select: none;
+  padding: 5px 0;
+}
+.wikify-menu .wikify-form .results .qnode:hover {
+  cursor: pointer;
+  background: #f9f9f9;
+}
+.wikify-menu .wikify-form .results .qnode .label {
+  display: block;
+  font-weight: bold;
+  width: 100%;
+}
+.wikify-menu .wikify-form .results .qnode .description {
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+/* Apply Option checkboxes */
+.wikify-menu .wikify-form .apply-options input {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  vertical-align: bottom;
+}
+.wikify-menu .wikify-form .apply-options label {
+  user-select: none;
+  cursor: pointer;
+}

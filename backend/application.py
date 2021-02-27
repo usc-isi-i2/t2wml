@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 import re
 import os
 import sys
@@ -499,6 +500,91 @@ def update_settings():
         update_t2wml_settings(project)
 
     response = dict(project=get_project_dict(project))
+    return response, 200
+
+
+@app.route('/api/qnodes', methods=['GET'])
+@json_response
+def get_qnodes():
+    q = request.args.get('q')
+    if not q:
+        raise web_exceptions.InvalidRequestException("No search parameter set")
+
+    # construct the url with correct parameters for kgtk search
+    url = 'https://kgtk.isi.edu/api/{}'.format(q)
+
+    # get the optional parameters for the url
+    is_class = request.args.get('is_class')
+    url += '?extra_info=true&language=en'
+    if is_class:
+        url += '&is_class=true&type=exact&size=5'
+    else:
+        url += '&is_class=false&type=ngram&size=10'
+        instance_of = request.args.get('instance_of')
+        if instance_of:
+            url += '&instance_of={}'.format(instance_of)
+
+    try:
+        response = requests.get(url, verify=False)
+    except requests.exceptions.RequestException as error:
+        raise web_exceptions.InvalidRequestException(error)
+    else:
+        items = response.json()
+        if type(items) != list:
+            raise web_exceptions.InvalidRequestException(
+                "KGTK did not return a valid list of qnodes"
+            )
+        qnodes = [{
+            'id': item['qnode'],
+            'label': item['label'][0] if item['label'] else '',
+            'description': item['description'][0] if item['description'] else '',
+        } for item in items]
+
+    return {'qnodes': qnodes}, 200
+
+
+@app.route('/api/set_qnode', methods=['POST'])
+@json_response
+def set_qnode():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    sheet_name=calc_params.sheet.name
+    data_file_name=calc_params.sheet.data_file_name
+    qnode_dict = request.get_json()['qnode']
+    if not qnode_dict:
+        raise web_exceptions.InvalidRequestException('No qnode provided')
+    item=qnode_dict["id"]
+    value = request.get_json()['value']
+    context = request.get_json().get("context", "")
+    selection = request.get_json()['selection']
+
+    if not selection:
+        raise web_exceptions.InvalidRequestException('No selection provided')
+    top_left, bottom_right=selection
+    col1, row1 = top_left
+    col2, row2 = bottom_right
+
+    df_rows=[]
+    for col in range(col1, col2+1):
+        for row in range(row1, row2+1):
+            df_rows.append([col, row, value, context, item, data_file_name, sheet_name])
+    df=pd.DataFrame(df_rows, columns=["column","row","value","context","item", "file", "sheet"])
+
+    filepath=os.path.join(project.directory, "user-input-wikification.csv")
+    if os.path.exists(filepath):
+        df.to_csv(filepath, mode='a', index=False, header=False)
+    else:
+        df.to_csv(filepath, index=False, header=True)
+
+    project.add_wikifier_file(filepath)
+    project.save()
+
+    #build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
+    # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
+
+    response= dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
     return response, 200
 
 

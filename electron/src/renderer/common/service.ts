@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodesDTO, QNode
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -97,6 +97,23 @@ class RequestService {
     console.log("qnode", response)
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.project.projectDTO = response.project;
+  }
+
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode) {
+    let url = `/qnodes?q=${search}`;
+    if ( isClass ) {
+      url += `&is_class=true`;
+    }
+    if ( instanceOf ) {
+      url += `&instance_of=${instanceOf.id}`;
+    }
+    const response = await backendGet(url) as ResponseWithQNodesDTO;
+    wikiStore.wikifyQnodes.qnodes = response.qnodes;
+  }
+
+  public async postQNodes(values: any) {
+    const response = await backendPost(`/set_qnode?${this.getDataFileParams(false)}`, values) as ResponseWithQNodeLayerDTO;
+    this.updateProjectandQnode(response);
   }
 
   public async addExistingMapping(data: any){

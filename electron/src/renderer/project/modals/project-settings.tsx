@@ -89,11 +89,12 @@ class Settings extends Component<SettingsProperties, SettingsState> {
       Config.defaultSparqlEndpoint,
       "https://query.wikidata.org/sparql"
     ];
+    const handleClose = () => this.props.cancelSaveSettings()
     return (
-      <Modal show={this.props.showSettings} size="lg" onHide={() => { /* do nothing */ }}>
+      <Modal show={this.props.showSettings} size="lg" onHide={handleClose}>
 
         {/* header */}
-        <Modal.Header style={{ background: "whitesmoke" }}>
+        <Modal.Header  closeButton style={{ background: "whitesmoke" }}>
           <Modal.Title>Project Settings</Modal.Title>
         </Modal.Header>
 
@@ -203,7 +204,7 @@ class Settings extends Component<SettingsProperties, SettingsState> {
 
         {/* footer */}
         <Modal.Footer style={{ background: "whitesmoke" }}>
-          <Button variant="outline-dark" onClick={() => this.props.cancelSaveSettings() }>
+          <Button variant="outline-dark" onClick={handleClose}>
             Cancel
           </Button>
           <Button variant="dark" onClick={() => this.handleSaveSettings()} disabled={!this.state.title}>

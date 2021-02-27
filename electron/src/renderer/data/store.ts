@@ -16,8 +16,9 @@ class EditorsState {
 }
 
 
-export type TableMode = 'annotation' | 'output';
+export type TableMode = 'annotation' | 'output' | 'wikify';
 class TableState {
+
     @observable public mode: TableMode;
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
@@ -225,6 +226,10 @@ export class EntitiesData {
     @observable entities: ResponseEntitiesPropertiesDTO = {}; //TODO- add type
 }
 
+export class WikifyQnodes {
+    @observable qnodes: QNode[] = [];
+}
+
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
@@ -239,6 +244,7 @@ class WikiStore {
     @observable public project = new ProjectState();
     @observable public globalSettings = new GlobalSettings();
     @observable public entitiesData = new EntitiesData();
+    @observable public wikifyQnodes = new WikifyQnodes();
 
 
     @action

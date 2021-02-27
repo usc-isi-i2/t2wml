@@ -30,7 +30,8 @@
 }
 
 /* top left corner piece */
-.table-wrapper table th:nth-child(1) {
+.table-wrapper table th:nth-child(1),
+.table-wrapper.wikify-table table th:nth-child(1) {
   padding: 0.15em 0.5em;
   text-align: center;
   background: #f9f9f9;
@@ -42,7 +43,8 @@
   top: -1px;
   pointer-events: none;
 }
-.table-wrapper table th:nth-child(1)::before {
+.table-wrapper table th:nth-child(1)::before,
+.table-wrapper.wikify-table table th:nth-child(1)::before {
   content: '';
   position: absolute;
   bottom: 0;
@@ -68,6 +70,9 @@
   width: 75px;
   top: -1px;
 }
+.table-wrapper.wikify-table table thead tr th:not(:nth-child(1)) {
+  min-width: 175px;
+}
 .table-wrapper table thead tr th::after {
   content: '';
   display: block;
@@ -87,9 +92,13 @@
   overflow: hidden;
   display: inline-table;
 }
+.table-wrapper.wikify-table table thead tr th:not(:nth-child(1)) > div {
+  min-width: 175px;
+}
 
 /* left column */
-.table-wrapper table tr td:nth-child(1) {
+.table-wrapper table tr td:nth-child(1),
+.table-wrapper.wikify-table table tr td:nth-child(1) {
   text-align: center;
   background: #f9f9f9;
   padding: 0.15em 0.5em;
@@ -100,7 +109,8 @@
   left: -1px;
   pointer-events: none;
 }
-.table-wrapper table tr td:nth-child(1)::after {
+.table-wrapper table tr td:nth-child(1)::after,
+.table-wrapper.wikify-table table tr td:nth-child(1)::after {
   content: '';
   display: block;
   top: 0;
@@ -124,6 +134,11 @@
   max-width: 75px;
   width: 75px;
   z-index: 1;
+}
+.table-wrapper.wikify-table table tr td:not(:nth-child(1)) {
+  min-width: 175px;
+  max-width: 175px;
+  width: 175px;
 }
 
 
