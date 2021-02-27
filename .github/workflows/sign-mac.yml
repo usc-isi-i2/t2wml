@@ -50,7 +50,7 @@ jobs:
         working-directory: electron/out
         run: |
           ls -l
-          cp t2wml*.pkg t2wml.pkg
+          cp t2wml*.dmg t2wml.dmg
 
       - name: Get the version
         id: get_version
@@ -61,8 +61,8 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: electron/out/t2wml.pkg
-          asset_name: t2wml-2.7.1-pre.5.pkg # ${{ steps.get_version.outputs.VERSION }}.pkg
+          file: electron/out/t2wml.dmg
+          asset_name: t2wml-2.7.1-pre.5.dmg # ${{ steps.get_version.outputs.VERSION }}.dmg
           tag: 2.7.1-pre.5 # ${{ github.ref }}
           overwrite: true
-          body: "MacOS Package"
+          body: "MacOS Instalation Package"
