@@ -278,10 +278,10 @@ class TableContainer extends Component<{}, TableState> {
         <ButtonGroup aria-label="modes" className="mode-toggle">
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': mode === 'output',
+              'active': mode === 'annotation',
             })}
-            onClick={() => this.switchMode('output')}>
-            Output
+            onClick={() => this.switchMode('annotation')}>
+            Annotate
           </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
@@ -292,11 +292,11 @@ class TableContainer extends Component<{}, TableState> {
           </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
-              'active': mode === 'annotation',
+              'active': mode === 'output',
             })}
             disabled={currentFilesService.currentState.mappingType === 'Yaml'}
-            onClick={() => this.switchMode('annotation')}>
-            Annotate
+            onClick={() => this.switchMode('output')}>
+            Output
           </Button>
         </ButtonGroup>
       )
