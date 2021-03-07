@@ -117,9 +117,9 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async deleteFile(deleteFromFs: boolean) {
     const filename = this.state.clickedNode!.label;
+    let updateTree = false;
     if (currentFilesService.currentState.dataFile == filename || currentFilesService.currentState.mappingFile == filename) {
-      alert("Cannot delete or remove a file that is currently open");
-      return;
+      updateTree=true;
     }
 
     this.setState({ showSpinner: true });
@@ -127,6 +127,10 @@ class FileTree extends Component<TreeProps, TreeState> {
     const data = { "file_name": filename, "delete": deleteFromFs };
     try {
       await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
+      if (updateTree){
+        currentFilesService.getFiles(wikiStore.project.projectDTO!); //do we need this in order to be able to call get table?
+        await this.requestService.getTable();
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -153,7 +157,11 @@ class FileTree extends Component<TreeProps, TreeState> {
           "dataFile": this.state.clickedNode!.parentNode!.label
         };
 
-        await this.requestService.saveYaml(data);
+
+
+        let filename = await this.requestService.saveYaml(data);
+        currentFilesService.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        await this.requestService.getTable();
       } catch (error) {
         console.log(error);
       }
@@ -178,7 +186,9 @@ class FileTree extends Component<TreeProps, TreeState> {
           "dataFile": this.state.clickedNode!.parentNode!.label
         };
 
-        await this.requestService.createAnnotation(data)
+        let filename = await this.requestService.createAnnotation(data)
+        currentFilesService.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        await this.requestService.getTable();
       } catch (error) {
         console.log(error);
       } finally {
@@ -206,7 +216,10 @@ class FileTree extends Component<TreeProps, TreeState> {
           "type":"yaml"
         };
 
-        await this.requestService.addExistingMapping(data);
+        let filename = await this.requestService.addExistingMapping(data);
+        currentFilesService.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        await this.requestService.getTable();
+
       } catch (error) {
         console.log(error);
       }
@@ -232,7 +245,10 @@ class FileTree extends Component<TreeProps, TreeState> {
           "type":"annotation"
         };
 
-        await this.requestService.addExistingMapping(data)
+        let filename = await this.requestService.addExistingMapping(data)
+        currentFilesService.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        await this.requestService.getTable();
+
       } catch (error) {
         console.log(error);
       } finally {

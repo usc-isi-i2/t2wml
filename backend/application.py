@@ -228,7 +228,8 @@ def upload_data_file():
     calc_params = CalcParams(project, data_file, sheet_name, None)
 
     if global_settings.datamart_integration:
-        calc_params.yaml_path = run_annotation(project, calc_params)
+        yaml_name = run_annotation(project, calc_params)
+        calc_params.yaml_path = Path(calc_params.project.directory) / yaml_name
         response["yamlContent"] = get_yaml_content(calc_params)
     response["table"] = get_table(calc_params)
     get_layers(response, calc_params)
@@ -332,8 +333,8 @@ def upload_yaml():
     sheet_name = request.get_json()["sheetName"]
     yaml_data = request.get_json()["yaml"]
     title = request.get_json()["title"]
-    save_yaml(project, yaml_data, dataFile, sheet_name, title)
-    response = dict(project=get_project_dict(project))
+    filename = save_yaml(project, yaml_data, dataFile, sheet_name, title)
+    response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
 
 
@@ -418,8 +419,9 @@ def save_annotation():
     sheet_name = request.get_json()["sheetName"]
     title = request.get_json()["title"]
     annotations_path = Path(project.directory) / title
-    save_annotations(project, [], annotations_path, dataFile, sheet_name)
-    response = dict(project=get_project_dict(project))
+    filename = save_annotations(
+        project, [], annotations_path, dataFile, sheet_name)
+    response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
 
 
@@ -548,29 +550,31 @@ def get_qnodes():
 def set_qnode():
     project = get_project()
     calc_params = get_calc_params(project)
-    sheet_name=calc_params.sheet.name
-    data_file_name=calc_params.sheet.data_file_name
+    sheet_name = calc_params.sheet.name
+    data_file_name = calc_params.sheet.data_file_name
     qnode_dict = request.get_json()['qnode']
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
-    item=qnode_dict["id"]
+    item = qnode_dict["id"]
     value = request.get_json()['value']
     context = request.get_json().get("context", "")
     selection = request.get_json()['selection']
 
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
-    top_left, bottom_right=selection
+    top_left, bottom_right = selection
     col1, row1 = top_left
     col2, row2 = bottom_right
 
-    df_rows=[]
+    df_rows = []
     for col in range(col1, col2+1):
         for row in range(row1, row2+1):
-            df_rows.append([col, row, value, context, item, data_file_name, sheet_name])
-    df=pd.DataFrame(df_rows, columns=["column","row","value","context","item", "file", "sheet"])
+            df_rows.append([col, row, value, context, item,
+                            data_file_name, sheet_name])
+    df = pd.DataFrame(df_rows, columns=[
+                      "column", "row", "value", "context", "item", "file", "sheet"])
 
-    filepath=os.path.join(project.directory, "user-input-wikification.csv")
+    filepath = os.path.join(project.directory, "user-input-wikification.csv")
     if os.path.exists(filepath):
         df.to_csv(filepath, mode='a', index=False, header=False)
     else:
@@ -579,10 +583,10 @@ def set_qnode():
     project.add_wikifier_file(filepath)
     project.save()
 
-    #build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
+    # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
-    response= dict(project=get_project_dict(project))
+    response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200
@@ -627,14 +631,15 @@ def add_mapping_file():
     title = request.get_json()["title"]
     type = request.get_json()["type"]
 
-    if type=="yaml":
-        project.add_yaml_file(title, dataFile, sheet_name, True)
+    if type == "yaml":
+        filename = project.add_yaml_file(title, dataFile, sheet_name, True)
 
-    if type=="annotation":
-        project.add_annotation_file(title, dataFile, sheet_name, True)
+    if type == "annotation":
+        filename = project.add_annotation_file(
+            title, dataFile, sheet_name, True)
 
     project.save()
-    response = dict(project=get_project_dict(project))
+    response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
 
 

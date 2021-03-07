@@ -161,6 +161,10 @@ export interface ResponseWithProjectDTO {
     project: ProjectDTO;
 }
 
+export interface ResponseWithProjectandFileName extends ResponseWithProjectDTO{
+    filename: string;
+}
+
 export interface ResponseWithMappingDTO{
     project: ProjectDTO;
     layers: LayersDTO;
