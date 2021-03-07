@@ -30,7 +30,6 @@ class App extends Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
-
     this.state = {
       showSpinner: false,
       errorMessage: {} as ErrorMessage,
@@ -100,7 +99,7 @@ class App extends Component<{}, AppState> {
     // console.log('Creating project in folder ', folder);
     // await this.handleNewProject(folder);
     // Open create project modal.
-    this.setState({ showCreateProjectModal :true });
+    this.setState({ showCreateProjectModal: true });
 
   }
 
@@ -149,8 +148,10 @@ class App extends Component<{}, AppState> {
     this.setState({ showSettings: false });
 
     // notify backend
-    const data = { "datamartIntegration": datamartIntegration,
-                   "datamartApi": datamartApi };
+    const data = {
+      "datamartIntegration": datamartIntegration,
+      "datamartApi": datamartApi
+    };
 
     try {
       await this.requestService.call(this, () => this.requestService.putGlobalSettings(data));
@@ -158,17 +159,19 @@ class App extends Component<{}, AppState> {
       console.log(error);
     }
   }
-  
+
   cancelSaveSettings() {
     this.setState({ showSettings: false });
   }
-  
+
   async createProject(path: string, title: string, description: string, url: string) {
     this.setState({ showCreateProjectModal: false });
 
-    const data = {  "title": title,
-                    "description": description,
-                    "url": url };
+    const data = {
+      "title": title,
+      "description": description,
+      "url": url
+    };
 
     try {
       await this.requestService.call(this, () => this.requestService.createProject(path, data));
@@ -187,12 +190,13 @@ class App extends Component<{}, AppState> {
         { this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
 
         <GlobalSettings showSettings={this.state.showSettings}
+          key={this.state.datamartApi}
           datamartIntegration={this.state.datamartIntegration}
           datamartApi={this.state.datamartApi}
           handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />
 
-        <CreateProject 
+        <CreateProject
           showCreateProjectModal={this.state.showCreateProjectModal}
           createProject={this.createProject.bind(this)}
           cancelCreateProject={() => this.cancelCreateProject()}
