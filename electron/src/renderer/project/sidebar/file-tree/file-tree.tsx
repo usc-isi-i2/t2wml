@@ -409,6 +409,7 @@ class FileTree extends Component<TreeProps, TreeState> {
               type={fileNode.type}
               parentNode={fileNode.parentNode}
               rightClick={fileNode.rightClick}
+              bolded={fileNode.bolded}
               onClick={fileNode.onClick} />
           ))}
 
