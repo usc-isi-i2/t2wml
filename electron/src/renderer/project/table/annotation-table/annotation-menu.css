@@ -31,20 +31,24 @@
   max-height: 350px;
   overflow: scroll;
 }
-.annotation-menu .annotation-form .results .property {
+.annotation-menu .annotation-form .results .property,
+.annotation-menu .annotation-form .results .qnode {
   user-select: none;
   padding: 5px 0;
 }
-.annotation-menu .annotation-form .results .property:hover {
+.annotation-menu .annotation-form .results .property:hover,
+.annotation-menu .annotation-form .results .qnode:hover {
   cursor: pointer;
   background: #f9f9f9;
 }
-.annotation-menu .annotation-form .results .property .label {
+.annotation-menu .annotation-form .results .property .label,
+.annotation-menu .annotation-form .results .qnode .label {
   display: block;
   font-weight: bold;
   width: 100%;
 }
-.annotation-menu .annotation-form .results .property .description {
+.annotation-menu .annotation-form .results .property .description,
+.annotation-menu .annotation-form .results .qnode .description {
   display: block;
   text-overflow: ellipsis;
   white-space: nowrap;
