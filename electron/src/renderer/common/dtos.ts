@@ -68,6 +68,15 @@ export interface QNode{
     url?: string;
 }
 
+
+export interface Property {
+    label: string;
+    description: string;
+    id: string;
+    url?: string;
+}
+
+
 export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
     qnodes: {[key: string]: QNode };
 }
@@ -206,4 +215,8 @@ export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, Respo
 
 export interface ResponseWithQNodesDTO {
     qnodes: QNode[];
+}
+
+export interface ResponseWithPropertiesDTO {
+    properties: Property[];
 }
