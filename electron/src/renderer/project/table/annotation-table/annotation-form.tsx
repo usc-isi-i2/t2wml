@@ -33,6 +33,7 @@ interface AnnotationFormState {
 class AnnotationForm extends React.Component<AnnotationFormProperties, AnnotationFormState> {
 
   private changed: boolean;
+  private timeoutId?: number;
 
   constructor(props: AnnotationFormProperties) {
     super(props);
@@ -65,7 +66,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       updatedState['type'] = undefined;
     }
 
-    this.setState({ ...updatedState }, () => onChange(key, value));
+    this.setState({ ...updatedState }, () => {
+      if ( this.timeoutId ) {
+        window.clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = window.setTimeout(() => {
+        onChange(key, value);
+      }, 300);
+    });
   }
 
   handleOnSelectionChange(event: React.ChangeEvent) {
