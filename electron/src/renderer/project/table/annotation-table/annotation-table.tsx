@@ -321,7 +321,7 @@ class AnnotationTable extends Component<{}, TableState> {
       const { role } = selectedBlock;
       if ( role ) {
         const className = `role-${role}`;
-        table.querySelectorAll(`td[class*="${className}"]`).forEach(element => {
+        table.querySelectorAll(`td[class*="${className}"]`).forEach((element: HTMLElement) => {
           element.classList.remove(className);
         });
         classNames.push(className);
@@ -753,7 +753,6 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   onSelectionChange(selection: CellSelection) {
-    const { selectedAnnotationBlock } = this.state;
     if ( selection ) {
       this.selection = selection;
       this.updateSelections();
