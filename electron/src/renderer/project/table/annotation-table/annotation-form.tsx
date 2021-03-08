@@ -252,6 +252,29 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     )
   }
 
+  handleOnClick(key, value) {
+    const updatedState: any = {};
+    updatedState[key] = value;
+    this.setState({ ...updatedState, properties: [] });
+  }
+
+  renderSearchResults() {
+    const {properties} = this.state;
+    return (
+      <div className="results">
+        {properties.map((item, index) => (
+          <Row className={'property'} key={index}
+            onClick={() => this.handleOnClick('property', item.id)}>
+            <Col sm="12" md="12">
+              <div className="label">{item.label} ({item.id})</div>
+              <div className="description">{item.description}</div>
+            </Col>
+          </Row>
+        ))}
+      </div>
+    )
+  }
+
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
@@ -294,6 +317,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptions()}
+        {this.renderSearchResults()}
         {this.renderSubmitButton()}
         {this.renderDeleteButton()}
       </Form>
