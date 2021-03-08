@@ -63,13 +63,11 @@ class FileTree extends Component<TreeProps, TreeState> {
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {
     currentFilesService.changeYaml(yaml, sheetName, dataFile);
     await this.requestService.getTable();
-    // await this.requestService.getMappingCalculation();
   }
 
   async changeAnnotation(annotation: string, sheetName: string, dataFile: string) {
     currentFilesService.changeAnnotation(annotation, sheetName, dataFile);
     await this.requestService.getTable();
-    // await this.requestService.getMappingCalculation();
   }
 
   async changeFile(node: NodeProps) {
@@ -128,7 +126,12 @@ class FileTree extends Component<TreeProps, TreeState> {
     try {
       await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
       if (updateTree){
-        currentFilesService.getFiles(wikiStore.project.projectDTO!); //do we need this in order to be able to call get table?
+        if (currentFilesService.currentState.dataFile == filename){
+          currentFilesService.getDefaultFiles(wikiStore.project.projectDTO!);
+        } else{ //mapping file
+          currentFilesService.setMappingFiles();
+        }
+         //do we need this in order to be able to call get table?
         await this.requestService.getTable();
       }
     } catch (error) {
@@ -157,11 +160,8 @@ class FileTree extends Component<TreeProps, TreeState> {
           "dataFile": this.state.clickedNode!.parentNode!.label
         };
 
-
-
         const filename = await this.requestService.saveYaml(data);
-        currentFilesService.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
-        await this.requestService.getTable();
+        this.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
       } catch (error) {
         console.log(error);
       }
@@ -187,8 +187,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         };
 
         const filename = await this.requestService.createAnnotation(data)
-        currentFilesService.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
-        await this.requestService.getTable();
+        this.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
       } catch (error) {
         console.log(error);
       } finally {
@@ -217,8 +216,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         };
 
         const filename = await this.requestService.addExistingMapping(data);
-        currentFilesService.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
-        await this.requestService.getTable();
+        this.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
 
       } catch (error) {
         console.log(error);
@@ -246,8 +244,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         };
 
         const filename = await this.requestService.addExistingMapping(data)
-        currentFilesService.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
-        await this.requestService.getTable();
+        this.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
 
       } catch (error) {
         console.log(error);
