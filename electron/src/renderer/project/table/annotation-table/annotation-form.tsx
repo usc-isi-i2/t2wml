@@ -161,9 +161,16 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">{type.label}</Form.Label>
+          { this.state[type.label.toLowerCase()] ? (
+          <Form.Control
+            type="text" size="sm"
+            value={this.state[type.label.toLowerCase()]}
+            defaultValue={defaultValue} />
+          ) : (
           <Form.Control
             type="text" size="sm"
             defaultValue={defaultValue} />
+          )}
         </Col>
       </Form.Group>
     )
