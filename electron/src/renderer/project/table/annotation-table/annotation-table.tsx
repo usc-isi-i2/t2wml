@@ -319,9 +319,12 @@ class AnnotationTable extends Component<{}, TableState> {
     const classNames: string[] = ['active'];
     if ( selectedBlock ) {
       const { role } = selectedBlock;
-      classNames.push(`active`);
       if ( role ) {
-        classNames.push(`role-${role}`);
+        const className = `role-${role}`;
+        table.querySelectorAll(`td[class*="${className}"]`).forEach(element => {
+          element.classList.remove(className);
+        });
+        classNames.push(className);
       }
     }
 
