@@ -1,13 +1,11 @@
 import React from 'react';
 
-import { IReactionDisposer, reaction } from 'mobx';
 import { AnnotationBlock } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
-import { Property } from '@/renderer/common/dtos';
-import wikiStore from '../../../data/store';
+import SearchResults from './search-results';
 
 
 interface AnnotationFormProperties {
@@ -30,7 +28,6 @@ interface AnnotationFormState {
   language?: string;
   precision?: string;
   selectedArea?: string;
-  properties: Property[];
 }
 
 
@@ -48,28 +45,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       role: selectedBlock?.role,
       type: selectedBlock?.type,
       selectedArea: undefined,
-      properties: [],
     };
     this.changed = false;
-  }
-
-  private disposers: IReactionDisposer[] = [];
-
-  componentDidMount() {
-    this.disposers.push(reaction(
-      () => wikiStore.annotateProperties.properties,
-      properties => this.updateProperties(properties)
-    ));
-  }
-
-  componentWillUnmount() {
-    for (const disposer of this.disposers) {
-      disposer();
-    }
-  }
-
-  updateProperties(properties: Property[]) {
-    this.setState({properties});
   }
 
   handleOnChange(event: KeyboardEvent, key: string) {
@@ -81,8 +58,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    const updatedState: any = {};
-    updatedState[key] = value;
+    const updatedState: AnnotationFormState = {};
+    updatedState[key as keyof AnnotationFormState] = value;
     this.changed = true;
 
     // Reset the role if the type has changed
@@ -151,6 +128,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderNestedOptionsChildren(type: any) {
     const { selectedAnnotationBlock: selectedBlock } = this.props;
 
+    const key: string = type.label.toLowerCase();
+
     let defaultValue = '';
     if ( selectedBlock && (selectedBlock as any)[type.value] ) {
       defaultValue = (selectedBlock as any)[type.value];
@@ -161,15 +140,15 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">{type.label}</Form.Label>
-          { this.state[type.label.toLowerCase()] ? (
-          <Form.Control
-            type="text" size="sm"
-            value={this.state[type.label.toLowerCase()]}
-            defaultValue={defaultValue} />
+          {this.state[key as keyof AnnotationFormState] ? (
+            <Form.Control
+              type="text" size="sm"
+              value={this.state[key as keyof AnnotationFormState]}
+              defaultValue={defaultValue} />
           ) : (
-          <Form.Control
-            type="text" size="sm"
-            defaultValue={defaultValue} />
+            <Form.Control
+              type="text" size="sm"
+              defaultValue={defaultValue} />
           )}
         </Col>
       </Form.Group>
@@ -259,26 +238,15 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     )
   }
 
-  handleOnClick(key, value) {
-    const updatedState: any = {};
-    updatedState[key] = value;
-    this.setState({ ...updatedState, properties: [] });
+  handleOnSelect(key: string, value: string) {
+    const updatedState: AnnotationFormState = {};
+    updatedState[key as keyof AnnotationFormState] = value;
+    this.setState({ ...updatedState });
   }
 
   renderSearchResults() {
-    const {properties} = this.state;
     return (
-      <div className="results">
-        {properties.map((item, index) => (
-          <Row className={'property'} key={index}
-            onClick={() => this.handleOnClick('property', item.id)}>
-            <Col sm="12" md="12">
-              <div className="label">{item.label} ({item.id})</div>
-              <div className="description">{item.description}</div>
-            </Col>
-          </Row>
-        ))}
-      </div>
+      <SearchResults onSelect={this.handleOnSelect.bind(this)} />
     )
   }
 
