@@ -8,7 +8,7 @@ import { Toast } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
-import { AnnotationBlock } from '../../../common/dtos';
+import { AnnotationBlock, QNode } from '../../../common/dtos';
 import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
@@ -52,6 +52,26 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
         this.setState({ errorMessage: error });
       } finally {
         console.log('properties request finished');
+      }
+    }
+
+    if ( key === 'unit' ) {
+
+      const instanceOf: QNode = {
+        label: 'unit of measurement',
+        description: 'quantity, defined and adopted by convention',
+        id: 'Q47574',
+      }
+
+      try {
+        await this.requestService.call(this, () => (
+          this.requestService.getQNodes(value, false, instanceOf)
+        ));
+      } catch (error) {
+        error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
+        this.setState({ errorMessage: error });
+      } finally {
+        console.log('qnodes request finished');
       }
     }
   }
