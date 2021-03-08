@@ -122,6 +122,11 @@ class RequestService {
     this.updateProjectandQnode(response);
   }
 
+  public async removeQNodes(values: any) {
+    const response = await backendPost(`/remove_qnode?${this.getDataFileParams(false)}`, values) as ResponseWithQNodeLayerDTO;
+    this.updateProjectandQnode(response);
+  }
+
   public async addExistingMapping(data: any){
     const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
