@@ -1,5 +1,3 @@
-//fills in tabledata and the mouse events, renders a "table" with those properties
-
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
