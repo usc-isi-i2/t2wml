@@ -39,8 +39,21 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };
   }
 
-  handleOnChange(key: string, value: string) {
+  async handleOnChange(key: string, value: string) {
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
+
+    if ( key === 'property' ) {
+      try {
+        await this.requestService.call(this, () => (
+          this.requestService.getProperties(value)
+        ));
+      } catch (error) {
+        error.errorDescription += `\nWasn't able to find any properties for ${value}`;
+        this.setState({ errorMessage: error });
+      } finally {
+        console.log('properties request finished');
+      }
+    }
   }
 
   handleOnDelete() {
