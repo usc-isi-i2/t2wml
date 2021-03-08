@@ -18,6 +18,7 @@
 
 .annotation-menu .annotation-form button.delete {
   cursor: pointer;
+  float: right;
   padding: 0px;
   color: red;
 }

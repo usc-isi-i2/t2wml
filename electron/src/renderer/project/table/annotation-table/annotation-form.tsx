@@ -260,6 +260,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
             variant="outline-dark">
             Submit
           </Button>
+          {this.renderDeleteButton()}
         </Col>
       </Form.Group>
     )
@@ -269,18 +270,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { selectedAnnotationBlock: selectedBlock } = this.props;
     if (selectedBlock) {
       return (
-        <Form.Group as={Row}>
-          <Col sm="12" md="12">
-            <Button
-              size="sm"
-              type="button"
-              variant="link"
-              className="delete"
-              onClick={(event: React.MouseEvent) => this.handleOnDelete(event)}>
-              delete this annotation block
-            </Button>
-          </Col>
-        </Form.Group>
+        <Button
+          size="sm"
+          type="button"
+          variant="link"
+          className="delete"
+          onClick={(event: React.MouseEvent) => this.handleOnDelete(event)}>
+          delete this annotation block
+        </Button>
       )
     }
   }
@@ -294,7 +291,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         {this.renderNestedOptions()}
         {this.renderSearchResults()}
         {this.renderSubmitButton()}
-        {this.renderDeleteButton()}
       </Form>
     )
   }
