@@ -4,7 +4,7 @@ import wikiStore from '../../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Col, Row } from 'react-bootstrap';
 
-import { Property } from '@/renderer/common/dtos';
+import { Property, QNode } from '@/renderer/common/dtos';
 
 
 interface SearchResultsProps {
@@ -14,6 +14,7 @@ interface SearchResultsProps {
 
 interface SearchResultsState {
   properties: Property[];
+  qnodes: QNode[];
 }
 
 
@@ -26,6 +27,7 @@ class SearchResults extends React.Component<SearchResultsProps, SearchResultsSta
 
     this.state = {
       properties: [],
+      qnodes: [],
     };
   }
 
@@ -33,6 +35,11 @@ class SearchResults extends React.Component<SearchResultsProps, SearchResultsSta
     this.disposers.push(reaction(
       () => wikiStore.annotateProperties.properties,
       properties => this.updateProperties(properties)
+    ));
+
+    this.disposers.push(reaction(
+      () => wikiStore.wikifyQnodes.qnodes,
+      qnodes => this.updateQNodes(qnodes)
     ));
   }
 
@@ -46,20 +53,33 @@ class SearchResults extends React.Component<SearchResultsProps, SearchResultsSta
     this.setState({properties});
   }
 
+  updateQNodes(qnodes: QNode[]) {
+    this.setState({qnodes});
+  }
+
   handleOnClick(key: string, value: string) {
     const {onSelect} = this.props;
-    this.setState({properties: []}, () => {
+    this.setState({properties: [], qnodes: []}, () => {
       onSelect(key, value);
     })
   }
 
   render() {
-    const {properties} = this.state;
+    const {properties, qnodes} = this.state;
     return (
       <div className="results">
         {properties.map((item, index) => (
           <Row className={'property'} key={index}
             onClick={() => this.handleOnClick('property', item.id)}>
+            <Col sm="12" md="12">
+              <div className="label">{item.label} ({item.id})</div>
+              <div className="description">{item.description}</div>
+            </Col>
+          </Row>
+        ))}
+        {qnodes.map((item, index) => (
+          <Row className={'qnode'} key={index}
+            onClick={() => this.handleOnClick('unit', item.id)}>
             <Col sm="12" md="12">
               <div className="label">{item.label} ({item.id})</div>
               <div className="description">{item.description}</div>
