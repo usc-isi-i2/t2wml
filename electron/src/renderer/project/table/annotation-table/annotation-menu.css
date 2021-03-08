@@ -6,12 +6,17 @@
   top: 70px;
 }
 
-.annotation-menu .handle {
+.annotation-menu .toast {
+  max-width: 500px;
+  min-width: 500px;
+}
+
+.annotation-menu .toast .handle {
   background: whitesmoke;
   cursor: pointer;
 }
 
-.annotation-menu form.annotation-form button.delete {
+.annotation-menu .annotation-form button.delete {
   cursor: pointer;
   padding: 0px;
   color: red;
