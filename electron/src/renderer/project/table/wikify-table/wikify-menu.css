@@ -15,6 +15,13 @@
   cursor: pointer;
 }
 
+.wikify-menu .wikify-form button.delete {
+  cursor: pointer;
+  float: right;
+  padding: 0px;
+  color: red;
+}
+
 .wikify-menu .toast .toast-body {
   background: #fefefe;
 }

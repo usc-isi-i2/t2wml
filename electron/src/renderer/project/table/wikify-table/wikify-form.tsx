@@ -280,8 +280,24 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               variant="outline-dark">
               Submit
             </Button>
+            {this.renderRemoveButton()}
           </Col>
         </Form.Group>
+      )
+    }
+  }
+
+  renderRemoveButton() {
+    const { qnodes } = this.state;
+    if ( !qnodes.length ) {
+      return (
+        <Button
+          size="sm"
+          type="submit"
+          variant="link"
+          className="delete">
+          remove wikification
+        </Button>
       )
     }
   }
