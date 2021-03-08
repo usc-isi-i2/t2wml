@@ -1,10 +1,13 @@
 import React from 'react';
 
+import { IReactionDisposer, reaction } from 'mobx';
 import { AnnotationBlock } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
+import { Property } from '@/renderer/common/dtos';
+import wikiStore from '../../../data/store';
 
 
 interface AnnotationFormProperties {
@@ -27,6 +30,7 @@ interface AnnotationFormState {
   language?: string;
   precision?: string;
   selectedArea?: string;
+  properties: Property[];
 }
 
 
@@ -44,8 +48,28 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       role: selectedBlock?.role,
       type: selectedBlock?.type,
       selectedArea: undefined,
+      properties: [],
     };
     this.changed = false;
+  }
+
+  private disposers: IReactionDisposer[] = [];
+
+  componentDidMount() {
+    this.disposers.push(reaction(
+      () => wikiStore.annotateProperties.properties,
+      properties => this.updateProperties(properties)
+    ));
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
+  }
+
+  updateProperties(properties: Property[]) {
+    this.setState({properties});
   }
 
   handleOnChange(event: KeyboardEvent, key: string) {
@@ -57,8 +81,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    const updatedState: AnnotationFormState = {};
-    updatedState[key as keyof AnnotationFormState] = value;
+    const updatedState: any = {};
+    updatedState[key] = value;
     this.changed = true;
 
     // Reset the role if the type has changed
