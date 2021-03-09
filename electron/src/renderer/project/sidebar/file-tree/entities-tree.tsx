@@ -17,14 +17,15 @@ interface TreeState {
   showSpinner: boolean;
 }
 
+function emptyFunc() { /* NO-OP */ }
 const entitiesNode = {
   id: "Root000001",
   label: "Entities",
   childNodes: [],
   type: "Label",
   parentNode: null,
-  onRightClick: undefined,
-  onClick: undefined
+  rightClick: emptyFunc,
+  onClick: emptyFunc
 } as NodeProps;
 const wikifiersNode = {
   id: "Root000002",
@@ -32,8 +33,8 @@ const wikifiersNode = {
   childNodes: [],
   type: "Label",
   parentNode: null,
-  onRightClick: undefined,
-  onClick: undefined
+  rightClick: emptyFunc,
+  onClick: emptyFunc
 } as NodeProps;
 
 
@@ -130,7 +131,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
         childNodes: [],
         type: "Entity",
         parentNode: entitiesNode,
-        onRightClick: (node: NodeProps) => this.onRightClick(node),
+        rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: () => this.changeFile(),
         bolded: currentFilesService.currentState.dataFile == ef // TODO: add entity file to state ?
       } as NodeProps;
@@ -144,7 +145,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
         childNodes: [],
         type: "Wikifier",
         parentNode: wikifiersNode,
-        onRightClick: (node: NodeProps) => this.onRightClick(node),
+        rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: () => this.changeFile(),
         bolded: currentFilesService.currentState.dataFile == wf // TODO: add wikifier file to state ?
       } as NodeProps;
@@ -174,7 +175,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
               childNodes={fileNode.childNodes}
               type={fileNode.type}
               parentNode={fileNode.parentNode}
-              onRightClick={fileNode.onRightClick}
+              rightClick={fileNode.rightClick}
               onClick={fileNode.onClick} />
           ))}
 

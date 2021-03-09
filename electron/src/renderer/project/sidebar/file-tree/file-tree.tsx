@@ -306,7 +306,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           childNodes: [] as NodeProps[],
           type: type,
           parentNode: parentNode,
-          onRightClick: (node: NodeProps) => this.onRightClick(node),
+          rightClick: (node: NodeProps) => this.onRightClick(node),
           onClick: (node: NodeProps) => this.changeFile(node),
           //because yaml ends in .yaml and annotation in .json, we can check both simultaneously?
           bolded: currentFilesService.currentState.mappingFile == filename
@@ -326,7 +326,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         childNodes: [],
         type: "DataFile",
         parentNode: null,
-        onRightClick: (node: NodeProps) => this.onRightClick(node),
+        rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: (node: NodeProps) => this.changeFile(node),
         bolded: currentFilesService.currentState.dataFile == df
       } as NodeProps;
@@ -338,7 +338,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           childNodes: [],
           type: "Sheet",
           parentNode: dataNode,
-          onRightClick: (node: NodeProps) => this.onRightClick(node),
+          rightClick: (node: NodeProps) => this.onRightClick(node),
           onClick: (node: NodeProps) => this.changeFile(node),
           bolded: currentFilesService.currentState.sheetName == sheetName
         } as NodeProps;
@@ -408,7 +408,7 @@ class FileTree extends Component<TreeProps, TreeState> {
               childNodes={fileNode.childNodes}
               type={fileNode.type}
               parentNode={fileNode.parentNode}
-              onRightClick={fileNode.onRightClick}
+              rightClick={fileNode.rightClick}
               bolded={fileNode.bolded}
               onClick={fileNode.onClick} />
           ))}
