@@ -14,6 +14,7 @@ interface WikifyFormProperties {
   selectedCell: Cell;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onSubmit: any | null;
+  onRemove: any | null;
 }
 
 
@@ -115,6 +116,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { onSubmit } = this.props;
     const { selected, applyToBlock } = this.state;
     onSubmit(selected, applyToBlock);
+  }
+
+  handleOnRemove() {
+    const { onRemove } = this.props;
+    const { selected, applyToBlock } = this.state;
+    onRemove(selected, applyToBlock);
   }
 
   handleOnClick(qnode: QNode) {
@@ -293,9 +300,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       return (
         <Button
           size="sm"
-          type="submit"
+          type="button"
           variant="link"
-          className="delete">
+          className="delete"
+          onClick={this.handleOnRemove.bind(this)}>
           remove wikification
         </Button>
       )
