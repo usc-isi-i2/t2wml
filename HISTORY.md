@@ -6,7 +6,7 @@ Changes in version 2.7.1:
 * t2wml-api version 0.2.2
 * sign electron executables for all OSes
 * when opening t2wml from path, t2wml command exists after opening the application 
-* 'load to datamart' button renamed to 'load to datamart (beta)' to emphasize beta status
+* search mode for property (for dependent variable, qualifier) and unit (same, but only type quantity) in annotation menu
 * pop-up window improvements
    - esc button exits pop up
    - added x button to close pop-up
@@ -23,7 +23,10 @@ Changes in version 2.7.1:
    - no side scroll bar, text opverflow set to ellipsis
    - fixed errors in filetree tooltip
 * bug fix: frontend wasn't correctly catching and displaying errors from backend when fetching table
-* search mode for properties in annotation menu
+* bug fix: changing range of annotation bock wasn't changing annotation block size
+* show wikified cells in blue in annotation mode
+* 'load to datamart' button renamed to 'load to datamart (beta)' to emphasize beta status
+
 
 Changes in version 2.7.0:
 ------------------------
