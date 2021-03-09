@@ -1,5 +1,3 @@
-//fills in tabledata and the mouse events, renders a "table" with those properties
-
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
@@ -321,9 +319,12 @@ class AnnotationTable extends Component<{}, TableState> {
     const classNames: string[] = ['active'];
     if ( selectedBlock ) {
       const { role } = selectedBlock;
-      classNames.push(`active`);
       if ( role ) {
-        classNames.push(`role-${role}`);
+        const className = `role-${role}`;
+        table.querySelectorAll(`td[class*="${className}"]`).forEach((element: HTMLElement) => {
+          element.classList.remove(className);
+        });
+        classNames.push(className);
       }
     }
 
@@ -752,8 +753,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   onSelectionChange(selection: CellSelection) {
-    const { selectedAnnotationBlock } = this.state;
-    if ( selection && !selectedAnnotationBlock ) {
+    if ( selection ) {
       this.selection = selection;
       this.updateSelections();
     }

@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
+import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, Property, QNode, QNodeEntry,
         StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
@@ -230,6 +230,10 @@ export class WikifyQnodes {
     @observable qnodes: QNode[] = [];
 }
 
+export class AnnotateProperties {
+    @observable properties: Property[] = [];
+}
+
 class WikiStore {
     @observable public editors = new EditorsState();
     @observable public table = new TableState();
@@ -245,6 +249,7 @@ class WikiStore {
     @observable public globalSettings = new GlobalSettings();
     @observable public entitiesData = new EntitiesData();
     @observable public wikifyQnodes = new WikifyQnodes();
+    @observable public annotateProperties = new AnnotateProperties();
 
 
     @action
