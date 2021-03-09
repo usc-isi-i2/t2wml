@@ -23,7 +23,7 @@ Changes in version 2.7.1:
    - no side scroll bar, text opverflow set to ellipsis
    - fixed errors in filetree tooltip
 * bug fix: frontend wasn't correctly catching and displaying errors from backend when fetching table
-
+* search mode for properties in annotation menu
 
 Changes in version 2.7.0:
 ------------------------
