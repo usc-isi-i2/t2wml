@@ -284,14 +284,14 @@ class TableContainer extends Component<{}, TableState> {
             onClick={() => this.switchMode('annotation')}>
             Annotate
           </Button>
-          {/*
+
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'wikify',
             })}
             onClick={() => this.switchMode('wikify')}>
             Wikify
-          </Button> */}
+          </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'output',
