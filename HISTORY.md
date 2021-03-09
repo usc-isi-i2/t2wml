@@ -24,6 +24,7 @@ Changes in version 2.7.1:
    - fixed errors in filetree tooltip
 * bug fix: frontend wasn't correctly catching and displaying errors from backend when fetching table
 
+
 Changes in version 2.7.0:
 ------------------------
 * t2wml-api version 0.2.1
