@@ -24,8 +24,8 @@ export interface NodeProps {
   childNodes: NodeProps[];
   type: NodeType;
   bolded?: boolean;
-  onClick: (node: NodeProps) => void,
-  rightClick: (node:NodeProps) => any,
+  onClick: ((node: NodeProps) => void) | undefined,
+  onRightClick: ((node:NodeProps) => any) | undefined,
 }
 
 interface NodeState {
@@ -53,13 +53,18 @@ class FileNode extends Component<NodeProps, NodeState> {
 
   async onNodeClick() {
     this.setState({ expanded: true });
-    this.props.onClick(this.props);
+    if (this.props.onClick) {
+      this.props.onClick(this.props);
+    }
   }
 
   onRightClick(event: any){
-      event.preventDefault();
-      this.props.rightClick(this.props);
+    event.preventDefault();
+    if (this.props.onRightClick) {
+      this.props.onRightClick(this.props);
+    }
   }
+  
   render() {
     let childrenNodes = null;
     if (this.props.childNodes.length && this.state.expanded) {
@@ -72,7 +77,7 @@ class FileNode extends Component<NodeProps, NodeState> {
             childNodes={n.childNodes}
             parentNode={n.parentNode}
             type={n.type}
-            rightClick={n.rightClick}
+            onRightClick={n.onRightClick}
             onClick={n.onClick} />)}
       </ul>)
     }
