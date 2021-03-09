@@ -2,7 +2,7 @@ T2WML Standalone Server App History
 ===================================
 
 Changes in version 2.7.1:
-------------------------
+-------------------------
 * t2wml-api version 0.2.2
 * sign electron executables for all OSes
 * when opening t2wml from path, t2wml command exists after opening the application 
