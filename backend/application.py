@@ -505,6 +505,36 @@ def update_settings():
     return response, 200
 
 
+@app.route('/api/properties', methods=['GET'])
+@json_response
+def get_properties():
+    q = request.args.get('q')
+    if not q:
+        raise web_exceptions.InvalidRequestException("No search parameter set")
+
+    # construct the url with correct parameters for kgtk search
+    url = 'https://kgtk.isi.edu/api/{}'.format(q)
+    url += '?type=ngram&extra_info=true&language=en&item=property'
+
+    try:
+        response = requests.get(url, verify=False)
+    except requests.exceptions.RequestException as error:
+        raise web_exceptions.InvalidRequestException(error)
+    else:
+        items = response.json()
+        if type(items) != list:
+            raise web_exceptions.InvalidRequestException(
+                "KGTK did not return a valid list of properties"
+            )
+        properties = [{
+            'id': item['qnode'],
+            'label': item['label'][0] if item['label'] else '',
+            'description': item['description'][0] if item['description'] else '',
+        } for item in items]
+
+    return {'properties': properties}, 200
+
+
 @app.route('/api/qnodes', methods=['GET'])
 @json_response
 def get_qnodes():

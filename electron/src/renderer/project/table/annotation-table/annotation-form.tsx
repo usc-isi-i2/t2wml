@@ -5,6 +5,7 @@ import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
+import SearchResults from './search-results';
 
 
 interface AnnotationFormProperties {
@@ -33,6 +34,7 @@ interface AnnotationFormState {
 class AnnotationForm extends React.Component<AnnotationFormProperties, AnnotationFormState> {
 
   private changed: boolean;
+  private timeoutId?: number;
 
   constructor(props: AnnotationFormProperties) {
     super(props);
@@ -65,7 +67,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       updatedState['type'] = undefined;
     }
 
-    this.setState({ ...updatedState }, () => onChange(key, value));
+    this.setState({ ...updatedState }, () => {
+      if ( this.timeoutId ) {
+        window.clearTimeout(this.timeoutId);
+      }
+      this.timeoutId = window.setTimeout(() => {
+        onChange(key, value);
+      }, 300);
+    });
   }
 
   handleOnSelectionChange(event: React.ChangeEvent) {
@@ -119,6 +128,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderNestedOptionsChildren(type: any) {
     const { selectedAnnotationBlock: selectedBlock } = this.props;
 
+    const key: string = type.label.toLowerCase();
+
     let defaultValue = '';
     if ( selectedBlock && (selectedBlock as any)[type.value] ) {
       defaultValue = (selectedBlock as any)[type.value];
@@ -129,9 +140,16 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">{type.label}</Form.Label>
-          <Form.Control
-            type="text" size="sm"
-            defaultValue={defaultValue} />
+          {this.state[key as keyof AnnotationFormState] ? (
+            <Form.Control
+              type="text" size="sm"
+              value={this.state[key as keyof AnnotationFormState]}
+              defaultValue={defaultValue} />
+          ) : (
+            <Form.Control
+              type="text" size="sm"
+              defaultValue={defaultValue} />
+          )}
         </Col>
       </Form.Group>
     )
@@ -220,6 +238,18 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     )
   }
 
+  handleOnSelect(key: string, value: string) {
+    const updatedState: AnnotationFormState = {};
+    updatedState[key as keyof AnnotationFormState] = value;
+    this.setState({ ...updatedState });
+  }
+
+  renderSearchResults() {
+    return (
+      <SearchResults onSelect={this.handleOnSelect.bind(this)} />
+    )
+  }
+
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
@@ -262,6 +292,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptions()}
+        {this.renderSearchResults()}
         {this.renderSubmitButton()}
         {this.renderDeleteButton()}
       </Form>

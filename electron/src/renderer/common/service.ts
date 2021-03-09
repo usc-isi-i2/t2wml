@@ -99,6 +99,12 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
+  public async getProperties(search: string) {
+    const url = `/properties?q=${search}`;
+    const response = await backendGet(url) as ResponseWithPropertiesDTO;
+    wikiStore.annotateProperties.properties = response.properties;
+  }
+
   public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode) {
     let url = `/qnodes?q=${search}`;
     if ( isClass ) {
