@@ -1,6 +1,29 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.7.1:
+------------------------
+* t2wml-api version 0.2.2
+* sign electron executables for all OSes
+* when opening t2wml from path, t2wml command exists after opening the application 
+* 'load to datamart' button renamed to 'load to datamart (beta)' to emphasize beta status
+* pop-up window improvements
+   - esc button exits pop up
+   - added x button to close pop-up
+   - tab button switches fields
+   - return works to submit in global settings pop up (support in entries/project settings still wip)
+   - if datamart integration is ON, will not save unless datamart url is specified
+* file-tree tweaks:
+   - added wikifier/entity files tab
+   - rename file menu items to clearer names
+   - enable deleting active files
+   - when adding a mapping file, automatially switch to that mapping file
+   - bug with bolding selected files not always working fixed
+   - removed root level node, slimming down tree
+   - no side scroll bar, text opverflow set to ellipsis
+   - fixed errors in filetree tooltip
+* bug fix: frontend wasn't correctly catching and displaying errors from backend when fetching table
+
 Changes in version 2.7.0:
 ------------------------
 * t2wml-api version 0.2.1
