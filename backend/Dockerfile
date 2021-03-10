@@ -7,4 +7,5 @@ RUN pip install t2wml-api
 RUN pip install -r /src/requirements.txt
 
 WORKDIR /src
+EXPOSE 13000
 ENTRYPOINT python t2wml-server.py
