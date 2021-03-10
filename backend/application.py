@@ -696,7 +696,7 @@ def upload_file(type):
             "No file selected for uploading")
 
     allowed_extensions = allowed_types_map[type]
-    file_extension = in_file.filename.split(".")[-1].lower()
+    file_extension = Path(in_file.filename).suffix
     file_allowed = file_extension in allowed_extensions
     if not file_allowed:
         raise web_exceptions.FileTypeNotSupportedException(
