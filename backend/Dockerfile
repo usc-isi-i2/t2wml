@@ -1,11 +1,14 @@
 # A dockerfile for running the t2wml backend
 FROM python:3.7-stretch
 
-COPY . /src
+RUN mkdir /src
+COPY requirements.txt /src/requirements.txt
 
 RUN pip install t2wml-api
 RUN pip install -r /src/requirements.txt
 
+COPY . /src
+
 WORKDIR /src
 EXPOSE 13000
-ENTRYPOINT python t2wml-server.py
+ENTRYPOINT python t2wml-server.py --public-server
