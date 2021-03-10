@@ -3,11 +3,11 @@ FROM python:3.7-stretch
 
 RUN mkdir /src
 COPY requirements.txt /src/requirements.txt
-COPY for-docker /proj
 
 RUN pip install t2wml-api
 RUN pip install -r /src/requirements.txt
 
+COPY for-docker /proj
 COPY . /src
 
 WORKDIR /src
