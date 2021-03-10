@@ -8,6 +8,7 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
+from werkzeug.utils import secure_filename
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, add_entities_from_project,
                        add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
@@ -671,6 +672,65 @@ def add_mapping_file():
     project.save()
     response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
+
+
+@app.route('/api/upload/<type>', methods=['POST'])
+@json_response
+def upload_file(type):
+    project = get_project()
+
+    allowed_types_map = {
+        "data": [".csv", ".xlsx"],
+        "annotation": [".json", ".annotation"],
+        "wikifier": [".csv"],
+        "entities": [".tsv"]
+    }
+
+    if 'file' not in request.files:
+        raise web_exceptions.NoFilePartException(
+            "Missing 'file' parameter in the file upload request")
+
+    in_file = request.files['file']
+    if in_file.filename == '':
+        raise web_exceptions.BlankFileNameException(
+            "No file selected for uploading")
+
+    allowed_extensions = allowed_types_map[type]
+    file_extension = in_file.filename.split(".")[-1].lower()
+    file_allowed = file_extension in allowed_extensions
+    if not file_allowed:
+        raise web_exceptions.FileTypeNotSupportedException(
+            "File with extension '"+file_extension+"' is not allowed")
+
+    folder = project.directory
+    # otherwise secure_filename does weird things on linux
+    shorter_name = Path(in_file.filename).name
+    filename = secure_filename(shorter_name)
+    file_path = folder/filename
+    in_file.save(str(file_path))
+
+    if type == "data":
+        file_path=project.add_data_file(file_path)
+        sheet_name=project.data_files[file_path]["val_arr"][0]
+        return dict(filepath=file_path, sheet_name=sheet_name)
+    if type == "wikifier":
+        file_path=project.add_wikifier_file(file_path)
+    if type == "entities":
+        file_path=project.add_entity_file(file_path)
+    if type == "annotation":
+        try:
+            data_path = request.args['data_file']
+        except KeyError:
+            raise web_exceptions.InvalidRequestException(
+                "data file parameter not specified")
+        try:
+            sheet_name = request.args['sheet_name']
+        except KeyError:
+            raise web_exceptions.InvalidRequestException(
+                "sheet name parameter not specified")
+        file_path=project.add_annotation_file(file_path, data_path, sheet_name)
+
+    return dict(filepath=file_path)
 
 
 @app.route('/api/is-alive')
