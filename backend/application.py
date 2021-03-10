@@ -712,7 +712,8 @@ def upload_file(type):
     if type == "data":
         file_path=project.add_data_file(file_path)
         sheet_name=project.data_files[file_path]["val_arr"][0]
-        return dict(filepath=file_path, sheet_name=sheet_name), 200
+        project.save()
+        return dict(project=get_project_dict(project), filepath=file_path, sheetName=sheet_name), 200
     if type == "wikifier":
         file_path=project.add_wikifier_file(file_path)
     if type == "entities":
@@ -729,8 +730,8 @@ def upload_file(type):
             raise web_exceptions.InvalidRequestException(
                 "sheet name parameter not specified")
         file_path=project.add_annotation_file(file_path, data_path, sheet_name)
-
-    return dict(filepath=file_path), 200
+    project.save()
+    return dict(project=get_project_dict(project), filepath=file_path), 200
 
 
 @app.route('/api/is-alive')
