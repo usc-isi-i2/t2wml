@@ -702,7 +702,7 @@ def upload_file(type):
         raise web_exceptions.FileTypeNotSupportedException(
             "File with extension '"+file_extension+"' is not allowed")
 
-    folder = project.directory
+    folder = Path(project.directory)
     # otherwise secure_filename does weird things on linux
     shorter_name = Path(in_file.filename).name
     filename = secure_filename(shorter_name)
@@ -712,7 +712,7 @@ def upload_file(type):
     if type == "data":
         file_path=project.add_data_file(file_path)
         sheet_name=project.data_files[file_path]["val_arr"][0]
-        return dict(filepath=file_path, sheet_name=sheet_name)
+        return dict(filepath=file_path, sheet_name=sheet_name), 200
     if type == "wikifier":
         file_path=project.add_wikifier_file(file_path)
     if type == "entities":
@@ -730,7 +730,7 @@ def upload_file(type):
                 "sheet name parameter not specified")
         file_path=project.add_annotation_file(file_path, data_path, sheet_name)
 
-    return dict(filepath=file_path)
+    return dict(filepath=file_path), 200
 
 
 @app.route('/api/is-alive')
