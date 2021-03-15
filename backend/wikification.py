@@ -5,6 +5,8 @@ from functools import partial
 import rltk.similarity as sim
 import os
 from abc import ABC, abstractmethod
+import pandas as pd
+from t2wml.spreadsheets.conversions import cell_range_str_to_tuples
 
 FILE_FOLDER=os.path.abspath(os.path.dirname(__file__))
 
@@ -92,7 +94,7 @@ class DatamartCountryWikifier:
             cache_file =  os.path.join(FILE_FOLDER, "country_wikifier_cache.json")
         if not os.path.exists(cache_file):
             raise ValueError("Country wikifier cache file not exist at {}!".format(cache_file))
-        with open(cache_file, "r") as f:
+        with open(cache_file, "r", encoding="utf-8") as f:
             self.memo = json.load(f)
 
     def save(self, loc: str = None) -> None:
@@ -154,3 +156,40 @@ class DatamartCountryWikifier:
                         input_str_processed_no_bracket, None)
 
         return wikified
+
+    def wikify_region(self, cell_range: str, sheet):
+        (start_col, start_row), (end_col, end_row) = cell_range_str_to_tuples(cell_range)
+        end_col += 1
+        end_row += 1
+
+        row_offset = start_row
+        columns = ",".join([str(i) for i in range(start_col, end_col)])
+        #rows=",".join([str(i) for i in range(start_row, end_row)])
+        cell_qnode_map = dict()
+        payload = {
+            'columns': columns,
+            #    'rows':rows,
+            'case_sensitive': 'false'
+        }
+
+        sheet_data = sheet[start_row:end_row]
+        flattened_sheet_data = sheet[start_row:end_row,
+                                     start_col:end_col].to_numpy().flatten()
+
+        result_dict = self.wikify(flattened_sheet_data)
+
+        df_rows = []
+        for value, item in result_dict.items():
+            df_rows.append(["", "", value, "", item, "", ""])
+        df = pd.DataFrame(df_rows, columns=[
+                        "column", "row", "value", "context", "item", "file", "sheet"])
+
+        return df, []
+
+
+
+def wikify_countries(calc_params, region):
+    #convenience function
+    dcw=DatamartCountryWikifier()
+    df, problem_cells = dcw.wikify_region(region, calc_params.sheet)
+    return df, problem_cells

@@ -20,6 +20,7 @@ from datamart_upload import upload_to_datamart
 from t2wml_annotation_integration import AnnotationIntegration, create_datafile
 from global_settings import global_settings
 import path_utils
+from wikification import wikify_countries
 
 debug_mode = False
 
@@ -733,6 +734,31 @@ def upload_file(type):
     project.save()
     return dict(project=get_project_dict(project), filepath=file_path), 200
 
+
+@app.route('/api/web/wikify_region', methods=['POST'])
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["region"]
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    file_path = save_dataframe(
+        project, cell_qnode_map, "wikify_region_output.csv")
+    file_path = project.add_wikifier_file(
+        file_path,  copy_from_elsewhere=True, overwrite=True)
+    project.save()
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
 
 @app.route('/api/is-alive')
 def is_alive():
