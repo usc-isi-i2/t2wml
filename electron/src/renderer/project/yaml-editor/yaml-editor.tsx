@@ -17,7 +17,7 @@ import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
-import { currentFilesService } from '../../common/current-file-service';
+import { CurrentFilesService, currentFilesService } from '../../common/current-file-service';
 import { remote } from 'electron';
 
 interface yamlProperties {
@@ -104,12 +104,15 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         const data = {
           "yaml": wikiStore.yaml.yamlContent,
           "title": result.filePath,
+          "dataFile": currentFilesService.currentState.dataFile,
           "sheetName": currentFilesService.currentState.sheetName
         };
 
-        await this.requestService.call(this, () => this.requestService.saveYaml(data));
+        const yamlFile = await this.requestService.call(this, () => this.requestService.saveYaml(data));
         // follow-ups (success)
         wikiStore.output.isDownloadDisabled = false;
+        currentFilesService.changeYaml(yamlFile, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile)
+
       } catch (error) {
         console.log(error);
       }
