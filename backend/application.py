@@ -710,29 +710,32 @@ def upload_file(type):
     file_path = folder/filename
     in_file.save(str(file_path))
 
+    response= dict()
+    code=200
+
     if type == "data":
         file_path=project.add_data_file(file_path)
         sheet_name=project.data_files[file_path]["val_arr"][0]
         project.save()
-        return dict(project=get_project_dict(project), filepath=file_path, sheetName=sheet_name), 200
+        response["sheetName"]=sheet_name
+        calc_params=CalcParams(project, file_path, sheet_name)
+        response["table"] = get_table(calc_params)
+        
     if type == "wikifier":
         file_path=project.add_wikifier_file(file_path)
     if type == "entities":
         file_path=project.add_entity_file(file_path)
     if type == "annotation":
-        try:
-            data_path = request.args['data_file']
-        except KeyError:
-            raise web_exceptions.InvalidRequestException(
-                "data file parameter not specified")
-        try:
-            sheet_name = request.args['sheet_name']
-        except KeyError:
-            raise web_exceptions.InvalidRequestException(
-                "sheet name parameter not specified")
-        file_path=project.add_annotation_file(file_path, data_path, sheet_name)
+        calc_params = get_calc_params(project)
+        file_path=project.add_annotation_file(file_path, calc_params.data_path, calc_params.sheet_name)
+        mapping_response, code = get_mapping(file_path, "Annotation")
+        response.update(mapping_response)
+
     project.save()
-    return dict(project=get_project_dict(project), filepath=file_path), 200
+    response.update(dict(project=get_project_dict(project), filepath=file_path))
+    return response, code
+
+
 
 
 @app.route('/api/web/wikify_region', methods=['POST'])
