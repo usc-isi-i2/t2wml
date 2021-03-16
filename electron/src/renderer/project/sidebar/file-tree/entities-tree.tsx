@@ -100,9 +100,6 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  removeFile() { // TODO
-    console.log("remove file");
-  }
 
   onRightClick(node: NodeProps) {
     this.setState({ clickedNode: node });
@@ -112,7 +109,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
 
     menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
     menu.append(new MenuItem({ type: 'separator' }));
-    menu.append(new MenuItem({ label: 'Remove from project', click: () => this.removeFile() }));
+    menu.append(new MenuItem({ label: 'Remove from project', click: () => this.deleteFile(false) }));
     menu.append(new MenuItem({ label: 'Delete from filesystem and project', click: () => this.deleteFile() }));
 
     menu.popup({ window: remote.getCurrentWindow() });
