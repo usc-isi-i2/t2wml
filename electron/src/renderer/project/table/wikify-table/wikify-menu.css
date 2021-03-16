@@ -26,6 +26,21 @@
   background: #fefefe;
 }
 
+/* Search Properties checkbox */
+.wikify-menu .wikify-form .search-properties {
+  margin-bottom: 15px;
+}
+.wikify-menu .wikify-form .search-properties input {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  vertical-align: bottom;
+}
+.wikify-menu .wikify-form .search-properties label {
+  user-select: none;
+  cursor: pointer;
+}
+
 /* Input field clear button */
 .wikify-menu .wikify-form .clear-button {
   position: absolute;

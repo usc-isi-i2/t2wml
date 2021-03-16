@@ -22,6 +22,7 @@ interface WikifyFormState {
   search?: string;
   instanceOf?: QNode;
   instanceOfSearch?: string;
+  searchProperties: boolean;
   applyToBlock: boolean;
   selected?: QNode;
   qnodes: QNode[];
@@ -39,6 +40,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       search: undefined,
       instanceOf: undefined,
       instanceOfSearch: undefined,
+      searchProperties: false,
       applyToBlock: false,
       selected: undefined,
       qnodes: [],
@@ -66,6 +68,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   toggleApplyToBlock() {
     const { applyToBlock } = this.state;
     this.setState({applyToBlock: !applyToBlock});
+  }
+
+  toggleSearchProperties() {
+    const { searchProperties } = this.state;
+    this.setState({searchProperties: !searchProperties});
   }
 
   updateQNodes(qnodes: QNode[]) {
@@ -164,9 +171,20 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSearchInputs() {
-    const { search, instanceOfSearch, qnodes } = this.state;
+    const { search, instanceOfSearch, qnodes, searchProperties } = this.state;
     return (
       <Form.Group as={Row}>
+        <Col sm="12" className="search-properties">
+          <input id="check-property-search"
+            type="checkbox"
+            defaultChecked={searchProperties}
+            onChange={this.toggleSearchProperties.bind(this)} />
+          <Form.Label
+            htmlFor="check-property-search"
+            className="text-muted">
+            Search Properties
+          </Form.Label>
+        </Col>
         <Col sm="12" md="8">
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
