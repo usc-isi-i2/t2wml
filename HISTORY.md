@@ -2,11 +2,11 @@ T2WML Standalone Server App History
 ===================================
 
 Changes in version 2.7.1:
-------------------------
+-------------------------
 * t2wml-api version 0.2.2
-* sign electron executables for all OSes
-* when opening t2wml from path, t2wml command exists after opening the application 
-* 'load to datamart' button renamed to 'load to datamart (beta)' to emphasize beta status
+* signed electron executables for Mac and Windows
+* when opening t2wml from path, t2wml command exits after opening the application 
+* search mode for property (for dependent variable, qualifier) and unit (same, but only type quantity) in annotation menu
 * pop-up window improvements
    - esc button exits pop up
    - added x button to close pop-up
@@ -20,10 +20,12 @@ Changes in version 2.7.1:
    - when adding a mapping file, automatially switch to that mapping file
    - bug with bolding selected files not always working fixed
    - removed root level node, slimming down tree
-   - no side scroll bar, text opverflow set to ellipsis
+   - no side scroll bar, text overflow set to ellipsis
    - fixed errors in filetree tooltip
 * bug fix: frontend wasn't correctly catching and displaying errors from backend when fetching table
-* search mode for properties in annotation menu
+* bug fix: changing range of annotation bock wasn't changing annotation block size
+* show wikified cells in blue in annotation mode
+* 'load to datamart' button renamed to 'load to datamart (beta)' to emphasize beta status
 
 Changes in version 2.7.0:
 ------------------------
