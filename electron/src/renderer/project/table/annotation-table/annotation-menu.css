@@ -30,7 +30,8 @@
  /* q-node search results */
 .annotation-menu .annotation-form .results {
   max-height: 350px;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 .annotation-menu .annotation-form .results .property,
 .annotation-menu .annotation-form .results .qnode {

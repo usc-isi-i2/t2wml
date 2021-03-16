@@ -60,7 +60,8 @@
  /* Wikify Menu Qnode results */
 .wikify-menu .wikify-form .results {
   max-height: 500px;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 .wikify-menu .wikify-form .results .qnode {
   user-select: none;
