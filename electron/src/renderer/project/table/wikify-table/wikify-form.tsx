@@ -85,7 +85,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnChangeSearch(event: any) {
-    const { instanceOf } = this.state;
+    const { instanceOf, searchProperties } = this.state;
     const value: string = (event.target as HTMLInputElement).value;
 
     this.setState({search: value}, () => {
@@ -96,7 +96,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           window.clearTimeout(this.timeoutId);
         }
         this.timeoutId = window.setTimeout(() => {
-          this.props.onChange('search', value, instanceOf);
+          this.props.onChange('search', value, instanceOf, searchProperties);
         }, 300);
       }
     });
