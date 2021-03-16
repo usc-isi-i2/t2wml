@@ -189,7 +189,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder="qnode"
+            placeholder={searchProperties ? 'property' : 'qnode'}
             value={search}
             onFocus={this.handleOnFocusSearch.bind(this)}
             onChange={(event: any) => this.handleOnChangeSearch(event)} />
