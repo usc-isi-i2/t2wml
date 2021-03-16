@@ -80,8 +80,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnFocusSearch() {
-    const { search, instanceOf } = this.state;
-    this.props.onChange('search', search, instanceOf);
+    const { search, instanceOf, searchProperties } = this.state;
+    this.props.onChange('search', search, instanceOf, searchProperties);
   }
 
   handleOnChangeSearch(event: any) {
