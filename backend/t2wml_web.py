@@ -324,8 +324,9 @@ def save_annotations(project, annotation, annotations_path, data_path, sheet_nam
 
     dga=Annotation(annotation)
     dga.save(annotations_path)
-    project.add_annotation_file(annotations_path, data_path, sheet_name)
+    filename = project.add_annotation_file(annotations_path, data_path, sheet_name)
     project.save()
+    return filename
 
 
 

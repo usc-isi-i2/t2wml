@@ -60,9 +60,9 @@ def save_yaml(project, yaml_data, data_file, sheet_name, yaml_title=None):
     with open(file_path, 'w', newline='', encoding="utf-8") as f:
         f.write(yaml_data)
 
-    project.add_yaml_file(file_path, data_file, sheet_name)
+    filename = project.add_yaml_file(file_path, data_file, sheet_name)
     project.save()
-    return file_path
+    return filename
 
 
 def get_empty_layers():

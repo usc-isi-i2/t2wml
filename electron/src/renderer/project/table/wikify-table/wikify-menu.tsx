@@ -43,7 +43,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   async handleOnChange(key: string, value: string, instanceOf?: QNode) {
     console.log('WikifyMenu OnChange triggered for -> ', key, value);
 
-    if ( !value ) { return; }
+    if (!value) { return; }
 
     const isClass = key === 'instanceOfSearch';
     try {
@@ -69,10 +69,10 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     const { col, row } = selectedCell;
 
     let selection = [[col, row], [col, row]];
-    if ( applyToBlock ) {
-      const cellSelection: CellSelection = {x1: col+1, x2: col+1, y1: row+1, y2: row+1};
+    if (applyToBlock) {
+      const cellSelection: CellSelection = { x1: col + 1, x2: col + 1, y1: row + 1, y2: row + 1 };
       const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
-      if ( selectedBlock ) {
+      if (selectedBlock) {
         selection = [
           [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
           [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
@@ -95,10 +95,22 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
-
-      // Close the wikify menu on submit
-      this.props.onClose();
     }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
+
+    // Close the wikify menu on submit
+    this.props.onClose();
   }
 
   async handleOnRemove(qnode: QNode, applyToBlock: boolean) {
@@ -172,7 +184,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     const { position, onClose } = this.props;
     return (
       <Draggable handle=".handle"
-        defaultPosition={{x: position[0], y: position[1]}}>
+        defaultPosition={{ x: position[0], y: position[1] }}>
         <div className="wikify-menu">
           <Toast onClose={onClose}>
             {this.renderHeader()}

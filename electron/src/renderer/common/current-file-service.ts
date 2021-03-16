@@ -34,6 +34,27 @@ export class CurrentFilesService {
         return undefined;
     }
 
+    getDefaultFiles(project: ProjectDTO){
+        //also called when deleting a file
+        if (Object.keys(project.data_files).length) {
+            this.currentState.dataFile = Object.keys(project.data_files)[0];
+            this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
+        }
+
+        if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
+            this.currentState.mappingFile = project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
+            this.currentState.mappingType = 'Annotation';
+        } else if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile!]) {
+            this.currentState.mappingFile = project.yaml_sheet_associations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
+            this.currentState.mappingType = 'Yaml';
+        } else {
+            this.currentState.mappingFile = undefined;
+            this.currentState.mappingType = undefined;
+        }
+
+        this.saveCurrentFileSelections();
+    }
+
     @action
     getFiles(project: ProjectDTO) {
         this.currentState = new CurrentFiles();
@@ -58,28 +79,13 @@ export class CurrentFilesService {
         } catch (exception) {
             console.log(exception)
             // If the file doen't exist, or is invalid, default to the first files
-            if (Object.keys(project.data_files).length) {
-                this.currentState.dataFile = Object.keys(project.data_files)[0];
-                this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
-            }
-
-            if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
-                this.currentState.mappingFile = project.annotations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
-                this.currentState.mappingType = 'Annotation';
-            } else if (Object.keys(project.yaml_sheet_associations).length && project.yaml_sheet_associations[this.currentState.dataFile!]) {
-                this.currentState.mappingFile = project.yaml_sheet_associations[this.currentState.dataFile!][this.currentState.sheetName!].val_arr[0];
-                this.currentState.mappingType = 'Yaml';
-            } else {
-                this.currentState.mappingFile = undefined;
-                this.currentState.mappingType = undefined;
-            }
-
-            this.saveCurrentFileSelections();
+            this.getDefaultFiles(project)
         }
     }
 
     @action
     setMappingFiles() {
+        //also called when deleting a mapping file
         const project = wikiStore.project.projectDTO!;
         const dataFile = this.currentState.dataFile!;
         const sheet = this.currentState.sheetName!;
@@ -95,6 +101,7 @@ export class CurrentFilesService {
             this.currentState.mappingFile = undefined;
             this.currentState.mappingType = undefined;
         }
+        this.saveCurrentFileSelections();
     }
 
     @action
@@ -104,7 +111,6 @@ export class CurrentFilesService {
         this.currentState.sheetName = project.data_files[newFile].val_arr[0];
 
         this.setMappingFiles();
-        this.saveCurrentFileSelections();
     }
 
     @action
@@ -122,7 +128,7 @@ export class CurrentFilesService {
         this.currentState.sheetName = newSheet;
 
         this.setMappingFiles();
-        this.saveCurrentFileSelections();
+
     }
 
     @action

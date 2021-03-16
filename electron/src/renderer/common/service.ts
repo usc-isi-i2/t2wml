@@ -4,7 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithPropertiesDTO, ResponseWithQNodesDTO, QNode
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodesDTO, QNode, ResponseWithProjectandFileName, ResponseWithPropertiesDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -128,13 +128,21 @@ class RequestService {
   }
 
   public async addExistingMapping(data: any){
-    const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
+    const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
     wikiStore.project.projectDTO = response.project;
+    return response.filename;
   }
 
-  public async createAnnotation(data: any){
-    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
+  public async createAnnotation(data: any): Promise<string>{
+    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
     wikiStore.project.projectDTO = response.project;
+    return response.filename;
+  }
+
+  public async saveYaml(data: any): Promise<string> {
+    const response = await backendPost(`/yaml/save?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
+    wikiStore.project.projectDTO = response.project;
+    return response.filename;
   }
 
   public async postAnnotationBlocks(data: any) {
@@ -171,6 +179,8 @@ class RequestService {
     this.fillMapping(response)
     wikiStore.project.projectDTO = response.project;
   }
+
+
 
   public async callWikifierService(data: any) {
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
@@ -258,10 +268,6 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async saveYaml(data: any) {
-    const response = await backendPost(`/yaml/save?${this.getProjectFolder()}`, data) as ResponseWithProjectDTO;
-    wikiStore.project.projectDTO = response.project;
-  }
 
   public async call<IProp, IState extends IStateWithError, ReturnValue>(
     component: React.Component<IProp, IState>,

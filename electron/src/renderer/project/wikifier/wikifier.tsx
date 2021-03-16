@@ -111,6 +111,18 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     } finally {
       wikiStore.wikifier.showSpinner = false;
     }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
   }
 
   cancelCallWikifier() {
@@ -161,12 +173,24 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
         propertiesMessage: message
       });
 
-
     } catch (error) {
       console.log(error);
     } finally {
       wikiStore.wikifier.showSpinner = false;
     }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
+
   }
 
   async handleOpenWikifierFile(event: any) {
@@ -194,6 +218,18 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
+    }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
     }
 
   }

@@ -39,7 +39,10 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.updateFileTree()));
-    this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
+    //until we figure out why reactions to currentState aren't working, just subscribing inidivually
+    this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateFileTree()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.sheetName, () => this.updateFileTree()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.mappingFile, () => this.updateFileTree()));
     this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
     this.updateFileTree();
   }
@@ -63,13 +66,11 @@ class FileTree extends Component<TreeProps, TreeState> {
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {
     currentFilesService.changeYaml(yaml, sheetName, dataFile);
     await this.requestService.getTable();
-    // await this.requestService.getMappingCalculation();
   }
 
   async changeAnnotation(annotation: string, sheetName: string, dataFile: string) {
     currentFilesService.changeAnnotation(annotation, sheetName, dataFile);
     await this.requestService.getTable();
-    // await this.requestService.getMappingCalculation();
   }
 
   async changeFile(node: NodeProps) {
@@ -117,9 +118,9 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   async deleteFile(deleteFromFs: boolean) {
     const filename = this.state.clickedNode!.label;
+    let updateTree = false;
     if (currentFilesService.currentState.dataFile == filename || currentFilesService.currentState.mappingFile == filename) {
-      alert("Cannot delete or remove a file that is currently open");
-      return;
+      updateTree=true;
     }
 
     this.setState({ showSpinner: true });
@@ -127,6 +128,15 @@ class FileTree extends Component<TreeProps, TreeState> {
     const data = { "file_name": filename, "delete": deleteFromFs };
     try {
       await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
+      if (updateTree){
+        if (currentFilesService.currentState.dataFile == filename){
+          currentFilesService.getDefaultFiles(wikiStore.project.projectDTO!);
+        } else{ //mapping file
+          currentFilesService.setMappingFiles();
+        }
+         //do we need this in order to be able to call get table?
+        await this.requestService.getTable();
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -153,7 +163,8 @@ class FileTree extends Component<TreeProps, TreeState> {
           "dataFile": this.state.clickedNode!.parentNode!.label
         };
 
-        await this.requestService.saveYaml(data);
+        const filename = await this.requestService.saveYaml(data);
+        this.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
       } catch (error) {
         console.log(error);
       }
@@ -178,7 +189,8 @@ class FileTree extends Component<TreeProps, TreeState> {
           "dataFile": this.state.clickedNode!.parentNode!.label
         };
 
-        await this.requestService.createAnnotation(data)
+        const filename = await this.requestService.createAnnotation(data)
+        this.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
       } catch (error) {
         console.log(error);
       } finally {
@@ -206,7 +218,9 @@ class FileTree extends Component<TreeProps, TreeState> {
           "type":"yaml"
         };
 
-        await this.requestService.addExistingMapping(data);
+        const filename = await this.requestService.addExistingMapping(data);
+        this.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+
       } catch (error) {
         console.log(error);
       }
@@ -232,7 +246,9 @@ class FileTree extends Component<TreeProps, TreeState> {
           "type":"annotation"
         };
 
-        await this.requestService.addExistingMapping(data)
+        const filename = await this.requestService.addExistingMapping(data)
+        this.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+
       } catch (error) {
         console.log(error);
       } finally {
@@ -393,6 +409,7 @@ class FileTree extends Component<TreeProps, TreeState> {
               type={fileNode.type}
               parentNode={fileNode.parentNode}
               rightClick={fileNode.rightClick}
+              bolded={fileNode.bolded}
               onClick={fileNode.onClick} />
           ))}
 

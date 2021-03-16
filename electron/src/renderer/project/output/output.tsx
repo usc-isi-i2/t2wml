@@ -57,6 +57,7 @@ class Output extends Component<{}, OutputComponentState> {
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.updateStateFromStore()));
     this.disposers.push(reaction(() => wikiStore.layers, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateStateFromStore()));
   }
 
   componentWillUnmount() {
