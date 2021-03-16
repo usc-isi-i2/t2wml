@@ -17,7 +17,7 @@ import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { defaultYamlContent } from "../default-values";
 import { IReactionDisposer, reaction } from 'mobx';
-import { CurrentFilesService, currentFilesService } from '../../common/current-file-service';
+import { currentFilesService } from '../../common/current-file-service';
 import { remote } from 'electron';
 
 interface yamlProperties {
