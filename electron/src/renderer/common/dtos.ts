@@ -224,3 +224,5 @@ export interface ResponseWithQNodesDTO {
 export interface ResponseWithPropertiesDTO {
     properties: Property[];
 }
+
+export interface ResponseWithQNodesOrPropertiesDTO extends ResponseWithQNodesDTO, ResponseWithPropertiesDTO {}
