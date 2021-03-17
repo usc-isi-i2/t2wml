@@ -10,7 +10,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate, upgrade, current, init
 
-home_dir = str(Path.home())
+
+home_dir = os.environ.get("T2WMLHOME")
+if not home_dir:
+    home_dir = str(Path.home())
 DATADIR = os.path.join(home_dir, ".t2wml")
 if not os.path.exists(DATADIR):
     os.makedirs(DATADIR)
