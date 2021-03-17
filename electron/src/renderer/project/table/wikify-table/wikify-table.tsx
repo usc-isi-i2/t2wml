@@ -197,7 +197,7 @@ class WikifyTable extends Component<{}, TableState> {
     this.setState({ tableData })
   }
 
-  selectCell(cell: Element, classNames: string[] = []) {
+  selectCell(cell: Element, row: number, col: number, classNames: string[] = []) {
     // Activate the current cell
     cell.classList.add('active');
     classNames.map(className => cell.classList.add(className));
@@ -221,42 +221,11 @@ class WikifyTable extends Component<{}, TableState> {
     const borderBottom = document.createElement('div');
     borderBottom.classList.add('cell-border-bottom');
     cell.appendChild(borderBottom);
-  }
 
-  selectRelatedCells(row: number, col: number) {
     const selectedCell = new Cell(col - 1, row - 1);
-
-    this.setState({ selectedCell });
-
-    // Update selected cell in the data store
-    wikiStore.table.selectedCell = selectedCell;
-
-    const statement = wikiStore.layers.statement.find(selectedCell);
-    if (!statement || !statement.cells) { return; }
-
-    // Get a reference to the table elements
-    const table: any = this.tableRef;
-    const rows = table!.querySelectorAll('tr');
-
-    // Select qualifier cells
-    if ('qualifiers' in statement.cells) {
-      statement.cells.qualifiers.forEach((cell: any) => {
-        for (const key in cell) {
-          const y = cell[key][0];
-          const x = cell[key][1];
-          const tableCell = rows[y + 1].children[x + 1];
-          this.selectCell(tableCell, []);
-        }
-      });
-    }
-
-    for (const key in statement.cells){
-      if (key=="qualifiers"){continue;}
-      const y = statement.cells[key][0];
-      const x = statement.cells[key][1];
-      const cell = rows[y + 1].children[x + 1];
-      this.selectCell(cell, []);
-    }
+    this.setState({ selectedCell }, () => {
+      wikiStore.table.selectedCell = selectedCell;
+    });
   }
 
   resetSelection() {
@@ -328,10 +297,7 @@ class WikifyTable extends Component<{}, TableState> {
 
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
-    this.selectCell(element);
-
-    // Activate the element on click
-    this.selectRelatedCells(y1, x1);
+    this.selectCell(element, y1, x1);
   }
 
   handleOnClickHeader(event: React.MouseEvent) {
@@ -397,8 +363,7 @@ class WikifyTable extends Component<{}, TableState> {
 
       this.resetSelection();
       const nextElement = rows[row + 1].children[col + 1];
-      this.selectCell(nextElement);
-      this.selectRelatedCells(row + 1, col + 1);
+      this.selectCell(nextElement, row + 1, col + 1);
     }
   }
 
