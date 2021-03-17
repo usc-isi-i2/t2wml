@@ -4,8 +4,7 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithPropertiesDTO, ResponseWithQNodesOrPropertiesDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -102,8 +101,8 @@ class RequestService {
 
   public async getProperties(search: string) {
     const url = `/properties?q=${search}`;
-    const response = await backendGet(url) as ResponseWithQNodesDTO;
-    wikiStore.annotateProperties.properties = response.qnodes;
+    const response = await backendGet(url) as ResponseWithPropertiesDTO;
+    wikiStore.annotateProperties.properties = response.properties;
   }
 
   public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean) {
@@ -117,8 +116,12 @@ class RequestService {
     if ( instanceOf ) {
       url += `&instance_of=${instanceOf.id}`;
     }
-    const response = await backendGet(url) as ResponseWithQNodesDTO;
+    const response = await backendGet(url) as ResponseWithQNodesOrPropertiesDTO;
+    if ( searchProperties ) {
+      wikiStore.wikifyQnodes.qnodes = response.properties;
+    } else {
       wikiStore.wikifyQnodes.qnodes = response.qnodes;
+    }
   }
 
   public async postQNodes(values: any) {
