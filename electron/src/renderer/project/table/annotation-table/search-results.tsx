@@ -4,7 +4,7 @@ import wikiStore from '../../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Col, Row } from 'react-bootstrap';
 
-import { QNode } from '@/renderer/common/dtos';
+import { Property, QNode } from '@/renderer/common/dtos';
 
 
 interface SearchResultsProps {
@@ -13,7 +13,7 @@ interface SearchResultsProps {
 
 
 interface SearchResultsState {
-  properties: QNode[];
+  properties: Property[];
   qnodes: QNode[];
 }
 
@@ -49,7 +49,7 @@ class SearchResults extends React.Component<SearchResultsProps, SearchResultsSta
     }
   }
 
-  updateProperties(properties: QNode[]) {
+  updateProperties(properties: Property[]) {
     this.setState({properties});
   }
 
