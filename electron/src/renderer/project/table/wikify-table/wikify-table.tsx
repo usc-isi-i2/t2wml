@@ -444,6 +444,8 @@ class WikifyTable extends Component<{}, TableState> {
   closeWikifyMenu() {
     this.setState({
       showWikifyMenu: false,
+    }, () => {
+      this.resetSelection();
     });
   }
 
