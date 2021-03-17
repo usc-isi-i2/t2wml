@@ -12,6 +12,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 interface WikifyFormProperties {
   selectedCell: Cell;
+  onSelectBlock: (applyToBlock: boolean) => void;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onSubmit: any | null;
   onRemove: any | null;
@@ -67,6 +68,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   toggleApplyToBlock() {
     const { applyToBlock } = this.state;
+    this.props.onSelectBlock(!applyToBlock);
     this.setState({applyToBlock: !applyToBlock});
   }
 

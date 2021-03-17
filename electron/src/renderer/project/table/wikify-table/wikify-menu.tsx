@@ -17,6 +17,7 @@ interface WikifyMenuProperties {
   selectedCell: Cell;
   position: Array<number>;
   wikifyCellContent?: string;
+  onSelectBlock: (applyToBlock: boolean) => void;
   onClose: () => void;
 }
 
@@ -170,10 +171,11 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   }
 
   renderWikifyForms() {
-    const { selectedCell } = this.props;
+    const { selectedCell, onSelectBlock } = this.props;
     return (
       <WikifyForm
         selectedCell={selectedCell}
+        onSelectBlock={(applyToBlock) => onSelectBlock(applyToBlock)}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)}
         onRemove={this.handleOnRemove.bind(this)} />
