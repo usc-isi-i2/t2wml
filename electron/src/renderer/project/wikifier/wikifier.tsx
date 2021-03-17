@@ -297,7 +297,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                 style={{ padding: "0rem 0.5rem" }}
                 onClick={() => { document.getElementById("file_wikifier")?.click(); }}
               >
-                Upload
+                Import Wikifier
                 </Button>
             </OverlayTrigger>
 
