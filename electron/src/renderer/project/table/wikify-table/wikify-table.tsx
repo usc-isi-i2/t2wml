@@ -4,24 +4,25 @@ import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
-import { QNodeEntry, QNode, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
+import { AnnotationBlock, QNodeEntry, QNode, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
 import WikifyMenu from './wikify-menu';
 import { settings } from '../../../../main/settings';
+import * as utils from '../table-utils';
 
 
 interface TableState {
   tableData?: TableData;
   selectedCell?: Cell;
-  showWikifyMenu: boolean,
-  wikifyCellContent?: string,
-  wikifyMenuPosition: Array<number>,
+  showWikifyMenu: boolean;
+  wikifyCellContent?: string;
+  wikifyMenuPosition: Array<number>;
+  selectedAnnotationBlock?: AnnotationBlock;
 }
 
 
 @observer
 class WikifyTable extends Component<{}, TableState> {
   private tableRef = React.createRef<HTMLTableElement>().current!;
-  private selection?: CellSelection;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -38,6 +39,7 @@ class WikifyTable extends Component<{}, TableState> {
       showWikifyMenu: false,
       wikifyCellContent: undefined,
       wikifyMenuPosition: [50, 70],
+      selectedAnnotationBlock: undefined,
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
@@ -197,40 +199,104 @@ class WikifyTable extends Component<{}, TableState> {
     this.setState({ tableData })
   }
 
-  selectCell(cell: Element, row: number, col: number, classNames: string[] = []) {
+  updateSelections(selectedBlock?: AnnotationBlock) {
+    const { selectedCell } = this.state;
+    if ( !selectedCell && !selectedBlock ) { return; }
+    const table: any = this.tableRef;
+    if ( !table ) { return; }
+
+    // Reset selections before update
+    this.resetSelection();
+    table.classList.add('active');
+
+    const classNames: string[] = ['active'];
+    if ( selectedBlock ) {
+      const { role } = selectedBlock;
+      if ( role ) {
+        const className = `role-${role}`;
+        table.querySelectorAll(`td[class*="${className}"]`).forEach((element: HTMLElement) => {
+          element.classList.remove(className);
+        });
+        classNames.push(className);
+      }
+    }
+
+    const rows = table.querySelectorAll('tr');
+    let x1, x2, y1, y2;
+    if ( selectedBlock ) {
+      x1 = selectedBlock.selection.x1;
+      x2 = selectedBlock.selection.x2;
+      y1 = selectedBlock.selection.y1;
+      y2 = selectedBlock.selection.y2;
+    } else {
+      const { col, row } = selectedCell!;
+      x1 = col + 1;
+      x2 = col + 1;
+      y1 = row + 1;
+      y2 = row + 1;
+    }
+    const leftCol = Math.min(x1, x2);
+    const rightCol = Math.max(x1, x2);
+    const topRow = Math.min(y1, y2);
+    const bottomRow = Math.max(y1, y2);
+    let rowIndex = topRow;
+    while ( rowIndex <= bottomRow ) {
+      let colIndex = leftCol;
+      while ( colIndex <= rightCol ) {
+        this.selectCell(
+          rows[rowIndex].children[colIndex],
+          rowIndex,
+          colIndex,
+          topRow,
+          leftCol,
+          rightCol,
+          bottomRow,
+          classNames,
+        );
+        colIndex += 1;
+      }
+      rowIndex += 1;
+    }
+  }
+
+  selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
     // Activate the current cell
     cell.classList.add('active');
     classNames.map(className => cell.classList.add(className));
 
     // Add a top border to the cells at the top of the selection
-    const borderTop = document.createElement('div');
-    borderTop.classList.add('cell-border-top');
-    cell.appendChild(borderTop);
+    if (rowIndex === topRow) {
+      const borderTop = document.createElement('div');
+      borderTop.classList.add('cell-border-top');
+      cell.appendChild(borderTop);
+    }
 
     // Add a left border to the cells on the left of the selection
-    const borderLeft = document.createElement('div');
-    borderLeft.classList.add('cell-border-left');
-    cell.appendChild(borderLeft);
+    if (colIndex === leftCol) {
+      const borderLeft = document.createElement('div');
+      borderLeft.classList.add('cell-border-left');
+      cell.appendChild(borderLeft);
+    }
 
     // Add a right border to the cells on the right of the selection
-    const borderRight = document.createElement('div');
-    borderRight.classList.add('cell-border-right');
-    cell.appendChild(borderRight);
+    if (colIndex === rightCol) {
+      const borderRight = document.createElement('div');
+      borderRight.classList.add('cell-border-right');
+      cell.appendChild(borderRight);
+    }
 
     // Add a bottom border to the cells at the bottom of the selection
-    const borderBottom = document.createElement('div');
-    borderBottom.classList.add('cell-border-bottom');
-    cell.appendChild(borderBottom);
-
-    const selectedCell = new Cell(col - 1, row - 1);
-    this.setState({ selectedCell }, () => {
-      wikiStore.table.selectedCell = selectedCell;
-    });
+    if (rowIndex === bottomRow) {
+      const borderBottom = document.createElement('div');
+      borderBottom.classList.add('cell-border-bottom');
+      cell.appendChild(borderBottom);
+    }
   }
 
   resetSelection() {
     const table = this.tableRef;
     if (table) {
+      table.classList.remove('active');
       table.querySelectorAll('td[class*="active"]').forEach(e => {
         e.classList.forEach(className => {
           if (className.startsWith('active')) {
@@ -297,7 +363,12 @@ class WikifyTable extends Component<{}, TableState> {
 
     const x1: number = element.cellIndex;
     const y1: number = element.parentElement.rowIndex;
-    this.selectCell(element, y1, x1);
+
+    const selectedCell: Cell = new Cell(x1 - 1, y1 - 1);
+    this.setState({ selectedCell }, () => {
+      wikiStore.table.selectedCell = selectedCell;
+      this.updateSelections();
+    });
   }
 
   handleOnClickHeader(event: React.MouseEvent) {
@@ -362,8 +433,11 @@ class WikifyTable extends Component<{}, TableState> {
       }
 
       this.resetSelection();
-      const nextElement = rows[row + 1].children[col + 1];
-      this.selectCell(nextElement, row + 1, col + 1);
+      const nextSelectedCell: Cell = new Cell(col, row);
+      this.setState({ selectedCell: nextSelectedCell }, () => {
+        wikiStore.table.selectedCell = selectedCell;
+        this.updateSelections();
+      });
     }
   }
 
@@ -371,6 +445,28 @@ class WikifyTable extends Component<{}, TableState> {
     this.setState({
       showWikifyMenu: false,
     });
+  }
+
+  handleOnSelectBlock(applyToBlock: boolean) {
+    const { selectedCell } = this.state;
+    if ( applyToBlock && selectedCell ) {
+      const { col, row } = selectedCell;
+      const selection: CellSelection = {
+        x1: col + 1,
+        x2: col + 1,
+        y1: row + 1,
+        y2: row + 1,
+      };
+      const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
+      if ( selectedBlock ) {
+        this.setState({ selectedAnnotationBlock: selectedBlock });
+        this.updateSelections(selectedBlock);
+      }
+    } else {
+      this.setState({ selectedAnnotationBlock: undefined }, () => {
+        this.updateSelections();
+      });
+    }
   }
 
   renderWikifyMenu() {
@@ -384,6 +480,7 @@ class WikifyTable extends Component<{}, TableState> {
       return (
         <WikifyMenu
           selectedCell={selectedCell}
+          onSelectBlock={this.handleOnSelectBlock.bind(this)}
           wikifyCellContent={wikifyCellContent}
           position={wikifyMenuPosition}
           onClose={() => this.closeWikifyMenu()} />
