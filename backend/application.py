@@ -532,7 +532,7 @@ def get_properties():
             'description': item['description'][0] if item['description'] else '',
         } for item in items]
 
-    return {'properties': properties}, 200
+    return {'qnodes': properties}, 200
 
 
 @app.route('/api/qnodes', methods=['GET'])
