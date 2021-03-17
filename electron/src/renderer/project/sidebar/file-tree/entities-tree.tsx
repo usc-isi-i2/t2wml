@@ -157,9 +157,9 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
   buildFileTree(): NodeProps[] {
     const project = wikiStore.project.projectDTO;
     entitiesNode.childNodes = [];
-    entitiesNode.rightClick = (node: NodeProps) => this.onRightClick(entitiesNode)
+    entitiesNode.rightClick = () => this.onRightClick(entitiesNode)
     wikifiersNode.childNodes = [];
-    wikifiersNode.rightClick = (node: NodeProps) => this.onRightClick(wikifiersNode)
+    wikifiersNode.rightClick = () => this.onRightClick(wikifiersNode)
 
     if (!project || (!project.entity_files && !project.wikifier_files)) { return []; }
     for (const ef of project.entity_files) {
