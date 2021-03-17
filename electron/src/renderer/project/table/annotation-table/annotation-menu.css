@@ -6,11 +6,10 @@
   top: 70px;
 }
 
-/*
 .annotation-menu .toast {
   max-width: 500px;
   min-width: 500px;
-}*/
+}
 
 .annotation-menu .toast .handle {
   background: whitesmoke;
@@ -19,6 +18,7 @@
 
 .annotation-menu .annotation-form button.delete {
   cursor: pointer;
+  float: right;
   padding: 0px;
   color: red;
 }
@@ -30,7 +30,8 @@
  /* q-node search results */
 .annotation-menu .annotation-form .results {
   max-height: 350px;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 .annotation-menu .annotation-form .results .property,
 .annotation-menu .annotation-form .results .qnode {

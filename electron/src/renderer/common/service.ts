@@ -4,7 +4,8 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodesDTO, QNode, ResponseWithProjectandFileName, ResponseWithPropertiesDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -101,12 +102,15 @@ class RequestService {
 
   public async getProperties(search: string) {
     const url = `/properties?q=${search}`;
-    const response = await backendGet(url) as ResponseWithPropertiesDTO;
-    wikiStore.annotateProperties.properties = response.properties;
+    const response = await backendGet(url) as ResponseWithQNodesDTO;
+    wikiStore.annotateProperties.properties = response.qnodes;
   }
 
-  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode) {
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean) {
     let url = `/qnodes?q=${search}`;
+    if ( searchProperties ) {
+      url = `/properties?q=${search}`;
+    }
     if ( isClass ) {
       url += `&is_class=true`;
     }
@@ -122,7 +126,12 @@ class RequestService {
     this.updateProjectandQnode(response);
   }
 
-  public async addExistingMapping(data: any): Promise<string>{
+  public async removeQNodes(values: any) {
+    const response = await backendPost(`/remove_qnode?${this.getDataFileParams(false)}`, values) as ResponseWithQNodeLayerDTO;
+    this.updateProjectandQnode(response);
+  }
+
+  public async addExistingMapping(data: any){
     const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
     wikiStore.project.projectDTO = response.project;
     return response.filename;
