@@ -1,7 +1,7 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version 2.8.0:
+Changes in version 2.8.0: 
 -------------------------
 * t2wml-api version 0.2.4
 * added property search bar in the annotation menu for dependent variables and qualifiers
@@ -12,10 +12,9 @@ Changes in version 2.8.0:
    - the user wikifications are saved to a file in the project
    - users can also remove any wikification they've added
 * the entities tab of the file tree has some enhancements:
-   - entity and wikifier files are no longer displayed alaphabetically, but rather in the order they are present in the project, which is also their order by precedence (ascending, ie last is highest precendence)
+   - entity and wikifier files are no longer displayed alaphabetically, but rather in the order they are present in the project, which is also their order by precedence (ascending, ie last is highest precedence)
    - the ability to add files has been added to the right click menu
 * bug fix: previously, changes to wikification (eg adding a new wikifier file) were not being displayed/updated in the results. this has been fixed, and all wikification changes-- adding and deleting files, auto-generation from annotation, and anything done in wikify mode-- will be displayed in the table and results.
-* while support for multiple wikifier files has been present for a few versions, this version is the official release of that feature
 * the wikify button has been disabled. the wikifier endpoint is currently down for an unknown amount of time.
 
 
