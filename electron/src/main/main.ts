@@ -92,10 +92,10 @@ function createMainWindow(): void {
       mainWindow!.maximize();
     }
 
-    if ( settings.dev.devToolsOpen && config.mode === 'dev' ) {
-      // In prod, dev tools never open automatically
-      mainWindow!.webContents.openDevTools();
-    }
+    // if ( settings.dev.devToolsOpen && config.mode === 'dev' ) {
+    //   // In prod, dev tools never open automatically
+    //   mainWindow!.webContents.openDevTools();
+    // }
 
     rendererNotifier.toggleShowCleanedData(uiState.showCleanedData);
   });

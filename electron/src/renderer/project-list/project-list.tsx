@@ -437,6 +437,7 @@ class ProjectList extends Component<{}, ProjectListState> {
               <div style={{ marginBottom: "20px" }}>
                 <div style={{ display: "inline-block", width: "40%" }}>
                   <Button
+                    id="btn-new-project"
                     variant="primary"
                     size="sm"
                     style={{ fontWeight: 600, marginRight: '1rem' }}
