@@ -1,6 +1,23 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.8.0: 
+-------------------------
+* t2wml-api version 0.2.4
+* added property search bar in the annotation menu for dependent variables and qualifiers
+* added wikify mode:
+   - in wikify mode, a cell's wikification is displayed in the cell, with label and description, allowing the user to easily see at a glance what QNodes/properties a cell is linked to
+   - in wikify mode the user can select a cell, or a cell within a block defined by the annotation, search for an appropriate wikidata QNode or Property, and apply it to that cell or all cells with the same content in the block.
+   - for qnode (not property) search, the user can specify a P31 node to filter the results of their query
+   - the user wikifications are saved to a file in the project
+   - users can also remove any wikification they've added
+* the entities tab of the file tree has some enhancements:
+   - entity and wikifier files are no longer displayed alaphabetically, but rather in the order they are present in the project, which is also their order by precedence (ascending, ie last is highest precedence)
+   - the ability to add files has been added to the right click menu
+* bug fix: previously, changes to wikification (eg adding a new wikifier file) were not being displayed/updated in the results. this has been fixed, and all wikification changes-- adding and deleting files, auto-generation from annotation, and anything done in wikify mode-- will be displayed in the table and results.
+* the wikify button has been disabled. the wikifier endpoint is currently down for an unknown amount of time.
+
+
 Changes in version 2.7.1:
 -------------------------
 * t2wml-api version 0.2.2
