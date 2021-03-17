@@ -200,7 +200,7 @@ async function initApp(): Promise<void> {
 }
 
 if ( config.mode !== 'prod' ) {
-  app.commandLine.appendSwitch('remote-debugging-port', '9223');
+  // app.commandLine.appendSwitch('remote-debugging-port', '9223');
   app.commandLine.appendSwitch('enable-logging');
 }
 

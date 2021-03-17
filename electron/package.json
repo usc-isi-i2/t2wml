@@ -13,7 +13,8 @@
     "watch": "npm-run-all --parallel lint-watch tsc-watch",
     "build:win": "electron-builder build --win --x64",
     "build:mac": "electron-builder build --mac --x64",
-    "build:linux": "electron-builder build --linux --x64"
+    "build:linux": "electron-builder build --linux --x64",
+    "test": "mocha"
   },
   "build": {
     "appId": "edu.isi.t2wml",
@@ -26,7 +27,8 @@
     "afterSign": "electron-builder-notarize",
     "mac": {
       "target": [
-        "pkg", "dmg"
+        "pkg",
+        "dmg"
       ],
       "extraResources": [
         {
@@ -118,6 +120,7 @@
     "lodash": "^4.17.15",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.2",
+    "mocha": "^8.3.2",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "monaco-languages": "^1.10.0",
     "npm-run-all": "^4.1.5",
@@ -132,7 +135,7 @@
     "react-split-pane": "0.1.92",
     "react-treebeard": "^3.2.4",
     "source-map-loader": "^0.2.4",
-    "spectron": "^5.0.0",
+    "spectron": "^12.0.0",
     "style-loader": "^0.23.1",
     "tree-kill": "^1.2.2",
     "ts-loader": "^8.0.2",
