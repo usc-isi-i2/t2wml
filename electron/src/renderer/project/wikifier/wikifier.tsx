@@ -308,6 +308,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               size="sm"
               style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
               onClick={() => { this.setState({ showCallWikifier: true }) }}
+              disabled={true} //until wikifier is working again
             >
               Wikify
             </Button>
