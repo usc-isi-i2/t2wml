@@ -78,7 +78,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     wikiStore.yaml.showSpinner = true;
     await wikiStore.yaml.saveYaml();
 
-    if (node.type === "DataFile") {
+    if (node.type === "DataFile" || node.type == "SingleSheetDataFile") {
       if (node.label !== currentFilesService.currentState.dataFile) {
         await this.changeDataFile(node.label);
       }
@@ -144,7 +144,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  async addYaml() {
+  async addYaml(clickedNode: NodeProps) {
     const result = await remote.dialog.showSaveDialog({
       title: "Add Empty Yaml File",
       defaultPath: wikiStore.project.projectDTO!.directory,
@@ -159,12 +159,12 @@ class FileTree extends Component<TreeProps, TreeState> {
         const data = {
           "yaml": defaultYamlContent,
           "title": result.filePath,
-          "sheetName": this.state.clickedNode!.label,
-          "dataFile": this.state.clickedNode!.parentNode!.label
+          "sheetName": clickedNode!.label,
+          "dataFile": clickedNode!.parentNode!.label
         };
 
         const filename = await this.requestService.saveYaml(data);
-        this.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        this.changeYaml(filename, clickedNode!.label, clickedNode!.parentNode!.label)
       } catch (error) {
         console.log(error);
       }
@@ -172,7 +172,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  async addAnnotation() {
+  async addAnnotation(clickedNode: NodeProps) {
     const result = await remote.dialog.showSaveDialog({
       title: "Add Empty Annotation File",
       defaultPath: wikiStore.project.projectDTO!.directory,
@@ -185,12 +185,12 @@ class FileTree extends Component<TreeProps, TreeState> {
       try {
         const data = {
           "title":result.filePath,
-          "sheetName": this.state.clickedNode!.label,
-          "dataFile": this.state.clickedNode!.parentNode!.label
+          "sheetName": clickedNode!.label,
+          "dataFile": clickedNode!.parentNode!.label
         };
 
         const filename = await this.requestService.createAnnotation(data)
-        this.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        this.changeAnnotation(filename, clickedNode!.label, clickedNode!.parentNode!.label)
       } catch (error) {
         console.log(error);
       } finally {
@@ -199,7 +199,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
   }
 
-  async addExistingYaml() {
+  async addExistingYaml(clickedNode: NodeProps) {
     const result = await remote.dialog.showOpenDialog({
       title: "Open Existing Yaml File",
       defaultPath: wikiStore.project.projectDTO!.directory,
@@ -213,13 +213,13 @@ class FileTree extends Component<TreeProps, TreeState> {
         // send request
         const data = {
           "title": result.filePaths[0],
-          "sheetName": this.state.clickedNode!.label,
-          "dataFile": this.state.clickedNode!.parentNode!.label,
+          "sheetName": clickedNode!.label,
+          "dataFile": clickedNode!.parentNode!.label,
           "type":"yaml"
         };
 
         const filename = await this.requestService.addExistingMapping(data);
-        this.changeYaml(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        this.changeYaml(filename, clickedNode!.label, clickedNode!.parentNode!.label)
 
       } catch (error) {
         console.log(error);
@@ -228,7 +228,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  async addExistingAnnotation() {
+  async addExistingAnnotation(clickedNode: NodeProps) {
     const result = await remote.dialog.showOpenDialog({
       title: "Open Existing Annotation File",
       defaultPath: wikiStore.project.projectDTO!.directory,
@@ -241,13 +241,13 @@ class FileTree extends Component<TreeProps, TreeState> {
       try {
         const data = {
           "title":result.filePaths[0],
-          "sheetName": this.state.clickedNode!.label,
-          "dataFile": this.state.clickedNode!.parentNode!.label,
+          "sheetName": clickedNode!.label,
+          "dataFile": clickedNode!.parentNode!.label,
           "type":"annotation"
         };
 
         const filename = await this.requestService.addExistingMapping(data)
-        this.changeAnnotation(filename, this.state.clickedNode!.label, this.state.clickedNode!.parentNode!.label)
+        this.changeAnnotation(filename, clickedNode!.label, clickedNode!.parentNode!.label)
 
       } catch (error) {
         console.log(error);
@@ -271,20 +271,31 @@ class FileTree extends Component<TreeProps, TreeState> {
       case 'Yaml':
       case 'Annotation': {
         menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
-        menu.append(new MenuItem({ type: 'separator' }));
         menu.append(new MenuItem({ label: 'Rename', click: () => this.renameNode() }));
         menu.append(new MenuItem({ label: 'Remove from project', click: () => this.deleteFile(false) }));
         menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile(true) }));
         break;
       }
       case 'Sheet': {
-        menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation() }));
-        menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml() }));
-        menu.append(new MenuItem({ type: 'separator' }));
-        menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation() }));
-        menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml() }));
+        menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation(node) }));
+        menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml(node) }));
+        menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation(node) }));
+        menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml(node) }));
         break;
       }
+    case 'SingleSheetDataFile': {
+      const sheetNode = node.childNodes[0]
+      menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
+      menu.append(new MenuItem({ label: 'Rename', click: () => this.renameNode() }));
+      menu.append(new MenuItem({ label: 'Remove from project', click: () => this.deleteFile(false) }));
+      menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile(true) }));
+      menu.append(new MenuItem({ type: 'separator' }));
+      menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation(sheetNode) }));
+      menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml(sheetNode) }));
+      menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation(sheetNode) }));
+      menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml(sheetNode) }));
+      break;
+    }
       default: {
         menu.append(new MenuItem({ type: 'separator' }));
       }
@@ -320,17 +331,22 @@ class FileTree extends Component<TreeProps, TreeState> {
     const files = [] as NodeProps[]
     if (!project || !project.data_files) { return files; }
     for (const df of Object.keys(project.data_files).sort()) {
+      const sheet_arr = project.data_files[df].val_arr;
+      let dataType= "DataFile"
+      if (sheet_arr.length<2){
+        dataType="SingleSheetDataFile"
+      }
       const dataNode = {
         id: df,
         label: df,
         childNodes: [],
-        type: "DataFile",
+        type: dataType,
         parentNode: null,
         rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: (node: NodeProps) => this.changeFile(node),
         bolded: currentFilesService.currentState.dataFile == df
       } as NodeProps;
-      const sheet_arr = project.data_files[df].val_arr;
+
       for (const sheetName of sheet_arr) {
         const sheetNode = {
           id: sheetName + df,
