@@ -22,11 +22,10 @@ interface AppSettings {
 }
 
 
+let file = `${os.homedir()}/.t2wml/gui-settings.json`;
 // Settings stored here
-if (process.env.T2WMLHOME){
-    const file = process.env.T2WMLHOME
-}else{
-const file = `${os.homedir()}/.t2wml/gui-settings.json`;
+if (process.env.T2WMLHOME) {
+    file = process.env.T2WMLHOME;
 }
 
 export class Settings implements AppSettings {
@@ -45,7 +44,7 @@ export class Settings implements AppSettings {
 
     private constructor() {
         try {
-            const content = fs.readFileSync(file, {encoding: 'utf8'});
+            const content = fs.readFileSync(file, { encoding: 'utf8' });
             if (content) {
                 const contentObj: any = JSON.parse(content);
                 if (contentObj.recentlyUsed) {
