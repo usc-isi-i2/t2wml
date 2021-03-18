@@ -606,9 +606,19 @@ def set_qnode():
 
     filepath = os.path.join(project.directory, "user-input-wikification.csv")
     if os.path.exists(filepath):
-        df.to_csv(filepath, mode='a', index=False, header=False)
-    else:
-        df.to_csv(filepath, index=False, header=True)
+        #clear any clashes/duplicates
+        org_df=pd.read_csv(filepath)
+        for col in range(col1, col2+1):
+            for row in range(row1, row2+1):
+                org_df= org_df.drop(org_df[(org_df['column'] == col)
+                                & (org_df['row'] == row)
+                                & (org_df['value'] == value)
+                                & (org_df['file'] == data_file_name)
+                                & (org_df['sheet'] == sheet_name)].index)
+
+        df=pd.concat([org_df, df]).drop_duplicates().reset_index(drop=True)
+
+    df.to_csv(filepath, index=False, header=True)
 
     project.add_wikifier_file(filepath)
     project.save()
