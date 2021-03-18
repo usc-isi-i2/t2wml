@@ -130,10 +130,10 @@ class AnnotationIntegration(object):
         temp_dir = tempfile.mkdtemp()
         t_file = f'{temp_dir}/{filename}'
 
-        if filename.endswith(".csv"):
-            self.df.to_csv(t_file, index=False, header=None)
-        elif filename.endswith(".xlsx") or filename.endswith(".xls"):
+        if filename.endswith(".xlsx") or filename.endswith(".xls"):
             self.df.to_excel(t_file, index=False, header=None)
+        else:
+            self.df.to_csv(t_file, index=False, header=None)
 
         files = {
             'file': (t_file.split('/')[-1], open(t_file, mode='rb'), 'application/octet-stream')
@@ -208,9 +208,7 @@ class AnnotationIntegration(object):
 def create_datafile(project, df, filepath, sheet_name):
     folder = project.directory
 
-    if filepath.endswith('.csv'):
-        df.to_csv(filepath, index=False, header=False)
-    elif filepath.endswith('.xlsx') or filepath.endswith('.xls'):
+    if filepath.endswith('.xlsx') or filepath.endswith('.xls'):
         with pd.ExcelWriter(filepath, engine='openpyxl', mode='a') as writer:
             workBook = writer.book
             try:
@@ -220,4 +218,6 @@ def create_datafile(project, df, filepath, sheet_name):
             finally:
                 df.to_excel(writer, sheet_name=sheet_name, index=False, header=None)
                 writer.save()
+    else:
+        df.to_csv(filepath, index=False, header=False)
     return df

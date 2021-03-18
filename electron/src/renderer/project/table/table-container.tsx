@@ -312,6 +312,7 @@ class TableContainer extends Component<{}, TableState> {
         <div className="text-left small">
           <b>Accepted file types:</b><br />
           • Comma-Separated Values (.csv)<br />
+          • Tab-Separated Values (.tsv)<br />
           • Microsoft Excel (.xls/.xlsx)
         </div>
       </Tooltip>
@@ -337,7 +338,7 @@ class TableContainer extends Component<{}, TableState> {
         <input
           type="file"
           id="file_table"
-          accept=".csv, .xls, .xlsx"
+          accept=".csv, .tsv, .xls, .xlsx"
           style={{ display: "none" }}
           onChange={this.handleOpenTableFile.bind(this)}
           onClick={(event) => (event.target as HTMLInputElement).value = ''}

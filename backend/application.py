@@ -210,7 +210,7 @@ def upload_data_file():
     """
     project = get_project()
 
-    file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
+    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
     data_file = project.add_data_file(
         file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
