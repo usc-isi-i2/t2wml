@@ -15,8 +15,30 @@
   cursor: pointer;
 }
 
+.wikify-menu .wikify-form button.delete {
+  cursor: pointer;
+  float: right;
+  padding: 0px;
+  color: red;
+}
+
 .wikify-menu .toast .toast-body {
   background: #fefefe;
+}
+
+/* Search Properties checkbox */
+.wikify-menu .wikify-form .search-properties {
+  margin-bottom: 15px;
+}
+.wikify-menu .wikify-form .search-properties input {
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  vertical-align: bottom;
+}
+.wikify-menu .wikify-form .search-properties label {
+  user-select: none;
+  cursor: pointer;
 }
 
 /* Input field clear button */
@@ -53,7 +75,8 @@
  /* Wikify Menu Qnode results */
 .wikify-menu .wikify-form .results {
   max-height: 500px;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 .wikify-menu .wikify-form .results .qnode {
   user-select: none;

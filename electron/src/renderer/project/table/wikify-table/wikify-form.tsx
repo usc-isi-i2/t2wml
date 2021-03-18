@@ -12,8 +12,10 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 interface WikifyFormProperties {
   selectedCell: Cell;
+  onSelectBlock: (applyToBlock: boolean) => void;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onSubmit: any | null;
+  onRemove: any | null;
 }
 
 
@@ -21,6 +23,7 @@ interface WikifyFormState {
   search?: string;
   instanceOf?: QNode;
   instanceOfSearch?: string;
+  searchProperties: boolean;
   applyToBlock: boolean;
   selected?: QNode;
   qnodes: QNode[];
@@ -38,6 +41,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       search: undefined,
       instanceOf: undefined,
       instanceOfSearch: undefined,
+      searchProperties: false,
       applyToBlock: false,
       selected: undefined,
       qnodes: [],
@@ -64,7 +68,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   toggleApplyToBlock() {
     const { applyToBlock } = this.state;
+    this.props.onSelectBlock(!applyToBlock);
     this.setState({applyToBlock: !applyToBlock});
+  }
+
+  toggleSearchProperties() {
+    const { searchProperties } = this.state;
+    this.setState({searchProperties: !searchProperties});
   }
 
   updateQNodes(qnodes: QNode[]) {
@@ -72,12 +82,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnFocusSearch() {
-    const { search, instanceOf } = this.state;
-    this.props.onChange('search', search, instanceOf);
+    const { search, instanceOf, searchProperties } = this.state;
+    this.props.onChange('search', search, instanceOf, searchProperties);
   }
 
   handleOnChangeSearch(event: any) {
-    const { instanceOf } = this.state;
+    const { instanceOf, searchProperties } = this.state;
     const value: string = (event.target as HTMLInputElement).value;
 
     this.setState({search: value}, () => {
@@ -88,7 +98,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           window.clearTimeout(this.timeoutId);
         }
         this.timeoutId = window.setTimeout(() => {
-          this.props.onChange('search', value, instanceOf);
+          this.props.onChange('search', value, instanceOf, searchProperties);
         }, 300);
       }
     });
@@ -115,6 +125,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { onSubmit } = this.props;
     const { selected, applyToBlock } = this.state;
     onSubmit(selected, applyToBlock);
+  }
+
+  handleOnRemove() {
+    const { onRemove } = this.props;
+    const { selected, applyToBlock } = this.state;
+    onRemove(selected, applyToBlock);
   }
 
   handleOnClick(qnode: QNode) {
@@ -157,14 +173,25 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSearchInputs() {
-    const { search, instanceOfSearch, qnodes } = this.state;
+    const { search, instanceOfSearch, qnodes, searchProperties } = this.state;
     return (
       <Form.Group as={Row}>
+        <Col sm="12" className="search-properties">
+          <input id="check-property-search"
+            type="checkbox"
+            defaultChecked={searchProperties}
+            onChange={this.toggleSearchProperties.bind(this)} />
+          <Form.Label
+            htmlFor="check-property-search"
+            className="text-muted">
+            Search Properties
+          </Form.Label>
+        </Col>
         <Col sm="12" md="8">
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder="qnode"
+            placeholder={searchProperties ? 'property' : 'qnode'}
             value={search}
             onFocus={this.handleOnFocusSearch.bind(this)}
             onChange={(event: any) => this.handleOnChangeSearch(event)} />
@@ -280,8 +307,25 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               variant="outline-dark">
               Submit
             </Button>
+            {this.renderRemoveButton()}
           </Col>
         </Form.Group>
+      )
+    }
+  }
+
+  renderRemoveButton() {
+    const { qnodes } = this.state;
+    if ( !qnodes.length ) {
+      return (
+        <Button
+          size="sm"
+          type="button"
+          variant="link"
+          className="delete"
+          onClick={this.handleOnRemove.bind(this)}>
+          remove wikification
+        </Button>
       )
     }
   }

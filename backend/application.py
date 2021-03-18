@@ -532,7 +532,7 @@ def get_properties():
             'description': item['description'][0] if item['description'] else '',
         } for item in items]
 
-    return {'properties': properties}, 200
+    return {'qnodes': properties}, 200
 
 
 @app.route('/api/qnodes', methods=['GET'])
@@ -606,9 +606,19 @@ def set_qnode():
 
     filepath = os.path.join(project.directory, "user-input-wikification.csv")
     if os.path.exists(filepath):
-        df.to_csv(filepath, mode='a', index=False, header=False)
-    else:
-        df.to_csv(filepath, index=False, header=True)
+        #clear any clashes/duplicates
+        org_df=pd.read_csv(filepath)
+        for col in range(col1, col2+1):
+            for row in range(row1, row2+1):
+                org_df= org_df.drop(org_df[(org_df['column'] == col)
+                                & (org_df['row'] == row)
+                                & (org_df['value'] == value)
+                                & (org_df['file'] == data_file_name)
+                                & (org_df['sheet'] == sheet_name)].index)
+
+        df=pd.concat([org_df, df]).drop_duplicates().reset_index(drop=True)
+
+    df.to_csv(filepath, index=False, header=True)
 
     project.add_wikifier_file(filepath)
     project.save()
@@ -617,6 +627,45 @@ def set_qnode():
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
     response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    return response, 200
+
+@app.route('/api/remove_qnode', methods=['POST'])
+@json_response
+def remove_qnode():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    sheet_name=calc_params.sheet.name
+    data_file_name=calc_params.sheet.data_file_name
+    qnode_dict = request.get_json()['qnode']
+    if not qnode_dict:
+        raise web_exceptions.InvalidRequestException('No qnode provided')
+
+    item=qnode_dict["id"]
+    value = request.get_json()['value']
+    context = request.get_json().get("context", "")
+    selection = request.get_json()['selection']
+    if not selection:
+        raise web_exceptions.InvalidRequestException('No selection provided')
+
+    top_left, bottom_right=selection
+    col1, row1 = top_left
+    col2, row2 = bottom_right
+
+    filepath=os.path.join(project.directory, "user-input-wikification.csv")
+    if os.path.exists(filepath):
+        df=pd.read_csv(filepath)
+        for col in range(col1, col2+1):
+            for row in range(row1, row2+1):
+                df= df.drop(df[(df['column'] == col)
+                                & (df['row'] == row)
+                                & (df['value'] == value)
+                                & (df['file'] == data_file_name)
+                                & (df['sheet'] == sheet_name)].index)
+        df.to_csv(filepath, index=False, header=True)
+
+    response= dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200

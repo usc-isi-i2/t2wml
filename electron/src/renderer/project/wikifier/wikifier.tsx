@@ -111,6 +111,18 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     } finally {
       wikiStore.wikifier.showSpinner = false;
     }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
   }
 
   cancelCallWikifier() {
@@ -161,12 +173,24 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
         propertiesMessage: message
       });
 
-
     } catch (error) {
       console.log(error);
     } finally {
       wikiStore.wikifier.showSpinner = false;
     }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
+
   }
 
   async handleOpenWikifierFile(event: any) {
@@ -194,6 +218,18 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
+    }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
     }
 
   }
@@ -261,7 +297,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                 style={{ padding: "0rem 0.5rem" }}
                 onClick={() => { document.getElementById("file_wikifier")?.click(); }}
               >
-                Upload
+                Import Wikifier
                 </Button>
             </OverlayTrigger>
 
@@ -272,6 +308,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               size="sm"
               style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
               onClick={() => { this.setState({ showCallWikifier: true }) }}
+              disabled={true} //until wikifier is working again
             >
               Wikify
             </Button>

@@ -21,6 +21,10 @@ export const TYPES = [{
   'children': [{
     'label': 'Unit',
     'value': 'unit',
+  },
+  {
+    'label': 'Property',
+    'value': 'property',
   }],
 }, {
   'label': 'Time',
