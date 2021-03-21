@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition, faChevronDown, faChevronRight, faTable, faStream, faColumns, faFile, faProjectDiagram, faList } from '@fortawesome/free-solid-svg-icons';
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import './node.css';
+import path from "path";
 
 
 export type NodeType = "DataFile" | "SingleSheetDataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
@@ -99,7 +100,8 @@ class FileNode extends Component<NodeProps, NodeState> {
       typeIcon = <FontAwesomeIcon icon={nodeToIconMapping[this.props.type] as IconDefinition} size="xs" />
     }
 
-    const labelText = this.props.bolded ? <b>{this.props.label}</b> : this.props.label
+    const noPathLabelText = path.parse(this.props.label).base
+    const labelText = this.props.bolded ? <b>{noPathLabelText}</b> : noPathLabelText
 
     const logoTooltipHtml = (
       <Tooltip /*style={{ width: "fit-content" }}*/ id="navbar-tooltip">
