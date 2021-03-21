@@ -72,14 +72,3 @@ class FileTypeNotSupportedException(WebException):
 
 class InvalidYAMLFileException(WebException):
     errorTitle = "YAML file is either empty or not valid"
-
-
-class NoSuchDatasetIDException(WebException):
-    code = 404
-    errorTitle = "Datamart Integration Error"
-    def __init__(self, dataset_id):
-        errorDescription =  """Dataset: \"{dataset_id}\" does not exist. To create this dataset, 
-                            please provide dataset name in cell C1 \n
-                            dataset description in cell D1 \n
-                            and url in cell E1\n\n""".format(dataset_id=dataset_id)
-        super().__init__(errorDescription)

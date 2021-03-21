@@ -29,7 +29,6 @@ export interface ProjectDTO {
 }
 
 export interface GlobalSettingsDTO {
-    datamart_integration: boolean;
     datamart_api: string;
 }
 

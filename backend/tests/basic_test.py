@@ -9,9 +9,6 @@ from tests.utils import (client, BaseClass, create_project,
 
 project_folder=None #we need to use a global for some reason... self.project_folder does not work.
 
-datamart_integration_switch=None
-
-
 def get_data(data):
     data = json.loads(data)
     if "error" in data:
@@ -33,22 +30,6 @@ class TestBasicWorkflow(BaseClass):
         global project_folder
         project_folder=create_project(client)
         assert project_folder is not None
-
-    def test_01a_clear_annotation_settings(self, client):
-        #get old settings:
-        url='/api/project/globalsettings'
-        response=client.get(url)
-        data = response.data.decode("utf-8")
-        data = get_data(data)
-        global datamart_integration_switch
-        datamart_integration_switch=data["datamart_integration"]
-
-        #set new settings
-        url='/api/project/globalsettings'
-        response=client.put(url,
-                json=dict(
-                datamartIntegration=False
-            ))
 
     def test_02_get_project(self, client):
         url='/api/project?project_folder={project_folder}'.format(project_folder=project_folder)
@@ -183,16 +164,6 @@ class TestBasicWorkflow(BaseClass):
             json=dict(
                 entity_file="kgtk_item_defs.tsv",
                 updated_entries={"P2006020002":{'data_type': 'WikibaseProperty', 'description': 'Qualifiers used to describe a variable. E.g., FertilizerType, Source, etc.', 'label': 'qualifier'}}
-            ))
-
-
-
-    def test_998_reset_global_settings(self, client):
-        #reset to old settings:
-        url='/api/project/globalsettings'.format(project_folder=project_folder)
-        response=client.put(url,
-                json=dict(
-                datamartIntegration=datamart_integration_switch
             ))
 
     def xtest_999_save(self):
