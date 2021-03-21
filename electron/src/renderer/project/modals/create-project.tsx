@@ -6,7 +6,6 @@ import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bo
 
 import { observer } from "mobx-react";
 import { remote } from 'electron';
-import { pathExists } from 'fs-extra';
 import path from 'path';
 
 
