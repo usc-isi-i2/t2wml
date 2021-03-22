@@ -72,3 +72,7 @@ class FileTypeNotSupportedException(WebException):
 
 class InvalidYAMLFileException(WebException):
     errorTitle = "YAML file is either empty or not valid"
+
+class FileOpenElsewhereError(WebException):
+    code=403
+    errorTitle = "IOError"

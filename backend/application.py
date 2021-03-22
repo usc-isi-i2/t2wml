@@ -51,6 +51,10 @@ def json_response(func):
         try:
             data, return_code = func(*args, **kwargs)
             return data, return_code
+        except IOError as e:
+            e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
+            data = {"error": e.error_dict}
+            return data, e.code
         except WebException as e:
             data = {"error": e.error_dict}
             return data, e.code
@@ -570,6 +574,11 @@ def set_qnode():
     if os.path.exists(filepath):
         #clear any clashes/duplicates
         org_df=pd.read_csv(filepath)
+        if 'file' not in org_df:
+            org_df['file']=''
+        if 'sheet' not in org_df:
+            org_df['sheet']=''
+
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
                 org_df= org_df.drop(org_df[(org_df['column'] == col)
