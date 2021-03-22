@@ -62,6 +62,8 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   async handleOnSubmit(qnode: QNode, applyToBlock: boolean) {
     console.log('WikifyMenu OnSubmit triggered for -> ', qnode);
 
+    let hasError=false;
+
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
@@ -90,8 +92,10 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         })
       ));
     } catch (error) {
-      error.errorDescription += `\nWasn't able to submit the qnode!`;
+      error.errorDescription = `Wasn't able to submit the qnode!\n` + error.errorDescription;
+      console.log(error.errorDescription)
       this.setState({ errorMessage: error });
+      hasError=true;
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -99,6 +103,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     }
 
     //also update results:
+    if (!hasError){
     try {
       wikiStore.output.showSpinner = true;
       await this.requestService.call(this, () => this.requestService.getMappingCalculation())
@@ -108,14 +113,13 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     }
     finally{
       wikiStore.output.showSpinner = false;
-    }
-
-    // Close the wikify menu on submit
-    this.props.onClose();
+      this.props.onClose();
+    }}
   }
 
   async handleOnRemove(qnode: QNode, applyToBlock: boolean) {
     console.log('WikifyMenu OnRemove triggered for -> ', qnode);
+    let hasError=false;
 
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
@@ -145,15 +149,20 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         })
       ));
     } catch (error) {
-      error.errorDescription += `\nWasn't able to submit the qnode!`;
+      error.errorDescription += `Wasn't able to submit the qnode!\n` + error.errorDescription;
+      console.log(error.errorDescription)
       this.setState({ errorMessage: error });
+      hasError=true;
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
 
       // Close the wikify menu on submit
-      this.props.onClose();
+      if (!hasError){
+        this.props.onClose();
+      }
+
     }
   }
 
@@ -191,7 +200,11 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
           <Toast onClose={onClose}>
             {this.renderHeader()}
             <Toast.Body>
+            <div style={{ color: 'red' }}>
+                            {this.state.errorMessage.errorDescription}
+                          </div>
               {this.renderWikifyForms()}
+
             </Toast.Body>
           </Toast>
         </div>
