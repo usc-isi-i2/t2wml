@@ -3,7 +3,7 @@ T2WML Standalone Server App History
 
 Changes in version 2.8.1: 
 -------------------------
-* t2wml-api version 0.2.5
+* t2wml-api version 0.2.6
 * added support for uploading tsv files as data files
 * when creating a project, auto suggest folder name as project name
 * don't create duplicate rows in use-wikification
