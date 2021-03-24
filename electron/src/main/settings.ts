@@ -21,8 +21,17 @@ interface AppSettings {
     dev: DevSettings;
 }
 
-// Settings stored here 
-const file = `${os.homedir()}/.t2wml/gui-settings.json`;
+// Settings stored here
+let home = os.homedir()
+if (process.env.T2WMLHOME){
+    home= process.env.T2WMLHOME;
+}
+
+if (!fs.existsSync(`${home}/.t2wml`)){
+    fs.mkdirSync(`${home}/.t2wml`);
+}
+
+const file = `${home}/.t2wml/gui-settings.json`;
 
 export class Settings implements AppSettings {
     private static _instance?: Settings
@@ -86,7 +95,7 @@ export class Settings implements AppSettings {
         }
     }
 
-    updateSettingsFromWindow(mainWindow: BrowserWindow) {  
+    updateSettingsFromWindow(mainWindow: BrowserWindow) {
         this.window.maximized = mainWindow.isMaximized();
         const bounds = mainWindow.getNormalBounds();
 
