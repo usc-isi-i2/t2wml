@@ -4,7 +4,7 @@ def make_frontend_err_dict(error):
     '''
     return {
         "errorCode": 500,
-        "errorTitle": "Undefined Backend Error",
+        "errorTitle": error.__class__.__name__,
         "errorDescription": str(error)
     }
 
