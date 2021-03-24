@@ -128,7 +128,7 @@ class TableContainer extends Component<{}, TableState> {
 
       //update in files state
       currentFilesService.changeDataFile(file.name);
-      wikiStore.table.mode = 'annotation';
+      this.switchMode('annotation')
 
     } catch (error) {
       error.errorDescription += "\n\nCannot open file!";
