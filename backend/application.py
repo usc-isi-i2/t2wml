@@ -361,7 +361,7 @@ def download_results(filetype):
 def load_to_datamart():
     project = get_project()
     calc_params = get_calc_params(project)
-    download_output, variables = get_kgtk_download_and_variables(calc_params)
+    download_output, variables = get_kgtk_download_and_variables(calc_params, validate_for_datamart=True)
     files = {"edges.tsv": download_output}
     datamart_api_endpoint = global_settings.datamart_api
     dataset_id = project.dataset_id
