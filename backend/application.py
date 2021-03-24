@@ -579,15 +579,8 @@ def set_qnode():
         if 'sheet' not in org_df:
             org_df['sheet']=''
 
-        for col in range(col1, col2+1):
-            for row in range(row1, row2+1):
-                org_df= org_df.drop(org_df[(org_df['column'] == col)
-                                & (org_df['row'] == row)
-                                & (org_df['value'] == value)
-                                & (org_df['file'] == data_file_name)
-                                & (org_df['sheet'] == sheet_name)].index)
+        df=pd.concat([org_df, df]).drop_duplicates(subset=['row', 'column', 'value', 'file', 'sheet'], keep='last').reset_index(drop=True)
 
-        df=pd.concat([org_df, df]).drop_duplicates().reset_index(drop=True)
 
     df.to_csv(filepath, index=False, header=True)
 
