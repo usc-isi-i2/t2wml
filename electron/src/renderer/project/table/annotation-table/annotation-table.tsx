@@ -603,6 +603,9 @@ class AnnotationTable extends Component<{}, TableState> {
       // Don't allow moving around when users are typing
       if ( (event.target as any).nodeName === 'INPUT' ) { return; }
 
+      // Don't allow moving around when selecting from the dropdown menu
+      if ( (event.target as any).nodeName === 'SELECT' ) { return; }
+
       event.preventDefault();
 
       this.setState({ selectedAnnotationBlock: undefined });
