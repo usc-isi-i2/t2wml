@@ -67,6 +67,22 @@ export const TYPES = [{
   }, {
     'label': 'Format',
     'value': 'format',
+    'children': [{
+      'label': 'Year (e.g. 2021)',
+      'value': '"%Y"',
+    }, {
+      'label': 'Year (e.g. 21)',
+      'value': '"%y"',
+    }, {
+      'label': 'Month (e.g. January)',
+      'value': '"%B"',
+    }, {
+      'label': 'Month (e.g. 01)',
+      'value': '"%m"',
+    }, {
+      'label': 'Weekday (e.g. Monday)',
+      'value': '"%A"',
+    }],
   }, {
     'label': 'Property',
     'value': 'property',
