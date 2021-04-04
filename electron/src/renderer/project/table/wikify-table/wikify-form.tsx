@@ -64,6 +64,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     if ( cellType ) {
       this.setState({
         selectedType: cellType.type,
+        searchProperties: cellType.type === 'property',
       });
     }
   }
