@@ -32,6 +32,28 @@ export const TYPES = [{
   'children': [{
     'label': 'Precision',
     'value': 'precision',
+    'children': [{
+      'label': 'Year',
+      'value': 'year',
+    }, {
+      'label': 'Month',
+      'value': 'month',
+    }, {
+      'label': 'Week',
+      'value': 'week',
+    }, {
+      'label': 'Day',
+      'value': 'day',
+    }, {
+      'label': 'Hour',
+      'value': 'hour',
+    }, {
+      'label': 'Minute',
+      'value': 'minute',
+    }, {
+      'label': 'Second',
+      'value': 'second',
+    }],
   }, {
     'label': 'Calendar',
     'value': 'calendar',
