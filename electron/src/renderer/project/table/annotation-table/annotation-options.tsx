@@ -35,6 +35,13 @@ export const TYPES = [{
   }, {
     'label': 'Calendar',
     'value': 'calendar',
+    'children': [{
+      'label': 'Gregorian',
+      'value': 'gregorian',
+    }, {
+      'label': 'Julian',
+      'value': 'julian',
+    }],
   }, {
     'label': 'Format',
     'value': 'format',
