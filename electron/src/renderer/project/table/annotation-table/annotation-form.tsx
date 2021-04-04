@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AnnotationBlock } from '../../../common/dtos';
+import { AnnotationBlock, AnnotationOption } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -144,8 +144,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Col sm="12" md="12">
             <Form.Label className="text-muted">Type</Form.Label>
             <Form.Control size="sm" as="select">
-              {type.children.map((option, i) => (
-                <option key={i}
+              {type.children.map((option: AnnotationOption) => (
+                <option key={option.value}
                   value={option.value}
                   selected={option.value === defaultValue}>
                   {option.label}
