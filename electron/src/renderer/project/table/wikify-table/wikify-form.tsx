@@ -25,6 +25,7 @@ interface WikifyFormState {
   instanceOfSearch?: string;
   searchProperties: boolean;
   applyToBlock: boolean;
+  selectedType: string;
   selected?: QNode;
   qnodes: QNode[];
 }
@@ -43,6 +44,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       instanceOfSearch: undefined,
       searchProperties: false,
       applyToBlock: false,
+      selectedType: '',
       selected: undefined,
       qnodes: [],
     };
@@ -57,6 +59,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const qnode = wikiStore.layers.qnode.find(selectedCell);
     if ( qnode ) {
       this.setState({selected: qnode});
+    }
+    const cellType = wikiStore.layers.type.find(selectedCell);
+    if ( cellType ) {
+      this.setState({
+        selectedType: cellType.type,
+      });
     }
   }
 
