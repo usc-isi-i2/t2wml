@@ -58,26 +58,38 @@ class App extends Component<{}, AppState> {
 
   }
 
+  checkIsProjectDir(commandArgs: any) {
+    // sometimes the project folder is in the index 2 and sometimes is the last in the args.
+    const dirArgs = [commandArgs[commandArgs.length - 1], commandArgs[2]]
+    for (let index = 0; index < dirArgs.length; index++) {
+      const arg = dirArgs[index];
+      const projectDir = path.resolve(arg);
+      if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
+        const projectFile = path.join(projectDir, "project.t2wml");
+        if (fs.existsSync(projectFile)) {
+          return projectDir;
+        }
+      }
+    }
+    return undefined;
+  }
+
   checkCommandLineArgs() {
 
     const commandArgs = remote.getGlobal('sharedObj').prop1;
     console.log("command args", commandArgs);
 
-    const lastArg = commandArgs[commandArgs.length - 1];
-    const projectDir = path.resolve(lastArg);
-    if (fs.existsSync(projectDir) && fs.lstatSync(projectDir).isDirectory()) {
+    const projectDir = this.checkIsProjectDir(commandArgs)
+    if (projectDir) { //existing project
       console.log("Launched with project directory:", projectDir)
-      const projectFile = path.join(projectDir, "project.t2wml");
-      if (fs.existsSync(projectFile)) { //existing project
-        this.onOpenProject(projectDir)
-        return;
-      }
-      else {
-        this.onNewProject()
-        // this.onNewProject(projectDir)
-        return;
-      }
+      this.onOpenProject(projectDir)
+      return;
     }
+    // else {
+    //   this.onNewProject()
+    //   return;
+    // }
+
     console.log("no project directory argument detected")
     wikiStore.changeWindowDisplayMode();
   }
