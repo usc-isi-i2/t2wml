@@ -757,8 +757,15 @@ class AnnotationTable extends Component<{}, TableState> {
 
   onSelectionChange(selection: CellSelection) {
     if ( selection ) {
+      const {selectedAnnotationBlock} = this.state;
       this.selection = selection;
       this.updateSelections();
+      this.setState({showAnnotationMenu: false}, () => {
+        this.setState({
+          showAnnotationMenu: true,
+          selectedAnnotationBlock: {...selectedAnnotationBlock, selection},
+        })
+      })
     }
   }
 
