@@ -140,6 +140,7 @@ export interface AnnotationBlock{
     precision?: string;
     calendar?: string;
     format?: string;
+    id?: string;
     //time_zone?: string;
 }
 
