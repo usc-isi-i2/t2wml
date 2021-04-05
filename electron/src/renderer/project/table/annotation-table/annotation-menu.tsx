@@ -147,7 +147,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
   render() {
     const { onClose } = this.props;
-    const position = {x: window.innerWidth / 2, y: 100};
+    const position = {x: window.innerWidth * 0.80 - 550, y: 100};
     return (
       <Draggable handle=".handle" defaultPosition={position}>
         <div className="annotation-menu">
