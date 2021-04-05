@@ -448,6 +448,7 @@ class ProjectList extends Component<{}, ProjectListState> {
                     New project
                   </Button>
                   <Button
+                    id="btn-open-project"
                     variant="primary"
                     size="sm"
                     style={{ fontWeight: 600 }}
