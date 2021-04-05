@@ -761,9 +761,10 @@ class AnnotationTable extends Component<{}, TableState> {
       this.selection = selection;
       this.updateSelections();
       this.setState({showAnnotationMenu: false}, () => {
+        selectedAnnotationBlock!.selection = selection;
         this.setState({
           showAnnotationMenu: true,
-          selectedAnnotationBlock: {...selectedAnnotationBlock, selection},
+          selectedAnnotationBlock,
         })
       })
     }
