@@ -128,6 +128,7 @@ class Sidebar extends Component<{}, SidebarState> {
                 </div>
 
                 <Card className="w-100 shadow-sm"
+                        id="card-file-tree"
                         style={{ height: "calc(100% - 40px)", marginTop: "0.25rem" }}>
                         {/* card header */}
                         <Card.Header style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.TREE }}>
@@ -138,7 +139,8 @@ class Sidebar extends Component<{}, SidebarState> {
                         </Card.Header>
 
                         {/* card body */}
-                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)"}}>
+                        <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)"}}
+                            id="card-file-tree-body">
                             <SheetSelector
                                 sheetNames={filesTypes}
                                 currSheetName={this.state.currFiles}

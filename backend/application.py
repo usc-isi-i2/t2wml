@@ -15,8 +15,6 @@ from utils import (file_upload_validator, save_dataframe,
                    get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
-from datamart_upload import upload_to_datamart
-from t2wml_annotation_integration import AnnotationIntegration, create_datafile
 from global_settings import global_settings
 import path_utils
 
@@ -24,33 +22,6 @@ debug_mode = False
 
 set_web_settings()
 
-
-def run_annotation(project, calc_params):
-    is_csv = Path(calc_params.data_path).suffix == ".csv"
-    sheet = calc_params.sheet_name
-    ai = AnnotationIntegration(is_csv, calc_params)
-    if ai.is_annotated_spreadsheet(project.directory):
-        yaml_path = ai.automate_integration(
-            project, calc_params.data_path, sheet)
-        return yaml_path
-
-    else:  # not annotation file, check if annotation is available
-        annotation_found, new_df = ai.is_annotation_available(
-            project.directory)
-        if annotation_found and new_df is not None:
-            create_datafile(project, new_df, calc_params.data_path,
-                            calc_params.sheet_name)
-            calc_params = get_calc_params(project)
-            sheet = calc_params.sheet_name
-            ai = AnnotationIntegration(is_csv, calc_params,
-                                       df=new_df)
-
-            # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
-            # TODO the users. There has to be a better way to handle it. For Future implementation
-            yaml_path = ai.automate_integration(
-                project, calc_params.data_path, sheet)
-            return yaml_path
-    return None
 
 
 def get_project_folder():
@@ -80,6 +51,10 @@ def json_response(func):
         try:
             data, return_code = func(*args, **kwargs)
             return data, return_code
+        except IOError as e:
+            e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
+            data = {"error": e.error_dict}
+            return data, e.code
         except WebException as e:
             data = {"error": e.error_dict}
             return data, e.code
@@ -205,14 +180,12 @@ def create_project():
 def upload_data_file():
     """
     This function uploads the data file.
-    If datamart_integration is True, it will attempt to run that on the file
     :return:
     """
     project = get_project()
 
-    file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
-    data_file = project.add_data_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
+    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
+    data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
     response = dict(project=get_project_dict(project))
     sheet_name = project.data_files[data_file]["val_arr"][0]
@@ -225,12 +198,8 @@ def upload_data_file():
 
     save_annotations(project, [], os.path.join(
         annotations_path), data_file, sheet_name)
-    calc_params = CalcParams(project, data_file, sheet_name, None)
 
-    if global_settings.datamart_integration:
-        yaml_name = run_annotation(project, calc_params)
-        calc_params.yaml_path = Path(calc_params.project.directory) / yaml_name
-        response["yamlContent"] = get_yaml_content(calc_params)
+    calc_params = CalcParams(project, data_file, sheet_name, None)
     response["table"] = get_table(calc_params)
     get_layers(response, calc_params)
 
@@ -392,7 +361,7 @@ def download_results(filetype):
 def load_to_datamart():
     project = get_project()
     calc_params = get_calc_params(project)
-    download_output, variables = get_kgtk_download_and_variables(calc_params)
+    download_output, variables = get_kgtk_download_and_variables(calc_params, validate_for_datamart=True)
     files = {"edges.tsv": download_output}
     datamart_api_endpoint = global_settings.datamart_api
     dataset_id = project.dataset_id
@@ -446,9 +415,6 @@ def upload_annotation():
 def update_global_settings():
     if request.method == 'PUT':
         new_global_settings = dict()
-        datamart = request.get_json().get("datamartIntegration", None)
-        if datamart is not None:
-            new_global_settings["datamart_integration"] = datamart
         datamart_api = request.get_json().get("datamartApi", None)
         if datamart_api is not None:
             new_global_settings["datamart_api"] = datamart_api
@@ -608,15 +574,13 @@ def set_qnode():
     if os.path.exists(filepath):
         #clear any clashes/duplicates
         org_df=pd.read_csv(filepath)
-        for col in range(col1, col2+1):
-            for row in range(row1, row2+1):
-                org_df= org_df.drop(org_df[(org_df['column'] == col)
-                                & (org_df['row'] == row)
-                                & (org_df['value'] == value)
-                                & (org_df['file'] == data_file_name)
-                                & (org_df['sheet'] == sheet_name)].index)
+        if 'file' not in org_df:
+            org_df['file']=''
+        if 'sheet' not in org_df:
+            org_df['sheet']=''
 
-        df=pd.concat([org_df, df]).drop_duplicates().reset_index(drop=True)
+        df=pd.concat([org_df, df]).drop_duplicates(subset=['row', 'column', 'value', 'file', 'sheet'], keep='last').reset_index(drop=True)
+
 
     df.to_csv(filepath, index=False, header=True)
 

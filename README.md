@@ -136,7 +136,7 @@ To develop the backend, you need to launch the `Backend` from the debug menu. Yo
 
 1. Open the GUI
 2. In **Table Viewer**,
-	1. click **Upload** to open a table file (.csv/.xls/.xlsx)
+	1. click **Upload** to open a table file (.csv/.tsv/.xls/.xlsx)
 3. In **Wikifier**,
 	1. define and wikify the regions you need [[demo](#wikify_region)], and/or
 	2. click **Upload** to open a wikifier file (.csv)

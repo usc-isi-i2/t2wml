@@ -21,12 +21,17 @@ interface AppSettings {
     dev: DevSettings;
 }
 
-
-let file = `${os.homedir()}/.t2wml/gui-settings.json`;
 // Settings stored here
-if (process.env.T2WMLHOME) {
-    file = process.env.T2WMLHOME;
+let home = os.homedir()
+if (process.env.T2WMLHOME){
+    home= process.env.T2WMLHOME;
 }
+
+if (!fs.existsSync(`${home}/.t2wml`)){
+    fs.mkdirSync(`${home}/.t2wml`);
+}
+
+const file = `${home}/.t2wml/gui-settings.json`;
 
 export class Settings implements AppSettings {
     private static _instance?: Settings

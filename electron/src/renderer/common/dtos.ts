@@ -29,7 +29,6 @@ export interface ProjectDTO {
 }
 
 export interface GlobalSettingsDTO {
-    datamart_integration: boolean;
     datamart_api: string;
 }
 
@@ -210,4 +209,10 @@ export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, Respo
 
 export interface ResponseWithQNodesDTO {
     qnodes: QNode[];
+}
+
+export interface AnnotationOption {
+  label: string;
+  value: string;
+  children?: AnnotationOption[];
 }

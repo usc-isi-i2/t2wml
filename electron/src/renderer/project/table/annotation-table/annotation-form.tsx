@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AnnotationBlock } from '../../../common/dtos';
+import { AnnotationBlock, AnnotationOption } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -133,6 +133,28 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     let defaultValue = '';
     if ( selectedBlock && (selectedBlock as any)[type.value] ) {
       defaultValue = (selectedBlock as any)[type.value];
+    }
+
+    if ( type.children ) {
+      return (
+        <Form.Group as={Row} key={type.value}
+          onChange={
+            (event: KeyboardEvent) => this.handleOnChange(event, type.value)
+          }>
+          <Col sm="12" md="12">
+            <Form.Label className="text-muted">Type</Form.Label>
+            <Form.Control size="sm" as="select">
+              {type.children.map((option: AnnotationOption) => (
+                <option key={option.value}
+                  value={option.value}
+                  selected={option.value === defaultValue}>
+                  {option.label}
+                </option>
+              ))}
+            </Form.Control>
+          </Col>
+        </Form.Group>
+      )
     }
 
     return (

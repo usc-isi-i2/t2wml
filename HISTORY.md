@@ -1,6 +1,29 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.8.1: 
+-------------------------
+* t2wml-api version 0.2.6
+* added support for uploading tsv files as data files
+* when creating a project, auto suggest folder name as project name
+* don't create duplicate rows in use-wikification
+* file tree:
+   - for single-sheet data files, don't show sheets
+   - display file name only (no relative path)
+* remove support for everything related to the old style of annotation (referring to adding rows to a spreadsheet and annotating it internally)
+* when adding a data file, mode defaults to annotation
+* changes to how output preview displays nodes, adding urlification for value field and general handling of label and parentheses
+   - this includes a bug fix where units were being displayed as junk
+* when attempting to upload to datamart, fail and alert user if variable is not of type quantity
+* add environment variable T2WMLHOME. when set, the .t2wml folder will be created there rather than in the os home. 
+   - fix a bug where program would error out if .t2wml folder was deleted mid run
+* errors:
+   - when a request to backend fails because it attempts to modify a file that is open elsewhere (eg excel), return a coherent error to user
+   - add error handling to the wikify menu
+   - get rid of error messages when adding wikifier/entity files before adding a data file
+   - change error titles to something more descriptive than "unknown backend error"
+
+
 Changes in version 2.8.0: 
 -------------------------
 * t2wml-api version 0.2.4

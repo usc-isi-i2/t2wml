@@ -18,6 +18,25 @@ interface ShowOutputProperties {
 @observer
 class ShowOutput extends Component<ShowOutputProperties, {}> {
 
+  qNodeGetter(id: string): any {
+    const node = wikiStore.layers.statement.getQNode(id)
+    if (node.url != "") {
+      return (
+        <a
+          href={node.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ "color": "hsl(200, 100%, 30%)" }}
+        >{node.label}</a>
+      );
+    }
+    if (node.label != node.id) {
+      return <span>{node.label} ({node.id})</span> //if we decide to get rid of this, tweak subjectParentheses below
+    }
+    return <span>{node.label}</span>
+
+  }
+
   render() {
     const outputDiv = [];
 
@@ -30,57 +49,25 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
     const statement = this.props.statement
     if (statement) {
+      const subjectQNode = wikiStore.layers.statement.getQNode(statement.subject)
+      let subjectParentheses= ""
+      if (subjectQNode.url!= "" || subjectQNode.label==subjectQNode.id){
+        subjectParentheses= "(" + subjectQNode.id + ")";
 
-      const subjectQNode = wikiStore.layers.statement.getQNode(statement.subject);
-
-      let subjectIDDiv;
-      if (subjectQNode.url != "") {
-        subjectIDDiv = (
-          <a
-            href={subjectQNode.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ "color": "hsl(200, 100%, 30%)" }}
-          >{subjectQNode.id}</a>
-        );
       }
-      else{
-        subjectIDDiv = <span>{statement.subject}</span>;
-      }
+      const subjectIDDiv = this.qNodeGetter(statement.subject);
 
-      const propertyQNode = wikiStore.layers.statement.getQNode(statement.property);
-
-      let propertyDiv = <span>{propertyQNode.label}</span>
-      if (propertyQNode.url != "") {
-        propertyDiv = (
-          <a
-            href={propertyQNode.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ "color": "hsl(200, 100%, 30%)" }}
-          >{propertyQNode.label}</a>
-        );
-      }
-
+      const propertyDiv = this.qNodeGetter(statement.property);
+      const valuePartDiv = this.qNodeGetter(statement.value)
       let valueDiv;
+      let unitDiv;
       if (statement.unit) {
-        const unitQNode = wikiStore.layers.statement.getQNode(statement.unit);
-        if (unitQNode.url!= ""){
-        valueDiv = <span>{statement.value}
-          <a
-            href={unitQNode.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ "color": "hsl(200, 100%, 30%)" }}
-            key="unit"
-          > {unitQNode.label}</a></span>;
-        }else{
-          valueDiv = <span>{statement.value} {unitQNode.label}</span>;
-        }
+        unitDiv = this.qNodeGetter(statement.unit);
+        valueDiv = <span>{valuePartDiv} ({unitDiv})</span>
+      } else {
+        valueDiv = valuePartDiv;
       }
-      else {
-        valueDiv = <span>{statement.value}</span>;
-      }
+
       // qualifiers
       const qualifiersDiv = [];
       const qualifiers = statement.qualifier;
@@ -88,63 +75,19 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
         for (let i = 0, len = qualifiers.length; i < len; i++) {
           const qualifier = qualifiers[i];
 
-          // qualifier property
-          const qualifierPropertyQNode = wikiStore.layers.statement.getQNode(qualifier["property"]);
-          let qualifierPropertyDiv = <span>{qualifierPropertyQNode.label}</span>
-          if (qualifierPropertyQNode.url != "") {
-            qualifierPropertyDiv =
-              <a
-                href={qualifierPropertyQNode.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierProperty"
-              >{qualifierPropertyQNode.label}</a>
-              ;
-          }
+          const qualifierPropertyDiv = this.qNodeGetter(qualifier["property"]);
+          const qualifierValueDiv = this.qNodeGetter(qualifier["value"]);
 
-          // qualifier value
-          let qualifierValueDiv;
-          const qualifierValueQNode = wikiStore.layers.statement.getQNode(qualifier["value"]);
 
-          if (qualifierValueQNode.url != "") {
-
-            qualifierValueDiv =
-              <a
-                href={qualifierValueQNode.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierValue"
-              >{qualifierValueQNode.label}</a>
-              ;
-          } else {
-            qualifierValueDiv = qualifierValueQNode.label;
-          }
 
           // qualifier unit
 
           let qualifierUnitDiv;
-          if (qualifier.unit){
-          const qualifierUnitQNode = wikiStore.layers.statement.getQNode(qualifier["unit"]);
-
-          if (qualifierUnitQNode.url != "") {
-
-            qualifierUnitDiv =
-              "("+ <a
-                href={qualifierUnitQNode.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierValue"
-              >{qualifierUnitQNode.label}</a> +")"
-              ;
+          if (qualifier.unit) {
+            qualifierUnitDiv = this.qNodeGetter(qualifier["unit"]);
           } else {
-            qualifierUnitDiv = "("+ qualifierUnitQNode.label +")";
+            qualifierUnitDiv = ""
           }
-        }else{
-          qualifierUnitDiv=""
-        }
 
           // append to qualifiersDiv
           qualifiersDiv.push(
@@ -157,11 +100,11 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       outputDiv.push(
         <Card.Title key="subject">
           <span style={{ fontSize: "24px", fontWeight: "bolder" }}>
-            {subjectQNode.label}
+            {subjectIDDiv}
           </span>
           &nbsp;
           <span style={{ fontSize: "20px" }}>
-            ({subjectIDDiv})
+            {subjectParentheses}
           </span>
         </Card.Title>
       );

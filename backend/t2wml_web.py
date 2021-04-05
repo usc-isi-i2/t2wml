@@ -91,10 +91,10 @@ def download(calc_params, filetype):
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
 
-def get_kgtk_download_and_variables(calc_params):
+def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
     kg = get_kg(calc_params)
     download_output = kg.get_output("tsv", calc_params.project)
-    variables=get_all_variables(calc_params.project, kg.statements)
+    variables=get_all_variables(calc_params.project, kg.statements, validate_for_datamart=validate_for_datamart)
     return download_output, variables
 
 
