@@ -180,6 +180,29 @@ describe('open a project', function () {
   //   return assert.strictEqual(count, 1);
   // });
 
+  it('switch between data files', async () => {
+    const appSelect = await appProject.client.react$('App');
+    const projectComponent = await appSelect.react$('Project');
+    await appProject.client.pause(5000);
+    const sidebarComponent = await projectComponent.react$('Sidebar');
+    const fileTreeComponentListElement = await sidebarComponent.react$$('FileTree');
+    const fileTreeComponent = fileTreeComponentListElement[1];
+
+    const fileNodeList = await fileTreeComponent.react$$('FileNode');
+    // console.log(await fileNodeList[0].getHTML());
+    await fileNodeList[0].click()
+    await appProject.client.pause(2000);
+    const fileNodeSubList0 = await fileNodeList[0].react$$('FileNode');
+    
+    const canonicalSpan = await fileNodeSubList0[0].$('span');
+    assert.strictEqual(await canonicalSpan.getText(), "canonical");
+    await canonicalSpan.click();
+
+    const yearRowSpan = await fileNodeSubList0[2].$('span');
+    assert.strictEqual(await yearRowSpan.getText(), "year-row");
+    await yearRowSpan.click();
+  });
+
   it('switch between sheets', async () => {
     const appSelect = await appProject.client.react$('App');
     const projectComponent = await appSelect.react$('Project');
