@@ -19,6 +19,7 @@ const appProject = new Application({
 
 
 describe('Start GUI', function () {
+  // return;
   this.timeout(10000);
 
   beforeEach( () => {
@@ -162,7 +163,8 @@ describe('Start GUI', function () {
 
 });
 
-describe('open a project', function () {
+describe('switch between files', function () {
+  // return;
   this.timeout(100000000); //this.timeout(10000);
 
   beforeEach( () => {
@@ -175,10 +177,10 @@ describe('open a project', function () {
     }
   });
 
-  // it('open window', async () => {
-  //   const count = await appProject.client.getWindowCount(); //.should.eventually.equal(1);
-  //   return assert.strictEqual(count, 1);
-  // });
+  it('open window', async () => {
+    const count = await appProject.client.getWindowCount(); //.should.eventually.equal(1);
+    return assert.strictEqual(count, 1);
+  });
 
   it('switch between data files', async () => {
     const appSelect = await appProject.client.react$('App');
@@ -220,7 +222,37 @@ describe('open a project', function () {
     const titleText = await tableContainerComponet.$('#table-container-title').then((t) => t.getText());
     const expectedText = "homicide_report_total_and_sex.xlsx[Read-Only]";
     return assert.strictEqual(titleText, expectedText);
-    // await appProject.client.pause(300000);
+  });
+
+  it('switch between mapping files', async () => {
+    const appSelect = await appProject.client.react$('App');
+    const projectComponent = await appSelect.react$('Project');
+    await appProject.client.pause(5000);
+    const sidebarComponent = await projectComponent.react$('Sidebar');
+    const fileTreeComponentListElement = await sidebarComponent.react$$('FileTree');
+    const fileTreeComponent = fileTreeComponentListElement[1];
+
+    const fileNodeList = await fileTreeComponent.react$$('FileNode');
+    // console.log(await fileNodeList[0].getHTML());
+    const fileNodeHomicide = fileNodeList[2];
+    await fileNodeHomicide.click()
+    await appProject.client.pause(2000);
+    const fileNodeHomicideChildren = await fileNodeHomicide.react$$('FileNode');
+    
+    const table1aNode = fileNodeHomicideChildren[0]
+    // const table1aNodeChildren = await table1aNode.react$$('FileNode');
+    // assert.strictEqual(table1aNodeChildren.length, 2)
+
+    const table1aNodeSpanList = await table1aNode.$$('span'); 
+    assert.strictEqual(await table1aNodeSpanList[0].getText(), "table-1a");
+    await table1aNodeSpanList[1].click(); // annotations...
+    assert.strictEqual(table1aNodeSpanList.length, 3);
+    await appProject.client.pause(1000);
+    await table1aNodeSpanList[2].click(); // table-1a.yaml
+    await appProject.client.pause(1000);
+    assert.strictEqual(await table1aNodeSpanList[2].getText(), "table-1a.yaml");
+
+    return;
   });
 
 });
