@@ -255,7 +255,7 @@ class TableContainer extends Component<{}, TableState> {
   renderTitle() {
     const { filename } = this.state;
     return (
-      <div style={{ width: "calc(100% - 350px)", cursor: "default" }}
+      <div id="table-container-title" style={{ width: "calc(100% - 350px)", cursor: "default" }}
         className="text-white font-weight-bold d-inline-block text-truncate">
         { filename ? (
           <span>
