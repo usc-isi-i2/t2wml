@@ -163,9 +163,9 @@ describe('Start GUI', function () {
 
 });
 
-describe('switch between files', function () {
-  // return;
-  this.timeout(100000000); //this.timeout(10000);
+describe('switch between files from the sidebar:', function () {
+  //return;
+  this.timeout(10000);
 
   beforeEach( () => {
     return appProject.start();
@@ -257,3 +257,34 @@ describe('switch between files', function () {
 
 });
 
+describe('switch between files from sheet switcher below spreadsheet:', function () {
+  this.timeout(10000);
+
+  beforeEach( () => {
+    return appProject.start();
+  })
+
+  afterEach(() => {
+    if (appProject && appProject.isRunning()) {
+      return appProject.stop();
+    }
+  });
+
+  it('switch between sheets', async () => {
+    const appSelect = await appProject.client.react$('App');
+    const projectComponent = await appSelect.react$('Project');
+    await appProject.client.pause(5000);
+
+    const tableContainerComponet = await projectComponent.react$('TableContainer');
+    const sheetSelectorComponent = await tableContainerComponet.react$('SheetSelector');
+    const buttonSheetSelctorList = await sheetSelectorComponent.$$('button');
+    // console.log(buttonSheetSelctorList.length);
+    assert.strictEqual(buttonSheetSelctorList.length, 22);
+    for (let index = 0; index < 3; index++) {
+      await buttonSheetSelctorList[index].click();
+      // console.log(await buttonSheetSelctorList[index].getText())
+    }
+    return;
+  });
+
+});
