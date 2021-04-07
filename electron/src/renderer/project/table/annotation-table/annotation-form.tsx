@@ -136,7 +136,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     }
 
     if ( type.children ) {
-      debugger
       return (
         <Form.Group as={Row} key={type.value}
           onChange={
