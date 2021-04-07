@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
+import RequestService from '../../../common/service';
 import wikiStore from '@/renderer/data/store';
 import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
@@ -26,6 +27,7 @@ class AnnotationTable extends Component<{}, TableState> {
   private prevDirection?: Direction;
   private selecting = false;
   private selection?: CellSelection;
+  private requestService: RequestService;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -44,6 +46,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
     this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
+    this.requestService = new RequestService();
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -296,11 +299,25 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  async getAnnotationSuggestionsForSelection(block: { 'x1':number, 'x2':number, 'y1':number, 'y2':number}){
+    //data should be a json dictionary, with fields:
+    // {
+    //   "block": The block,
+    //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
+    // }
+    console.log(this.selection)
+    console.log( wikiStore.annotations.blocks);
+    //for ( const block of wikiStore.annotations.blocks ) {
+    //  const { role, type, selection } = block;
+    const suggestion = await this.requestService.getAnnotationSuggestions({"block": block, "annotations": wikiStore.annotations.blocks});
+    console.log(suggestion);
+  }
+
   updateSelections(selectedBlock?: AnnotationBlock) {
     if ( !selectedBlock ) {
       selectedBlock = this.state.selectedAnnotationBlock;
     }
-
+   
     if (!this.selection) {
       console.warn("updateSelections should probably not be called without an existing selection");
       // If this warning shows up, you need to figure out whether it is actually OK for this function
@@ -308,6 +325,8 @@ class AnnotationTable extends Component<{}, TableState> {
 
       return;
     }
+    
+    this.getAnnotationSuggestionsForSelection(this.selection)
 
     const table: any = this.tableRef;
     if ( !table ) { return; }
