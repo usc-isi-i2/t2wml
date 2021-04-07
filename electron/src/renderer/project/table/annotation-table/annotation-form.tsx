@@ -185,7 +185,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
     if (!selectedAnnotationType){
       //default to string:
-      selectedAnnotationType="string";
+      if (annotationSuggestions.type.length){
+        selectedAnnotationType = annotationSuggestions.type[0];
+      }
+      else{
+        selectedAnnotationType = "string"
+      }
     }
     let selectedOption = null;
     if (selectedAnnotationRole) {
@@ -240,16 +245,28 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderOptionsDropdown() {
     const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
     
-    const selectedAnnotationRole = selected ? selected.role : '';
-    const rolesFiltered = ROLES.filter(role =>  annotationSuggestions.role.includes(role.value));
+    let selectedAnnotationRole = selected ? selected.role : {'label': '','value': ''};
+    let rolesList: {'label': string, 'value': string, 'children'?: any}[];
+    if (!selected){
+      rolesList = [];
+      annotationSuggestions.role.forEach(value => {
+        const role = ROLES.find(role => role.value === value);
+        if (role){
+          rolesList.push(role);
+        }
+      });
+      selectedAnnotationRole = rolesList[0];
+    } else {
+      rolesList = ROLES;
+    }
+    
     return (
       <Form.Group as={Row}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'role')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Role</Form.Label>
           <Form.Control size="sm" as="select">
-            <option disabled selected>--</option>
-            {rolesFiltered.map((role, i) => ( // TODO
+            {rolesList.map((role, i) => (
               <option key={i}
                 value={role.value}
                 selected={role.value === selectedAnnotationRole}>
