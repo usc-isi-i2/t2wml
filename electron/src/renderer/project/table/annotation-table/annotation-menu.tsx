@@ -95,7 +95,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     console.log('AnnotationMenu OnSubmit triggered for -> ', selection, values);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
-      return block.id !== selectedAnnotationBlock!.id;
+      return block.id !== selectedAnnotationBlock?.id;
     });
 
     const annotation: any = {
