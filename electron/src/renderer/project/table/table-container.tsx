@@ -275,7 +275,7 @@ class TableContainer extends Component<{}, TableState> {
     const { mode } = this.state;
     if (this.state.filename) {
       return (
-        <ButtonGroup aria-label="modes" className="mode-toggle">
+        <ButtonGroup aria-label="modes" className="mode-toggle" id="table-mode-btn-group">
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'annotation',

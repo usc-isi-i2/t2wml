@@ -51,17 +51,10 @@ describe('Start GUI', function () {
     return assert.strictEqual(title, 'T2WML - Projects');
   });
 
-  it('has a button with the text "New project"', async () => {
+  it('Has a button with the text "New project"', async () => {
     const expectedText = 'New project';
-    const appSelect = await app.client.react$('App');//.react$('ProjectList');
-    const projlistSelect = await appSelect.react$('ProjectList');
-    const btnText = await projlistSelect.$('#btn-new-project').then((btn) => btn.getText());
-    return assert.strictEqual(btnText, expectedText);
-  });
-
-  it('button Text = New project', async () => {
-    const expectedText = 'New project';
-    const appSelect = await app.client.react$('App');//.react$('ProjectList');
+    const appSelect = await app.client.react$('App');
+    await appSelect.waitForExist({timeout: 5000});
     const projlistSelect = await appSelect.react$('ProjectList');
     const btnText = await projlistSelect.$('#btn-new-project').then((btn) => btn.getText());
     return assert.strictEqual(btnText, expectedText);
@@ -163,12 +156,13 @@ describe('Start GUI', function () {
 
 });
 
-describe('switch between files from the sidebar:', function () {
-  //return;
-  this.timeout(10000);
+describe('Open with project:', function () {
+  // return;
+  this.timeout(20000);
 
-  beforeEach( () => {
-    return appProject.start();
+  beforeEach( async () =>  {
+    await appProject.start();
+    return appProject.isRunning();
   })
 
   afterEach(() => {
@@ -178,15 +172,18 @@ describe('switch between files from the sidebar:', function () {
   });
 
   it('open window', async () => {
-    const count = await appProject.client.getWindowCount(); //.should.eventually.equal(1);
+    const count = await appProject.client.getWindowCount();
     return assert.strictEqual(count, 1);
   });
 
-  it('switch between data files', async () => {
+  it('switch between data files from the sidebar', async () => {
     const appSelect = await appProject.client.react$('App');
+    await appSelect.waitForExist({timeout: 5000});
     const projectComponent = await appSelect.react$('Project');
-    await appProject.client.pause(5000);
+    await projectComponent.waitForExist();
+    assert.strictEqual(projectComponent.error, undefined);
     const sidebarComponent = await projectComponent.react$('Sidebar');
+    await sidebarComponent.waitForExist({ timeout: 5000 });
     const fileTreeComponentListElement = await sidebarComponent.react$$('FileTree');
     const fileTreeComponent = fileTreeComponentListElement[1];
 
@@ -205,11 +202,14 @@ describe('switch between files from the sidebar:', function () {
     await yearRowSpan.click();
   });
 
-  it('switch between sheets', async () => {
+  it('switch between sheets from the sidebar', async () => {
     const appSelect = await appProject.client.react$('App');
+    await appSelect.waitForExist({timeout: 5000});
     const projectComponent = await appSelect.react$('Project');
-    await appProject.client.pause(5000);
+    await projectComponent.waitForExist();
+    assert.strictEqual(projectComponent.error, undefined);
     const sidebarComponent = await projectComponent.react$('Sidebar');
+    await sidebarComponent.waitForExist({ timeout: 5000 });
     const fileTreeComponentListElement = await sidebarComponent.react$$('FileTree');
     const fileTreeComponent = fileTreeComponentListElement[1];
 
@@ -226,9 +226,13 @@ describe('switch between files from the sidebar:', function () {
 
   it('switch between mapping files', async () => {
     const appSelect = await appProject.client.react$('App');
+    await appSelect.waitForExist({timeout: 5000});
     const projectComponent = await appSelect.react$('Project');
-    await appProject.client.pause(5000);
+    await projectComponent.waitForExist();
+    assert.strictEqual(projectComponent.error, undefined);
     const sidebarComponent = await projectComponent.react$('Sidebar');
+    await sidebarComponent.waitForExist({ timeout: 5000 });
+
     const fileTreeComponentListElement = await sidebarComponent.react$$('FileTree');
     const fileTreeComponent = fileTreeComponentListElement[1];
 
@@ -236,10 +240,11 @@ describe('switch between files from the sidebar:', function () {
     // console.log(await fileNodeList[0].getHTML());
     const fileNodeHomicide = fileNodeList[2];
     await fileNodeHomicide.click()
-    await appProject.client.pause(2000);
+    // await appProject.client.pause(2000);
     const fileNodeHomicideChildren = await fileNodeHomicide.react$$('FileNode');
     
     const table1aNode = fileNodeHomicideChildren[0]
+    await table1aNode.waitForExist({ timeout: 5000 });
     // const table1aNodeChildren = await table1aNode.react$$('FileNode');
     // assert.strictEqual(table1aNodeChildren.length, 2)
 
@@ -250,33 +255,19 @@ describe('switch between files from the sidebar:', function () {
     await appProject.client.pause(1000);
     await table1aNodeSpanList[2].click(); // table-1a.yaml
     await appProject.client.pause(1000);
-    assert.strictEqual(await table1aNodeSpanList[2].getText(), "table-1a.yaml");
-
-    return;
+    return assert.strictEqual(await table1aNodeSpanList[2].getText(), "table-1a.yaml");
   });
 
-});
-
-describe('switch between files from sheet switcher below spreadsheet:', function () {
-  this.timeout(10000);
-
-  beforeEach( () => {
-    return appProject.start();
-  })
-
-  afterEach(() => {
-    if (appProject && appProject.isRunning()) {
-      return appProject.stop();
-    }
-  });
-
-  it('switch between sheets', async () => {
+  it('switch between files from sheet switcher below spreadsheet', async () => {
     const appSelect = await appProject.client.react$('App');
+    await appSelect.waitForExist({timeout: 5000});
     const projectComponent = await appSelect.react$('Project');
-    await appProject.client.pause(5000);
+    await projectComponent.waitForExist();
+    assert.strictEqual(projectComponent.error, undefined);
 
     const tableContainerComponet = await projectComponent.react$('TableContainer');
     const sheetSelectorComponent = await tableContainerComponet.react$('SheetSelector');
+    await sheetSelectorComponent.waitForExist({timeout: 5000});
     const buttonSheetSelctorList = await sheetSelectorComponent.$$('button');
     // console.log(buttonSheetSelctorList.length);
     assert.strictEqual(buttonSheetSelctorList.length, 22);
@@ -287,4 +278,45 @@ describe('switch between files from sheet switcher below spreadsheet:', function
     return;
   });
 
+  it('switch between modes (annotation, wikify, output).', async () => {
+    const appSelect = await appProject.client.react$('App');
+    await appSelect.waitForExist({timeout: 5000});
+    const projectComponent = await appSelect.react$('Project');
+    await projectComponent.waitForExist();
+    assert.strictEqual(projectComponent.error, undefined);
+
+    const tableContainerComponet = await projectComponent.react$('TableContainer');
+    const modeBtnGroup = await tableContainerComponet.$('#table-mode-btn-group');
+    // console.log(modeBtnGroup);
+    const buttonModeList = await modeBtnGroup.$$('button');
+    assert.strictEqual(await buttonModeList.length, 3);
+
+    const tableMode = ["AnnotationTable", "WikifyTable", "OutputTable"]
+    const btnText = ['Annotate', "Wikify", "Output"];
+
+    for (let index = 0; index < buttonModeList.length; index++) {
+      await buttonModeList[index].click();
+      await appProject.client.pause(2000);
+      const tableComponent = await tableContainerComponet.react$(tableMode[index]);
+      assert.strictEqual(tableComponent.error, undefined);
+      assert.strictEqual(await buttonModeList[index].getText(), btnText[index]);
+    }
+    return;
+  });
+
+});
+
+describe('test try:', function () {
+  //return;
+  this.timeout(20000);
+
+  beforeEach( () => {
+    return appProject.start();
+  })
+
+  afterEach(() => {
+    if (appProject && appProject.isRunning()) {
+      return appProject.stop();
+    }
+  });
 });
