@@ -155,9 +155,10 @@ class RequestService {
     this.fillMapping(response);
   }
 
-  public async getAnnotationSuggestions(data: any) {
+  public async getAnnotationSuggestions(data: any): Promise<any>  {
     const response = await backendPost(`/annotation/suggest?${this.getDataFileParams()}`, data) as any; //TODO
     console.log(response)
+    return response
   }
 
   public async createProject(folder:string, data?: any) {
