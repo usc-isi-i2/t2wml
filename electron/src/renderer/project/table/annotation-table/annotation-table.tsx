@@ -14,6 +14,7 @@ interface TableState {
   tableData?: TableData;
   showAnnotationMenu: boolean;
   selectedAnnotationBlock?: AnnotationBlock;
+  annotationSuggestionsSelectedBlock: { role: any[], type: any[]};
 }
 
 
@@ -42,6 +43,7 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData: undefined,
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
+      annotationSuggestionsSelectedBlock: { role:[], type: []}
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
@@ -307,10 +309,9 @@ class AnnotationTable extends Component<{}, TableState> {
     // }
     console.log(this.selection)
     console.log( wikiStore.annotations.blocks);
-    //for ( const block of wikiStore.annotations.blocks ) {
-    //  const { role, type, selection } = block;
     const suggestion = await this.requestService.getAnnotationSuggestions({"block": block, "annotations": wikiStore.annotations.blocks});
     console.log(suggestion);
+    this.setState({annotationSuggestionsSelectedBlock: suggestion})
   }
 
   updateSelections(selectedBlock?: AnnotationBlock) {
@@ -800,15 +801,19 @@ class AnnotationTable extends Component<{}, TableState> {
     const {
       showAnnotationMenu,
       selectedAnnotationBlock,
+      annotationSuggestionsSelectedBlock
     } = this.state;
     if (showAnnotationMenu) {
-      return (
+      return ( 
         <AnnotationMenu
+        key={annotationSuggestionsSelectedBlock.toString()}
           selection={this.selection}
           onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}
           onClose={() => this.closeAnnotationMenu()}
-          onDelete={this.deleteAnnotationBlock.bind(this)} />
+          onDelete={this.deleteAnnotationBlock.bind(this)} 
+          annotationSuggestions={annotationSuggestionsSelectedBlock}
+          />
       )
     }
   }

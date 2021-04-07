@@ -15,6 +15,7 @@ interface AnnotationMenuProperties {
   selection?: CellSelection;
   onSelectionChange: (selection: CellSelection) => void;
   selectedAnnotationBlock?: AnnotationBlock;
+  annotationSuggestions: { role: any[], type: any[]};
   onDelete: any | null;
   onClose: any | null;
 }
@@ -133,12 +134,14 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       selection,
       onSelectionChange,
       selectedAnnotationBlock,
+      annotationSuggestions,
     } = this.props;
     return (
-      <AnnotationForm
+      <AnnotationForm 
         selection={selection}
         onSelectionChange={onSelectionChange}
         selectedAnnotationBlock={selectedAnnotationBlock}
+        annotationSuggestions={annotationSuggestions}
         onChange={this.handleOnChange.bind(this)}
         onDelete={this.handleOnDelete.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
