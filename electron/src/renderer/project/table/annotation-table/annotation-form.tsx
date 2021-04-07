@@ -136,13 +136,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     }
 
     if ( type.children ) {
+      debugger
       return (
         <Form.Group as={Row} key={type.value}
           onChange={
             (event: KeyboardEvent) => this.handleOnChange(event, type.value)
           }>
           <Col sm="12" md="12">
-            <Form.Label className="text-muted">Type</Form.Label>
+            <Form.Label className="text-muted">{type.label}</Form.Label>
             <Form.Control size="sm" as="select">
               {type.children.map((option: AnnotationOption) => (
                 <option key={option.value}
