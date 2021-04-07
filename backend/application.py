@@ -410,24 +410,24 @@ def upload_annotation():
     return response, code
 
 
-@app.route('/api/annotation/suggest', methods=['GET'])
+@app.route('/api/annotation/suggest', methods=['PUT'])
 @json_response
 def suggest_annotation_block():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["block"]
     annotation = request.get_json()["annotations"]
-    response={
+
+    fallback_response={
         "role": ["dependentVar", "mainSubject", "property", "qualifier", "unit"], #drop metadata
         "type": ["string", "quantity", "time", "wikibaseitem"] #drop monolingual string
     }
 
     try:
-        for block in annotation:
-            if block["role"] in ["dependentVar", "mainSubject"]:
-                response["role"].remove(block["role"])
+        from t2wml.input_processing.annotation_parsing import annotation_suggester
+        response = annotation_suggester(calc_params.sheet, block, annotation)
     except:
-        pass #right now we're just checking response pipeline, if this doesn't work forget it
+        response=fallback_response
     return response, 200
 
 

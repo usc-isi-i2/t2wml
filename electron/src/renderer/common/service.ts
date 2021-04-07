@@ -156,7 +156,7 @@ class RequestService {
   }
 
   public async getAnnotationSuggestions(data: any): Promise<any>  {
-    const response = await backendPost(`/annotation/suggest?${this.getDataFileParams()}`, data) as any; //TODO
+    const response = await backendPut(`/annotation/suggest?${this.getDataFileParams()}`, data) as any; //TODO
     console.log(response)
     return response
   }
