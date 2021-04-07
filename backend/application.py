@@ -8,6 +8,7 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
+from t2wml.input_processing.annotation_parsing import annotation_suggester
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, add_entities_from_project,
                        add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
@@ -418,16 +419,16 @@ def suggest_annotation_block():
     block = request.get_json()["block"]
     annotation = request.get_json()["annotations"]
 
-    fallback_response={
+    response={ #fallback response
         "role": ["dependentVar", "mainSubject", "property", "qualifier", "unit"], #drop metadata
         "type": ["string", "quantity", "time", "wikibaseitem"] #drop monolingual string
     }
 
     try:
-        from t2wml.input_processing.annotation_parsing import annotation_suggester
         response = annotation_suggester(calc_params.sheet, block, annotation)
-    except:
-        response=fallback_response
+    except Exception as e:
+        print(e)
+        pass
     return response, 200
 
 
