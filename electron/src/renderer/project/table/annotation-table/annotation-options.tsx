@@ -59,10 +59,10 @@ export const TYPES = [{
     'value': 'calendar',
     'children': [{
       'label': 'Gregorian',
-      'value': 'gregorian',
+      'value': 'Q12138',
     }, {
-      'label': 'Julian',
-      'value': 'julian',
+      'label': 'Ethiopian',
+      'value': 'Q215271',
     }],
   }, {
     'label': 'Format',
