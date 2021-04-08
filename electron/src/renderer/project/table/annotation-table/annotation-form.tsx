@@ -192,7 +192,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const selectedAnnotationRole = selectedBlock && !this.changed ? selectedBlock.role : role;
     let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
     if (!selectedAnnotationType) {
-      //default to string:
+      // default to string:
       if (annotationSuggestions.type.length) {
         selectedAnnotationType = annotationSuggestions.type[0];
       }
@@ -270,9 +270,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderOptionsDropdown() {
     const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
 
-    let selectedAnnotationRole = selected ? selected.role : { 'label': '', 'value': '' };
-    let rolesList: { 'label': string, 'value': string, 'children'?: any }[];
-    if (!selected) {
+    let selectedAnnotationRole = selected ? selected.role : ''; //{ 'label': '', 'value': '' } | 
+    let rolesList: { 'label': string, 'value': string, 'children'?: any }[] = ROLES;
+
+    if (!selected && annotationSuggestions.role && annotationSuggestions.role.length) {
       rolesList = [];
       annotationSuggestions.role.forEach(value => {
         const role = ROLES.find(role => role.value === value);
@@ -280,9 +281,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           rolesList.push(role);
         }
       });
-      selectedAnnotationRole = rolesList[0];
-    } else {
-      rolesList = ROLES;
+      selectedAnnotationRole = rolesList[0].value;
     }
 
     return (

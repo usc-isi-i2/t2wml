@@ -247,6 +247,7 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+      this.setState({annotationSuggestionsSelectedBlock: { role: [], type: []}});
     }
   }
 
@@ -307,10 +308,8 @@ class AnnotationTable extends Component<{}, TableState> {
     //   "block": The block,
     //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
     // }
-    console.log(this.selection)
-    console.log( wikiStore.annotations.blocks);
+    this.setState({annotationSuggestionsSelectedBlock: { role: [], type: []}});
     const suggestion = await this.requestService.getAnnotationSuggestions({"block": block, "annotations": wikiStore.annotations.blocks});
-    console.log(suggestion);
     this.setState({annotationSuggestionsSelectedBlock: suggestion})
   }
 
@@ -542,6 +541,9 @@ class AnnotationTable extends Component<{}, TableState> {
         this.selection = { x1, x2, y1, y2 };
       });
     }
+    if( this.selection &&this.selection.x1===this.selection.x2 && this.selection.y1===this.selection.y2){
+      this.getAnnotationSuggestionsForSelection(this.selection)
+}
 
     // Initialize the previous element with the one selected
     this.prevElement = element;
