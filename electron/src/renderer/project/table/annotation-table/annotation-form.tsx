@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AnnotationBlock} from '../../../common/dtos';
+import { AnnotationBlock, ResponseWithSuggestion} from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -12,7 +12,7 @@ interface AnnotationFormProperties {
   selection?: CellSelection;
   onSelectionChange: (selection: CellSelection) => void;
   selectedAnnotationBlock?: AnnotationBlock;
-  annotationSuggestions: { role: any[], type: any[] };
+  annotationSuggestions: ResponseWithSuggestion;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onDelete: any | null;
   onSubmit: any | null;
@@ -193,8 +193,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
     if (!selectedAnnotationType) {
       //default to string:
-      if (annotationSuggestions.type.length) {
-        selectedAnnotationType = annotationSuggestions.type[0];
+      if (annotationSuggestions.types.length) {
+        selectedAnnotationType = annotationSuggestions.types[0];
       }
       else {
         selectedAnnotationType = "string"
@@ -208,7 +208,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     } else {
       selectedOption = ROLES.find(option => option.value === role);
       if (!selectedOption) {
-        selectedOption = ROLES.find(option => option.value === annotationSuggestions.role[0]);
+        selectedOption = ROLES.find(option => option.value === annotationSuggestions.roles[0]);
       }
     }
     if (!selectedOption || !('children' in selectedOption)) { return null; }
@@ -218,7 +218,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Type</Form.Label>
           <Form.Control size="sm" as="select">
-            {selectedOption?.children?.filter(typeOption => annotationSuggestions.type.includes(typeOption.value)).map((type, i) => (
+            {selectedOption?.children?.filter(typeOption => annotationSuggestions.types.includes(typeOption.value)).map((type, i) => (
               <option key={i}
                 value={type.value}
                 selected={type.value === selectedAnnotationType}>
@@ -274,7 +274,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     let rolesList: { 'label': string, 'value': string, 'children'?: any }[];
     if (!selected) {
       rolesList = [];
-      annotationSuggestions.role.forEach(value => {
+      annotationSuggestions.roles.forEach(value => {
         const role = ROLES.find(role => role.value === value);
         if (role) {
           rolesList.push(role);

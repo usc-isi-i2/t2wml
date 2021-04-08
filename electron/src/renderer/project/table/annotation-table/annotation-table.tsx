@@ -4,7 +4,7 @@ import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '../../../common/service';
 import wikiStore from '@/renderer/data/store';
-import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../../common/dtos';
+import { AnnotationBlock, ResponseWithSuggestion, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
 import * as utils from '../table-utils';
@@ -14,7 +14,7 @@ interface TableState {
   tableData?: TableData;
   showAnnotationMenu: boolean;
   selectedAnnotationBlock?: AnnotationBlock;
-  annotationSuggestionsSelectedBlock: { role: any[], type: any[]};
+  annotationSuggestionsSelectedBlock: ResponseWithSuggestion;
 }
 
 
@@ -43,7 +43,7 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData: undefined,
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
-      annotationSuggestionsSelectedBlock: { role:[], type: []}
+      annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {}}
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
@@ -318,7 +318,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( !selectedBlock ) {
       selectedBlock = this.state.selectedAnnotationBlock;
     }
-   
+
     if (!this.selection) {
       console.warn("updateSelections should probably not be called without an existing selection");
       // If this warning shows up, you need to figure out whether it is actually OK for this function
@@ -326,7 +326,7 @@ class AnnotationTable extends Component<{}, TableState> {
 
       return;
     }
-    
+
     this.getAnnotationSuggestionsForSelection(this.selection)
 
     const table: any = this.tableRef;
@@ -804,15 +804,15 @@ class AnnotationTable extends Component<{}, TableState> {
       annotationSuggestionsSelectedBlock
     } = this.state;
     if (showAnnotationMenu) {
-      return ( 
+      return (
         <AnnotationMenu
-        key={annotationSuggestionsSelectedBlock.toString()}
+        key={annotationSuggestionsSelectedBlock.roles.toString()}
           selection={this.selection}
           onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}
           onClose={() => this.closeAnnotationMenu()}
-          onDelete={this.deleteAnnotationBlock.bind(this)} 
-          annotationSuggestions={annotationSuggestionsSelectedBlock}
+          onDelete={this.deleteAnnotationBlock.bind(this)}
+        annotationSuggestions={annotationSuggestionsSelectedBlock}
           />
       )
     }
