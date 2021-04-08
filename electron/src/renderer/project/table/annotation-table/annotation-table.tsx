@@ -308,7 +308,6 @@ class AnnotationTable extends Component<{}, TableState> {
     //   "block": The block,
     //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
     // }
-    this.setState({annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {}}});
     const suggestion = await this.requestService.getAnnotationSuggestions({"block": block, "annotations": wikiStore.annotations.blocks});
     this.setState({annotationSuggestionsSelectedBlock: suggestion})
   }
@@ -326,6 +325,7 @@ class AnnotationTable extends Component<{}, TableState> {
       return;
     }
 
+    console.log("not a single cell?")
     this.getAnnotationSuggestionsForSelection(this.selection)
 
     const table: any = this.tableRef;
@@ -539,11 +539,9 @@ class AnnotationTable extends Component<{}, TableState> {
         // Activate the element on click
         this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
         this.selection = { x1, x2, y1, y2 };
+        this.getAnnotationSuggestionsForSelection(this.selection)
       });
     }
-    if( this.selection &&this.selection.x1===this.selection.x2 && this.selection.y1===this.selection.y2){
-      this.getAnnotationSuggestionsForSelection(this.selection)
-}
 
     // Initialize the previous element with the one selected
     this.prevElement = element;
