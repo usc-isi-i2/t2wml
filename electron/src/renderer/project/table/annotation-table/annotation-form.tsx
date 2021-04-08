@@ -45,12 +45,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   constructor(props: AnnotationFormProperties) {
     super(props);
 
-    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
     this.state = {
       fields: {
         ...selectedBlock,
-        role: selectedBlock?.role,
-        type: selectedBlock?.type,
+        role: selectedBlock?.role || annotationSuggestions.roles[0],
+        type: selectedBlock?.type || annotationSuggestions.types[0],
         selectedArea: undefined,
       },
       showExtraFields: false
@@ -270,19 +270,22 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderOptionsDropdown() {
     const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
 
-    let selectedAnnotationRole = selected ? selected.role : ''; //{ 'label': '', 'value': '' } | 
-    let rolesList: { 'label': string, 'value': string, 'children'?: any }[] = ROLES;
 
-    if (!selected && annotationSuggestions.roles && annotationSuggestions.roles.length) {
-      rolesList = [];
+    let rolesList= ROLES;
+    if (!selected) {
+      const suggestedRolesList = [] as {label:string, value:string, children:any}[];
       annotationSuggestions.roles.forEach(value => {
-        const role = ROLES.find(role => role.value === value);
+        const role = ROLES.find(role => role.value === value) as {label:string, value:string, children:any};
         if (role) {
-          rolesList.push(role);
+          suggestedRolesList.push(role);
         }
       });
-      selectedAnnotationRole = rolesList[0].value;
+      if (suggestedRolesList.length){
+        rolesList=suggestedRolesList
+      }
     }
+
+    let selectedAnnotationRole = selected ? selected.role :  rolesList[0];
 
     return (
       <Form.Group as={Row}
