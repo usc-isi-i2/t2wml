@@ -211,3 +211,9 @@ export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, Respo
 export interface ResponseWithQNodesDTO {
     qnodes: QNode[];
 }
+
+export interface ResponseWithSuggestion {
+    roles: string[];
+    types: string[];
+    children: any;
+}
