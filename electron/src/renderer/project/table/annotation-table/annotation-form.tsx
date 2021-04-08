@@ -285,7 +285,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       }
     }
 
-    let selectedAnnotationRole = selected ? selected.role :  rolesList[0];
+    const selectedAnnotationRole = selected ? selected.role :  rolesList[0];
 
     return (
       <Form.Group as={Row}
