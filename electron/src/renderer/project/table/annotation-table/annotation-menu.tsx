@@ -8,13 +8,14 @@ import { Toast } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
-import { AnnotationBlock, QNode } from '../../../common/dtos';
+import { AnnotationBlock, QNode, ResponseWithSuggestion } from '../../../common/dtos';
 import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
   onSelectionChange: (selection: CellSelection) => void;
   selectedAnnotationBlock?: AnnotationBlock;
+  annotationSuggestions:  ResponseWithSuggestion;
   onDelete: any | null;
   onClose: any | null;
 }
@@ -31,7 +32,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
   constructor(props: AnnotationMenuProperties) {
     super(props);
-
     this.requestService = new RequestService();
 
     this.state = {
@@ -94,7 +94,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     console.log('AnnotationMenu OnSubmit triggered for -> ', selection, values);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
-      return block.id !== selectedAnnotationBlock!.id;
+      return block.id !== selectedAnnotationBlock?.id;
     });
 
     const annotation: any = {
@@ -133,12 +133,14 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       selection,
       onSelectionChange,
       selectedAnnotationBlock,
+      annotationSuggestions,
     } = this.props;
     return (
       <AnnotationForm
         selection={selection}
         onSelectionChange={onSelectionChange}
         selectedAnnotationBlock={selectedAnnotationBlock}
+        annotationSuggestions={annotationSuggestions}
         onChange={this.handleOnChange.bind(this)}
         onDelete={this.handleOnDelete.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />

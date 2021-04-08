@@ -5,7 +5,7 @@ import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -153,6 +153,11 @@ class RequestService {
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
     wikiStore.project.projectDTO = response.project;
     this.fillMapping(response);
+  }
+
+  public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion>  {
+    const response = await backendPut(`/annotation/suggest?${this.getDataFileParams()}`, data) as ResponseWithSuggestion; //TODO
+    return response
   }
 
   public async createProject(folder:string, data?: any) {

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { AnnotationBlock, AnnotationOption } from '../../../common/dtos';
+import { AnnotationBlock, ResponseWithSuggestion} from '../../../common/dtos';
 import * as utils from '../table-utils';
-import { ROLES } from './annotation-options';
+import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
 import SearchResults from './search-results';
@@ -12,13 +12,13 @@ interface AnnotationFormProperties {
   selection?: CellSelection;
   onSelectionChange: (selection: CellSelection) => void;
   selectedAnnotationBlock?: AnnotationBlock;
+  annotationSuggestions: ResponseWithSuggestion;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
   onDelete: any | null;
   onSubmit: any | null;
 }
 
-
-interface AnnotationFormState {
+interface AnnotationFields {
   role?: string;
   type?: string;
   unit?: string;
@@ -31,6 +31,12 @@ interface AnnotationFormState {
 }
 
 
+interface AnnotationFormState {
+  fields: AnnotationFields;
+  showExtraFields: boolean;
+}
+
+
 class AnnotationForm extends React.Component<AnnotationFormProperties, AnnotationFormState> {
 
   private changed: boolean;
@@ -39,36 +45,39 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   constructor(props: AnnotationFormProperties) {
     super(props);
 
-    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
     this.state = {
-      ...selectedBlock,
-      role: selectedBlock?.role,
-      type: selectedBlock?.type,
-      selectedArea: undefined,
+      fields: {
+        ...selectedBlock,
+        role: selectedBlock?.role || annotationSuggestions.roles[0],
+        type: selectedBlock?.type || annotationSuggestions.types[0],
+        selectedArea: undefined,
+      },
+      showExtraFields: false
     };
     this.changed = false;
   }
 
   handleOnChange(event: KeyboardEvent, key: string) {
     const { onSubmit } = this.props;
-    if (event.code === 'Enter' ) {
+    if (event.code === 'Enter') {
       event.preventDefault();
-      onSubmit(this.state);
+      onSubmit(this.state.fields);
     }
 
     const { onChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    const updatedState: AnnotationFormState = {};
-    updatedState[key as keyof AnnotationFormState] = value;
+    const updatedFields = { ...this.state.fields }
+    updatedFields[key as keyof AnnotationFields] = value;
     this.changed = true;
 
     // Reset the role if the type has changed
-    if ( key === 'role' ) {
-      updatedState['type'] = undefined;
+    if (key === 'role') {
+      updatedFields['type'] = undefined;
     }
 
-    this.setState({ ...updatedState }, () => {
-      if ( this.timeoutId ) {
+    this.setState({ fields: updatedFields }, () => {
+      if (this.timeoutId) {
         window.clearTimeout(this.timeoutId);
       }
       this.timeoutId = window.setTimeout(() => {
@@ -80,12 +89,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   handleOnSelectionChange(event: React.ChangeEvent) {
     const { onSelectionChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
-    this.setState({
-      selectedArea: value,
-    });
+    const fields = { ...this.state.fields }
+    fields.selectedArea = value;
+    this.setState({ fields });
     const regex = /^.?([a-z]+)([0-9]+):([a-z]+)([0-9]+).?$/gmi;
     const groups = regex.exec(value);
-    if ( groups && groups[1] && groups[2] && groups[3] && groups[4] ) {
+    if (groups && groups[1] && groups[2] && groups[3] && groups[4]) {
       const selection: CellSelection = {
         x1: utils.letterToColumn(groups[1]),
         x2: utils.letterToColumn(groups[3]),
@@ -99,7 +108,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   handleOnSubmit(event: any) {
     event.preventDefault();
     const { onSubmit } = this.props;
-    onSubmit(this.state);
+    onSubmit(this.state.fields);
   }
 
   handleOnDelete(event: React.MouseEvent) {
@@ -108,7 +117,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderSelectionAreas() {
-    const { selectedArea } = this.state;
+    const { selectedArea } = this.state.fields;
     const { selection } = this.props;
     if (!selection) { return null; }
     const defaultValue = utils.humanReadableSelection(selection);
@@ -131,11 +140,11 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const key: string = type.label.toLowerCase();
 
     let defaultValue = '';
-    if ( selectedBlock && (selectedBlock as any)[type.value] ) {
+    if (selectedBlock && (selectedBlock as any)[type.value]) {
       defaultValue = (selectedBlock as any)[type.value];
     }
 
-    if ( type.children ) {
+    if (type.children) {
       return (
         <Form.Group as={Row} key={type.value}
           onChange={
@@ -162,10 +171,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">{type.label}</Form.Label>
-          {this.state[key as keyof AnnotationFormState] ? (
+          {this.state.fields[key as keyof AnnotationFields] ? (
             <Form.Control
               type="text" size="sm"
-              value={this.state[key as keyof AnnotationFormState]}
+              value={this.state.fields[key as keyof AnnotationFields]}
               defaultValue={defaultValue} />
           ) : (
             <Form.Control
@@ -178,13 +187,18 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderNestedOptions() {
-    const { role, type } = this.state;
-    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const { role, type } = this.state.fields;
+    const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
     const selectedAnnotationRole = selectedBlock && !this.changed ? selectedBlock.role : role;
     let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
-    if (!selectedAnnotationType){
-      //default to string:
-      selectedAnnotationType="string";
+    if (!selectedAnnotationType) {
+      // default to string:
+      if (annotationSuggestions.types.length) {
+        selectedAnnotationType = annotationSuggestions.types[0];
+      }
+      else {
+        selectedAnnotationType = "string"
+      }
     }
     let selectedOption = null;
     if (selectedAnnotationRole) {
@@ -193,6 +207,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       ));
     } else {
       selectedOption = ROLES.find(option => option.value === role);
+      if (!selectedOption) {
+        selectedOption = ROLES.find(option => option.value === annotationSuggestions.roles[0]);
+      }
     }
     if (!selectedOption || !('children' in selectedOption)) { return null; }
     const optionsDropdown = (
@@ -201,7 +218,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Type</Form.Label>
           <Form.Control size="sm" as="select">
-            {selectedOption?.children?.map((type, i) => (
+            {selectedOption?.children?.filter(typeOption => annotationSuggestions.types.includes(typeOption.value)).map((type, i) => (
               <option key={i}
                 value={type.value}
                 selected={type.value === selectedAnnotationType}>
@@ -225,11 +242,25 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
-      return (
+      if (this.state.showExtraFields && selectedType.children)
+        return (
+          <React.Fragment>
+            {optionsDropdown}
+            <Form.Label style={{ color: 'grey' }}
+              onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label>
+            {selectedType?.children?.map(type => {
+              return this.renderNestedOptionsChildren(type);
+            })}
+          </React.Fragment>
+        )
+      else return ( //show property field regardless of extra field toggle
         <React.Fragment>
           {optionsDropdown}
-          {selectedType?.children?.map(type => {
-            return this.renderNestedOptionsChildren(type);
+          {selectedType.children.length > 1 ? <Form.Label style={{ color: 'grey' }}
+            onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label> : null}
+          {this.renderNestedOptionsChildren({
+            'label': 'Property',
+            'value': 'property',
           })}
         </React.Fragment>
       )
@@ -237,8 +268,24 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderOptionsDropdown() {
-    const { selectedAnnotationBlock: selected } = this.props;
-    const selectedAnnotationRole = selected ? selected.role : '';
+    const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
+
+
+    let rolesList= ROLES;
+    if (!selected) {
+      const suggestedRolesList = [] as {label:string, value:string, children:any}[];
+      annotationSuggestions.roles.forEach(value => {
+        const role = ROLES.find(role => role.value === value) as {label:string, value:string, children:any};
+        if (role) {
+          suggestedRolesList.push(role);
+        }
+      });
+      if (suggestedRolesList.length){
+        rolesList=suggestedRolesList
+      }
+    }
+
+    const selectedAnnotationRole = selected ? selected.role :  rolesList[0];
 
     return (
       <Form.Group as={Row}
@@ -246,8 +293,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Role</Form.Label>
           <Form.Control size="sm" as="select">
-            <option disabled selected>--</option>
-            {ROLES.map((role, i) => (
+            {rolesList.map((role, i) => (
               <option key={i}
                 value={role.value}
                 selected={role.value === selectedAnnotationRole}>
@@ -261,9 +307,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   handleOnSelect(key: string, value: string) {
-    const updatedState: AnnotationFormState = {};
-    updatedState[key as keyof AnnotationFormState] = value;
-    this.setState({ ...updatedState });
+    const fields = { ...this.state.fields };
+    fields[key as keyof AnnotationFields] = value;
+    this.setState({ fields });
   }
 
   renderSearchResults() {
