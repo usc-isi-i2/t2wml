@@ -1,6 +1,20 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.9.0 (beta): 
+-------------------------
+* t2wml-api version 0.2.7
+* added suggestions during annotation process. the user receives, already selected, the backend's best guess
+for what the annotation should be. if correct, user can simply click 'submit' without having to select from the 
+various dropdowns.
+* a variety of frontend tweaks:
+   - arrow keys nav don't steal focus
+   - add calendar options
+   - add date format options
+   - add precision options
+   - various bug fixes
+   - added a toggle for viewing/hiding additional fields (eg unit, date, precision)
+
 Changes in version 2.8.1: 
 -------------------------
 * t2wml-api version 0.2.6
