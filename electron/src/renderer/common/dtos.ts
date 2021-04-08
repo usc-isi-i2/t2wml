@@ -212,8 +212,8 @@ export interface ResponseWithQNodesDTO {
     qnodes: QNode[];
 }
 
-export interface AnnotationOption {
-  label: string;
-  value: string;
-  children?: AnnotationOption[];
+export interface ResponseWithSuggestion {
+    roles: string[];
+    types: string[];
+    children: any;
 }
