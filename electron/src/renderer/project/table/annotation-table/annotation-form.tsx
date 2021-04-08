@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { AnnotationBlock, AnnotationOption } from '../../../common/dtos';
+import { AnnotationBlock} from '../../../common/dtos';
 import * as utils from '../table-utils';
-import { ROLES } from './annotation-options';
+import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
 import SearchResults from './search-results';

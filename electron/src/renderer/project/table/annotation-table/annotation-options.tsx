@@ -1,3 +1,9 @@
+export interface AnnotationOption {
+  label: string;
+  value: string;
+  children?: AnnotationOption[];
+}
+
 export const TYPES = [{
   'label': 'String',
   'value': 'string',
