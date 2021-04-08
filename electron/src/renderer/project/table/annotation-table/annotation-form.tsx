@@ -193,7 +193,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
     if (!selectedAnnotationType) {
       //default to string:
-      selectedAnnotationType = "string";
+      if (annotationSuggestions.type.length) {
+        selectedAnnotationType = annotationSuggestions.type[0];
+      }
+      else {
+        selectedAnnotationType = "string"
+      }
     }
     let selectedOption = null;
     if (selectedAnnotationRole) {
@@ -202,6 +207,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       ));
     } else {
       selectedOption = ROLES.find(option => option.value === role);
+      if (!selectedOption) {
+        selectedOption = ROLES.find(option => option.value === annotationSuggestions.role[0]);
+      }
     }
     if (!selectedOption || !('children' in selectedOption)) { return null; }
     const optionsDropdown = (
@@ -239,7 +247,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <React.Fragment>
             {optionsDropdown}
             <Form.Label style={{ color: 'grey' }}
-            onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label>
+              onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label>
             {selectedType?.children?.map(type => {
               return this.renderNestedOptionsChildren(type);
             })}
@@ -248,8 +256,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       else return ( //show property field regardless of extra field toggle
         <React.Fragment>
           {optionsDropdown}
-          {selectedType.children.length>1? <Form.Label style={{ color: 'grey'}}
-            onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label>: null}
+          {selectedType.children.length > 1 ? <Form.Label style={{ color: 'grey' }}
+            onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label> : null}
           {this.renderNestedOptionsChildren({
             'label': 'Property',
             'value': 'property',
@@ -262,16 +270,28 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderOptionsDropdown() {
     const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
 
-    const selectedAnnotationRole = selected ? selected.role : '';
-    const rolesFiltered = ROLES.filter(role => annotationSuggestions.role.includes(role.value));
+    let selectedAnnotationRole = selected ? selected.role : { 'label': '', 'value': '' };
+    let rolesList: { 'label': string, 'value': string, 'children'?: any }[];
+    if (!selected) {
+      rolesList = [];
+      annotationSuggestions.role.forEach(value => {
+        const role = ROLES.find(role => role.value === value);
+        if (role) {
+          rolesList.push(role);
+        }
+      });
+      selectedAnnotationRole = rolesList[0];
+    } else {
+      rolesList = ROLES;
+    }
+
     return (
       <Form.Group as={Row}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'role')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Role</Form.Label>
           <Form.Control size="sm" as="select">
-            <option disabled selected>--</option>
-            {rolesFiltered.map((role, i) => ( // TODO
+            {rolesList.map((role, i) => (
               <option key={i}
                 value={role.value}
                 selected={role.value === selectedAnnotationRole}>
