@@ -7,6 +7,7 @@ import { Card } from 'react-bootstrap';
 import { observer } from "mobx-react";
 import { StatementEntry } from '@/renderer/common/dtos';
 import wikiStore from '@/renderer/data/store';
+import dayjs from 'dayjs';
 
 interface ShowOutputProperties {
   errors: string;
@@ -14,9 +15,64 @@ interface ShowOutputProperties {
 }
 
 
+function ordinal_suffix_of(i: number):string {
+  var j = i % 10,
+      k = i % 100;
+  if (j == 1 && k != 11) {
+      return i + "st";
+  }
+  if (j == 2 && k != 12) {
+      return i + "nd";
+  }
+  if (j == 3 && k != 13) {
+      return i + "rd";
+  }
+  return i + "th";
+}
+
 
 @observer
 class ShowOutput extends Component<ShowOutputProperties, {}> {
+
+  dateParser(precision:number, date:string): string{
+    const dayFormatter = dayjs(date)
+    switch(precision){
+      case 0:
+        return date;
+      case 1:
+        return date;
+      case 2:
+        return date;
+      case 3:
+        return date;
+      case 4:
+        return date;
+      case 5:
+        return date;
+      case 6:
+        return date;
+      case 7:
+        const millenium =Math.floor(dayFormatter.year() / 1000) + 1;
+        return ordinal_suffix_of(millenium)+ " millenium";
+      case 8:
+        const century =Math.floor(dayFormatter.year() / 100) + 1;
+        return ordinal_suffix_of(century)+ " century";
+      case 9:
+        return dayFormatter.format("YYYY");
+      case 10:
+        return dayFormatter.format("MMMM YYYY");
+      case 11:
+        return dayFormatter.format("MMMM D, YYYY");
+      case 12:
+        return dayFormatter.format("YYYY-MM-DD HH");
+      case 13:
+        return dayFormatter.format("YYYY-MM-DD HH:mm");
+      case 14:
+        return dayFormatter.format("YYYY-MM-DD HH:mm:ss");
+      default:
+        return date;
+    }
+  }
 
   qNodeGetter(id: string): any {
     const node = wikiStore.layers.statement.getQNode(id)
@@ -56,9 +112,15 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
       }
       const subjectIDDiv = this.qNodeGetter(statement.subject);
-
       const propertyDiv = this.qNodeGetter(statement.property);
-      const valuePartDiv = this.qNodeGetter(statement.value)
+
+
+      let value=statement.value;
+      if (statement.precision!=undefined){
+          value=this.dateParser(statement.precision, value);
+      }
+
+      const valuePartDiv = this.qNodeGetter(value)
       let valueDiv;
       let unitDiv;
       if (statement.unit) {
@@ -76,7 +138,12 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
           const qualifier = qualifiers[i];
 
           const qualifierPropertyDiv = this.qNodeGetter(qualifier["property"]);
-          const qualifierValueDiv = this.qNodeGetter(qualifier["value"]);
+
+          let value=qualifier.value;
+          if (qualifier.precision!=undefined){
+              value=this.dateParser(qualifier.precision, value);
+          }
+          const qualifierValueDiv = this.qNodeGetter(value);
 
 
 

@@ -116,6 +116,7 @@ export interface StatementEntry extends Entry{
     qnodes: any;
     qualifier?: any;
     unit?: string;
+    precision?: number;
 }
 
 
