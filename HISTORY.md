@@ -6,6 +6,10 @@ Changes in version 2.9.0-pre-3 (beta):
 * t2wml version 0.2.9
 * bug fix: app crashed when navigating into empty cells in output mode
 * add date formatting for most precisions
+* add additional precision options
+* for child dropdowns, add a disabled default option for a new annotation to denote nothing selected
+* remove the format dropdown, return to text box input. 
+
 
 Changes in version 2.9.0-pre-2 (beta): 
 -------------------------

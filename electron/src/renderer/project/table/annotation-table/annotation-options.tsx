@@ -79,7 +79,7 @@ export const TYPES = [{
       'value': 'Q215271',
     }],
   }, {
-    'label': 'Format',
+    'label': 'Format (must be enclosed in quotes eg "%Y")',
     'value': 'format',
     /*'children': [
       {
