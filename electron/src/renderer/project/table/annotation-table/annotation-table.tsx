@@ -308,7 +308,7 @@ class AnnotationTable extends Component<{}, TableState> {
     //   "selection": The block,
     //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
     // }
-    const suggestion = await this.requestService.getAnnotationSuggestions({"selection": block, "annotations": wikiStore.annotations.blocks});
+    const suggestion = await this.requestService.getAnnotationSuggestions({"selection": selection, "annotations": wikiStore.annotations.blocks});
     this.setState({annotationSuggestionsSelectedBlock: suggestion})
   }
 
