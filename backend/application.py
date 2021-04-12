@@ -416,12 +416,13 @@ def upload_annotation():
 def suggest_annotation_block():
     project = get_project()
     calc_params = get_calc_params(project)
-    block = request.get_json()["block"]
+    block = request.get_json()["selection"]
     annotation = request.get_json()["annotations"]
 
     response={ #fallback response
-        "role": ["dependentVar", "mainSubject", "property", "qualifier", "unit"], #drop metadata
-        "type": ["string", "quantity", "time", "wikibaseitem"] #drop monolingual string
+        "roles": ["dependentVar", "mainSubject", "property", "qualifier", "unit"], #drop metadata
+        "types": ["string", "quantity", "time", "wikibaseitem"], #drop monolingual string
+        "children": {}
     }
 
     try:

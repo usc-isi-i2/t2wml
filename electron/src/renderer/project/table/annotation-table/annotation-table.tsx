@@ -302,13 +302,13 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  async getAnnotationSuggestionsForSelection(block: { 'x1':number, 'x2':number, 'y1':number, 'y2':number}){
+  async getAnnotationSuggestionsForSelection(selection: { 'x1':number, 'x2':number, 'y1':number, 'y2':number}){
     //data should be a json dictionary, with fields:
     // {
-    //   "block": The block,
+    //   "selection": The block,
     //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
     // }
-    const suggestion = await this.requestService.getAnnotationSuggestions({"block": block, "annotations": wikiStore.annotations.blocks});
+    const suggestion = await this.requestService.getAnnotationSuggestions({"selection": block, "annotations": wikiStore.annotations.blocks});
     this.setState({annotationSuggestionsSelectedBlock: suggestion})
   }
 
