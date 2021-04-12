@@ -15,17 +15,18 @@ interface ShowOutputProperties {
 }
 
 
-function ordinal_suffix_of(i: number):string {
-  var j = i % 10,
-      k = i % 100;
+function ordinal_suffix_of(i: number): string {
+  const j = i % 10,
+        k = i % 100;
+        
   if (j == 1 && k != 11) {
-      return i + "st";
+    return i + "st";
   }
   if (j == 2 && k != 12) {
-      return i + "nd";
+    return i + "nd";
   }
   if (j == 3 && k != 13) {
-      return i + "rd";
+    return i + "rd";
   }
   return i + "th";
 }
@@ -34,43 +35,47 @@ function ordinal_suffix_of(i: number):string {
 @observer
 class ShowOutput extends Component<ShowOutputProperties, {}> {
 
-  dateParser(precision:number, date:string): string{
+  dateParser(precision: number, date: string): string {
     const dayFormatter = dayjs(date)
-    switch(precision){
+    switch (precision) {
       case 0:
-        return date;
+        { return date; }
       case 1:
-        return date;
+        { return date; }
       case 2:
-        return date;
+        { return date; }
       case 3:
-        return date;
+        { return date; }
       case 4:
-        return date;
+        { return date; }
       case 5:
-        return date;
+        { return date; }
       case 6:
-        return date;
+        { return date; }
       case 7:
-        const millenium =Math.floor(dayFormatter.year() / 1000) + 1;
-        return ordinal_suffix_of(millenium)+ " millenium";
+        {
+          const millenium = Math.floor(dayFormatter.year() / 1000) + 1;
+          return ordinal_suffix_of(millenium) + " millenium";
+        }
       case 8:
-        const century =Math.floor(dayFormatter.year() / 100) + 1;
-        return ordinal_suffix_of(century)+ " century";
+        {
+          const century = Math.floor(dayFormatter.year() / 100) + 1;
+          return ordinal_suffix_of(century) + " century";
+        }
       case 9:
-        return dayFormatter.format("YYYY");
+        { return dayFormatter.format("YYYY"); }
       case 10:
-        return dayFormatter.format("MMMM YYYY");
+        { return dayFormatter.format("MMMM YYYY"); }
       case 11:
-        return dayFormatter.format("MMMM D, YYYY");
+        { return dayFormatter.format("MMMM D, YYYY"); }
       case 12:
-        return dayFormatter.format("YYYY-MM-DD HH");
+        { return dayFormatter.format("YYYY-MM-DD HH"); }
       case 13:
-        return dayFormatter.format("YYYY-MM-DD HH:mm");
+        { return dayFormatter.format("YYYY-MM-DD HH:mm"); }
       case 14:
-        return dayFormatter.format("YYYY-MM-DD HH:mm:ss");
+        { return dayFormatter.format("YYYY-MM-DD HH:mm:ss"); }
       default:
-        return date;
+        { return date; }
     }
   }
 
@@ -106,18 +111,18 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
     const statement = this.props.statement
     if (statement) {
       const subjectQNode = wikiStore.layers.statement.getQNode(statement.subject)
-      let subjectParentheses= ""
-      if (subjectQNode.url!= "" || subjectQNode.label==subjectQNode.id){
-        subjectParentheses= "(" + subjectQNode.id + ")";
+      let subjectParentheses = ""
+      if (subjectQNode.url != "" || subjectQNode.label == subjectQNode.id) {
+        subjectParentheses = "(" + subjectQNode.id + ")";
 
       }
       const subjectIDDiv = this.qNodeGetter(statement.subject);
       const propertyDiv = this.qNodeGetter(statement.property);
 
 
-      let value=statement.value;
-      if (statement.precision!=undefined){
-          value=this.dateParser(statement.precision, value);
+      let value = statement.value;
+      if (statement.precision != undefined) {
+        value = this.dateParser(statement.precision, value);
       }
 
       const valuePartDiv = this.qNodeGetter(value)
@@ -139,9 +144,9 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
           const qualifierPropertyDiv = this.qNodeGetter(qualifier["property"]);
 
-          let value=qualifier.value;
-          if (qualifier.precision!=undefined){
-              value=this.dateParser(qualifier.precision, value);
+          let value = qualifier.value;
+          if (qualifier.precision != undefined) {
+            value = this.dateParser(qualifier.precision, value);
           }
           const qualifierValueDiv = this.qNodeGetter(value);
 
