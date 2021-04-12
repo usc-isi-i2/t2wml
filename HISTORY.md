@@ -1,9 +1,15 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version 2.9.0 (beta): 
+Changes in version 2.9.0-pre-3 (beta): 
 -------------------------
-* t2wml-api version 0.2.7
+* t2wml version 0.2.9
+* bug fix: app crashed when navigating into empty cells in output mode
+* add date formatting for most precisions
+
+Changes in version 2.9.0-pre-2 (beta): 
+-------------------------
+* t2wml-api version 0.2.8
 * added suggestions during annotation process. the user receives, already selected, the backend's best guess
 for what the annotation should be. if correct, user can simply click 'submit' without having to select from the 
 various dropdowns.
