@@ -153,6 +153,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Col sm="12" md="12">
             <Form.Label className="text-muted">{type.label}</Form.Label>
             <Form.Control size="sm" as="select">
+            <option disabled selected>--</option>
               {type.children.map((option: AnnotationOption) => (
                 <option key={option.value}
                   value={option.value}

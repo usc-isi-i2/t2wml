@@ -38,28 +38,36 @@ export const TYPES = [{
   'children': [{
     'label': 'Precision',
     'value': 'precision',
-    'children': [{
-      'label': 'Year',
-      'value': 'year',
-    }, {
-      'label': 'Month',
-      'value': 'month',
-    }, {
-      'label': 'Week',
-      'value': 'week',
-    }, {
-      'label': 'Day',
-      'value': 'day',
-    }, {
-      'label': 'Hour',
-      'value': 'hour',
-    }, {
-      'label': 'Minute',
-      'value': 'minute',
-    }, {
-      'label': 'Second',
-      'value': 'second',
-    }],
+    'children': [
+      {
+        'label': 'Millenium',
+        'value': 'millenium',
+      }, {
+        'label': 'Century',
+        'value': 'century',
+      },
+      {
+        'label': 'Year',
+        'value': 'year',
+      }, {
+        'label': 'Month',
+        'value': 'month',
+      }, {
+        'label': 'Week',
+        'value': 'week',
+      }, {
+        'label': 'Day',
+        'value': 'day',
+      }, {
+        'label': 'Hour',
+        'value': 'hour',
+      }, {
+        'label': 'Minute',
+        'value': 'minute',
+      }, {
+        'label': 'Second',
+        'value': 'second',
+      }],
   }, {
     'label': 'Calendar',
     'value': 'calendar',
@@ -73,22 +81,23 @@ export const TYPES = [{
   }, {
     'label': 'Format',
     'value': 'format',
-    'children': [{
-      'label': 'Year (e.g. 2021)',
-      'value': '"%Y"',
-    }, {
-      'label': 'Year (e.g. 21)',
-      'value': '"%y"',
-    }, {
-      'label': 'Month (e.g. January)',
-      'value': '"%B"',
-    }, {
-      'label': 'Month (e.g. 01)',
-      'value': '"%m"',
-    }, {
-      'label': 'Weekday (e.g. Monday)',
-      'value': '"%A"',
-    }],
+    /*'children': [
+      {
+        'label': '1999',
+        'value': "'%Y'",
+      }, {
+        'label': '30-02-1999',
+        'value': "'%d-%m-%Y'",
+      },{
+        'label': '30/02/1999',
+        'value': "'%d/%m/%Y'",
+      }, {
+        'label': '02-30-1999',
+        'value': "'%m-%d-%Y'",
+      },{
+        'label': '02/30/1999',
+        'value': "'%m/%d/%Y'",
+      }],*/
   }, {
     'label': 'Property',
     'value': 'property',
