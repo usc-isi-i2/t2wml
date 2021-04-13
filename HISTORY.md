@@ -3,7 +3,7 @@ T2WML Standalone Server App History
 
 Changes in version 2.9.0-pre.6 (beta): 
 -------------------------
-* t2wml version 0.2.10
+* t2wml version 0.2.11
 * bug fix: app crashed when navigating into empty cells in output mode
 * add output formatting for date precisions
 * add additional precision options
