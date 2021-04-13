@@ -1,11 +1,11 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version 2.9.0-pre-3 (beta): 
+Changes in version 2.9.0-pre.6 (beta): 
 -------------------------
-* t2wml version 0.2.9
+* t2wml version 0.2.10
 * bug fix: app crashed when navigating into empty cells in output mode
-* add date formatting for most precisions
+* add output formatting for date precisions
 * add additional precision options
 * for child dropdowns, add a disabled default option for a new annotation to denote nothing selected
 * remove the format dropdown, return to text box input. 
