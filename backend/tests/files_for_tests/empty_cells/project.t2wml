@@ -1,10 +1,3 @@
-_saved_state:
-  current_annotation: null
-  current_data_file: fertilizer.xlsx
-  current_sheet: Sheet1
-  current_wikifiers:
-  - consolidated-wikifier.csv
-  current_yaml: t2wml.yaml
 annotations: {}
 cache_id: 76e8cf28-665f-4851-82d9-00f8a69923c1
 data_files:
@@ -12,12 +5,14 @@ data_files:
     selected: Sheet1
     val_arr:
     - Sheet1
+description: ''
 entity_files:
 - item_definitions.tsv
 - properties_all.tsv
 handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: empty cells
+url: ''
 warn_for_empty_cells: true
 wikifier_files:
 - consolidated-wikifier.csv
