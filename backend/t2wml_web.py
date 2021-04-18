@@ -9,6 +9,7 @@ from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapp
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
 from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
+from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
@@ -347,3 +348,13 @@ def update_entities(project, entity_file, updated_entries):
     full_path=project.get_full_path(entity_file)
     dict_to_kgtk(entities, full_path)
     return get_entities(project)
+
+
+def get_partial_csv(calc_params):
+    from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
+    wikifier=calc_params.wikifier
+    annotation= calc_params.annotation_path
+    cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
+    columns, dict_values=get_cells_and_columns(kg.statements)
+    return dict_values
