@@ -19,7 +19,6 @@ import CreateProject from './project/modals/create-project';
 interface AppState extends IStateWithError {
   showSpinner: boolean;
   showSettings: boolean;
-  datamartIntegration: boolean;
   datamartApi: string;
   showCreateProjectModal: boolean;
 }
@@ -34,7 +33,6 @@ class App extends Component<{}, AppState> {
       showSpinner: false,
       errorMessage: {} as ErrorMessage,
       showSettings: false,
-      datamartIntegration: false,
       datamartApi: '',
       showCreateProjectModal: false,
     }
@@ -89,7 +87,6 @@ class App extends Component<{}, AppState> {
   async onShowGlobalSettings() {
     await this.requestService.getGlobalSettings();
     this.setState({
-      datamartIntegration: wikiStore.globalSettings.datamart_integration,
       datamartApi: wikiStore.globalSettings.datamart_api,
       showSettings: true
     });
@@ -143,13 +140,12 @@ class App extends Component<{}, AppState> {
     }
   }
 
-  async handleSaveSettings(datamartIntegration: boolean, datamartApi: string) {
+  async handleSaveSettings(datamartApi: string) {
     // update settings
     this.setState({ showSettings: false });
 
     // notify backend
     const data = {
-      "datamartIntegration": datamartIntegration,
       "datamartApi": datamartApi
     };
 
@@ -191,7 +187,6 @@ class App extends Component<{}, AppState> {
 
         <GlobalSettings showSettings={this.state.showSettings}
           key={this.state.datamartApi}
-          datamartIntegration={this.state.datamartIntegration}
           datamartApi={this.state.datamartApi}
           handleSaveSettings={this.handleSaveSettings.bind(this)}
           cancelSaveSettings={() => this.cancelSaveSettings()} />

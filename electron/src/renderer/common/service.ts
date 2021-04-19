@@ -5,7 +5,7 @@ import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -137,14 +137,20 @@ class RequestService {
     return response.filename;
   }
 
-  public async createAnnotation(data: any): Promise<string>{
-    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
+  public async saveYaml(data: any): Promise<string> {
+    const response = await backendPost(`/yaml/save?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
     wikiStore.project.projectDTO = response.project;
     return response.filename;
   }
 
-  public async saveYaml(data: any): Promise<string> {
-    const response = await backendPost(`/yaml/save?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
+  public async uploadYaml(data: any) {
+    const response = await backendPost(`/yaml/apply?${this.getMappingParams()}`, data) as ResponseWithProjectAndMappingDTO;
+    this.fillMapping(response)
+    wikiStore.project.projectDTO = response.project;
+  }
+
+  public async createAnnotation(data: any): Promise<string>{
+    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
     wikiStore.project.projectDTO = response.project;
     return response.filename;
   }
@@ -153,6 +159,11 @@ class RequestService {
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
     wikiStore.project.projectDTO = response.project;
     this.fillMapping(response);
+  }
+
+  public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion>  {
+    const response = await backendPut(`/annotation/suggest?${this.getDataFileParams()}`, data) as ResponseWithSuggestion; //TODO
+    return response
   }
 
   public async createProject(folder:string, data?: any) {
@@ -177,14 +188,6 @@ class RequestService {
     const response = await backendPost(`/wikifier?${this.getDataFileParams(false)}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
-
-  public async uploadYaml(data: any) {
-    const response = await backendPost(`/yaml/apply?${this.getMappingParams()}`, data) as ResponseWithProjectAndMappingDTO;
-    this.fillMapping(response)
-    wikiStore.project.projectDTO = response.project;
-  }
-
-
 
   public async callWikifierService(data: any) {
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
@@ -226,13 +229,11 @@ class RequestService {
   public async getGlobalSettings() {
     const response = await backendGet(`/project/globalsettings`) as GlobalSettingsDTO;
     wikiStore.globalSettings.datamart_api=response.datamart_api;
-    wikiStore.globalSettings.datamart_integration=response.datamart_integration;
   }
 
   public async putGlobalSettings(data: any) {
     const response = await backendPut(`/project/globalsettings`, data) as GlobalSettingsDTO;
     wikiStore.globalSettings.datamart_api=response.datamart_api;
-    wikiStore.globalSettings.datamart_integration=response.datamart_integration;
   }
 
   public async uploadEntities(data: any) {

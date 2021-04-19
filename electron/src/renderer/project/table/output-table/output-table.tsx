@@ -191,7 +191,7 @@ class OutputTable extends Component<{}, TableState> {
     }
 
     for (const key in statement.cells) {
-      if ( key === 'qualifiers' ) { continue; }
+      if (key === 'qualifiers') { continue; }
       const y = statement.cells[key][0];
       const x = statement.cells[key][1];
       const cell = rows[y + 1].children[x + 1];
@@ -220,7 +220,7 @@ class OutputTable extends Component<{}, TableState> {
   openOutputMenu(event: React.MouseEvent) {
     let { pageX, pageY } = event;
     pageX = pageX - 300;
-    if ( settings.window.height - pageY <= 375 ) {
+    if (settings.window.height - pageY <= 375) {
       pageY -= 375;
     } else {
       pageY = pageY - 100;
@@ -240,11 +240,15 @@ class OutputTable extends Component<{}, TableState> {
       // There is no such cell, do nothing
       return;
     }
-    const tableCell = tableData[row][col];
 
     // Only open the output menu if there's content
-    if ( tableCell.content ) {
-      this.openOutputMenu(event);
+    if (tableData[row]) {
+      if (tableData[row][col]) {
+        const tableCell = tableData[row][col];
+        if (tableCell.content) {
+          this.openOutputMenu(event);
+        }
+      }
     }
   }
 
@@ -294,14 +298,14 @@ class OutputTable extends Component<{}, TableState> {
     if (!selectedCell || !tableData) { return; }
 
     // Hide the output menu with ESC key
-    if (event.code === 'Escape' ) {
+    if (event.code === 'Escape') {
       this.setState({ showOutputMenu: false }, () => {
         this.resetSelections();
       });
     }
 
     const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-    if ( arrowCodes.includes(event.code) ) {
+    if (arrowCodes.includes(event.code)) {
 
       event.preventDefault();
 
@@ -310,25 +314,25 @@ class OutputTable extends Component<{}, TableState> {
       let { row, col } = selectedCell;
 
       // arrow up
-      if (event.code === 'ArrowUp' ) {
+      if (event.code === 'ArrowUp') {
         row = row - 1;
         if (row < 0) { return; }
       }
 
       // arrow down
-      if (event.code === 'ArrowDown' ) {
+      if (event.code === 'ArrowDown') {
         row = row + 1;
         if (row >= rows.length - 1) { return; }
       }
 
       // arrow left
-      if (event.code === 'ArrowLeft' ) {
+      if (event.code === 'ArrowLeft') {
         col = col - 1;
         if (col < 0) { return; }
       }
 
       // arrow right
-      if (event.code === 'ArrowRight' ) {
+      if (event.code === 'ArrowRight') {
         col = col + 1;
         if (col >= rows[row].children.length - 1) { return; }
       }
@@ -345,8 +349,15 @@ class OutputTable extends Component<{}, TableState> {
         this.selectRelatedCells(newSelectedCell);
 
         // Only open the output menu if there's content
-        const tableCell = tableData[row][col];
-        this.setState({ showOutputMenu: !!tableCell.content });
+        if (tableData[row]) {
+          if (tableData[row][col]) {
+            const tableCell = tableData[row][col];
+            if (tableCell.content) {
+              this.setState({ showOutputMenu: !!tableCell.content });
+            }
+          }
+        }
+
       });
     }
   }

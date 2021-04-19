@@ -25,6 +25,7 @@ interface WikifyFormState {
   instanceOfSearch?: string;
   searchProperties: boolean;
   applyToBlock: boolean;
+  selectedType: string;
   selected?: QNode;
   qnodes: QNode[];
 }
@@ -43,6 +44,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       instanceOfSearch: undefined,
       searchProperties: false,
       applyToBlock: false,
+      selectedType: '',
       selected: undefined,
       qnodes: [],
     };
@@ -57,6 +59,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const qnode = wikiStore.layers.qnode.find(selectedCell);
     if ( qnode ) {
       this.setState({selected: qnode});
+    }
+    const cellType = wikiStore.layers.type.find(selectedCell);
+    if ( cellType ) {
+      this.setState({
+        selectedType: cellType.type,
+        searchProperties: cellType.type === 'property',
+      });
     }
   }
 
@@ -173,21 +182,29 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSearchInputs() {
-    const { search, instanceOfSearch, qnodes, searchProperties } = this.state;
+    const {
+      qnodes,
+      search,
+      instanceOfSearch,
+      searchProperties,
+      selectedType,
+    } = this.state;
     return (
       <Form.Group as={Row}>
-        <Col sm="12" className="search-properties">
-          <input id="check-property-search"
-            type="checkbox"
-            defaultChecked={searchProperties}
-            onChange={this.toggleSearchProperties.bind(this)} />
-          <Form.Label
-            htmlFor="check-property-search"
-            className="text-muted">
-            Search Properties
-          </Form.Label>
-        </Col>
-        <Col sm="12" md="8">
+        {selectedType !== 'property' && (
+          <Col sm="12" className="search-properties">
+            <input id="check-property-search"
+              type="checkbox"
+              defaultChecked={searchProperties}
+              onChange={this.toggleSearchProperties.bind(this)} />
+            <Form.Label
+              htmlFor="check-property-search"
+              className="text-muted">
+              Search Properties
+            </Form.Label>
+          </Col>
+        )}
+        <Col sm="12" md={selectedType !== 'property' ? '8' : '12'}>
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
@@ -202,22 +219,24 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
                 onClick={this.clearSearch.bind(this)} />
             ) : null}
         </Col>
-        <Col sm="12" md="4">
-          <Form.Label className="text-muted">Instance Of</Form.Label>
-          <Form.Control
-            type="text" size="sm"
-            placeholder="qnode"
-            value={instanceOfSearch}
-            onChange={(event: any) => {
-              this.handleOnChangeInstanceOfSearch(event)
-            }} />
-            {instanceOfSearch && qnodes.length ? (
-              <FontAwesomeIcon
-                icon={faTimes}
-                className="clear-button"
-                onClick={this.clearInstanceOfSearch.bind(this)} />
-            ) : null}
-        </Col>
+        {selectedType !== 'property' && (
+          <Col sm="12" md="4">
+            <Form.Label className="text-muted">Instance Of</Form.Label>
+            <Form.Control
+              type="text" size="sm"
+              placeholder="qnode"
+              value={instanceOfSearch}
+              onChange={(event: any) => {
+                this.handleOnChangeInstanceOfSearch(event)
+              }} />
+              {instanceOfSearch && qnodes.length ? (
+                <FontAwesomeIcon
+                  icon={faTimes}
+                  className="clear-button"
+                  onClick={this.clearInstanceOfSearch.bind(this)} />
+              ) : null}
+          </Col>
+        )}
       </Form.Group>
     )
   }

@@ -29,7 +29,6 @@ export interface ProjectDTO {
 }
 
 export interface GlobalSettingsDTO {
-    datamart_integration: boolean;
     datamart_api: string;
 }
 
@@ -117,6 +116,7 @@ export interface StatementEntry extends Entry{
     qnodes: any;
     qualifier?: any;
     unit?: string;
+    precision?: number;
 }
 
 
@@ -141,6 +141,7 @@ export interface AnnotationBlock{
     precision?: string;
     calendar?: string;
     format?: string;
+    id?: string;
     //time_zone?: string;
 }
 
@@ -210,4 +211,10 @@ export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, Respo
 
 export interface ResponseWithQNodesDTO {
     qnodes: QNode[];
+}
+
+export interface ResponseWithSuggestion {
+    roles: string[];
+    types: string[];
+    children: any;
 }

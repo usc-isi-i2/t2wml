@@ -182,7 +182,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     //also update results:
     try {
       wikiStore.output.showSpinner = true;
-      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+      await this.requestService.getMappingCalculation() //don't use call, we don't want to alert errors
     }
     catch (error) {
       console.log(error) //don't break on this
@@ -223,7 +223,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     //also update results:
     try {
       wikiStore.output.showSpinner = true;
-      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+      await this.requestService.getMappingCalculation() //don't use call, we don't want to alert errors
     }
     catch (error) {
       console.log(error) //don't break on this

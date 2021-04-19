@@ -1,3 +1,9 @@
+export interface AnnotationOption {
+  label: string;
+  value: string;
+  children?: AnnotationOption[];
+}
+
 export const TYPES = [{
   'label': 'String',
   'value': 'string',
@@ -32,12 +38,66 @@ export const TYPES = [{
   'children': [{
     'label': 'Precision',
     'value': 'precision',
+    'children': [
+      {
+        'label': 'Millenium',
+        'value': 'millenium',
+      }, {
+        'label': 'Century',
+        'value': 'century',
+      },
+      {
+        'label': 'Year',
+        'value': 'year',
+      }, {
+        'label': 'Month',
+        'value': 'month',
+      }, {
+        'label': 'Week',
+        'value': 'week',
+      }, {
+        'label': 'Day',
+        'value': 'day',
+      }, {
+        'label': 'Hour',
+        'value': 'hour',
+      }, {
+        'label': 'Minute',
+        'value': 'minute',
+      }, {
+        'label': 'Second',
+        'value': 'second',
+      }],
   }, {
     'label': 'Calendar',
     'value': 'calendar',
+    'children': [{
+      'label': 'Gregorian',
+      'value': 'Q12138',
+    }, {
+      'label': 'Ethiopian',
+      'value': 'Q215271',
+    }],
   }, {
-    'label': 'Format',
+    'label': 'Format (must be enclosed in quotes eg "%Y")',
     'value': 'format',
+    /*'children': [
+      {
+        'label': '1999',
+        'value': "'%Y'",
+      }, {
+        'label': '30-02-1999',
+        'value': "'%d-%m-%Y'",
+      },{
+        'label': '30/02/1999',
+        'value': "'%d/%m/%Y'",
+      }, {
+        'label': '02-30-1999',
+        'value': "'%m-%d-%Y'",
+      },{
+        'label': '02/30/1999',
+        'value': "'%m/%d/%Y'",
+      }],*/
   }, {
     'label': 'Property',
     'value': 'property',

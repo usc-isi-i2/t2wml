@@ -6,6 +6,7 @@ import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bo
 
 import { observer } from "mobx-react";
 import { remote } from 'electron';
+import path from 'path';
 
 
 interface CreateProperties {
@@ -57,7 +58,7 @@ class CreateProject extends Component<CreateProperties, CreateState> {
     });
 
     if (!result.canceled && result.filePaths) {
-        this.setState({ path: result.filePaths[0] });
+        this.setState({ path: result.filePaths[0], title: path.parse(result.filePaths[0]).name});
     }
   }
 

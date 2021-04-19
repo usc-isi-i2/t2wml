@@ -2,8 +2,9 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
+import RequestService from '../../../common/service';
 import wikiStore from '@/renderer/data/store';
-import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../../common/dtos';
+import { AnnotationBlock, ResponseWithSuggestion, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
 import * as utils from '../table-utils';
@@ -13,6 +14,7 @@ interface TableState {
   tableData?: TableData;
   showAnnotationMenu: boolean;
   selectedAnnotationBlock?: AnnotationBlock;
+  annotationSuggestionsSelectedBlock: ResponseWithSuggestion;
 }
 
 
@@ -26,6 +28,7 @@ class AnnotationTable extends Component<{}, TableState> {
   private prevDirection?: Direction;
   private selecting = false;
   private selection?: CellSelection;
+  private requestService: RequestService;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -40,10 +43,12 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData: undefined,
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
+      annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {}}
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
     this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
+    this.requestService = new RequestService();
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -242,6 +247,7 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+      this.setState({annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {}}});
     }
   }
 
@@ -296,6 +302,16 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  async getAnnotationSuggestionsForSelection(selection: { 'x1':number, 'x2':number, 'y1':number, 'y2':number}){
+    //data should be a json dictionary, with fields:
+    // {
+    //   "selection": The block,
+    //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
+    // }
+    const suggestion = await this.requestService.getAnnotationSuggestions({"selection": selection, "annotations": wikiStore.annotations.blocks});
+    this.setState({annotationSuggestionsSelectedBlock: suggestion})
+  }
+
   updateSelections(selectedBlock?: AnnotationBlock) {
     if ( !selectedBlock ) {
       selectedBlock = this.state.selectedAnnotationBlock;
@@ -309,6 +325,9 @@ class AnnotationTable extends Component<{}, TableState> {
       return;
     }
 
+    console.log("not a single cell?")
+    this.getAnnotationSuggestionsForSelection(this.selection)
+
     const table: any = this.tableRef;
     if ( !table ) { return; }
 
@@ -320,11 +339,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( selectedBlock ) {
       const { role } = selectedBlock;
       if ( role ) {
-        const className = `role-${role}`;
-        table.querySelectorAll(`td[class*="${className}"]`).forEach((element: HTMLElement) => {
-          element.classList.remove(className);
-        });
-        classNames.push(className);
+        classNames.push(`role-${role}`);
       }
     }
 
@@ -524,6 +539,7 @@ class AnnotationTable extends Component<{}, TableState> {
         // Activate the element on click
         this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
         this.selection = { x1, x2, y1, y2 };
+        this.getAnnotationSuggestionsForSelection(this.selection)
       });
     }
 
@@ -602,6 +618,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
       // Don't allow moving around when users are typing
       if ( (event.target as any).nodeName === 'INPUT' ) { return; }
+
+      // Don't allow moving around when selecting from the dropdown menu
+      if ( (event.target as any).nodeName === 'SELECT' ) { return; }
 
       event.preventDefault();
 
@@ -754,8 +773,16 @@ class AnnotationTable extends Component<{}, TableState> {
 
   onSelectionChange(selection: CellSelection) {
     if ( selection ) {
+      const {selectedAnnotationBlock} = this.state;
       this.selection = selection;
       this.updateSelections();
+      this.setState({showAnnotationMenu: false}, () => {
+        selectedAnnotationBlock!.selection = selection;
+        this.setState({
+          showAnnotationMenu: true,
+          selectedAnnotationBlock,
+        })
+      })
     }
   }
 
@@ -774,15 +801,19 @@ class AnnotationTable extends Component<{}, TableState> {
     const {
       showAnnotationMenu,
       selectedAnnotationBlock,
+      annotationSuggestionsSelectedBlock
     } = this.state;
     if (showAnnotationMenu) {
       return (
         <AnnotationMenu
+        key={annotationSuggestionsSelectedBlock.roles.toString()}
           selection={this.selection}
           onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}
           onClose={() => this.closeAnnotationMenu()}
-          onDelete={this.deleteAnnotationBlock.bind(this)} />
+          onDelete={this.deleteAnnotationBlock.bind(this)}
+        annotationSuggestions={annotationSuggestionsSelectedBlock}
+          />
       )
     }
   }

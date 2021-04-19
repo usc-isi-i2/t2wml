@@ -218,7 +218,6 @@ export class ProjectState{
 }
 
 export class GlobalSettings{
-    @observable datamart_integration = false;
     @observable datamart_api = "";
 }
 
