@@ -200,6 +200,8 @@ class TableContainer extends Component<{}, TableState> {
 
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
+
+    if (this.state.mode === 'annotation'){this.fetchAnnotations()}
   }
 
   async switchMode(mode: TableMode) {
