@@ -191,11 +191,10 @@ class AnnotationTable extends Component<{}, TableState> {
     this.setState({ tableData });
   }
 
-  deleteAnnotationBlock(block?: AnnotationBlock, selection?: CellSelection) {
-    debugger;
+  deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
     if ( tableData ) {
-      const { x1, y1, x2, y2 } = block ? block.selection : selection!;
+      const { x1, y1, x2, y2 } = block.selection;
       if ( y1 <= y2 ) {
         if ( x1 <= x2 ) {
           for ( let row = y1 - 1; row < y2; row++ ) {
@@ -786,7 +785,6 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( selection ) {
       const {selectedAnnotationBlock} = this.state;
       this.selection = selection;
-      this.deleteAnnotationBlock(undefined, selection)
       this.updateSelections();
       this.setState({showAnnotationMenu: false}, () => {
         selectedAnnotationBlock!.selection = selection;

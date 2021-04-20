@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { action, observable } from 'mobx';
-import { ProjectDTO, TableDTO } from './dtos';
+import { ProjectDTO } from './dtos';
 import wikiStore from '../data/store';
 
 export class CurrentFiles {
