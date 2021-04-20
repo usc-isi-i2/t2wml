@@ -104,6 +104,17 @@ export class CurrentFilesService {
         this.saveCurrentFileSelections();
     }
 
+    getAnnotationsLength(): number{
+        const project = wikiStore.project.projectDTO!;
+        const dataFile = this.currentState.dataFile!;
+        const sheet = this.currentState.sheetName!;
+
+        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
+            return project.annotations[dataFile][sheet].val_arr.length
+        }
+        return 0;
+    }
+
     @action
     changeDataFile(newFile: string) {
         const project = wikiStore.project.projectDTO!;

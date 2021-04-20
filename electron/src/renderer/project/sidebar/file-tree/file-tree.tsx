@@ -117,11 +117,30 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async deleteFile(deleteFromFs: boolean) {
-    const filename = this.state.clickedNode!.label;
+    let filename = this.state.clickedNode!.label;
+
+    if (currentFilesService.currentState.mappingFile == filename &&
+      wikiStore.table.mode=="annotation" &&
+      currentFilesService.getAnnotationsLength()<2){
+      alert("Cannot remove only annotation on sheet while in annotation mode. Clearing annotation instead.")
+      const sheetName = this.state.clickedNode!.parentNode!.label;
+      const dataFile=this.state.clickedNode!.parentNode!.parentNode!.label;
+      const createData = {
+        "title": filename,
+        "sheetName": sheetName,
+        "dataFile": dataFile,
+      };
+      filename = await this.requestService.createAnnotation(createData)
+      this.changeAnnotation(filename, sheetName, dataFile)
+      return;
+    }
+
+
     let updateTree = false;
     if (currentFilesService.currentState.dataFile == filename || currentFilesService.currentState.mappingFile == filename) {
       updateTree=true;
     }
+
 
     this.setState({ showSpinner: true });
     // send request
