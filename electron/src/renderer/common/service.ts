@@ -82,6 +82,7 @@ class RequestService {
     console.log("mapping", response)
     wikiStore.project.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
+    wikiStore.layers.partialCsv = response.partialCsv;
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.yaml.yamlError = response.yamlError;
     wikiStore.annotations.blocks = response.annotations || [];

@@ -2,6 +2,7 @@ from collections import defaultdict
 import os
 import json
 import numpy as np
+import pandas as pd
 from pathlib import Path
 from numpy.core.numeric import full
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
@@ -294,7 +295,15 @@ def get_table(calc_params, first_index=0, num_rows=None):
 def get_layers(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
+
     response["layers"].update(get_qnodes_layer(calc_params))
+    try:
+        response["partialCsv"]=get_partial_csv(calc_params)
+    except Exception as e:
+        print(e)
+        response["partialCsv"]=dict(dims=[1,3],
+                                    firstRowIndex=0,
+                                    cells=[["subject", "value", "property"]])
     try:
         response["layers"].update(get_yaml_layers(calc_params))
     except Exception as e:
@@ -357,4 +366,10 @@ def get_partial_csv(calc_params):
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
     columns, dict_values=get_cells_and_columns(kg.statements)
-    return dict_values
+    df = pd.DataFrame.from_dict(dict_values)
+    df.replace(to_replace=[None], value="", inplace=True)
+    dims = list(df.shape)
+    cells = json.loads(df.to_json(orient="values"))
+    cells.insert(0, list(df.columns))
+    return dict(dims=dims, firstRowIndex=0, cells=cells)
+
