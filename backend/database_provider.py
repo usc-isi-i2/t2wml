@@ -29,7 +29,7 @@ class DatabaseProvider(FallbackSparql):
         #check for project-specific first
         prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
         #check for generic wikidata entry
-        if not prop or prop.data_type is None or prop.data_type == "Property Not Found":
+        if not prop:
             prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.sparql_endpoint).first()
         if not prop:
             raise ValueError("Not found")
