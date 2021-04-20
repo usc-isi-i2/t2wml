@@ -122,7 +122,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     if (currentFilesService.currentState.mappingFile == filename &&
       wikiStore.table.mode=="annotation" &&
       currentFilesService.getAnnotationsLength()<2){
-      alert("Cannot remove only annotation on sheet while in annotation mode. clearing annotation instead.")
+      alert("Cannot remove only annotation on sheet while in annotation mode. Clearing annotation instead.")
       const sheetName = this.state.clickedNode!.parentNode!.label;
       const dataFile=this.state.clickedNode!.parentNode!.parentNode!.label;
       const createData = {

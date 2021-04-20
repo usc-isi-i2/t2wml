@@ -12,7 +12,7 @@ from t2wml.input_processing.annotation_parsing import annotation_suggester
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, add_entities_from_project,
                        add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
-from utils import (file_upload_validator, save_dataframe,
+from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
@@ -144,6 +144,10 @@ def get_mapping(mapping_file=None, mapping_type=None):
 @json_response
 def get_data():
     project = get_project()
+    data_file = request.args.get('data_file')
+    if not data_file:
+        response=dict(layers=get_empty_layers(), table=[[]])
+        return response, 200
     calc_params = get_calc_params(project)
     response = dict()
     response["table"] = get_table(calc_params)
