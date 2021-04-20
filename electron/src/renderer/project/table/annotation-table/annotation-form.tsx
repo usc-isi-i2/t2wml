@@ -144,6 +144,18 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       defaultValue = (selectedBlock as any)[type.value];
     }
 
+    if (type.value === 'property') {
+      return (
+        <Form.Group as={Row} key={type.value}>
+          <Col sm="12" md="12">
+            <Form.Label className="text-muted">{type.label}</Form.Label>
+            <Form.Control
+              type="text" size="sm"
+              defaultValue={type.property} />
+          </Col>
+        </Form.Group>
+      )
+    }
     if (type.children) {
       return (
         <Form.Group as={Row} key={type.value}
@@ -262,6 +274,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           {this.renderNestedOptionsChildren({
             'label': 'Property',
             'value': 'property',
+            property: annotationSuggestions.children.property
           })}
         </React.Fragment>
       )
