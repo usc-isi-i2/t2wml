@@ -298,16 +298,17 @@ def get_layers(response, calc_params):
 
     response["layers"].update(get_qnodes_layer(calc_params))
     try:
+        response["layers"].update(get_yaml_layers(calc_params))
+    except Exception as e:
+        response["yamlError"] = str(e)
+
+    try:
         response["partialCsv"]=get_partial_csv(calc_params)
     except Exception as e:
         print(e)
         response["partialCsv"]=dict(dims=[1,3],
                                     firstRowIndex=0,
                                     cells=[["subject", "value", "property"]])
-    try:
-        response["layers"].update(get_yaml_layers(calc_params))
-    except Exception as e:
-        response["yamlError"] = str(e)
 
 
 def get_annotations(calc_params):
