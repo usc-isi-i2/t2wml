@@ -8,6 +8,7 @@ import { AnnotationBlock, ResponseWithSuggestion, TableCell, TableData, TableDTO
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
 import * as utils from '../table-utils';
+import { currentFilesService } from '@/renderer/common/current-file-service';
 
 
 interface TableState {
@@ -87,8 +88,15 @@ class AnnotationTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-    this.updateAnnotationBlocks(tableData);
+
+    if (currentFilesService.currentState.mappingFile)
+        {this.updateAnnotationBlocks(tableData);}
+    else{
+      this.updateQnodes(tableData);
+    }
   }
+
+
 
   updateAnnotationBlocks(tableData?: TableData) {
     if ( !tableData ) {
@@ -167,7 +175,10 @@ class AnnotationTable extends Component<{}, TableState> {
         }
       }
     }
+    this.updateQnodes(tableData)
+  }
 
+  updateQnodes(tableData?: TableData){
     const qnodes = wikiStore.layers.qnode;
     if (!tableData) { return; }
     for (const entry of qnodes.entries) {
