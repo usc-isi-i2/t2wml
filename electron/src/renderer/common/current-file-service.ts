@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { action, observable } from 'mobx';
-import { ProjectDTO } from './dtos';
+import { ProjectDTO, TableDTO } from './dtos';
 import wikiStore from '../data/store';
 
 export class CurrentFiles {
@@ -39,6 +39,9 @@ export class CurrentFilesService {
         if (Object.keys(project.data_files).length) {
             this.currentState.dataFile = Object.keys(project.data_files)[0];
             this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
+        } else {
+            this.currentState.dataFile = "";
+            this.currentState.sheetName = "";
         }
 
         if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
