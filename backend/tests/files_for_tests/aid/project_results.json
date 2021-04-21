@@ -1382,6 +1382,20 @@
                 "layerType": "type"
             }
         },
+        "partialCsv": {
+            "cells": [
+                [
+                    "subject",
+                    "value",
+                    "property"
+                ]
+            ],
+            "dims": [
+                1,
+                3
+            ],
+            "firstRowIndex": 0
+        },
         "table": {
             "cells": [
                 [
