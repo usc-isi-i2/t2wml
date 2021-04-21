@@ -73,9 +73,8 @@ def get_kg(calc_params):
             return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
-        if cell_mapper.annotation.potentially_enough_annotation_information:
-            ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
-            ang.preload(calc_params.sheet, wikifier)
+        ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
+        ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
