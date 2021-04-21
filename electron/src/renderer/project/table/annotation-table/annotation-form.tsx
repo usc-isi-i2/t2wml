@@ -117,7 +117,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       if (this.timeoutChangeAreaId) {
         window.clearTimeout(this.timeoutChangeAreaId);
       }
-      this.timeoutChangeAreaId = window.setTimeout(() => { 
+      this.timeoutChangeAreaId = window.setTimeout(() => {
         if(this.state.validArea){
           onSelectionChange(selection);
         }
@@ -151,7 +151,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
             required
             type="text" size="sm"
             value={selectedArea || defaultValue}
-            onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)} 
+            onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
             isInvalid={ !this.state.validArea } />
           <Form.Control.Feedback type="invalid">
               Please choose a valid range.
@@ -171,18 +171,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       defaultValue = (selectedBlock as any)[type.value];
     }
 
-    if (type.value === 'property') {
-      return (
-        <Form.Group as={Row} key={type.value}>
-          <Col sm="12" md="12">
-            <Form.Label className="text-muted">{type.label}</Form.Label>
-            <Form.Control
-              type="text" size="sm"
-              defaultValue={type.property} />
-          </Col>
-        </Form.Group>
-      )
-    }
     if (type.children) {
       return (
         <Form.Group as={Row} key={type.value}
@@ -301,7 +289,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           {this.renderNestedOptionsChildren({
             'label': 'Property',
             'value': 'property',
-            property: annotationSuggestions.children.property
           })}
         </React.Fragment>
       )
