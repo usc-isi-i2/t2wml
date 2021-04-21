@@ -52,6 +52,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         role: selectedBlock?.role || annotationSuggestions.roles[0],
         type: selectedBlock?.type || annotationSuggestions.types[0],
         selectedArea: undefined,
+        ...annotationSuggestions.children
       },
       showExtraFields: false
     };
