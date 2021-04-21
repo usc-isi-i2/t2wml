@@ -103,7 +103,7 @@ export const TYPES = [{
   }],
 }, {
   'label': 'Wikidata Item',
-  'value': 'wikibaseitem',
+  'value': 'wikibase-item',
   'children': [{
     'label': 'Property',
     'value': 'property',
