@@ -81,7 +81,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         window.clearTimeout(this.timeoutId);
       }
       this.timeoutId = window.setTimeout(() => {
-        onChange(key, value);
+        const { type } = this.state.fields;
+        onChange(key, value, type);
       }, 300);
     });
   }
