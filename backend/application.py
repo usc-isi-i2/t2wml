@@ -513,7 +513,7 @@ def get_qnodes():
         if data_type:
             if data_type=="wikibaseitem":
                 data_type="wikibase-item"
-        url += '&data_type={}'.format(data_type)
+            url += '&data_type={}'.format(data_type)
 
     else: #qnodes
         # get the optional parameters for the url
