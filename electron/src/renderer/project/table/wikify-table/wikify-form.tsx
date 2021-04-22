@@ -241,9 +241,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     )
   }
 
-  renderResults() {
+  renderQNodeResults() {
     const { qnodes } = this.state;
-    return qnodes.map((item, index) => (
+    if ( qnodes.length ) {
+      return (
+        <div className="results">
+          {qnodes.map((item, index) => (
       <Row className={"qnode"} key={index}
         onClick={() => this.handleOnClick(item)}>
         <Col sm="12" md="12">
@@ -251,15 +254,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <div className="description">{item.description}</div>
         </Col>
       </Row>
-    ));
-  }
-
-  renderQNodeResults() {
-    const { qnodes } = this.state;
-    if ( qnodes.length ) {
-      return (
-        <div className="results">
-          {this.renderResults()}
+        ))}
         </div>
       )
     }

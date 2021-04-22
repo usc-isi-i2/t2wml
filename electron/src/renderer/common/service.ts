@@ -82,6 +82,7 @@ class RequestService {
     console.log("mapping", response)
     wikiStore.project.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
+    wikiStore.layers.partialCsv = response.partialCsv;
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.yaml.yamlError = response.yamlError;
     wikiStore.annotations.blocks = response.annotations || [];
@@ -100,8 +101,8 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async getProperties(search: string) {
-    const url = `/properties?q=${search}`;
+  public async getProperties(search: string, type: string) {
+    const url = `/properties?q=${search}&data_type=${type}`;
     const response = await backendGet(url) as ResponseWithQNodesDTO;
     wikiStore.annotateProperties.properties = response.qnodes;
   }

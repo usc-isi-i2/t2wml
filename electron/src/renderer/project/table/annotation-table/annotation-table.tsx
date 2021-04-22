@@ -336,7 +336,6 @@ class AnnotationTable extends Component<{}, TableState> {
       return;
     }
 
-    console.log("not a single cell?")
     this.getAnnotationSuggestionsForSelection(this.selection)
 
     const table: any = this.tableRef;
@@ -782,10 +781,24 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  deleteRolePrevSelection(){
+    const table = this.tableRef;
+    if ( table ) {
+      table.querySelectorAll('td[class*="active"]').forEach(e => {
+        e.classList.forEach(className => {
+          if (className.startsWith('role-')) {
+            e.classList.remove(className);
+          }
+        });
+      });
+    }
+  }
+
   onSelectionChange(selection: CellSelection) {
     if ( selection ) {
       const {selectedAnnotationBlock} = this.state;
       this.selection = selection;
+      this.deleteRolePrevSelection();
       this.updateSelections();
       this.setState({showAnnotationMenu: false}, () => {
         selectedAnnotationBlock!.selection = selection;

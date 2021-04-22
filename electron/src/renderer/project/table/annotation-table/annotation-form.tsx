@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AnnotationBlock, ResponseWithSuggestion} from '../../../common/dtos';
+import { AnnotationBlock, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -34,6 +34,7 @@ interface AnnotationFields {
 interface AnnotationFormState {
   fields: AnnotationFields;
   showExtraFields: boolean;
+  validArea: boolean;
 }
 
 
@@ -41,6 +42,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   private changed: boolean;
   private timeoutId?: number;
+  private timeoutChangeAreaId?: number;
 
   constructor(props: AnnotationFormProperties) {
     super(props);
@@ -48,11 +50,13 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
     this.state = {
       fields: {
-        ...selectedBlock,
-        role: selectedBlock?.role || annotationSuggestions.roles[0],
-        type: selectedBlock?.type || annotationSuggestions.types[0],
+        role: annotationSuggestions.roles[0],
+        type: annotationSuggestions.types[0],
         selectedArea: undefined,
+        ...annotationSuggestions.children,
+        ...selectedBlock //override everything previous
       },
+      validArea: true,
       showExtraFields: false
     };
     this.changed = false;
@@ -81,9 +85,18 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         window.clearTimeout(this.timeoutId);
       }
       this.timeoutId = window.setTimeout(() => {
-        onChange(key, value);
+        const { type } = this.state.fields;
+        onChange(key, value, type);
       }, 300);
     });
+  }
+
+  validationSelectionArea(selection: CellSelection){
+    if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2){
+      this.setState({validArea: true});
+    } else{
+      this.setState({validArea: false});
+    }
   }
 
   handleOnSelectionChange(event: React.ChangeEvent) {
@@ -101,7 +114,17 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         y1: parseInt(groups[2]),
         y2: parseInt(groups[4]),
       };
-      onSelectionChange(selection);
+      this.validationSelectionArea(selection);
+      if (this.timeoutChangeAreaId) {
+        window.clearTimeout(this.timeoutChangeAreaId);
+      }
+      this.timeoutChangeAreaId = window.setTimeout(() => {
+        if(this.state.validArea){
+          onSelectionChange(selection);
+        }
+      }, 500);
+    } else {
+      this.setState({validArea: false});
     }
   }
 
@@ -126,9 +149,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Selected area</Form.Label>
           <Form.Control
+            required
             type="text" size="sm"
             value={selectedArea || defaultValue}
-            onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)} />
+            onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
+            isInvalid={ !this.state.validArea } />
+          <Form.Control.Feedback type="invalid">
+              Please choose a valid range.
+            </Form.Control.Feedback>
         </Col>
       </Form.Group>
     )
@@ -153,7 +181,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Col sm="12" md="12">
             <Form.Label className="text-muted">{type.label}</Form.Label>
             <Form.Control size="sm" as="select">
-            <option disabled selected>--</option>
+              <option disabled selected>--</option>
               {type.children.map((option: AnnotationOption) => (
                 <option key={option.value}
                   value={option.value}
@@ -272,21 +300,21 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
 
 
-    let rolesList= ROLES;
+    let rolesList = ROLES;
     if (!selected) {
-      const suggestedRolesList = [] as {label:string, value:string, children:any}[];
+      const suggestedRolesList = [] as { label: string, value: string, children: any }[];
       annotationSuggestions.roles.forEach(value => {
-        const role = ROLES.find(role => role.value === value) as {label:string, value:string, children:any};
+        const role = ROLES.find(role => role.value === value) as { label: string, value: string, children: any };
         if (role) {
           suggestedRolesList.push(role);
         }
       });
-      if (suggestedRolesList.length){
-        rolesList=suggestedRolesList
+      if (suggestedRolesList.length) {
+        rolesList = suggestedRolesList
       }
     }
 
-    const selectedAnnotationRole = selected ? selected.role :  rolesList[0];
+    const selectedAnnotationRole = selected ? selected.role : rolesList[0];
 
     return (
       <Form.Group as={Row}
