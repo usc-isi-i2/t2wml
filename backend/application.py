@@ -510,6 +510,8 @@ def get_properties():
 
     data_type = request.args.get('data_type')
     if data_type:
+        if data_type=="wikibaseitem":
+            data_type="wikibase-item"
         url += '&data_type={}'.format(data_type)
 
     try:
