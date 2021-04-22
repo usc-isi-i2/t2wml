@@ -505,8 +505,12 @@ def get_properties():
         raise web_exceptions.InvalidRequestException("No search parameter set")
 
     # construct the url with correct parameters for kgtk search
-    url = 'https://kgtk.isi.edu/api/{}'.format(q)
-    url += '?type=ngram&extra_info=true&language=en&item=property'
+    url = 'https://kgtk.isi.edu/api?q={}'.format(q)
+    url += '&type=ngram&extra_info=true&language=en&item=property'
+
+    data_type = request.args.get('data_type')
+    if data_type:
+        url += '&data_type={}'.format(data_type)
 
     try:
         response = requests.get(url, verify=False)
@@ -535,11 +539,11 @@ def get_qnodes():
         raise web_exceptions.InvalidRequestException("No search parameter set")
 
     # construct the url with correct parameters for kgtk search
-    url = 'https://kgtk.isi.edu/api/{}'.format(q)
+    url = 'https://kgtk.isi.edu/api?q={}'.format(q)
 
     # get the optional parameters for the url
     is_class = request.args.get('is_class')
-    url += '?extra_info=true&language=en'
+    url += '&extra_info=true&language=en'
     if is_class:
         url += '&is_class=true&type=exact&size=5'
     else:

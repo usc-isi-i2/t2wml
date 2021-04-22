@@ -27,8 +27,7 @@ export const TYPES = [{
   'children': [{
     'label': 'Unit',
     'value': 'unit',
-  },
-  {
+  }, {
     'label': 'Property',
     'value': 'property',
   }],
@@ -104,7 +103,7 @@ export const TYPES = [{
   }],
 }, {
   'label': 'Wikidata Item',
-  'value': 'wikibaseitem',
+  'value': 'wikibase-item',
   'children': [{
     'label': 'Property',
     'value': 'property',

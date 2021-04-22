@@ -101,8 +101,8 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async getProperties(search: string) {
-    const url = `/properties?q=${search}`;
+  public async getProperties(search: string, type: string) {
+    const url = `/properties?q=${search}&data_type=${type}`;
     const response = await backendGet(url) as ResponseWithQNodesDTO;
     wikiStore.annotateProperties.properties = response.qnodes;
   }
