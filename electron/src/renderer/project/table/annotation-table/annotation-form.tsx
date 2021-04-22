@@ -50,11 +50,11 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
     this.state = {
       fields: {
-        ...selectedBlock,
-        role: selectedBlock?.role || annotationSuggestions.roles[0],
-        type: selectedBlock?.type || annotationSuggestions.types[0],
+        role: annotationSuggestions.roles[0],
+        type: annotationSuggestions.types[0],
         selectedArea: undefined,
-        ...annotationSuggestions.children
+        ...annotationSuggestions.children,
+        ...selectedBlock //override everything previous
       },
       validArea: true,
       showExtraFields: false
