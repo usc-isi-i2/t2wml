@@ -368,6 +368,7 @@ def get_partial_csv(calc_params):
     columns, dict_values=get_cells_and_columns(kg.statements)
     df = pd.DataFrame.from_dict(dict_values)
     df.replace(to_replace=[None], value="", inplace=True)
+    df = df[columns] # sort the columns
     dims = list(df.shape)
     cells = json.loads(df.to_json(orient="values"))
     cells.insert(0, list(df.columns))
