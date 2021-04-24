@@ -307,7 +307,7 @@ def get_layers(response, calc_params):
         print(e)
         response["partialCsv"]=dict(dims=[1,3],
                                     firstRowIndex=0,
-                                    cells=[["subject", "value", "property"]])
+                                    cells=[["subject", "property", "value"]])
 
 
 def get_annotations(calc_params):
