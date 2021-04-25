@@ -5,7 +5,7 @@ Qtest-label	Qtest	label	test	string													"test"
 Qtest-P1476	Qtest	P1476	test	string													"test"	
 Qtest-description	Qtest	description		string														
 Qtest-P2699	Qtest	P2699		string														
-Qtest-P5017	Qtest	P5017	2021-03-24T20:15:29.619992	date_and_times					"2021-03-24T20:15:29.619992"									
+Qtest-P5017	Qtest	P5017	2021-04-25T10:14:13.585516	date_and_times					"2021-04-25T10:14:13.585516"									
 Qtest-P2006020003-Qaid-security-002	Qtest	P2006020003	Qtest-Qaid-security-002	symbol									Qtest-Qaid-security-002					
 Qtest-Qaid-security-002-P2006020004	Qtest-Qaid-security-002	P2006020004	Qtest	symbol									Qtest					
 Qtest-Qaid-security-002-P31	Qtest-Qaid-security-002	P31	Q50701	symbol									Q50701					
@@ -20,11 +20,6 @@ Paid-security-002-data_type	Paid-security-002	data_type	quantity	string									
 Paid-security-002-P31	Paid-security-002	P31	Q18616576	symbol									Q18616576					
 Paid-security-002-label	Paid-security-002	label	UN	string													"UN"	
 Paid-security-002-wikidata_data_type	Paid-security-002	wikidata_data_type	Quantity	string													"Quantity"	
-Qtest-Qaid-security-002-P2006020002-P17	Qtest-Qaid-security-002	P2006020002	P17	symbol									P17					
-Qtest-P17-label	P17	label	A P17	string													"A P17"	
-Qtest-P17-P31	P17	P31	Q18616576	symbol									Q18616576					
-Qtest-P17-data_type	P17	data_type	string	string													"string"	
-Qtest-P17-wikidata_data_type	P17	wikidata_data_type	String	string													"String"	
 Qtest-P2006020003-Qaid-security-003	Qtest	P2006020003	Qtest-Qaid-security-003	symbol									Qtest-Qaid-security-003					
 Qtest-Qaid-security-003-P2006020004	Qtest-Qaid-security-003	P2006020004	Qtest	symbol									Qtest					
 Qtest-Qaid-security-003-P31	Qtest-Qaid-security-003	P31	Q50701	symbol									Q50701					
@@ -53,60 +48,65 @@ Paid-security-004-data_type	Paid-security-004	data_type	quantity	string									
 Paid-security-004-P31	Paid-security-004	P31	Q18616576	symbol									Q18616576					
 Paid-security-004-label	Paid-security-004	label	LNGO/NRCS	string													"LNGO/NRCS"	
 Paid-security-004-wikidata_data_type	Paid-security-004	wikidata_data_type	Quantity	string													"Quantity"	
+Qtest-Qaid-security-002-P2006020002-P17	Qtest-Qaid-security-002	P2006020002	P17	symbol									P17					
+Qtest-P17-label	P17	label	A P17	string													"A P17"	
+Qtest-P17-P31	P17	P31	Q18616576	symbol									Q18616576					
+Qtest-P17-data_type	P17	data_type	string	string													"string"	
+Qtest-P17-wikidata_data_type	P17	wikidata_data_type	String	string													"String"	
 Qtest-P2006020004-dataset.xlsx.Sheet3;F3	dataset.xlsx.Sheet3;F3	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;F3	22	Paid-security-002	2	quantity	2			Qaid-security-U002										
 dataset.xlsx.Sheet3;F3-P585	dataset.xlsx.Sheet3;F3	P585	1997-09-24T00:00:00	date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;G3	dataset.xlsx.Sheet3;G3	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;G3	22	Paid-security-003	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;G3-P585	dataset.xlsx.Sheet3;G3	P585	1997-09-24T00:00:00	date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;H3	dataset.xlsx.Sheet3;H3	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;H3	22	Paid-security-004	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;H3-P585	dataset.xlsx.Sheet3;H3	P585	1997-09-24T00:00:00	date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
 Qtest-P2006020004-dataset.xlsx.Sheet3;F4	dataset.xlsx.Sheet3;F4	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;F4	47	Paid-security-002	0	quantity	0			Qaid-security-U002										
 dataset.xlsx.Sheet3;F4-P585	dataset.xlsx.Sheet3;F4	P585	1998-06-25T00:00:00	date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
 dataset.xlsx.Sheet3;F4-P17	dataset.xlsx.Sheet3;F4	P17	Q21203	symbol									Q21203					
-Qtest-P2006020004-dataset.xlsx.Sheet3;F5	dataset.xlsx.Sheet3;F5	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;F5	73	Paid-security-002	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;F5-P585	dataset.xlsx.Sheet3;F5	P585	1999-04-01T00:00:00	date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;F6	dataset.xlsx.Sheet3;F6	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;F6	103	Paid-security-002	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;F6-P585	dataset.xlsx.Sheet3;F6	P585	2000-02-01T00:00:00	date_and_times					"2000-02-01T00:00:00"	10	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;F7	dataset.xlsx.Sheet3;F7	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;F7	475	Paid-security-002	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;F7-P585	dataset.xlsx.Sheet3;F7	P585	2006-09-20T00:00:00	date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;F8	dataset.xlsx.Sheet3;F8	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;F8	782	Paid-security-002	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;F8-P585	dataset.xlsx.Sheet3;F8	P585	2008-01-01T00:00:00	date_and_times					"2008-01-01T00:00:00"	9	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;G3	dataset.xlsx.Sheet3;G3	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;G3	22	Paid-security-003	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;G3-P585	dataset.xlsx.Sheet3;G3	P585	1997-09-24T00:00:00	date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
 Qtest-P2006020004-dataset.xlsx.Sheet3;G4	dataset.xlsx.Sheet3;G4	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;G4	47	Paid-security-003	0	quantity	0			Qaid-security-U002										
 dataset.xlsx.Sheet3;G4-P585	dataset.xlsx.Sheet3;G4	P585	1998-06-25T00:00:00	date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
 dataset.xlsx.Sheet3;G4-P17	dataset.xlsx.Sheet3;G4	P17	Q21203	symbol									Q21203					
-Qtest-P2006020004-dataset.xlsx.Sheet3;G5	dataset.xlsx.Sheet3;G5	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;G5	73	Paid-security-003	1	quantity	1			Qaid-security-U002										
-dataset.xlsx.Sheet3;G5-P585	dataset.xlsx.Sheet3;G5	P585	1999-04-01T00:00:00	date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;G6	dataset.xlsx.Sheet3;G6	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;G6	103	Paid-security-003	2	quantity	2			Qaid-security-U002										
-dataset.xlsx.Sheet3;G6-P585	dataset.xlsx.Sheet3;G6	P585	2000-02-01T00:00:00	date_and_times					"2000-02-01T00:00:00"	10	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;G7	dataset.xlsx.Sheet3;G7	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;G7	475	Paid-security-003	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;G7-P585	dataset.xlsx.Sheet3;G7	P585	2006-09-20T00:00:00	date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;G8	dataset.xlsx.Sheet3;G8	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;G8	782	Paid-security-003	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;G8-P585	dataset.xlsx.Sheet3;G8	P585	2008-01-01T00:00:00	date_and_times					"2008-01-01T00:00:00"	9	Q1985727							
-Qtest-P2006020004-dataset.xlsx.Sheet3;H3	dataset.xlsx.Sheet3;H3	P2006020004	Qtest	symbol									Qtest					
-dataset.xlsx.Sheet3;H3	22	Paid-security-004	0	quantity	0			Qaid-security-U002										
-dataset.xlsx.Sheet3;H3-P585	dataset.xlsx.Sheet3;H3	P585	1997-09-24T00:00:00	date_and_times					"1997-09-24T00:00:00"	11	Q1985727							
 Qtest-P2006020004-dataset.xlsx.Sheet3;H4	dataset.xlsx.Sheet3;H4	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;H4	47	Paid-security-004	0	quantity	0			Qaid-security-U002										
 dataset.xlsx.Sheet3;H4-P585	dataset.xlsx.Sheet3;H4	P585	1998-06-25T00:00:00	date_and_times					"1998-06-25T00:00:00"	11	Q1985727							
 dataset.xlsx.Sheet3;H4-P17	dataset.xlsx.Sheet3;H4	P17	Q21203	symbol									Q21203					
+Qtest-P2006020004-dataset.xlsx.Sheet3;F5	dataset.xlsx.Sheet3;F5	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;F5	73	Paid-security-002	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;F5-P585	dataset.xlsx.Sheet3;F5	P585	1999-04-01T00:00:00	date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;G5	dataset.xlsx.Sheet3;G5	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;G5	73	Paid-security-003	1	quantity	1			Qaid-security-U002										
+dataset.xlsx.Sheet3;G5-P585	dataset.xlsx.Sheet3;G5	P585	1999-04-01T00:00:00	date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
 Qtest-P2006020004-dataset.xlsx.Sheet3;H5	dataset.xlsx.Sheet3;H5	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;H5	73	Paid-security-004	0	quantity	0			Qaid-security-U002										
 dataset.xlsx.Sheet3;H5-P585	dataset.xlsx.Sheet3;H5	P585	1999-04-01T00:00:00	date_and_times					"1999-04-01T00:00:00"	10	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;F6	dataset.xlsx.Sheet3;F6	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;F6	103	Paid-security-002	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;F6-P585	dataset.xlsx.Sheet3;F6	P585	2000-02-01T00:00:00	date_and_times					"2000-02-01T00:00:00"	10	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;G6	dataset.xlsx.Sheet3;G6	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;G6	103	Paid-security-003	2	quantity	2			Qaid-security-U002										
+dataset.xlsx.Sheet3;G6-P585	dataset.xlsx.Sheet3;G6	P585	2000-02-01T00:00:00	date_and_times					"2000-02-01T00:00:00"	10	Q1985727							
 Qtest-P2006020004-dataset.xlsx.Sheet3;H6	dataset.xlsx.Sheet3;H6	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;H6	103	Paid-security-004	0	quantity	0			Qaid-security-U002										
 dataset.xlsx.Sheet3;H6-P585	dataset.xlsx.Sheet3;H6	P585	2000-02-01T00:00:00	date_and_times					"2000-02-01T00:00:00"	10	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;F7	dataset.xlsx.Sheet3;F7	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;F7	475	Paid-security-002	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;F7-P585	dataset.xlsx.Sheet3;F7	P585	2006-09-20T00:00:00	date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;G7	dataset.xlsx.Sheet3;G7	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;G7	475	Paid-security-003	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;G7-P585	dataset.xlsx.Sheet3;G7	P585	2006-09-20T00:00:00	date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
 Qtest-P2006020004-dataset.xlsx.Sheet3;H7	dataset.xlsx.Sheet3;H7	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;H7	475	Paid-security-004	0	quantity	0			Qaid-security-U002										
 dataset.xlsx.Sheet3;H7-P585	dataset.xlsx.Sheet3;H7	P585	2006-09-20T00:00:00	date_and_times					"2006-09-20T00:00:00"	11	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;F8	dataset.xlsx.Sheet3;F8	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;F8	782	Paid-security-002	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;F8-P585	dataset.xlsx.Sheet3;F8	P585	2008-01-01T00:00:00	date_and_times					"2008-01-01T00:00:00"	9	Q1985727							
+Qtest-P2006020004-dataset.xlsx.Sheet3;G8	dataset.xlsx.Sheet3;G8	P2006020004	Qtest	symbol									Qtest					
+dataset.xlsx.Sheet3;G8	782	Paid-security-003	0	quantity	0			Qaid-security-U002										
+dataset.xlsx.Sheet3;G8-P585	dataset.xlsx.Sheet3;G8	P585	2008-01-01T00:00:00	date_and_times					"2008-01-01T00:00:00"	9	Q1985727							
 Qtest-P2006020004-dataset.xlsx.Sheet3;H8	dataset.xlsx.Sheet3;H8	P2006020004	Qtest	symbol									Qtest					
 dataset.xlsx.Sheet3;H8	782	Paid-security-004	3	quantity	3			Qaid-security-U002										
 dataset.xlsx.Sheet3;H8-P585	dataset.xlsx.Sheet3;H8	P585	2008-01-01T00:00:00	date_and_times					"2008-01-01T00:00:00"	9	Q1985727							

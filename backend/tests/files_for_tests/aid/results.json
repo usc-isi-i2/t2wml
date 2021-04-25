@@ -59,8 +59,8 @@
             "cells": [
                 [
                     "subject",
-                    "value",
-                    "property"
+                    "property",
+                    "value"
                 ]
             ],
             "dims": [
@@ -629,143 +629,7 @@
                         ],
                         "indices": [
                             [
-                                4,
-                                5
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
-                                5,
-                                5
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
-                                6,
-                                5
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
-                                7,
-                                5
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
                                 2,
-                                6
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
-                                4,
-                                6
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
-                                5,
-                                6
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
-                                6,
-                                6
-                            ]
-                        ]
-                    },
-                    {
-                        "error": [
-                            {
-                                "field": "value",
-                                "level": "Minor",
-                                "message": "Failed to resolve for value (=item[I,$row])",
-                                "qualifier_index": 1,
-                                "role": "qualifier"
-                            }
-                        ],
-                        "indices": [
-                            [
-                                7,
                                 6
                             ]
                         ]
@@ -800,7 +664,75 @@
                         "indices": [
                             [
                                 4,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
+                                6
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
                                 7
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                6
                             ]
                         ]
                     },
@@ -834,7 +766,75 @@
                         "indices": [
                             [
                                 6,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                6,
+                                6
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                6,
                                 7
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                7,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "value",
+                                "level": "Minor",
+                                "message": "Failed to resolve for value (=item[I,$row])",
+                                "qualifier_index": 1,
+                                "role": "qualifier"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                7,
+                                6
                             ]
                         ]
                     },
@@ -1069,6 +1069,84 @@
                     {
                         "cells": {
                             "mainSubject": [
+                                2,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
+                        },
+                        "indices": [
+                            [
+                                2,
+                                6
+                            ]
+                        ],
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1997-09-24T00:00:00"
+                            }
+                        ],
+                        "subject": "22",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                2,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
+                        },
+                        "indices": [
+                            [
+                                2,
+                                7
+                            ]
+                        ],
+                        "property": "Paid-security-004",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1997-09-24T00:00:00"
+                            }
+                        ],
+                        "subject": "22",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
                                 3,
                                 1
                             ],
@@ -1097,6 +1175,104 @@
                             ]
                         ],
                         "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1998-06-25T00:00:00"
+                            },
+                            {
+                                "property": "P17",
+                                "value": "Q21203"
+                            }
+                        ],
+                        "subject": "47",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                3,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
+                        },
+                        "indices": [
+                            [
+                                3,
+                                6
+                            ]
+                        ],
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "1998-06-25T00:00:00"
+                            },
+                            {
+                                "property": "P17",
+                                "value": "Q21203"
+                            }
+                        ],
+                        "subject": "47",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                3,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                7
+                            ],
+                            "qualifiers": [
+                                {},
+                                {
+                                    "qualifier": [
+                                        3,
+                                        8
+                                    ]
+                                }
+                            ],
+                            "unit": [
+                                0,
+                                7
+                            ]
+                        },
+                        "indices": [
+                            [
+                                3,
+                                7
+                            ]
+                        ],
+                        "property": "Paid-security-004",
                         "qualifier": [
                             {
                                 "calendar": "Q1985727",
@@ -1151,211 +1327,6 @@
                             }
                         ],
                         "subject": "73",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                5,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                5
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                5
-                            ]
-                        },
-                        "indices": [
-                            [
-                                5,
-                                5
-                            ]
-                        ],
-                        "property": "Paid-security-002",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m",
-                                "precision": 10,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "2000-02-01T00:00:00"
-                            }
-                        ],
-                        "subject": "103",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                6,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                5
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                5
-                            ]
-                        },
-                        "indices": [
-                            [
-                                6,
-                                5
-                            ]
-                        ],
-                        "property": "Paid-security-002",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m-%d",
-                                "precision": 11,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "2006-09-20T00:00:00"
-                            }
-                        ],
-                        "subject": "475",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                7,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                5
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                5
-                            ]
-                        },
-                        "indices": [
-                            [
-                                7,
-                                5
-                            ]
-                        ],
-                        "property": "Paid-security-002",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y",
-                                "precision": 9,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "2008-01-01T00:00:00"
-                            }
-                        ],
-                        "subject": "782",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                2,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                6
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                6
-                            ]
-                        },
-                        "indices": [
-                            [
-                                2,
-                                6
-                            ]
-                        ],
-                        "property": "Paid-security-003",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m-%d",
-                                "precision": 11,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "1997-09-24T00:00:00"
-                            }
-                        ],
-                        "subject": "22",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                3,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                6
-                            ],
-                            "qualifiers": [
-                                {},
-                                {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                }
-                            ],
-                            "unit": [
-                                0,
-                                6
-                            ]
-                        },
-                        "indices": [
-                            [
-                                3,
-                                6
-                            ]
-                        ],
-                        "property": "Paid-security-003",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m-%d",
-                                "precision": 11,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "1998-06-25T00:00:00"
-                            },
-                            {
-                                "property": "P17",
-                                "value": "Q21203"
-                            }
-                        ],
-                        "subject": "47",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
@@ -1401,211 +1372,6 @@
                     {
                         "cells": {
                             "mainSubject": [
-                                5,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                6
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                6
-                            ]
-                        },
-                        "indices": [
-                            [
-                                5,
-                                6
-                            ]
-                        ],
-                        "property": "Paid-security-003",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m",
-                                "precision": 10,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "2000-02-01T00:00:00"
-                            }
-                        ],
-                        "subject": "103",
-                        "unit": "Qaid-security-U002",
-                        "value": "2"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                6,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                6
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                6
-                            ]
-                        },
-                        "indices": [
-                            [
-                                6,
-                                6
-                            ]
-                        ],
-                        "property": "Paid-security-003",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m-%d",
-                                "precision": 11,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "2006-09-20T00:00:00"
-                            }
-                        ],
-                        "subject": "475",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                7,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                6
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                6
-                            ]
-                        },
-                        "indices": [
-                            [
-                                7,
-                                6
-                            ]
-                        ],
-                        "property": "Paid-security-003",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y",
-                                "precision": 9,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "2008-01-01T00:00:00"
-                            }
-                        ],
-                        "subject": "782",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                2,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                7
-                            ],
-                            "qualifiers": [
-                                {}
-                            ],
-                            "unit": [
-                                0,
-                                7
-                            ]
-                        },
-                        "indices": [
-                            [
-                                2,
-                                7
-                            ]
-                        ],
-                        "property": "Paid-security-004",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m-%d",
-                                "precision": 11,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "1997-09-24T00:00:00"
-                            }
-                        ],
-                        "subject": "22",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
-                                3,
-                                1
-                            ],
-                            "property": [
-                                1,
-                                7
-                            ],
-                            "qualifiers": [
-                                {},
-                                {
-                                    "qualifier": [
-                                        3,
-                                        8
-                                    ]
-                                }
-                            ],
-                            "unit": [
-                                0,
-                                7
-                            ]
-                        },
-                        "indices": [
-                            [
-                                3,
-                                7
-                            ]
-                        ],
-                        "property": "Paid-security-004",
-                        "qualifier": [
-                            {
-                                "calendar": "Q1985727",
-                                "format": "%Y-%m-%d",
-                                "precision": 11,
-                                "property": "P585",
-                                "time_zone": 0,
-                                "value": "1998-06-25T00:00:00"
-                            },
-                            {
-                                "property": "P17",
-                                "value": "Q21203"
-                            }
-                        ],
-                        "subject": "47",
-                        "unit": "Qaid-security-U002",
-                        "value": "0"
-                    },
-                    {
-                        "cells": {
-                            "mainSubject": [
                                 4,
                                 1
                             ],
@@ -1650,6 +1416,84 @@
                             ],
                             "property": [
                                 1,
+                                5
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
+                        },
+                        "indices": [
+                            [
+                                5,
+                                5
+                            ]
+                        ],
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2000-02-01T00:00:00"
+                            }
+                        ],
+                        "subject": "103",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                5,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
+                        },
+                        "indices": [
+                            [
+                                5,
+                                6
+                            ]
+                        ],
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m",
+                                "precision": 10,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2000-02-01T00:00:00"
+                            }
+                        ],
+                        "subject": "103",
+                        "unit": "Qaid-security-U002",
+                        "value": "2"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                5,
+                                1
+                            ],
+                            "property": [
+                                1,
                                 7
                             ],
                             "qualifiers": [
@@ -1689,6 +1533,84 @@
                             ],
                             "property": [
                                 1,
+                                5
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
+                        },
+                        "indices": [
+                            [
+                                6,
+                                5
+                            ]
+                        ],
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2006-09-20T00:00:00"
+                            }
+                        ],
+                        "subject": "475",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                6,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
+                        },
+                        "indices": [
+                            [
+                                6,
+                                6
+                            ]
+                        ],
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y-%m-%d",
+                                "precision": 11,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2006-09-20T00:00:00"
+                            }
+                        ],
+                        "subject": "475",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                6,
+                                1
+                            ],
+                            "property": [
+                                1,
                                 7
                             ],
                             "qualifiers": [
@@ -1717,6 +1639,84 @@
                             }
                         ],
                         "subject": "475",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                7,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                5
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                5
+                            ]
+                        },
+                        "indices": [
+                            [
+                                7,
+                                5
+                            ]
+                        ],
+                        "property": "Paid-security-002",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y",
+                                "precision": 9,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2008-01-01T00:00:00"
+                            }
+                        ],
+                        "subject": "782",
+                        "unit": "Qaid-security-U002",
+                        "value": "0"
+                    },
+                    {
+                        "cells": {
+                            "mainSubject": [
+                                7,
+                                1
+                            ],
+                            "property": [
+                                1,
+                                6
+                            ],
+                            "qualifiers": [
+                                {}
+                            ],
+                            "unit": [
+                                0,
+                                6
+                            ]
+                        },
+                        "indices": [
+                            [
+                                7,
+                                6
+                            ]
+                        ],
+                        "property": "Paid-security-003",
+                        "qualifier": [
+                            {
+                                "calendar": "Q1985727",
+                                "format": "%Y",
+                                "precision": 9,
+                                "property": "P585",
+                                "time_zone": 0,
+                                "value": "2008-01-01T00:00:00"
+                            }
+                        ],
+                        "subject": "782",
                         "unit": "Qaid-security-U002",
                         "value": "0"
                     },
@@ -1854,47 +1854,7 @@
                                 5
                             ],
                             [
-                                3,
-                                5
-                            ],
-                            [
-                                4,
-                                5
-                            ],
-                            [
-                                5,
-                                5
-                            ],
-                            [
-                                6,
-                                5
-                            ],
-                            [
-                                7,
-                                5
-                            ],
-                            [
                                 2,
-                                6
-                            ],
-                            [
-                                3,
-                                6
-                            ],
-                            [
-                                4,
-                                6
-                            ],
-                            [
-                                5,
-                                6
-                            ],
-                            [
-                                6,
-                                6
-                            ],
-                            [
-                                7,
                                 6
                             ],
                             [
@@ -1903,7 +1863,23 @@
                             ],
                             [
                                 3,
+                                5
+                            ],
+                            [
+                                3,
+                                6
+                            ],
+                            [
+                                3,
                                 7
+                            ],
+                            [
+                                4,
+                                5
+                            ],
+                            [
+                                4,
+                                6
                             ],
                             [
                                 4,
@@ -1911,11 +1887,35 @@
                             ],
                             [
                                 5,
+                                5
+                            ],
+                            [
+                                5,
+                                6
+                            ],
+                            [
+                                5,
                                 7
                             ],
                             [
                                 6,
+                                5
+                            ],
+                            [
+                                6,
+                                6
+                            ],
+                            [
+                                6,
                                 7
+                            ],
+                            [
+                                7,
+                                5
+                            ],
+                            [
+                                7,
+                                6
                             ],
                             [
                                 7,
@@ -1978,8 +1978,8 @@
             "cells": [
                 [
                     "subject",
-                    "value",
-                    "property"
+                    "property",
+                    "value"
                 ]
             ],
             "dims": [
@@ -2199,8 +2199,8 @@
             "cells": [
                 [
                     "subject",
-                    "value",
-                    "property"
+                    "property",
+                    "value"
                 ]
             ],
             "dims": [
