@@ -365,7 +365,7 @@ def get_partial_csv(calc_params):
     annotation= calc_params.annotation_path
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
-    columns, dict_values=get_cells_and_columns(kg.statements)
+    columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
     df = pd.DataFrame.from_dict(dict_values)
     df.replace(to_replace=[None], value="", inplace=True)
     df = df[columns] # sort the columns
