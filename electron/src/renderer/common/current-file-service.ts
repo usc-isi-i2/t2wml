@@ -34,6 +34,7 @@ export class CurrentFilesService {
         return undefined;
     }
 
+    @action
     getDefaultFiles(project: ProjectDTO){
         //also called when deleting a file
         if (Object.keys(project.data_files).length) {
