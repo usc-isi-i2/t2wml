@@ -10,7 +10,6 @@ import * as utils from '../../common/utils'
 import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 import CallWikifier from './call-wikifier';
-import WikifierOutput from './wikifier-output';
 
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
