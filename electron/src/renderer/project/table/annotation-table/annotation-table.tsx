@@ -8,6 +8,7 @@ import { AnnotationBlock, ResponseWithSuggestion, TableCell, TableData, TableDTO
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
 import * as utils from '../table-utils';
+import { currentFilesService } from '@/renderer/common/current-file-service';
 
 
 interface TableState {
@@ -87,8 +88,15 @@ class AnnotationTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-    this.updateAnnotationBlocks(tableData);
+
+    if (currentFilesService.currentState.mappingFile)
+        {this.updateAnnotationBlocks(tableData);}
+    else{
+      this.updateQnodes(tableData);
+    }
   }
+
+
 
   updateAnnotationBlocks(tableData?: TableData) {
     if ( !tableData ) {
@@ -167,7 +175,10 @@ class AnnotationTable extends Component<{}, TableState> {
         }
       }
     }
+    this.updateQnodes(tableData)
+  }
 
+  updateQnodes(tableData?: TableData){
     const qnodes = wikiStore.layers.qnode;
     if (!tableData) { return; }
     for (const entry of qnodes.entries) {
@@ -302,13 +313,13 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  async getAnnotationSuggestionsForSelection(block: { 'x1':number, 'x2':number, 'y1':number, 'y2':number}){
+  async getAnnotationSuggestionsForSelection(selection: { 'x1':number, 'x2':number, 'y1':number, 'y2':number}){
     //data should be a json dictionary, with fields:
     // {
-    //   "block": The block,
+    //   "selection": The block,
     //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
     // }
-    const suggestion = await this.requestService.getAnnotationSuggestions({"block": block, "annotations": wikiStore.annotations.blocks});
+    const suggestion = await this.requestService.getAnnotationSuggestions({"selection": selection, "annotations": wikiStore.annotations.blocks});
     this.setState({annotationSuggestionsSelectedBlock: suggestion})
   }
 
@@ -325,7 +336,6 @@ class AnnotationTable extends Component<{}, TableState> {
       return;
     }
 
-    console.log("not a single cell?")
     this.getAnnotationSuggestionsForSelection(this.selection)
 
     const table: any = this.tableRef;
@@ -771,10 +781,24 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  deleteRolePrevSelection(){
+    const table = this.tableRef;
+    if ( table ) {
+      table.querySelectorAll('td[class*="active"]').forEach(e => {
+        e.classList.forEach(className => {
+          if (className.startsWith('role-')) {
+            e.classList.remove(className);
+          }
+        });
+      });
+    }
+  }
+
   onSelectionChange(selection: CellSelection) {
     if ( selection ) {
       const {selectedAnnotationBlock} = this.state;
       this.selection = selection;
+      this.deleteRolePrevSelection();
       this.updateSelections();
       this.setState({showAnnotationMenu: false}, () => {
         selectedAnnotationBlock!.selection = selection;

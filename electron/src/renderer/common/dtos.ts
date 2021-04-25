@@ -116,6 +116,7 @@ export interface StatementEntry extends Entry{
     qnodes: any;
     qualifier?: any;
     unit?: string;
+    precision?: number;
 }
 
 
@@ -168,6 +169,7 @@ export interface ResponseWithProjectandFileName extends ResponseWithProjectDTO{
 export interface ResponseWithMappingDTO{
     project: ProjectDTO;
     layers: LayersDTO;
+    partialCsv: TableDTO;
     yamlContent: string;
     yamlError?: string;
     annotations: AnnotationBlock[];

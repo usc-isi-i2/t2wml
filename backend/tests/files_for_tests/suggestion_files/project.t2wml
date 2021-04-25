@@ -1,0 +1,17 @@
+annotations: {}
+cache_id: 1b19be87-b717-48fd-b09b-f718f8c578ab
+data_files:
+  numbers.csv:
+    selected: numbers.csv
+    val_arr:
+    - numbers.csv
+description: ''
+entity_files: []
+handle_calendar: leave
+sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
+title: numbers
+url: ''
+warn_for_empty_cells: false
+wikifier_files: []
+yaml_files: []
+yaml_sheet_associations: {}

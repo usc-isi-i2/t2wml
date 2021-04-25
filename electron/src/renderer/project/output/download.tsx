@@ -5,10 +5,9 @@ import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bo
 
 import { observer } from "mobx-react";
 
-import wikiStore from '../../data/store';
-
 interface DownloadProperties {
     showDownload: boolean;
+    filename: string;
 
     handleDoDownload: (fileName: string, fileType: string) => void;
     cancelDownload: () => void;
@@ -26,17 +25,13 @@ class Download extends Component<DownloadProperties, DownloadState> {
     super(props);
 
     this.state = {
-      downloadFileName: wikiStore.projects.current!.name,
+      downloadFileName: props.filename,
       downloadFileType: "json",
     };
   }
 
   download() {
       this.props.handleDoDownload(this.state.downloadFileName, this.state.downloadFileType);
-      this.setState({
-        downloadFileName: this.state.downloadFileName,
-        downloadFileType: "json",
-      });
     }
 
   render() {

@@ -162,6 +162,7 @@ export class LayerState {
     @observable public statement: StatementLayer;
     @observable public error: Layer<ErrorEntry>;
     @observable public cleaned: Layer<CleanEntry>;
+    @observable public partialCsv: TableDTO;
 
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
@@ -169,6 +170,7 @@ export class LayerState {
         this.statement = new StatementLayer();
         this.error = new Layer<ErrorEntry>();
         this.cleaned = new Layer<CleanEntry>();
+        this.partialCsv = {} as TableDTO;
     }
 
     @action

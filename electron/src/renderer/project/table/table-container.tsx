@@ -200,6 +200,8 @@ class TableContainer extends Component<{}, TableState> {
 
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
+
+    if (this.state.mode === 'annotation') { this.fetchAnnotations() }
   }
 
   async switchMode(mode: TableMode) {
@@ -221,11 +223,12 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async fetchAnnotations() {
-    if (!currentFilesService.currentState.mappingFile){
+    if (!currentFilesService.currentState.dataFile) { return; }
+    if (!currentFilesService.currentState.mappingFile) {
       //create a mapping file
-      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name+"-"+currentFilesService.currentState.sheetName+".annotation");
+      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation");
       const data = {
-        "title":title,
+        "title": title,
         "sheetName": currentFilesService.currentState.sheetName,
         "dataFile": currentFilesService.currentState.dataFile
       };
@@ -265,8 +268,8 @@ class TableContainer extends Component<{}, TableState> {
             </span>
           </span>
         ) : (
-            <span>Table&nbsp;Viewer</span>
-          )}
+          <span>Table&nbsp;Viewer</span>
+        )}
       </div>
     )
   }

@@ -39,6 +39,9 @@ export class CurrentFilesService {
         if (Object.keys(project.data_files).length) {
             this.currentState.dataFile = Object.keys(project.data_files)[0];
             this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
+        } else {
+            this.currentState.dataFile = "";
+            this.currentState.sheetName = "";
         }
 
         if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
@@ -102,6 +105,17 @@ export class CurrentFilesService {
             this.currentState.mappingType = undefined;
         }
         this.saveCurrentFileSelections();
+    }
+
+    getAnnotationsLength(): number{
+        const project = wikiStore.project.projectDTO!;
+        const dataFile = this.currentState.dataFile!;
+        const sheet = this.currentState.sheetName!;
+
+        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
+            return project.annotations[dataFile][sheet].val_arr.length
+        }
+        return 0;
     }
 
     @action

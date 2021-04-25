@@ -2,6 +2,7 @@ from collections import defaultdict
 import os
 import json
 import numpy as np
+import pandas as pd
 from pathlib import Path
 from numpy.core.numeric import full
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
@@ -9,6 +10,7 @@ from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapp
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
 from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
+from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
@@ -71,9 +73,8 @@ def get_kg(calc_params):
             return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
-        if cell_mapper.annotation.potentially_enough_annotation_information:
-            ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
-            ang.preload(calc_params.sheet, wikifier)
+        ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
+        ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
@@ -293,11 +294,20 @@ def get_table(calc_params, first_index=0, num_rows=None):
 def get_layers(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
+
     response["layers"].update(get_qnodes_layer(calc_params))
     try:
         response["layers"].update(get_yaml_layers(calc_params))
     except Exception as e:
         response["yamlError"] = str(e)
+
+    try:
+        response["partialCsv"]=get_partial_csv(calc_params)
+    except Exception as e:
+        print(e)
+        response["partialCsv"]=dict(dims=[1,3],
+                                    firstRowIndex=0,
+                                    cells=[["subject", "property", "value"]])
 
 
 def get_annotations(calc_params):
@@ -347,3 +357,20 @@ def update_entities(project, entity_file, updated_entries):
     full_path=project.get_full_path(entity_file)
     dict_to_kgtk(entities, full_path)
     return get_entities(project)
+
+
+def get_partial_csv(calc_params):
+    from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
+    wikifier=calc_params.wikifier
+    annotation= calc_params.annotation_path
+    cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
+    columns, dict_values=get_cells_and_columns(kg.statements)
+    df = pd.DataFrame.from_dict(dict_values)
+    df.replace(to_replace=[None], value="", inplace=True)
+    df = df[columns] # sort the columns
+    dims = list(df.shape)
+    cells = json.loads(df.to_json(orient="values"))
+    cells.insert(0, list(df.columns))
+    return dict(dims=dims, firstRowIndex=0, cells=cells)
+
