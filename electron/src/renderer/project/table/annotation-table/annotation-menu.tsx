@@ -39,6 +39,23 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };
   }
 
+  async handleOnChangeSubject(key: string, value: string, instanceOf?: QNode){
+    
+    if (!value) { return; }
+
+    const isClass = key === 'instanceOfSearch';
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.getQNodes(value, isClass, instanceOf)
+      ));
+    } catch (error) {
+      error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
+      this.setState({ errorMessage: error });
+    } finally {
+      console.log('qnodes request finished');
+    }
+  }
+
   async handleOnChange(key: string, value: string, type: string) {
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
 
@@ -142,6 +159,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
         selectedAnnotationBlock={selectedAnnotationBlock}
         annotationSuggestions={annotationSuggestions}
         onChange={this.handleOnChange.bind(this)}
+        onChangeSubject={this.handleOnChangeSubject.bind(this)}
         onDelete={this.handleOnDelete.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
     )
