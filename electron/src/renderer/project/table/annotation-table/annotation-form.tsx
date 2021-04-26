@@ -271,7 +271,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
-      if (this.state.showExtraFields && selectedType.children)
+      if (this.state.showExtraFields && selectedType.children.length>1)
         return (
           <React.Fragment>
             {optionsDropdown}

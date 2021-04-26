@@ -54,14 +54,15 @@ def json_response(func):
         try:
             data, return_code = func(*args, **kwargs)
             return data, return_code
-        except IOError as e:
-            e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
-            data = {"error": e.error_dict}
-            return data, e.code
         except WebException as e:
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
+            if "Permission denied" in str(e):
+                e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
+                data = {"error": e.error_dict}
+                return data, 403
+
             data = {"error": make_frontend_err_dict(e)}
             try:
                 code = e.code
