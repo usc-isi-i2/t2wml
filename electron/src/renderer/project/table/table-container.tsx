@@ -201,9 +201,7 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
 
-    if (this.state.mode === 'annotation') {
-      this.createAnnotationIfDoesNotExist();
-    }
+    if (this.state.mode === 'annotation') { this.fetchAnnotations() }
   }
 
   async switchMode(mode: TableMode) {
@@ -224,7 +222,7 @@ class TableContainer extends Component<{}, TableState> {
     wikiStore.yaml.showSpinner = false;
   }
 
-  async createAnnotationIfDoesNotExist(){
+  async fetchAnnotations() {
     if (!currentFilesService.currentState.dataFile) { return; }
     if (!currentFilesService.currentState.mappingFile) {
       //create a mapping file
@@ -238,12 +236,6 @@ class TableContainer extends Component<{}, TableState> {
       await this.requestService.createAnnotation(data)
       currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
     }
-  }
-
-  async fetchAnnotations() {
-    if (!currentFilesService.currentState.dataFile) { return; }
-    this.createAnnotationIfDoesNotExist();
-
     try {
       await this.requestService.call(this, () => (
         this.requestService.getMappingCalculation()
