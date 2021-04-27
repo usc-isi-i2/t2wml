@@ -99,6 +99,8 @@ class TestBasicWorkflow(BaseClass):
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project', None)
+        ann = data.pop("annotations", None) #TODO- test correctness of annotation
+        yaml = data.pop("yamlContent", None) #TODO- test correctness of yaml
         self.results_dict['change_sheet']=data
         self.compare_jsons(data, 'change_sheet')
 
