@@ -56,6 +56,7 @@ def json_response(func):
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
+            print(e)
             if "Permission denied" in str(e):
                 e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
                 data = {"error": e.error_dict}
@@ -130,12 +131,12 @@ def get_mapping(mapping_file=None, mapping_type=None):
 
     response = dict(project=get_project_dict(project))
 
-    if calc_params.annotation_path:
-        response["annotations"], response["yamlContent"] = get_annotations(
-            calc_params)
-    elif calc_params.yaml_path:
+    if calc_params.yaml_path:
         response["yamlContent"] = get_yaml_content(calc_params)
         response["annotations"] = []
+    else:
+        response["annotations"], response["yamlContent"] = get_annotations(
+            calc_params)
     get_layers(response, calc_params)
     return response, 200
 

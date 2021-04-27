@@ -311,6 +311,7 @@ def get_layers(response, calc_params):
 
 
 def get_annotations(calc_params):
+    from t2wml.input_processing.annotation_parsing import basic_block_finder
     annotations_path=calc_params.annotation_path
     try:
         dga = Annotation.load(annotations_path)
@@ -318,6 +319,11 @@ def get_annotations(calc_params):
         dga=Annotation()
     except Exception as e:
         raise e
+
+    if not dga.annotations_array:
+        dga=Annotation(basic_block_finder(calc_params.sheet))
+        if annotations_path:
+            dga.save(annotations_path)
 
     try:
         yamlContent=dga.generate_yaml()[0]
