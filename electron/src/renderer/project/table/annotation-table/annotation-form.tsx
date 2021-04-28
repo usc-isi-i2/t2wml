@@ -6,6 +6,12 @@ import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
 import SearchResults from './search-results';
+import { QNode } from '@/renderer/common/dtos';
+import wikiStore from '../../../data/store';
+
+import { IReactionDisposer, reaction } from 'mobx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 
 interface AnnotationFormProperties {
@@ -14,6 +20,7 @@ interface AnnotationFormProperties {
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions: ResponseWithSuggestion;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
+  onChangeSubject: any | null;
   onDelete: any | null;
   onSubmit: any | null;
 }
@@ -28,6 +35,7 @@ interface AnnotationFields {
   language?: string;
   precision?: string;
   selectedArea?: string;
+  subject?: string;
 }
 
 
@@ -35,6 +43,15 @@ interface AnnotationFormState {
   fields: AnnotationFields;
   showExtraFields: boolean;
   validArea: boolean;
+  showResult1: boolean;
+  showResult2: boolean;
+  subject: {
+    value?: string;
+    instanceOfSearch?: string;
+    instanceOf?: QNode;
+    qnodes: QNode[];
+    selected?: QNode;
+  };
 }
 
 
@@ -48,6 +65,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     super(props);
 
     const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
+    const instanceOf = selectedBlock?.subject ? undefined : {
+      label: 'country',
+      description: 'the distinct region in geography; a broad term that can include political divisions or regions associated with distinct political characteristics',
+      id: 'Q6256',
+      url: 'https://www.wikidata.org/wiki/Q6256'
+    }
     this.state = {
       fields: {
         role: annotationSuggestions.roles[0],
@@ -56,10 +79,30 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         ...annotationSuggestions.children,
         ...selectedBlock //override everything previous
       },
+      subject: {
+        value: selectedBlock?.subject ? selectedBlock?.subject : undefined,
+        instanceOfSearch: undefined,
+        instanceOf: instanceOf,
+        qnodes: [],
+      },
       validArea: true,
-      showExtraFields: false
+      showExtraFields: false,
+      showResult1: false,
+      showResult2: false
     };
     this.changed = false;
+  }
+
+  private disposers: IReactionDisposer[] = [];
+
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.subjectQnodes.qnodes, (qnodes) => this.updateSubjectQNodes(qnodes)));
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
   }
 
   handleOnChange(event: KeyboardEvent, key: string) {
@@ -86,16 +129,19 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       }
       this.timeoutId = window.setTimeout(() => {
         const { type } = this.state.fields;
+        if(key==='unit' || key==='property'){
+          this.setState({showResult1: true, showResult2: false})
+        }
         onChange(key, value, type);
       }, 300);
     });
   }
 
-  validationSelectionArea(selection: CellSelection){
-    if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2){
-      this.setState({validArea: true});
-    } else{
-      this.setState({validArea: false});
+  validationSelectionArea(selection: CellSelection) {
+    if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2) {
+      this.setState({ validArea: true });
+    } else {
+      this.setState({ validArea: false });
     }
   }
 
@@ -119,12 +165,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         window.clearTimeout(this.timeoutChangeAreaId);
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
-        if(this.state.validArea){
+        if (this.state.validArea) {
           onSelectionChange(selection);
         }
       }, 500);
     } else {
-      this.setState({validArea: false});
+      this.setState({ validArea: false });
     }
   }
 
@@ -153,9 +199,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
             type="text" size="sm"
             value={selectedArea || defaultValue}
             onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
-            isInvalid={ !this.state.validArea } />
+            isInvalid={!this.state.validArea} />
           <Form.Control.Feedback type="invalid">
-              Please choose a valid range.
+            Please choose a valid range.
             </Form.Control.Feedback>
         </Col>
       </Form.Group>
@@ -335,7 +381,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     )
   }
 
-  handleOnSelect(key: string, value: string) {
+  handleOnSelect(key: string, value?: string) {
     const fields = { ...this.state.fields };
     fields[key as keyof AnnotationFields] = value;
     this.setState({ fields });
@@ -343,7 +389,206 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderSearchResults() {
     return (
-      <SearchResults onSelect={this.handleOnSelect.bind(this)} />
+      <div>{
+        this.state.showResult1 ? 
+        <SearchResults onSelect={this.handleOnSelect.bind(this)} /> 
+        : null
+        }
+      
+       </div>
+    )
+  }
+
+  clearSubject() {
+    const subject = { ...this.state.subject };
+    subject.value = '';
+    this.setState({
+      subject: subject,
+      showResult2: false
+    });
+  }
+
+  clearInstanceOfSearch() {
+    const subject = { ...this.state.subject };
+    subject.instanceOfSearch = '';
+    this.setState({
+      subject: subject,
+      showResult2: false
+    });
+  }
+
+  handleOnFocusSubject() {
+    const { value, instanceOf } = this.state.subject;
+    if (value && value === this.state.fields.subject) { return; }
+    this.props.onChangeSubject('subject', value, instanceOf);
+  }
+
+  updateSubjectQNodes(qnodes: QNode[]) {
+    this.setState({showResult1: false, showResult2: true})
+    const subject = { ...this.state.subject };
+    subject.qnodes = qnodes;
+    this.setState({ subject: subject });
+  }
+
+  handleOnClickQnode(qnode: QNode) {
+    const subject = { ...this.state.subject };
+    console.log(subject);
+    subject.qnodes = [];
+    if (subject.instanceOfSearch) {
+      subject.instanceOfSearch = '';
+      subject.instanceOf = qnode;
+      this.handleOnSelect("subject", undefined)
+      subject.value = "";
+      subject.selected = undefined;
+    } else {
+      this.handleOnSelect("subject", qnode.id)
+      subject.value = qnode.id;
+      subject.selected = qnode;
+    }
+    this.setState({ subject: subject, showResult2: false });
+  }
+
+  handleOnChangeSubject(event: any) {
+    const value: string = (event.target as HTMLInputElement).value;
+    const subject = { ...this.state.subject };
+    subject.value = value;
+
+    this.setState({ subject: subject }, () => {
+
+      if (!value) {
+        this.clearSubject();
+      } else {
+        if (this.timeoutId) {
+          window.clearTimeout(this.timeoutId);
+        }
+        this.timeoutId = window.setTimeout(() => {
+          if (subject.value && subject.value == this.state.fields.subject) { return; }
+          this.props.onChangeSubject('subject', value, subject.instanceOf);
+        }, 300);
+      }
+    });
+  }
+
+  handleOnChangeInstanceOfSearch(event: any) {
+    const value: string = (event.target as HTMLInputElement).value;
+    const subject = { ...this.state.subject };
+    subject.instanceOfSearch = value;
+    this.setState({ subject: subject }, () => {
+      if (!value) {
+        this.clearInstanceOfSearch();
+      } else {
+        if (this.timeoutId) {
+          window.clearTimeout(this.timeoutId);
+        }
+        this.timeoutId = window.setTimeout(() => {
+          this.props.onChangeSubject('instanceOfSearch', value);
+        }, 300);
+      }
+    });
+  }
+
+  removeInstanceOf() {
+    const subject = { ...this.state.subject };
+    subject.instanceOf = undefined;
+    this.setState({
+      subject: subject,
+    }, () => {
+      this.props.onChangeSubject('subject', subject.value);
+    });
+  }
+
+  renderSubjectQNodeResults() {
+    const { qnodes } = this.state.subject;
+    if ( qnodes.length ) {
+      return (
+        <div className="results-subject">
+          {qnodes.map((item, index) => (
+      <Row className={"qnode"} key={index}
+        onClick={() => this.handleOnClickQnode(item)}>
+        <Col sm="12" md="12">
+          <div className="label">{item.label} ({item.id})</div>
+          <div className="description">{item.description}</div>
+        </Col>
+      </Row>
+        ))}
+        </div>
+      )
+    }
+  }
+
+  renderSelectedNode(){
+    const { qnodes, selected } = this.state.subject;
+    // const { subject } = {...this.state.fields};
+    if ( !qnodes.length && selected ) {
+      return (
+        <div className="selected-node">
+          <strong>{selected.label}</strong>&nbsp;
+          <a target="_blank"
+            rel="noopener noreferrer"
+            className="type-qnode"
+            href={`https://www.wikidata.org/wiki/${selected.id}`}>
+            {selected.id}
+          </a>
+          <br />
+          {selected.description}
+        </div>
+      )
+    }
+  }
+
+  renderSubject() {
+    const { value, instanceOfSearch, instanceOf, qnodes } = this.state.subject;
+    if (this.state.fields?.role != 'dependentVar') { return null; }
+    return (
+      <div>
+        <Form.Group as={Row}>
+          <Col sm="12" md='8'>
+            <Form.Label className="text-muted">Subject</Form.Label>
+            <Form.Control
+              type="text" size="sm"
+              placeholder='qnode'
+              value={value}
+              onFocus={this.handleOnFocusSubject.bind(this)}
+              onChange={(event: any) => this.handleOnChangeSubject(event)}
+            />
+            {value && qnodes.length ? (
+              <FontAwesomeIcon
+                icon={faTimes}
+                className="clear-button"
+                onClick={this.clearSubject.bind(this)} />
+            ) : null}
+          </Col>
+          <Col sm="12" md="4">
+            <Form.Label className="text-muted">Instance Of</Form.Label>
+            <Form.Control
+              type="text" size="sm"
+              placeholder="qnode"
+              value={instanceOfSearch}
+              onChange={(event: any) => {
+                this.handleOnChangeInstanceOfSearch(event)
+              }} />
+            {instanceOfSearch && qnodes.length? (
+              <FontAwesomeIcon
+                icon={faTimes}
+                className="clear-button"
+                onClick={this.clearInstanceOfSearch.bind(this)} />
+            ) : null}
+          </Col>
+        </Form.Group>
+        {instanceOf ? (
+          <div className="instance-of">
+            Results shown are limited to instances of <strong>{instanceOf.label} ({instanceOf.id})</strong>
+            <span className="remove-instance-of-button"
+              onClick={this.removeInstanceOf.bind(this)}>Remove</span>
+          </div>
+        ) : null}
+        {
+          this.state.showResult2 ?
+          this.renderSubjectQNodeResults()
+          : null
+        }
+        {this.renderSelectedNode()}
+      </div>
     )
   }
 
@@ -383,10 +628,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
+        {/* ref={this.containerResultRef}  */}
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptions()}
         {this.renderSearchResults()}
+        {this.renderSubject()}
         {this.renderSubmitButton()}
       </Form>
     )
