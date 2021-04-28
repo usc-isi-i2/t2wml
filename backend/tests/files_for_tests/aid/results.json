@@ -59,8 +59,8 @@
             "cells": [
                 [
                     "subject",
-                    "value",
-                    "property"
+                    "property",
+                    "value"
                 ]
             ],
             "dims": [
@@ -1978,8 +1978,8 @@
             "cells": [
                 [
                     "subject",
-                    "value",
-                    "property"
+                    "property",
+                    "value"
                 ]
             ],
             "dims": [
@@ -2199,8 +2199,8 @@
             "cells": [
                 [
                     "subject",
-                    "value",
-                    "property"
+                    "property",
+                    "value"
                 ]
             ],
             "dims": [

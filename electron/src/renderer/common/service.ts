@@ -107,7 +107,7 @@ class RequestService {
     wikiStore.annotateProperties.properties = response.qnodes;
   }
 
-  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean) {
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean, isSubject=false) {
     let url = `/qnodes?q=${search}`;
     if ( searchProperties ) {
       url = `/properties?q=${search}`;
@@ -119,7 +119,12 @@ class RequestService {
       url += `&instance_of=${instanceOf.id}`;
     }
     const response = await backendGet(url) as ResponseWithQNodesDTO;
-    wikiStore.wikifyQnodes.qnodes = response.qnodes;
+    if(isSubject){
+      wikiStore.subjectQnodes.qnodes = response.qnodes;
+    } else{
+      wikiStore.wikifyQnodes.qnodes = response.qnodes;
+    }
+    
   }
 
   public async postQNodes(values: any) {
