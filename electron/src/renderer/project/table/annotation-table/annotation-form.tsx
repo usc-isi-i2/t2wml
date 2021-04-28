@@ -43,6 +43,8 @@ interface AnnotationFormState {
   fields: AnnotationFields;
   showExtraFields: boolean;
   validArea: boolean;
+  showResult1: boolean;
+  showResult2: boolean;
   subject: {
     value?: string;
     instanceOfSearch?: string;
@@ -72,14 +74,15 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         ...selectedBlock //override everything previous
       },
       subject: {
-        value: undefined,
+        value: selectedBlock?.subject ? selectedBlock?.subject : undefined,
         instanceOfSearch: undefined,
         instanceOf: undefined,
         qnodes: [],
-        selected: undefined
       },
       validArea: true,
-      showExtraFields: false
+      showExtraFields: false,
+      showResult1: false,
+      showResult2: false
     };
     this.changed = false;
   }
@@ -87,12 +90,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
-
-    // const qnode = wikiStore.layers.qnode.find(selectedCell);
-    // if ( qnode ) {
-    //   this.setState({selected: qnode});
-    // }
+    this.disposers.push(reaction(() => wikiStore.subjectQnodes.qnodes, (qnodes) => this.updateSubjectQNodes(qnodes)));
   }
 
   componentWillUnmount() {
@@ -125,6 +123,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       }
       this.timeoutId = window.setTimeout(() => {
         const { type } = this.state.fields;
+        if(key==='unit' || key==='property'){
+          this.setState({showResult1: true, showResult2: false})
+        }
         onChange(key, value, type);
       }, 300);
     });
@@ -374,7 +375,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     )
   }
 
-  handleOnSelect(key: string, value: string) {
+  handleOnSelect(key: string, value?: string) {
     const fields = { ...this.state.fields };
     fields[key as keyof AnnotationFields] = value;
     this.setState({ fields });
@@ -382,7 +383,13 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderSearchResults() {
     return (
-      <SearchResults onSelect={this.handleOnSelect.bind(this)} />
+      <div>{
+        this.state.showResult1 ? 
+        <SearchResults onSelect={this.handleOnSelect.bind(this)} /> 
+        : null
+        }
+      
+       </div>
     )
   }
 
@@ -390,7 +397,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const subject = { ...this.state.subject };
     subject.value = '';
     this.setState({
-      subject: subject
+      subject: subject,
+      showResult2: false
     });
   }
 
@@ -398,16 +406,19 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const subject = { ...this.state.subject };
     subject.instanceOfSearch = '';
     this.setState({
-      subject: subject
+      subject: subject,
+      showResult2: false
     });
   }
 
   handleOnFocusSubject() {
     const { value, instanceOf } = this.state.subject;
+    if (value && value === this.state.fields.subject) { return; }
     this.props.onChangeSubject('subject', value, instanceOf);
   }
 
-  updateQNodes(qnodes: QNode[]) {
+  updateSubjectQNodes(qnodes: QNode[]) {
+    this.setState({showResult1: false, showResult2: true})
     const subject = { ...this.state.subject };
     subject.qnodes = qnodes;
     this.setState({ subject: subject });
@@ -420,10 +431,15 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     if (subject.instanceOfSearch) {
       subject.instanceOfSearch = '';
       subject.instanceOf = qnode;
+      this.handleOnSelect("subject", undefined)
+      subject.value = "";
+      subject.selected = undefined;
     } else {
-      subject.selected= qnode;
+      this.handleOnSelect("subject", qnode.id)
+      subject.value = qnode.id;
+      subject.selected = qnode;
     }
-    this.setState({ subject: subject });
+    this.setState({ subject: subject, showResult2: false });
   }
 
   handleOnChangeSubject(event: any) {
@@ -432,6 +448,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     subject.value = value;
 
     this.setState({ subject: subject }, () => {
+
       if (!value) {
         this.clearSubject();
       } else {
@@ -439,6 +456,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           window.clearTimeout(this.timeoutId);
         }
         this.timeoutId = window.setTimeout(() => {
+          if (subject.value && subject.value == this.state.fields.subject) { return; }
           this.props.onChangeSubject('subject', value, subject.instanceOf);
         }, 300);
       }
@@ -494,6 +512,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderSelectedNode(){
     const { qnodes, selected } = this.state.subject;
+    // const { subject } = {...this.state.fields};
     if ( !qnodes.length && selected ) {
       return (
         <div className="selected-node">
@@ -557,7 +576,11 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
               onClick={this.removeInstanceOf.bind(this)}>Remove</span>
           </div>
         ) : null}
-        {this.renderSubjectQNodeResults()}
+        {
+          this.state.showResult2 ?
+          this.renderSubjectQNodeResults()
+          : null
+        }
         {this.renderSelectedNode()}
       </div>
     )
@@ -599,6 +622,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
+        {/* ref={this.containerResultRef}  */}
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptions()}

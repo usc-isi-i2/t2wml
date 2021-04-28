@@ -46,7 +46,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     const isClass = key === 'instanceOfSearch';
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getQNodes(value, isClass, instanceOf)
+        this.requestService.getQNodes(value, isClass, instanceOf, false, true) // searchProperties=false, isSubject=true
       ));
     } catch (error) {
       error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;

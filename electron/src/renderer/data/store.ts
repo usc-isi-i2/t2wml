@@ -250,6 +250,7 @@ class WikiStore {
     @observable public globalSettings = new GlobalSettings();
     @observable public entitiesData = new EntitiesData();
     @observable public wikifyQnodes = new WikifyQnodes();
+    @observable public subjectQnodes = new WikifyQnodes();
     @observable public annotateProperties = new AnnotateProperties();
 
 
