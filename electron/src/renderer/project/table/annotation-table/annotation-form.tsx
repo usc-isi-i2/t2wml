@@ -65,6 +65,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     super(props);
 
     const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
+    const instanceOf = selectedBlock?.subject ? undefined : {
+      label: 'country',
+      description: 'the distinct region in geography; a broad term that can include political divisions or regions associated with distinct political characteristics',
+      id: 'Q6256',
+      url: 'https://www.wikidata.org/wiki/Q6256'
+    }
     this.state = {
       fields: {
         role: annotationSuggestions.roles[0],
@@ -76,7 +82,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       subject: {
         value: selectedBlock?.subject ? selectedBlock?.subject : undefined,
         instanceOfSearch: undefined,
-        instanceOf: undefined,
+        instanceOf: instanceOf,
         qnodes: [],
       },
       validArea: true,
