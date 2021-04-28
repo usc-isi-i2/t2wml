@@ -1386,8 +1386,8 @@
             "cells": [
                 [
                     "subject",
-                    "value",
-                    "property"
+                    "property",
+                    "value"
                 ]
             ],
             "dims": [
