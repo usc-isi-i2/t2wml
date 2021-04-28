@@ -7,7 +7,9 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
 import SearchResults from './search-results';
 import { QNode } from '@/renderer/common/dtos';
+import wikiStore from '../../../data/store';
 
+import { IReactionDisposer, reaction } from 'mobx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
@@ -33,6 +35,7 @@ interface AnnotationFields {
   language?: string;
   precision?: string;
   selectedArea?: string;
+  subject?: string;
 }
 
 
@@ -79,6 +82,23 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       showExtraFields: false
     };
     this.changed = false;
+  }
+
+  private disposers: IReactionDisposer[] = [];
+
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
+
+    // const qnode = wikiStore.layers.qnode.find(selectedCell);
+    // if ( qnode ) {
+    //   this.setState({selected: qnode});
+    // }
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
   }
 
   handleOnChange(event: KeyboardEvent, key: string) {
@@ -395,6 +415,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   handleOnClickQnode(qnode: QNode) {
     const subject = { ...this.state.subject };
+    console.log(subject);
     subject.qnodes = [];
     if (subject.instanceOfSearch) {
       subject.instanceOfSearch = '';
@@ -436,7 +457,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           window.clearTimeout(this.timeoutId);
         }
         this.timeoutId = window.setTimeout(() => {
-          this.props.onChange('instanceOfSearch', value);
+          this.props.onChangeSubject('instanceOfSearch', value);
         }, 300);
       }
     });
