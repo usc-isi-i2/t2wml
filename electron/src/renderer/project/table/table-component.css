@@ -302,6 +302,15 @@
 .table-wrapper table tr td.role-dependentVar {
   background: #D9F2E6;
 }
+.table-wrapper table tr td.role-dependentVar-no-property {
+  background: repeating-linear-gradient(
+  45deg,
+  #D9F2E6,
+  #D9F2E6 5px,
+  #ffffff 5px,
+  #ffffff 10px
+);
+}
 .table-wrapper table tr td.role-mainSubject {
   background: #D9EAF2;
 }
@@ -313,6 +322,16 @@
 .table-wrapper table tr td.role-qualifier {
   background: #DDD9F2;
 }
+.table-wrapper table tr td.role-qualifier-no-property {
+  background: repeating-linear-gradient(
+  45deg,
+  #DDD9F2,
+  #DDD9F2 5px,
+  #ffffff 5px,
+  #ffffff 10px
+);
+}
+
 .table-wrapper table tr td.role-property {
   background: #fbe5ce;
 }

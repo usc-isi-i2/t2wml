@@ -4,7 +4,7 @@ import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
 import RequestService from '../../../common/service';
 import wikiStore from '@/renderer/data/store';
-import { AnnotationBlock, ResponseWithSuggestion, TableCell, TableData, TableDTO } from '../../../common/dtos';
+import { AnnotationBlock, AnnotationBlockRole, ResponseWithSuggestion, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
 import * as utils from '../table-utils';
@@ -116,10 +116,16 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( wikiStore.annotations.blocks && tableData ) {
 
       for ( const block of wikiStore.annotations.blocks ) {
-        const { role, type, selection } = block;
+        const { role, type, selection, property, links, subject } = block;
         const classNames: string[] = [];
         if ( role ) {
-          classNames.push(`role-${role}`);
+          if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
+            classNames.push(`role-${role}-no-property`);
+          } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.mainSubject))){
+            classNames.push(`role-${role}-no-property`);
+          } else{
+            classNames.push(`role-${role}`);
+          }
         }
         if ( type ) {
           classNames.push(`type-${type}`);
@@ -346,15 +352,39 @@ class AnnotationTable extends Component<{}, TableState> {
     table.classList.add('active');
 
     const classNames: string[] = ['active'];
+    const linksBlocks: {block: AnnotationBlock, classNames: string[]}[] = [];
     if ( selectedBlock ) {
-      const { role } = selectedBlock;
+      const { role, property, links, subject } = selectedBlock;
       if ( role ) {
-        classNames.push(`role-${role}`);
+        if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
+          classNames.push(`role-${role}-no-property`);
+        } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.mainSubject))){
+          classNames.push(`role-${role}-no-property`);
+        } else{
+          classNames.push(`role-${role}`);
+        }
+      }
+      if (links){
+        for ( const block of wikiStore.annotations.blocks ) {
+          if((links.property && block.id == links.property) || (links.mainSubject &&  block.id == links.mainSubject)
+          || (links.unit && block.id == links.unit)){
+            const linkedBlock = { ...block };
+            linksBlocks.push({classNames: ['active', `role-${linkedBlock.role}`], block: linkedBlock})
+          }
+        }
       }
     }
+    this.selectBlock(this.selection, table, classNames);
+    for(const linkedBlock of linksBlocks){
+      const { selection } = linkedBlock.block;
+      this.selectBlock(selection, table, linkedBlock.classNames);
+    }
 
+  }
+
+  selectBlock(selection:CellSelection, table: any, classNames: string[]){
+    const { x1, x2, y1, y2 } = selection;
     const rows = table.querySelectorAll('tr');
-    const { x1, x2, y1, y2 } = this.selection;
     const leftCol = Math.min(x1, x2);
     const rightCol = Math.max(x1, x2);
     const topRow = Math.min(y1, y2);
