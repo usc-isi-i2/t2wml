@@ -442,9 +442,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   clearSubject() {
     const subject = { ...this.state.subject };
+    const fields = {...this.state.fields};
+    fields.subject=undefined;
     subject.value = '';
     this.setState({
       subject: subject,
+      fields: fields,
       showResult2: false
     });
   }
