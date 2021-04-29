@@ -252,7 +252,14 @@ class TableContainer extends Component<{}, TableState> {
         return;
       }
     }
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try{
     this.requestService.call(this, ()=>this.requestService.getSuggestedAnnotationBlocks())
+    }finally{
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
   }
 
   renderErrorMessage() {

@@ -211,19 +211,9 @@ class RequestService {
 
 
   public async getTable() {
-
-    wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
     const updater = currentFilesService.createUpdater();
-    try{
-      const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-      updater.update(()=>this.fillTable(response), "getTable");
-    } finally{
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-    }
+    const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
+    updater.update(()=>this.fillTable(response), "getTable");
   }
 
   public async getMappingCalculation() {
