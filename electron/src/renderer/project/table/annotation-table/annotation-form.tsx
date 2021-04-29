@@ -252,12 +252,22 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         }
       }
     }
+    const unitBlockId = selectedBlock?.links?.unit;
+    let unitBlockSelection = "";
+    if (unitBlockId) {
+      for (const block of wikiStore.annotations.blocks) {
+        if (block.id == unitBlockId) {
+          const { x1, x2, y1, y2 } = block.selection;
+          unitBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
+        }
+      }
+    }
 
     return (
       <Form.Group as={Row} key={type.value}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
-        <Col sm='12' md={key == 'property' && propertyBlockId ? '8' : '12'}>
-          {/* {key == 'property' && propertyBlockId ? '6' : '12'} */}
+        <Col sm='12' md={(key == 'property' && propertyBlockId)
+                    ||  (key == 'unit' && unitBlockId) ? '9' : '12'}>
           <Form.Label className="text-muted">{type.label}</Form.Label>
           <Form.Control
             type="text" size="sm"
@@ -267,12 +277,21 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         </Col>
         {
           key == "property" && propertyBlockId ?
-            <Col sm="12" md='4'>
-              <Form.Label className="text-muted">Property Area</Form.Label>
+            <Col sm="12" md='3'>
+              <Form.Label className="text-muted">Sheet link</Form.Label>
               <Form.Control
                 type="text" size="sm"
                 value={propertyBlockSelection}
                 defaultValue={propertyBlockSelection}
+                readOnly />
+            </Col>
+            : key == "unit" && unitBlockId ?
+            <Col sm="12" md='3'>
+              <Form.Label className="text-muted">Sheet link</Form.Label>
+              <Form.Control
+                type="text" size="sm"
+                value={unitBlockSelection}
+                defaultValue={unitBlockSelection}
                 readOnly />
             </Col>
             : null

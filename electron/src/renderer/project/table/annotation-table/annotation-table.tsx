@@ -116,18 +116,14 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( wikiStore.annotations.blocks && tableData ) {
 
       for ( const block of wikiStore.annotations.blocks ) {
-        const { role, type, selection, property, links, subject, link } = block;
+        const { role, type, selection, property, links, subject } = block;
         const classNames: string[] = [];
         if ( role ) {
           if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
             classNames.push(`role-${role}-no-property`);
           } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.subject))){
             classNames.push(`role-${role}-no-property`);
-          }
-          //else if (!link){
-          //  classNames.push(`role-${role}-no-property`);
-          //}
-          else{
+          } else{
             classNames.push(`role-${role}`);
           }
         }
@@ -358,22 +354,20 @@ class AnnotationTable extends Component<{}, TableState> {
     const classNames: string[] = ['active'];
     const linksBlocks: {block: AnnotationBlock, classNames: string[]}[] = [];
     if ( selectedBlock ) {
-      const { role, property, links, subject, link } = selectedBlock;
+      const { role, property, links, subject } = selectedBlock;
       if ( role ) {
         if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
           classNames.push(`role-${role}-no-property`);
         } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.subject))){
           classNames.push(`role-${role}-no-property`);
-        } //else if (!link){
-          //classNames.push(`role-${role}-no-property`);
-        //}
-        else{
+        } else{
           classNames.push(`role-${role}`);
         }
       }
       if (links){
         for ( const block of wikiStore.annotations.blocks ) {
-          if((links.property && block.id == links.property) || (links.subject &&  block.id == links.subject)){
+          if((links.property && block.id == links.property) || (links.subject &&  block.id == links.subject) 
+          || (links.unit && block.id == links.unit)){
             const linkedBlock = { ...block };
             linksBlocks.push({classNames: ['active', `role-${linkedBlock.role}`], block: linkedBlock})
           }
