@@ -9,7 +9,7 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
-from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
+from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator, Annotation, basic_block_finder
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
@@ -18,7 +18,6 @@ from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
-from t2wml.input_processing.annotation_parsing import Annotation
 
 
 def add_entities_from_project(project):
@@ -318,12 +317,19 @@ def get_annotations(calc_params):
         dga=Annotation()
     except Exception as e:
         raise e
-
     try:
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
     return dga.annotation_block_array, yamlContent
+
+def suggest_annotations(calc_params):
+    annotations_path=calc_params.annotation_path
+    dga=Annotation(basic_block_finder(calc_params.sheet))
+    if annotations_path:
+        dga.save(annotations_path)
+    return dga.annotation_block_array
+
 
 def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
     #temporary fix until we fix in frontend:

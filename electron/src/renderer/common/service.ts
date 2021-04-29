@@ -173,6 +173,12 @@ class RequestService {
     return response
   }
 
+  public async getSuggestedAnnotationBlocks(){
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithMappingDTO;
+    updater.update(()=>{this.fillMapping(response);}, "getsuggestedAnnotationBlocks")
+  }
+
   public async createProject(folder:string, data?: any) {
     const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
