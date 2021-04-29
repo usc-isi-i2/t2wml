@@ -580,10 +580,21 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderSubject() {
     const { value, instanceOfSearch, instanceOf, qnodes } = this.state.subject;
     if (this.state.fields?.role != 'dependentVar') { return null; }
+    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const subjectBlockId = selectedBlock?.links?.subject;
+    let subjectBlockSelection = "";
+    if (subjectBlockId) {
+      for (const block of wikiStore.annotations.blocks) {
+        if (block.id == subjectBlockId) {
+          const { x1, x2, y1, y2 } = block.selection;
+          subjectBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
+        }
+      }
+    }
     return (
       <div>
         <Form.Group as={Row}>
-          <Col sm="12" md='8'>
+          <Col sm="12" md={ subjectBlockSelection ? '6' : '8'}>
             <Form.Label className="text-muted">Subject</Form.Label>
             <Form.Control
               type="text" size="sm"
@@ -599,7 +610,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
                 onClick={this.clearSubject.bind(this)} />
             ) : null}
           </Col>
-          <Col sm="12" md="4">
+          <Col sm="12" md={ subjectBlockSelection ? '3' : '4'}>
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
               type="text" size="sm"
@@ -615,6 +626,18 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
                 onClick={this.clearInstanceOfSearch.bind(this)} />
             ) : null}
           </Col>
+          {
+            subjectBlockSelection ?
+             <Col sm="12" md='3'>
+              <Form.Label className="text-muted">Sheet link</Form.Label>
+              <Form.Control
+                type="text" size="sm"
+                value={subjectBlockSelection}
+                defaultValue={subjectBlockSelection}
+                readOnly />
+            </Col> : null
+          }
+         
         </Form.Group>
         {instanceOf ? (
           <div className="instance-of">
