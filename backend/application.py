@@ -11,7 +11,7 @@ from app_config import app
 from t2wml.input_processing.annotation_parsing import annotation_suggester
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, add_entities_from_project, get_partial_csv,
-                       add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
+                       add_entities_from_file, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
@@ -436,6 +436,16 @@ def suggest_annotation_block():
         print(e)
         pass
     return response, 200
+
+
+@app.route('/api/annotation/guess-blocks', methods=['GET'])
+@json_response
+def guess_annotation_blocks():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    annotation_blocks=suggest_annotations(calc_params)
+    return get_mapping()
+
 
 
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
