@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from t2wml.input_processing.annotation_parsing import annotation_suggester
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, add_entities_from_project, get_partial_csv,
-                       add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
+                       add_entities_from_file, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
@@ -58,6 +58,7 @@ def json_response(func):
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
+            print(e)
             if "Permission denied" in str(e):
                 e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
                 data = {"error": e.error_dict}
@@ -132,12 +133,12 @@ def get_mapping(mapping_file=None, mapping_type=None):
 
     response = dict(project=get_project_dict(project))
 
-    if calc_params.annotation_path:
-        response["annotations"], response["yamlContent"] = get_annotations(
-            calc_params)
-    elif calc_params.yaml_path:
+    if calc_params.yaml_path:
         response["yamlContent"] = get_yaml_content(calc_params)
         response["annotations"] = []
+    else:
+        response["annotations"], response["yamlContent"] = get_annotations(
+            calc_params)
     get_layers(response, calc_params)
     return response, 200
 
@@ -437,6 +438,16 @@ def suggest_annotation_block():
         print(e)
         pass
     return response, 200
+
+
+@app.route('/api/annotation/guess-blocks', methods=['GET'])
+@json_response
+def guess_annotation_blocks():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    annotation_blocks=suggest_annotations(calc_params)
+    return get_mapping()
+
 
 
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])

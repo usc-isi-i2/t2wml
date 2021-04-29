@@ -9,7 +9,7 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
-from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
+from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator, Annotation, basic_block_finder
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
@@ -18,7 +18,6 @@ from app_config import db, CACHE_FOLDER
 from database_provider import DatabaseProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
-from t2wml.input_processing.annotation_parsing import Annotation
 
 
 def add_entities_from_project(project):
@@ -318,12 +317,19 @@ def get_annotations(calc_params):
         dga=Annotation()
     except Exception as e:
         raise e
-
     try:
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
     return dga.annotation_block_array, yamlContent
+
+def suggest_annotations(calc_params):
+    annotations_path=calc_params.annotation_path
+    dga=Annotation(basic_block_finder(calc_params.sheet))
+    if annotations_path:
+        dga.save(annotations_path)
+    return dga.annotation_block_array
+
 
 def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
     #temporary fix until we fix in frontend:
@@ -365,10 +371,22 @@ def get_partial_csv(calc_params):
     annotation= calc_params.annotation_path
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
-    columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
-    df = pd.DataFrame.from_dict(dict_values)
-    df.replace(to_replace=[None], value="", inplace=True)
-    df = df[columns] # sort the columns
+    if not kg.statements:
+        if cell_mapper.annotation.subject_annotations:
+            df=pd.DataFrame([], columns=["subject", "property", "value"])
+            subject_cells=[]
+            (x1, y1),(x2, y2)=subject_block_cells=cell_mapper.annotation.subject_annotations[0].cell_args
+            for row in range(y1, y2+1):
+                for col in range(x1, x2+1):
+                    subject_cells.append(calc_params.sheet[row][col])
+            df.subject=subject_cells
+
+
+    else:
+        columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
+        df = pd.DataFrame.from_dict(dict_values)
+        df.replace(to_replace=[None], value="", inplace=True)
+        df = df[columns] # sort the columns
     dims = list(df.shape)
     cells = json.loads(df.to_json(orient="values"))
     cells.insert(0, list(df.columns))

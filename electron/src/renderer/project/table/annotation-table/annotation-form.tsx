@@ -12,6 +12,7 @@ import wikiStore from '../../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { columnToLetter } from '../table-utils';
 
 
 interface AnnotationFormProperties {
@@ -129,8 +130,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       }
       this.timeoutId = window.setTimeout(() => {
         const { type } = this.state.fields;
-        if(key==='unit' || key==='property'){
-          this.setState({showResult1: true, showResult2: false})
+        if (key === 'unit' || key === 'property') {
+          this.setState({ showResult1: true, showResult2: false })
         }
         onChange(key, value, type);
       }, 300);
@@ -241,22 +242,62 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       )
     }
 
+    const propertyBlockId = selectedBlock?.links?.property;
+    let propertyBlockSelection = "";
+    if (propertyBlockId) {
+      for (const block of wikiStore.annotations.blocks) {
+        if (block.id == propertyBlockId) {
+          const { x1, x2, y1, y2 } = block.selection;
+          propertyBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
+        }
+      }
+    }
+    const unitBlockId = selectedBlock?.links?.unit;
+    let unitBlockSelection = "";
+    if (unitBlockId) {
+      for (const block of wikiStore.annotations.blocks) {
+        if (block.id == unitBlockId) {
+          const { x1, x2, y1, y2 } = block.selection;
+          unitBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
+        }
+      }
+    }
+
     return (
       <Form.Group as={Row} key={type.value}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
-        <Col sm="12" md="12">
+        <Col sm='12' md={(key == 'property' && propertyBlockId)
+                    ||  (key == 'unit' && unitBlockId) ? '9' : '12'}>
           <Form.Label className="text-muted">{type.label}</Form.Label>
-          {this.state.fields[key as keyof AnnotationFields] ? (
-            <Form.Control
-              type="text" size="sm"
-              value={this.state.fields[key as keyof AnnotationFields]}
-              defaultValue={defaultValue} />
-          ) : (
-            <Form.Control
-              type="text" size="sm"
-              defaultValue={defaultValue} />
-          )}
+          <Form.Control
+            type="text" size="sm"
+            value={this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""}
+            defaultValue={defaultValue} />
+
         </Col>
+        {
+          key == "property" && propertyBlockId ?
+            <Col sm="12" md='3'>
+              <Form.Label className="text-muted">Sheet link</Form.Label>
+              <Form.Control
+                type="text" size="sm"
+                value={propertyBlockSelection}
+                defaultValue={propertyBlockSelection}
+                readOnly />
+            </Col>
+            : key == "unit" && unitBlockId ?
+            <Col sm="12" md='3'>
+              <Form.Label className="text-muted">Sheet link</Form.Label>
+              <Form.Control
+                type="text" size="sm"
+                value={unitBlockSelection}
+                defaultValue={unitBlockSelection}
+                readOnly />
+            </Col>
+            : null
+        }
+
+
       </Form.Group>
     )
   }
@@ -317,7 +358,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
-      if (this.state.showExtraFields && selectedType.children.length>1)
+      if (this.state.showExtraFields && selectedType.children.length > 1)
         return (
           <React.Fragment>
             {optionsDropdown}
@@ -390,20 +431,23 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderSearchResults() {
     return (
       <div>{
-        this.state.showResult1 ? 
-        <SearchResults onSelect={this.handleOnSelect.bind(this)} /> 
-        : null
-        }
-      
-       </div>
+        this.state.showResult1 ?
+          <SearchResults onSelect={this.handleOnSelect.bind(this)} />
+          : null
+      }
+
+      </div>
     )
   }
 
   clearSubject() {
     const subject = { ...this.state.subject };
+    const fields = {...this.state.fields};
+    fields.subject=undefined;
     subject.value = '';
     this.setState({
       subject: subject,
+      fields: fields,
       showResult2: false
     });
   }
@@ -424,7 +468,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   updateSubjectQNodes(qnodes: QNode[]) {
-    this.setState({showResult1: false, showResult2: true})
+    this.setState({ showResult1: false, showResult2: true })
     const subject = { ...this.state.subject };
     subject.qnodes = qnodes;
     this.setState({ subject: subject });
@@ -499,27 +543,27 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderSubjectQNodeResults() {
     const { qnodes } = this.state.subject;
-    if ( qnodes.length ) {
+    if (qnodes.length) {
       return (
         <div className="results-subject">
           {qnodes.map((item, index) => (
-      <Row className={"qnode"} key={index}
-        onClick={() => this.handleOnClickQnode(item)}>
-        <Col sm="12" md="12">
-          <div className="label">{item.label} ({item.id})</div>
-          <div className="description">{item.description}</div>
-        </Col>
-      </Row>
-        ))}
+            <Row className={"qnode"} key={index}
+              onClick={() => this.handleOnClickQnode(item)}>
+              <Col sm="12" md="12">
+                <div className="label">{item.label} ({item.id})</div>
+                <div className="description">{item.description}</div>
+              </Col>
+            </Row>
+          ))}
         </div>
       )
     }
   }
 
-  renderSelectedNode(){
+  renderSelectedNode() {
     const { qnodes, selected } = this.state.subject;
     // const { subject } = {...this.state.fields};
-    if ( !qnodes.length && selected ) {
+    if (!qnodes.length && selected) {
       return (
         <div className="selected-node">
           <strong>{selected.label}</strong>&nbsp;
@@ -539,10 +583,21 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderSubject() {
     const { value, instanceOfSearch, instanceOf, qnodes } = this.state.subject;
     if (this.state.fields?.role != 'dependentVar') { return null; }
+    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const subjectBlockId = selectedBlock?.links?.mainSubject;
+    let subjectBlockSelection = "";
+    if (subjectBlockId) {
+      for (const block of wikiStore.annotations.blocks) {
+        if (block.id == subjectBlockId) {
+          const { x1, x2, y1, y2 } = block.selection;
+          subjectBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
+        }
+      }
+    }
     return (
       <div>
         <Form.Group as={Row}>
-          <Col sm="12" md='8'>
+          <Col sm="12" md={ subjectBlockSelection ? '6' : '8'}>
             <Form.Label className="text-muted">Subject</Form.Label>
             <Form.Control
               type="text" size="sm"
@@ -558,7 +613,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
                 onClick={this.clearSubject.bind(this)} />
             ) : null}
           </Col>
-          <Col sm="12" md="4">
+          <Col sm="12" md={ subjectBlockSelection ? '3' : '4'}>
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
               type="text" size="sm"
@@ -567,13 +622,25 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
               onChange={(event: any) => {
                 this.handleOnChangeInstanceOfSearch(event)
               }} />
-            {instanceOfSearch && qnodes.length? (
+            {instanceOfSearch && qnodes.length ? (
               <FontAwesomeIcon
                 icon={faTimes}
                 className="clear-button"
                 onClick={this.clearInstanceOfSearch.bind(this)} />
             ) : null}
           </Col>
+          {
+            subjectBlockSelection ?
+             <Col sm="12" md='3'>
+              <Form.Label className="text-muted">Sheet link</Form.Label>
+              <Form.Control
+                type="text" size="sm"
+                value={subjectBlockSelection}
+                defaultValue={subjectBlockSelection}
+                readOnly />
+            </Col> : null
+          }
+
         </Form.Group>
         {instanceOf ? (
           <div className="instance-of">
@@ -584,8 +651,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         ) : null}
         {
           this.state.showResult2 ?
-          this.renderSubjectQNodeResults()
-          : null
+            this.renderSubjectQNodeResults()
+            : null
         }
         {this.renderSelectedNode()}
       </div>

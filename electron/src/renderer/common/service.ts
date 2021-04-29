@@ -124,7 +124,7 @@ class RequestService {
     } else{
       wikiStore.wikifyQnodes.qnodes = response.qnodes;
     }
-    
+
   }
 
   public async postQNodes(values: any) {
@@ -162,14 +162,21 @@ class RequestService {
   }
 
   public async postAnnotationBlocks(data: any) {
+    const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
-    wikiStore.project.projectDTO = response.project;
-    this.fillMapping(response);
+    updater.update(()=>{wikiStore.project.projectDTO = response.project;
+    this.fillMapping(response);}, "postAnnotationBlocks")
   }
 
   public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion>  {
     const response = await backendPut(`/annotation/suggest?${this.getDataFileParams()}`, data) as ResponseWithSuggestion; //TODO
     return response
+  }
+
+  public async getSuggestedAnnotationBlocks(){
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithMappingDTO;
+    updater.update(()=>{this.fillMapping(response);}, "getsuggestedAnnotationBlocks")
   }
 
   public async createProject(folder:string, data?: any) {
@@ -186,8 +193,9 @@ class RequestService {
   }
 
   public async uploadDataFile(folder: string, data: any) {
+    const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/data?project_folder=${folder}`, data) as ResponseWithEverythingDTO;
-    this.fillTable(response);
+    updater.update(()=>this.fillTable(response), "uploadDataFile");
   }
 
   public async uploadWikifierOutput(data: any) {
@@ -203,23 +211,15 @@ class RequestService {
 
 
   public async getTable() {
-
-    wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
-    try{
-      const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-      this.fillTable(response);
-    } finally{
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-    }
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
+    updater.update(()=>this.fillTable(response), "getTable");
   }
 
   public async getMappingCalculation() {
+    const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
-    this.fillMapping(response);
+    updater.update(()=>this.fillMapping(response), "getMappingCalculation");
   }
 
   public async getSettings(folder: string) {

@@ -12,6 +12,30 @@ export class CurrentFiles {
 
 const filename = 't2wmlproj.user.json';
 
+class Updater{
+    datafile: string;
+    sheetName: string;
+    mappingFile?: string;
+    constructor(datafile: string, sheetName: string, mappingFile?:string){
+        this.datafile=datafile;
+        this.sheetName=sheetName;
+        this.mappingFile=mappingFile;
+    }
+
+    update(func: ()=>void, callfunctionlog=""){
+        console.log("called via update", callfunctionlog)
+        if (this.datafile==currentFilesService.currentState.dataFile
+            && this.sheetName==currentFilesService.currentState.sheetName
+            && this.mappingFile==currentFilesService.currentState.mappingFile
+            ){
+                func()
+        }
+        else{
+            console.warn("threw out an update because state was not as expected", callfunctionlog)
+        }
+    }
+}
+
 export class CurrentFilesService {
     // Instance needed ?
     private static _instance?: CurrentFilesService;
@@ -213,6 +237,11 @@ export class CurrentFilesService {
     }
         }
     }
+
+    createUpdater(): Updater{
+        return new Updater(this.currentState.dataFile, this.currentState.sheetName, this.currentState.mappingFile);
+    }
+
 }
 
 export const currentFilesService = CurrentFilesService.instance;

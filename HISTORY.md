@@ -1,7 +1,35 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version 2.9.0-pre.6 (beta): 
+Changes in version 2.9.1:
+-------------------------
+* t2wml-api 0.3.2
+* fix out of sync state updates, much more stable coloring code
+* add workaround to display subject in partial csv if no dependent variable specified
+* add button to suggest an automatic annotation when in annotation mode
+* if qualifier is missing property, or variable is missing property/main subject, display as striped
+* if qualifier/depvar are linked to other blocks, active-border-highlight those blocks when qualifier/depvar are clicked
+* display a field for sheet link for any fields linked to other blocks in the sheet
+
+Changes in version 2.9.0-pre.9 (beta):
+-------------------------
+* t2wml version 0.3.0
+* replaced wikifier window with results preview window
+* improved property/qnode search passes property's data_type to search
+* added annotation block auto-suggestions
+* add ability to pass subject in dependent variable's annotation
+* tweaks:
+   * download name is no longer [project].suffix and is now [data file + sheet].suffix
+   * default mode now annotation not output
+* bug fixes:
+   * critical bug fix: when switching sheets, impossible to annotate
+   * removed ability to delete active annotation file while in annotation mode
+   * colors from previous file carrying over to new file
+   * entities labels not being fetched
+   * better handling of permission denied IO error
+   * additional fields toggle wasn't disappearing when type switched
+
+Changes in version 2.9.0-pre.7 (beta): 
 -------------------------
 * t2wml version 0.2.11
 * bug fix: app crashed when navigating into empty cells in output mode

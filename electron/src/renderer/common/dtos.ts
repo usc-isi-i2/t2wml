@@ -132,6 +132,13 @@ export interface AnnotationBlock{
 
     unit?: string;
     subject?: string;
+    property?: string;
+    links?: {
+        property?: string;// the ID of the block with the property of this block
+        mainSubject?: string; // the ID of the block with the subject of this block
+        unit?: string;
+    };
+    
     //upperBound?: string;
     //lowerBound?: string;
 

@@ -64,6 +64,17 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     }
   }
 
+  async callGetTable(){
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try{
+    await this.requestService.getTable();
+    }finally{
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+  }
+
   async changeFile() {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
@@ -93,7 +104,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     const data = { "file_name": filename, "delete": deleteFromFs };
     try {
       await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
-      await this.requestService.getTable();
+      await this.callGetTable();
     } catch (error) {
       console.log(error);
     } finally {
@@ -125,7 +136,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
         else {
           await this.requestService.uploadEntities(data);
         }
-        await this.requestService.getTable();
+        await this.callGetTable();
 
       } catch (error) {
         console.log(error);

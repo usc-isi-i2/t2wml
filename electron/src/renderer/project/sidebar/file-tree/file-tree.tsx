@@ -53,24 +53,35 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
+  async callGetTable(){
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try{
+    await this.requestService.getTable();
+    }finally{
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+  }
+
   async changeDataFile(dataFile: string) {
     currentFilesService.changeDataFile(dataFile);
-    await this.requestService.getTable();
+    await this.callGetTable()
   }
 
   async changeSheet(sheetName: string, dataFile: string) {
     currentFilesService.changeSheet(sheetName, dataFile);
-    await this.requestService.getTable();
+    await this.callGetTable()
   }
 
   async changeYaml(yaml: string, sheetName: string, dataFile: string) {
     currentFilesService.changeYaml(yaml, sheetName, dataFile);
-    await this.requestService.getTable();
+    await this.callGetTable()
   }
 
   async changeAnnotation(annotation: string, sheetName: string, dataFile: string) {
     currentFilesService.changeAnnotation(annotation, sheetName, dataFile);
-    await this.requestService.getTable();
+    await this.callGetTable()
   }
 
   async changeFile(node: NodeProps) {
@@ -154,7 +165,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           currentFilesService.setMappingFiles();
         }
          //do we need this in order to be able to call get table?
-        await this.requestService.getTable();
+        await this.callGetTable()
       }
     } catch (error) {
       console.log(error);

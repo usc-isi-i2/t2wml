@@ -102,7 +102,7 @@ class OutputTable extends Component<{}, TableState> {
     if (!tableData) { return; }
     for (const entry of qnodes.entries) {
       for (const indexPair of entry.indices) {
-        const tableCell = tableData[indexPair[0]][indexPair[1]];
+        const tableCell = tableData[indexPair[0]][indexPair[1]]; //TODO: sometimes doesn't exist and crashes program
         tableCell.classNames.push(`type-wikibaseitem`);
       }
     }
