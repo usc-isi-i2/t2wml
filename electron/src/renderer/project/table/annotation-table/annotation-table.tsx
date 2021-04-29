@@ -116,12 +116,18 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( wikiStore.annotations.blocks && tableData ) {
 
       for ( const block of wikiStore.annotations.blocks ) {
-        const { role, type, selection, property, links } = block;
+        const { role, type, selection, property, links, subject, link } = block;
         const classNames: string[] = [];
         if ( role ) {
-          if((role == "qualifier" as AnnotationBlockRole || role == "dependentVar" as AnnotationBlockRole ) && !property  && !links?.property){
+          if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
             classNames.push(`role-${role}-no-property`);
-          } else{
+          } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.subject))){
+            classNames.push(`role-${role}-no-property`);
+          }
+          //else if (!link){
+          //  classNames.push(`role-${role}-no-property`);
+          //}
+          else{
             classNames.push(`role-${role}`);
           }
         }
@@ -352,11 +358,16 @@ class AnnotationTable extends Component<{}, TableState> {
     const classNames: string[] = ['active'];
     const linksBlocks: {block: AnnotationBlock, classNames: string[]}[] = [];
     if ( selectedBlock ) {
-      const { role, property, links } = selectedBlock;
+      const { role, property, links, subject, link } = selectedBlock;
       if ( role ) {
-        if((role == "qualifier" as AnnotationBlockRole || role == "dependentVar" as AnnotationBlockRole ) && !property && ! links?.property){
+        if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
           classNames.push(`role-${role}-no-property`);
-        } else{
+        } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.subject))){
+          classNames.push(`role-${role}-no-property`);
+        } //else if (!link){
+          //classNames.push(`role-${role}-no-property`);
+        //}
+        else{
           classNames.push(`role-${role}`);
         }
       }
@@ -374,7 +385,7 @@ class AnnotationTable extends Component<{}, TableState> {
       const { selection } = linkedBlock.block;
       this.selectBlock(selection, table, linkedBlock.classNames);
     }
-    
+
   }
 
   selectBlock(selection:CellSelection, table: any, classNames: string[]){
