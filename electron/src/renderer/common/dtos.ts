@@ -132,6 +132,8 @@ export interface AnnotationBlock{
 
     unit?: string;
     subject?: string;
+    property?: string;
+    links?: any[];
     //upperBound?: string;
     //lowerBound?: string;
 
