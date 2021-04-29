@@ -246,6 +246,22 @@ class TableContainer extends Component<{}, TableState> {
     }
   }
 
+  async getAnnotationSuggestion(){
+    if (wikiStore.annotations.blocks.length>0){
+      if (!confirm("This will clear the existing annotation, are you sure you want to continue?")){
+        return;
+      }
+    }
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try{
+    this.requestService.call(this, ()=>this.requestService.getSuggestedAnnotationBlocks())
+    }finally{
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+  }
+
   renderErrorMessage() {
     const { errorMessage } = this.state;
     if (errorMessage.errorDescription) {
@@ -258,7 +274,7 @@ class TableContainer extends Component<{}, TableState> {
   renderTitle() {
     const { filename } = this.state;
     return (
-      <div style={{ width: "calc(100% - 350px)", cursor: "default" }}
+      <div style={{ width: "calc(100% - 500px)", cursor: "default" }}
         className="text-white font-weight-bold d-inline-block text-truncate">
         { filename ? (
           <span>
@@ -272,6 +288,17 @@ class TableContainer extends Component<{}, TableState> {
         )}
       </div>
     )
+  }
+
+  renderSuggestButton(){
+    if (this.state.mode == "annotation"){
+    return (
+      <div style={{ cursor: "pointer", textDecoration: "underline"}}
+        className="text-white d-inline-block">
+          <span onClick={()=>this.getAnnotationSuggestion()}>Suggest annotation</span>
+      </div>
+    )
+    }
   }
 
   renderAnnotationToggle() {
@@ -399,6 +426,7 @@ class TableContainer extends Component<{}, TableState> {
             style={{ height: "40px", background: "#339966" }}>
             {this.renderTitle()}
             {this.renderUploadButton()}
+            {this.renderSuggestButton()}
             {this.renderAnnotationToggle()}
           </Card.Header>
 

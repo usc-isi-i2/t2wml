@@ -173,6 +173,12 @@ class RequestService {
     return response
   }
 
+  public async getSuggestedAnnotationBlocks(){
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithMappingDTO;
+    updater.update(()=>{this.fillMapping(response);}, "getsuggestedAnnotationBlocks")
+  }
+
   public async createProject(folder:string, data?: any) {
     const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
@@ -205,19 +211,9 @@ class RequestService {
 
 
   public async getTable() {
-
-    wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
     const updater = currentFilesService.createUpdater();
-    try{
-      const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-      updater.update(()=>this.fillTable(response), "getTable");
-    } finally{
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-    }
+    const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
+    updater.update(()=>this.fillTable(response), "getTable");
   }
 
   public async getMappingCalculation() {
