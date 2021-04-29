@@ -116,10 +116,10 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( wikiStore.annotations.blocks && tableData ) {
 
       for ( const block of wikiStore.annotations.blocks ) {
-        const { role, type, selection, property } = block;
+        const { role, type, selection, property, links } = block;
         const classNames: string[] = [];
         if ( role ) {
-          if((role == "qualifier" as AnnotationBlockRole || role == "dependentVar" as AnnotationBlockRole ) && !property){
+          if((role == "qualifier" as AnnotationBlockRole || role == "dependentVar" as AnnotationBlockRole ) && !property  && !links?.property){
             classNames.push(`role-${role}-no-property`);
           } else{
             classNames.push(`role-${role}`);
@@ -354,7 +354,7 @@ class AnnotationTable extends Component<{}, TableState> {
     if ( selectedBlock ) {
       const { role, property, links } = selectedBlock;
       if ( role ) {
-        if((role == "qualifier" as AnnotationBlockRole || role == "dependentVar" as AnnotationBlockRole ) && !property){
+        if((role == "qualifier" as AnnotationBlockRole || role == "dependentVar" as AnnotationBlockRole ) && !property && ! links?.property){
           classNames.push(`role-${role}-no-property`);
         } else{
           classNames.push(`role-${role}`);
