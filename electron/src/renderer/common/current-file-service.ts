@@ -22,16 +22,16 @@ class Updater{
         this.mappingFile=mappingFile;
     }
 
-    update(func: ()=>any, callfunctionlog=""){
+    update(func: ()=>void, callfunctionlog=""){
         console.log("called via update", callfunctionlog)
         if (this.datafile==currentFilesService.currentState.dataFile
             && this.sheetName==currentFilesService.currentState.sheetName
             && this.mappingFile==currentFilesService.currentState.mappingFile
             ){
-                return func()
+                func()
         }
         else{
-            console.warn("threw out an update because state was not as expected")
+            console.warn("threw out an update because state was not as expected", callfunctionlog)
         }
     }
 }

@@ -156,18 +156,16 @@ class RequestService {
   }
 
   public async createAnnotation(data: any): Promise<string>{
-    const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
-    return updater.update(()=>{
-      wikiStore.project.projectDTO = response.project;
-      return response.filename;})
+    wikiStore.project.projectDTO = response.project;
+    return response.filename;
   }
 
   public async postAnnotationBlocks(data: any) {
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
     updater.update(()=>{wikiStore.project.projectDTO = response.project;
-    this.fillMapping(response);})
+    this.fillMapping(response);}, "postAnnotationBlocks")
   }
 
   public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion>  {
@@ -191,7 +189,7 @@ class RequestService {
   public async uploadDataFile(folder: string, data: any) {
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/data?project_folder=${folder}`, data) as ResponseWithEverythingDTO;
-    updater.update(()=>this.fillTable(response));
+    updater.update(()=>this.fillTable(response), "uploadDataFile");
   }
 
   public async uploadWikifierOutput(data: any) {
@@ -214,7 +212,7 @@ class RequestService {
     const updater = currentFilesService.createUpdater();
     try{
       const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-      updater.update(()=>this.fillTable(response));
+      updater.update(()=>this.fillTable(response), "getTable");
     } finally{
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -225,7 +223,7 @@ class RequestService {
   public async getMappingCalculation() {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
-    updater.update(()=>this.fillMapping(response));
+    updater.update(()=>this.fillMapping(response), "getMappingCalculation");
   }
 
   public async getSettings(folder: string) {
