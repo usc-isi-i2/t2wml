@@ -121,7 +121,7 @@ class AnnotationTable extends Component<{}, TableState> {
         if ( role ) {
           if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
             classNames.push(`role-${role}-no-property`);
-          } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.subject))){
+          } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.mainSubject))){
             classNames.push(`role-${role}-no-property`);
           }
           //else if (!link){
@@ -362,7 +362,7 @@ class AnnotationTable extends Component<{}, TableState> {
       if ( role ) {
         if((role == "qualifier" as AnnotationBlockRole) && !property  && !links?.property){
           classNames.push(`role-${role}-no-property`);
-        } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.subject))){
+        } else if (role == "dependentVar" as AnnotationBlockRole && ((!property  && !links?.property)||(!subject && !links?.mainSubject))){
           classNames.push(`role-${role}-no-property`);
         } //else if (!link){
           //classNames.push(`role-${role}-no-property`);
@@ -373,7 +373,7 @@ class AnnotationTable extends Component<{}, TableState> {
       }
       if (links){
         for ( const block of wikiStore.annotations.blocks ) {
-          if((links.property && block.id == links.property) || (links.subject &&  block.id == links.subject)){
+          if((links.property && block.id == links.property) || (links.mainSubject &&  block.id == links.mainSubject)){
             const linkedBlock = { ...block };
             linksBlocks.push({classNames: ['active', `role-${linkedBlock.role}`], block: linkedBlock})
           }
