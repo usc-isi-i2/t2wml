@@ -124,7 +124,7 @@ class RequestService {
     } else{
       wikiStore.wikifyQnodes.qnodes = response.qnodes;
     }
-    
+
   }
 
   public async postQNodes(values: any) {
@@ -156,15 +156,18 @@ class RequestService {
   }
 
   public async createAnnotation(data: any): Promise<string>{
+    const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
-    wikiStore.project.projectDTO = response.project;
-    return response.filename;
+    return updater.update(()=>{
+      wikiStore.project.projectDTO = response.project;
+      return response.filename;})
   }
 
   public async postAnnotationBlocks(data: any) {
+    const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
-    wikiStore.project.projectDTO = response.project;
-    this.fillMapping(response);
+    updater.update(()=>{wikiStore.project.projectDTO = response.project;
+    this.fillMapping(response);})
   }
 
   public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion>  {
@@ -186,8 +189,9 @@ class RequestService {
   }
 
   public async uploadDataFile(folder: string, data: any) {
+    const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/data?project_folder=${folder}`, data) as ResponseWithEverythingDTO;
-    this.fillTable(response);
+    updater.update(()=>this.fillTable(response));
   }
 
   public async uploadWikifierOutput(data: any) {
@@ -207,9 +211,10 @@ class RequestService {
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
+    const updater = currentFilesService.createUpdater();
     try{
       const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-      this.fillTable(response);
+      updater.update(()=>this.fillTable(response));
     } finally{
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
@@ -218,8 +223,9 @@ class RequestService {
   }
 
   public async getMappingCalculation() {
+    const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
-    this.fillMapping(response);
+    updater.update(()=>this.fillMapping(response));
   }
 
   public async getSettings(folder: string) {
