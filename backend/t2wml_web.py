@@ -9,7 +9,8 @@ from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
-from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator, Annotation, basic_block_finder
+from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator, Annotation
+from t2wml.input_processing.annotation_suggesting import basic_block_finder
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.utils.t2wml_exceptions import T2WMLException
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
