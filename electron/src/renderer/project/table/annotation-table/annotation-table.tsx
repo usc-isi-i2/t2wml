@@ -30,6 +30,7 @@ class AnnotationTable extends Component<{}, TableState> {
   private selecting = false;
   private selection?: CellSelection;
   private requestService: RequestService;
+  private timeoutSuggest?: number;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -325,8 +326,13 @@ class AnnotationTable extends Component<{}, TableState> {
     //   "selection": The block,
     //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
     // }
-    const suggestion = await this.requestService.getAnnotationSuggestions({"selection": selection, "annotations": wikiStore.annotations.blocks});
-    this.setState({annotationSuggestionsSelectedBlock: suggestion})
+    if (this.timeoutSuggest) {
+      window.clearTimeout(this.timeoutSuggest);
+    }
+    this.timeoutSuggest = window.setTimeout(async () => {
+      const suggestion = await this.requestService.getAnnotationSuggestions({"selection": selection, "annotations": wikiStore.annotations.blocks});
+      this.setState({annotationSuggestionsSelectedBlock: suggestion})
+    }, 200);
   }
 
   updateSelections(selectedBlock?: AnnotationBlock) {
