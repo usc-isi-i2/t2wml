@@ -363,7 +363,7 @@ def get_partial_csv(calc_params):
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, start=0, end=150)
     if not kg.statements:
         if cell_mapper.annotation.subject_annotations:
             df=pd.DataFrame([], columns=["subject", "property", "value"])
