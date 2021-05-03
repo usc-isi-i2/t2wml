@@ -3,6 +3,18 @@ T2WML Standalone Server App History
 
 Changes in version 2.9.1:
 -------------------------
+* t2wml-api 0.3.3
+* various performance improvements
+   - no more database for properties
+   - bug with multiple calls to layers/partialcsv resolved
+   - no overloading suggest api
+* display unused properties/units/main subject as striped. when clicking any block, highlight linked blocks as well
+* change suggestion api-- select suggestion as default option but show all options in dropdown
+* limit partial csv result preview to 150 rows
+
+
+Changes in version 2.9.1:
+-------------------------
 * t2wml-api 0.3.2
 * fix out of sync state updates, much more stable coloring code
 * add workaround to display subject in partial csv if no dependent variable specified
