@@ -269,7 +269,7 @@ class TableContainer extends Component<{}, TableState> {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
     try {
-      this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
+      await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;

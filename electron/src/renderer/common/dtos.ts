@@ -138,7 +138,8 @@ export interface AnnotationBlock{
         mainSubject?: string; // the ID of the block with the subject of this block
         unit?: string;
     };
-    
+    link?: string;
+
     //upperBound?: string;
     //lowerBound?: string;
 
