@@ -59,3 +59,4 @@ class DatabaseProvider(FallbackSparql):
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         WikidataEntity.do_commit()
+

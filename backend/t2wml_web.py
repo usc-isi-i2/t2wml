@@ -12,8 +12,8 @@ from t2wml.input_processing.annotation_suggesting import block_finder
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
-from app_config import db, CACHE_FOLDER
-from database_provider import DatabaseProvider
+from app_config import CACHE_FOLDER
+from web_dict_provider import WebDictionaryProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
@@ -44,7 +44,7 @@ def set_web_settings():
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
-    t2wml_settings.wikidata_provider = DatabaseProvider()
+    t2wml_settings.wikidata_provider = WebDictionaryProvider()
 
 def update_t2wml_settings(project):
     t2wml_settings.update_from_dict(**project.__dict__)
@@ -74,8 +74,8 @@ def get_kg(calc_params):
         ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
-    db.session.commit()  # save any queried properties
+    with t2wml_settings.wikidata_provider as p:
+        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
     return kg
 
 
@@ -116,7 +116,7 @@ def get_qnodes_layer(calc_params):
                             qNode= QNode(id, value, context),
                             indices=[[row, col]])
 
-        labels_and_descriptions = get_labels_and_descriptions(list(ids_to_get), calc_params.sparql_endpoint)
+        labels_and_descriptions = get_labels_and_descriptions(t2wml_settings.wikidata_provider, list(ids_to_get), calc_params.sparql_endpoint)
         for id in qnode_entries:
             if id in labels_and_descriptions:
                 qnode_entries[id]['qNode'].update(**labels_and_descriptions[id])
@@ -242,7 +242,7 @@ def get_yaml_layers(calc_params):
 
         cleanedLayer=get_cleaned(kg)
 
-        labels = get_labels_and_descriptions(qnodes, calc_params.project.sparql_endpoint)
+        labels = get_labels_and_descriptions(t2wml_settings.wikidata_provider, qnodes, calc_params.project.sparql_endpoint)
         qnodes.update(labels)
         for id in qnodes:
             if qnodes[id]:
