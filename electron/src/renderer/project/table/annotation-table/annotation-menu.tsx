@@ -13,7 +13,7 @@ import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
-  onSelectionChange: (selection: CellSelection) => void;
+  onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions:  ResponseWithSuggestion;
   onDelete: any | null;
@@ -40,7 +40,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   async handleOnChangeSubject(key: string, value: string, instanceOf?: QNode){
-    
+
     if (!value) { return; }
 
     const isClass = key === 'instanceOfSearch';
@@ -130,7 +130,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
   async postAnnotations(annotations: AnnotationBlock[]) {
     const { onClose } = this.props;
-
+    wikiStore.table.showSpinner=true;
     try {
       await this.requestService.call(this, () => (
         this.requestService.postAnnotationBlocks(
@@ -141,8 +141,19 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       error.errorDescription += "\n\nCannot submit annotations!";
       this.setState({ errorMessage: error });
     } finally {
-      onClose();
+      wikiStore.table.showSpinner=false;
     }
+
+    wikiStore.wikifier.showSpinner = true;
+    try{
+      await this.requestService.getPartialCsv();
+    }
+    finally{
+      wikiStore.wikifier.showSpinner = false;
+    }
+
+
+    onClose();
   }
 
   renderAnnotationForms() {

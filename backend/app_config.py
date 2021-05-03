@@ -51,7 +51,7 @@ DEFAULT_SPARQL_ENDPOINT = 'https://query.wikidata.org/bigdata/namespace/wdq/spar
 
 
 #############SQL STUFF
-
+"""
 AUTO_MIGRATE = "sqlite" in AppConfig.SQLALCHEMY_DATABASE_URI  # only set to true if database is sqlite
 
 
@@ -73,6 +73,7 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 
+
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(app, metadata=metadata)
@@ -83,4 +84,4 @@ migrate = Migrate(app, db, render_as_batch=True)  # , directory=MIGRATE_DIR
 
 if AUTO_MIGRATE:
     with app.app_context():
-        upgrade(directory=os.path.join(BASEDIR, 'migrations'))
+        upgrade(directory=os.path.join(BASEDIR, 'migrations')) """

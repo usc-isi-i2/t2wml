@@ -73,6 +73,13 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
+    wikiStore.wikifier.showSpinner = true;
+    try{
+      await this.requestService.getPartialCsv();
+    }
+    finally{
+      wikiStore.wikifier.showSpinner = false;
+    }
   }
 
   async changeFile() {

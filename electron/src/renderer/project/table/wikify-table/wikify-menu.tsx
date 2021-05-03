@@ -114,6 +114,13 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     finally{
       wikiStore.output.showSpinner = false;
       this.props.onClose();
+    }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
     }}
   }
 

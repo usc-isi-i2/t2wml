@@ -111,7 +111,6 @@ class Project extends Component<ProjectProps, ProjectState> {
   async loadProject() {
     // before fetching project files
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
     wikiStore.output.isDownloadDisabled = true;
 
@@ -123,27 +122,35 @@ class Project extends Component<ProjectProps, ProjectState> {
         await this.requestService.call(this, () => this.requestService.getTable());
       }
 
-      if (wikiStore.project.projectDTO){
-      document.title = 't2wml: ' + wikiStore.project.projectDTO.title;
-      this.setState({ name: wikiStore.project.projectDTO.title });
+      if (wikiStore.project.projectDTO) {
+        document.title = 't2wml: ' + wikiStore.project.projectDTO.title;
+        this.setState({ name: wikiStore.project.projectDTO.title });
 
-      if (wikiStore.yaml.yamlContent !== null) {
-        wikiStore.output.isDownloadDisabled = false;
-      }
+        if (wikiStore.yaml.yamlContent !== null) {
+          wikiStore.output.isDownloadDisabled = false;
+        }
 
-      // load settings
-      if (!wikiStore.project.projectDTO.sparql_endpoint) {
-        wikiStore.project.projectDTO.sparql_endpoint = Config.defaultSparqlEndpoint;
+        // load settings
+        if (!wikiStore.project.projectDTO.sparql_endpoint) {
+          wikiStore.project.projectDTO.sparql_endpoint = Config.defaultSparqlEndpoint;
+        }
       }
-    }
 
     } catch (error) {
       console.log(error);
 
     } finally {
       wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
+    }
+    if (currentFilesService.currentState.dataFile && currentFilesService.currentState.sheetName) {
+      wikiStore.wikifier.showSpinner = true;
+      try {
+        await this.requestService.getPartialCsv();
+      }
+      finally {
+        wikiStore.wikifier.showSpinner = false;
+      }
     }
 
   }
@@ -173,17 +180,19 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
-  async handleSaveSettings(endpoint: string, warn: boolean, calendar:string, title: string, description: string | undefined, url: string | undefined) {
+  async handleSaveSettings(endpoint: string, warn: boolean, calendar: string, title: string, description: string | undefined, url: string | undefined) {
     // update settings
     this.setState({ showSettings: false });
 
     // notify backend
-    const data = {"endpoint": endpoint,
-                  "warnEmpty": warn,
-                  "handleCalendar": calendar,
-                  "title": title,
-                  "description": description,
-                  "url": url };
+    const data = {
+      "endpoint": endpoint,
+      "warnEmpty": warn,
+      "handleCalendar": calendar,
+      "title": title,
+      "description": description,
+      "url": url
+    };
 
     try {
       await this.requestService.call(this, () => this.requestService.putSettings(this.props.path, data));
@@ -199,7 +208,7 @@ class Project extends Component<ProjectProps, ProjectState> {
   async handleSaveEntities(file: string, property: string, propertyVals: any) {
     const data = {
       entity_file: file,
-      updated_entries: {[property]: propertyVals},
+      updated_entries: { [property]: propertyVals },
     }
     try {
       await this.requestService.saveEntities(data);

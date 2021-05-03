@@ -10,7 +10,7 @@ entity_files:
 - item_definitions.tsv
 - properties_all.tsv
 handle_calendar: leave
-sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
+sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
 title: empty cells
 url: ''
 warn_for_empty_cells: true
@@ -23,6 +23,4 @@ yaml_sheet_associations:
     Sheet1:
       selected: t2wml.yaml
       val_arr:
-      - t2wml.yaml
-      - t2wml.yaml
       - t2wml.yaml

@@ -1171,31 +1171,39 @@
                 "layerType": "statement",
                 "qnodes": {
                     "P17": {
+                        "data_type": "WikibaseItem",
                         "description": "sovereign state of this item (not to be used for human beings)",
                         "id": "P17",
                         "label": "country",
                         "url": "https://www.wikidata.org/wiki/Property:P17"
                     },
                     "P585": {
+                        "data_type": "Time",
                         "description": "time and date something took place, existed or a statement was true",
                         "id": "P585",
                         "label": "point in time",
                         "url": "https://www.wikidata.org/wiki/Property:P585"
                     },
                     "Paid-security-002": {
-                        "description": "",
+                        "P31": "Q18616576",
+                        "data_type": "Quantity",
+                        "from_file": true,
                         "id": "Paid-security-002",
                         "label": "UN",
                         "url": ""
                     },
                     "Paid-security-003": {
-                        "description": "",
+                        "P31": "Q18616576",
+                        "data_type": "Quantity",
+                        "from_file": true,
                         "id": "Paid-security-003",
                         "label": "INGO",
                         "url": ""
                     },
                     "Paid-security-004": {
-                        "description": "",
+                        "P31": "Q18616576",
+                        "data_type": "Quantity",
+                        "from_file": true,
                         "id": "Paid-security-004",
                         "label": "LNGO/NRCS",
                         "url": ""

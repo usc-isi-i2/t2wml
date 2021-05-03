@@ -1,13 +1,13 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from wikidata_models import WikidataEntity
 
-wikidata_label_query_cache = {} 
+
+wikidata_label_query_cache = {}
 
 def query_wikidata_for_label_and_description(items, sparql_endpoint):
     items = ' wd:'.join(items)
     items = "wd:" + items
 
-    query = """SELECT ?qnode ?qnodeLabel ?qnodeDescription WHERE 
+    query = """SELECT ?qnode ?qnodeLabel ?qnodeDescription WHERE
             {{
             VALUES ?qnode {{{items}}}
             SERVICE wikibase:label {{ bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}
@@ -33,24 +33,15 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
     return response
 
 
-def get_labels_and_descriptions(items, sparql_endpoint):
-    response = dict()
-    missing_items = {}
+def get_labels_and_descriptions(provider, items, sparql_endpoint):
+    response=dict()
+    missing_items={}
     for item in items:
-        wp = WikidataEntity.query.filter_by(wd_id=item).first()
-        if wp:
-            label = desc = ""
-            if wp.label:
-                label = wp.label
-                if wp.description:
-                    desc = wp.description
-                response[item] = dict(label=label, description=desc)
-            else:
-                if item not in wikidata_label_query_cache:
-                    missing_items[item]=True
-        else:
-            if item not in wikidata_label_query_cache:
-                missing_items[item]=True
+        try:
+            wp=provider.get_entity(item)
+            response[item]=wp
+        except:
+            missing_items[item]=True
     try:
         if missing_items:
             wikidata_label_query_cache.update(missing_items)
@@ -58,16 +49,16 @@ def get_labels_and_descriptions(items, sparql_endpoint):
             additional_items = query_wikidata_for_label_and_description(
                 missing_items, sparql_endpoint)
             response.update(additional_items)
-            try:
+            with provider as p:
                 for item in additional_items:
-                    WikidataEntity.add_or_update(item, do_session_commit=False, **additional_items[item])
-            except Exception as e:
-                print(e)
-            WikidataEntity.do_commit()
-
+                    prop_dict=additional_items[item]
+                    data_type=prop_dict.pop("data_type", None)
+                    p.save_entry(item, data_type, **prop_dict)
     except:  # eg 502 bad gateway error
         pass
     return response
+
+
 
 
 def get_qnode_url(id):
@@ -95,4 +86,3 @@ class QNode:
     def update(self, label="", description="", **kwargs):
         self.label=label
         self.description=description
-        

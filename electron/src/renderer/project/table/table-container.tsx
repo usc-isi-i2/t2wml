@@ -93,6 +93,7 @@ class TableContainer extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, () => this.uncheckAnnotationifYaml()));
+    this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
   }
 
   componentWillUnmount() {
@@ -164,7 +165,6 @@ class TableContainer extends Component<{}, TableState> {
 
     // before sending request
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
@@ -172,7 +172,6 @@ class TableContainer extends Component<{}, TableState> {
       // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       currentFilesService.changeSheet(sheetName, currentFilesService.currentState.dataFile);
       await this.requestService.getTable();
-
       if (wikiStore.yaml.yamlContent) {
         wikiStore.output.isDownloadDisabled = false;
       }
@@ -180,8 +179,14 @@ class TableContainer extends Component<{}, TableState> {
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
     }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
     wikiStore.table.showSpinner = false;
-    wikiStore.wikifier.showSpinner = false;
 
   }
 
@@ -201,7 +206,7 @@ class TableContainer extends Component<{}, TableState> {
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
 
-    if (this.state.mode === 'annotation') { this.fetchAnnotations() }
+    if (this.state.mode === 'annotation') { this.createAnnotationIfDoesNotExist(); }
   }
 
   async switchMode(mode: TableMode) {
@@ -214,7 +219,7 @@ class TableContainer extends Component<{}, TableState> {
 
     this.resetTableData();
 
-    if ( mode === 'annotation' ) {
+    if (mode === 'annotation') {
       this.fetchAnnotations();
     }
 
@@ -222,7 +227,7 @@ class TableContainer extends Component<{}, TableState> {
     wikiStore.yaml.showSpinner = false;
   }
 
-  async fetchAnnotations() {
+  async createAnnotationIfDoesNotExist(){
     if (!currentFilesService.currentState.dataFile) { return; }
     if (!currentFilesService.currentState.mappingFile) {
       //create a mapping file
@@ -236,6 +241,11 @@ class TableContainer extends Component<{}, TableState> {
       await this.requestService.createAnnotation(data)
       currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
     }
+  }
+
+  async fetchAnnotations() {
+    if (!currentFilesService.currentState.dataFile) { return; }
+    this.createAnnotationIfDoesNotExist();
     try {
       await this.requestService.call(this, () => (
         this.requestService.getMappingCalculation()
@@ -244,19 +254,28 @@ class TableContainer extends Component<{}, TableState> {
       error.errorDescription += "\n\nCannot fetch annotations!";
       this.setState({ errorMessage: error });
     }
+
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
+
   }
 
-  async getAnnotationSuggestion(){
-    if (wikiStore.annotations.blocks.length>0){
-      if (!confirm("This will clear the existing annotation, are you sure you want to continue?")){
+  async getAnnotationSuggestion() {
+    if (wikiStore.annotations.blocks.length > 0) {
+      if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
         return;
       }
     }
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
-    try{
-    this.requestService.call(this, ()=>this.requestService.getSuggestedAnnotationBlocks())
-    }finally{
+    try {
+      await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
+    } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
@@ -290,14 +309,14 @@ class TableContainer extends Component<{}, TableState> {
     )
   }
 
-  renderSuggestButton(){
-    if (this.state.mode == "annotation"){
-    return (
-      <div style={{ cursor: "pointer", textDecoration: "underline"}}
-        className="text-white d-inline-block">
-          <span onClick={()=>this.getAnnotationSuggestion()}>Suggest annotation</span>
-      </div>
-    )
+  renderSuggestButton() {
+    if (this.state.mode == "annotation") {
+      return (
+        <div style={{ cursor: "pointer", textDecoration: "underline" }}
+          className="text-white d-inline-block">
+          <span onClick={() => this.getAnnotationSuggestion()}>Suggest annotation</span>
+        </div>
+      )
     }
   }
 
@@ -379,7 +398,7 @@ class TableContainer extends Component<{}, TableState> {
 
   renderLoading() {
     return (
-      <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
+      <div className="mySpinner" hidden={!this.state.showSpinner}>
         <Spinner animation="border" />
       </div>
     )

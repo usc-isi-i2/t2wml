@@ -138,7 +138,8 @@ export interface AnnotationBlock{
         mainSubject?: string; // the ID of the block with the subject of this block
         unit?: string;
     };
-    
+    link?: string;
+
     //upperBound?: string;
     //lowerBound?: string;
 
@@ -174,10 +175,13 @@ export interface ResponseWithProjectandFileName extends ResponseWithProjectDTO{
     filename: string;
 }
 
+export interface ResponseWithPartialCsvDTO{
+    partialCsv: TableDTO;
+}
+
 export interface ResponseWithMappingDTO{
     project: ProjectDTO;
     layers: LayersDTO;
-    partialCsv: TableDTO;
     yamlContent: string;
     yamlError?: string;
     annotations: AnnotationBlock[];

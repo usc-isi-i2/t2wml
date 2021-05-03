@@ -156,6 +156,21 @@ def get_data():
     response.update(calc_response)
     return response, code
 
+@app.route('/api/partialcsv', methods=['GET'])
+@json_response
+def partial_csv():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response=dict()
+    try:
+        response["partialCsv"]=get_partial_csv(calc_params)
+    except Exception as e:
+        print(e)
+        response["partialCsv"]=dict(dims=[1,3],
+                                    firstRowIndex=0,
+                                    cells=[["subject", "property", "value"]])
+    return response, 200
+
 
 @app.route('/api/project', methods=['POST'])
 @json_response

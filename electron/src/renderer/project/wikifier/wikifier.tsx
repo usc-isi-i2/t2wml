@@ -146,6 +146,13 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     finally{
       wikiStore.output.showSpinner = false;
     }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
   }
 
   cancelCallWikifier() {
@@ -213,6 +220,13 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     finally{
       wikiStore.output.showSpinner = false;
     }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
 
   }
 
@@ -253,6 +267,13 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     }
     finally{
       wikiStore.output.showSpinner = false;
+    }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
     }
 
   }

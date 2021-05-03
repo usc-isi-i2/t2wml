@@ -92,6 +92,13 @@ class Sidebar extends Component<{}, SidebarState> {
           wikiStore.table.showSpinner = false;
           wikiStore.yaml.showSpinner = false;
         }
+        wikiStore.wikifier.showSpinner = true;
+        try{
+        await this.requestService.getPartialCsv();
+        }
+        finally{
+        wikiStore.wikifier.showSpinner = false;
+        }
     }
 
     getFilesData() {

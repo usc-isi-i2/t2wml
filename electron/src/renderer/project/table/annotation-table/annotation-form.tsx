@@ -17,7 +17,7 @@ import { columnToLetter } from '../table-utils';
 
 interface AnnotationFormProperties {
   selection?: CellSelection;
-  onSelectionChange: (selection: CellSelection) => void;
+  onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions: ResponseWithSuggestion;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
@@ -167,7 +167,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
-          onSelectionChange(selection);
+          onSelectionChange(selection, fields.role);
         }
       }, 500);
     } else {
@@ -334,7 +334,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Type</Form.Label>
           <Form.Control size="sm" as="select">
-            {selectedOption?.children?.filter(typeOption => annotationSuggestions.types.includes(typeOption.value)).map((type, i) => (
+            {selectedOption?.children?.map((type, i) => (
               <option key={i}
                 value={type.value}
                 selected={type.value === selectedAnnotationType}>
@@ -387,21 +387,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
 
 
-    let rolesList = ROLES;
-    if (!selected) {
-      const suggestedRolesList = [] as { label: string, value: string, children: any }[];
-      annotationSuggestions.roles.forEach(value => {
-        const role = ROLES.find(role => role.value === value) as { label: string, value: string, children: any };
-        if (role) {
-          suggestedRolesList.push(role);
-        }
-      });
-      if (suggestedRolesList.length) {
-        rolesList = suggestedRolesList
-      }
-    }
+    const rolesList = ROLES;
 
-    const selectedAnnotationRole = selected ? selected.role : rolesList[0];
+    let selectedAnnotationRole = selected ? selected.role as string : rolesList[0].value;
+    if(!selected && annotationSuggestions.roles.length){
+      selectedAnnotationRole = annotationSuggestions.roles[0];
+    }
 
     return (
       <Form.Group as={Row}
