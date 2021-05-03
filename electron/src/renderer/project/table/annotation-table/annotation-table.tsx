@@ -829,18 +829,23 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  onSelectionChange(selection: CellSelection) {
+  onSelectionChange(selection: CellSelection, role?: string) {
     if (selection) {
+      const {selectedAnnotationBlock} = this.state;
       this.selection = selection;
       this.deleteRolePrevSelection();
       this.updateSelections();
-      const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
-      if (selectedBlock) {
-        this.setState({
-          showAnnotationMenu: true,
-          selectedAnnotationBlock: selectedBlock,
-        });
+      let newBlock = selectedAnnotationBlock;
+      if(newBlock){
+        newBlock.selection = selection;
       }
+      else{
+        newBlock = {role: role as AnnotationBlockRole, selection: selection};
+      }
+      this.setState({
+        showAnnotationMenu: true,
+        selectedAnnotationBlock: newBlock,
+      })
     }
   }
 

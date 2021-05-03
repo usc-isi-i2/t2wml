@@ -13,7 +13,7 @@ import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
-  onSelectionChange: (selection: CellSelection) => void;
+  onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions:  ResponseWithSuggestion;
   onDelete: any | null;

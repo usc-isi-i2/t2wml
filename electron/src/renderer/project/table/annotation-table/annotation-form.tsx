@@ -17,7 +17,7 @@ import { columnToLetter } from '../table-utils';
 
 interface AnnotationFormProperties {
   selection?: CellSelection;
-  onSelectionChange: (selection: CellSelection) => void;
+  onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions: ResponseWithSuggestion;
   onChange: any | null; // Use the actual function type: (arg: argType) => returnType
@@ -167,7 +167,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
-          onSelectionChange(selection);
+          onSelectionChange(selection, fields.role);
         }
       }, 500);
     } else {
