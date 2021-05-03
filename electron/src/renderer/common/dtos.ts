@@ -174,10 +174,13 @@ export interface ResponseWithProjectandFileName extends ResponseWithProjectDTO{
     filename: string;
 }
 
+export interface ResponseWithPartialCsvDTO{
+    partialCsv: TableDTO;
+}
+
 export interface ResponseWithMappingDTO{
     project: ProjectDTO;
     layers: LayersDTO;
-    partialCsv: TableDTO;
     yamlContent: string;
     yamlError?: string;
     annotations: AnnotationBlock[];
