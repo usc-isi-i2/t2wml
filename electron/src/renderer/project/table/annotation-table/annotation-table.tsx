@@ -116,14 +116,17 @@ class AnnotationTable extends Component<{}, TableState> {
     if (wikiStore.annotations.blocks && tableData) {
 
       for (const block of wikiStore.annotations.blocks) {
-        const { role, type, selection, property, links, subject } = block;
+        const { role, type, selection, property, links, subject, link } = block;
         const classNames: string[] = [];
         if (role) {
           if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
             classNames.push(`role-${role}-no-property`);
           } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
             classNames.push(`role-${role}-no-property`);
-          } else {
+          }  else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+            classNames.push(`role-${role}-no-link`);
+          }
+          else {
             classNames.push(`role-${role}`);
           }
         }
@@ -259,6 +262,13 @@ class AnnotationTable extends Component<{}, TableState> {
           }
         });
       });
+      table.querySelectorAll('td[class*="linked"]').forEach(e => {
+        e.classList.forEach(className => {
+          if (className.startsWith('linked')) {
+            e.classList.remove(className);
+          }
+        });
+      });
       table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
@@ -359,13 +369,16 @@ class AnnotationTable extends Component<{}, TableState> {
     const classNames: string[] = ['active'];
     const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
     if (selectedBlock) {
-      const { role, property, links, subject } = selectedBlock;
+      const { role, property, links, subject, link} = selectedBlock;
       if (role) {
         if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
           classNames.push(`role-${role}-no-property`);
         } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
           classNames.push(`role-${role}-no-property`);
-        } else {
+        } else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+          classNames.push(`role-${role}-no-link`);
+        }
+        {
           classNames.push(`role-${role}`);
         }
       }
@@ -374,7 +387,15 @@ class AnnotationTable extends Component<{}, TableState> {
           if ((links.property && block.id == links.property) || (links.mainSubject && block.id == links.mainSubject)
             || (links.unit && block.id == links.unit)) {
             const linkedBlock = { ...block };
-            linksBlocks.push({ classNames: ['active', `role-${linkedBlock.role}`], block: linkedBlock })
+            linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+          }
+        }
+      }
+      if (link){
+        for (const block of wikiStore.annotations.blocks) {
+          if (block.id == link){
+            const linkedBlock = { ...block };
+            linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
           }
         }
       }
