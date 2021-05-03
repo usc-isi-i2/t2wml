@@ -11,17 +11,6 @@ BACKEND_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 @pytest.fixture(scope="session")
 def client(request):
-    def fin():
-        os.close(db_fd)
-        os.unlink(name)
-    app.config['TESTING']=True
-    db_fd, name = tempfile.mkstemp()
-    app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///' +name
-    app.config['USE_CACHE']=False
-    request.addfinalizer(fin)
-    with app.app_context():
-        upgrade(directory=os.path.join(BACKEND_DIR, 'migrations'))
-
     with app.test_client() as client:
         yield client
 
