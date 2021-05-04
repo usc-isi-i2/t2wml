@@ -867,8 +867,11 @@ class AnnotationTable extends Component<{}, TableState> {
     const {selectedAnnotationBlock} = this.state;
     this.selection = selection;
     this.deleteRolePrevSelection();
-    let newBlock = selectedAnnotationBlock;
-    if(newBlock){
+
+    let newBlock;
+
+    if(selectedAnnotationBlock){
+      newBlock = {...selectedAnnotationBlock};
       newBlock.selection = selection;
     }
     else{
