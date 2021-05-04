@@ -292,7 +292,7 @@ def get_layers(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
 
-    response["layers"].update(get_qnodes_layer(calc_params))
+
     try:
         response["layers"].update(get_yaml_layers(calc_params))
     except Exception as e:
@@ -301,6 +301,8 @@ def get_layers(response, calc_params):
     response["partialCsv"]=dict(dims=[1,3],
                                 firstRowIndex=0,
                                 cells=[["subject", "property", "value"]])
+
+    response["layers"].update(get_qnodes_layer(calc_params)) #needs to be after layers, since layers can update qnodes
 
 def get_annotations(calc_params):
     annotations_path=calc_params.annotation_path
