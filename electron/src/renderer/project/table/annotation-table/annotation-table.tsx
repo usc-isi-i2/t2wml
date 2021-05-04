@@ -72,11 +72,8 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  updateTableData(table?: TableDTO) {
-    if (!table || !table.cells) {
-      this.setState({ tableData: undefined });
-      return;
-    }
+  getClasslessTableData(table?: TableDTO): TableData{
+    if (!table){table=wikiStore.table.table}
     const tableData = [];
     for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
@@ -89,6 +86,18 @@ class AnnotationTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
+    return tableData;
+
+  }
+
+  updateTableData(table?: TableDTO) {
+    if (!table || !table.cells) {
+      this.setState({ tableData: undefined });
+      return;
+    }
+
+    const tableData=this.getClasslessTableData(table);
+
 
     if (currentFilesService.currentState.mappingFile) { this.updateAnnotationBlocks(tableData); }
     else {
@@ -100,8 +109,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
   updateAnnotationBlocks(tableData?: TableData) {
     if (!tableData) {
-      tableData = this.state.tableData;
+      tableData = this.getClasslessTableData()
     }
+    this.resetSelection();
 
     function emptyTableCell(): TableCell {
       return {
@@ -112,8 +122,11 @@ class AnnotationTable extends Component<{}, TableState> {
 
     const table: any = this.tableRef;
     if (!table) { return; }
+    if (!tableData){return; }
 
-    if (wikiStore.annotations.blocks && tableData) {
+
+
+    if (wikiStore.annotations.blocks) {
 
       for (const block of wikiStore.annotations.blocks) {
         const { role, type, selection, property, links, subject, link } = block;
