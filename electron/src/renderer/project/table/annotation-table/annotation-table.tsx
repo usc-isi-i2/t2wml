@@ -855,7 +855,6 @@ class AnnotationTable extends Component<{}, TableState> {
       const {selectedAnnotationBlock} = this.state;
       this.selection = selection;
       this.deleteRolePrevSelection();
-      this.updateSelections();
       let newBlock = selectedAnnotationBlock;
       if(newBlock){
         newBlock.selection = selection;
@@ -867,6 +866,7 @@ class AnnotationTable extends Component<{}, TableState> {
         showAnnotationMenu: true,
         selectedAnnotationBlock: newBlock,
       })
+      this.updateSelections();
     }
   }
 
