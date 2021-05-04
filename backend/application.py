@@ -215,7 +215,7 @@ def upload_data_file():
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
     annotations_path = os.path.join(annotations_dir, Path(
-        data_file).stem+"_"+sheet_name+".json")
+        data_file).stem+"_"+sheet_name+".annotation")
 
     save_annotations(project, [], os.path.join(
         annotations_path), data_file, sheet_name)
