@@ -1,7 +1,15 @@
 T2WML Standalone Server App History
 ===================================
+Changes in version 2.9.3:
+-------------------------
+* various bug fixes and tweaks, among them:
+   * fix submit not working in annotation menu
+   * fix color problems
+   * fix race condition for wikifier labels
+   * fix missing scrollbar in file tree
 
-Changes in version 2.9.1:
+
+Changes in version 2.9.2:
 -------------------------
 * t2wml-api 0.3.3
 * various performance improvements
