@@ -453,7 +453,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           <Spinner animation="border" />
         </div>
 
-        <ul style={{width: "100%"}}>
+        <ul className="filetree">
           {this.state.files.map((fileNode, index) => (
             <FileNode key={index}
               id={fileNode.id}
