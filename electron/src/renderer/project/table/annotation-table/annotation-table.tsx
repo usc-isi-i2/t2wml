@@ -72,11 +72,8 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  updateTableData(table?: TableDTO) {
-    if (!table || !table.cells) {
-      this.setState({ tableData: undefined });
-      return;
-    }
+  getClasslessTableData(table?: TableDTO): TableData{
+    if (!table){table=wikiStore.table.table}
     const tableData = [];
     for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
@@ -89,6 +86,18 @@ class AnnotationTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
+    return tableData;
+
+  }
+
+  updateTableData(table?: TableDTO) {
+    if (!table || !table.cells) {
+      this.setState({ tableData: undefined });
+      return;
+    }
+
+    const tableData=this.getClasslessTableData(table);
+
 
     if (currentFilesService.currentState.mappingFile) { this.updateAnnotationBlocks(tableData); }
     else {
@@ -100,8 +109,9 @@ class AnnotationTable extends Component<{}, TableState> {
 
   updateAnnotationBlocks(tableData?: TableData) {
     if (!tableData) {
-      tableData = this.state.tableData;
+      tableData = this.getClasslessTableData()
     }
+    this.resetSelection();
 
     function emptyTableCell(): TableCell {
       return {
@@ -112,8 +122,11 @@ class AnnotationTable extends Component<{}, TableState> {
 
     const table: any = this.tableRef;
     if (!table) { return; }
+    if (!tableData){return; }
 
-    if (wikiStore.annotations.blocks && tableData) {
+
+
+    if (wikiStore.annotations.blocks) {
 
       for (const block of wikiStore.annotations.blocks) {
         const { role, type, selection, property, links, subject, link } = block;
@@ -840,10 +853,10 @@ class AnnotationTable extends Component<{}, TableState> {
   deleteRolePrevSelection() {
     const table = this.tableRef;
     if (table) {
-      table.querySelectorAll('td[class*="active"]').forEach(e => {
-        e.classList.forEach(className => {
+      table.querySelectorAll('td[class*="active"]').forEach(cell => {
+        cell.classList.forEach(className => {
           if (className.startsWith('role-')) {
-            e.classList.remove(className);
+            cell.classList.remove(className);
           }
         });
       });
@@ -851,23 +864,24 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   onSelectionChange(selection: CellSelection, role?: string) {
-    if (selection) {
-      const {selectedAnnotationBlock} = this.state;
-      this.selection = selection;
-      this.deleteRolePrevSelection();
-      this.updateSelections();
-      let newBlock = selectedAnnotationBlock;
-      if(newBlock){
-        newBlock.selection = selection;
-      }
-      else{
-        newBlock = {role: role as AnnotationBlockRole, selection: selection};
-      }
-      this.setState({
-        showAnnotationMenu: true,
-        selectedAnnotationBlock: newBlock,
-      })
+    const {selectedAnnotationBlock} = this.state;
+    this.selection = selection;
+    this.deleteRolePrevSelection();
+
+    let newBlock;
+
+    if(selectedAnnotationBlock){
+      newBlock = {...selectedAnnotationBlock};
+      newBlock.selection = selection;
     }
+    else{
+      newBlock = {role: role as AnnotationBlockRole, selection: selection};
+    }
+    this.setState({
+      showAnnotationMenu: true,
+      selectedAnnotationBlock: newBlock,
+    })
+    this.updateSelections();
   }
 
   closeAnnotationMenu() {

@@ -104,7 +104,7 @@ class RequestService {
   public async getPartialCsv() {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/partialcsv?${this.getMappingParams()}`) as ResponseWithPartialCsvDTO;
-    updater.update(() => { wikiStore.layers.partialCsv = response.partialCsv; });
+    updater.update(() => { wikiStore.layers.partialCsv = response.partialCsv; }, "getPartialCsv");
   }
 
 

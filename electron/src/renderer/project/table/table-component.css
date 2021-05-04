@@ -324,7 +324,7 @@
 }
 .table-wrapper table tr td.role-dependentVar-no-property {
   background: repeating-linear-gradient(
-  45deg,
+  55deg,
   #D9F2E6,
   #D9F2E6 5px,
   #ffffff 5px,
@@ -337,7 +337,7 @@
 
 .table-wrapper table tr td.role-mainSubject-no-link {
   background: repeating-linear-gradient(
-  45deg,
+  55deg,
   #D9EAF2,
   #D9EAF2 5px,
   #ffffff 5px,
@@ -354,7 +354,7 @@
 }
 .table-wrapper table tr td.role-qualifier-no-property {
   background: repeating-linear-gradient(
-  45deg,
+  55deg,
   #DDD9F2,
   #DDD9F2 5px,
   #ffffff 5px,
@@ -368,7 +368,7 @@
 
 .table-wrapper table tr td.role-property-no-link {
   background: repeating-linear-gradient(
-  45deg,
+  55deg,
   #fbe5ce,
   #fbe5ce 5px,
   #ffffff 5px,
@@ -381,7 +381,7 @@
 
 .table-wrapper table tr td.role-unit-no-link {
   background: repeating-linear-gradient(
-  45deg,
+  55deg,
   #fff2ce,
   #fff2ce 5px,
   #ffffff 5px,
