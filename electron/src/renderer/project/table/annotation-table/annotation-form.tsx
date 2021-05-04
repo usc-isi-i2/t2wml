@@ -214,7 +214,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
     const key: string = type.label.toLowerCase();
 
-    let defaultValue = '';
+    let defaultValue = '--';
     if (selectedBlock && (selectedBlock as any)[type.value]) {
       defaultValue = (selectedBlock as any)[type.value];
     }
@@ -227,12 +227,11 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           }>
           <Col sm="12" md="12">
             <Form.Label className="text-muted">{type.label}</Form.Label>
-            <Form.Control size="sm" as="select">
-              <option disabled selected>--</option>
+            <Form.Control size="sm" as="select" defaultValue={defaultValue}>
+              <option disabled selected defaultValue="--">--</option>
               {type.children.map((option: AnnotationOption) => (
                 <option key={option.value}
-                  value={option.value}
-                  selected={option.value === defaultValue}>
+                  value={option.value}>
                   {option.label}
                 </option>
               ))}
@@ -271,8 +270,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           <Form.Label className="text-muted">{type.label}</Form.Label>
           <Form.Control
             type="text" size="sm"
-            value={this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""}
-            defaultValue={defaultValue} />
+            defaultValue={this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""}
+            />
 
         </Col>
         {
@@ -282,7 +281,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
               <Form.Control
                 type="text" size="sm"
                 value={propertyBlockSelection}
-                defaultValue={propertyBlockSelection}
                 readOnly />
             </Col>
             : key == "unit" && unitBlockId ?
@@ -291,7 +289,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
               <Form.Control
                 type="text" size="sm"
                 value={unitBlockSelection}
-                defaultValue={unitBlockSelection}
                 readOnly />
             </Col>
             : null
@@ -333,11 +330,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'type')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Type</Form.Label>
-          <Form.Control size="sm" as="select">
+          <Form.Control size="sm" as="select" defaultValue={ selectedAnnotationType }>
             {selectedOption?.children?.map((type, i) => (
               <option key={i}
-                value={type.value}
-                selected={type.value === selectedAnnotationType}>
+                value={type.value}>
                 {type.label}
               </option>
             ))}
@@ -399,11 +395,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'role')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Role</Form.Label>
-          <Form.Control size="sm" as="select">
+          <Form.Control size="sm" as="select" defaultValue={selectedAnnotationRole}>
             {rolesList.map((role, i) => (
               <option key={i}
-                value={role.value}
-                selected={role.value === selectedAnnotationRole}>
+                value={role.value}>
                 {role.label}
               </option>
             ))}
@@ -627,7 +622,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
               <Form.Control
                 type="text" size="sm"
                 value={subjectBlockSelection}
-                defaultValue={subjectBlockSelection}
                 readOnly />
             </Col> : null
           }
