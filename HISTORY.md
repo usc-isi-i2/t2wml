@@ -2,6 +2,7 @@ T2WML Standalone Server App History
 ===================================
 Changes in version 2.9.3:
 -------------------------
+* t2wml-api version 0.3.5
 * various bug fixes and tweaks, among them:
    * fix submit not working in annotation menu
    * fix color problems
