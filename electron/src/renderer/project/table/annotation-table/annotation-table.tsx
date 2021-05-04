@@ -840,10 +840,10 @@ class AnnotationTable extends Component<{}, TableState> {
   deleteRolePrevSelection() {
     const table = this.tableRef;
     if (table) {
-      table.querySelectorAll('td[class*="active"]').forEach(e => {
-        e.classList.forEach(className => {
+      table.querySelectorAll('td[class*="active"]').forEach(cell => {
+        cell.classList.forEach(className => {
           if (className.startsWith('role-')) {
-            e.classList.remove(className);
+            cell.classList.remove(className);
           }
         });
       });
@@ -851,23 +851,21 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   onSelectionChange(selection: CellSelection, role?: string) {
-    if (selection) {
-      const {selectedAnnotationBlock} = this.state;
-      this.selection = selection;
-      this.deleteRolePrevSelection();
-      let newBlock = selectedAnnotationBlock;
-      if(newBlock){
-        newBlock.selection = selection;
-      }
-      else{
-        newBlock = {role: role as AnnotationBlockRole, selection: selection};
-      }
-      this.setState({
-        showAnnotationMenu: true,
-        selectedAnnotationBlock: newBlock,
-      })
-      this.updateSelections();
+    const {selectedAnnotationBlock} = this.state;
+    this.selection = selection;
+    this.deleteRolePrevSelection();
+    let newBlock = selectedAnnotationBlock;
+    if(newBlock){
+      newBlock.selection = selection;
     }
+    else{
+      newBlock = {role: role as AnnotationBlockRole, selection: selection};
+    }
+    this.setState({
+      showAnnotationMenu: true,
+      selectedAnnotationBlock: newBlock,
+    })
+    this.updateSelections();
   }
 
   closeAnnotationMenu() {

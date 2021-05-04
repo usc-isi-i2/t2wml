@@ -76,7 +76,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       fields: {
         role: annotationSuggestions.roles[0],
         type: annotationSuggestions.types[0],
-        selectedArea: undefined,
+        selectedArea: selectedBlock ? utils.humanReadableSelection(selectedBlock.selection) : undefined,
         ...annotationSuggestions.children,
         ...selectedBlock //override everything previous
       },
