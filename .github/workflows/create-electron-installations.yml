@@ -18,7 +18,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '3.8'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
 
@@ -35,6 +35,7 @@ jobs:
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller pywin32 semver
+          pip uninstall -q typing typing-extensions
       - name: Create installer
         working-directory: backend
         env:  # Replace unicode characters with ?
@@ -72,7 +73,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '3.8'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
       - name: Set backend environment
@@ -82,6 +83,7 @@ jobs:
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
+          pip uninstall -q typing typing-extensions
       - name: Compile Code
         working-directory: backend
         env:
@@ -129,7 +131,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '3.8'
       - name: Setup Node
         uses: actions/setup-node@v2-beta
 
@@ -140,6 +142,7 @@ jobs:
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
+          pip uninstall -q typing typing-extensions
       - name: Create executable
         env:
           CI: false   # Otherwise React stops on warnings

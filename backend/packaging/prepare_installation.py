@@ -21,7 +21,7 @@ def get_paths():
     # Returns the paths for the frontend and backend, all relative to this module.
     # The backend is one directory up, the frontend is a sibling directory of the backend.
     global backend_path,electron_path
-    
+
     backend_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # frontend_path = os.path.join(os.path.dirname(backend_path), 'frontend')
     electron_path = os.path.join(os.path.dirname(backend_path), 'electron')
@@ -87,7 +87,7 @@ def build_installer():
     cwd = os.getcwd()
     try:
         os.chdir(backend_path)
-        cmd = f'pyinstaller --onefile --noconfirm --windowed --add-data "./migrations{sep}migrations" --runtime-hook packaging/pyinstaller_hooks.py t2wml-server.py'
+        cmd = f'pyinstaller --clean t2wml-server.spec'
         print('Running ', cmd)
         os.system(cmd)
     finally:
@@ -124,7 +124,7 @@ def run():
     get_paths()
     if args.version:
         prepare_version(args.version)
-    
+
     #if not args.skip_frontend:
     #    build_frontend()
     #copy_frontend_to_static()
