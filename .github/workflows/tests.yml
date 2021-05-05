@@ -19,6 +19,7 @@ jobs:
           pip install --upgrade pip
           pip install ./t2wml-api
           pip install -r backend/requirements.txt
+          pip install -r backend/test-requirements.txt
       - name: Run Tests
         run: |
           cd backend

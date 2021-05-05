@@ -1,14 +1,7 @@
-SQLAlchemy==1.3.18 #required to prevent version incompatibilties when download flask-sqlalchemy which otherwise installs later versions that don't work
 Flask==1.1.2
 Flask-Cors==3.0.8
-Flask-SQLAlchemy==2.4.1
-Flask-Migrate==2.5.3
 numpy==1.19.1
 pandas==1.2.2
-pytest==6.0.1
-semver==2.13.0
 openpyxl==3.0.5
 xlrd==1.2.0
-pytest-cov==2.11.1
-pytest-html==3.1.1
 rltk==2.0.0a15
