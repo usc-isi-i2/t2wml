@@ -4,7 +4,9 @@ FROM python:3.7-stretch
 RUN mkdir /src
 COPY requirements.txt /src/requirements.txt
 
-RUN pip install t2wml-api
+RUN git clone https://github.com/usc-isi-i2/t2wml-api.git
+RUN pip install -e ./t2wml-api
+
 RUN pip install -r /src/requirements.txt
 
 COPY for-docker /proj
