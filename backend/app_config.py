@@ -10,7 +10,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_migrate import Migrate, upgrade, current, init
 
-home_dir = str(Path.home())
+home_dir = os.environ.get("T2WMLHOME")
+if not home_dir:
+    home_dir = str(Path.home())
 DATADIR = os.path.join(home_dir, ".t2wml")
 if not os.path.exists(DATADIR):
     os.makedirs(DATADIR)
@@ -49,7 +51,7 @@ DEFAULT_SPARQL_ENDPOINT = 'https://query.wikidata.org/bigdata/namespace/wdq/spar
 
 
 #############SQL STUFF
-
+"""
 AUTO_MIGRATE = "sqlite" in AppConfig.SQLALCHEMY_DATABASE_URI  # only set to true if database is sqlite
 
 
@@ -71,6 +73,7 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 
+
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(app, metadata=metadata)
@@ -81,4 +84,4 @@ migrate = Migrate(app, db, render_as_batch=True)  # , directory=MIGRATE_DIR
 
 if AUTO_MIGRATE:
     with app.app_context():
-        upgrade(directory=os.path.join(BASEDIR, 'migrations'))
+        upgrade(directory=os.path.join(BASEDIR, 'migrations')) """

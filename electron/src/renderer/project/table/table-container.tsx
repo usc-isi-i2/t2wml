@@ -93,6 +93,7 @@ class TableContainer extends Component<{}, TableState> {
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, () => this.uncheckAnnotationifYaml()));
+    this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
   }
 
   componentWillUnmount() {
@@ -128,7 +129,7 @@ class TableContainer extends Component<{}, TableState> {
 
       //update in files state
       currentFilesService.changeDataFile(file.name);
-      wikiStore.table.mode = 'annotation';
+      this.switchMode('annotation')
 
     } catch (error) {
       error.errorDescription += "\n\nCannot open file!";
@@ -164,7 +165,6 @@ class TableContainer extends Component<{}, TableState> {
 
     // before sending request
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
 
     // send request
     console.log("<TableComponent> -> %c/change_sheet%c for sheet: %c" + sheetName, LOG.link, LOG.default, LOG.highlight);
@@ -172,7 +172,6 @@ class TableContainer extends Component<{}, TableState> {
       // await this.requestService.changeSheet(wikiStore.projects.current!.folder, sheetName);
       currentFilesService.changeSheet(sheetName, currentFilesService.currentState.dataFile);
       await this.requestService.getTable();
-
       if (wikiStore.yaml.yamlContent) {
         wikiStore.output.isDownloadDisabled = false;
       }
@@ -180,8 +179,14 @@ class TableContainer extends Component<{}, TableState> {
       error.errorDescription += "\n\nCannot change sheet!";
       this.setState({ errorMessage: error });
     }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
     wikiStore.table.showSpinner = false;
-    wikiStore.wikifier.showSpinner = false;
 
   }
 
@@ -200,6 +205,8 @@ class TableContainer extends Component<{}, TableState> {
 
       this.setState({ filename, sheetNames, currSheetName, multipleSheets });
     }
+
+    if (this.state.mode === 'annotation') { this.createAnnotationIfDoesNotExist(); }
   }
 
   async switchMode(mode: TableMode) {
@@ -212,7 +219,7 @@ class TableContainer extends Component<{}, TableState> {
 
     this.resetTableData();
 
-    if ( mode === 'annotation' ) {
+    if (mode === 'annotation') {
       this.fetchAnnotations();
     }
 
@@ -220,12 +227,13 @@ class TableContainer extends Component<{}, TableState> {
     wikiStore.yaml.showSpinner = false;
   }
 
-  async fetchAnnotations() {
-    if (!currentFilesService.currentState.mappingFile){
+  async createAnnotationIfDoesNotExist(){
+    if (!currentFilesService.currentState.dataFile) { return; }
+    if (!currentFilesService.currentState.mappingFile) {
       //create a mapping file
-      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name+"-"+currentFilesService.currentState.sheetName+".annotation");
+      const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation");
       const data = {
-        "title":title,
+        "title": title,
         "sheetName": currentFilesService.currentState.sheetName,
         "dataFile": currentFilesService.currentState.dataFile
       };
@@ -233,6 +241,11 @@ class TableContainer extends Component<{}, TableState> {
       await this.requestService.createAnnotation(data)
       currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
     }
+  }
+
+  async fetchAnnotations() {
+    if (!currentFilesService.currentState.dataFile) { return; }
+    this.createAnnotationIfDoesNotExist();
     try {
       await this.requestService.call(this, () => (
         this.requestService.getMappingCalculation()
@@ -240,6 +253,39 @@ class TableContainer extends Component<{}, TableState> {
     } catch (error) {
       error.errorDescription += "\n\nCannot fetch annotations!";
       this.setState({ errorMessage: error });
+    }
+
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
+
+  }
+
+  async getAnnotationSuggestion() {
+    if (wikiStore.annotations.blocks.length > 0) {
+      if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
+        return;
+      }
+    }
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try {
+      await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+    
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
     }
   }
 
@@ -255,7 +301,7 @@ class TableContainer extends Component<{}, TableState> {
   renderTitle() {
     const { filename } = this.state;
     return (
-      <div style={{ width: "calc(100% - 350px)", cursor: "default" }}
+      <div style={{ width: "calc(100% - 500px)", cursor: "default" }}
         className="text-white font-weight-bold d-inline-block text-truncate">
         { filename ? (
           <span>
@@ -265,10 +311,21 @@ class TableContainer extends Component<{}, TableState> {
             </span>
           </span>
         ) : (
-            <span>Table&nbsp;Viewer</span>
-          )}
+          <span>Table&nbsp;Viewer</span>
+        )}
       </div>
     )
+  }
+
+  renderSuggestButton() {
+    if (this.state.mode == "annotation") {
+      return (
+        <div style={{ cursor: "pointer", textDecoration: "underline" }}
+          className="text-white d-inline-block">
+          <span onClick={() => this.getAnnotationSuggestion()}>Suggest annotation</span>
+        </div>
+      )
+    }
   }
 
   renderAnnotationToggle() {
@@ -284,14 +341,14 @@ class TableContainer extends Component<{}, TableState> {
             onClick={() => this.switchMode('annotation')}>
             Annotate
           </Button>
-          {/*
+
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'wikify',
             })}
             onClick={() => this.switchMode('wikify')}>
             Wikify
-          </Button> */}
+          </Button>
           <Button variant="outline-light"
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'output',
@@ -312,6 +369,7 @@ class TableContainer extends Component<{}, TableState> {
         <div className="text-left small">
           <b>Accepted file types:</b><br />
           • Comma-Separated Values (.csv)<br />
+          • Tab-Separated Values (.tsv)<br />
           • Microsoft Excel (.xls/.xlsx)
         </div>
       </Tooltip>
@@ -337,7 +395,7 @@ class TableContainer extends Component<{}, TableState> {
         <input
           type="file"
           id="file_table"
-          accept=".csv, .xls, .xlsx"
+          accept=".csv, .tsv, .xls, .xlsx"
           style={{ display: "none" }}
           onChange={this.handleOpenTableFile.bind(this)}
           onClick={(event) => (event.target as HTMLInputElement).value = ''}
@@ -348,7 +406,7 @@ class TableContainer extends Component<{}, TableState> {
 
   renderLoading() {
     return (
-      <div className="mySpinner" hidden={!wikiStore.table.showSpinner}>
+      <div className="mySpinner" hidden={!this.state.showSpinner}>
         <Spinner animation="border" />
       </div>
     )
@@ -395,6 +453,7 @@ class TableContainer extends Component<{}, TableState> {
             style={{ height: "40px", background: "#339966" }}>
             {this.renderTitle()}
             {this.renderUploadButton()}
+            {this.renderSuggestButton()}
             {this.renderAnnotationToggle()}
           </Card.Header>
 

@@ -1,5 +1,118 @@
 T2WML Standalone Server App History
 ===================================
+Changes in version 2.9.3:
+-------------------------
+* t2wml-api version 0.3.5
+* various bug fixes and tweaks, among them:
+   * fix submit not working in annotation menu
+   * fix color problems
+   * fix race condition for wikifier labels
+   * fix missing scrollbar in file tree
+
+
+Changes in version 2.9.2:
+-------------------------
+* t2wml-api 0.3.3
+* various performance improvements
+   - no more database for properties
+   - bug with multiple calls to layers/partialcsv resolved
+   - no overloading suggest api
+* display unused properties/units/main subject as striped. when clicking any block, highlight linked blocks as well
+* change suggestion api-- select suggestion as default option but show all options in dropdown
+* limit partial csv result preview to 150 rows
+
+
+Changes in version 2.9.1:
+-------------------------
+* t2wml-api 0.3.2
+* fix out of sync state updates, much more stable coloring code
+* add workaround to display subject in partial csv if no dependent variable specified
+* add button to suggest an automatic annotation when in annotation mode
+* if qualifier is missing property, or variable is missing property/main subject, display as striped
+* if qualifier/depvar are linked to other blocks, active-border-highlight those blocks when qualifier/depvar are clicked
+* display a field for sheet link for any fields linked to other blocks in the sheet
+
+Changes in version 2.9.0-pre.9 (beta):
+-------------------------
+* t2wml version 0.3.0
+* replaced wikifier window with results preview window
+* improved property/qnode search passes property's data_type to search
+* added annotation block auto-suggestions
+* add ability to pass subject in dependent variable's annotation
+* tweaks:
+   * download name is no longer [project].suffix and is now [data file + sheet].suffix
+   * default mode now annotation not output
+* bug fixes:
+   * critical bug fix: when switching sheets, impossible to annotate
+   * removed ability to delete active annotation file while in annotation mode
+   * colors from previous file carrying over to new file
+   * entities labels not being fetched
+   * better handling of permission denied IO error
+   * additional fields toggle wasn't disappearing when type switched
+
+Changes in version 2.9.0-pre.7 (beta): 
+-------------------------
+* t2wml version 0.2.11
+* bug fix: app crashed when navigating into empty cells in output mode
+* add output formatting for date precisions
+* add additional precision options
+* for child dropdowns, add a disabled default option for a new annotation to denote nothing selected
+* remove the format dropdown, return to text box input. 
+
+
+Changes in version 2.9.0-pre-2 (beta): 
+-------------------------
+* t2wml-api version 0.2.8
+* added suggestions during annotation process. the user receives, already selected, the backend's best guess
+for what the annotation should be. if correct, user can simply click 'submit' without having to select from the 
+various dropdowns.
+* a variety of frontend tweaks:
+   - arrow keys nav don't steal focus
+   - add calendar options
+   - add date format options
+   - add precision options
+   - various bug fixes
+   - added a toggle for viewing/hiding additional fields (eg unit, date, precision)
+
+Changes in version 2.8.1: 
+-------------------------
+* t2wml-api version 0.2.6
+* added support for uploading tsv files as data files
+* when creating a project, auto suggest folder name as project name
+* don't create duplicate rows in use-wikification
+* file tree:
+   - for single-sheet data files, don't show sheets
+   - display file name only (no relative path)
+* remove support for everything related to the old style of annotation (referring to adding rows to a spreadsheet and annotating it internally)
+* when adding a data file, mode defaults to annotation
+* changes to how output preview displays nodes, adding urlification for value field and general handling of label and parentheses
+   - this includes a bug fix where units were being displayed as junk
+* when attempting to upload to datamart, fail and alert user if variable is not of type quantity
+* add environment variable T2WMLHOME. when set, the .t2wml folder will be created there rather than in the os home. 
+   - fix a bug where program would error out if .t2wml folder was deleted mid run
+* errors:
+   - when a request to backend fails because it attempts to modify a file that is open elsewhere (eg excel), return a coherent error to user
+   - add error handling to the wikify menu
+   - get rid of error messages when adding wikifier/entity files before adding a data file
+   - change error titles to something more descriptive than "unknown backend error"
+
+
+Changes in version 2.8.0: 
+-------------------------
+* t2wml-api version 0.2.4
+* added property search bar in the annotation menu for dependent variables and qualifiers
+* added wikify mode:
+   - in wikify mode, a cell's wikification is displayed in the cell, with label and description, allowing the user to easily see at a glance what QNodes/properties a cell is linked to
+   - in wikify mode the user can select a cell, or a cell within a block defined by the annotation, search for an appropriate wikidata QNode or Property, and apply it to that cell or all cells with the same content in the block.
+   - for qnode (not property) search, the user can specify a P31 node to filter the results of their query
+   - the user wikifications are saved to a file in the project
+   - users can also remove any wikification they've added
+* the entities tab of the file tree has some enhancements:
+   - entity and wikifier files are no longer displayed alaphabetically, but rather in the order they are present in the project, which is also their order by precedence (ascending, ie last is highest precedence)
+   - the ability to add files has been added to the right click menu
+* bug fix: previously, changes to wikification (eg adding a new wikifier file) were not being displayed/updated in the results. this has been fixed, and all wikification changes-- adding and deleting files, auto-generation from annotation, and anything done in wikify mode-- will be displayed in the table and results.
+* the wikify button has been disabled. the wikifier endpoint is currently down for an unknown amount of time.
+
 
 Changes in version 2.7.1:
 -------------------------

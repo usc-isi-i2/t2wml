@@ -64,6 +64,24 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     }
   }
 
+  async callGetTable(){
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try{
+    await this.requestService.getTable();
+    }finally{
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+    wikiStore.wikifier.showSpinner = true;
+    try{
+      await this.requestService.getPartialCsv();
+    }
+    finally{
+      wikiStore.wikifier.showSpinner = false;
+    }
+  }
+
   async changeFile() {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
@@ -93,6 +111,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     const data = { "file_name": filename, "delete": deleteFromFs };
     try {
       await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
+      await this.callGetTable();
     } catch (error) {
       console.log(error);
     } finally {
@@ -100,8 +119,38 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  removeFile() { // TODO
-    console.log("remove file");
+
+  async addFile(fileType: string) { // this function?
+    let title = "Open Existing Wikifier File"
+    let filters = [{ name: "wikifier", extensions: ["csv"] }]
+    if (fileType == "Entities") {
+      title = "Open Existing Entities File";
+      filters = [{ name: "entities (kgtk)", extensions: ["tsv"] }]
+    }
+
+    const result = await remote.dialog.showOpenDialog({
+      title: title,
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['createDirectory'],
+      filters: filters,
+    });
+    if (!result.canceled && result.filePaths) {
+      try {
+        const data = { "filepath": result.filePaths[0] };
+        if (fileType == "Wikifiers") {
+          await this.requestService.uploadWikifierOutput(data);
+        }
+        else {
+          await this.requestService.uploadEntities(data);
+        }
+        await this.callGetTable();
+
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.setState({ showSpinner: false });
+      }
+    }
   }
 
   onRightClick(node: NodeProps) {
@@ -110,10 +159,15 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
 
     const menu = new Menu();
 
-    menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
-    menu.append(new MenuItem({ type: 'separator' }));
-    menu.append(new MenuItem({ label: 'Remove from project', click: () => this.removeFile() }));
-    menu.append(new MenuItem({ label: 'Delete from filesystem and project', click: () => this.deleteFile() }));
+    if (node.label == "Wikifiers" || node.label == "Entities") {
+      menu.append(new MenuItem({ label: 'Load existing file', click: () => this.addFile(node.label) }));
+    } else {
+      menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
+      menu.append(new MenuItem({ type: 'separator' }));
+      menu.append(new MenuItem({ label: 'Remove from project', click: () => this.deleteFile(false) }));
+      menu.append(new MenuItem({ label: 'Delete from filesystem and project', click: () => this.deleteFile() }));
+    }
+
 
     menu.popup({ window: remote.getCurrentWindow() });
   }
@@ -121,10 +175,12 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
   buildFileTree(): NodeProps[] {
     const project = wikiStore.project.projectDTO;
     entitiesNode.childNodes = [];
+    entitiesNode.rightClick = () => this.onRightClick(entitiesNode)
     wikifiersNode.childNodes = [];
+    wikifiersNode.rightClick = () => this.onRightClick(wikifiersNode)
 
     if (!project || (!project.entity_files && !project.wikifier_files)) { return []; }
-    for (const ef of project.entity_files.sort()) {
+    for (const ef of project.entity_files) {
       const entityNode = {
         id: ef,
         label: ef,
@@ -138,7 +194,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
       entitiesNode.childNodes.push(entityNode);
     }
 
-    for (const wf of project.wikifier_files.sort()) {
+    for (const wf of project.wikifier_files) {
       const wikifierNode = {
         id: wf,
         label: wf,
@@ -167,7 +223,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
           <Spinner animation="border" />
         </div>
 
-        <ul style={{width: "100%"}}>
+        <ul style={{ width: "100%" }}>
           {this.state.files.map((fileNode, index) => (
             <FileNode key={index}
               id={fileNode.id}

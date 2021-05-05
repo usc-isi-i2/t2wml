@@ -29,7 +29,6 @@ export interface ProjectDTO {
 }
 
 export interface GlobalSettingsDTO {
-    datamart_integration: boolean;
     datamart_api: string;
 }
 
@@ -67,15 +66,6 @@ export interface QNode{
     id: string;
     url?: string;
 }
-
-
-export interface Property {
-    label: string;
-    description: string;
-    id: string;
-    url?: string;
-}
-
 
 export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
     qnodes: {[key: string]: QNode };
@@ -126,6 +116,7 @@ export interface StatementEntry extends Entry{
     qnodes: any;
     qualifier?: any;
     unit?: string;
+    precision?: number;
 }
 
 
@@ -140,6 +131,15 @@ export interface AnnotationBlock{
     language?: string;
 
     unit?: string;
+    subject?: string;
+    property?: string;
+    links?: {
+        property?: string;// the ID of the block with the property of this block
+        mainSubject?: string; // the ID of the block with the subject of this block
+        unit?: string;
+    };
+    link?: string;
+
     //upperBound?: string;
     //lowerBound?: string;
 
@@ -150,6 +150,7 @@ export interface AnnotationBlock{
     precision?: string;
     calendar?: string;
     format?: string;
+    id?: string;
     //time_zone?: string;
 }
 
@@ -172,6 +173,10 @@ export interface ResponseWithProjectDTO {
 
 export interface ResponseWithProjectandFileName extends ResponseWithProjectDTO{
     filename: string;
+}
+
+export interface ResponseWithPartialCsvDTO{
+    partialCsv: TableDTO;
 }
 
 export interface ResponseWithMappingDTO{
@@ -221,6 +226,8 @@ export interface ResponseWithQNodesDTO {
     qnodes: QNode[];
 }
 
-export interface ResponseWithPropertiesDTO {
-    properties: Property[];
+export interface ResponseWithSuggestion {
+    roles: string[];
+    types: string[];
+    children: any;
 }

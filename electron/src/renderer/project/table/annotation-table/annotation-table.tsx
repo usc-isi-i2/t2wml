@@ -2,17 +2,20 @@ import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import Table from '../table';
 import { IReactionDisposer, reaction } from 'mobx';
+import RequestService from '../../../common/service';
 import wikiStore from '@/renderer/data/store';
-import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../../common/dtos';
+import { AnnotationBlock, AnnotationBlockRole, ResponseWithSuggestion, TableCell, TableData, TableDTO } from '../../../common/dtos';
 import { CellSelection } from '../../../common/general';
 import AnnotationMenu from './annotation-menu';
 import * as utils from '../table-utils';
+import { currentFilesService } from '@/renderer/common/current-file-service';
 
 
 interface TableState {
   tableData?: TableData;
   showAnnotationMenu: boolean;
   selectedAnnotationBlock?: AnnotationBlock;
+  annotationSuggestionsSelectedBlock: ResponseWithSuggestion;
 }
 
 
@@ -26,6 +29,8 @@ class AnnotationTable extends Component<{}, TableState> {
   private prevDirection?: Direction;
   private selecting = false;
   private selection?: CellSelection;
+  private requestService: RequestService;
+  private timeoutSuggest?: number;
 
   setTableReference(reference?: HTMLTableElement) {
     if (!reference) { return; }
@@ -40,10 +45,12 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData: undefined,
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
+      annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {} }
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
     this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
+    this.requestService = new RequestService();
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -65,15 +72,12 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  updateTableData(table?: TableDTO) {
-    if ( !table || !table.cells ) {
-      this.setState({ tableData: undefined });
-      return;
-    }
+  getClasslessTableData(table?: TableDTO): TableData{
+    if (!table){table=wikiStore.table.table}
     const tableData = [];
-    for ( let i = 0; i < table.cells.length; i++ ) {
+    for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
-      for ( let j = 0; j < table.cells[i].length; j++ ) {
+      for (let j = 0; j < table.cells[i].length; j++) {
         const cell: TableCell = {
           content: table.cells[i][j],
           classNames: [],
@@ -82,13 +86,32 @@ class AnnotationTable extends Component<{}, TableState> {
       }
       tableData.push(rowData);
     }
-    this.updateAnnotationBlocks(tableData);
+    return tableData;
+
   }
 
-  updateAnnotationBlocks(tableData?: TableData) {
-    if ( !tableData ) {
-      tableData = this.state.tableData;
+  updateTableData(table?: TableDTO) {
+    if (!table || !table.cells) {
+      this.setState({ tableData: undefined });
+      return;
     }
+
+    const tableData=this.getClasslessTableData(table);
+
+
+    if (currentFilesService.currentState.mappingFile) { this.updateAnnotationBlocks(tableData); }
+    else {
+      this.updateQnodes(tableData);
+    }
+  }
+
+
+
+  updateAnnotationBlocks(tableData?: TableData) {
+    if (!tableData) {
+      tableData = this.getClasslessTableData()
+    }
+    this.resetSelection();
 
     function emptyTableCell(): TableCell {
       return {
@@ -98,17 +121,29 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     const table: any = this.tableRef;
-    if ( !table ) { return; }
+    if (!table) { return; }
+    if (!tableData){return; }
 
-    if ( wikiStore.annotations.blocks && tableData ) {
 
-      for ( const block of wikiStore.annotations.blocks ) {
-        const { role, type, selection } = block;
+
+    if (wikiStore.annotations.blocks) {
+
+      for (const block of wikiStore.annotations.blocks) {
+        const { role, type, selection, property, links, subject, link } = block;
         const classNames: string[] = [];
-        if ( role ) {
-          classNames.push(`role-${role}`);
+        if (role) {
+          if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
+            classNames.push(`role-${role}-no-property`);
+          } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+            classNames.push(`role-${role}-no-property`);
+          }  else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+            classNames.push(`role-${role}-no-link`);
+          }
+          else {
+            classNames.push(`role-${role}`);
+          }
         }
-        if ( type ) {
+        if (type) {
           classNames.push(`type-${type}`);
         }
         const { x1, y1, x2, y2 } = selection;
@@ -118,10 +153,10 @@ class AnnotationTable extends Component<{}, TableState> {
         const topRow = Math.min(y1, y2);
         const bottomRow = Math.max(y1, y2);
         let rowIndex = topRow;
-        while ( rowIndex <= bottomRow ) {
+        while (rowIndex <= bottomRow) {
           let colIndex = leftCol;
           const row = rows[rowIndex];
-          while ( row && colIndex <= rightCol ) {
+          while (row && colIndex <= rightCol) {
             this.selectCell(
               row.children[colIndex],
               rowIndex,
@@ -136,25 +171,25 @@ class AnnotationTable extends Component<{}, TableState> {
           }
           rowIndex += 1;
         }
-        for ( let row = topRow; row <= bottomRow; row++ ) {
-          for ( let col = leftCol; col <= rightCol; col++ ) {
+        for (let row = topRow; row <= bottomRow; row++) {
+          for (let col = leftCol; col <= rightCol; col++) {
             try {
               const cell = tableData[row - 1][col - 1];
               cell.classNames = classNames;
             } catch {
               let rx = row;
-              while ( rx > tableData.length ) {
+              while (rx > tableData.length) {
                 const emptyArray: TableCell[] = [...Array(col)].map(() => emptyTableCell());
                 tableData.push(emptyArray);
                 rx -= 1;
               }
               let cx = col;
-              while ( cx > tableData[0].length ) {
+              while (cx > tableData[0].length) {
                 tableData.forEach(tableRow => tableRow.push(emptyTableCell()));
                 cx -= 1;
               }
               const cell = tableData[row - 1][col - 1];
-              if ( cell ) {
+              if (cell) {
                 cell.classNames = classNames;
               }
             }
@@ -162,7 +197,10 @@ class AnnotationTable extends Component<{}, TableState> {
         }
       }
     }
+    this.updateQnodes(tableData)
+  }
 
+  updateQnodes(tableData?: TableData) {
     const qnodes = wikiStore.layers.qnode;
     if (!tableData) { return; }
     for (const entry of qnodes.entries) {
@@ -177,43 +215,43 @@ class AnnotationTable extends Component<{}, TableState> {
 
   deleteAnnotationBlock(block: AnnotationBlock) {
     const { tableData } = this.state;
-    if ( tableData ) {
+    if (tableData) {
       const { x1, y1, x2, y2 } = block.selection;
-      if ( y1 <= y2 ) {
-        if ( x1 <= x2 ) {
-          for ( let row = y1 - 1; row < y2; row++ ) {
-            for ( let col = x1 - 1; col < x2; col++ ) {
+      if (y1 <= y2) {
+        if (x1 <= x2) {
+          for (let row = y1 - 1; row < y2; row++) {
+            for (let col = x1 - 1; col < x2; col++) {
               const cell = tableData[row][col];
-              if ( cell ) {
+              if (cell) {
                 cell.classNames = [];
               }
             }
           }
         } else {
-          for ( let row = y1 - 1; row < y2; row++ ) {
-            for ( let col = x2 - 1; col < x1; col++ ) {
+          for (let row = y1 - 1; row < y2; row++) {
+            for (let col = x2 - 1; col < x1; col++) {
               const cell = tableData[row][col];
-              if ( cell ) {
+              if (cell) {
                 cell.classNames = [];
               }
             }
           }
         }
       } else {
-        if ( x1 <= x2 ) {
-          for ( let row = y2 - 1; row < y1; row++ ) {
-            for ( let col = x1 - 1; col < x2; col++ ) {
+        if (x1 <= x2) {
+          for (let row = y2 - 1; row < y1; row++) {
+            for (let col = x1 - 1; col < x2; col++) {
               const cell = tableData[row][col];
-              if ( cell ) {
+              if (cell) {
                 cell.classNames = [];
               }
             }
           }
         } else {
-          for ( let row = y2 - 1; row < y1; row++ ) {
-            for ( let col = x2 - 1; col < x1; col++ ) {
+          for (let row = y2 - 1; row < y1; row++) {
+            for (let col = x2 - 1; col < x1; col++) {
               const cell = tableData[row][col];
-              if ( cell ) {
+              if (cell) {
                 cell.classNames = [];
               }
             }
@@ -228,11 +266,18 @@ class AnnotationTable extends Component<{}, TableState> {
 
   resetSelection() {
     const table = this.tableRef;
-    if ( table ) {
+    if (table) {
       table.classList.remove('active');
       table.querySelectorAll('td[class*="active"]').forEach(e => {
         e.classList.forEach(className => {
           if (className.startsWith('active')) {
+            e.classList.remove(className);
+          }
+        });
+      });
+      table.querySelectorAll('td[class*="linked"]').forEach(e => {
+        e.classList.forEach(className => {
+          if (className.startsWith('linked')) {
             e.classList.remove(className);
           }
         });
@@ -242,11 +287,12 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+      this.setState({ annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {} } });
     }
   }
 
   resetEmptyCells(x1: number, x2: number, y1: number, y2: number) {
-    if ( !this.selection ) { return; }
+    if (!this.selection) { return; }
 
     // Typescript and HTML Element types do not play nicely, so we use 'any'
     const table: any = this.tableRef;
@@ -254,20 +300,20 @@ class AnnotationTable extends Component<{}, TableState> {
     rows.forEach((row: any, index: number) => {
       // We know this.selection is defined, byt Typescript misses it in this nested
       // function
-      if ( this.selection!.y1 < this.selection!.y2 ) {
-        if ( index >= this.selection!.y1 && index <= this.selection!.y2 ) {
+      if (this.selection!.y1 < this.selection!.y2) {
+        if (index >= this.selection!.y1 && index <= this.selection!.y2) {
           // reset cell class names on the vertical axes
           let colIndex = x1;
-          while ( colIndex > x2 ) {
+          while (colIndex > x2) {
             row.children[colIndex].className = '';
             colIndex = colIndex - 1;
           }
         }
       } else {
-        if ( index >= this.selection!.y2 && index <= this.selection!.y1 ) {
+        if (index >= this.selection!.y2 && index <= this.selection!.y1) {
           // reset cell class names on the vertical axes
           let colIndex = x1;
-          while ( colIndex > x2 ) {
+          while (colIndex > x2) {
             row.children[colIndex].className = '';
             colIndex = colIndex - 1;
           }
@@ -277,17 +323,17 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // reset cell class names on the horizontal axes
     let rowIndex = y1;
-    while ( rowIndex > y2 ) {
+    while (rowIndex > y2) {
       const row = rows[rowIndex];
-      if ( this.selection.x1 < this.selection.x2 ) {
+      if (this.selection.x1 < this.selection.x2) {
         let colIndex = this.selection.x1;
-        while ( colIndex <= this.selection.x2 ) {
+        while (colIndex <= this.selection.x2) {
           row.children[colIndex].className = '';
           colIndex = colIndex + 1;
         }
       } else {
         let colIndex = this.selection.x2;
-        while ( colIndex <= this.selection.x1 ) {
+        while (colIndex <= this.selection.x1) {
           row.children[colIndex].className = '';
           colIndex = colIndex + 1;
         }
@@ -296,8 +342,23 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
+  async getAnnotationSuggestionsForSelection(selection: { 'x1': number, 'x2': number, 'y1': number, 'y2': number }) {
+    //data should be a json dictionary, with fields:
+    // {
+    //   "selection": The block,
+    //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
+    // }
+    if (this.timeoutSuggest) {
+      window.clearTimeout(this.timeoutSuggest);
+    }
+    this.timeoutSuggest = window.setTimeout(async () => {
+      const suggestion = await this.requestService.getAnnotationSuggestions({ "selection": selection, "annotations": wikiStore.annotations.blocks });
+      this.setState({ annotationSuggestionsSelectedBlock: suggestion })
+    }, 200);
+  }
+
   updateSelections(selectedBlock?: AnnotationBlock) {
-    if ( !selectedBlock ) {
+    if (!selectedBlock) {
       selectedBlock = this.state.selectedAnnotationBlock;
     }
 
@@ -309,35 +370,68 @@ class AnnotationTable extends Component<{}, TableState> {
       return;
     }
 
+    this.getAnnotationSuggestionsForSelection(this.selection)
+
     const table: any = this.tableRef;
-    if ( !table ) { return; }
+    if (!table) { return; }
 
     // Reset selections before update
     this.resetSelection();
     table.classList.add('active');
 
     const classNames: string[] = ['active'];
-    if ( selectedBlock ) {
-      const { role } = selectedBlock;
-      if ( role ) {
-        const className = `role-${role}`;
-        table.querySelectorAll(`td[class*="${className}"]`).forEach((element: HTMLElement) => {
-          element.classList.remove(className);
-        });
-        classNames.push(className);
+    const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
+    if (selectedBlock) {
+      const { role, property, links, subject, link} = selectedBlock;
+      if (role) {
+        if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
+          classNames.push(`role-${role}-no-property`);
+        } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+          classNames.push(`role-${role}-no-property`);
+        } else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+          classNames.push(`role-${role}-no-link`);
+        }
+        {
+          classNames.push(`role-${role}`);
+        }
+      }
+      if (links) {
+        for (const block of wikiStore.annotations.blocks) {
+          if ((links.property && block.id == links.property) || (links.mainSubject && block.id == links.mainSubject)
+            || (links.unit && block.id == links.unit)) {
+            const linkedBlock = { ...block };
+            linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+          }
+        }
+      }
+      if (link){
+        for (const block of wikiStore.annotations.blocks) {
+          if (block.id == link){
+            const linkedBlock = { ...block };
+            linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+          }
+        }
       }
     }
+    this.selectBlock(this.selection, table, classNames);
+    for (const linkedBlock of linksBlocks) {
+      const { selection } = linkedBlock.block;
+      this.selectBlock(selection, table, linkedBlock.classNames);
+    }
 
+  }
+
+  selectBlock(selection: CellSelection, table: any, classNames: string[]) {
+    const { x1, x2, y1, y2 } = selection;
     const rows = table.querySelectorAll('tr');
-    const { x1, x2, y1, y2 } = this.selection;
     const leftCol = Math.min(x1, x2);
     const rightCol = Math.max(x1, x2);
     const topRow = Math.min(y1, y2);
     const bottomRow = Math.max(y1, y2);
     let rowIndex = topRow;
-    while ( rowIndex <= bottomRow ) {
+    while (rowIndex <= bottomRow) {
       let colIndex = leftCol;
-      while ( colIndex <= rightCol ) {
+      while (colIndex <= rightCol) {
         this.selectCell(
           rows[rowIndex].children[colIndex],
           rowIndex,
@@ -387,7 +481,7 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     // Add resize corner to the active selection areas
-    if ( classNames.includes('active') ) {
+    if (classNames.includes('active')) {
       if (rowIndex === bottomRow && colIndex === rightCol) {
         const resizeCorner = document.createElement('div');
         resizeCorner.classList.add('cell-resize-corner');
@@ -397,7 +491,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   checkOverlaps() {
-    if ( !this.selection ) { return; }
+    if (!this.selection) { return; }
     const { x1, y1, x2, y2 } = this.selection;
 
     // Get the coordinates of the sides
@@ -407,7 +501,7 @@ class AnnotationTable extends Component<{}, TableState> {
     const aBottom = y2 >= y1 ? y2 : y1;
 
     const { blocks } = wikiStore.annotations;
-    for (let i = 0; i < blocks.length; i++ ) {
+    for (let i = 0; i < blocks.length; i++) {
       const other = blocks[i].selection;
 
       // Get the coordinates of the sides
@@ -439,13 +533,13 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnMouseUp() {
-    if ( this.selection ) {
+    if (this.selection) {
       this.selection = utils.standardizeSelection(this.selection);
       const { selectedAnnotationBlock } = this.state;
-      if ( !selectedAnnotationBlock && this.selecting && this.checkOverlaps() ) {
+      if (!selectedAnnotationBlock && this.selecting && this.checkOverlaps()) {
         this.closeAnnotationMenu();
       } else {
-        this.setState({showAnnotationMenu: true});
+        this.setState({ showAnnotationMenu: true });
       }
     }
     this.selecting = false;
@@ -455,11 +549,11 @@ class AnnotationTable extends Component<{}, TableState> {
     const element = event.target as any;
 
     // Allow users to select the resize-corner of the cell
-    if ( element.className === 'cell-resize-corner' ) {
+    if (element.className === 'cell-resize-corner') {
       this.prevElement = element.parentElement;
       this.selecting = true;
       return;
-    } else if ( element.nodeName !== 'TD' ) { return; }
+    } else if (element.nodeName !== 'TD') { return; }
 
     // Set both coordinates to the same cell
     const x1: number = element.cellIndex;
@@ -470,10 +564,10 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // check if the user is selecting an annotation block
     const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
-    if ( selectedBlock ) {
+    if (selectedBlock) {
 
       // Reset annotation menu
-      if ( selectedBlock !== this.state.selectedAnnotationBlock ) {
+      if (selectedBlock !== this.state.selectedAnnotationBlock) {
         this.setState({
           showAnnotationMenu: false,
           selectedAnnotationBlock: undefined,
@@ -524,6 +618,7 @@ class AnnotationTable extends Component<{}, TableState> {
         // Activate the element on click
         this.selectCell(element, y1, x1, y1, x1, x1, y1, ['active']);
         this.selection = { x1, x2, y1, y2 };
+        this.getAnnotationSuggestionsForSelection(this.selection)
       });
     }
 
@@ -537,12 +632,12 @@ class AnnotationTable extends Component<{}, TableState> {
     if (element === this.prevElement) { return; }
 
     // Don't allow out-of-bounds resizing
-    if ( element.nodeName !== 'TD' ) {
+    if (element.nodeName !== 'TD') {
       return;
     }
 
     if (this.selecting && !event.shiftKey) {
-      if ( !this.selection ) { return; }
+      if (!this.selection) { return; }
 
       // Update the last x coordinate of the selection
       const newCellIndex = element.cellIndex;
@@ -552,11 +647,11 @@ class AnnotationTable extends Component<{}, TableState> {
       const newRowIndex = element.parentElement.rowIndex;
       this.selection.y2 = newRowIndex;
 
-      if ( this.prevElement.nodeName === 'TD' ) {
+      if (this.prevElement.nodeName === 'TD') {
         const oldCellIndex = this.prevElement.cellIndex;
         const oldRowIndex = this.prevElement.parentElement.rowIndex;
-        if ( selectedAnnotationBlock ) {
-          if ( newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex ) {
+        if (selectedAnnotationBlock) {
+          if (newCellIndex <= oldCellIndex || newRowIndex <= oldRowIndex) {
             this.resetEmptyCells(oldCellIndex, newCellIndex, oldRowIndex, newRowIndex);
           }
         }
@@ -593,15 +688,18 @@ class AnnotationTable extends Component<{}, TableState> {
   handleOnKeyDown(event: KeyboardEvent) {
 
     // Close annotation menu with ESC key
-    if (event.code === 'Escape' ) {
+    if (event.code === 'Escape') {
       this.closeAnnotationMenu();
     }
 
     const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-    if ( arrowCodes.includes(event.code) && this.selection ) {
+    if (arrowCodes.includes(event.code) && this.selection) {
 
       // Don't allow moving around when users are typing
-      if ( (event.target as any).nodeName === 'INPUT' ) { return; }
+      if ((event.target as any).nodeName === 'INPUT') { return; }
+
+      // Don't allow moving around when selecting from the dropdown menu
+      if ((event.target as any).nodeName === 'SELECT') { return; }
 
       event.preventDefault();
 
@@ -752,11 +850,38 @@ class AnnotationTable extends Component<{}, TableState> {
     }
   }
 
-  onSelectionChange(selection: CellSelection) {
-    if ( selection ) {
-      this.selection = selection;
-      this.updateSelections();
+  deleteRolePrevSelection() {
+    const table = this.tableRef;
+    if (table) {
+      table.querySelectorAll('td[class*="active"]').forEach(cell => {
+        cell.classList.forEach(className => {
+          if (className.startsWith('role-')) {
+            cell.classList.remove(className);
+          }
+        });
+      });
     }
+  }
+
+  onSelectionChange(selection: CellSelection, role?: string) {
+    const {selectedAnnotationBlock} = this.state;
+    this.selection = selection;
+    this.deleteRolePrevSelection();
+
+    let newBlock;
+
+    if(selectedAnnotationBlock){
+      newBlock = {...selectedAnnotationBlock};
+      newBlock.selection = selection;
+    }
+    else{
+      newBlock = {role: role as AnnotationBlockRole, selection: selection};
+    }
+    this.setState({
+      showAnnotationMenu: true,
+      selectedAnnotationBlock: newBlock,
+    })
+    this.updateSelections();
   }
 
   closeAnnotationMenu() {
@@ -774,15 +899,19 @@ class AnnotationTable extends Component<{}, TableState> {
     const {
       showAnnotationMenu,
       selectedAnnotationBlock,
+      annotationSuggestionsSelectedBlock
     } = this.state;
     if (showAnnotationMenu) {
       return (
         <AnnotationMenu
+          key={annotationSuggestionsSelectedBlock.roles.toString()}
           selection={this.selection}
           onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}
           onClose={() => this.closeAnnotationMenu()}
-          onDelete={this.deleteAnnotationBlock.bind(this)} />
+          onDelete={this.deleteAnnotationBlock.bind(this)}
+          annotationSuggestions={annotationSuggestionsSelectedBlock}
+        />
       )
     }
   }

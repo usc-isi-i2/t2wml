@@ -17,6 +17,7 @@ interface WikifyMenuProperties {
   selectedCell: Cell;
   position: Array<number>;
   wikifyCellContent?: string;
+  onSelectBlock: (applyToBlock: boolean) => void;
   onClose: () => void;
 }
 
@@ -40,15 +41,15 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     };
   }
 
-  async handleOnChange(key: string, value: string, instanceOf?: QNode) {
+  async handleOnChange(key: string, value: string, instanceOf?: QNode, searchProperties?: boolean) {
     console.log('WikifyMenu OnChange triggered for -> ', key, value);
 
-    if ( !value ) { return; }
+    if (!value) { return; }
 
     const isClass = key === 'instanceOfSearch';
     try {
       await this.requestService.call(this, () => (
-        this.requestService.getQNodes(value, isClass, instanceOf)
+        this.requestService.getQNodes(value, isClass, instanceOf, searchProperties)
       ));
     } catch (error) {
       error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
@@ -60,6 +61,72 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
 
   async handleOnSubmit(qnode: QNode, applyToBlock: boolean) {
     console.log('WikifyMenu OnSubmit triggered for -> ', qnode);
+
+    let hasError=false;
+
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+
+    const { selectedCell, wikifyCellContent } = this.props;
+    const { col, row } = selectedCell;
+
+    let selection = [[col, row], [col, row]];
+    if (applyToBlock) {
+      const cellSelection: CellSelection = { x1: col + 1, x2: col + 1, y1: row + 1, y2: row + 1 };
+      const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
+      if (selectedBlock) {
+        selection = [
+          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
+          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+        ];
+      }
+    }
+
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.postQNodes({
+          value: wikifyCellContent,
+          selection,
+          qnode,
+        })
+      ));
+    } catch (error) {
+      error.errorDescription = `Wasn't able to submit the qnode!\n` + error.errorDescription;
+      console.log(error.errorDescription)
+      this.setState({ errorMessage: error });
+      hasError=true;
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+
+    //also update results:
+    if (!hasError){
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+      this.props.onClose();
+    }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }}
+  }
+
+  async handleOnRemove(qnode: QNode, applyToBlock: boolean) {
+    console.log('WikifyMenu OnRemove triggered for -> ', qnode);
+    let hasError=false;
 
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
@@ -82,22 +149,27 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
 
     try {
       await this.requestService.call(this, () => (
-        this.requestService.postQNodes({
+        this.requestService.removeQNodes({
           value: wikifyCellContent,
           selection,
           qnode,
         })
       ));
     } catch (error) {
-      error.errorDescription += `\nWasn't able to submit the qnode!`;
+      error.errorDescription += `Wasn't able to submit the qnode!\n` + error.errorDescription;
+      console.log(error.errorDescription)
       this.setState({ errorMessage: error });
+      hasError=true;
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
 
       // Close the wikify menu on submit
-      this.props.onClose();
+      if (!hasError){
+        this.props.onClose();
+      }
+
     }
   }
 
@@ -115,12 +187,14 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   }
 
   renderWikifyForms() {
-    const { selectedCell } = this.props;
+    const { selectedCell, onSelectBlock } = this.props;
     return (
       <WikifyForm
         selectedCell={selectedCell}
+        onSelectBlock={(applyToBlock) => onSelectBlock(applyToBlock)}
         onChange={this.handleOnChange.bind(this)}
-        onSubmit={this.handleOnSubmit.bind(this)} />
+        onSubmit={this.handleOnSubmit.bind(this)}
+        onRemove={this.handleOnRemove.bind(this)} />
     )
   }
 
@@ -128,12 +202,16 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     const { position, onClose } = this.props;
     return (
       <Draggable handle=".handle"
-        defaultPosition={{x: position[0], y: position[1]}}>
+        defaultPosition={{ x: position[0], y: position[1] }}>
         <div className="wikify-menu">
           <Toast onClose={onClose}>
             {this.renderHeader()}
             <Toast.Body>
+            <div style={{ color: 'red' }}>
+                            {this.state.errorMessage.errorDescription}
+                          </div>
               {this.renderWikifyForms()}
+
             </Toast.Body>
           </Toast>
         </div>

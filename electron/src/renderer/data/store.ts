@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, Property, QNode, QNodeEntry,
+import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
         StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
 import { Cell } from '../common/general';
 import RequestService from '../common/service';
@@ -26,7 +26,7 @@ class TableState {
     @observable public showCleanedData: boolean;
 
     constructor() {
-        this.mode = 'output';
+        this.mode = 'annotation';
         this.table = {} as TableDTO;
         this.showSpinner = false;
         this.showCleanedData = false;
@@ -162,6 +162,7 @@ export class LayerState {
     @observable public statement: StatementLayer;
     @observable public error: Layer<ErrorEntry>;
     @observable public cleaned: Layer<CleanEntry>;
+    @observable public partialCsv: TableDTO;
 
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
@@ -169,6 +170,7 @@ export class LayerState {
         this.statement = new StatementLayer();
         this.error = new Layer<ErrorEntry>();
         this.cleaned = new Layer<CleanEntry>();
+        this.partialCsv = {} as TableDTO;
     }
 
     @action
@@ -218,7 +220,6 @@ export class ProjectState{
 }
 
 export class GlobalSettings{
-    @observable datamart_integration = false;
     @observable datamart_api = "";
 }
 
@@ -231,7 +232,7 @@ export class WikifyQnodes {
 }
 
 export class AnnotateProperties {
-    @observable properties: Property[] = [];
+    @observable properties: QNode[] = [];
 }
 
 class WikiStore {
@@ -249,6 +250,7 @@ class WikiStore {
     @observable public globalSettings = new GlobalSettings();
     @observable public entitiesData = new EntitiesData();
     @observable public wikifyQnodes = new WikifyQnodes();
+    @observable public subjectQnodes = new WikifyQnodes();
     @observable public annotateProperties = new AnnotateProperties();
 
 

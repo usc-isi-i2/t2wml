@@ -7,6 +7,7 @@ class DatabaseProvider(FallbackSparql):
         super().__init__()
         self.cache_id=None
         self.project=None
+        self.property_cache={}
 
     def change_project(self, project):
         self.project = project
@@ -26,29 +27,36 @@ class DatabaseProvider(FallbackSparql):
         return WikidataEntity.add_or_update(wd_id, data_type, do_session_commit=False, cache_id=cache_id, **kwargs)
 
     def get_entity(self, wikidata_property, *args, **kwargs):
-        #check for project-specific first
-        prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
-        #check for generic wikidata entry
-        if not prop or prop.data_type is None or prop.data_type == "Property Not Found":
-            prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.sparql_endpoint).first()
+        prop=self.property_cache.get(wikidata_property, None)
         if not prop:
-            raise ValueError("Not found")
+            #check for project-specific first
+            prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
+            #check for generic wikidata entry
+            if not prop:
+                prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.sparql_endpoint).first()
+            if not prop:
+                raise ValueError("Not found")
+        self.property_cache[wikidata_property]=prop
         return prop.__dict__
 
 
     def try_get_property_type(self, wikidata_property, *args, **kwargs):
-        #check for project-specific first
-        prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
-        #check for generic wikidata entry
-        if not prop or prop.data_type is None or prop.data_type == "Property Not Found":
-            prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.sparql_endpoint).first()
+        prop=self.property_cache.get(wikidata_property, None)
         if not prop:
-            raise ValueError("Not found")
+            #check for project-specific first
+            prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.cache_id).first()
+            #check for generic wikidata entry
+            if not prop or prop.data_type is None or prop.data_type == "Property Not Found":
+                prop = WikidataEntity.query.filter_by(wd_id=wikidata_property, cache_id=self.sparql_endpoint).first()
+            if not prop:
+                raise ValueError("Not found")
         if prop.data_type == "Property Not Found":
             return prop.data_type
         if prop.data_type is None:
             raise ValueError("No datatype defined for that ID")
+        self.property_cache[wikidata_property]=prop
         return prop.data_type
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         WikidataEntity.do_commit()
+

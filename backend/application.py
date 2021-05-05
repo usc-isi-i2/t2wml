@@ -8,16 +8,15 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
+from t2wml.input_processing.annotation_suggesting import annotation_suggester
 from werkzeug.utils import secure_filename
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
-                       get_project_instance, create_api_project, add_entities_from_project,
-                       add_entities_from_file, get_qnodes_layer, get_entities, update_entities, update_t2wml_settings, wikify, get_entities)
-from utils import (file_upload_validator, save_dataframe,
+                       get_project_instance, create_api_project, add_entities_from_project, get_partial_csv,
+                       add_entities_from_file, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
+from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
-from datamart_upload import upload_to_datamart
-from t2wml_annotation_integration import AnnotationIntegration, create_datafile
 from global_settings import global_settings
 import path_utils
 from wikification import wikify_countries
@@ -26,33 +25,6 @@ debug_mode = False
 
 set_web_settings()
 
-
-def run_annotation(project, calc_params):
-    is_csv = Path(calc_params.data_path).suffix == ".csv"
-    sheet = calc_params.sheet_name
-    ai = AnnotationIntegration(is_csv, calc_params)
-    if ai.is_annotated_spreadsheet(project.directory):
-        yaml_path = ai.automate_integration(
-            project, calc_params.data_path, sheet)
-        return yaml_path
-
-    else:  # not annotation file, check if annotation is available
-        annotation_found, new_df = ai.is_annotation_available(
-            project.directory)
-        if annotation_found and new_df is not None:
-            create_datafile(project, new_df, calc_params.data_path,
-                            calc_params.sheet_name)
-            calc_params = get_calc_params(project)
-            sheet = calc_params.sheet_name
-            ai = AnnotationIntegration(is_csv, calc_params,
-                                       df=new_df)
-
-            # do not check if dataset exists or not in case we are adding annotation for users, it will only confuse
-            # TODO the users. There has to be a better way to handle it. For Future implementation
-            yaml_path = ai.automate_integration(
-                project, calc_params.data_path, sheet)
-            return yaml_path
-    return None
 
 
 def get_project_folder():
@@ -86,6 +58,12 @@ def json_response(func):
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
+            print(e)
+            if "Permission denied" in str(e):
+                e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
+                data = {"error": e.error_dict}
+                return data, 403
+
             data = {"error": make_frontend_err_dict(e)}
             try:
                 code = e.code
@@ -155,14 +133,13 @@ def get_mapping(mapping_file=None, mapping_type=None):
 
     response = dict(project=get_project_dict(project))
 
-    if calc_params.annotation_path:
-        response["annotations"], response["yamlContent"] = get_annotations(
-            calc_params)
-    elif calc_params.yaml_path:
+    if calc_params.yaml_path:
         response["yamlContent"] = get_yaml_content(calc_params)
         response["annotations"] = []
+    else:
+        response["annotations"], response["yamlContent"] = get_annotations(
+            calc_params)
     get_layers(response, calc_params)
-
     return response, 200
 
 
@@ -170,12 +147,31 @@ def get_mapping(mapping_file=None, mapping_type=None):
 @json_response
 def get_data():
     project = get_project()
+    data_file = request.args.get('data_file')
+    if not data_file:
+        response=dict(layers=get_empty_layers(), table=[[]])
+        return response, 200
     calc_params = get_calc_params(project)
     response = dict()
     response["table"] = get_table(calc_params)
     calc_response, code = get_mapping()
     response.update(calc_response)
     return response, code
+
+@app.route('/api/partialcsv', methods=['GET'])
+@json_response
+def partial_csv():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response=dict()
+    try:
+        response["partialCsv"]=get_partial_csv(calc_params)
+    except Exception as e:
+        print(e)
+        response["partialCsv"]=dict(dims=[1,3],
+                                    firstRowIndex=0,
+                                    cells=[["subject", "property", "value"]])
+    return response, 200
 
 
 @app.route('/api/project', methods=['POST'])
@@ -207,14 +203,12 @@ def create_project():
 def upload_data_file():
     """
     This function uploads the data file.
-    If datamart_integration is True, it will attempt to run that on the file
     :return:
     """
     project = get_project()
 
-    file_path = file_upload_validator({'.xlsx', '.xls', '.csv'})
-    data_file = project.add_data_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
+    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
+    data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
     response = dict(project=get_project_dict(project))
     sheet_name = project.data_files[data_file]["val_arr"][0]
@@ -223,16 +217,12 @@ def upload_data_file():
     if not os.path.isdir(annotations_dir):
         os.mkdir(annotations_dir)
     annotations_path = os.path.join(annotations_dir, Path(
-        data_file).stem+"_"+sheet_name+".json")
+        data_file).stem+"_"+sheet_name+".annotation")
 
     save_annotations(project, [], os.path.join(
         annotations_path), data_file, sheet_name)
-    calc_params = CalcParams(project, data_file, sheet_name, None)
 
-    if global_settings.datamart_integration:
-        yaml_name = run_annotation(project, calc_params)
-        calc_params.yaml_path = Path(calc_params.project.directory) / yaml_name
-        response["yamlContent"] = get_yaml_content(calc_params)
+    calc_params = CalcParams(project, data_file, sheet_name, None)
     response["table"] = get_table(calc_params)
     get_layers(response, calc_params)
 
@@ -394,7 +384,7 @@ def download_results(filetype):
 def load_to_datamart():
     project = get_project()
     calc_params = get_calc_params(project)
-    download_output, variables = get_kgtk_download_and_variables(calc_params)
+    download_output, variables = get_kgtk_download_and_variables(calc_params, validate_for_datamart=True)
     files = {"edges.tsv": download_output}
     datamart_api_endpoint = global_settings.datamart_api
     dataset_id = project.dataset_id
@@ -443,14 +433,43 @@ def upload_annotation():
     return response, code
 
 
+@app.route('/api/annotation/suggest', methods=['PUT'])
+@json_response
+def suggest_annotation_block():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    block = request.get_json()["selection"]
+    annotation = request.get_json()["annotations"]
+
+    response={ #fallback response
+        "roles": ["dependentVar", "mainSubject", "property", "qualifier", "unit"], #drop metadata
+        "types": ["string", "quantity", "time", "wikibaseitem"], #drop monolingual string
+        "children": {}
+    }
+
+    try:
+        response = annotation_suggester(calc_params.sheet, block, annotation)
+    except Exception as e:
+        print(e)
+        pass
+    return response, 200
+
+
+@app.route('/api/annotation/guess-blocks', methods=['GET'])
+@json_response
+def guess_annotation_blocks():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    annotation_blocks=suggest_annotations(calc_params)
+    return get_mapping()
+
+
+
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
 @json_response
 def update_global_settings():
     if request.method == 'PUT':
         new_global_settings = dict()
-        datamart = request.get_json().get("datamartIntegration", None)
-        if datamart is not None:
-            new_global_settings["datamart_integration"] = datamart
         datamart_api = request.get_json().get("datamartApi", None)
         if datamart_api is not None:
             new_global_settings["datamart_api"] = datamart_api
@@ -506,37 +525,7 @@ def update_settings():
     response = dict(project=get_project_dict(project))
     return response, 200
 
-
 @app.route('/api/properties', methods=['GET'])
-@json_response
-def get_properties():
-    q = request.args.get('q')
-    if not q:
-        raise web_exceptions.InvalidRequestException("No search parameter set")
-
-    # construct the url with correct parameters for kgtk search
-    url = 'https://kgtk.isi.edu/api/{}'.format(q)
-    url += '?type=ngram&extra_info=true&language=en&item=property'
-
-    try:
-        response = requests.get(url, verify=False)
-    except requests.exceptions.RequestException as error:
-        raise web_exceptions.InvalidRequestException(error)
-    else:
-        items = response.json()
-        if type(items) != list:
-            raise web_exceptions.InvalidRequestException(
-                "KGTK did not return a valid list of properties"
-            )
-        properties = [{
-            'id': item['qnode'],
-            'label': item['label'][0] if item['label'] else '',
-            'description': item['description'][0] if item['description'] else '',
-        } for item in items]
-
-    return {'properties': properties}, 200
-
-
 @app.route('/api/qnodes', methods=['GET'])
 @json_response
 def get_qnodes():
@@ -545,18 +534,27 @@ def get_qnodes():
         raise web_exceptions.InvalidRequestException("No search parameter set")
 
     # construct the url with correct parameters for kgtk search
-    url = 'https://kgtk.isi.edu/api/{}'.format(q)
+    url = 'https://kgtk.isi.edu/api?q={}'.format(q)
 
-    # get the optional parameters for the url
-    is_class = request.args.get('is_class')
-    url += '?extra_info=true&language=en'
-    if is_class:
-        url += '&is_class=true&type=exact&size=5'
-    else:
-        url += '&is_class=false&type=ngram&size=10'
-        instance_of = request.args.get('instance_of')
-        if instance_of:
-            url += '&instance_of={}'.format(instance_of)
+    if "properties" in request.url:
+        url += '&type=ngram&extra_info=true&language=en&item=property'
+        data_type = request.args.get('data_type')
+        if data_type:
+            if data_type=="wikibaseitem":
+                data_type="wikibase-item"
+            url += '&data_type={}'.format(data_type)
+
+    else: #qnodes
+        # get the optional parameters for the url
+        is_class = request.args.get('is_class')
+        url += '&extra_info=true&language=en'
+        if is_class:
+            url += '&is_class=true&type=exact&size=5'
+        else:
+            url += '&is_class=false&type=ngram&size=10'
+            instance_of = request.args.get('instance_of')
+            if instance_of:
+                url += '&instance_of={}'.format(instance_of)
 
     try:
         response = requests.get(url, verify=False)
@@ -566,7 +564,7 @@ def get_qnodes():
         items = response.json()
         if type(items) != list:
             raise web_exceptions.InvalidRequestException(
-                "KGTK did not return a valid list of qnodes"
+                "KGTK did not return a valid list of nodes"
             )
         qnodes = [{
             'id': item['qnode'],
@@ -608,9 +606,17 @@ def set_qnode():
 
     filepath = os.path.join(project.directory, "user-input-wikification.csv")
     if os.path.exists(filepath):
-        df.to_csv(filepath, mode='a', index=False, header=False)
-    else:
-        df.to_csv(filepath, index=False, header=True)
+        #clear any clashes/duplicates
+        org_df=pd.read_csv(filepath)
+        if 'file' not in org_df:
+            org_df['file']=''
+        if 'sheet' not in org_df:
+            org_df['sheet']=''
+
+        df=pd.concat([org_df, df]).drop_duplicates(subset=['row', 'column', 'value', 'file', 'sheet'], keep='last').reset_index(drop=True)
+
+
+    df.to_csv(filepath, index=False, header=True)
 
     project.add_wikifier_file(filepath)
     project.save()
@@ -619,6 +625,45 @@ def set_qnode():
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
     response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    return response, 200
+
+@app.route('/api/remove_qnode', methods=['POST'])
+@json_response
+def remove_qnode():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    sheet_name=calc_params.sheet.name
+    data_file_name=calc_params.sheet.data_file_name
+    qnode_dict = request.get_json()['qnode']
+    if not qnode_dict:
+        raise web_exceptions.InvalidRequestException('No qnode provided')
+
+    item=qnode_dict["id"]
+    value = request.get_json()['value']
+    context = request.get_json().get("context", "")
+    selection = request.get_json()['selection']
+    if not selection:
+        raise web_exceptions.InvalidRequestException('No selection provided')
+
+    top_left, bottom_right=selection
+    col1, row1 = top_left
+    col2, row2 = bottom_right
+
+    filepath=os.path.join(project.directory, "user-input-wikification.csv")
+    if os.path.exists(filepath):
+        df=pd.read_csv(filepath)
+        for col in range(col1, col2+1):
+            for row in range(row1, row2+1):
+                df= df.drop(df[(df['column'] == col)
+                                & (df['row'] == row)
+                                & (df['value'] == value)
+                                & (df['file'] == data_file_name)
+                                & (df['sheet'] == sheet_name)].index)
+        df.to_csv(filepath, index=False, header=True)
+
+    response= dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200

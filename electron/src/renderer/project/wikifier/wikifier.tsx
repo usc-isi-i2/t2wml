@@ -10,18 +10,20 @@ import * as utils from '../../common/utils'
 import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 import CallWikifier from './call-wikifier';
-import WikifierOutput from './wikifier-output';
 
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { reaction, IReactionDisposer } from 'mobx';
 import { getColumnTitleFromIndex } from '../../common/utils'
+import Table from '../table/table';
+import { TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
 
 interface WikifierProperties {
   isShowing: boolean;
 }
 
 interface WikifierState extends IStateWithError {
+  partialCsv?: TableData;
   showSpinner: boolean;
   showCallWikifier: boolean;
   rowData: Array<any>,
@@ -43,7 +45,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
     // init state
     this.state = {
-
+      partialCsv: undefined,
       // appearance
       showSpinner: wikiStore.wikifier.showSpinner, //false,
 
@@ -64,14 +66,35 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateWikifierFromStoreQnodes()));
-    this.updateWikifierFromStoreQnodes();
+    this.disposers.push(reaction(() => wikiStore.layers.partialCsv, (table) => this.updateTableData(table)));
+    //this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateWikifierFromStoreQnodes()));
+    //this.updateWikifierFromStoreQnodes();
   }
 
   componentWillUnmount() {
     for (const disposer of this.disposers) {
       disposer();
     }
+  }
+
+  updateTableData(table?: TableDTO) {
+    if ( !table || !table.cells ) {
+      this.setState({ partialCsv: undefined });
+      return;
+    }
+    const tableData = [];
+    for ( let i = 0; i < table.cells.length; i++ ) {
+      const rowData = [];
+      for ( let j = 0; j < table.cells[i].length; j++ ) {
+        const cell: TableCell = {
+          content: table.cells[i][j],
+          classNames: [],
+        };
+        rowData.push(cell);
+      }
+      tableData.push(rowData);
+    }
+    this.setState({ partialCsv: tableData });
   }
 
   async handleWikifyRegion(region: string, flag: string, context: string) {
@@ -109,6 +132,25 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
     } catch (error) {
       console.log(error);
     } finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
       wikiStore.wikifier.showSpinner = false;
     }
   }
@@ -161,12 +203,31 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
         propertiesMessage: message
       });
 
-
     } catch (error) {
       console.log(error);
     } finally {
       wikiStore.wikifier.showSpinner = false;
     }
+
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.getMappingCalculation() //don't use call, we don't want to alert errors
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
+
   }
 
   async handleOpenWikifierFile(event: any) {
@@ -196,8 +257,26 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
       wikiStore.wikifier.showSpinner = false;
     }
 
-  }
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.getMappingCalculation() //don't use call, we don't want to alert errors
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally{
+      wikiStore.output.showSpinner = false;
+    }
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
 
+  }
 
   render() {
 
@@ -249,7 +328,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               // style={{ width: "calc(100% - 75px)", cursor: "default" }}
               style={{ width: "calc(100% - 300px)", cursor: "default" }}
             >
-              Wikifier
+              Output Preview
             </div>
 
             {/* button to upload wikifier file */}
@@ -261,7 +340,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
                 style={{ padding: "0rem 0.5rem" }}
                 onClick={() => { document.getElementById("file_wikifier")?.click(); }}
               >
-                Upload
+                Import Wikifier
                 </Button>
             </OverlayTrigger>
 
@@ -272,6 +351,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
               size="sm"
               style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
               onClick={() => { this.setState({ showCallWikifier: true }) }}
+              disabled={true} //until wikifier is working again
             >
               Wikify
             </Button>
@@ -326,8 +406,9 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
 
             {/* wikifier output */}
-            <WikifierOutput
-              rowData={this.state.rowData} />
+            <Table
+            tableData={this.state.partialCsv}
+            setTableReference={()=>(null)}/>
           </Card.Body>
 
         </Card >

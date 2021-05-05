@@ -4,7 +4,8 @@ import { currentFilesService } from './current-file-service';
 import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
-  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO, TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, ResponseWithQNodesDTO, QNode, ResponseWithProjectandFileName, ResponseWithPropertiesDTO
+  ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -37,8 +38,8 @@ class RequestService {
   }
 
   public getDataFileParams(required = true) {
-    if ( !currentFilesService.currentState.dataFile ) {
-      if ( required ) {
+    if (!currentFilesService.currentState.dataFile) {
+      if (required) {
         console.error("There is no data file"); //TODO: actual proper error handling?
       }
       return this.getProjectFolder();
@@ -46,9 +47,9 @@ class RequestService {
     return this.getProjectFolder() + `&data_file=${currentFilesService.currentState.dataFile}&sheet_name=${currentFilesService.currentState.sheetName}`;
   }
 
-  public getMappingParams(){
-    let url=this.getDataFileParams();
-    if ( currentFilesService.currentState.mappingFile ) {
+  public getMappingParams() {
+    let url = this.getDataFileParams();
+    if (currentFilesService.currentState.mappingFile) {
       url += `&mapping_file=${currentFilesService.currentState.mappingFile}`;
       url += `&mapping_type=${currentFilesService.currentState.mappingType}`;
     }
@@ -56,19 +57,19 @@ class RequestService {
   }
 
   @action
-  public switchProjectState(response: ResponseWithProjectDTO){
+  public switchProjectState(response: ResponseWithProjectDTO) {
     console.debug('switchProjectState called');
     wikiStore.project.projectDTO = response.project;
     currentFilesService.getFiles(response.project);
 
     // new project
-    if ( !Object.keys(response.project.data_files).length ) {
+    if (!Object.keys(response.project.data_files).length) {
       this.resetPreProject();
     }
   }
 
   @action
-  public resetPreProject(){
+  public resetPreProject() {
     wikiStore.table.updateTable({} as TableDTO);
     wikiStore.layers.resetLayers();
     wikiStore.yaml.yamlContent = '';
@@ -77,8 +78,9 @@ class RequestService {
   }
 
   @action
-  public fillMapping(response: ResponseWithMappingDTO){
+  public fillMapping(response: ResponseWithMappingDTO) {
     console.log("mapping", response)
+    wikiStore.layers.partialCsv = {} as TableDTO;
     wikiStore.project.projectDTO = response.project;
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.yaml.yamlContent = response.yamlContent;
@@ -87,34 +89,49 @@ class RequestService {
   }
 
   @action
-  public fillTable(response: ResponseWithTableDTO){
+  public fillTable(response: ResponseWithTableDTO) {
     wikiStore.table.updateTable(response.table);
     this.fillMapping(response);
   }
 
   @action
-  public updateProjectandQnode(response: ResponseWithQNodeLayerDTO){
+  public updateProjectandQnode(response: ResponseWithQNodeLayerDTO) {
     console.log("qnode", response)
     wikiStore.layers.updateFromDTO(response.layers);
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async getProperties(search: string) {
-    const url = `/properties?q=${search}`;
-    const response = await backendGet(url) as ResponseWithPropertiesDTO;
-    wikiStore.annotateProperties.properties = response.properties;
+  public async getPartialCsv() {
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/partialcsv?${this.getMappingParams()}`) as ResponseWithPartialCsvDTO;
+    updater.update(() => { wikiStore.layers.partialCsv = response.partialCsv; }, "getPartialCsv");
   }
 
-  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode) {
+
+  public async getProperties(search: string, type: string) {
+    const url = `/properties?q=${search}&data_type=${type}`;
+    const response = await backendGet(url) as ResponseWithQNodesDTO;
+    wikiStore.annotateProperties.properties = response.qnodes;
+  }
+
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean, isSubject = false) {
     let url = `/qnodes?q=${search}`;
-    if ( isClass ) {
+    if (searchProperties) {
+      url = `/properties?q=${search}`;
+    }
+    if (isClass) {
       url += `&is_class=true`;
     }
-    if ( instanceOf ) {
+    if (instanceOf) {
       url += `&instance_of=${instanceOf.id}`;
     }
     const response = await backendGet(url) as ResponseWithQNodesDTO;
-    wikiStore.wikifyQnodes.qnodes = response.qnodes;
+    if (isSubject) {
+      wikiStore.subjectQnodes.qnodes = response.qnodes;
+    } else {
+      wikiStore.wikifyQnodes.qnodes = response.qnodes;
+    }
+
   }
 
   public async postQNodes(values: any) {
@@ -122,14 +139,13 @@ class RequestService {
     this.updateProjectandQnode(response);
   }
 
-  public async addExistingMapping(data: any): Promise<string>{
-    const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
-    wikiStore.project.projectDTO = response.project;
-    return response.filename;
+  public async removeQNodes(values: any) {
+    const response = await backendPost(`/remove_qnode?${this.getDataFileParams(false)}`, values) as ResponseWithQNodeLayerDTO;
+    this.updateProjectandQnode(response);
   }
 
-  public async createAnnotation(data: any): Promise<string>{
-    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
+  public async addExistingMapping(data: any) {
+    const response = await backendPost(`/files/add_mapping?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
     wikiStore.project.projectDTO = response.project;
     return response.filename;
   }
@@ -140,13 +156,39 @@ class RequestService {
     return response.filename;
   }
 
-  public async postAnnotationBlocks(data: any) {
-    const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
+  public async uploadYaml(data: any) {
+    const response = await backendPost(`/yaml/apply?${this.getMappingParams()}`, data) as ResponseWithProjectAndMappingDTO;
+    this.fillMapping(response)
     wikiStore.project.projectDTO = response.project;
-    this.fillMapping(response);
   }
 
-  public async createProject(folder:string, data?: any) {
+  public async createAnnotation(data: any): Promise<string> {
+    const response = await backendPost(`/annotation/create?${this.getProjectFolder()}`, data) as ResponseWithProjectandFileName;
+    wikiStore.project.projectDTO = response.project;
+    return response.filename;
+  }
+
+  public async postAnnotationBlocks(data: any) {
+    const updater = currentFilesService.createUpdater();
+    const response = await backendPost(`/annotation?${this.getDataFileParams()}`, data) as ResponseWithProjectAndMappingDTO;
+    updater.update(() => {
+      wikiStore.project.projectDTO = response.project;
+      this.fillMapping(response);
+    }, "postAnnotationBlocks")
+  }
+
+  public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion> {
+    const response = await backendPut(`/annotation/suggest?${this.getDataFileParams()}`, data) as ResponseWithSuggestion; //TODO
+    return response
+  }
+
+  public async getSuggestedAnnotationBlocks() {
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithMappingDTO;
+    updater.update(() => { this.fillMapping(response); }, "getsuggestedAnnotationBlocks")
+  }
+
+  public async createProject(folder: string, data?: any) {
     const response = await backendPost(`/project?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project; // not necessary?
     wikiStore.changeWindowDisplayMode(folder);
@@ -160,22 +202,15 @@ class RequestService {
   }
 
   public async uploadDataFile(folder: string, data: any) {
+    const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/data?project_folder=${folder}`, data) as ResponseWithEverythingDTO;
-    this.fillTable(response);
+    updater.update(() => this.fillTable(response), "uploadDataFile");
   }
 
   public async uploadWikifierOutput(data: any) {
     const response = await backendPost(`/wikifier?${this.getDataFileParams(false)}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
-
-  public async uploadYaml(data: any) {
-    const response = await backendPost(`/yaml/apply?${this.getMappingParams()}`, data) as ResponseWithProjectAndMappingDTO;
-    this.fillMapping(response)
-    wikiStore.project.projectDTO = response.project;
-  }
-
-
 
   public async callWikifierService(data: any) {
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
@@ -185,23 +220,15 @@ class RequestService {
 
 
   public async getTable() {
-
-    wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
-    try{
-      const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
-      this.fillTable(response);
-    } finally{
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-    }
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
+    updater.update(() => this.fillTable(response), "getTable");
   }
 
   public async getMappingCalculation() {
+    const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/mapping?${this.getMappingParams()}`) as ResponseWithMappingDTO;
-    this.fillMapping(response);
+    updater.update(() => this.fillMapping(response), "getMappingCalculation");
   }
 
   public async getSettings(folder: string) {
@@ -216,14 +243,12 @@ class RequestService {
 
   public async getGlobalSettings() {
     const response = await backendGet(`/project/globalsettings`) as GlobalSettingsDTO;
-    wikiStore.globalSettings.datamart_api=response.datamart_api;
-    wikiStore.globalSettings.datamart_integration=response.datamart_integration;
+    wikiStore.globalSettings.datamart_api = response.datamart_api;
   }
 
   public async putGlobalSettings(data: any) {
     const response = await backendPut(`/project/globalsettings`, data) as GlobalSettingsDTO;
-    wikiStore.globalSettings.datamart_api=response.datamart_api;
-    wikiStore.globalSettings.datamart_integration=response.datamart_integration;
+    wikiStore.globalSettings.datamart_api = response.datamart_api;
   }
 
   public async uploadEntities(data: any) {
@@ -266,7 +291,7 @@ class RequestService {
 
   public async call<IProp, IState extends IStateWithError, ReturnValue>(
     component: React.Component<IProp, IState>,
-    func: () => Promise<ReturnValue> ) {
+    func: () => Promise<ReturnValue>) {
 
     component.setState({ errorMessage: {} as ErrorMessage });
 

@@ -8,13 +8,14 @@ import { Toast } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
-import { AnnotationBlock, QNode } from '../../../common/dtos';
+import { AnnotationBlock, QNode, ResponseWithSuggestion } from '../../../common/dtos';
 import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
-  onSelectionChange: (selection: CellSelection) => void;
+  onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
+  annotationSuggestions:  ResponseWithSuggestion;
   onDelete: any | null;
   onClose: any | null;
 }
@@ -31,7 +32,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
   constructor(props: AnnotationMenuProperties) {
     super(props);
-
     this.requestService = new RequestService();
 
     this.state = {
@@ -39,13 +39,30 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };
   }
 
-  async handleOnChange(key: string, value: string) {
+  async handleOnChangeSubject(key: string, value: string, instanceOf?: QNode){
+
+    if (!value) { return; }
+
+    const isClass = key === 'instanceOfSearch';
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.getQNodes(value, isClass, instanceOf, false, true) // searchProperties=false, isSubject=true
+      ));
+    } catch (error) {
+      error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
+      this.setState({ errorMessage: error });
+    } finally {
+      console.log('qnodes request finished');
+    }
+  }
+
+  async handleOnChange(key: string, value: string, type: string) {
     console.log('AnnotationMenu OnChange triggered for -> ', key, value);
 
     if ( key === 'property' ) {
       try {
         await this.requestService.call(this, () => (
-          this.requestService.getProperties(value)
+          this.requestService.getProperties(value, type)
         ));
       } catch (error) {
         error.errorDescription += `\nWasn't able to find any properties for ${value}`;
@@ -94,7 +111,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     console.log('AnnotationMenu OnSubmit triggered for -> ', selection, values);
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
-      return block !== selectedAnnotationBlock;
+      return block.id !== selectedAnnotationBlock?.id;
     });
 
     const annotation: any = {
@@ -113,7 +130,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
   async postAnnotations(annotations: AnnotationBlock[]) {
     const { onClose } = this.props;
-
+    wikiStore.table.showSpinner=true;
     try {
       await this.requestService.call(this, () => (
         this.requestService.postAnnotationBlocks(
@@ -124,8 +141,19 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       error.errorDescription += "\n\nCannot submit annotations!";
       this.setState({ errorMessage: error });
     } finally {
-      onClose();
+      wikiStore.table.showSpinner=false;
     }
+
+    wikiStore.wikifier.showSpinner = true;
+    try{
+      await this.requestService.getPartialCsv();
+    }
+    finally{
+      wikiStore.wikifier.showSpinner = false;
+    }
+
+
+    onClose();
   }
 
   renderAnnotationForms() {
@@ -133,13 +161,16 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       selection,
       onSelectionChange,
       selectedAnnotationBlock,
+      annotationSuggestions,
     } = this.props;
     return (
       <AnnotationForm
         selection={selection}
         onSelectionChange={onSelectionChange}
         selectedAnnotationBlock={selectedAnnotationBlock}
+        annotationSuggestions={annotationSuggestions}
         onChange={this.handleOnChange.bind(this)}
+        onChangeSubject={this.handleOnChangeSubject.bind(this)}
         onDelete={this.handleOnDelete.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)} />
     )
@@ -147,7 +178,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
   render() {
     const { onClose } = this.props;
-    const position = {x: window.innerWidth / 2, y: 100};
+    const position = {x: window.innerWidth * 0.80 - 550, y: 100};
     return (
       <Draggable handle=".handle" defaultPosition={position}>
         <div className="annotation-menu">

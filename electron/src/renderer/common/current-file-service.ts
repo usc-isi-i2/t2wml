@@ -12,6 +12,30 @@ export class CurrentFiles {
 
 const filename = 't2wmlproj.user.json';
 
+class Updater{
+    datafile: string;
+    sheetName: string;
+    mappingFile?: string;
+    constructor(datafile: string, sheetName: string, mappingFile?:string){
+        this.datafile=datafile;
+        this.sheetName=sheetName;
+        this.mappingFile=mappingFile;
+    }
+
+    update(func: ()=>void, callfunctionlog=""){
+        console.log("called via update", callfunctionlog)
+        if (this.datafile==currentFilesService.currentState.dataFile
+            && this.sheetName==currentFilesService.currentState.sheetName
+            && this.mappingFile==currentFilesService.currentState.mappingFile
+            ){
+                func()
+        }
+        else{
+            console.warn("threw out an update because state was not as expected", callfunctionlog)
+        }
+    }
+}
+
 export class CurrentFilesService {
     // Instance needed ?
     private static _instance?: CurrentFilesService;
@@ -34,11 +58,15 @@ export class CurrentFilesService {
         return undefined;
     }
 
+    @action
     getDefaultFiles(project: ProjectDTO){
         //also called when deleting a file
         if (Object.keys(project.data_files).length) {
             this.currentState.dataFile = Object.keys(project.data_files)[0];
             this.currentState.sheetName = project.data_files[this.currentState.dataFile].val_arr[0];
+        } else {
+            this.currentState.dataFile = "";
+            this.currentState.sheetName = "";
         }
 
         if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
@@ -102,6 +130,17 @@ export class CurrentFilesService {
             this.currentState.mappingType = undefined;
         }
         this.saveCurrentFileSelections();
+    }
+
+    getAnnotationsLength(): number{
+        const project = wikiStore.project.projectDTO!;
+        const dataFile = this.currentState.dataFile!;
+        const sheet = this.currentState.sheetName!;
+
+        if (Object.keys(project.annotations).length && project.annotations[dataFile] && project.annotations[dataFile][sheet]) {
+            return project.annotations[dataFile][sheet].val_arr.length
+        }
+        return 0;
     }
 
     @action
@@ -198,6 +237,11 @@ export class CurrentFilesService {
     }
         }
     }
+
+    createUpdater(): Updater{
+        return new Updater(this.currentState.dataFile, this.currentState.sheetName, this.currentState.mappingFile);
+    }
+
 }
 
 export const currentFilesService = CurrentFilesService.instance;

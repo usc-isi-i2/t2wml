@@ -7,6 +7,7 @@ import { Card } from 'react-bootstrap';
 import { observer } from "mobx-react";
 import { StatementEntry } from '@/renderer/common/dtos';
 import wikiStore from '@/renderer/data/store';
+import dayjs from 'dayjs';
 
 interface ShowOutputProperties {
   errors: string;
@@ -14,9 +15,88 @@ interface ShowOutputProperties {
 }
 
 
+function ordinal_suffix_of(i: number): string {
+  const j = i % 10,
+        k = i % 100;
+        
+  if (j == 1 && k != 11) {
+    return i + "st";
+  }
+  if (j == 2 && k != 12) {
+    return i + "nd";
+  }
+  if (j == 3 && k != 13) {
+    return i + "rd";
+  }
+  return i + "th";
+}
+
 
 @observer
 class ShowOutput extends Component<ShowOutputProperties, {}> {
+
+  dateParser(precision: number, date: string): string {
+    const dayFormatter = dayjs(date)
+    switch (precision) {
+      case 0:
+        { return date; }
+      case 1:
+        { return date; }
+      case 2:
+        { return date; }
+      case 3:
+        { return date; }
+      case 4:
+        { return date; }
+      case 5:
+        { return date; }
+      case 6:
+        { return date; }
+      case 7:
+        {
+          const millenium = Math.floor(dayFormatter.year() / 1000) + 1;
+          return ordinal_suffix_of(millenium) + " millenium";
+        }
+      case 8:
+        {
+          const century = Math.floor(dayFormatter.year() / 100) + 1;
+          return ordinal_suffix_of(century) + " century";
+        }
+      case 9:
+        { return dayFormatter.format("YYYY"); }
+      case 10:
+        { return dayFormatter.format("MMMM YYYY"); }
+      case 11:
+        { return dayFormatter.format("MMMM D, YYYY"); }
+      case 12:
+        { return dayFormatter.format("YYYY-MM-DD HH"); }
+      case 13:
+        { return dayFormatter.format("YYYY-MM-DD HH:mm"); }
+      case 14:
+        { return dayFormatter.format("YYYY-MM-DD HH:mm:ss"); }
+      default:
+        { return date; }
+    }
+  }
+
+  qNodeGetter(id: string): any {
+    const node = wikiStore.layers.statement.getQNode(id)
+    if (node.url != "") {
+      return (
+        <a
+          href={node.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ "color": "hsl(200, 100%, 30%)" }}
+        >{node.label}</a>
+      );
+    }
+    if (node.label != node.id) {
+      return <span>{node.label} ({node.id})</span> //if we decide to get rid of this, tweak subjectParentheses below
+    }
+    return <span>{node.label}</span>
+
+  }
 
   render() {
     const outputDiv = [];
@@ -30,57 +110,31 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
     const statement = this.props.statement
     if (statement) {
+      const subjectQNode = wikiStore.layers.statement.getQNode(statement.subject)
+      let subjectParentheses = ""
+      if (subjectQNode.url != "" || subjectQNode.label == subjectQNode.id) {
+        subjectParentheses = "(" + subjectQNode.id + ")";
 
-      const subjectQNode = wikiStore.layers.statement.getQNode(statement.subject);
-
-      let subjectIDDiv;
-      if (subjectQNode.url != "") {
-        subjectIDDiv = (
-          <a
-            href={subjectQNode.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ "color": "hsl(200, 100%, 30%)" }}
-          >{subjectQNode.id}</a>
-        );
       }
-      else{
-        subjectIDDiv = <span>{statement.subject}</span>;
+      const subjectIDDiv = this.qNodeGetter(statement.subject);
+      const propertyDiv = this.qNodeGetter(statement.property);
+
+
+      let value = statement.value;
+      if (statement.precision != undefined) {
+        value = this.dateParser(statement.precision, value);
       }
 
-      const propertyQNode = wikiStore.layers.statement.getQNode(statement.property);
-
-      let propertyDiv = <span>{propertyQNode.label}</span>
-      if (propertyQNode.url != "") {
-        propertyDiv = (
-          <a
-            href={propertyQNode.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ "color": "hsl(200, 100%, 30%)" }}
-          >{propertyQNode.label}</a>
-        );
-      }
-
+      const valuePartDiv = this.qNodeGetter(value)
       let valueDiv;
+      let unitDiv;
       if (statement.unit) {
-        const unitQNode = wikiStore.layers.statement.getQNode(statement.unit);
-        if (unitQNode.url!= ""){
-        valueDiv = <span>{statement.value}
-          <a
-            href={unitQNode.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ "color": "hsl(200, 100%, 30%)" }}
-            key="unit"
-          > {unitQNode.label}</a></span>;
-        }else{
-          valueDiv = <span>{statement.value} {unitQNode.label}</span>;
-        }
+        unitDiv = this.qNodeGetter(statement.unit);
+        valueDiv = <span>{valuePartDiv} ({unitDiv})</span>
+      } else {
+        valueDiv = valuePartDiv;
       }
-      else {
-        valueDiv = <span>{statement.value}</span>;
-      }
+
       // qualifiers
       const qualifiersDiv = [];
       const qualifiers = statement.qualifier;
@@ -88,63 +142,24 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
         for (let i = 0, len = qualifiers.length; i < len; i++) {
           const qualifier = qualifiers[i];
 
-          // qualifier property
-          const qualifierPropertyQNode = wikiStore.layers.statement.getQNode(qualifier["property"]);
-          let qualifierPropertyDiv = <span>{qualifierPropertyQNode.label}</span>
-          if (qualifierPropertyQNode.url != "") {
-            qualifierPropertyDiv =
-              <a
-                href={qualifierPropertyQNode.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierProperty"
-              >{qualifierPropertyQNode.label}</a>
-              ;
+          const qualifierPropertyDiv = this.qNodeGetter(qualifier["property"]);
+
+          let value = qualifier.value;
+          if (qualifier.precision != undefined) {
+            value = this.dateParser(qualifier.precision, value);
           }
+          const qualifierValueDiv = this.qNodeGetter(value);
 
-          // qualifier value
-          let qualifierValueDiv;
-          const qualifierValueQNode = wikiStore.layers.statement.getQNode(qualifier["value"]);
 
-          if (qualifierValueQNode.url != "") {
-
-            qualifierValueDiv =
-              <a
-                href={qualifierValueQNode.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierValue"
-              >{qualifierValueQNode.label}</a>
-              ;
-          } else {
-            qualifierValueDiv = qualifierValueQNode.label;
-          }
 
           // qualifier unit
 
           let qualifierUnitDiv;
-          if (qualifier.unit){
-          const qualifierUnitQNode = wikiStore.layers.statement.getQNode(qualifier["unit"]);
-
-          if (qualifierUnitQNode.url != "") {
-
-            qualifierUnitDiv =
-              "("+ <a
-                href={qualifierUnitQNode.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ "color": "hsl(200, 100%, 30%)" }}
-                key="qualifierValue"
-              >{qualifierUnitQNode.label}</a> +")"
-              ;
+          if (qualifier.unit) {
+            qualifierUnitDiv = this.qNodeGetter(qualifier["unit"]);
           } else {
-            qualifierUnitDiv = "("+ qualifierUnitQNode.label +")";
+            qualifierUnitDiv = ""
           }
-        }else{
-          qualifierUnitDiv=""
-        }
 
           // append to qualifiersDiv
           qualifiersDiv.push(
@@ -157,11 +172,11 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       outputDiv.push(
         <Card.Title key="subject">
           <span style={{ fontSize: "24px", fontWeight: "bolder" }}>
-            {subjectQNode.label}
+            {subjectIDDiv}
           </span>
           &nbsp;
           <span style={{ fontSize: "20px" }}>
-            ({subjectIDDiv})
+            {subjectParentheses}
           </span>
         </Card.Title>
       );

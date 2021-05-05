@@ -82,11 +82,23 @@ class Sidebar extends Component<{}, SidebarState> {
 
     async changeDataFile(fileName: string) {
         // save prev yaml
-        await wikiStore.yaml.saveYaml();
-
-        currentFilesService.changeDataFile(fileName);
-
-        await this.requestService.getTable();
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
+        try{
+            await wikiStore.yaml.saveYaml();
+            currentFilesService.changeDataFile(fileName);
+            await this.requestService.getTable();
+        }finally{
+          wikiStore.table.showSpinner = false;
+          wikiStore.yaml.showSpinner = false;
+        }
+        wikiStore.wikifier.showSpinner = true;
+        try{
+        await this.requestService.getPartialCsv();
+        }
+        finally{
+        wikiStore.wikifier.showSpinner = false;
+        }
     }
 
     getFilesData() {

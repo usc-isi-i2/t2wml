@@ -1,22 +1,21 @@
-from collections import defaultdict
 import os
 import json
 import numpy as np
+import pandas as pd
 from pathlib import Path
-from numpy.core.numeric import full
 from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
-from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator
-from t2wml.utils.t2wml_exceptions import T2WMLException
+from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator, Annotation
+from t2wml.input_processing.annotation_suggesting import block_finder
+from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
-from app_config import db, CACHE_FOLDER
-from database_provider import DatabaseProvider
+from app_config import CACHE_FOLDER
+from web_dict_provider import WebDictionaryProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
-from t2wml.input_processing.annotation_parsing import Annotation
 
 
 def add_entities_from_project(project):
@@ -45,7 +44,7 @@ def set_web_settings():
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
-    t2wml_settings.wikidata_provider = DatabaseProvider()
+    t2wml_settings.wikidata_provider = WebDictionaryProvider()
 
 def update_t2wml_settings(project):
     t2wml_settings.update_from_dict(**project.__dict__)
@@ -71,13 +70,12 @@ def get_kg(calc_params):
             return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
-        if cell_mapper.annotation.potentially_enough_annotation_information:
-            ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
-            ang.preload(calc_params.sheet, wikifier)
+        ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
+        ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
-    db.session.commit()  # save any queried properties
+    with t2wml_settings.wikidata_provider as p:
+        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
     return kg
 
 
@@ -91,10 +89,10 @@ def download(calc_params, filetype):
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
 
-def get_kgtk_download_and_variables(calc_params):
+def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
     kg = get_kg(calc_params)
     download_output = kg.get_output("tsv", calc_params.project)
-    variables=get_all_variables(calc_params.project, kg.statements)
+    variables=get_all_variables(calc_params.project, kg.statements, validate_for_datamart=validate_for_datamart)
     return download_output, variables
 
 
@@ -118,7 +116,7 @@ def get_qnodes_layer(calc_params):
                             qNode= QNode(id, value, context),
                             indices=[[row, col]])
 
-        labels_and_descriptions = get_labels_and_descriptions(list(ids_to_get), calc_params.sparql_endpoint)
+        labels_and_descriptions = get_labels_and_descriptions(t2wml_settings.wikidata_provider, list(ids_to_get), calc_params.sparql_endpoint)
         for id in qnode_entries:
             if id in labels_and_descriptions:
                 qnode_entries[id]['qNode'].update(**labels_and_descriptions[id])
@@ -244,7 +242,7 @@ def get_yaml_layers(calc_params):
 
         cleanedLayer=get_cleaned(kg)
 
-        labels = get_labels_and_descriptions(qnodes, calc_params.project.sparql_endpoint)
+        labels = get_labels_and_descriptions(t2wml_settings.wikidata_provider, qnodes, calc_params.project.sparql_endpoint)
         qnodes.update(labels)
         for id in qnodes:
             if qnodes[id]:
@@ -293,12 +291,18 @@ def get_table(calc_params, first_index=0, num_rows=None):
 def get_layers(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
-    response["layers"].update(get_qnodes_layer(calc_params))
+
+
     try:
         response["layers"].update(get_yaml_layers(calc_params))
     except Exception as e:
         response["yamlError"] = str(e)
 
+    response["partialCsv"]=dict(dims=[1,3],
+                                firstRowIndex=0,
+                                cells=[["subject", "property", "value"]])
+
+    response["layers"].update(get_qnodes_layer(calc_params)) #needs to be after layers, since layers can update qnodes
 
 def get_annotations(calc_params):
     annotations_path=calc_params.annotation_path
@@ -308,12 +312,19 @@ def get_annotations(calc_params):
         dga=Annotation()
     except Exception as e:
         raise e
-
     try:
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
     return dga.annotation_block_array, yamlContent
+
+def suggest_annotations(calc_params):
+    annotations_path=calc_params.annotation_path
+    dga=Annotation(block_finder(calc_params.sheet))
+    if annotations_path:
+        dga.save(annotations_path)
+    return dga.annotation_block_array
+
 
 def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
     #temporary fix until we fix in frontend:
@@ -347,3 +358,32 @@ def update_entities(project, entity_file, updated_entries):
     full_path=project.get_full_path(entity_file)
     dict_to_kgtk(entities, full_path)
     return get_entities(project)
+
+
+def get_partial_csv(calc_params):
+    from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
+    wikifier=calc_params.wikifier
+    annotation= calc_params.annotation_path
+    cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, start=0, end=150)
+    if not kg.statements:
+        if cell_mapper.annotation.subject_annotations:
+            df=pd.DataFrame([], columns=["subject", "property", "value"])
+            subject_cells=[]
+            (x1, y1),(x2, y2)=subject_block_cells=cell_mapper.annotation.subject_annotations[0].cell_args
+            for row in range(y1, y2+1):
+                for col in range(x1, x2+1):
+                    subject_cells.append(calc_params.sheet[row][col])
+            df.subject=subject_cells
+
+
+    else:
+        columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
+        df = pd.DataFrame.from_dict(dict_values)
+        df.replace(to_replace=[None], value="", inplace=True)
+        df = df[columns] # sort the columns
+    dims = list(df.shape)
+    cells = json.loads(df.to_json(orient="values"))
+    cells.insert(0, list(df.columns))
+    return dict(dims=dims, firstRowIndex=0, cells=cells)
+

@@ -17,6 +17,7 @@ import Download from './download';
 import ShowOutput from './show-output';
 import { reaction, IReactionDisposer } from 'mobx';
 import { StatementEntry } from '@/renderer/common/dtos';
+import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface OutputComponentState extends IStateWithError {
   // statement
@@ -24,6 +25,7 @@ interface OutputComponentState extends IStateWithError {
   errors: string;
 
   // download
+  filename: string;
   showDownload: boolean,
   isDownloading: boolean;
   isLoadDatamart: boolean;
@@ -43,7 +45,9 @@ class Output extends Component<{}, OutputComponentState> {
     this.state = {
       statement: null,
       errors: "",
+
       // download
+      filename: "",
       showDownload: false,
       isDownloading: false,
       isLoadDatamart: false,
@@ -55,14 +59,27 @@ class Output extends Component<{}, OutputComponentState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
+    this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateFilename()));
+    this.disposers.push(reaction(() => currentFilesService.currentState.sheetName, () => this.updateFilename()));
     this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.updateStateFromStore()));
     this.disposers.push(reaction(() => wikiStore.layers, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateStateFromStore()));
+
   }
 
   componentWillUnmount() {
     for (const disposer of this.disposers) {
       disposer();
     }
+  }
+
+  updateFilename(){
+    const datafile = currentFilesService.currentState.dataFile;
+    const file_without_ext = datafile.substring(0, datafile.lastIndexOf('.')) || datafile;
+    const sheetName = currentFilesService.currentState.sheetName;
+    const sheet_without_ext = sheetName.substring(0, sheetName.lastIndexOf('.')) || sheetName;
+    const filename = file_without_ext+"_"+sheet_without_ext;
+    this.setState({filename})
   }
 
   async handleDoDownload(fileName: string, fileType: string) {
@@ -171,7 +188,10 @@ class Output extends Component<{}, OutputComponentState> {
   render() {
     return (
       <div className="w-100 h-100 p-1">
-        <Download showDownload={this.state.showDownload}
+        <Download
+          key={this.state.filename}
+          filename={this.state.filename}
+          showDownload={this.state.showDownload}
           handleDoDownload={(fileName: string, fileType: string) => this.handleDoDownload(fileName, fileType)}
           cancelDownload={() => this.cancelDownload()} />
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}

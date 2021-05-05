@@ -4,10 +4,9 @@ from app_config import DATADIR
 
 
 class GlobalSettings:
-    def __init__(self, datamart_integration=False, datamart_api=None, **kwargs):
-        self.datamart_integration=datamart_integration
+    def __init__(self, datamart_api=None, **kwargs):
         self.datamart_api=datamart_api
-    
+
     @property
     def settings_path(self):
         return os.path.join(DATADIR, "global_backend_settings.json")
@@ -15,7 +14,7 @@ class GlobalSettings:
     def save(self):
         with open(self.settings_path, 'w', encoding='utf-8') as f:
             f.write(json.dumps(self.__dict__))
-    
+
     def update(self, **kwargs):
         self.__dict__.update(**kwargs)
         self.save()
