@@ -1,4 +1,4 @@
-name: Create Electron Installations
+name: Create Linux Installation
 on:
   push:
     tags:
