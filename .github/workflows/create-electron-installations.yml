@@ -35,7 +35,7 @@ jobs:
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller pywin32 semver
-          pip uninstall -q typing typing-extensions
+          pip uninstall -y typing typing-extensions
       - name: Create installer
         working-directory: backend
         env:  # Replace unicode characters with ?
@@ -83,7 +83,7 @@ jobs:
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
-          pip uninstall -q typing typing-extensions
+          pip uninstall -y typing typing-extensions
       - name: Compile Code
         working-directory: backend
         env:
@@ -142,7 +142,7 @@ jobs:
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
-          pip uninstall -q typing typing-extensions
+          pip uninstall -y typing typing-extensions
       - name: Create executable
         env:
           CI: false   # Otherwise React stops on warnings
