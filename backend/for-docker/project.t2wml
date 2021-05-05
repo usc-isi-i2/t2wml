@@ -1,0 +1,13 @@
+annotations: {}
+cache_id: null
+data_files: {}
+description: ''
+entity_files: []
+handle_calendar: leave
+sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
+title: for-docker
+url: ''
+warn_for_empty_cells: false
+wikifier_files: []
+yaml_files: []
+yaml_sheet_associations: {}

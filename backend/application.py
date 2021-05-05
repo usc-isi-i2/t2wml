@@ -8,6 +8,7 @@ from pathlib import Path
 from flask import request
 import web_exceptions
 from app_config import app
+from werkzeug.utils import secure_filename
 from t2wml.input_processing.annotation_suggesting import annotation_suggester
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, add_entities_from_project, get_partial_csv,
@@ -18,6 +19,7 @@ from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
 import path_utils
+from wikification import wikify_countries
 
 debug_mode = False
 
@@ -717,6 +719,94 @@ def add_mapping_file():
     response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
 
+
+@app.route('/api/upload/<type>', methods=['POST'])
+@json_response
+def upload_file(type):
+    project = get_project()
+
+    allowed_types_map = {
+        "data": [".csv", ".xlsx"],
+        "annotation": [".json", ".annotation"],
+        "wikifier": [".csv"],
+        "entities": [".tsv"]
+    }
+
+    if 'file' not in request.files:
+        raise web_exceptions.NoFilePartException(
+            "Missing 'file' parameter in the file upload request")
+
+    in_file = request.files['file']
+    if in_file.filename == '':
+        raise web_exceptions.BlankFileNameException(
+            "No file selected for uploading")
+
+    allowed_extensions = allowed_types_map[type]
+    file_extension = Path(in_file.filename).suffix
+    file_allowed = file_extension in allowed_extensions
+    if not file_allowed:
+        raise web_exceptions.FileTypeNotSupportedException(
+            "File with extension '"+file_extension+"' is not allowed")
+
+    folder = Path(project.directory)
+    # otherwise secure_filename does weird things on linux
+    shorter_name = Path(in_file.filename).name
+    filename = secure_filename(shorter_name)
+    file_path = folder/filename
+    in_file.save(str(file_path))
+
+    response= dict()
+    code=200
+
+    if type == "data":
+        file_path=project.add_data_file(file_path)
+        sheet_name=project.data_files[file_path]["val_arr"][0]
+        project.save()
+        response["sheetName"]=sheet_name
+        calc_params=CalcParams(project, file_path, sheet_name)
+        response["table"] = get_table(calc_params)
+
+    if type == "wikifier":
+        file_path=project.add_wikifier_file(file_path)
+    if type == "entities":
+        file_path=project.add_entity_file(file_path)
+    if type == "annotation":
+        calc_params = get_calc_params(project)
+        file_path=project.add_annotation_file(file_path, calc_params.data_path, calc_params.sheet_name)
+        mapping_response, code = get_mapping(file_path, "Annotation")
+        response.update(mapping_response)
+
+    project.save()
+    response.update(dict(project=get_project_dict(project), filepath=file_path))
+    return response, code
+
+
+
+
+@app.route('/api/web/wikify_region', methods=['POST'])
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["region"]
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    file_path = save_dataframe(
+        project, cell_qnode_map, "wikify_region_output.csv")
+    file_path = project.add_wikifier_file(
+        file_path,  copy_from_elsewhere=True, overwrite=True)
+    project.save()
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
 
 @app.route('/api/is-alive')
 def is_alive():
