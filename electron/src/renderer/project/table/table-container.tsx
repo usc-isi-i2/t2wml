@@ -265,7 +265,7 @@ class TableContainer extends Component<{}, TableState> {
 
   }
 
-  async getAnnotationSuggestion() {
+  async getAnnotationSuggestedBlocks() {
     if (wikiStore.annotations.blocks.length > 0) {
       if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
         return;
@@ -337,7 +337,7 @@ class TableContainer extends Component<{}, TableState> {
       return (
         <div style={{ cursor: "pointer", textDecoration: "underline" }}
           className="text-white d-inline-block">
-          <span onClick={() => this.getAnnotationSuggestion()}>Suggest annotation</span>
+          <span onClick={() => this.getAnnotationSuggestedBlocks()}>Suggest annotation</span>
         </div>
       )
     }
