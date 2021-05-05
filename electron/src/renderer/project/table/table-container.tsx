@@ -276,10 +276,25 @@ class TableContainer extends Component<{}, TableState> {
     try {
       await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
     } finally {
-      wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
-    
+
+    let data={} as any;
+    let hasSubject=false;
+    for (const block of wikiStore.annotations.blocks){
+      if (block.role=="mainSubject"){
+        hasSubject=true;
+        data={"selection": block.selection};
+      }
+    }
+
+    if (hasSubject)
+    try {
+      await this.requestService.call(this, () => this.requestService.callCountryWikifer(data))
+    } finally {
+      //
+    }
+    wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = true;
     try {
       await this.requestService.getPartialCsv();

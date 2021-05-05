@@ -461,7 +461,9 @@ def guess_annotation_blocks():
     project = get_project()
     calc_params = get_calc_params(project)
     annotation_blocks=suggest_annotations(calc_params)
-    return get_mapping()
+    response=dict()
+    response["annotations"], response["yamlContent"] = get_annotations(calc_params)
+    return response, 200
 
 
 
@@ -720,6 +722,35 @@ def add_mapping_file():
     return response, 200
 
 
+@app.route('/api/web/wikify_region', methods=['POST'])
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["selection"]
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    file_path = save_dataframe(
+        project, cell_qnode_map, "wikify_region_output.csv")
+    file_path = project.add_wikifier_file(
+        file_path,  copy_from_elsewhere=True, overwrite=True)
+    project.save()
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
+
+
+
+##for web version
+
 @app.route('/api/upload/<type>', methods=['POST'])
 @json_response
 def upload_file(type):
@@ -782,31 +813,7 @@ def upload_file(type):
 
 
 
-
-@app.route('/api/web/wikify_region', methods=['POST'])
-@json_response
-def causx_wikify():
-    project = get_project()
-    region = request.get_json()["region"]
-    #context = request.get_json()["context"]
-    calc_params = get_calc_params(project)
-
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    file_path = save_dataframe(
-        project, cell_qnode_map, "wikify_region_output.csv")
-    file_path = project.add_wikifier_file(
-        file_path,  copy_from_elsewhere=True, overwrite=True)
-    project.save()
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
+##app utils
 
 @app.route('/api/is-alive')
 def is_alive():

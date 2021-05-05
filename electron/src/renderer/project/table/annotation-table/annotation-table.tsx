@@ -132,11 +132,11 @@ class AnnotationTable extends Component<{}, TableState> {
         const { role, type, selection, property, links, subject, link } = block;
         const classNames: string[] = [];
         if (role) {
-          if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
+          if ((role == "qualifier") && !property && !links?.property) {
             classNames.push(`role-${role}-no-property`);
-          } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+          } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
             classNames.push(`role-${role}-no-property`);
-          }  else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+          }  else if ((role=="unit"||role=="mainSubject"||role=="property") &&  !link){
             classNames.push(`role-${role}-no-link`);
           }
           else {
@@ -384,11 +384,11 @@ class AnnotationTable extends Component<{}, TableState> {
     if (selectedBlock) {
       const { role, property, links, subject, link} = selectedBlock;
       if (role) {
-        if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
+        if ((role == "qualifier") && !property && !links?.property) {
           classNames.push(`role-${role}-no-property`);
-        } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+        } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
           classNames.push(`role-${role}-no-property`);
-        } else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+        } else if ((role=="unit"||role=="mainSubject"||role=="property") &&  !link){
           classNames.push(`role-${role}-no-link`);
         }
         {
