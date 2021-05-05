@@ -31,7 +31,7 @@ jobs:
       - name: Set backend environment
         working-directory: backend
         run: |
-          pip install --upgrade pip
+          pip install --upgrade setuptools pip wheel
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller pywin32 semver

@@ -21,7 +21,7 @@ jobs:
       - name: Set backend environment
         run: |
           cd $GITHUB_WORKSPACE/backend
-          pip install --upgrade setuptools pip
+          pip install --upgrade setuptools pip wheel
           pip install t2wml-api
           pip install -r requirements.txt
           pip install pyinstaller semver
