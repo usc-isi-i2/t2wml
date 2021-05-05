@@ -1,0 +1,66 @@
+name: Create Windows Installer
+on:
+  push:
+    tags:
+      - v*
+
+# For Code Signing please make sure the following secrets are defined in the repository:
+# WINDOWS_CERTIFICATE_BASE64 - The Windows code signing certificate, base64 encoded
+# WINDOWS_CERTIFICATE_PASSWORD - The password for Windows the certificate
+
+jobs:
+  windows:
+    name: Create the Windows Installation
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Setup Node
+        uses: actions/setup-node@v2-beta
+
+      - name: Extract Code Signing Certificate
+        shell: bash
+        working-directory: electron
+        run: |
+          echo "${{secrets.WINDOWS_CERTIFICATE_BASE64}}" > certificate.pfx.base64
+          cat certificate.pfx.base64 | base64 -d > certificate.pfx
+      - name: Set backend environment
+        working-directory: backend
+        run: |
+          pip install --upgrade pip
+          pip install t2wml-api
+          pip install -r requirements.txt
+          pip install pyinstaller pywin32 semver
+          pip uninstall -y typing typing-extensions
+      - name: Create installer
+        working-directory: backend
+        env:  # Replace unicode characters with ?
+          PYTHONIOENCODING: :replace
+          PYTHONLEGACYWINDOWSIOENCODING: true
+          CI: false   # Otherwise React stops on warnings
+          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          $env:CSC_LINK="$env:GITHUB_WORKSPACE/electron/certificate.pfx"
+          python packaging/prepare_installation.py --version ${{ github.ref }}
+      - name: Rename installer to canonical name
+        working-directory: electron/out
+        run: |
+          copy "t2wml*.msi" t2wml.msi
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        shell: bash
+      - name: Upload to Release
+        id: upload-release-asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: electron/out/t2wml.msi
+          asset_name: t2wml-${{ steps.get_version.outputs.VERSION }}.msi
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Windows Setup"
