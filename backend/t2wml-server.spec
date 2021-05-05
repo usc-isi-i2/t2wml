@@ -5,7 +5,7 @@
 
 from PyInstaller.utils.hooks import copy_metadata
 import sys
-from os import path
+from os import path, getcwd
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 def copy_package(name):
@@ -14,7 +14,7 @@ block_cipher = None
 
 
 a = Analysis(['t2wml-server.py'],
-             pathex=['D:\\Sources\\Pedro\\t2wml\\t2wml\\backend'],
+             pathex=[getcwd()],
              binaries=[],
              datas=copy_package('distributed'),
              hiddenimports=['rltk', 'logging.config', 'cmath'],
