@@ -21,13 +21,16 @@ def suggest(client, selection, annotations):
     response = client.put(url, json=payload)
     data = response.data.decode("utf-8")
     data = json.loads(data)
-    annotations.append(
-            {
+    annotation={
                 "selection":selection,
-                "role":data["roles"][0],
-                "type": data["types"][0],
                 "title": title
             }
+    children=data.pop("children")
+    annotation.update(data)
+    annotation.update(children)
+
+    annotations.append(
+                annotation
             )
     return annotations
 
