@@ -3,12 +3,8 @@ import os
 import json
 import numpy as np
 from pathlib import Path
-import uuid
 from flask import Flask
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
-from flask_migrate import Migrate, upgrade, current, init
 
 home_dir = os.environ.get("T2WMLHOME")
 if not home_dir:
