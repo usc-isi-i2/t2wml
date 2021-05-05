@@ -45,7 +45,7 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData: undefined,
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
-      annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {} }
+      annotationSuggestionsSelectedBlock: { role: '', type: undefined, children: {} }
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
@@ -132,11 +132,11 @@ class AnnotationTable extends Component<{}, TableState> {
         const { role, type, selection, property, links, subject, link } = block;
         const classNames: string[] = [];
         if (role) {
-          if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
+          if ((role == "qualifier") && !property && !links?.property) {
             classNames.push(`role-${role}-no-property`);
-          } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+          } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
             classNames.push(`role-${role}-no-property`);
-          }  else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+          }  else if ((role=="unit"||role=="mainSubject"||role=="property") &&  !link){
             classNames.push(`role-${role}-no-link`);
           }
           else {
@@ -287,7 +287,7 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
-      this.setState({ annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {} } });
+      this.setState({ annotationSuggestionsSelectedBlock: { role: '', type: undefined, children: {} } });
     }
   }
 
@@ -384,11 +384,11 @@ class AnnotationTable extends Component<{}, TableState> {
     if (selectedBlock) {
       const { role, property, links, subject, link} = selectedBlock;
       if (role) {
-        if ((role == "qualifier" as AnnotationBlockRole) && !property && !links?.property) {
+        if ((role == "qualifier") && !property && !links?.property) {
           classNames.push(`role-${role}-no-property`);
-        } else if (role == "dependentVar" as AnnotationBlockRole && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+        } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
           classNames.push(`role-${role}-no-property`);
-        } else if ((role=="unit"as AnnotationBlockRole||role=="mainSubject"as AnnotationBlockRole||role=="property"as AnnotationBlockRole) &&  !link){
+        } else if ((role=="unit"||role=="mainSubject"||role=="property") &&  !link){
           classNames.push(`role-${role}-no-link`);
         }
         {
@@ -901,10 +901,11 @@ class AnnotationTable extends Component<{}, TableState> {
       selectedAnnotationBlock,
       annotationSuggestionsSelectedBlock
     } = this.state;
+    const typeString=annotationSuggestionsSelectedBlock.type? annotationSuggestionsSelectedBlock.type : "";
     if (showAnnotationMenu) {
       return (
         <AnnotationMenu
-          key={annotationSuggestionsSelectedBlock.roles.toString()}
+          key={annotationSuggestionsSelectedBlock.role + typeString}
           selection={this.selection}
           onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}

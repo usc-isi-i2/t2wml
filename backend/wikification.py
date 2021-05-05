@@ -6,7 +6,6 @@ import rltk.similarity as sim
 import os
 from abc import ABC, abstractmethod
 import pandas as pd
-from t2wml.spreadsheets.conversions import cell_range_str_to_tuples
 
 FILE_FOLDER=os.path.abspath(os.path.dirname(__file__))
 
@@ -157,22 +156,12 @@ class DatamartCountryWikifier:
 
         return wikified
 
-    def wikify_region(self, cell_range: str, sheet):
-        (start_col, start_row), (end_col, end_row) = cell_range_str_to_tuples(cell_range)
+    def wikify_region(self, selection, sheet):
+        (start_col, start_row), (end_col, end_row) = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
         end_col += 1
         end_row += 1
 
-        row_offset = start_row
-        columns = ",".join([str(i) for i in range(start_col, end_col)])
-        #rows=",".join([str(i) for i in range(start_row, end_row)])
-        cell_qnode_map = dict()
-        payload = {
-            'columns': columns,
-            #    'rows':rows,
-            'case_sensitive': 'false'
-        }
 
-        sheet_data = sheet[start_row:end_row]
         flattened_sheet_data = sheet[start_row:end_row,
                                      start_col:end_col].to_numpy().flatten()
 
@@ -180,7 +169,8 @@ class DatamartCountryWikifier:
 
         df_rows = []
         for value, item in result_dict.items():
-            df_rows.append(["", "", value, "", item, "", ""])
+            if item:
+                df_rows.append(["", "", value, "", item, "", ""])
         df = pd.DataFrame(df_rows, columns=[
                         "column", "row", "value", "context", "item", "file", "sheet"])
 
@@ -188,8 +178,8 @@ class DatamartCountryWikifier:
 
 
 
-def wikify_countries(calc_params, region):
+def wikify_countries(calc_params, selection):
     #convenience function
     dcw=DatamartCountryWikifier()
-    df, problem_cells = dcw.wikify_region(region, calc_params.sheet)
+    df, problem_cells = dcw.wikify_region(selection, calc_params.sheet)
     return df, problem_cells

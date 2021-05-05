@@ -5,7 +5,7 @@ import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -184,8 +184,9 @@ class RequestService {
 
   public async getSuggestedAnnotationBlocks() {
     const updater = currentFilesService.createUpdater();
-    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithMappingDTO;
-    updater.update(() => { this.fillMapping(response); }, "getsuggestedAnnotationBlocks")
+    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithAnnotationsDTO;
+    updater.update(() => { wikiStore.annotations.blocks = response.annotations || [];
+                           wikiStore.yaml.yamlContent = response.yamlContent;}, "getsuggestedAnnotationBlocks")
   }
 
   public async createProject(folder: string, data?: any) {
@@ -216,6 +217,13 @@ class RequestService {
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
     this.updateProjectandQnode(response);
     wikiStore.wikifier.wikifierError = response.wikifierError;
+  }
+
+  public async callCountryWikifer(data: any){
+    const updater = currentFilesService.createUpdater();
+    const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
+    updater.update(() => { this.updateProjectandQnode(response);
+      wikiStore.wikifier.wikifierError = response.wikifierError; })
   }
 
 

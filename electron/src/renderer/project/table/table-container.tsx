@@ -265,7 +265,7 @@ class TableContainer extends Component<{}, TableState> {
 
   }
 
-  async getAnnotationSuggestion() {
+  async getAnnotationSuggestedBlocks() {
     if (wikiStore.annotations.blocks.length > 0) {
       if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
         return;
@@ -276,10 +276,25 @@ class TableContainer extends Component<{}, TableState> {
     try {
       await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
     } finally {
-      wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
-    
+
+    let data={} as any;
+    let hasSubject=false;
+    for (const block of wikiStore.annotations.blocks){
+      if (block.role=="mainSubject"){
+        hasSubject=true;
+        data={"selection": block.selection};
+      }
+    }
+
+    if (hasSubject)
+    try {
+      await this.requestService.call(this, () => this.requestService.callCountryWikifer(data))
+    } finally {
+      //
+    }
+    wikiStore.table.showSpinner = false;
     wikiStore.wikifier.showSpinner = true;
     try {
       await this.requestService.getPartialCsv();
@@ -322,7 +337,7 @@ class TableContainer extends Component<{}, TableState> {
       return (
         <div style={{ cursor: "pointer", textDecoration: "underline" }}
           className="text-white d-inline-block">
-          <span onClick={() => this.getAnnotationSuggestion()}>Suggest annotation</span>
+          <span onClick={() => this.getAnnotationSuggestedBlocks()}>Suggest annotation</span>
         </div>
       )
     }

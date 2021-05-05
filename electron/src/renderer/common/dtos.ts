@@ -120,8 +120,8 @@ export interface StatementEntry extends Entry{
 }
 
 
-export type AnnotationBlockRole = "Dependent Variable" | "Qualifier" | "Metadata" | "Property" | "Main Subject" | "Unit";
-export type AnnotationBlockType = "Monolingual String" | "String" | "Quantity" | "Time" | "Q-Node";
+export type AnnotationBlockRole = "dependentVar" | "qualifier" | "metadata" | "property" | "mainSubject" | "unit";
+export type AnnotationBlockType = "string" | "quantity" | "time" | "wikibaseitem";
 
 export interface AnnotationBlock{
     selection: CellSelection;
@@ -179,6 +179,11 @@ export interface ResponseWithPartialCsvDTO{
     partialCsv: TableDTO;
 }
 
+export interface ResponseWithAnnotationsDTO{
+    annotations: AnnotationBlock[];
+    yamlContent: string;
+}
+
 export interface ResponseWithMappingDTO{
     project: ProjectDTO;
     layers: LayersDTO;
@@ -227,7 +232,7 @@ export interface ResponseWithQNodesDTO {
 }
 
 export interface ResponseWithSuggestion {
-    roles: string[];
-    types: string[];
+    role: string;
+    type?: string;
     children: any;
 }
