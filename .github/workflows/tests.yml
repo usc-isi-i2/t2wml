@@ -1,8 +1,5 @@
 name: Run Tests
-on:
-  push:
-    tags-ignore:
-      - '**'
+on: push
 
 jobs:
   run-tests:
