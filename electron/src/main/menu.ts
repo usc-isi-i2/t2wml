@@ -1,5 +1,5 @@
 // Manage the main menu
-import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog, shell } from 'electron';
+import { BrowserWindow, Menu, MenuItemConstructorOptions, dialog, shell, MessageBoxOptions } from 'electron';
 
 import { config } from './config';
 import { settings } from './settings';
@@ -8,6 +8,7 @@ import { rendererNotifier } from './renderer-notifier';
 import * as path from 'path';
 import * as url from 'url';
 import { addToPath } from './path-helper';
+import axios from 'axios';
 
 export default class MainMenuManager {
     private recentlyUsed: MenuItemConstructorOptions[] = [];
@@ -112,6 +113,10 @@ export default class MainMenuManager {
                   click: () => this.onReloadAppClick(),
                 }, {
                   role: 'toggleDevTools',
+                },
+                {
+                    label: "Check version",
+                    click: () => this.showVersion(),
                 }]
             }
         ]
@@ -122,6 +127,20 @@ export default class MainMenuManager {
 
         const menu = Menu.buildFromTemplate(mainMenuTemplate);
         return menu;
+    }
+
+    private async showVersion(){
+        const url = `${config.backend}api/get-version`;
+        const a = await axios.get(url);
+        const version =a.data;
+        const options: MessageBoxOptions = {
+            type: 'info',
+            title: 'Version info',
+            message: 'version 2.9.3-pre-4',
+            detail: "t2wml api version "+ version,
+        }
+
+        dialog.showMessageBox(null as unknown as BrowserWindow, options);
     }
 
     private loadGrammar(){

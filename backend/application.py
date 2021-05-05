@@ -1,6 +1,4 @@
-import json
 import pandas as pd
-import re
 import os
 import sys
 import requests
@@ -819,6 +817,10 @@ def upload_file(type):
 def is_alive():
     return 'Backend is here', 200
 
+@app.route('/api/get-version', methods=["GET"])
+def get_api_version():
+    import pkg_resources
+    return pkg_resources.get_distribution('t2wml-api').version, 200
 
 @app.route('/api/windows/add-to-path', methods=['POST'])
 def windows_add_to_path():
