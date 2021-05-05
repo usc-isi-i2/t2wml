@@ -6,6 +6,7 @@ import rltk.similarity as sim
 import os
 from abc import ABC, abstractmethod
 import pandas as pd
+from t2wml.wikification.country_wikifier_cache import countries
 
 FILE_FOLDER=os.path.abspath(os.path.dirname(__file__))
 
@@ -89,21 +90,7 @@ class DatamartCountryWikifier:
     def __init__(self, cache_file: str = None):
         self.similarity_unit = HybridJaccardSimilarity(tl_args={"ignore_case": True}, tokenizer="word")
         self._logger = logging.getLogger(__name__)
-        if cache_file is None:
-            cache_file =  os.path.join(FILE_FOLDER, "country_wikifier_cache.json")
-        if not os.path.exists(cache_file):
-            raise ValueError("Country wikifier cache file not exist at {}!".format(cache_file))
-        with open(cache_file, "r", encoding="utf-8") as f:
-            self.memo = json.load(f)
-
-    def save(self, loc: str = None) -> None:
-        """
-            save current wikifier file for further using
-        """
-        if loc is None:
-            loc = os.path.join(FILE_FOLDER, "country_wikifier_cache.json")
-        with open(loc, "r") as f:
-            json.dump(self.memo, f)
+        self.memo=countries
 
     def wikify(self, input_countries: list) -> dict:
         no_wifiy_memo = set()
