@@ -9,7 +9,7 @@ from flask import request
 import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
-from t2wml.input_processing.annotation_parsing import annotation_suggester
+from t2wml.input_processing.annotation_suggesting import annotation_suggester
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, add_entities_from_project, get_partial_csv,
                        add_entities_from_file, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
