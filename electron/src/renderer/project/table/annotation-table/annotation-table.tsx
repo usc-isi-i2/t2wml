@@ -45,7 +45,7 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData: undefined,
       showAnnotationMenu: false,
       selectedAnnotationBlock: undefined,
-      annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {} }
+      annotationSuggestionsSelectedBlock: { role: '', type: undefined, children: {} }
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
@@ -287,7 +287,7 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
       table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
-      this.setState({ annotationSuggestionsSelectedBlock: { roles: [], types: [], children: {} } });
+      this.setState({ annotationSuggestionsSelectedBlock: { role: '', type: undefined, children: {} } });
     }
   }
 
@@ -901,10 +901,11 @@ class AnnotationTable extends Component<{}, TableState> {
       selectedAnnotationBlock,
       annotationSuggestionsSelectedBlock
     } = this.state;
+    const typeString=annotationSuggestionsSelectedBlock.type? annotationSuggestionsSelectedBlock.type : "";
     if (showAnnotationMenu) {
       return (
         <AnnotationMenu
-          key={annotationSuggestionsSelectedBlock.roles.toString()}
+          key={annotationSuggestionsSelectedBlock.role + typeString}
           selection={this.selection}
           onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}

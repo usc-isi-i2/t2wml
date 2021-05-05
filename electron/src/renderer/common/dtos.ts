@@ -232,7 +232,7 @@ export interface ResponseWithQNodesDTO {
 }
 
 export interface ResponseWithSuggestion {
-    roles: string[];
-    types: string[];
+    role: string;
+    type?: string;
     children: any;
 }

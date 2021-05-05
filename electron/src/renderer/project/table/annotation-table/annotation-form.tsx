@@ -74,8 +74,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     }
     this.state = {
       fields: {
-        role: annotationSuggestions.roles[0],
-        type: annotationSuggestions.types[0],
+        role: annotationSuggestions.role,
+        type: annotationSuggestions.type,
         selectedArea: selectedBlock ? utils.humanReadableSelection(selectedBlock.selection) : undefined,
         ...annotationSuggestions.children,
         ...selectedBlock //override everything previous
@@ -306,12 +306,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
     if (!selectedAnnotationType) {
       // default to string:
-      if (annotationSuggestions.types.length) {
-        selectedAnnotationType = annotationSuggestions.types[0];
-      }
-      else {
-        selectedAnnotationType = "string"
-      }
+      selectedAnnotationType = annotationSuggestions.type ? annotationSuggestions.type : "string";
     }
     let selectedOption = null;
     if (selectedAnnotationRole) {
@@ -321,7 +316,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     } else {
       selectedOption = ROLES.find(option => option.value === role);
       if (!selectedOption) {
-        selectedOption = ROLES.find(option => option.value === annotationSuggestions.roles[0]);
+        selectedOption = ROLES.find(option => option.value === annotationSuggestions.role);
       }
     }
     if (!selectedOption || !('children' in selectedOption)) { return null; }
@@ -386,8 +381,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const rolesList = ROLES;
 
     let selectedAnnotationRole = selected ? selected.role as string : rolesList[0].value;
-    if(!selected && annotationSuggestions.roles.length){
-      selectedAnnotationRole = annotationSuggestions.roles[0];
+    if(!selected && annotationSuggestions.role){
+      selectedAnnotationRole = annotationSuggestions.role;
     }
 
     return (
