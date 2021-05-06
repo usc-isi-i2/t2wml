@@ -1,3 +1,4 @@
+import logging
 import json
 import os
 from app_config import DATADIR
@@ -21,12 +22,14 @@ class GlobalSettings:
 
     @classmethod
     def load(cls):
+        logging.debug("enter global settings load")
         g=GlobalSettings()
         try:
             with open(g.settings_path, 'r',  encoding='utf-8') as f:
                 g.__dict__.update(json.load(f))
         except FileNotFoundError:
             pass
+        logging.debug("return global settings load")
         return g
 
 global_settings=GlobalSettings.load()

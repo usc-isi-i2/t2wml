@@ -1,9 +1,11 @@
+import logging
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 wikidata_label_query_cache = {}
 
 def query_wikidata_for_label_and_description(items, sparql_endpoint):
+    logging.debug("enter query_wikidata_for_label_and_description")
     items = ' wd:'.join(items)
     items = "wd:" + items
 
@@ -17,8 +19,11 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     try:
+        logging.debug("sending query for query_wikidata_for_label_and_description: "+query)
         results = sparql.query().convert()
+        logging.debug("received response for query for query_wikidata_for_label_and_description: "+query)
     except Exception as e:
+        logging.debug("raise error from query_wikidata_for_label_and_description: "+query)
         raise e
     response = dict()
     for i in range(len(results["results"]["bindings"])):
@@ -30,10 +35,12 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
             response[qnode] = {'label': label, 'description': desc}
         except (IndexError, KeyError):
             pass
+    logging.debug("return from query_wikidata_for_label_and_description")
     return response
 
 
 def get_labels_and_descriptions(provider, items, sparql_endpoint):
+    logging.debug("enter get_labels_and_descriptions")
     response=dict()
     missing_items={}
     for item in items:
@@ -56,6 +63,7 @@ def get_labels_and_descriptions(provider, items, sparql_endpoint):
                     p.save_entry(item, data_type, **prop_dict)
     except:  # eg 502 bad gateway error
         pass
+    logging.debug("return get_labels_and_descriptions")
     return response
 
 

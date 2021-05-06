@@ -1,9 +1,11 @@
+import logging
 from t2wml.wikification.wikidata_provider import FallbackSparql
 from uuid import uuid4
 from wikidata_models import WikidataEntity
 
 class DatabaseProvider(FallbackSparql):
     def __init__(self):
+        logging.warn("we shouldn't be in the init for databaseprovider")
         super().__init__()
         self.cache_id=None
         self.project=None

@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 import numpy as np
-from string import punctuation
+import logging
 from flask import request
 
 import web_exceptions
@@ -14,11 +14,14 @@ def numpy_converter(o):
 
 
 def get_yaml_content(calc_params):
+    logging.debug("enter utils get_yaml_content")
     yaml_path = calc_params.yaml_path
     if yaml_path:
         with open(yaml_path, "r", encoding="utf-8") as f:
             yamlFileContent = f.read()
+        logging.debug("return utils get_yaml_content")
         return yamlFileContent
+    logging.debug("return utils get_yaml_content")
     return None
 
 
@@ -42,6 +45,7 @@ def file_upload_validator(file_extensions):
 
 
 def save_dataframe(project, df, file_name, kgtk=False):
+    logging.debug("enter utils save dataframe")
     # entities and wikifiers
     folder = project.directory
     filepath = str(Path(folder) / file_name)
@@ -49,10 +53,12 @@ def save_dataframe(project, df, file_name, kgtk=False):
         df.to_csv(filepath, sep='\t', index=False, quoting=csv.QUOTE_NONE)
     else:
         df.to_csv(filepath, index=False)
+    logging.debug("return utils save dataframe")
     return filepath
 
 
 def save_yaml(project, yaml_data, data_file, sheet_name, yaml_title=None):
+    logging.debug("enter utils save yaml")
     if not yaml_title:
         yaml_title = sheet_name + ".yaml"
 
@@ -62,6 +68,7 @@ def save_yaml(project, yaml_data, data_file, sheet_name, yaml_title=None):
 
     filename = project.add_yaml_file(file_path, data_file, sheet_name)
     project.save()
+    logging.debug("return utils save yaml")
     return filename
 
 

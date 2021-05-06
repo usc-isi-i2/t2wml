@@ -1,4 +1,3 @@
-import json
 import logging
 import numpy as np
 from functools import partial
@@ -167,6 +166,8 @@ class DatamartCountryWikifier:
 
 def wikify_countries(calc_params, selection):
     #convenience function
+    logging.debug("enter wikify countries")
     dcw=DatamartCountryWikifier()
     df, problem_cells = dcw.wikify_region(selection, calc_params.sheet)
+    logging.debug("return wikify countries")
     return df, problem_cells
