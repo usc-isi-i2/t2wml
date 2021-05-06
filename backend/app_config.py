@@ -5,6 +5,9 @@ import numpy as np
 from pathlib import Path
 from flask import Flask
 from flask_cors import CORS
+import logging
+from datetime import datetime
+
 
 home_dir = os.environ.get("T2WMLHOME")
 if not home_dir:
@@ -12,6 +15,14 @@ if not home_dir:
 DATADIR = os.path.join(home_dir, ".t2wml")
 if not os.path.exists(DATADIR):
     os.makedirs(DATADIR)
+
+log_dir=os.path.join(DATADIR, "logs")
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+now=datetime.now()
+dt_string = now.strftime("%d-%m-%Y_H-%M-%S")
+log_file=os.path.join(log_dir, dt_string+"t2wml.log")
+logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 if BASEDIR not in sys.path:
