@@ -9,10 +9,10 @@ import { observer } from 'mobx-react';
 interface SheetProperties  {
 
   // csv: null    excel: [ "sheet1", "sheet2", ... ]
-  sheetNames: Array<string> | null,
+  sheetNames?: Array<string>,
 
   // csv: null    excel: "sheet1"
-  currSheetName: string | null,
+  currSheetName?: string,
 
   handleSelectSheet: (event: React.MouseEvent) => void;
 
@@ -30,7 +30,7 @@ class SheetSelector extends Component<SheetProperties, {}> {
       handleSelectSheet,
       sheetNames,
     } = this.props;
-    if ( !sheetNames ) { return null; }
+    if ( !sheetNames ) { return undefined; }
     return sheetNames.map((sheet, i) => (
       <Button
         key={i}

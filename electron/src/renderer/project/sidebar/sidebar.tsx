@@ -62,7 +62,9 @@ class Sidebar extends Component<{}, SidebarState> {
         cursor.active = false;
         this.setState({ cursor });
 
-        node.active = true;
+        if(node){
+            node.active = true;
+        }
         // if (node.children) {
         //     node.toggled = toggled;
         // }

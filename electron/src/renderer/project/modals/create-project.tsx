@@ -131,7 +131,7 @@ class CreateProject extends Component<CreateProperties, CreateState> {
           <Button variant="outline-dark" onClick={() => this.props.cancelCreateProject()}>
             Cancel
           </Button>
-          <OverlayTrigger placement="bottom" trigger={["hover", "focus"]}
+          {/* <OverlayTrigger placement="bottom" trigger={["hover", "focus"]}
             overlay={
               <Tooltip style={{ width: "fit-content" }} id="file">
                 <div className="text-left small">
@@ -139,11 +139,11 @@ class CreateProject extends Component<CreateProperties, CreateState> {
                 </div>
               </Tooltip>
             }
-          >
+          > */}
             <Button variant="dark" onClick={() => this.createProject()} disabled={!this.state.title || !this.state.path}>
               OK
             </Button>
-          </OverlayTrigger>
+          {/* </OverlayTrigger> */}
 
         </Modal.Footer>
       </Modal >

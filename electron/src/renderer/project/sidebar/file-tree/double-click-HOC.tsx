@@ -9,21 +9,21 @@ interface funcProps {
 
 
 export default class DoubleClick extends Component<funcProps> {
-  timeout: number | null;
+  timeout?: number;
 
   constructor(props: funcProps) {
     super(props);
     this.onClick = this.onClick.bind(this);
     this.onDoubleClick = this.onDoubleClick.bind(this);
-    this.timeout = null;
+    this.timeout = undefined;
   }
 
   onClick(e: React.MouseEvent) {
     e.preventDefault();
-    if (this.timeout === null) {
+    if (!this.timeout) {
       this.timeout = window.setTimeout(() => {
         this.props.onClick();
-        this.timeout = null;
+        this.timeout = undefined;
       }, 500);
     }
   }
@@ -34,7 +34,7 @@ export default class DoubleClick extends Component<funcProps> {
     if (this.timeout) {
       window.clearTimeout(this.timeout);
     }
-    this.timeout = null;
+    this.timeout = undefined;
     this.props.onDoubleClick(e);
   }
 
