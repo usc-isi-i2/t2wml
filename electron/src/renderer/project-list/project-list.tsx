@@ -129,7 +129,7 @@ class ProjectList extends Component<{}, ProjectListState> {
     const { sortBy, isAscending } = this.state;
 
     // decide if it's ascending
-    if (!willBeAscending) {
+    if (willBeAscending === undefined) {
       if (willSortBy === sortBy) {
         // click same header again
         willBeAscending = !isAscending;
