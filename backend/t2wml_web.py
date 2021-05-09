@@ -1,6 +1,5 @@
 import os
 import json
-import logging
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -17,46 +16,44 @@ from app_config import CACHE_FOLDER
 from web_dict_provider import WebDictionaryProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
+from utils import basic_debug, web_log
 
-
+@basic_debug
 def add_entities_from_project(project):
-    logging.debug("enter add_entities_from_project")
     for f in project.entity_files:
         api_add_entities_from_file(Path(project.directory) / f)
-    logging.debug("exit add_entities_from_project")
 
+@basic_debug
 def add_entities_from_file(file_path):
     return api_add_entities_from_file(file_path)
 
+@basic_debug
 def create_api_project(project_folder, title, description, url):
-    logging.debug("enter create_api_project")
     api_proj = Project(project_folder, title=title, description=description, url=url)
     api_proj.save()
-    logging.debug("return create_api_project")
     return api_proj
 
+@basic_debug
 def get_project_instance(project_folder):
-    logging.debug("enter get_project_instance")
     project = Project.load(project_folder)
     update_t2wml_settings(project)
-    logging.debug("return get_project_instance")
     return project
 
+@basic_debug
 def wikify(calc_params, region, context):
     ws = WikifierService()
     df, problem_cells = ws.wikify_region(region, calc_params.sheet, context)
     return df, problem_cells
 
+@basic_debug
 def set_web_settings():
-    logging.debug("enter set_web_settings")
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
     t2wml_settings.wikidata_provider = WebDictionaryProvider()
-    logging.debug("exit set_web_settings")
 
+@basic_debug
 def update_t2wml_settings(project):
-    logging.debug("enter update_t2wml_settings")
     t2wml_settings.update_from_dict(**project.__dict__)
 
     #update wikidata provider ONLY if necessary
@@ -67,36 +64,32 @@ def update_t2wml_settings(project):
         t2wml_settings.wikidata_provider.change_project(project)
     elif t2wml_settings.wikidata_provider.sparql_endpoint!=project.sparql_endpoint:
         t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
-    logging.debug("exit update_t2wml_settings")
 
 
 
-
+@basic_debug
 def get_kg(calc_params):
-    logging.debug("enter get_kg")
     wikifier=calc_params.wikifier
-    logging.debug("enter get_kg-- got wikifier")
     annotation= calc_params.annotation_path
     if calc_params.cache and not annotation:
-        logging.debug("enter get_kg-- if cache path")
+        web_log.debug("enter get_kg-- if cache path")
         kg = calc_params.cache.load_kg()
         if kg:
             return kg
     if annotation:
-        logging.debug("enter get_kg-- if annotation path")
+        web_log.debug("enter get_kg-- if annotation path")
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
-        logging.debug("enter get_kg-- if annotation path-- got mapper")
+        web_log.debug("enter get_kg-- if annotation path-- got mapper")
         ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
-        logging.debug("enter get_kg-- if annotation path-- got ang")
+        web_log.debug("enter get_kg-- if annotation path-- got ang")
         ang.preload(calc_params.sheet, wikifier)
-        logging.debug("enter get_kg-- if annotation path--did preload")
+        web_log.debug("enter get_kg-- if annotation path--did preload")
     else:
-        logging.debug("enter get_kg-- yaml path")
+        web_log.debug("enter get_kg-- yaml path")
         cell_mapper = YamlMapper(calc_params.yaml_path)
     with t2wml_settings.wikidata_provider as p:
-        logging.debug("enter get_kg-- call generate")
+        web_log.debug("enter get_kg-- call generate")
         kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
-    logging.debug("return get_kg")
     return kg
 
 
@@ -117,14 +110,12 @@ def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
     return download_output, variables
 
 
-
+@basic_debug
 def get_qnodes_layer(calc_params):
-    logging.debug("enter get_qnodes_layer")
     sheet = calc_params.sheet
     wikifier = calc_params.wikifier
     item_table = wikifier.item_table
     qnode_entries=dict()
-    logging.debug("enter get_qnodes_layer-- got all the objects")
     if len(item_table.lookup_table):
         ids_to_get = set()
         for col in range(sheet.col_len):
@@ -139,7 +130,6 @@ def get_qnodes_layer(calc_params):
                             qNode= QNode(id, value, context),
                             indices=[[row, col]])
 
-        logging.debug("enter get_qnodes_layer-- get labels and description")
         labels_and_descriptions = get_labels_and_descriptions(t2wml_settings.wikidata_provider, list(ids_to_get), calc_params.sparql_endpoint)
         for id in qnode_entries:
             if id in labels_and_descriptions:
@@ -148,7 +138,6 @@ def get_qnodes_layer(calc_params):
         for id in qnode_entries:
             qNode=qnode_entries[id].pop("qNode")
             qnode_entries[id].update(qNode.__dict__)
-    logging.debug("return get_qnodes_layer")
     return {"qnode": dict(layerType="qNode", entries=list(qnode_entries.values()))}
 
 
@@ -157,8 +146,8 @@ def indexer(cell):
     col, row = cell_str_to_tuple(cell)
     return [row, col]
 
+@basic_debug
 def get_cleaned(kg):
-    logging.debug("enter get_cleaned")
     cleanedLayer=dict(layerType="cleaned", entries=[])
     if kg.sheet:
         cleaned_data=kg.sheet.cleaned_data
@@ -171,11 +160,10 @@ def get_cleaned(kg):
                 old_value = kg.sheet.raw_data.iloc[entry[0], entry[1]]
                 entry=dict(indices=[[entry[0], entry[1]]], cleaned=new_value, original=old_value)
                 cleanedLayer["entries"].append(entry)
-    logging.debug("return get_cleaned")
     return cleanedLayer
 
+@basic_debug
 def get_cell_qnodes(statement, qnodes):
-    logging.debug("enter get_cell_qnodes")
     # get cell qnodes
     for outer_key, outer_value in statement.items():
         if outer_key == "qualifier":
@@ -186,10 +174,9 @@ def get_cell_qnodes(statement, qnodes):
         else:
             if str(outer_value).upper()[0] in ["P", "Q"]:
                 qnodes[str(outer_value)] = None
-    logging.debug("exit get_cell_qnodes")
 
+@basic_debug
 def get_yaml_layers(calc_params):
-    logging.debug("enter get_yaml_layers")
     if calc_params.cache:
         layers=calc_params.cache.get_layers()
         if layers:
@@ -292,13 +279,11 @@ def get_yaml_layers(calc_params):
     #no caching until we've figured out how to make it work
     #if calc_params.yaml_path:
     #    calc_params.cache.save(kg, layers)
-    logging.debug("return get_yaml_layers")
     return layers
 
 
-
+@basic_debug
 def get_table(calc_params, first_index=0, num_rows=None):
-    logging.debug("enter get_table")
     sheet = calc_params.sheet
     if not sheet:
         raise ValueError("Calc params does not have sheet loaded")
@@ -312,14 +297,12 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
     #There's no need to check for overflow, as pandas handles that automatically
     cells = json.loads(df[first_index:last_index].to_json(orient="values"))
-    logging.debug("return get_table")
     return dict(dims=dims, firstRowIndex=first_index, cells=cells)
 
 
 
-
+@basic_debug
 def get_layers(response, calc_params):
-    logging.debug("enter get_layers")
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
 
@@ -334,42 +317,38 @@ def get_layers(response, calc_params):
                                 cells=[["subject", "property", "value"]])
 
     response["layers"].update(get_qnodes_layer(calc_params)) #needs to be after layers, since layers can update qnodes
-    logging.debug("exit get_layers")
 
+@basic_debug
 def get_annotations(calc_params):
-    logging.debug("enter get_annotations")
     annotations_path=calc_params.annotation_path
     try:
-        logging.debug("get_annotations-- load")
+        web_log.debug("get_annotations-- load")
         dga = Annotation.load(annotations_path)
     except FileNotFoundError:
-        logging.debug("get_annotations-- file not found, laod blank")
+        web_log.debug("get_annotations-- file not found, laod blank")
         dga=Annotation()
     except Exception as e:
-        logging.debug("get_annotations-- raise exception")
+        web_log.debug("get_annotations-- raise exception")
         raise e
     try:
-        logging.debug("get_annotations-- generate yaml")
+        web_log.debug("get_annotations-- generate yaml")
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
-        logging.debug("get_annotations-- generate yaml returned error")
+        web_log.debug("get_annotations-- generate yaml returned error")
         yamlContent="#Error when generating yaml: "+str(e)
-    logging.debug("return get_annotations")
     return dga.annotation_block_array, yamlContent
 
+@basic_debug
 def suggest_annotations(calc_params):
-    logging.debug("enter suggest_annotations")
     annotations_path=calc_params.annotation_path
     dga=Annotation(block_finder(calc_params.sheet))
     if annotations_path:
         dga.save(annotations_path)
-    logging.debug("return suggest_annotations")
     return dga.annotation_block_array
 
-
+@basic_debug
 def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
     #temporary fix until we fix in frontend:
-    logging.debug("enter save_annotations")
     for block in annotation:
         if block["role"] in ["qualifier", "dependentVar"]:
             if not block.get("type"):
@@ -379,22 +358,19 @@ def save_annotations(project, annotation, annotations_path, data_path, sheet_nam
     dga.save(annotations_path)
     filename = project.add_annotation_file(annotations_path, data_path, sheet_name)
     project.save()
-    logging.debug("return save_annotations")
     return filename
 
 
-
+@basic_debug
 def get_entities(project: Project):
-    logging.debug("enter get_entities")
     entity_dict={}
     for file in project.entity_files:
         full_path=project.get_full_path(file)
         entity_dict[file]=kgtk_to_dict(full_path)
-    logging.debug("return get_entities")
     return entity_dict
 
+@basic_debug
 def update_entities(project, entity_file, updated_entries):
-    logging.debug("enter update_entities")
     entities=get_entities(project)[entity_file]
     for entry, new_vals in updated_entries.items():
         entities[entry].update(new_vals)
@@ -402,12 +378,10 @@ def update_entities(project, entity_file, updated_entries):
     entities.update(updated_entries)
     full_path=project.get_full_path(entity_file)
     dict_to_kgtk(entities, full_path)
-    logging.debug("return update_entities")
     return get_entities(project)
 
-
+@basic_debug
 def get_partial_csv(calc_params):
-    logging.debug("enter get_partial_csv")
     from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
@@ -432,6 +406,5 @@ def get_partial_csv(calc_params):
     dims = list(df.shape)
     cells = json.loads(df.to_json(orient="values"))
     cells.insert(0, list(df.columns))
-    logging.debug("return get_partial_csv")
     return dict(dims=dims, firstRowIndex=0, cells=cells)
 

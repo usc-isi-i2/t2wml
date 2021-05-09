@@ -6,6 +6,7 @@ from flask import request
 
 import web_exceptions
 
+web_log=logging.getLogger("web-t2wml")
 
 def basic_debug(func=None):
     def wrapper(*args, **kwargs):
@@ -13,13 +14,13 @@ def basic_debug(func=None):
             function_name = func.__func__.__qualname__
         except:
             function_name = func.__qualname__
-        logging.info(f"Web server calling {function_name}")
+        web_log.info(f"calling {function_name}")
         try:
             result= func(*args, **kwargs)
-            logging.info(f"Web server returned from {function_name}")
+            web_log.info(f"returned from {function_name}")
             return result
         except Exception as e:
-            logging.error(f"Web server {function_name} raised {str(e)}")
+            web_log.error(f"{function_name} raised {str(e)}")
             raise e
     return wrapper
 

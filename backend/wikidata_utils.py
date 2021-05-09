@@ -1,6 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-import logging
-from utils import basic_debug
+from utils import basic_debug, web_log
 
 
 wikidata_label_query_cache = {}
@@ -19,9 +18,9 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
     sparql = SPARQLWrapper(sparql_endpoint, agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
-    logging.debug("sending query for query_wikidata_for_label_and_description: "+query)
+    web_log.debug("sending query for query_wikidata_for_label_and_description: "+query)
     results = sparql.query().convert()
-    logging.debug("received response for query for query_wikidata_for_label_and_description: "+query)
+    web_log.debug("received response for query for query_wikidata_for_label_and_description: "+query)
 
     response = dict()
     for i in range(len(results["results"]["bindings"])):

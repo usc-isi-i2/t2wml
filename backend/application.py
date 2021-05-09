@@ -1,4 +1,3 @@
-import logging
 import pandas as pd
 import os
 import sys
@@ -13,7 +12,7 @@ from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, downlo
                        get_project_instance, create_api_project, add_entities_from_project, get_partial_csv,
                        add_entities_from_file, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
-                   get_yaml_content, save_yaml)
+                   get_yaml_content, save_yaml, web_log)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
@@ -51,16 +50,16 @@ def get_project_dict(project):
 def json_response(func):
     def wrapper(*args, **kwargs):
         try:
-            logging.debug(f"received request {request.url}")
+            web_log.debug(f"received request {request.url}")
             data, return_code = func(*args, **kwargs)
-            logging.debug(f"returning successfully from request {request.url}")
+            web_log.debug(f"returning successfully from request {request.url}")
             return data, return_code
         except WebException as e:
-            logging.debug(f"returning error {str(e)} from request {request.url}")
+            web_log.debug(f"returning error {str(e)} from request {request.url}")
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
-            logging.debug(f"returning error {str(e)} from request {request.url}")
+            web_log.debug(f"returning error {str(e)} from request {request.url}")
             print(e)
             if "Permission denied" in str(e):
                 e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
