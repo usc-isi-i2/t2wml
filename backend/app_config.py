@@ -20,7 +20,7 @@ log_dir=os.path.join(DATADIR, "logs")
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 now=datetime.now()
-dt_string = now.strftime("%d-%m-%Y_H-%M-%S")
+dt_string = now.strftime("%Y-%m-%d_%H-%M-%S")
 log_file=os.path.join(log_dir, dt_string+"t2wml.log")
 logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
