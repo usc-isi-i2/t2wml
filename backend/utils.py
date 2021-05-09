@@ -7,21 +7,36 @@ from flask import request
 import web_exceptions
 
 
+def basic_debug(func=None):
+    def wrapper(*args, **kwargs):
+        try:
+            function_name = func.__func__.__qualname__
+        except:
+            function_name = func.__qualname__
+        logging.info(f"Web server calling {function_name}")
+        try:
+            result= func(*args, **kwargs)
+            logging.info(f"Web server returned from {function_name}")
+            return result
+        except Exception as e:
+            logging.error(f"Web server {function_name} raised {str(e)}")
+            raise e
+    return wrapper
+
+
 def numpy_converter(o):
     if isinstance(o, np.generic):
         return o.item()
     raise TypeError
 
 
+@basic_debug
 def get_yaml_content(calc_params):
-    logging.debug("enter utils get_yaml_content")
     yaml_path = calc_params.yaml_path
     if yaml_path:
         with open(yaml_path, "r", encoding="utf-8") as f:
             yamlFileContent = f.read()
-        logging.debug("return utils get_yaml_content")
         return yamlFileContent
-    logging.debug("return utils get_yaml_content")
     return None
 
 
@@ -43,9 +58,8 @@ def file_upload_validator(file_extensions):
 
     return filepath
 
-
+@basic_debug
 def save_dataframe(project, df, file_name, kgtk=False):
-    logging.debug("enter utils save dataframe")
     # entities and wikifiers
     folder = project.directory
     filepath = str(Path(folder) / file_name)
@@ -53,12 +67,10 @@ def save_dataframe(project, df, file_name, kgtk=False):
         df.to_csv(filepath, sep='\t', index=False, quoting=csv.QUOTE_NONE)
     else:
         df.to_csv(filepath, index=False)
-    logging.debug("return utils save dataframe")
     return filepath
 
-
+@basic_debug
 def save_yaml(project, yaml_data, data_file, sheet_name, yaml_title=None):
-    logging.debug("enter utils save yaml")
     if not yaml_title:
         yaml_title = sheet_name + ".yaml"
 
@@ -68,7 +80,6 @@ def save_yaml(project, yaml_data, data_file, sheet_name, yaml_title=None):
 
     filename = project.add_yaml_file(file_path, data_file, sheet_name)
     project.save()
-    logging.debug("return utils save yaml")
     return filename
 
 

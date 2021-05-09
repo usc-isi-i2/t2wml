@@ -1,11 +1,12 @@
-import logging
 from SPARQLWrapper import SPARQLWrapper, JSON
+import logging
+from utils import basic_debug
 
 
 wikidata_label_query_cache = {}
 
+@basic_debug
 def query_wikidata_for_label_and_description(items, sparql_endpoint):
-    logging.debug("enter query_wikidata_for_label_and_description")
     items = ' wd:'.join(items)
     items = "wd:" + items
 
@@ -18,13 +19,10 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
     sparql = SPARQLWrapper(sparql_endpoint, agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
-    try:
-        logging.debug("sending query for query_wikidata_for_label_and_description: "+query)
-        results = sparql.query().convert()
-        logging.debug("received response for query for query_wikidata_for_label_and_description: "+query)
-    except Exception as e:
-        logging.debug("raise error from query_wikidata_for_label_and_description: "+query)
-        raise e
+    logging.debug("sending query for query_wikidata_for_label_and_description: "+query)
+    results = sparql.query().convert()
+    logging.debug("received response for query for query_wikidata_for_label_and_description: "+query)
+
     response = dict()
     for i in range(len(results["results"]["bindings"])):
         try:
@@ -35,12 +33,10 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
             response[qnode] = {'label': label, 'description': desc}
         except (IndexError, KeyError):
             pass
-    logging.debug("return from query_wikidata_for_label_and_description")
     return response
 
-
+@basic_debug
 def get_labels_and_descriptions(provider, items, sparql_endpoint):
-    logging.debug("enter get_labels_and_descriptions")
     response=dict()
     missing_items={}
     for item in items:
@@ -63,7 +59,6 @@ def get_labels_and_descriptions(provider, items, sparql_endpoint):
                     p.save_entry(item, data_type, **prop_dict)
     except:  # eg 502 bad gateway error
         pass
-    logging.debug("return get_labels_and_descriptions")
     return response
 
 
