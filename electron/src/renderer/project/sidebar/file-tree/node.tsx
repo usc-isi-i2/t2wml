@@ -22,7 +22,7 @@ const nodeToIconMapping = {
 export interface NodeProps {
   id: string;
   label: string;
-  parentNode: NodeProps | null;
+  parentNode?: NodeProps;
   childNodes: NodeProps[];
   type: NodeType;
   bolded?: boolean;

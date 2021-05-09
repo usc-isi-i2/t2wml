@@ -41,7 +41,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     };
   }
 
-  async handleOnChange(key: string, value: string, instanceOf?: QNode, searchProperties?: boolean) {
+  async handleOnChange(key: string, value?: string, instanceOf?: QNode, searchProperties?: boolean) {
     console.log('WikifyMenu OnChange triggered for -> ', key, value);
 
     if (!value) { return; }

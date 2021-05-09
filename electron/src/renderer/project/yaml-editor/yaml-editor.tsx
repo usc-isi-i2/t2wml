@@ -25,9 +25,9 @@ interface yamlProperties {
 }
 
 interface yamlState extends IStateWithError {
-  yamlJson: JSON | null;
+  yamlJson?: JSON;
   isValidYaml: boolean;
-  yamlParseErrMsg: string | null;
+  yamlParseErrMsg?: string;
   yamlParseErrFloatMessage: string;
   isYamlContentChanged: boolean;
   isImportFile: boolean;
@@ -50,7 +50,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     // init state
     this.state = {
       // yaml
-      yamlJson: null,
+      yamlJson: undefined,
       isValidYaml: true,
       yamlParseErrMsg: "",
       yamlParseErrFloatMessage: "",
@@ -163,12 +163,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
-        yamlParseErrMsg: null,
+        yamlParseErrMsg: undefined,
         yamlParseErrFloatMessage: '',
       });
     } catch (error) {
       this.setState({
-        yamlJson: null,
+        yamlJson: undefined,
         isValidYaml: false,
         yamlParseErrMsg: "⚠️ " + error.message.match(/[^:]*(?=:)/)[0],
         yamlParseErrFloatMessage: error.stack,
@@ -203,7 +203,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         this.setState({
           yamlJson: yamlJson,
           isValidYaml: true,
-          yamlParseErrMsg: null,
+          yamlParseErrMsg: undefined,
           yamlParseErrFloatMessage: '',
           isImportFile: true
         });
@@ -212,7 +212,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         await wikiStore.yaml.saveYaml();
       } catch (error) {
         this.setState({
-          yamlJson: null,
+          yamlJson: undefined,
           isValidYaml: false,
           yamlParseErrMsg: "⚠️ " + error.message.match(/[^:]*(?=:)/)[0],
           yamlParseErrFloatMessage: error.stack
@@ -235,12 +235,12 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       this.setState({
         yamlJson: yamlJson,
         isValidYaml: true,
-        yamlParseErrMsg: null,
+        yamlParseErrMsg: undefined,
         yamlParseErrFloatMessage: ''
       });
     } catch (error) {
       this.setState({
-        yamlJson: null,
+        yamlJson: undefined,
         isValidYaml: false,
         yamlParseErrMsg: "⚠️ " + error.message.match(/[^:]*(?=:)/)[0],
         yamlParseErrFloatMessage: error.stack

@@ -23,7 +23,7 @@ const entitiesNode = {
   label: "Entities",
   childNodes: [],
   type: "Label",
-  parentNode: null,
+  parentNode: undefined,
   rightClick: emptyFunc,
   onClick: emptyFunc
 } as NodeProps;
@@ -32,7 +32,7 @@ const wikifiersNode = {
   label: "Wikifiers",
   childNodes: [],
   type: "Label",
-  parentNode: null,
+  parentNode: undefined,
   rightClick: emptyFunc,
   onClick: emptyFunc
 } as NodeProps;

@@ -125,11 +125,11 @@ class ProjectList extends Component<{}, ProjectListState> {
     this.setState({ showProjectSettings: false });
   }
 
-  handleApplySort(willSortBy: SortByField, willBeAscending: boolean | null = null) {
+  handleApplySort(willSortBy: SortByField, willBeAscending?: boolean) {
     const { sortBy, isAscending } = this.state;
 
     // decide if it's ascending
-    if (willBeAscending === null) {
+    if (!willBeAscending) {
       if (willSortBy === sortBy) {
         // click same header again
         willBeAscending = !isAscending;
