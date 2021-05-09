@@ -22,7 +22,8 @@ if not os.path.exists(log_dir):
 now=datetime.now()
 dt_string = now.strftime("%Y-%m-%d_%H-%M-%S")
 log_file=os.path.join(log_dir, dt_string+"t2wml.log")
-logging.basicConfig(filename=log_file, level=logging.DEBUG)
+handler = logging.FileHandler(log_file, 'a', 'utf-8')
+logging.basicConfig(level=logging.DEBUG, handlers=[handler])
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 if BASEDIR not in sys.path:
