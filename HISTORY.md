@@ -1,5 +1,9 @@
 T2WML Standalone Server App History
 ===================================
+Changes in version 2.9.3-builds
+-------------------------
+* logs everywhere
+
 Changes in version 2.9.3:
 -------------------------
 * t2wml-api version 0.3.5
