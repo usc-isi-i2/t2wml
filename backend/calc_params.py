@@ -1,13 +1,13 @@
-import logging
 from pathlib import Path
 from t2wml.api import Sheet, SpreadsheetFile, Wikifier
 from t2wml.api import Project
 from caching import CacheHolder
+from utils import basic_debug
 
 
 class CalcParams:
+    @basic_debug
     def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
-        logging.debug("enter init for calc params")
         self.project_path = project.directory
         self.project = Project.load(self.project_path)
         self.data_path = Path(project.directory) / data_path
@@ -19,7 +19,6 @@ class CalcParams:
         self.annotation_path = annotation_path or ""
         if annotation_path:
             self.annotation_path= Path(project.directory) / annotation_path
-        logging.debug("exit init for calc params")
 
 
     # @property
@@ -37,8 +36,8 @@ class CalcParams:
             return CacheHolder(self.project, self.data_path, self.sheet_name, self.yaml_path)
 
     @property
+    @basic_debug
     def wikifier(self):
-        logging.debug("enter wikifier property calc params")
         project = self.project
         if project.wikifier_files:
             wikifier_files = [project.get_full_path(wf)
@@ -49,7 +48,6 @@ class CalcParams:
         wikifier = Wikifier()
         for path in wikifier_files:
             wikifier.add_file(path)
-        logging.debug("return wikifier property calc params")
         return wikifier
 
     @property
