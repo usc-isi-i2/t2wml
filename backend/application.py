@@ -121,9 +121,8 @@ def get_project_files():
 
 @app.route('/api/mapping', methods=['GET'])
 @json_response
-def get_mapping(mapping_file=None, mapping_type=None, project=None):
-    if project is None: #spare a double load of project when redirecting
-        project = get_project()
+def get_mapping(mapping_file=None, mapping_type=None):
+    project = get_project()
     calc_params = get_calc_params(project)
     # if redirecting from a save:
     update_calc_params_mapping_files(
@@ -152,7 +151,7 @@ def get_data():
     calc_params = get_calc_params(project)
     response = dict()
     response["table"] = get_table(calc_params)
-    calc_response, code = get_mapping(project=project)
+    calc_response, code = get_mapping()
     response.update(calc_response)
     return response, code
 
@@ -344,7 +343,7 @@ def apply_yaml():
     yaml_title = request.get_json()["title"]
     yaml_path = Path(project.directory) / yaml_title
     response = dict(project=get_project_dict(project))
-    calc_response, code = get_mapping(yaml_path, "Yaml", project=project)
+    calc_response, code = get_mapping(yaml_path, "Yaml")
     response.update(calc_response)
     return response, code
 
@@ -426,7 +425,7 @@ def upload_annotation():
     save_annotations(project, annotation, annotations_path,
                      calc_params.data_path, calc_params.sheet_name)
     response = dict(project=get_project_dict(project))
-    calc_response, code = get_mapping(annotations_path, "Annotation", project=project)
+    calc_response, code = get_mapping(annotations_path, "Annotation")
     response.update(calc_response)
     return response, code
 
@@ -802,7 +801,7 @@ def upload_file(type):
     if type == "annotation":
         calc_params = get_calc_params(project)
         file_path=project.add_annotation_file(file_path, calc_params.data_path, calc_params.sheet_name)
-        mapping_response, code = get_mapping(file_path, "Annotation", project=project)
+        mapping_response, code = get_mapping(file_path, "Annotation")
         response.update(mapping_response)
 
     project.save()
