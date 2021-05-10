@@ -6,11 +6,11 @@ from caching import CacheHolder
 
 class CalcParams:
     def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
+        self.project = project
         self.project_path = project.directory
-        self.project = Project.load(self.project_path)
         self.data_path = Path(project.directory) / data_path
         self.sheet_name = sheet_name
-        self.sheet = Sheet(self.data_path, self.sheet_name)
+        self._sheet = None
         self.yaml_path = None
         if yaml_path:
             self.yaml_path = Path(project.directory) / yaml_path
@@ -19,13 +19,11 @@ class CalcParams:
             self.annotation_path= Path(project.directory) / annotation_path
 
 
-    # @property
-    # def project(self):
-    #     return Project.load(self.project_path)
-
-    # @property
-    # def sheet(self):
-    #     return Sheet(self.data_path, self.sheet_name)
+    @property
+    def sheet(self):
+        if self._sheet is None:
+            self._sheet= Sheet(self.data_path, self.sheet_name)
+        return self._sheet
 
     @property
     def cache(self):

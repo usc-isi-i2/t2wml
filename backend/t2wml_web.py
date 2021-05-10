@@ -2,8 +2,6 @@ import os
 import json
 import numpy as np
 import pandas as pd
-from pathlib import Path
-from t2wml.api import add_entities_from_file as api_add_entities_from_file
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
@@ -17,13 +15,6 @@ from web_dict_provider import WebDictionaryProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
-
-def add_entities_from_project(project):
-    for f in project.entity_files:
-        api_add_entities_from_file(Path(project.directory) / f)
-
-def add_entities_from_file(file_path):
-    return api_add_entities_from_file(file_path)
 
 def create_api_project(project_folder, title, description, url):
     api_proj = Project(project_folder, title=title, description=description, url=url)
@@ -50,13 +41,11 @@ def update_t2wml_settings(project):
     t2wml_settings.update_from_dict(**project.__dict__)
 
     #update wikidata provider ONLY if necessary
-
-    if not t2wml_settings.wikidata_provider.project:
-        t2wml_settings.wikidata_provider.change_project(project)
-    elif t2wml_settings.wikidata_provider.project.directory!=project.directory:
-        t2wml_settings.wikidata_provider.change_project(project)
+    if not t2wml_settings.wikidata_provider.project or \
+           t2wml_settings.wikidata_provider.project.directory!=project.directory:
+                t2wml_settings.wikidata_provider=WebDictionaryProvider(project)
     elif t2wml_settings.wikidata_provider.sparql_endpoint!=project.sparql_endpoint:
-        t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
+                t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
 
 
 
