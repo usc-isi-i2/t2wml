@@ -1,19 +1,27 @@
 
 import json
+from pathlib import Path
+from t2wml.api import add_entities_from_file
 from t2wml.wikification.preloaded_properties import preloaded_properties
 from t2wml.wikification.wikidata_provider import FallbackSparql
+from app_config import DEFAULT_SPARQL_ENDPOINT
+
+
+def add_entities_from_project(project):
+    for f in project.entity_files:
+        add_entities_from_file(Path(project.directory) / f)
 
 class WebDictionaryProvider(FallbackSparql):
-    def __init__(self):
+    def __init__(self, project=None):
         super().__init__()
-        self.project=None
         self.cache=preloaded_properties
-
-    def change_project(self, project):
         self.project = project
-        self.sparql_endpoint=project.sparql_endpoint
-        with open(project.entity_file, 'r') as f:
-            self.cache.update(json.load(f))
+        self.sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
+        if project:
+            self.sparql_endpoint=project.sparql_endpoint
+            add_entities_from_project(project)
+            with open(project.entity_file, 'r') as f:
+                self.cache.update(json.load(f))
 
     def save_entry(self, wd_id, data_type, **kwargs):
         self.cache[wd_id]=dict(kwargs)
