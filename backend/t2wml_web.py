@@ -362,7 +362,7 @@ def get_partial_csv(calc_params):
             (x1, y1),(x2, y2)=subject_block_cells=cell_mapper.annotation.subject_annotations[0].cell_args
             for row in range(y1, y2+1):
                 for col in range(x1, x2+1):
-                    subject_cells.append(calc_params.sheet[row][col])
+                    subject_cells.append(calc_params.sheet[row, col])
             df.subject=subject_cells
 
 
