@@ -91,6 +91,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   updateTableData(table?: TableDTO) {
+    const t0 = performance.now()
     if (!table || !table.cells) {
       this.setState({ tableData: undefined });
       return;
@@ -103,11 +104,14 @@ class AnnotationTable extends Component<{}, TableState> {
     else {
       this.updateQnodes(tableData);
     }
+    const t1 = performance.now()
+    console.log("updateTableData took " + (t1 - t0) + " milliseconds.")
   }
 
 
 
   updateAnnotationBlocks(tableData?: TableData) {
+    const t0 = performance.now()
     if (!tableData) {
       tableData = this.getClasslessTableData()
     }
@@ -198,6 +202,8 @@ class AnnotationTable extends Component<{}, TableState> {
       }
     }
     this.updateQnodes(tableData)
+    const t1 = performance.now()
+    console.log("updateAnnotationBlocks took " + (t1 - t0) + " milliseconds.")
   }
 
   updateQnodes(tableData?: TableData) {
@@ -265,6 +271,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   resetSelection() {
+    const t0 = performance.now()
     const table = this.tableRef;
     if (table) {
       table.classList.remove('active');
@@ -289,6 +296,8 @@ class AnnotationTable extends Component<{}, TableState> {
       table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
       this.setState({ annotationSuggestionsSelectedBlock: { role: '', type: undefined, children: {} } });
     }
+    const t1 = performance.now()
+    console.log("resetSelection took " + (t1 - t0) + " milliseconds.")
   }
 
   resetEmptyCells(x1: number, x2: number, y1: number, y2: number) {
@@ -358,6 +367,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   updateSelections(selectedBlock?: AnnotationBlock) {
+    const t0 = performance.now()
     if (!selectedBlock) {
       selectedBlock = this.state.selectedAnnotationBlock;
     }
@@ -418,6 +428,8 @@ class AnnotationTable extends Component<{}, TableState> {
       const { selection } = linkedBlock.block;
       this.selectBlock(selection, table, linkedBlock.classNames);
     }
+    const t1 = performance.now()
+    console.log("updateSelections took " + (t1 - t0) + " milliseconds.")
 
   }
 
@@ -527,12 +539,12 @@ class AnnotationTable extends Component<{}, TableState> {
       // collision detected
       return true;
     }
-
     // no collisions detected
     return false;
   }
 
   handleOnMouseUp() {
+    const t0 = performance.now()
     if (this.selection) {
       this.selection = utils.standardizeSelection(this.selection);
       const { selectedAnnotationBlock } = this.state;
@@ -543,9 +555,12 @@ class AnnotationTable extends Component<{}, TableState> {
       }
     }
     this.selecting = false;
+    const t1 = performance.now()
+    console.log("handleOnMouseUp took " + (t1 - t0) + " milliseconds.")
   }
 
   handleOnMouseDown(event: React.MouseEvent) {
+    const t0 = performance.now()
     const element = event.target as any;
 
     // Allow users to select the resize-corner of the cell
@@ -577,7 +592,8 @@ class AnnotationTable extends Component<{}, TableState> {
           this.updateSelections(selectedBlock);
         });
       }
-
+      const t2 = performance.now()
+      console.log("handleOnMouseDown line 597 took " + (t2 - t0) + " milliseconds.")
       return;
     }
 
@@ -624,6 +640,8 @@ class AnnotationTable extends Component<{}, TableState> {
 
     // Initialize the previous element with the one selected
     this.prevElement = element;
+    const t1 = performance.now()
+    console.log("handleOnMouseDown took " + (t1 - t0) + " milliseconds.")
   }
 
   handleOnMouseMove(event: React.MouseEvent) {
@@ -669,6 +687,7 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   handleOnClickHeader(event: React.MouseEvent) {
+    const t0 = performance.now()
     const element = event.target as any;
     element.setAttribute('style', 'width: 100%;');
     element.parentElement.setAttribute('style', 'max-width: 1%');
@@ -683,10 +702,12 @@ class AnnotationTable extends Component<{}, TableState> {
     setTimeout(() => {
       element.setAttribute('style', `min-width: ${element.clientWidth}px`);
     }, 100);
+    const t1 = performance.now()
+    console.log("handleOnClickHeader took " + (t1 - t0) + " milliseconds.")
   }
 
   handleOnKeyDown(event: KeyboardEvent) {
-
+    const t0 = performance.now()
     // Close annotation menu with ESC key
     if (event.code === 'Escape') {
       this.closeAnnotationMenu();
@@ -848,6 +869,8 @@ class AnnotationTable extends Component<{}, TableState> {
       // Trigger a render of the annotation menu
       this.setState({ showAnnotationMenu: true });
     }
+    const t1 = performance.now()
+    console.log("handleOnKeyDown took " + (t1 - t0) + " milliseconds.")
   }
 
   deleteRolePrevSelection() {

@@ -17,6 +17,7 @@ export interface IStateWithError {
 
 class RequestService {
   public getProjectFolder() {
+    const t0 = performance.now()
     let folder: string;
 
     if (wikiStore.project?.projectDTO?.directory) {
@@ -33,7 +34,8 @@ class RequestService {
         throw new Error("Can't determine project folder");
       }
     }
-
+    const t1 = performance.now()
+    console.log("getProjectFolder took " + (t1 - t0) + " milliseconds.")
     return `project_folder=${folder}`;
   }
 

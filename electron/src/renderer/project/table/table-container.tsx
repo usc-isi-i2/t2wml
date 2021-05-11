@@ -266,6 +266,7 @@ class TableContainer extends Component<{}, TableState> {
   }
 
   async getAnnotationSuggestedBlocks() {
+    const t0 = performance.now()
     if (wikiStore.annotations.blocks.length > 0) {
       if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
         return;
@@ -302,6 +303,8 @@ class TableContainer extends Component<{}, TableState> {
     finally {
       wikiStore.wikifier.showSpinner = false;
     }
+    const t1 = performance.now()
+    console.log("getAnnotationSuggestedBlocks took " + (t1 - t0) + " milliseconds.")
   }
 
   renderErrorMessage() {

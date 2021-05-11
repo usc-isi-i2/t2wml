@@ -64,6 +64,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   constructor(props: AnnotationFormProperties) {
     super(props);
+    const t0 = performance.now()
 
     const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
     const instanceOf = selectedBlock?.subject ? undefined : {
@@ -92,6 +93,9 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       showResult2: false
     };
     this.changed = false;
+    
+    const t1 = performance.now()
+    console.log("AnnotationForm constructor took " + (t1 - t0) + " milliseconds.")
   }
 
   private disposers: IReactionDisposer[] = [];
@@ -176,9 +180,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   handleOnSubmit(event: any) {
+    const t0 = performance.now()
     event.preventDefault();
     const { onSubmit } = this.props;
     onSubmit(this.state.fields);
+    const t1 = performance.now()
+    console.log("handleOnSubmit took " + (t1 - t0) + " milliseconds.")
   }
 
   handleOnDelete(event: React.MouseEvent) {
