@@ -1,5 +1,17 @@
 T2WML Standalone Server App History
 ===================================
+
+Changes in version 2.9.4:
+-------------------------
+* t2wml-api version 0.4.0
+* add auto-country wikification
+* fix bug where partial csv wasn't appearing
+* change how suggestions work, to select an option but display all options
+* switch from database to dictionary properties
+* various optimizations to improve performance
+* disable switching modes while loading an annotation
+
+
 Changes in version 2.9.3:
 -------------------------
 * t2wml-api version 0.3.5
