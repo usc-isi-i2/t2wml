@@ -352,7 +352,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'annotation',
             })}
-            disabled={currentFilesService.currentState.mappingType === 'Yaml'}
+            disabled={currentFilesService.currentState.mappingType === 'Yaml' || wikiStore.table.showSpinner}
             onClick={() => this.switchMode('annotation')}>
             Annotate
           </Button>
@@ -361,6 +361,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'wikify',
             })}
+            disabled={wikiStore.table.showSpinner}
             onClick={() => this.switchMode('wikify')}>
             Wikify
           </Button>
@@ -368,7 +369,7 @@ class TableContainer extends Component<{}, TableState> {
             className={classNames('btn-sm py-0 px-2', {
               'active': mode === 'output',
             })}
-
+            disabled={wikiStore.table.showSpinner}
             onClick={() => this.switchMode('output')}>
             Output
           </Button>
