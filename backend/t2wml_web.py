@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import pandas as pd
+from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk)
 from t2wml.mapping.kgtk import get_all_variables
@@ -350,7 +351,6 @@ def update_entities(project, entity_file, updated_entries):
 
 
 def get_partial_csv(calc_params):
-    from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
