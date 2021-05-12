@@ -21,7 +21,6 @@ Changes in version 2.9.3:
    * fix race condition for wikifier labels
    * fix missing scrollbar in file tree
 
-
 Changes in version 2.9.2:
 -------------------------
 * t2wml-api 0.3.3
