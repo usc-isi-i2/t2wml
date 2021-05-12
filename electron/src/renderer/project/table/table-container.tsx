@@ -290,7 +290,7 @@ class TableContainer extends Component<{}, TableState> {
 
     if (hasSubject)
     try {
-      await this.requestService.call(this, () => this.requestService.callCountryWikifer(data))
+      await this.requestService.call(this, () => this.requestService.callCountryWikifier(data))
     } finally {
       //
     }

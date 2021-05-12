@@ -125,10 +125,10 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
     annotations.push(annotation);
 
-    this.postAnnotations(annotations);
+    this.postAnnotations(annotations, annotation);
   }
 
-  async postAnnotations(annotations: AnnotationBlock[]) {
+  async postAnnotations(annotations: AnnotationBlock[], annotation?: AnnotationBlock) {
     const { onClose } = this.props;
     wikiStore.table.showSpinner=true;
     try {
@@ -140,9 +140,20 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     } catch (error) {
       error.errorDescription += "\n\nCannot submit annotations!";
       this.setState({ errorMessage: error });
-    } finally {
-      wikiStore.table.showSpinner=false;
     }
+
+    if (annotation && annotation.role && annotation.selection && annotation.role == "mainSubject"){
+      try{
+      await this.requestService.call(this, ()=> (
+        this.requestService.callCountryWikifier({"selection": annotation.selection})
+      ))}
+      catch(error){
+        //do nothing...
+      }
+    }
+
+    wikiStore.table.showSpinner=false;
+
 
     wikiStore.wikifier.showSpinner = true;
     try{
@@ -151,7 +162,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     finally{
       wikiStore.wikifier.showSpinner = false;
     }
-
 
     onClose();
   }

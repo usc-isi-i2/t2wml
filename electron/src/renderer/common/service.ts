@@ -219,7 +219,7 @@ class RequestService {
     wikiStore.wikifier.wikifierError = response.wikifierError;
   }
 
-  public async callCountryWikifer(data: any){
+  public async callCountryWikifier(data: any){
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
     updater.update(() => { this.updateProjectandQnode(response);
