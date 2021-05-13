@@ -97,12 +97,12 @@ class AnnotationTable extends Component<{}, TableState> {
     }
 
     const tableData=this.getClasslessTableData(table);
-
-
-    if (currentFilesService.currentState.mappingFile) { this.updateAnnotationBlocks(tableData); }
-    else {
-      this.updateQnodes(tableData);
-    }
+    this.setState({ tableData }, () => {
+      if (currentFilesService.currentState.mappingFile) { this.updateAnnotationBlocks(tableData); }
+      else {
+        this.updateQnodes(tableData);
+      }
+    });
   }
 
 
