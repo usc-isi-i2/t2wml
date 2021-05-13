@@ -17,7 +17,7 @@ url_appendix=f"?project_folder={project_folder}&data_file={data_file}&sheet_name
 
 def suggest(client, selection, annotations):
     payload = {"selection": selection, "annotations": annotations}
-    url=f"http://localhost:13000//api/annotation/suggest"+url_appendix
+    url=f"/api/annotation/suggest"+url_appendix
     response = client.put(url, json=payload)
     data = response.data.decode("utf-8")
     data = json.loads(data)
@@ -35,7 +35,7 @@ def suggest(client, selection, annotations):
     return annotations
 
 def annotate(client, annotations):
-    url=f"http://localhost:13000//api/annotation"+url_appendix
+    url=f"/api/annotation"+url_appendix
     payload={
         "annotations":annotations,
         "title":title
