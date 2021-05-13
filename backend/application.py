@@ -643,7 +643,7 @@ def remove_qnode():
 
 @app.route('/api/create_node', methods=['POST'])
 @json_response
-def set_qnode():
+def create_qnode():
     project = get_project()
     request_json=request.get_json()
     try:
