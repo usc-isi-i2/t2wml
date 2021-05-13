@@ -652,6 +652,8 @@ def set_qnode():
         is_prop=request_json.pop("isProperty") # is_prop=id[0].lower()=="p"
         if is_prop:
             data_type=request_json.pop("datatype")
+            if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
+                raise web_exceptions.InvalidRequestException("Invalid data type")
     except KeyError:
         raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
 
@@ -676,7 +678,7 @@ def set_qnode():
     project.save()
 
     response=dict(entity=id, project=get_project_dict(project))
-    
+
     selection=request_json.get("selection", None)
     if selection:
         calc_params=get_calc_params()
