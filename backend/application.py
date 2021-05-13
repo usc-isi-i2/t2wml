@@ -4,12 +4,13 @@ import sys
 import requests
 from pathlib import Path
 from flask import request
+from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file
 from t2wml.input_processing.annotation_suggesting import annotation_suggester
-from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (create_wikification_entry, get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml)
@@ -579,8 +580,6 @@ def get_qnodes():
 def set_qnode():
     project = get_project()
     calc_params = get_calc_params(project)
-    sheet_name = calc_params.sheet.name
-    data_file_name = calc_params.sheet.data_file_name
     qnode_dict = request.get_json()['qnode']
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
@@ -591,35 +590,8 @@ def set_qnode():
 
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
-    top_left, bottom_right = selection
-    col1, row1 = top_left
-    col2, row2 = bottom_right
 
-    df_rows = []
-    for col in range(col1, col2+1):
-        for row in range(row1, row2+1):
-            df_rows.append([col, row, value, context, item,
-                            data_file_name, sheet_name])
-    df = pd.DataFrame(df_rows, columns=[
-                      "column", "row", "value", "context", "item", "file", "sheet"])
-
-    filepath = os.path.join(project.directory, "user-input-wikification.csv")
-    if os.path.exists(filepath):
-        #clear any clashes/duplicates
-        org_df=pd.read_csv(filepath)
-        if 'file' not in org_df:
-            org_df['file']=''
-        if 'sheet' not in org_df:
-            org_df['sheet']=''
-
-        df=pd.concat([org_df, df]).drop_duplicates(subset=['row', 'column', 'value', 'file', 'sheet'], keep='last').reset_index(drop=True)
-
-
-    df.to_csv(filepath, index=False, header=True)
-
-    project.add_wikifier_file(filepath)
-    project.save()
-
+    create_wikification_entry(calc_params, project, selection, value, context, item)
     # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
@@ -666,6 +638,62 @@ def remove_qnode():
     response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200
+
+
+
+@app.route('/api/create_node', methods=['POST'])
+@json_response
+def set_qnode():
+    project = get_project()
+    request_json=request.get_json()
+    try:
+        id=request_json.pop("id")
+        label=request_json.pop("label")
+        is_prop=request_json.pop("isProperty") # is_prop=id[0].lower()=="p"
+        if is_prop:
+            data_type=request_json.pop("datatype")
+    except KeyError:
+        raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
+
+    entity_dict={
+        "label":label
+    }
+    if is_prop:
+        entity_dict["data_type"]=data_type
+
+    for key in ["description", "P31"]: #more to be added
+        if request_json.get(key, None):
+            entity_dict[key]=request_json[key]
+
+    filepath= Path(project.directory)/"user_input_properties.tsv"
+    if os.path.isfile(filepath):
+        custom_nodes=kgtk_to_dict(filepath)
+    else:
+        custom_nodes=dict()
+    custom_nodes[id]=entity_dict
+    dict_to_kgtk(custom_nodes, filepath)
+    project.add_entity_file(filepath)
+    project.save()
+
+    response=dict(entity=id, project=get_project_dict(project))
+    
+    selection=request_json.get("selection", None)
+    if selection:
+        calc_params=get_calc_params()
+        context = request.get_json().get("context", "")
+        create_wikification_entry(calc_params, project, selection, label, context, id)
+        response["layers"] = get_qnodes_layer(calc_params)
+
+    return response, 200
+
+
+
+
+
+
+
+
+
 
 
 @app.route('/api/files/rename', methods=['POST'])
