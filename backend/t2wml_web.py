@@ -13,31 +13,31 @@ from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from t2wml.api import Project
 from app_config import CACHE_FOLDER
 from web_dict_provider import WebDictionaryProvider
-from utils import get_empty_layers
+from utils import get_empty_layers, basic_debug
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
-
+@basic_debug
 def create_api_project(project_folder, title, description, url):
     api_proj = Project(project_folder, title=title, description=description, url=url)
     api_proj.save()
     return api_proj
-
+@basic_debug
 def get_project_instance(project_folder):
     project = Project.load(project_folder)
     update_t2wml_settings(project)
     return project
-
+@basic_debug
 def wikify(calc_params, region, context):
     ws = WikifierService()
     df, problem_cells = ws.wikify_region(region, calc_params.sheet, context)
     return df, problem_cells
-
+@basic_debug
 def set_web_settings():
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
     t2wml_settings.wikidata_provider = WebDictionaryProvider()
-
+@basic_debug
 def update_t2wml_settings(project):
     t2wml_settings.update_from_dict(**project.__dict__)
 
@@ -50,7 +50,7 @@ def update_t2wml_settings(project):
 
 
 
-
+@basic_debug
 def get_kg(calc_params):
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
@@ -70,7 +70,7 @@ def get_kg(calc_params):
 
 
 
-
+@basic_debug
 def download(calc_params, filetype):
     response = dict()
     kg = get_kg(calc_params)
@@ -78,7 +78,7 @@ def download(calc_params, filetype):
     response["error"] = None
     response["internalErrors"] = kg.errors if kg.errors else None
     return response
-
+@basic_debug
 def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
     kg = get_kg(calc_params)
     download_output = kg.get_output("tsv", calc_params.project)
@@ -86,7 +86,7 @@ def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
     return download_output, variables
 
 
-
+@basic_debug
 def get_qnodes_layer(calc_params):
     sheet = calc_params.sheet
     wikifier = calc_params.wikifier
@@ -118,11 +118,10 @@ def get_qnodes_layer(calc_params):
     return {"qnode": dict(layerType="qNode", entries=list(qnode_entries.values()))}
 
 
-
 def indexer(cell):
     col, row = cell_str_to_tuple(cell)
     return [row, col]
-
+@basic_debug
 def get_cleaned(kg):
     cleanedLayer=dict(layerType="cleaned", entries=[])
     if kg.sheet:
@@ -150,7 +149,7 @@ def get_cell_qnodes(statement, qnodes):
                 if str(outer_value).upper()[0] in ["P", "Q"]:
                     qnodes[str(outer_value)] = None
 
-
+@basic_debug
 def get_yaml_layers(calc_params):
     if calc_params.cache:
         layers=calc_params.cache.get_layers()
@@ -257,7 +256,7 @@ def get_yaml_layers(calc_params):
     return layers
 
 
-
+@basic_debug
 def get_table(calc_params, first_index=0, num_rows=None):
     sheet = calc_params.sheet
     if not sheet:
@@ -277,7 +276,7 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 
 
-
+@basic_debug
 def get_layers(response, calc_params):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
@@ -293,7 +292,7 @@ def get_layers(response, calc_params):
                                 cells=[["subject", "property", "value"]])
 
     response["layers"].update(get_qnodes_layer(calc_params)) #needs to be after layers, since layers can update qnodes
-
+@basic_debug
 def get_annotations(calc_params):
     annotations_path=calc_params.annotation_path
     try:
@@ -307,7 +306,7 @@ def get_annotations(calc_params):
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
     return dga.annotation_block_array, yamlContent
-
+@basic_debug
 def suggest_annotations(calc_params):
     annotations_path=calc_params.annotation_path
     dga=Annotation(block_finder(calc_params.sheet))
@@ -315,7 +314,7 @@ def suggest_annotations(calc_params):
         dga.save(annotations_path)
     return dga.annotation_block_array
 
-
+@basic_debug
 def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
     #temporary fix until we fix in frontend:
     for block in annotation:
@@ -330,14 +329,14 @@ def save_annotations(project, annotation, annotations_path, data_path, sheet_nam
     return filename
 
 
-
+@basic_debug
 def get_entities(project: Project):
     entity_dict={}
     for file in project.entity_files:
         full_path=project.get_full_path(file)
         entity_dict[file]=kgtk_to_dict(full_path)
     return entity_dict
-
+@basic_debug
 def update_entities(project, entity_file, updated_entries):
 
     entities=get_entities(project)[entity_file]
@@ -349,7 +348,7 @@ def update_entities(project, entity_file, updated_entries):
     dict_to_kgtk(entities, full_path)
     return get_entities(project)
 
-
+@basic_debug
 def get_partial_csv(calc_params):
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
@@ -376,7 +375,7 @@ def get_partial_csv(calc_params):
     cells.insert(0, list(df.columns))
     return dict(dims=dims, firstRowIndex=0, cells=cells)
 
-
+@basic_debug
 def create_wikification_entry(calc_params, project, selection, value, context, item):
     top_left, bottom_right = selection
     col1, row1 = top_left

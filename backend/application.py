@@ -6,7 +6,7 @@ from pathlib import Path
 from flask import request
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
-from app_config import app
+from app_config import app, web_logger
 from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file
 from t2wml.input_processing.annotation_suggesting import annotation_suggester
@@ -51,12 +51,16 @@ def get_project_dict(project):
 def json_response(func):
     def wrapper(*args, **kwargs):
         try:
+            web_logger.info(f"received request {request.url}")
             data, return_code = func(*args, **kwargs)
+            web_logger.info(f"returning from request {request.url}")
             return data, return_code
         except WebException as e:
+            web_logger.error(f"error raised from request {request.url}")
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
+            web_logger.error(f"error raised from request {request.url}")
             print(e)
             if "Permission denied" in str(e):
                 e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))

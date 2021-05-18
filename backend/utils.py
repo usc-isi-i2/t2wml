@@ -3,9 +3,27 @@ from pathlib import Path
 import numpy as np
 from string import punctuation
 from flask import request
-
 import web_exceptions
+import logging
 
+
+web_log=logging.getLogger("web-t2wml")
+
+def basic_debug(func=None):
+    def wrapper(*args, **kwargs):
+        try:
+            function_name = func.__func__.__qualname__
+        except:
+            function_name = func.__qualname__
+        web_log.info(f"calling {function_name}")
+        try:
+            result= func(*args, **kwargs)
+            web_log.info(f"returned from {function_name}")
+            return result
+        except Exception as e:
+            web_log.error(f"{function_name} raised {str(e)}")
+            raise e
+    return wrapper
 
 def numpy_converter(o):
     if isinstance(o, np.generic):

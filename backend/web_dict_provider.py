@@ -5,13 +5,14 @@ from t2wml.api import add_entities_from_file
 from t2wml.wikification.preloaded_properties import preloaded_properties
 from t2wml.wikification.wikidata_provider import FallbackSparql
 from app_config import DEFAULT_SPARQL_ENDPOINT
-
+from utils import basic_debug
 
 def add_entities_from_project(project):
     for f in project.entity_files:
         add_entities_from_file(Path(project.directory) / f)
 
 class WebDictionaryProvider(FallbackSparql):
+    @basic_debug
     def __init__(self, project=None):
         super().__init__()
         self.cache=preloaded_properties
@@ -56,6 +57,7 @@ class WebDictionaryProvider(FallbackSparql):
     def __enter__(self):
         return self
 
+    @basic_debug
     def __exit__(self, exc_type, exc_value, exc_traceback):
         if self.project is not None:
             properties=json.dumps(self.cache)
