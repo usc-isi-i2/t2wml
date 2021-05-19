@@ -73,7 +73,8 @@ class AnnotationTable extends Component<{}, TableState> {
   }
 
   getClasslessTableData(table?: TableDTO): TableData{
-    if (!table){table=wikiStore.table.table}
+    if (!table){ table=wikiStore.table.table; }
+    if (!table.cells) { return []; }
     const tableData = [];
     for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
@@ -87,7 +88,6 @@ class AnnotationTable extends Component<{}, TableState> {
       tableData.push(rowData);
     }
     return tableData;
-
   }
 
   updateTableData(table?: TableDTO) {

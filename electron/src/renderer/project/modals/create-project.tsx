@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 // App
-import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 
 import { observer } from "mobx-react";
 import { remote } from 'electron';
@@ -10,22 +10,22 @@ import path from 'path';
 
 
 interface CreateProperties {
-    showCreateProjectModal: boolean;
+  showCreateProjectModal: boolean;
 
-    createProject: (
-        path: string,
-        title: string,
-        description: string,
-        url: string,
-    ) => void;
-    cancelCreateProject: () => void;
+  createProject: (
+    path: string,
+    title: string,
+    description: string,
+    url: string,
+  ) => void;
+  cancelCreateProject: () => void;
 }
 
 interface CreateState {
-    path: string;
-    title: string;
-    description: string;
-    url: string;
+  path: string;
+  title: string;
+  description: string;
+  url: string;
 }
 
 @observer
@@ -42,23 +42,23 @@ class CreateProject extends Component<CreateProperties, CreateState> {
   }
 
   createProject() {
-      this.props.createProject(this.state.path, this.state.title, this.state.description, this.state.url);
-      this.setState({
-        path: '',
-        title: '',
-        description: '',
-        url: '',
-      });
+    this.props.createProject(this.state.path, this.state.title, this.state.description, this.state.url);
+    this.setState({
+      path: '',
+      title: '',
+      description: '',
+      url: '',
+    });
   }
 
   async openFile() {
     const result = await remote.dialog.showOpenDialog({
-            title: "Open Project Folder",
-            properties: ['openDirectory', 'createDirectory']
+      title: "Open Project Folder",
+      properties: ['openDirectory', 'createDirectory']
     });
 
     if (!result.canceled && result.filePaths) {
-        this.setState({ path: result.filePaths[0], title: path.parse(result.filePaths[0]).name});
+      this.setState({ path: result.filePaths[0], title: path.parse(result.filePaths[0]).name });
     }
   }
 
@@ -94,7 +94,7 @@ class CreateProject extends Component<CreateProperties, CreateState> {
                   defaultValue={this.state.title}
                   onChange={(event) => this.setState({ title: event.target?.value })}
                 />
-                {this.state.title ? null : <label style={{ "color": "#FF0000"}}>Title cannot be left blank</label>}
+                {this.state.title ? null : <label style={{ "color": "#FF0000" }}>Title cannot be left blank</label>}
               </Col>
             </Form.Group>
 
@@ -131,19 +131,10 @@ class CreateProject extends Component<CreateProperties, CreateState> {
           <Button variant="outline-dark" onClick={() => this.props.cancelCreateProject()}>
             Cancel
           </Button>
-          <OverlayTrigger placement="bottom" trigger={["hover", "focus"]}
-            overlay={
-              <Tooltip style={{ width: "fit-content" }} id="file">
-                <div className="text-left small">
-                  text here....
-                </div>
-              </Tooltip>
-            }
-          >
-            <Button variant="dark" onClick={() => this.createProject()} disabled={!this.state.title || !this.state.path}>
-              OK
-            </Button>
-          </OverlayTrigger>
+          <Button variant="dark" onClick={() => this.createProject()} disabled={!this.state.title || !this.state.path}>
+            OK
+          </Button>
+
 
         </Modal.Footer>
       </Modal >
