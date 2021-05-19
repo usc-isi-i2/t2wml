@@ -30,10 +30,10 @@ interface TableState {
     showToast: boolean;
 
     // table data
-    filename: string | null; // if null, show "Table Viewer"
+    filename?: string; // if undefined, show "Table Viewer"
     multipleSheets: boolean;
-    sheetNames: Array<string> | null;
-    currSheetName: string | null;
+    sheetNames?: Array<string>;
+    currSheetName?: string;
     tableData?: TableData;
 
     selectedCell?: Cell;
@@ -65,11 +65,7 @@ class CombinedTable extends Component<{}, TableState> {
             showToast: false,
 
             // table data
-            filename: null,
-            sheetNames: null,
-            currSheetName: null,
             multipleSheets: false,
-            tableData: undefined,
 
             mode: wikiStore.table.mode,
 
