@@ -37,6 +37,7 @@ interface TableState {
     tableData?: TableData;
 
     selectedCell?: Cell;
+    selectedAnnotationBlock?: AnnotationBlock;
 
     mode: TableMode,
 
@@ -74,20 +75,26 @@ class CombinedTable extends Component<{}, TableState> {
 
             errorMessage: {} as ErrorMessage,
         };
+
+        this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+        this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
     }
 
     private disposers: IReactionDisposer[] = [];
 
     componentDidMount() {
         document.addEventListener('keydown', this.handleOnKeyDown);
+        document.addEventListener('mouseup', this.handleOnMouseUp);
         this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
         this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-        this.disposers.push(reaction(() => wikiStore.layers, (table) => this.updateLayers()));
+        this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
+        this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
     }
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.handleOnKeyDown);
+        document.removeEventListener('mouseup', this.handleOnMouseUp);
         for (const disposer of this.disposers) {
             disposer();
         }
@@ -138,8 +145,13 @@ class CombinedTable extends Component<{}, TableState> {
             const types = wikiStore.layers.type;
             for (const entry of types.entries) {
                 for (const indexPair of entry.indices) {
+                    try{
                     const tableCell = tableData[indexPair[0]][indexPair[1]];
                     tableCell.classNames.push(`role-${entry.type}`);
+                    }
+                    catch{
+
+                    }
                 }
             }
         }
@@ -149,8 +161,13 @@ class CombinedTable extends Component<{}, TableState> {
         const qnodes = wikiStore.layers.qnode;
         for (const entry of qnodes.entries) {
             for (const indexPair of entry.indices) {
-                const tableCell = tableData[indexPair[0]][indexPair[1]]; //TODO: sometimes doesn't exist and crashes program
+                try{
+                const tableCell = tableData[indexPair[0]][indexPair[1]];
                 tableCell.classNames.push(`type-wikibaseitem`);
+                }
+                catch{
+                    //pass
+                }
             }
         }
 
@@ -159,8 +176,11 @@ class CombinedTable extends Component<{}, TableState> {
 
     setAnnotationColors(tableData?: TableData) {
         if (!tableData) {
+            if (!this.state.tableData){
+                return;
+            }
             const tableData = {...this.state.tableData}
-            if (!tableData){ return;}
+            //if we're taking existing table data, gotta clean it:
             tableData.forEach( row => {
                 row.forEach( cell => {
                     cell.classNames = cell.classNames.filter(function(value, index, arr){
@@ -170,7 +190,7 @@ class CombinedTable extends Component<{}, TableState> {
             })
         }
 
-        if (wikiStore.annotations.blocks) {
+        if (wikiStore.annotations.blocks && tableData) {
             for (const block of wikiStore.annotations.blocks) {
                 const { role, type, selection, property, links, subject, link } = block;
                 const classNames: string[] = [];
@@ -186,7 +206,7 @@ class CombinedTable extends Component<{}, TableState> {
                         classNames.push(`role-${role}`);
                     }
                 }
-                //todo: set to "needs wikification"?
+                //TODO: set to "needs wikification"?
                 //if (type=="wikibaseitem") {
                 //  classNames.push(`type-${type}`);
                 //}
@@ -201,8 +221,13 @@ class CombinedTable extends Component<{}, TableState> {
                 while (rowIndex < bottomRow) {
                     let colIndex = leftCol;
                     while (colIndex < rightCol) {
-                        const tableCell = tableData[rowIndex][colIndex]; //TODO: sometimes doesn't exist and crashes program
+                        try{
+                        const tableCell = tableData[rowIndex][colIndex];
                         tableCell.classNames.push(...classNames);
+                        }
+                        catch{
+                            //TODO: handle annotating imaginary cells
+                        }
                         colIndex += 1;
                     }
                     rowIndex += 1;
@@ -465,6 +490,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     changeSelectedCell(selectedCell:Cell){
         wikiStore.table.selectedCell = selectedCell;
+        this.setState({selectedCell})
     }
 
     handleOnMouseDown(event: React.MouseEvent) {
