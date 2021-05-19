@@ -23,6 +23,7 @@ class TableState {
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
     @observable public selectedCell?: Cell;
+    @observable public selectedBlock?: AnnotationBlock;
     @observable public showCleanedData: boolean;
 
     constructor() {
