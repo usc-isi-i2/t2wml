@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 
 interface ShowOutputProperties {
   errors: string;
-  statement: StatementEntry | null;
+  statement?: StatementEntry;
 }
 
 

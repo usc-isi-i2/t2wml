@@ -13,7 +13,7 @@ import { Spinner } from "react-bootstrap";
 type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
   files: NodeProps[];
-  clickedNode: NodeProps | null;
+  clickedNode?: NodeProps;
   showSpinner: boolean;
 }
 
@@ -23,7 +23,7 @@ const entitiesNode = {
   label: "Entities",
   childNodes: [],
   type: "Label",
-  parentNode: null,
+  parentNode: undefined,
   rightClick: emptyFunc,
   onClick: emptyFunc
 } as NodeProps;
@@ -32,7 +32,7 @@ const wikifiersNode = {
   label: "Wikifiers",
   childNodes: [],
   type: "Label",
-  parentNode: null,
+  parentNode: undefined,
   rightClick: emptyFunc,
   onClick: emptyFunc
 } as NodeProps;
@@ -47,7 +47,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     this.requestService = new RequestService();
     this.state = {
       files: [entitiesNode, wikifiersNode],
-      clickedNode: null,
+      clickedNode: undefined,
       showSpinner: false,
     };
   }

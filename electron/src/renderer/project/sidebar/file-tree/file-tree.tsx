@@ -17,7 +17,7 @@ type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
   files: NodeProps[];
   showRenameFile: boolean;
-  clickedNode: NodeProps | null;
+  clickedNode?: NodeProps;
   showSpinner: boolean;
 }
 
@@ -32,7 +32,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     this.state = {
       files: [],
       showRenameFile: false,
-      clickedNode: null,
+      clickedNode: undefined,
       showSpinner: false,
     };
   }
@@ -378,7 +378,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         label: df,
         childNodes: [],
         type: dataType,
-        parentNode: null,
+        parentNode: undefined,
         rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: (node: NodeProps) => this.changeFile(node),
         bolded: currentFilesService.currentState.dataFile == df

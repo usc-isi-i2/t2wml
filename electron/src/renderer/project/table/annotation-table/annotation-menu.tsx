@@ -16,8 +16,8 @@ interface AnnotationMenuProperties {
   onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions:  ResponseWithSuggestion;
-  onDelete: any | null;
-  onClose: any | null;
+  onDelete: (block: AnnotationBlock) => void;
+  onClose: () => void;
 }
 
 
@@ -39,7 +39,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };
   }
 
-  async handleOnChangeSubject(key: string, value: string, instanceOf?: QNode){
+  async handleOnChangeSubject(key: string, value?: string, instanceOf?: QNode){
 
     if (!value) { return; }
 
@@ -96,6 +96,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   handleOnDelete() {
     const { selectedAnnotationBlock, selection, onDelete } = this.props;
     console.log('AnnotationMenu OnDelete triggered for -> ', selection);
+    if (!selectedAnnotationBlock) { return; }
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedAnnotationBlock;
@@ -106,7 +107,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     onDelete(selectedAnnotationBlock);
   }
 
-  handleOnSubmit(values: { [key: string]: string }) {
+  handleOnSubmit(values: { [key: string]: string | undefined }) {
     const { selectedAnnotationBlock, selection } = this.props;
     console.log('AnnotationMenu OnSubmit triggered for -> ', selection, values);
 

@@ -13,9 +13,9 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 interface WikifyFormProperties {
   selectedCell: Cell;
   onSelectBlock: (applyToBlock: boolean) => void;
-  onChange: any | null; // Use the actual function type: (arg: argType) => returnType
-  onSubmit: any | null;
-  onRemove: any | null;
+  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>; 
+  onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
+  onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
 }
 
 
@@ -133,12 +133,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     event.preventDefault();
     const { onSubmit } = this.props;
     const { selected, applyToBlock } = this.state;
+    if(!selected) { return; }
     onSubmit(selected, applyToBlock);
   }
 
   handleOnRemove() {
     const { onRemove } = this.props;
     const { selected, applyToBlock } = this.state;
+    if(!selected) { return; }
     onRemove(selected, applyToBlock);
   }
 

@@ -75,7 +75,7 @@ class Table extends React.Component<TableProperties>{
     }
 
     const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-    const cols = [...Array(Math.max(tableData[0].length, 26))];
+    const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, 26))];
 
     return (
       <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>

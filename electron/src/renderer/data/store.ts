@@ -124,8 +124,8 @@ export class Layer<T extends Entry> {
         }
     }
 
-    public find(cell: Cell | null): T | undefined {
-        if (cell!=null) {
+    public find(cell: Cell | undefined): T | undefined {
+        if (cell) {
             const index = `${cell.row},${cell.col}`;
             return this.entryMap.get(index);
         }

@@ -29,10 +29,10 @@ interface TableState {
   showToast: boolean;
 
   // table data
-  filename: string | null; // if null, show "Table Viewer"
+  filename?: string; // if undefined, show "Table Viewer"
   multipleSheets: boolean;
-  sheetNames: Array<string> | null;
-  currSheetName: string | null;
+  sheetNames?: Array<string>;
+  currSheetName?: string;
 
   selectedCell?: Cell;
   selectedQualifiers?: Array<Cell>;
@@ -66,9 +66,9 @@ class TableContainer extends Component<{}, TableState> {
       showToast: false,
 
       // table data
-      filename: null,
-      sheetNames: null,
-      currSheetName: null,
+      filename: undefined,
+      sheetNames: undefined,
+      currSheetName: undefined,
       multipleSheets: false,
 
       selectedCell: undefined,
