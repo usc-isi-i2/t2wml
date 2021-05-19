@@ -79,6 +79,7 @@ class CombinedTable extends Component<{}, TableState> {
     private disposers: IReactionDisposer[] = [];
 
     componentDidMount() {
+        document.addEventListener('keydown', this.handleOnKeyDown);
         this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
         this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
@@ -86,10 +87,12 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleOnKeyDown);
         for (const disposer of this.disposers) {
             disposer();
         }
     }
+
 
     getClasslessTableData(table?: TableDTO): TableData {
         if (!table) { table = wikiStore.table.table }
@@ -118,7 +121,7 @@ class CombinedTable extends Component<{}, TableState> {
         this.updateLayers(tableData);
     }
 
-    updateLayers(tableData: TableData) {
+    updateLayers(tableData?: TableData) {
         if (!tableData) {
             tableData = this.getClasslessTableData()
         }
@@ -141,8 +144,33 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-        else if (wikiStore.annotations.blocks) {
-            debugger
+        else { this.setAnnotationColors(tableData) }
+
+        const qnodes = wikiStore.layers.qnode;
+        for (const entry of qnodes.entries) {
+            for (const indexPair of entry.indices) {
+                const tableCell = tableData[indexPair[0]][indexPair[1]]; //TODO: sometimes doesn't exist and crashes program
+                tableCell.classNames.push(`type-wikibaseitem`);
+            }
+        }
+
+        this.setState({ tableData });
+    }
+
+    setAnnotationColors(tableData?: TableData) {
+        if (!tableData) {
+            const tableData = {...this.state.tableData}
+            if (!tableData){ return;}
+            tableData.forEach( row => {
+                row.forEach( cell => {
+                    cell.classNames = cell.classNames.filter(function(value, index, arr){
+                        return !value.startsWith("role-")
+                    })
+                })
+            })
+        }
+
+        if (wikiStore.annotations.blocks) {
             for (const block of wikiStore.annotations.blocks) {
                 const { role, type, selection, property, links, subject, link } = block;
                 const classNames: string[] = [];
@@ -165,9 +193,9 @@ class CombinedTable extends Component<{}, TableState> {
 
 
                 const { x1, y1, x2, y2 } = selection;
-                const leftCol = Math.min(x1, x2)-1;
+                const leftCol = Math.min(x1, x2) - 1;
                 const rightCol = Math.max(x1, x2);
-                const topRow = Math.min(y1, y2)-1;
+                const topRow = Math.min(y1, y2) - 1;
                 const bottomRow = Math.max(y1, y2);
                 let rowIndex = topRow;
                 while (rowIndex < bottomRow) {
@@ -181,16 +209,6 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
-
-        const qnodes = wikiStore.layers.qnode;
-        for (const entry of qnodes.entries) {
-            for (const indexPair of entry.indices) {
-                const tableCell = tableData[indexPair[0]][indexPair[1]]; //TODO: sometimes doesn't exist and crashes program
-                tableCell.classNames.push(`type-wikibaseitem`);
-            }
-        }
-
-        this.setState({ tableData });
     }
 
     async addFile(file: File) {
@@ -237,7 +255,6 @@ class CombinedTable extends Component<{}, TableState> {
         if (!file) { return; }
         this.addFile(file)
     }
-
 
     async handleSelectSheet(event: React.MouseEvent) {
         this.setState({
@@ -295,7 +312,7 @@ class CombinedTable extends Component<{}, TableState> {
             this.setState({ filename, sheetNames, currSheetName, multipleSheets });
         }
 
-        if (this.state.mode === 'annotation') { this.createAnnotationIfDoesNotExist(); }
+        { this.createAnnotationIfDoesNotExist(); }
     }
 
 
@@ -313,28 +330,6 @@ class CombinedTable extends Component<{}, TableState> {
             await this.requestService.createAnnotation(data)
             currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
         }
-    }
-
-    async fetchAnnotations() {
-        if (!currentFilesService.currentState.dataFile) { return; }
-        this.createAnnotationIfDoesNotExist();
-        try {
-            await this.requestService.call(this, () => (
-                this.requestService.getMappingCalculation()
-            ));
-        } catch (error) {
-            error.errorDescription += "\n\nCannot fetch annotations!";
-            this.setState({ errorMessage: error });
-        }
-
-        wikiStore.wikifier.showSpinner = true;
-        try {
-            await this.requestService.getPartialCsv();
-        }
-        finally {
-            wikiStore.wikifier.showSpinner = false;
-        }
-
     }
 
     async getAnnotationSuggestedBlocks() {
@@ -468,9 +463,68 @@ class CombinedTable extends Component<{}, TableState> {
         //TODO
     }
 
-    handleOnMouseDown() {
-        //TODO
+    changeSelectedCell(selectedCell:Cell){
+        wikiStore.table.selectedCell = selectedCell;
     }
+
+    handleOnMouseDown(event: React.MouseEvent) {
+        const element = event.target as any;
+
+        // Don't let users select header cells
+        if (element.nodeName !== 'TD') { return; }
+
+        const x1: number = element.cellIndex;
+        const y1: number = element.parentElement.rowIndex;
+
+        // Activate related cells
+        const selectedCell = new Cell(x1 - 1, y1 - 1);
+        this.changeSelectedCell(selectedCell)
+
+      }
+
+
+    handleOnKeyDown(event: KeyboardEvent) {
+        const { selectedCell, tableData } = this.state;
+        if (!selectedCell || !tableData) { return; }
+
+        const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+        if (arrowCodes.includes(event.code)) {
+
+          event.preventDefault();
+
+          const table: any = this.tableRef;
+          const rows = table!.querySelectorAll('tr');
+          let { row, col } = selectedCell;
+
+          // arrow up
+          if (event.code === 'ArrowUp') {
+            row = row - 1;
+            if (row < 0) { return; }
+          }
+
+          // arrow down
+          if (event.code === 'ArrowDown') {
+            row = row + 1;
+            if (row >= rows.length - 1) { return; }
+          }
+
+          // arrow left
+          if (event.code === 'ArrowLeft') {
+            col = col - 1;
+            if (col < 0) { return; }
+          }
+
+          // arrow right
+          if (event.code === 'ArrowRight') {
+            col = col + 1;
+            if (col >= rows[row].children.length - 1) { return; }
+          }
+
+          const newSelectedCell = new Cell(col, row);
+          this.changeSelectedCell(newSelectedCell)
+
+        }
+      }
 
     handleOnMouseMove() {
         //TODO
