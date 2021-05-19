@@ -38,9 +38,6 @@ interface TableState {
 
     selectedCell?: Cell;
     selectedAnnotationBlock?: AnnotationBlock;
-
-    mode: TableMode,
-
     errorMessage: ErrorMessage;
 }
 
@@ -66,9 +63,6 @@ class CombinedTable extends Component<{}, TableState> {
 
             // table data
             multipleSheets: false,
-
-            mode: wikiStore.table.mode,
-
             errorMessage: {} as ErrorMessage,
         };
 
@@ -253,7 +247,6 @@ class CombinedTable extends Component<{}, TableState> {
 
             //update in files state
             currentFilesService.changeDataFile(file.name);
-            wikiStore.table.mode = 'annotation';
 
         } catch (error) {
             error.errorDescription += "\n\nCannot open file!";
@@ -421,7 +414,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     renderSuggestButton() {
-        if (this.state.mode == "annotation") {
+        if (currentFilesService.currentState.mappingType != "Yaml") {
             return (
                 <div style={{ cursor: "pointer", textDecoration: "underline" }}
                     className="text-white d-inline-block">
