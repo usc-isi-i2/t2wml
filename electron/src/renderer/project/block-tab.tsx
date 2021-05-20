@@ -13,15 +13,7 @@ class BlockTab extends Component {
     render() {
         return (
             <div>
-                <AnnotationForm
-                    selection={{ x1: 0, x2: 0, y1: 0, y2: 0 }}
-                    onSelectionChange={(selection) => { console.log(selection); }}
-                    selectedAnnotationBlock={{ selection: { x1: 0, x2: 0, y1: 0, y2: 0 }, role: "dependentVar" }}
-                    annotationSuggestions={{ role: "", children: [] }}
-                    onChange={() => { return true; }}
-                    onChangeSubject={() => { return true; }}
-                    onDelete={() => { return true; }}
-                    onSubmit={() => { return true; }} />
+                <AnnotationForm />
                 {/* Lorem ipsum dolor sit amet consectetur, adipisicing elit. Neque quia corporis consequuntur culpa deserunt iure eius, fuga dignissimos porro, maiores est. Vel voluptas laudantium molestiae blanditiis quod similique. Vero, ad. */}
                 {/* <AnnotationMenu
                     key={0}
