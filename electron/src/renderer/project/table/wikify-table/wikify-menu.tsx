@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import './wikify-menu.css';
 import WikifyForm from './wikify-form';
 
-import Draggable from 'react-draggable';
-import { Toast } from 'react-bootstrap';
 import { ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import { QNode } from '@/renderer/common/dtos';
@@ -15,12 +13,9 @@ import * as utils from '../table-utils';
 
 interface WikifyMenuProperties {
   selectedCell: Cell;
-  position: Array<number>;
   wikifyCellContent?: string;
   onSelectBlock: (applyToBlock: boolean) => void;
-  onClose: () => void;
 }
-
 
 interface WikifyMenuState {
   errorMessage: ErrorMessage;
@@ -113,7 +108,6 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     }
     finally{
       wikiStore.output.showSpinner = false;
-      this.props.onClose();
     }
     wikiStore.wikifier.showSpinner = true;
     try {
@@ -126,7 +120,6 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
 
   async handleOnRemove(qnode: QNode, applyToBlock: boolean) {
     console.log('WikifyMenu OnRemove triggered for -> ', qnode);
-    let hasError=false;
 
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
@@ -159,16 +152,11 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
       error.errorDescription += `Wasn't able to submit the qnode!\n` + error.errorDescription;
       console.log(error.errorDescription)
       this.setState({ errorMessage: error });
-      hasError=true;
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
 
-      // Close the wikify menu on submit
-      if (!hasError){
-        this.props.onClose();
-      }
 
     }
   }
@@ -178,11 +166,11 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     if (!selectedCell) { return null; }
     const { col, row } = selectedCell;
     return (
-      <Toast.Header className="handle">
+      <div className="header">
         <strong className="mr-auto">
           Selected: {utils.columnToLetter(col + 1)}{row + 1}
         </strong>
-      </Toast.Header>
+      </div>
     )
   }
 
@@ -199,23 +187,17 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   }
 
   render() {
-    const { position, onClose } = this.props;
     return (
-      <Draggable handle=".handle"
-        defaultPosition={{ x: position[0], y: position[1] }}>
         <div className="wikify-menu">
-          <Toast onClose={onClose}>
-            {this.renderHeader()}
-            <Toast.Body>
+          {this.renderHeader()}
+          <div className="body">
             <div style={{ color: 'red' }}>
-                            {this.state.errorMessage.errorDescription}
-                          </div>
-              {this.renderWikifyForms()}
-
-            </Toast.Body>
-          </Toast>
+                {this.state.errorMessage.errorDescription}
+            </div>
+            {this.renderWikifyForms()}
+          </div>
         </div>
-      </Draggable>
+
     )
   }
 }

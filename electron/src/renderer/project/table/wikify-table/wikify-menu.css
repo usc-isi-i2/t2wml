@@ -1,29 +1,27 @@
 .wikify-menu {
+  /* display: flex; */
   position: absolute;
-  z-index: 250;
-  left: 50px;
-  top: 70px;
-}
-
-.wikify-menu .toast {
+  /* left: 50px; */
+  top: 40px;
+  margin-top: 5px;
   max-width: 500px;
   min-width: 500px;
 }
 
-.wikify-menu .toast .handle {
+.wikify-menu .header {
   background: whitesmoke;
   cursor: pointer;
 }
+.wikify-menu .body{
+  background: #fefefe;
+}
+
 
 .wikify-menu .wikify-form button.delete {
   cursor: pointer;
   float: right;
   padding: 0px;
   color: red;
-}
-
-.wikify-menu .toast .toast-body {
-  background: #fefefe;
 }
 
 /* Search Properties checkbox */

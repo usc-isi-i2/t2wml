@@ -476,7 +476,6 @@ class WikifyTable extends Component<{}, TableState> {
       selectedCell,
       showWikifyMenu,
       wikifyCellContent,
-      wikifyMenuPosition,
     } = this.state;
     if ( selectedCell && showWikifyMenu ) {
       return (
@@ -484,8 +483,7 @@ class WikifyTable extends Component<{}, TableState> {
           selectedCell={selectedCell}
           onSelectBlock={this.handleOnSelectBlock.bind(this)}
           wikifyCellContent={wikifyCellContent}
-          position={wikifyMenuPosition}
-          onClose={() => this.closeWikifyMenu()} />
+          />
       )
     }
   }
