@@ -92,5 +92,5 @@ export function checkSelectedAnnotationBlocks(selection: CellSelection): Annotat
       }
     }
   }
-  return;
+  return undefined;
 }
