@@ -1,16 +1,8 @@
-.wikify-menu {
-  /* display: flex; */
-  position: absolute;
-  /* left: 50px; */
-  top: 40px;
-  margin-top: 5px;
-  max-width: 500px;
-  min-width: 500px;
-}
-
 .wikify-menu .header {
   background: whitesmoke;
   cursor: pointer;
+  margin-top: 3px;
+  margin-bottom: 3px;
 }
 .wikify-menu .body{
   background: #fefefe;

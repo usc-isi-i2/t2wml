@@ -187,7 +187,7 @@ class Output extends Component<{}, OutputComponentState> {
 
   render() {
     return (
-      <div className="w-100 h-100 p-1">
+      <div className="w-100 h-100 p-1" style={{height: "100vh"}}>
         <Download
           key={this.state.filename}
           filename={this.state.filename}

@@ -17,7 +17,6 @@ interface AnnotationMenuProperties {
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions:  ResponseWithSuggestion;
   onDelete: any | null;
-  onClose: any | null;
 }
 
 
@@ -129,7 +128,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   async postAnnotations(annotations: AnnotationBlock[], annotation?: AnnotationBlock) {
-    const { onClose } = this.props;
     wikiStore.table.showSpinner=true;
     try {
       await this.requestService.call(this, () => (
@@ -163,7 +161,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       wikiStore.wikifier.showSpinner = false;
     }
 
-    onClose();
   }
 
   renderAnnotationForms() {
@@ -187,12 +184,9 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   render() {
-    const { onClose } = this.props;
-    const position = {x: window.innerWidth * 0.80 - 550, y: 100};
     return (
-      <Draggable handle=".handle" defaultPosition={position}>
-        <div className="annotation-menu">
-          <Toast onClose={onClose}>
+        <div className="annotation-menu" style={{overflowY: 'scroll'}}>
+          <Toast>
             <Toast.Header className="handle">
               <strong className="mr-auto">Annotate selected areas</strong>
             </Toast.Header>
@@ -201,7 +195,6 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
             </Toast.Body>
           </Toast>
         </div>
-      </Draggable>
     )
   }
 }
