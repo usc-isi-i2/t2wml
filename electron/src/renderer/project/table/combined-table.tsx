@@ -79,7 +79,7 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
         this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
         this.disposers.push(reaction(() => wikiStore.table.selection, () => this.updateSelectionStyle()));
-        this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => this.updateSelectedBlockStyle(block)));
+        //this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => this.updateSelectedBlockStyle(block)));
         this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateSelectedCellStyle(cell)));
 
     }
@@ -118,6 +118,9 @@ class CombinedTable extends Component<{}, TableState> {
         }
         const tableData = this.getClasslessTableData(table);
         this.updateLayers(tableData);
+        wikiStore.table.selectedCell= undefined;
+        wikiStore.table.selectedBlock=undefined;
+        wikiStore.table.selection=undefined;
     }
 
     updateLayers(tableData?: TableData) {
@@ -228,61 +231,6 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    updateSelectedBlockStyle(selectedBlock?: AnnotationBlock) {
-        if (!selectedBlock){return;}
-        const table: any = this.tableRef;
-        if (!table) { return; }
-        if (!wikiStore.table.selection) {
-            console.warn("updateSelections should probably not be called without an existing selection");
-            // If this warning shows up, you need to figure out whether it is actually OK for this function
-            // to be called without an existing selection. If it is, remove the warning.
-            return;
-        }
-        // Reset selections before update
-        this.resetSelection();
-        table.classList.add('active');
-
-        const classNames: string[] = ['active'];
-        const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
-        if (selectedBlock) {
-            const { role, property, links, subject, link } = selectedBlock;
-            if (role) {
-                if ((role == "qualifier") && !property && !links?.property) {
-                    classNames.push(`role-${role}-no-property`);
-                } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
-                    classNames.push(`role-${role}-no-property`);
-                } else if ((role == "unit" || role == "mainSubject" || role == "property") && !link) {
-                    classNames.push(`role-${role}-no-link`);
-                }
-                {
-                    classNames.push(`role-${role}`);
-                }
-            }
-            if (links) {
-                for (const block of wikiStore.annotations.blocks) {
-                    if ((links.property && block.id == links.property) || (links.mainSubject && block.id == links.mainSubject)
-                        || (links.unit && block.id == links.unit)) {
-                        const linkedBlock = { ...block };
-                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
-                    }
-                }
-            }
-            if (link) {
-                for (const block of wikiStore.annotations.blocks) {
-                    if (block.id == link) {
-                        const linkedBlock = { ...block };
-                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
-                    }
-                }
-            }
-        }
-        this.selectBlock(wikiStore.table.selection, table, classNames);
-        for (const linkedBlock of linksBlocks) {
-            const { selection } = linkedBlock.block;
-            this.selectBlock(selection, table, linkedBlock.classNames);
-        }
-    }
-
     selectBlock(selection: CellSelection, table: any, classNames: string[]) {
         const { x1, x2, y1, y2 } = selection;
         const rows = table.querySelectorAll('tr');
@@ -354,28 +302,9 @@ class CombinedTable extends Component<{}, TableState> {
 
     selectCell(cell: Element, classNames: string[] = []) {
         // Activate the current cell
-        cell.classList.add('active');
+        cell.classList.add('selected');
         classNames.map(className => cell.classList.add(className));
 
-        // Add a top border to the cells at the top of the selection
-        const borderTop = document.createElement('div');
-        borderTop.classList.add('cell-border-top');
-        cell.appendChild(borderTop);
-
-        // Add a left border to the cells on the left of the selection
-        const borderLeft = document.createElement('div');
-        borderLeft.classList.add('cell-border-left');
-        cell.appendChild(borderLeft);
-
-        // Add a right border to the cells on the right of the selection
-        const borderRight = document.createElement('div');
-        borderRight.classList.add('cell-border-right');
-        cell.appendChild(borderRight);
-
-        // Add a bottom border to the cells at the bottom of the selection
-        const borderBottom = document.createElement('div');
-        borderBottom.classList.add('cell-border-bottom');
-        cell.appendChild(borderBottom);
     }
 
     updateSelectedCellStyle(selectedCell?: Cell) {
@@ -383,6 +312,7 @@ class CombinedTable extends Component<{}, TableState> {
         // Get a reference to the table elements
         const table: any = this.tableRef;
         if (!table) { return; }
+        this.resetCellSelections()
         const rows = table!.querySelectorAll('tr');
         const statement = wikiStore.layers.statement.find(selectedCell);
 
@@ -409,6 +339,59 @@ class CombinedTable extends Component<{}, TableState> {
                 const x = statement.cells[key][1];
                 tableCell = rows[y + 1].children[x + 1];
                 this.selectCell(tableCell, []);
+            }
+        }
+
+        //select block:
+        table.classList.add('active');
+
+        const classNames: string[] = ['active'];
+        const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
+        const selectedBlock = checkSelectedAnnotationBlocks({ x1: selectedCell.col+1,
+                                                            y1: selectedCell.row+1,
+                                                            x2: selectedCell.col+1,
+                                                            y2: selectedCell.row+1});
+
+        if (selectedBlock && selectedBlock!=wikiStore.table.selectedBlock) {
+            this.resetBlockSelections()
+            const { role, property, links, subject, link } = selectedBlock;
+            if (role) {
+                if ((role == "qualifier") && !property && !links?.property) {
+                    classNames.push(`role-${role}-no-property`);
+                } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+                    classNames.push(`role-${role}-no-property`);
+                } else if ((role == "unit" || role == "mainSubject" || role == "property") && !link) {
+                    classNames.push(`role-${role}-no-link`);
+                }
+                {
+                    classNames.push(`role-${role}`);
+                }
+            }
+            if (links) {
+                for (const block of wikiStore.annotations.blocks) {
+                    if ((links.property && block.id == links.property) || (links.mainSubject && block.id == links.mainSubject)
+                        || (links.unit && block.id == links.unit)) {
+                        const linkedBlock = { ...block };
+                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+                    }
+                }
+            }
+            if (link) {
+                for (const block of wikiStore.annotations.blocks) {
+                    if (block.id == link) {
+                        const linkedBlock = { ...block };
+                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+                    }
+                }
+            }
+        //if (wikiStore.table.selection)
+        //    this.selectBlock(wikiStore.table.selection, table, classNames);
+
+            this.selectBlock(selectedBlock.selection, table, classNames)
+
+            for (const linkedBlock of linksBlocks) {
+                const { selection } = linkedBlock.block;
+                this.selectBlock(selection, table, linkedBlock.classNames);
             }
         }
 
@@ -577,7 +560,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    resetSelection() {
+    resetBlockSelections() {
         const table = this.tableRef;
         if (table) {
             table.classList.remove('active');
@@ -601,6 +584,19 @@ class CombinedTable extends Component<{}, TableState> {
             table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
             table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
         }
+    }
+
+    resetCellSelections() {
+        const table = this.tableRef;
+        if (table) {
+        table.querySelectorAll('td[class*="selected"]').forEach(e => {
+            e.classList.forEach(className => {
+                if (className.startsWith('selected')) {
+                    e.classList.remove(className);
+                }
+            });
+        });
+      }
     }
 
     checkOverlaps() {
