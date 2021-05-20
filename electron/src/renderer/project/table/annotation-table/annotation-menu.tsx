@@ -3,8 +3,7 @@ import React from 'react';
 import './annotation-menu.css';
 import AnnotationForm from './annotation-form';
 
-import Draggable from 'react-draggable';
-import { Toast } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
@@ -164,36 +163,22 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   renderAnnotationForms() {
-    const {
-      selection,
-      onSelectionChange,
-      selectedAnnotationBlock,
-      annotationSuggestions,
-    } = this.props;
     return (
-      <AnnotationForm
-        selection={selection}
-        onSelectionChange={onSelectionChange}
-        selectedAnnotationBlock={selectedAnnotationBlock}
-        annotationSuggestions={annotationSuggestions}
-        onChange={this.handleOnChange.bind(this)}
-        onChangeSubject={this.handleOnChangeSubject.bind(this)}
-        onDelete={this.handleOnDelete.bind(this)}
-        onSubmit={this.handleOnSubmit.bind(this)} />
+      <AnnotationForm />
     )
   }
 
   render() {
     return (
         <div className="annotation-menu" style={{overflowY: 'scroll'}}>
-          <Toast>
-            <Toast.Header className="handle">
+          <Card>
+            <Card.Header className="handle">
               <strong className="mr-auto">Annotate selected areas</strong>
-            </Toast.Header>
-            <Toast.Body>
+            </Card.Header>
+            <Card.Body>
               {this.renderAnnotationForms()}
-            </Toast.Body>
-          </Toast>
+            </Card.Body>
+          </Card>
         </div>
     )
   }

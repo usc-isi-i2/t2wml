@@ -909,7 +909,6 @@ class AnnotationTable extends Component<{}, TableState> {
           selection={this.selection}
           onSelectionChange={this.onSelectionChange.bind(this)}
           selectedAnnotationBlock={selectedAnnotationBlock}
-          onClose={() => this.closeAnnotationMenu()}
           onDelete={this.deleteAnnotationBlock.bind(this)}
           annotationSuggestions={annotationSuggestionsSelectedBlock}
         />

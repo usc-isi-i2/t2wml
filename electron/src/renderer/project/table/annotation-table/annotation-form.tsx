@@ -4,7 +4,7 @@ import { AnnotationBlock, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { CellSelection } from '@/renderer/common/general';
+import { CellSelection, ErrorMessage } from '@/renderer/common/general';
 import SearchResults from './search-results';
 import { QNode } from '@/renderer/common/dtos';
 import wikiStore from '../../../data/store';
@@ -13,18 +13,9 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { columnToLetter } from '../table-utils';
+import RequestService from '@/renderer/common/service';
+import { currentFilesService } from '@/renderer/common/current-file-service';
 
-
-interface AnnotationFormProperties {
-  selection?: CellSelection;
-  onSelectionChange: (selection: CellSelection, role?: string) => void;
-  selectedAnnotationBlock?: AnnotationBlock;
-  annotationSuggestions: ResponseWithSuggestion;
-  onChange: (key: string, value: string, type: string) => Promise<void>; // Use the actual function type: (arg: argType) => returnType
-  onChangeSubject: (key: string, value?: string, instanceOf?: QNode) => Promise<void>;
-  onDelete: () => void;
-  onSubmit: (values: {[key: string]: string | undefined;}) => void;
-}
 
 interface AnnotationFields {
   role?: string;
@@ -41,6 +32,8 @@ interface AnnotationFields {
 
 
 interface AnnotationFormState {
+  selectedBlock?: AnnotationBlock;
+  annotationSuggestions: ResponseWithSuggestion;
   fields: AnnotationFields;
   showExtraFields: boolean;
   validArea: boolean;
@@ -53,19 +46,26 @@ interface AnnotationFormState {
     qnodes: QNode[];
     selected?: QNode;
   };
+  errorMessage: ErrorMessage;
 }
 
 
-class AnnotationForm extends React.Component<AnnotationFormProperties, AnnotationFormState> {
+class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   private changed: boolean;
   private timeoutId?: number;
   private timeoutChangeAreaId?: number;
+  private timeoutSuggest?: number;
+  private disposers: IReactionDisposer[] = [];
+  private requestService: RequestService;
 
-  constructor(props: AnnotationFormProperties) {
+  constructor(props: any) {
     super(props);
 
-    const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
+    this.requestService = new RequestService();
+    const selectedBlock = wikiStore.table.selectedBlock;
+    // const annotationSuggestions = this.getAnnotationSuggestionsForSelection(selectedBlock ? selectedBlock.selection : undefined);
+    const annotationSuggestions = { role: '', type: undefined, children: {} };
     const instanceOf = selectedBlock?.subject ? undefined : {
       label: 'country',
       description: 'the distinct region in geography; a broad term that can include political divisions or regions associated with distinct political characteristics',
@@ -73,6 +73,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       url: 'https://www.wikidata.org/wiki/Q6256'
     }
     this.state = {
+      selectedBlock: undefined,
+      annotationSuggestions: annotationSuggestions,
       fields: {
         role: annotationSuggestions.role,
         type: annotationSuggestions.type,
@@ -89,15 +91,45 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       validArea: true,
       showExtraFields: false,
       showResult1: false,
-      showResult2: false
+      showResult2: false,
+      errorMessage: {} as ErrorMessage
     };
     this.changed = false;
+    this.updateSelectedBlock(selectedBlock);
   }
-
-  private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.subjectQnodes.qnodes, (qnodes) => this.updateSubjectQNodes(qnodes)));
+    this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
+  }
+
+  async updateSelectedBlock(selectedBlock?: AnnotationBlock) {
+    if (selectedBlock) {
+      this.setState({
+        selectedBlock,
+        fields: {
+          ...this.state.fields,
+          selectedArea: selectedBlock ? utils.humanReadableSelection(selectedBlock.selection) : undefined,
+        }
+
+      }, () => this.getAnnotationSuggestionsForSelection(selectedBlock.selection));
+    }
+  }
+
+  async updateSuggestion(suggestion: ResponseWithSuggestion) {
+    const { selectedBlock } = this.state
+    if (suggestion) {
+      this.setState({
+        annotationSuggestions: suggestion,
+        fields: {
+          ...this.state.fields,
+          role: suggestion.role,
+          type: suggestion.type,
+          ...suggestion.children,
+          ...selectedBlock
+        }
+      })
+    }
   }
 
   componentWillUnmount() {
@@ -106,14 +138,65 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     }
   }
 
-  handleOnChange(event: KeyboardEvent, key: string) {
-    const { onSubmit } = this.props;
-    if (event.code === 'Enter') {
-      event.preventDefault();
-      onSubmit({...this.state.fields});
+  async getAnnotationSuggestionsForSelection(selection?: { 'x1': number, 'x2': number, 'y1': number, 'y2': number }) {
+    if (!selection) { return; }
+    //data should be a json dictionary, with fields:
+    // {
+    //   "selection": The block,
+    //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
+    // }
+    if (this.timeoutSuggest) {
+      window.clearTimeout(this.timeoutSuggest);
+    }
+    this.timeoutSuggest = window.setTimeout(async () => {
+      const suggestion = await this.requestService.getAnnotationSuggestions({ "selection": selection, "annotations": wikiStore.annotations.blocks });
+      this.updateSuggestion(suggestion)
+    }, 200);
+  }
+
+  async handleOnPropertyUnit(key: string, value: string, type: string) {
+    console.log('AnnotationMenu OnChange triggered for -> ', key, value);
+
+    if (key === 'property') {
+      try {
+        await this.requestService.call(this, () => (
+          this.requestService.getProperties(value, type)
+        ));
+      } catch (error) {
+        error.errorDescription += `\nWasn't able to find any properties for ${value}`;
+        this.setState({ errorMessage: error });
+      } finally {
+        console.log('properties request finished');
+      }
     }
 
-    const { onChange } = this.props;
+    if (key === 'unit') {
+
+      const instanceOf: QNode = {
+        label: 'unit of measurement',
+        description: 'quantity, defined and adopted by convention',
+        id: 'Q47574',
+      }
+
+      try {
+        await this.requestService.call(this, () => (
+          this.requestService.getQNodes(value, false, instanceOf)
+        ));
+      } catch (error) {
+        error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
+        this.setState({ errorMessage: error });
+      } finally {
+        console.log('qnodes request finished');
+      }
+    }
+  }
+
+  handleOnChange(event: KeyboardEvent, key: string) {
+    if (event.code === 'Enter') {
+      event.preventDefault();
+      this.handleOnSubmit(event);
+    }
+
     const value = (event.target as HTMLInputElement).value;
     const updatedFields = { ...this.state.fields }
     updatedFields[key as keyof AnnotationFields] = value;
@@ -133,8 +216,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         if (key === 'unit' || key === 'property') {
           this.setState({ showResult1: true, showResult2: false })
         }
-        if(!type){ type = "string"; }
-        onChange(key, value, type);
+        if (!type) { type = "string"; }
+        this.handleOnPropertyUnit(key, value, type);
       }, 300);
     });
   }
@@ -148,7 +231,6 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   handleOnSelectionChange(event: React.ChangeEvent) {
-    const { onSelectionChange } = this.props;
     const value = (event.target as HTMLInputElement).value;
     const fields = { ...this.state.fields }
     fields.selectedArea = value;
@@ -168,7 +250,10 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
-          onSelectionChange(selection, fields.role);
+          if (wikiStore.table.selectedBlock) {
+            wikiStore.table.selectedBlock.selection = selection;
+          }
+          wikiStore.table.selection = selection;
         }
       }, 500);
     } else {
@@ -176,20 +261,83 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     }
   }
 
+  async postAnnotations(annotations: AnnotationBlock[], annotation?: AnnotationBlock) {
+    wikiStore.table.showSpinner = true;
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.postAnnotationBlocks(
+          { 'annotations': annotations, "title": currentFilesService.currentState.mappingFile }
+        )
+      ));
+    } catch (error) {
+      error.errorDescription += "\n\nCannot submit annotations!";
+      this.setState({ errorMessage: error });
+    }
+
+    if (annotation && annotation.role && annotation.selection && annotation.role == "mainSubject") {
+      try {
+        await this.requestService.call(this, () => (
+          this.requestService.callCountryWikifier({ "selection": annotation.selection })
+        ))
+      }
+      catch (error) {
+        //do nothing...
+      }
+    }
+
+    wikiStore.table.showSpinner = false;
+
+    wikiStore.wikifier.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.wikifier.showSpinner = false;
+    }
+
+  }
+
   handleOnSubmit(event: any) {
     event.preventDefault();
-    const { onSubmit } = this.props;
-    onSubmit({...this.state.fields});
+    const { fields, selectedBlock } = this.state;
+    if (!selectedBlock) { return null; }
+    console.log('AnnotationMenu OnSubmit triggered for -> ', selectedBlock.selection, fields);
+    const annotations = wikiStore.annotations.blocks.filter(block => {
+      return block.id !== selectedBlock.id;
+    });
+    const annotation: any = {
+      'selection': selectedBlock.selection,
+    };
+    // Add all updated values from the annotation form
+    for (const [key, value] of Object.entries(fields)) {
+      annotation[key] = value;
+    }
+
+    annotations.push(annotation);
+
+    this.postAnnotations(annotations, annotation);
   }
 
   handleOnDelete(event: React.MouseEvent) {
     event.preventDefault();
-    this.props.onDelete();
+
+    const { selectedBlock } = this.state
+    if (!selectedBlock) { return; }
+    console.log('AnnotationMenu OnDelete triggered for -> ', selectedBlock.selection);
+
+    const annotations = wikiStore.annotations.blocks.filter(block => {
+      return block !== selectedBlock;
+    });
+    this.postAnnotations(annotations);
+
+    // onDelete(selectedAnnotationBlock);
+
   }
 
   renderSelectionAreas() {
     const { selectedArea } = this.state.fields;
-    const { selection } = this.props;
+    if (!this.state.selectedBlock) { return null; }
+    const { selection } = this.state.selectedBlock;
     if (!selection) { return null; }
     const defaultValue = utils.humanReadableSelection(selection);
     return (
@@ -211,9 +359,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderNestedOptionsChildren(type: any) {
-    const { selectedAnnotationBlock: selectedBlock } = this.props;
-
     const key: string = type.label.toLowerCase();
+    const { selectedBlock } = this.state;
 
     let defaultValue = '--';
     if (selectedBlock && (selectedBlock as any)[type.value]) {
@@ -267,12 +414,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       <Form.Group as={Row} key={type.value}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
         <Col sm='12' md={(key == 'property' && propertyBlockId)
-                    ||  (key == 'unit' && unitBlockId) ? '9' : '12'}>
+          || (key == 'unit' && unitBlockId) ? '9' : '12'}>
           <Form.Label className="text-muted">{type.label}</Form.Label>
           <Form.Control
             type="text" size="sm"
             defaultValue={this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""}
-            />
+          />
 
         </Col>
         {
@@ -285,14 +432,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
                 readOnly />
             </Col>
             : key == "unit" && unitBlockId ?
-            <Col sm="12" md='3'>
-              <Form.Label className="text-muted">Sheet link</Form.Label>
-              <Form.Control
-                type="text" size="sm"
-                value={unitBlockSelection}
-                readOnly />
-            </Col>
-            : null
+              <Col sm="12" md='3'>
+                <Form.Label className="text-muted">Sheet link</Form.Label>
+                <Form.Control
+                  type="text" size="sm"
+                  value={unitBlockSelection}
+                  readOnly />
+              </Col>
+              : null
         }
 
 
@@ -302,7 +449,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   renderNestedOptions() {
     const { role, type } = this.state.fields;
-    const { selectedAnnotationBlock: selectedBlock, annotationSuggestions } = this.props;
+    const { annotationSuggestions } = this.state;
+    const { selectedBlock } = this.state;
     const selectedAnnotationRole = selectedBlock && !this.changed ? selectedBlock.role : role;
     let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
     if (!selectedAnnotationType) {
@@ -326,7 +474,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'type')}>
         <Col sm="12" md="12">
           <Form.Label className="text-muted">Type</Form.Label>
-          <Form.Control size="sm" as="select" defaultValue={ selectedAnnotationType }>
+          <Form.Control size="sm" as="select" defaultValue={selectedAnnotationType}>
             {selectedOption?.children?.map((type, i) => (
               <option key={i}
                 value={type.value}>
@@ -376,13 +524,13 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderOptionsDropdown() {
-    const { selectedAnnotationBlock: selected, annotationSuggestions } = this.props;
+    const { selectedBlock, annotationSuggestions } = this.state;
 
 
     const rolesList = ROLES;
 
-    let selectedAnnotationRole = selected ? selected.role as string : rolesList[0].value;
-    if(!selected && annotationSuggestions.role){
+    let selectedAnnotationRole = selectedBlock ? selectedBlock.role as string : rolesList[0].value;
+    if (!selectedBlock && annotationSuggestions.role) {
       selectedAnnotationRole = annotationSuggestions.role;
     }
 
@@ -424,8 +572,8 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
 
   clearSubject() {
     const subject = { ...this.state.subject };
-    const fields = {...this.state.fields};
-    fields.subject=undefined;
+    const fields = { ...this.state.fields };
+    fields.subject = undefined;
     subject.value = '';
     this.setState({
       subject: subject,
@@ -443,10 +591,29 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     });
   }
 
+  async SearchSubject(key: string, value?: string, instanceOf?: QNode) {
+    if (!value) { return; }
+
+    const isClass = key === 'instanceOfSearch';
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.getQNodes(value, isClass, instanceOf, false, true) // searchProperties=false, isSubject=true
+      ));
+    } catch (error) {
+      error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
+      this.setState({ errorMessage: error });
+    } finally {
+      console.log('qnodes request finished');
+    }
+
+
+  }
+
   handleOnFocusSubject() {
     const { value, instanceOf } = this.state.subject;
-    if (value && value === this.state.fields.subject) { return; }
-    this.props.onChangeSubject('subject', value, instanceOf);
+    if (!value || value === this.state.fields.subject) { return; }
+
+    this.SearchSubject("subject", value, instanceOf)
   }
 
   updateSubjectQNodes(qnodes: QNode[]) {
@@ -489,7 +656,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         }
         this.timeoutId = window.setTimeout(() => {
           if (subject.value && subject.value == this.state.fields.subject) { return; }
-          this.props.onChangeSubject('subject', value, subject.instanceOf);
+          this.SearchSubject('subject', value, subject.instanceOf);
         }, 300);
       }
     });
@@ -507,7 +674,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           window.clearTimeout(this.timeoutId);
         }
         this.timeoutId = window.setTimeout(() => {
-          this.props.onChangeSubject('instanceOfSearch', value);
+          this.SearchSubject('instanceOfSearch', value);
         }, 300);
       }
     });
@@ -519,7 +686,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     this.setState({
       subject: subject,
     }, () => {
-      this.props.onChangeSubject('subject', subject.value);
+      this.SearchSubject('subject', subject.value);
     });
   }
 
@@ -565,7 +732,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   renderSubject() {
     const { value, instanceOfSearch, instanceOf, qnodes } = this.state.subject;
     if (this.state.fields?.role != 'dependentVar') { return null; }
-    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const { selectedBlock } = this.state;
     const subjectBlockId = selectedBlock?.links?.mainSubject;
     let subjectBlockSelection = "";
     if (subjectBlockId) {
@@ -579,7 +746,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     return (
       <div>
         <Form.Group as={Row}>
-          <Col sm="12" md={ subjectBlockSelection ? '6' : '8'}>
+          <Col sm="12" md={subjectBlockSelection ? '6' : '8'}>
             <Form.Label className="text-muted">Subject</Form.Label>
             <Form.Control
               type="text" size="sm"
@@ -595,7 +762,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
                 onClick={this.clearSubject.bind(this)} />
             ) : null}
           </Col>
-          <Col sm="12" md={ subjectBlockSelection ? '3' : '4'}>
+          <Col sm="12" md={subjectBlockSelection ? '3' : '4'}>
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
               type="text" size="sm"
@@ -613,13 +780,13 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           </Col>
           {
             subjectBlockSelection ?
-             <Col sm="12" md='3'>
-              <Form.Label className="text-muted">Sheet link</Form.Label>
-              <Form.Control
-                type="text" size="sm"
-                value={subjectBlockSelection}
-                readOnly />
-            </Col> : null
+              <Col sm="12" md='3'>
+                <Form.Label className="text-muted">Sheet link</Form.Label>
+                <Form.Control
+                  type="text" size="sm"
+                  value={subjectBlockSelection}
+                  readOnly />
+              </Col> : null
           }
 
         </Form.Group>
@@ -657,7 +824,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   renderDeleteButton() {
-    const { selectedAnnotationBlock: selectedBlock } = this.props;
+    const { selectedBlock } = this.state;
     if (selectedBlock) {
       return (
         <Button
@@ -673,10 +840,12 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   }
 
   render() {
+    const { selectedBlock } = this.state;
+    if (!selectedBlock) { return null; }
     return (
       <Form className="container annotation-form"
-        onSubmit={this.handleOnSubmit.bind(this)}>
-        {/* ref={this.containerResultRef}  */}
+        onSubmit={this.handleOnSubmit.bind(this)}
+        style={{ overflowY: 'scroll' }}>
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptions()}
