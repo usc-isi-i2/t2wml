@@ -11,6 +11,7 @@ import { AnnotationBlock, QNode, ResponseWithSuggestion } from '../../../common/
 import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
+  selection?: CellSelection;
   onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions:  ResponseWithSuggestion;
@@ -162,22 +163,8 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   }
 
   renderAnnotationForms() {
-    const {
-      selection,
-      onSelectionChange,
-      selectedAnnotationBlock,
-      annotationSuggestions,
-    } = this.props;
     return (
-      <AnnotationForm
-        selection={selection}
-        onSelectionChange={onSelectionChange}
-        selectedAnnotationBlock={selectedAnnotationBlock}
-        annotationSuggestions={annotationSuggestions}
-        onChange={this.handleOnChange.bind(this)}
-        onChangeSubject={this.handleOnChangeSubject.bind(this)}
-        onDelete={this.handleOnDelete.bind(this)}
-        onSubmit={this.handleOnSubmit.bind(this)} />
+      <AnnotationForm />
     )
   }
 
