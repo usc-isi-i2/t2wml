@@ -3,8 +3,7 @@ import React from 'react';
 import './annotation-menu.css';
 import AnnotationForm from './annotation-form';
 
-import Draggable from 'react-draggable';
-import { Toast } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
 import wikiStore from '../../../data/store';
@@ -12,7 +11,6 @@ import { AnnotationBlock, QNode, ResponseWithSuggestion } from '../../../common/
 import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface AnnotationMenuProperties {
-  selection?: CellSelection;
   onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions:  ResponseWithSuggestion;
@@ -186,14 +184,14 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
   render() {
     return (
         <div className="annotation-menu" style={{overflowY: 'scroll'}}>
-          <Toast>
-            <Toast.Header className="handle">
+          <Card>
+            <Card.Header className="handle">
               <strong className="mr-auto">Annotate selected areas</strong>
-            </Toast.Header>
-            <Toast.Body>
+            </Card.Header>
+            <Card.Body>
               {this.renderAnnotationForms()}
-            </Toast.Body>
-          </Toast>
+            </Card.Body>
+          </Card>
         </div>
     )
   }

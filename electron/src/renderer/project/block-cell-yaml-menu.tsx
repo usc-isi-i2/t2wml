@@ -11,12 +11,12 @@ class BlockCellYamlMenu extends Component {
     render() {
         return (
             <div className="w-100 shadow-sm h-100" style={{ margin: "2px" }}>
-                <Tabs defaultActiveKey="Cell" id="tabs" transition={false}>
-                    <Tab eventKey="Cell" title="Cell">
-                        <CellTab />
-                    </Tab>
-                    <Tab eventKey="block" title="Block">
+                <Tabs defaultActiveKey="block" id="tabs" transition={false}>
+                <Tab eventKey="block" title="Block">
                         <BlockTab />
+                    </Tab>
+                    <Tab eventKey="cell" title="Cell">
+                        <CellTab />
                     </Tab>
                     <Tab eventKey="yaml" title="YAML">
                         <YamlEditor isShowing={true} />
