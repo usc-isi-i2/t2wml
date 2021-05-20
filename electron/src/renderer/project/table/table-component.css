@@ -144,16 +144,25 @@
 
 /* active cell */
 .table-wrapper table.active tr td {
-  opacity: 0.3;
+  opacity: 0.4;
 }
 
 .table-wrapper table.active tr td.linked{
   opacity: 0.75;
 }
 
+.table-wrapper table.active tr td.selected{
+  filter: brightness(85%);
+  opacity: 0.75;
+}
+
 .table-wrapper table.active tr td.active {
   opacity: 1;
 }
+
+
+
+
 .table-wrapper table tr td div.cell-border-top,
 .table-wrapper table tr td div.cell-border-left,
 .table-wrapper table tr td div.cell-border-right,
