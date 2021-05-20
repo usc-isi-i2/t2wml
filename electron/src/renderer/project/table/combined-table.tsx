@@ -79,8 +79,8 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
         this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
         this.disposers.push(reaction(() => wikiStore.table.selection, () => this.updateSelectionStyle()));
-        this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => this.updateSelectedBlockStyle()));
-        this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.updateSelectedCellStyle()));
+        this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => this.updateSelectedBlockStyle(block)));
+        this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateSelectedCellStyle(cell)));
 
     }
 
@@ -228,7 +228,8 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    updateSelectedBlockStyle(selectedBlock: AnnotationBlock) {
+    updateSelectedBlockStyle(selectedBlock?: AnnotationBlock) {
+        if (!selectedBlock){return;}
         const table: any = this.tableRef;
         if (!table) { return; }
         if (!wikiStore.table.selection) {
@@ -293,7 +294,7 @@ class CombinedTable extends Component<{}, TableState> {
         while (rowIndex <= bottomRow) {
             let colIndex = leftCol;
             while (colIndex <= rightCol) {
-                this.selectCell(
+                this.selectCellBlock(
                     rows[rowIndex].children[colIndex],
                     rowIndex,
                     colIndex,
@@ -309,7 +310,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
+    selectCellBlock(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
         // Apply class names to the selected cell
         classNames.map(className => cell.classList.add(className));
 
@@ -350,7 +351,66 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
     }
-    updateSelectedCellStyle() {
+
+    selectCell(cell: Element, classNames: string[] = []) {
+        // Activate the current cell
+        cell.classList.add('active');
+        classNames.map(className => cell.classList.add(className));
+
+        // Add a top border to the cells at the top of the selection
+        const borderTop = document.createElement('div');
+        borderTop.classList.add('cell-border-top');
+        cell.appendChild(borderTop);
+
+        // Add a left border to the cells on the left of the selection
+        const borderLeft = document.createElement('div');
+        borderLeft.classList.add('cell-border-left');
+        cell.appendChild(borderLeft);
+
+        // Add a right border to the cells on the right of the selection
+        const borderRight = document.createElement('div');
+        borderRight.classList.add('cell-border-right');
+        cell.appendChild(borderRight);
+
+        // Add a bottom border to the cells at the bottom of the selection
+        const borderBottom = document.createElement('div');
+        borderBottom.classList.add('cell-border-bottom');
+        cell.appendChild(borderBottom);
+    }
+
+    updateSelectedCellStyle(selectedCell?: Cell) {
+        if (!selectedCell){return;}
+        // Get a reference to the table elements
+        const table: any = this.tableRef;
+        if (!table) { return; }
+        const rows = table!.querySelectorAll('tr');
+        const statement = wikiStore.layers.statement.find(selectedCell);
+
+        let tableCell=rows[selectedCell.row+1].children[selectedCell.col+1]
+        this.selectCell(tableCell, [])
+
+        //select related cells
+        if (statement && statement.cells) {
+            // Select qualifier cells
+            if ('qualifiers' in statement.cells) {
+                statement.cells.qualifiers.forEach((cell: any) => {
+                    for (const key in cell) {
+                        const y = cell[key][0];
+                        const x = cell[key][1];
+                        tableCell = rows[y + 1].children[x + 1];
+                        this.selectCell(tableCell, []);
+                    }
+                });
+            }
+
+            for (const key in statement.cells) {
+                if (key === 'qualifiers') { continue; }
+                const y = statement.cells[key][0];
+                const x = statement.cells[key][1];
+                tableCell = rows[y + 1].children[x + 1];
+                this.selectCell(tableCell, []);
+            }
+        }
 
     }
 
@@ -820,13 +880,13 @@ class CombinedTable extends Component<{}, TableState> {
         const rows = table!.querySelectorAll('tr');
         const index = element.parentElement.cellIndex;
         rows.forEach((row: any) => {
-          row.children[index].setAttribute('style', 'max-width: 1%');
+            row.children[index].setAttribute('style', 'max-width: 1%');
         });
 
         setTimeout(() => {
-          element.setAttribute('style', `min-width: ${element.clientWidth}px`);
+            element.setAttribute('style', `min-width: ${element.clientWidth}px`);
         }, 100);
-      }
+    }
 
     renderErrorMessage() {
         const { errorMessage } = this.state;
