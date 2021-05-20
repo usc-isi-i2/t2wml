@@ -17,7 +17,7 @@ import { settings } from './settings';
 import { uiState } from './ui-state';
 
 /* Splash Screen */
-let splashWindow: Electron.BrowserWindow | null;
+let splashWindow: Electron.BrowserWindow | undefined;
 
 function openSplashScreen(): void {
   splashWindow = new BrowserWindow({
@@ -45,8 +45,8 @@ function openSplashScreen(): void {
 }
 
 /* Main Window */
-let mainWindow: Electron.BrowserWindow | null;
-let mainMenuManager: MainMenuManager | null;
+let mainWindow: Electron.BrowserWindow | undefined;
+let mainMenuManager: MainMenuManager | undefined;
 const rendererEventListener = new RendererEventListener(); // Used by splash-screen and main window
 
 function createMainWindow(): void {
@@ -85,7 +85,7 @@ function createMainWindow(): void {
       // On a Mac, the main window can be opened several times. There is
       // no splash window in subsequent openings of the main window.
       splashWindow.close();
-      splashWindow = null;
+      splashWindow = undefined;
     }
 
     if ( settings.window.maximized ) {
@@ -106,13 +106,13 @@ function createMainWindow(): void {
 
   // Emitted when the window is closed.
   mainWindow.once('closed', () => {
-    mainWindow = null;
+    mainWindow = undefined;
   });
 }
 
 
 /* Backend Initialization */
-let backendProcess: ChildProcess | null;
+let backendProcess: ChildProcess | undefined;
 
 function getBackendPath() {
   let filename = 't2wml-server';
@@ -217,7 +217,7 @@ app.on('window-all-closed', async () => {
 app.on('activate', () => {
   // On OS X it"s common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if ( mainWindow === null ) {
+  if ( !mainWindow ) {
     createMainWindow();
   }
 });
@@ -232,7 +232,7 @@ app.on('will-quit', (event) => {
     // wait until it's done before actually quitting, or else on Windows
     // we'll be left with stray server instances.
     treeKill(backendProcess.pid, () => {
-      backendProcess = null;
+      backendProcess = undefined;
       app.quit();  // Quit for real
     });
 

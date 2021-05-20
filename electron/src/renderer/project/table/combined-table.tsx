@@ -7,38 +7,30 @@ import './table-component.css';
 import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../common/dtos';
-import { LOG, ErrorMessage, Cell } from '../../common/general';
-import { classNames } from '../../common/utils';
+import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 
-
+import { checkSelectedAnnotationBlocks, standardizeSelection } from './table-utils';
 import { observer } from 'mobx-react';
 import wikiStore, { TableMode } from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
-import AnnotationTable from './annotation-table/annotation-table';
-import OutputTable from './output-table/output-table';
-import WikifyTable from './wikify-table/wikify-table';
 import { currentFilesService } from '../../common/current-file-service';
 import Table from './table';
-
+type Direction = 'up' | 'down' | 'left' | 'right';
 
 interface TableState {
     showSpinner: boolean;
     showToast: boolean;
 
     // table data
-    filename: string | null; // if null, show "Table Viewer"
+    filename?: string; // if undefined, show "Table Viewer"
     multipleSheets: boolean;
-    sheetNames: Array<string> | null;
-    currSheetName: string | null;
+    sheetNames?: Array<string>;
+    currSheetName?: string;
     tableData?: TableData;
-
-    selectedCell?: Cell;
-
-    mode: TableMode,
 
     errorMessage: ErrorMessage;
 }
@@ -47,6 +39,10 @@ interface TableState {
 class CombinedTable extends Component<{}, TableState> {
     private requestService: RequestService;
     private tableRef = React.createRef<HTMLTableElement>().current!;
+    private selecting = false;
+    private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
+    private prevDirection?: Direction;
+
     setTableReference(reference?: HTMLTableElement) {
         if (!reference) { return; }
         this.tableRef = reference;
@@ -64,30 +60,33 @@ class CombinedTable extends Component<{}, TableState> {
             showToast: false,
 
             // table data
-            filename: null,
-            sheetNames: null,
-            currSheetName: null,
             multipleSheets: false,
-            tableData: undefined,
-
-            mode: wikiStore.table.mode,
-
             errorMessage: {} as ErrorMessage,
         };
+
+        this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+        this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
     }
 
     private disposers: IReactionDisposer[] = [];
 
     componentDidMount() {
         document.addEventListener('keydown', this.handleOnKeyDown);
+        document.addEventListener('mouseup', this.handleOnMouseUp);
         this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
         this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-        this.disposers.push(reaction(() => wikiStore.layers, (table) => this.updateLayers()));
+        this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
+        this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
+        this.disposers.push(reaction(() => wikiStore.table.selection, () => this.updateSelectionStyle()));
+        this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => this.updateSelectedBlockStyle()));
+        this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.updateSelectedCellStyle()));
+
     }
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.handleOnKeyDown);
+        document.removeEventListener('mouseup', this.handleOnMouseUp);
         for (const disposer of this.disposers) {
             disposer();
         }
@@ -138,8 +137,13 @@ class CombinedTable extends Component<{}, TableState> {
             const types = wikiStore.layers.type;
             for (const entry of types.entries) {
                 for (const indexPair of entry.indices) {
-                    const tableCell = tableData[indexPair[0]][indexPair[1]];
-                    tableCell.classNames.push(`role-${entry.type}`);
+                    try {
+                        const tableCell = tableData[indexPair[0]][indexPair[1]];
+                        tableCell.classNames.push(`role-${entry.type}`);
+                    }
+                    catch {
+
+                    }
                 }
             }
         }
@@ -149,8 +153,13 @@ class CombinedTable extends Component<{}, TableState> {
         const qnodes = wikiStore.layers.qnode;
         for (const entry of qnodes.entries) {
             for (const indexPair of entry.indices) {
-                const tableCell = tableData[indexPair[0]][indexPair[1]]; //TODO: sometimes doesn't exist and crashes program
-                tableCell.classNames.push(`type-wikibaseitem`);
+                try {
+                    const tableCell = tableData[indexPair[0]][indexPair[1]];
+                    tableCell.classNames.push(`type-wikibaseitem`);
+                }
+                catch {
+                    //pass
+                }
             }
         }
 
@@ -159,18 +168,21 @@ class CombinedTable extends Component<{}, TableState> {
 
     setAnnotationColors(tableData?: TableData) {
         if (!tableData) {
-            const tableData = {...this.state.tableData}
-            if (!tableData){ return;}
-            tableData.forEach( row => {
-                row.forEach( cell => {
-                    cell.classNames = cell.classNames.filter(function(value, index, arr){
+            if (!this.state.tableData) {
+                return;
+            }
+            const tableData = { ...this.state.tableData }
+            //if we're taking existing table data, gotta clean it:
+            tableData.forEach(row => {
+                row.forEach(cell => {
+                    cell.classNames = cell.classNames.filter(function (value, index, arr) {
                         return !value.startsWith("role-")
                     })
                 })
             })
         }
 
-        if (wikiStore.annotations.blocks) {
+        if (wikiStore.annotations.blocks && tableData) {
             for (const block of wikiStore.annotations.blocks) {
                 const { role, type, selection, property, links, subject, link } = block;
                 const classNames: string[] = [];
@@ -186,7 +198,7 @@ class CombinedTable extends Component<{}, TableState> {
                         classNames.push(`role-${role}`);
                     }
                 }
-                //todo: set to "needs wikification"?
+                //TODO: set to "needs wikification"?
                 //if (type=="wikibaseitem") {
                 //  classNames.push(`type-${type}`);
                 //}
@@ -201,14 +213,149 @@ class CombinedTable extends Component<{}, TableState> {
                 while (rowIndex < bottomRow) {
                     let colIndex = leftCol;
                     while (colIndex < rightCol) {
-                        const tableCell = tableData[rowIndex][colIndex]; //TODO: sometimes doesn't exist and crashes program
-                        tableCell.classNames.push(...classNames);
+                        try {
+                            const tableCell = tableData[rowIndex][colIndex];
+                            tableCell.classNames.push(...classNames);
+                        }
+                        catch {
+                            //TODO: handle annotating imaginary cells
+                        }
                         colIndex += 1;
                     }
                     rowIndex += 1;
                 }
             }
         }
+    }
+
+    updateSelectedBlockStyle(selectedBlock: AnnotationBlock) {
+        const table: any = this.tableRef;
+        if (!table) { return; }
+        if (!wikiStore.table.selection) {
+            console.warn("updateSelections should probably not be called without an existing selection");
+            // If this warning shows up, you need to figure out whether it is actually OK for this function
+            // to be called without an existing selection. If it is, remove the warning.
+            return;
+        }
+        // Reset selections before update
+        this.resetSelection();
+        table.classList.add('active');
+
+        const classNames: string[] = ['active'];
+        const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
+        if (selectedBlock) {
+            const { role, property, links, subject, link } = selectedBlock;
+            if (role) {
+                if ((role == "qualifier") && !property && !links?.property) {
+                    classNames.push(`role-${role}-no-property`);
+                } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+                    classNames.push(`role-${role}-no-property`);
+                } else if ((role == "unit" || role == "mainSubject" || role == "property") && !link) {
+                    classNames.push(`role-${role}-no-link`);
+                }
+                {
+                    classNames.push(`role-${role}`);
+                }
+            }
+            if (links) {
+                for (const block of wikiStore.annotations.blocks) {
+                    if ((links.property && block.id == links.property) || (links.mainSubject && block.id == links.mainSubject)
+                        || (links.unit && block.id == links.unit)) {
+                        const linkedBlock = { ...block };
+                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+                    }
+                }
+            }
+            if (link) {
+                for (const block of wikiStore.annotations.blocks) {
+                    if (block.id == link) {
+                        const linkedBlock = { ...block };
+                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+                    }
+                }
+            }
+        }
+        this.selectBlock(wikiStore.table.selection, table, classNames);
+        for (const linkedBlock of linksBlocks) {
+            const { selection } = linkedBlock.block;
+            this.selectBlock(selection, table, linkedBlock.classNames);
+        }
+    }
+
+    selectBlock(selection: CellSelection, table: any, classNames: string[]) {
+        const { x1, x2, y1, y2 } = selection;
+        const rows = table.querySelectorAll('tr');
+        const leftCol = Math.min(x1, x2);
+        const rightCol = Math.max(x1, x2);
+        const topRow = Math.min(y1, y2);
+        const bottomRow = Math.max(y1, y2);
+        let rowIndex = topRow;
+        while (rowIndex <= bottomRow) {
+            let colIndex = leftCol;
+            while (colIndex <= rightCol) {
+                this.selectCell(
+                    rows[rowIndex].children[colIndex],
+                    rowIndex,
+                    colIndex,
+                    topRow,
+                    leftCol,
+                    rightCol,
+                    bottomRow,
+                    classNames,
+                );
+                colIndex += 1;
+            }
+            rowIndex += 1;
+        }
+    }
+
+    selectCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
+        // Apply class names to the selected cell
+        classNames.map(className => cell.classList.add(className));
+
+        // Add a top border to the cells at the top of the selection
+        if (rowIndex === topRow) {
+            const borderTop = document.createElement('div');
+            borderTop.classList.add('cell-border-top');
+            cell.appendChild(borderTop);
+        }
+
+        // Add a left border to the cells on the left of the selection
+        if (colIndex === leftCol) {
+            const borderLeft = document.createElement('div');
+            borderLeft.classList.add('cell-border-left');
+            cell.appendChild(borderLeft);
+        }
+
+        // Add a right border to the cells on the right of the selection
+        if (colIndex === rightCol) {
+            const borderRight = document.createElement('div');
+            borderRight.classList.add('cell-border-right');
+            cell.appendChild(borderRight);
+        }
+
+        // Add a bottom border to the cells at the bottom of the selection
+        if (rowIndex === bottomRow) {
+            const borderBottom = document.createElement('div');
+            borderBottom.classList.add('cell-border-bottom');
+            cell.appendChild(borderBottom);
+        }
+
+        // Add resize corner to the active selection areas
+        if (classNames.includes('active')) {
+            if (rowIndex === bottomRow && colIndex === rightCol) {
+                const resizeCorner = document.createElement('div');
+                resizeCorner.classList.add('cell-resize-corner');
+                cell.appendChild(resizeCorner);
+            }
+        }
+    }
+    updateSelectedCellStyle() {
+
+    }
+
+    updateSelectionStyle() {
+
     }
 
     async addFile(file: File) {
@@ -232,7 +379,6 @@ class CombinedTable extends Component<{}, TableState> {
 
             //update in files state
             currentFilesService.changeDataFile(file.name);
-            wikiStore.table.mode = 'annotation';
 
         } catch (error) {
             error.errorDescription += "\n\nCannot open file!";
@@ -371,6 +517,317 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
+    resetSelection() {
+        const table = this.tableRef;
+        if (table) {
+            table.classList.remove('active');
+            table.querySelectorAll('td[class*="active"]').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('active')) {
+                        e.classList.remove(className);
+                    }
+                });
+            });
+            table.querySelectorAll('td[class*="linked"]').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('linked')) {
+                        e.classList.remove(className);
+                    }
+                });
+            });
+            table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
+            table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+        }
+    }
+
+    checkOverlaps() {
+        if (!wikiStore.table.selection) { return; }
+        const { x1, y1, x2, y2 } = wikiStore.table.selection;
+
+        // Get the coordinates of the sides
+        const aTop = y1 <= y2 ? y1 : y2;
+        const aLeft = x1 <= x2 ? x1 : x2;
+        const aRight = x2 >= x1 ? x2 : x1;
+        const aBottom = y2 >= y1 ? y2 : y1;
+
+        const { blocks } = wikiStore.annotations;
+        for (let i = 0; i < blocks.length; i++) {
+            const other = blocks[i].selection;
+
+            // Get the coordinates of the sides
+            const bTop = other.y1 <= other.y2 ? other.y1 : other.y2;
+            const bLeft = other.x1 <= other.x2 ? other.x1 : other.x2;
+            const bRight = other.x2 >= other.x1 ? other.x2 : other.x1;
+            const bBottom = other.y2 >= other.y1 ? other.y2 : other.y1;
+
+            // check for collisions between area A and B
+            if (aTop > bBottom) {
+                continue;
+            }
+            if (aBottom < bTop) {
+                continue;
+            }
+            if (aLeft > bRight) {
+                continue;
+            }
+            if (aRight < bLeft) {
+                continue;
+            }
+
+            // collision detected
+            return true;
+        }
+
+        // no collisions detected
+        return false;
+    }
+
+
+    handleOnMouseUp() {
+        //todo
+        this.selecting = false;
+    }
+
+    handleOnMouseDown(event: React.MouseEvent) {
+        const element = event.target as any;
+
+        // Allow users to select the resize-corner of the cell
+        if (element.className === 'cell-resize-corner') {
+            this.prevElement = element.parentElement;
+            this.selecting = true;
+            return;
+        } else if (element.nodeName !== 'TD') { return; }
+
+
+        // get coordinates
+        const x: number = element.cellIndex;
+        const y: number = element.parentElement.rowIndex;
+
+        wikiStore.table.selectedCell = new Cell(x - 1, y - 1);
+
+        // check if the user is selecting an annotation block
+        const selectedBlock = checkSelectedAnnotationBlocks({ x1: x, y1: y, x2: x, y2: y });
+        if (selectedBlock) {
+            wikiStore.table.selectedBlock = selectedBlock;
+            wikiStore.table.selection = selectedBlock.selection;
+        }
+
+        else {
+            // Activate the selection mode
+            this.selecting = true;
+            const x1 = x, x2 = x, y1 = y, y2 = y;
+            const selection = wikiStore.table.selection;
+
+            // Extend the previous selection if user is holding down Shift key
+            if (event.shiftKey && selection) {
+
+                // Extend the previous selection left or right
+                if (x1 !== selection['x1']) {
+                    if (x1 < selection['x1']) {
+                        selection['x1'] = x1;
+                    } else {
+                        selection['x2'] = x1;
+                    }
+                }
+
+                // Extend the previous selection up or down
+                if (y1 !== selection['y1']) {
+                    if (y1 < selection['y1']) {
+                        selection['y1'] = y1;
+                    } else {
+                        selection['y2'] = y1;
+                    }
+                }
+
+                wikiStore.table.selection = selection;
+            } else {
+                wikiStore.table.selection = { x1, x2, y1, y2 };
+            };
+        }
+
+        // Initialize the previous element with the one selected
+        this.prevElement = element;
+    }
+
+
+    handleOnMouseMove(event: React.MouseEvent) {
+        const selectedAnnotationBlock = wikiStore.table.selectedBlock;
+        const element = event.target as any;
+        if (element === this.prevElement) { return; }
+
+        // Don't allow out-of-bounds resizing
+        if (element.nodeName !== 'TD') {
+            return;
+        }
+
+        if (this.selecting && !event.shiftKey) {
+            const selection = wikiStore.table.selection;
+            if (!selection) { return; }
+
+            // Update the last x coordinate of the selection
+            const newCellIndex = element.cellIndex;
+            selection.x2 = newCellIndex;
+
+            // Update the last y coordinate of the selection
+            const newRowIndex = element.parentElement.rowIndex;
+            selection.y2 = newRowIndex;
+
+            wikiStore.table.selection = selection
+
+            // Update reference to the previous element
+            this.prevElement = element;
+        }
+    }
+
+    handleOnKeyDown(event: KeyboardEvent) {
+
+        // remove selections
+        if (event.code === 'Escape') {
+            wikiStore.table.selectedCell = undefined;
+            wikiStore.table.selectedBlock = undefined;
+            wikiStore.table.selection = undefined;
+            return;
+        }
+
+        const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+        if (arrowCodes.includes(event.code)) {
+
+            // Don't allow moving around when users are typing
+            if ((event.target as any).nodeName === 'INPUT') { return; }
+
+            // Don't allow moving around when selecting from the dropdown menu
+            if ((event.target as any).nodeName === 'SELECT') { return; }
+
+
+            event.preventDefault();
+            const table: any = this.tableRef;
+            const rows = table!.querySelectorAll('tr');
+            if (wikiStore.table.selectedCell) {
+                let { row, col } = wikiStore.table.selectedCell;
+
+                // arrow up
+                if (event.code === 'ArrowUp') {
+                    if (row > 0) {
+                        row = row - 1;
+                    }
+                }
+
+                // arrow down
+                if (event.code === 'ArrowDown') {
+                    if (row < rows.length) { row = row + 1; }
+                }
+
+                // arrow left
+                if (event.code === 'ArrowLeft') {
+                    if (col > 0) { col = col - 1; }
+                }
+
+                // arrow right
+                if (event.code === 'ArrowRight') {
+                    if (col < rows[row].children.length) { col = col + 1; }
+                }
+
+                wikiStore.table.selectedCell = new Cell(col, row);
+
+
+                if (event.shiftKey) {
+                    let selection = wikiStore.table.selection;
+                    if (selection) {
+                        const { x1, x2, y1, y2 } = selection;
+                        if (event.code === 'ArrowUp' && y1 > 1) {
+                            const nextElement = rows[y1 - 1].children[x1];
+                            if (y1 === y2) {
+                                selection = { 'x1': x1, 'x2': x2, 'y1': y1 - 1, 'y2': y2 };
+                                this.prevDirection = 'up';
+                            } else {
+                                if (this.prevDirection === 'down') {
+                                    selection = { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 - 1 };
+                                } else {
+                                    selection = { 'x1': x1, 'x2': x2, 'y1': y1 - 1, 'y2': y2 };
+                                    this.prevDirection = 'up';
+                                }
+                            }
+                            this.prevElement = nextElement;
+                        }
+
+                        if (event.code === 'ArrowDown' && y1 < rows.length - 1) {
+                            const nextElement = rows[y1 + 1].children[x1];
+                            if (y1 === y2) {
+                                selection = { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 + 1 };
+                                this.prevDirection = 'down';
+                            } else {
+                                if (this.prevDirection === 'up') {
+                                    selection = { 'x1': x1, 'x2': x2, 'y1': y1 + 1, 'y2': y2 };
+                                } else {
+                                    selection = { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 + 1 };
+                                    this.prevDirection = 'down';
+                                }
+                            }
+                            this.prevElement = nextElement;
+                        }
+
+                        if (event.code === 'ArrowLeft' && x1 > 1) {
+                            const nextElement = rows[y1].children[x1 - 1];
+                            if (x1 === x2) {
+                                selection = { 'x1': x1 - 1, 'x2': x2, 'y1': y1, 'y2': y2 };
+                                this.prevDirection = 'left';
+                            } else {
+                                if (this.prevDirection === 'right') {
+                                    selection = { 'x1': x1, 'x2': x2 - 1, 'y1': y1, 'y2': y2 };
+                                } else {
+                                    selection = { 'x1': x1 - 1, 'x2': x2, 'y1': y1, 'y2': y2 };
+                                    this.prevDirection = 'left';
+                                }
+                            }
+                            this.prevElement = nextElement;
+                        }
+                        if (event.code === 'ArrowRight' && x1 < rows[y1].children.length - 1) {
+                            const nextElement = rows[y1].children[x1 + 1];
+                            if (x1 === x2) {
+                                selection = { 'x1': x1, 'x2': x2 + 1, 'y1': y1, 'y2': y2 };
+                                this.prevDirection = 'right';
+                            } else {
+                                if (this.prevDirection === 'left') {
+                                    selection = { 'x1': x1 + 1, 'x2': x2, 'y1': y1, 'y2': y2 };
+                                } else {
+                                    selection = { 'x1': x1, 'x2': x2 + 1, 'y1': y1, 'y2': y2 };
+                                    this.prevDirection = 'right';
+                                }
+                            }
+                            this.prevElement = nextElement;
+                        }
+                        wikiStore.table.selection = selection
+                    }
+                }
+                else { //moved arrow potentially into new block;
+                    const selectedBlock = checkSelectedAnnotationBlocks({ x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 });
+                    wikiStore.table.selectedBlock = selectedBlock;
+                    wikiStore.table.selection = selectedBlock?.selection || undefined;
+                }
+            }
+        }
+    }
+
+    handleOnClickHeader(event: React.MouseEvent) {
+        const element = event.target as any;
+        element.setAttribute('style', 'width: 100%;');
+        element.parentElement.setAttribute('style', 'max-width: 1%');
+
+        const table: any = this.tableRef;
+        const rows = table!.querySelectorAll('tr');
+        const index = element.parentElement.cellIndex;
+        rows.forEach((row: any) => {
+          row.children[index].setAttribute('style', 'max-width: 1%');
+        });
+
+        setTimeout(() => {
+          element.setAttribute('style', `min-width: ${element.clientWidth}px`);
+        }, 100);
+      }
+
     renderErrorMessage() {
         const { errorMessage } = this.state;
         if (errorMessage.errorDescription) {
@@ -400,7 +857,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     renderSuggestButton() {
-        if (this.state.mode == "annotation") {
+        if (currentFilesService.currentState.mappingType != "Yaml") {
             return (
                 <div style={{ cursor: "pointer", textDecoration: "underline" }}
                     className="text-white d-inline-block">
@@ -457,82 +914,6 @@ class CombinedTable extends Component<{}, TableState> {
                 <Spinner animation="border" />
             </div>
         )
-    }
-
-    handleOnMouseUp() {
-        //TODO
-    }
-
-    changeSelectedCell(selectedCell:Cell){
-        wikiStore.table.selectedCell = selectedCell;
-    }
-
-    handleOnMouseDown(event: React.MouseEvent) {
-        const element = event.target as any;
-
-        // Don't let users select header cells
-        if (element.nodeName !== 'TD') { return; }
-
-        const x1: number = element.cellIndex;
-        const y1: number = element.parentElement.rowIndex;
-
-        // Activate related cells
-        const selectedCell = new Cell(x1 - 1, y1 - 1);
-        this.changeSelectedCell(selectedCell)
-
-      }
-
-
-    handleOnKeyDown(event: KeyboardEvent) {
-        const { selectedCell, tableData } = this.state;
-        if (!selectedCell || !tableData) { return; }
-
-        const arrowCodes = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-        if (arrowCodes.includes(event.code)) {
-
-          event.preventDefault();
-
-          const table: any = this.tableRef;
-          const rows = table!.querySelectorAll('tr');
-          let { row, col } = selectedCell;
-
-          // arrow up
-          if (event.code === 'ArrowUp') {
-            row = row - 1;
-            if (row < 0) { return; }
-          }
-
-          // arrow down
-          if (event.code === 'ArrowDown') {
-            row = row + 1;
-            if (row >= rows.length - 1) { return; }
-          }
-
-          // arrow left
-          if (event.code === 'ArrowLeft') {
-            col = col - 1;
-            if (col < 0) { return; }
-          }
-
-          // arrow right
-          if (event.code === 'ArrowRight') {
-            col = col + 1;
-            if (col >= rows[row].children.length - 1) { return; }
-          }
-
-          const newSelectedCell = new Cell(col, row);
-          this.changeSelectedCell(newSelectedCell)
-
-        }
-      }
-
-    handleOnMouseMove() {
-        //TODO
-    }
-
-
-    handleOnClickHeader() {
-        //TODO
     }
 
     renderTable() {

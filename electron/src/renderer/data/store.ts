@@ -4,7 +4,7 @@ import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
 import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
         StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
-import { Cell } from '../common/general';
+import { Cell, CellSelection } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
 import { currentFilesService } from '../common/current-file-service';
@@ -24,6 +24,8 @@ class TableState {
     @observable public showSpinner: boolean;
     @observable public selectedCell?: Cell;
     @observable public selectedBlock?: AnnotationBlock;
+    @observable public selection?: CellSelection;
+    
     @observable public showCleanedData: boolean;
 
     constructor() {
@@ -125,8 +127,8 @@ export class Layer<T extends Entry> {
         }
     }
 
-    public find(cell: Cell | null): T | undefined {
-        if (cell!=null) {
+    public find(cell: Cell | undefined): T | undefined {
+        if (cell) {
             const index = `${cell.row},${cell.col}`;
             return this.entryMap.get(index);
         }

@@ -39,8 +39,8 @@ class T2WMLLogo extends React.Component<{}, T2WMLLogoState> {
     return (
       <span>
         <OverlayTrigger overlay={logoTooltipHtml} placement="bottom" trigger={["hover", "focus"]}>
-          <Navbar.Brand className="pl-2" style={{ cursor: "pointer", fontWeight: "bold" }} onClick={() => { wikiStore.changeWindowDisplayMode(); }}>
-            <img src={logoImage} />
+          <Navbar.Brand  className="pl-2" style={{ cursor: "pointer", fontWeight: "bold" }} onClick={() => { wikiStore.changeWindowDisplayMode(); }}>
+            <img src={logoImage} alt="t2wml-logo"/>
             {logo}
           </Navbar.Brand>
         </OverlayTrigger>

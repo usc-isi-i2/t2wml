@@ -17,7 +17,7 @@ type TreeProps = {}; // An empty interfaces causes an error
 interface TreeState {
   files: NodeProps[];
   showRenameFile: boolean;
-  clickedNode: NodeProps | null;
+  clickedNode?: NodeProps;
   showSpinner: boolean;
 }
 
@@ -32,7 +32,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     this.state = {
       files: [],
       showRenameFile: false,
-      clickedNode: null,
+      clickedNode: undefined,
       showSpinner: false,
     };
   }
@@ -138,7 +138,6 @@ class FileTree extends Component<TreeProps, TreeState> {
     let filename = this.state.clickedNode!.label;
 
     if (currentFilesService.currentState.mappingFile == filename &&
-      wikiStore.table.mode=="annotation" &&
       currentFilesService.getAnnotationsLength()<2){
       alert("Cannot remove only annotation on sheet while in annotation mode. Clearing annotation instead.")
       const sheetName = this.state.clickedNode!.parentNode!.label;
@@ -378,7 +377,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         label: df,
         childNodes: [],
         type: dataType,
-        parentNode: null,
+        parentNode: undefined,
         rightClick: (node: NodeProps) => this.onRightClick(node),
         onClick: (node: NodeProps) => this.changeFile(node),
         bolded: currentFilesService.currentState.dataFile == df

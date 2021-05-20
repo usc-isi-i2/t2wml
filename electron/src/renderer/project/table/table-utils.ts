@@ -53,7 +53,7 @@ export function standardizeSelection(selection: CellSelection): CellSelection {
   return selection;
 }
 
-export function checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | null {
+export function checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | undefined {
   // checks if a given selection is part of an annotation block
   // if so, returns the annotation block
   const { x1, x2, y1, y2 } = selection;
@@ -92,5 +92,5 @@ export function checkSelectedAnnotationBlocks(selection: CellSelection): Annotat
       }
     }
   }
-  return null;
+  return undefined;
 }

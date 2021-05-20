@@ -17,8 +17,12 @@ import SheetSelector from '../sheet-selector/sheet-selector';
 // }
 
 interface SidebarState {
-    data: any,
-    cursor: any,
+    data: {
+        name?: string,
+        toggled?: boolean,
+        children?: {name: string;}[]
+    },
+    cursor: { active?: boolean, name?: any, children?: any },
     active: boolean,
     showSpinner: boolean,
     currFiles: string,
@@ -62,7 +66,9 @@ class Sidebar extends Component<{}, SidebarState> {
         cursor.active = false;
         this.setState({ cursor });
 
-        node.active = true;
+        if(node){
+            node.active = true;
+        }
         // if (node.children) {
         //     node.toggled = toggled;
         // }

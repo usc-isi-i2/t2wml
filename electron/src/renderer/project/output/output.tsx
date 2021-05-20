@@ -21,7 +21,7 @@ import { currentFilesService } from '@/renderer/common/current-file-service';
 
 interface OutputComponentState extends IStateWithError {
   // statement
-  statement: StatementEntry | null
+  statement?: StatementEntry;
   errors: string;
 
   // download
@@ -43,7 +43,7 @@ class Output extends Component<{}, OutputComponentState> {
 
     // init state
     this.state = {
-      statement: null,
+      statement: undefined,
       errors: "",
 
       // download
@@ -135,7 +135,7 @@ class Output extends Component<{}, OutputComponentState> {
 
   updateStateFromStore() {
     this.setState({
-      statement: null,
+      statement: undefined,
       errors: ""
     });
 

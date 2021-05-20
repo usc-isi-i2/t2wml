@@ -20,10 +20,10 @@ interface AnnotationFormProperties {
   onSelectionChange: (selection: CellSelection, role?: string) => void;
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions: ResponseWithSuggestion;
-  onChange: any | null; // Use the actual function type: (arg: argType) => returnType
-  onChangeSubject: any | null;
-  onDelete: any | null;
-  onSubmit: any | null;
+  onChange: (key: string, value: string, type: string) => Promise<void>; // Use the actual function type: (arg: argType) => returnType
+  onChangeSubject: (key: string, value?: string, instanceOf?: QNode) => Promise<void>;
+  onDelete: () => void;
+  onSubmit: (values: {[key: string]: string | undefined;}) => void;
 }
 
 interface AnnotationFields {
@@ -110,7 +110,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     const { onSubmit } = this.props;
     if (event.code === 'Enter') {
       event.preventDefault();
-      onSubmit(this.state.fields);
+      onSubmit({...this.state.fields});
     }
 
     const { onChange } = this.props;
@@ -129,10 +129,11 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
         window.clearTimeout(this.timeoutId);
       }
       this.timeoutId = window.setTimeout(() => {
-        const { type } = this.state.fields;
+        let { type } = this.state.fields;
         if (key === 'unit' || key === 'property') {
           this.setState({ showResult1: true, showResult2: false })
         }
+        if(!type){ type = "string"; }
         onChange(key, value, type);
       }, 300);
     });
@@ -178,7 +179,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
   handleOnSubmit(event: any) {
     event.preventDefault();
     const { onSubmit } = this.props;
-    onSubmit(this.state.fields);
+    onSubmit({...this.state.fields});
   }
 
   handleOnDelete(event: React.MouseEvent) {
