@@ -103,13 +103,19 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
   }
 
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
+  }
+
   async updateSelectedBlock(selectedBlock?: AnnotationBlock) {
     if (selectedBlock) {
       this.setState({
         selectedBlock,
         fields: {
           ...this.state.fields,
-          selectedArea: selectedBlock ? utils.humanReadableSelection(selectedBlock.selection) : undefined,
+          selectedArea: utils.humanReadableSelection(selectedBlock.selection),
         }
 
       }, () => this.getAnnotationSuggestionsForSelection(selectedBlock.selection));
@@ -129,12 +135,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           ...selectedBlock
         }
       })
-    }
-  }
-
-  componentWillUnmount() {
-    for (const disposer of this.disposers) {
-      disposer();
     }
   }
 
@@ -315,6 +315,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     annotations.push(annotation);
 
+    this.setState({ selectedBlock:undefined });
     this.postAnnotations(annotations, annotation);
   }
 
@@ -328,6 +329,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedBlock;
     });
+    this.setState({ selectedBlock:undefined });
     this.postAnnotations(annotations);
 
     // onDelete(selectedAnnotationBlock);
