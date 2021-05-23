@@ -33,6 +33,7 @@ interface AnnotationFields {
 
 interface AnnotationFormState {
   selectedBlock?: AnnotationBlock;
+  selection?: CellSelection;
   annotationSuggestions: ResponseWithSuggestion;
   fields: AnnotationFields;
   showExtraFields: boolean;
@@ -63,27 +64,19 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     super(props);
 
     this.requestService = new RequestService();
-    const selectedBlock = wikiStore.table.selectedBlock;
-    // const annotationSuggestions = this.getAnnotationSuggestionsForSelection(selectedBlock ? selectedBlock.selection : undefined);
-    const annotationSuggestions = { role: '', type: undefined, children: {} };
-    const instanceOf = selectedBlock?.subject ? undefined : {
+    const instanceOf = {
       label: 'country',
       description: 'the distinct region in geography; a broad term that can include political divisions or regions associated with distinct political characteristics',
       id: 'Q6256',
       url: 'https://www.wikidata.org/wiki/Q6256'
     }
+    const annotationSuggestions = { role: '', type: undefined, children: {} };
+
     this.state = {
-      selectedBlock: undefined,
       annotationSuggestions: annotationSuggestions,
-      fields: {
-        role: annotationSuggestions.role,
-        type: annotationSuggestions.type,
-        selectedArea: selectedBlock ? utils.humanReadableSelection(selectedBlock.selection) : undefined,
-        ...annotationSuggestions.children,
-        ...selectedBlock //override everything previous
-      },
+      fields: {},
       subject: {
-        value: selectedBlock?.subject ? selectedBlock?.subject : undefined,
+        value: undefined,
         instanceOfSearch: undefined,
         instanceOf: instanceOf,
         qnodes: [],
@@ -95,21 +88,28 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       errorMessage: {} as ErrorMessage
     };
     this.changed = false;
-    this.updateSelectedBlock(selectedBlock);
   }
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.subjectQnodes.qnodes, (qnodes) => this.updateSubjectQNodes(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
+    this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection)));
+  }
+
+  updateSelection(selection?: CellSelection){
+    const selectedArea = selection? utils.humanReadableSelection(selection): undefined;
+    this.setState({selection: selection, fields: { ...this.state.fields, selectedArea: selectedArea}},
+      () => this.getAnnotationSuggestionsForSelection(selection))
   }
 
   async updateSelectedBlock(selectedBlock?: AnnotationBlock) {
     if (selectedBlock) {
       this.setState({
         selectedBlock,
+        selection: selectedBlock.selection,
         fields: {
           ...this.state.fields,
-          selectedArea: selectedBlock ? utils.humanReadableSelection(selectedBlock.selection) : undefined,
+          selectedArea: utils.humanReadableSelection(selectedBlock.selection),
         }
 
       }, () => this.getAnnotationSuggestionsForSelection(selectedBlock.selection));
@@ -250,9 +250,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
-          if (wikiStore.table.selectedBlock) {
-            wikiStore.table.selectedBlock.selection = selection;
-          }
           wikiStore.table.selection = selection;
         }
       }, 500);
@@ -299,14 +296,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnSubmit(event: any) {
     event.preventDefault();
-    const { fields, selectedBlock } = this.state;
-    if (!selectedBlock) { return null; }
-    console.log('AnnotationMenu OnSubmit triggered for -> ', selectedBlock.selection, fields);
+    const { fields, selectedBlock, selection} = this.state;
+    if (!fields.selectedArea) { return null; }
+    console.log('AnnotationMenu OnSubmit triggered for -> ', fields.selectedArea, fields);
     const annotations = wikiStore.annotations.blocks.filter(block => {
-      return block.id !== selectedBlock.id;
+      return block.id !== selectedBlock?.id;
     });
     const annotation: any = {
-      'selection': selectedBlock.selection,
+      'selection': selection
     };
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
@@ -336,10 +333,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   renderSelectionAreas() {
     const { selectedArea } = this.state.fields;
-    if (!this.state.selectedBlock) { return null; }
-    const { selection } = this.state.selectedBlock;
-    if (!selection) { return null; }
-    const defaultValue = utils.humanReadableSelection(selection);
+    let blockSelection=undefined;
+    if (this.state.selectedBlock?.selection)
+    {blockSelection = utils.humanReadableSelection(this.state.selectedBlock?.selection);}
+    if (!selectedArea && !blockSelection){return null;}
     return (
       <Form.Group as={Row}>
         <Col sm="12" md="12">
@@ -347,7 +344,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           <Form.Control
             required
             type="text" size="sm"
-            value={selectedArea || defaultValue}
+            value={selectedArea || blockSelection}
             onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
             isInvalid={!this.state.validArea} />
           <Form.Control.Feedback type="invalid">
@@ -840,8 +837,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selectedBlock } = this.state;
-    if (!selectedBlock) { return null; }
+    const { selection } = this.state;
+    if (currentFilesService.currentState.mappingType == "Yaml")
+    {return <div>Block mode not relevant when working with a yaml file</div>}
+    if (!selection) { return <div>Select a block to start editing</div>; }
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}

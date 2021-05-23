@@ -78,10 +78,9 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
         this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
         this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
-        this.disposers.push(reaction(() => wikiStore.table.selection, () => this.updateSelectionStyle()));
-        //this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => this.updateSelectedBlockStyle(block)));
+        this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelectionStyle(selection)));
         this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateSelectedCellStyle(cell)));
-
+        this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => {wikiStore.table.selection=block?.selection}));
     }
 
     componentWillUnmount() {
@@ -231,7 +230,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    selectBlock(selection: CellSelection, table: any, classNames: string[]) {
+    applyCsstoBlock(selection: CellSelection, table: any, classNames: string[]) {
         const { x1, x2, y1, y2 } = selection;
         const rows = table.querySelectorAll('tr');
         const leftCol = Math.min(x1, x2);
@@ -242,7 +241,7 @@ class CombinedTable extends Component<{}, TableState> {
         while (rowIndex <= bottomRow) {
             let colIndex = leftCol;
             while (colIndex <= rightCol) {
-                this.selectCellBlock(
+                this.applyCsstoBlockCells(
                     rows[rowIndex].children[colIndex],
                     rowIndex,
                     colIndex,
@@ -258,7 +257,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    selectCellBlock(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
+    applyCsstoBlockCells(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
         // Apply class names to the selected cell
         classNames.map(className => cell.classList.add(className));
 
@@ -300,7 +299,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    selectCell(cell: Element, classNames: string[] = []) {
+    applyCsstoSelectedCell(cell: Element, classNames: string[] = []) {
         // Activate the current cell
         cell.classList.add('selected');
         classNames.map(className => cell.classList.add(className));
@@ -317,7 +316,7 @@ class CombinedTable extends Component<{}, TableState> {
         const statement = wikiStore.layers.statement.find(selectedCell);
 
         let tableCell=rows[selectedCell.row+1].children[selectedCell.col+1]
-        this.selectCell(tableCell, [])
+        this.applyCsstoSelectedCell(tableCell, [])
 
         //select related cells
         if (statement && statement.cells) {
@@ -328,7 +327,7 @@ class CombinedTable extends Component<{}, TableState> {
                         const y = cell[key][0];
                         const x = cell[key][1];
                         tableCell = rows[y + 1].children[x + 1];
-                        this.selectCell(tableCell, []);
+                        this.applyCsstoSelectedCell(tableCell, []);
                     }
                 });
             }
@@ -338,7 +337,7 @@ class CombinedTable extends Component<{}, TableState> {
                 const y = statement.cells[key][0];
                 const x = statement.cells[key][1];
                 tableCell = rows[y + 1].children[x + 1];
-                this.selectCell(tableCell, []);
+                this.applyCsstoSelectedCell(tableCell, []);
             }
         }
 
@@ -384,21 +383,42 @@ class CombinedTable extends Component<{}, TableState> {
                     }
                 }
             }
-        //if (wikiStore.table.selection)
-        //    this.selectBlock(wikiStore.table.selection, table, classNames);
 
-            this.selectBlock(selectedBlock.selection, table, classNames)
+            this.applyCsstoBlock(selectedBlock.selection, table, classNames)
 
             for (const linkedBlock of linksBlocks) {
                 const { selection } = linkedBlock.block;
-                this.selectBlock(selection, table, linkedBlock.classNames);
+                this.applyCsstoBlock(selection, table, linkedBlock.classNames);
             }
         }
 
     }
 
-    updateSelectionStyle() {
+    updateSelectionStyle(selection?: CellSelection) {
+        const table: any = this.tableRef;
+        if (!table) { return; }
+        this.resetBlockSelections()
+        if (!selection) {return}
 
+        const classNames: string[] = ['active'];
+        const selectedBlock = this.checkOverlaps(selection)
+
+        if (selectedBlock) {
+            const { role, property, links, subject, link } = selectedBlock;
+            if (role) {
+                if ((role == "qualifier") && !property && !links?.property) {
+                    classNames.push(`role-${role}-no-property`);
+                } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
+                    classNames.push(`role-${role}-no-property`);
+                } else if ((role == "unit" || role == "mainSubject" || role == "property") && !link) {
+                    classNames.push(`role-${role}-no-link`);
+                }
+                {
+                    classNames.push(`role-${role}`);
+                }
+            }
+        }
+        this.applyCsstoBlock(selection, table, classNames);
     }
 
     async addFile(file: File) {
@@ -599,9 +619,12 @@ class CombinedTable extends Component<{}, TableState> {
       }
     }
 
-    checkOverlaps() {
-        if (!wikiStore.table.selection) { return; }
-        const { x1, y1, x2, y2 } = wikiStore.table.selection;
+    checkOverlaps(selection?: CellSelection) {
+        if (!selection){
+            selection = wikiStore.table.selection;
+        }
+        if (!selection) { return; }
+        const { x1, y1, x2, y2 } = selection;
 
         // Get the coordinates of the sides
         const aTop = y1 <= y2 ? y1 : y2;
@@ -634,11 +657,11 @@ class CombinedTable extends Component<{}, TableState> {
             }
 
             // collision detected
-            return true;
+            return blocks[i];
         }
 
         // no collisions detected
-        return false;
+        return undefined;
     }
 
 
@@ -710,7 +733,6 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     handleOnMouseMove(event: React.MouseEvent) {
-        const selectedAnnotationBlock = wikiStore.table.selectedBlock;
         const element = event.target as any;
         if (element === this.prevElement) { return; }
 
@@ -720,8 +742,11 @@ class CombinedTable extends Component<{}, TableState> {
         }
 
         if (this.selecting && !event.shiftKey) {
-            const selection = wikiStore.table.selection;
-            if (!selection) { return; }
+            if (!wikiStore.table.selection){
+                return;
+            }
+            const selection = {...wikiStore.table.selection};
+
 
             // Update the last x coordinate of the selection
             const newCellIndex = element.cellIndex;
