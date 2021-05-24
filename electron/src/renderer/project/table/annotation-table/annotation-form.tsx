@@ -102,6 +102,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       () => this.getAnnotationSuggestionsForSelection(selection))
   }
 
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
+  }
+
   async updateSelectedBlock(selectedBlock?: AnnotationBlock) {
     if (selectedBlock) {
       this.setState({
@@ -129,12 +135,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           ...selectedBlock
         }
       })
-    }
-  }
-
-  componentWillUnmount() {
-    for (const disposer of this.disposers) {
-      disposer();
     }
   }
 
@@ -312,6 +312,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     annotations.push(annotation);
 
+    this.setState({ selectedBlock:undefined });
     this.postAnnotations(annotations, annotation);
   }
 
@@ -325,6 +326,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block !== selectedBlock;
     });
+    this.setState({ selectedBlock:undefined });
     this.postAnnotations(annotations);
 
     // onDelete(selectedAnnotationBlock);
