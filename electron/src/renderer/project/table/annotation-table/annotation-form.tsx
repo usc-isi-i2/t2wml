@@ -340,9 +340,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     {blockSelection = utils.humanReadableSelection(this.state.selectedBlock?.selection);}
     if (!selectedArea && !blockSelection){return null;}
     return (
-      <Form.Group as={Row}>
-        <Col sm="12" md="12">
-          <Form.Label className="text-muted">Selected area</Form.Label>
+      <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+        <Form.Label column sm="12" md="3" className="text-muted">
+          Selected area
+        </Form.Label>
+        <Col sm="12" md="9">
           <Form.Control
             required
             type="text" size="sm"
@@ -351,7 +353,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             isInvalid={!this.state.validArea} />
           <Form.Control.Feedback type="invalid">
             Please choose a valid range.
-            </Form.Control.Feedback>
+          </Form.Control.Feedback>
         </Col>
       </Form.Group>
     )
@@ -368,12 +370,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     if (type.children) {
       return (
-        <Form.Group as={Row} key={type.value}
+        <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}
           onChange={
             (event: KeyboardEvent) => this.handleOnChange(event, type.value)
           }>
-          <Col sm="12" md="12">
-            <Form.Label className="text-muted">{type.label}</Form.Label>
+          <Form.Label column sm="12" md="3" className="text-muted">{type.label}5</Form.Label>
+          <Col sm="12" md="9">
             <Form.Control size="sm" as="select" defaultValue={defaultValue}>
               <option disabled selected defaultValue="--">--</option>
               {type.children.map((option: AnnotationOption) => (
@@ -410,11 +412,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
 
     return (
-      <Form.Group as={Row} key={type.value}
+      <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
-        <Col sm='12' md={(key == 'property' && propertyBlockId)
-          || (key == 'unit' && unitBlockId) ? '9' : '12'}>
-          <Form.Label className="text-muted">{type.label}</Form.Label>
+        <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
+        <Col sm='12' md='9'>
+          {/* {(key == 'property' && propertyBlockId) */}
+          {/* || (key == 'unit' && unitBlockId) ? '9' : '12'}> */}
           <Form.Control
             type="text" size="sm"
             defaultValue={this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""}
@@ -469,10 +472,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     if (!selectedOption || !('children' in selectedOption)) { return null; }
     const optionsDropdown = (
-      <Form.Group as={Row}
+      <Form.Group as={Row} style={{ marginTop: "1rem" }}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'type')}>
-        <Col sm="12" md="12">
-          <Form.Label className="text-muted">Type</Form.Label>
+        <Form.Label column sm="12" md="3" className="text-muted">Type</Form.Label>
+        <Col sm="12" md="9">
           <Form.Control size="sm" as="select" defaultValue={selectedAnnotationType}>
             {selectedOption?.children?.map((type, i) => (
               <option key={i}
@@ -534,10 +537,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
 
     return (
-      <Form.Group as={Row}
+      <Form.Group as={Row} style={{ marginTop: "1rem" }}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'role')}>
-        <Col sm="12" md="12">
-          <Form.Label className="text-muted">Role</Form.Label>
+        <Form.Label column sm="12" md="3" className="text-muted">Role</Form.Label>
+        <Col sm="12" md="9">
           <Form.Control size="sm" as="select" defaultValue={selectedAnnotationRole}>
             {rolesList.map((role, i) => (
               <option key={i}
@@ -845,8 +848,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (!selection) { return <div>Select a block to start editing</div>; }
     return (
       <Form className="container annotation-form"
-        onSubmit={this.handleOnSubmit.bind(this)}
-        style={{ overflowY: 'scroll' }}>
+        onSubmit={this.handleOnSubmit.bind(this)}>
         {this.renderSelectionAreas()}
         {this.renderOptionsDropdown()}
         {this.renderNestedOptions()}
