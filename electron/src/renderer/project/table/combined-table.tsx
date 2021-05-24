@@ -690,7 +690,7 @@ class CombinedTable extends Component<{}, TableState> {
         const x: number = element.cellIndex;
         const y: number = element.parentElement.rowIndex;
 
-        wikiStore.table.selectedCell = new Cell(x - 1, y - 1);
+        wikiStore.table.selectedCell = { ...new Cell(x - 1, y - 1), value: element.textContent};
 
         // check if the user is selecting an annotation block
         const selectedBlock = checkSelectedAnnotationBlocks({ x1: x, y1: y, x2: x, y2: y });
@@ -816,7 +816,7 @@ class CombinedTable extends Component<{}, TableState> {
                     if (col < rows[row].children.length) { col = col + 1; }
                 }
 
-                wikiStore.table.selectedCell = new Cell(col, row);
+                wikiStore.table.selectedCell = {...new Cell(col, row), value: wikiStore.table.selectedCell.value};
 
 
                 if (event.shiftKey) {

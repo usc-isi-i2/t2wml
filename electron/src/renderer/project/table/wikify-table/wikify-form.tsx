@@ -38,14 +38,23 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   constructor(props: WikifyFormProperties) {
     super(props);
 
+    const { selectedCell } = this.props;
+    const selected = wikiStore.layers.qnode.find(selectedCell);
+    // console.log("selectedCell", selectedCell.value);
+    // console.log("selected", selected?.id, selected?.label);
+
+    const cellType = wikiStore.layers.type.find(selectedCell);
+    const selectedType = cellType ? cellType.type : "";
+    const searchProperties = cellType ? cellType.type === 'property': false;
+    
     this.state = {
       search: undefined,
       instanceOf: undefined,
       instanceOfSearch: undefined,
-      searchProperties: false,
+      searchProperties: searchProperties,
       applyToBlock: false,
-      selectedType: '',
-      selected: undefined,
+      selectedType: selectedType,
+      selected: selected,
       qnodes: [],
     };
   }
@@ -55,18 +64,18 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
 
-    const { selectedCell } = this.props;
-    const qnode = wikiStore.layers.qnode.find(selectedCell);
-    if ( qnode ) {
-      this.setState({selected: qnode});
-    }
-    const cellType = wikiStore.layers.type.find(selectedCell);
-    if ( cellType ) {
-      this.setState({
-        selectedType: cellType.type,
-        searchProperties: cellType.type === 'property',
-      });
-    }
+    // const { selectedCell } = this.props;
+    // const qnode = wikiStore.layers.qnode.find(selectedCell);
+    // if ( qnode ) {
+    //   this.setState({selected: qnode});
+    // }
+    // const cellType = wikiStore.layers.type.find(selectedCell);
+    // if ( cellType ) {
+    //   this.setState({
+    //     selectedType: cellType.type,
+    //     searchProperties: cellType.type === 'property',
+    //   });
+    // }
   }
 
   componentWillUnmount() {
@@ -276,7 +285,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSelectedNode() {
-    const { qnodes, selected } = this.state;
+    // const { qnodes, selected } = this.state;
+    const { qnodes } = this.state;
+    const { selectedCell } = this.props;
+    const selected = wikiStore.layers.qnode.find(selectedCell);
+    
     if ( !qnodes.length && selected ) {
       return (
         <div className="selected-node">

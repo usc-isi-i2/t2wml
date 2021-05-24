@@ -11,10 +11,7 @@ class CellTab extends Component {
             <Container>
                 <Row>
                     <Col>
-                        <WikifyMenu
-                            onSelectBlock={() => { return true; }}
-                            wikifyCellContent={"1"}
-                        />
+                        <WikifyMenu />
                     </Col>
                 </Row>
                 <Row>

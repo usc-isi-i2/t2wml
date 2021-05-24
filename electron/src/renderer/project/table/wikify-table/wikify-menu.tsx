@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import './wikify-menu.css';
 import WikifyForm from './wikify-form';
@@ -13,23 +13,18 @@ import { Card } from 'react-bootstrap';
 import { IReactionDisposer, reaction } from 'mobx';
 
 
-interface WikifyMenuProperties {
-  wikifyCellContent?: string;
-  onSelectBlock: (applyToBlock: boolean) => void;
-}
-
 interface WikifyMenuState {
   errorMessage: ErrorMessage;
   selectedCell?: Cell;
 }
 
 
-class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> {
+class WikifyMenu extends React.Component<{}, WikifyMenuState> {
 
   private requestService: RequestService;
   private disposers: IReactionDisposer[] = [];
 
-  constructor(props: WikifyMenuProperties) {
+  constructor(props: {}) {
     super(props);
 
     this.requestService = new RequestService();
@@ -46,6 +41,25 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
   componentWillUnmount() {
     for (const disposer of this.disposers) {
       disposer();
+    }
+  }
+
+  onSelectBlock(applyToBlock: boolean) {
+    const { selectedCell } = this.state;
+    if ( applyToBlock && selectedCell ) {
+      const { col, row } = selectedCell;
+      const selection: CellSelection = {
+        x1: col + 1,
+        x2: col + 1,
+        y1: row + 1,
+        y2: row + 1,
+      };
+      const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
+      if ( selectedBlock ) {
+        wikiStore.table.selectedBlock = selectedBlock;
+      }
+    } else {
+      wikiStore.table.selectedBlock = undefined;
     }
   }
 
@@ -76,7 +90,6 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
-    const { wikifyCellContent } = this.props;
     const { selectedCell } = this.state;
     if (!selectedCell) { return; }
     const { col, row } = selectedCell;
@@ -96,7 +109,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     try {
       await this.requestService.call(this, () => (
         this.requestService.postQNodes({
-          value: wikifyCellContent,
+          value: selectedCell.value,
           selection,
           qnode,
         })
@@ -141,7 +154,6 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
-    const { wikifyCellContent } = this.props;
     const { selectedCell } = this.state;
     if (!selectedCell) { return; }
 
@@ -162,7 +174,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     try {
       await this.requestService.call(this, () => (
         this.requestService.removeQNodes({
-          value: wikifyCellContent,
+          value: selectedCell.value,
           selection,
           qnode,
         })
@@ -187,20 +199,22 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     return (
       <div className="header">
         <strong className="mr-auto">
-          Selected: {utils.columnToLetter(col + 1)}{row + 1}
+          Selected: {selectedCell ?
+          utils.columnToLetter(col + 1) + (row + 1)
+          : ""
+          }
         </strong>
       </div>
     )
   }
 
   renderWikifyForms() {
-    const { onSelectBlock } = this.props;
     const { selectedCell } = this.state;
     if (!selectedCell) { return; }
     return (
       <WikifyForm
         selectedCell={selectedCell}
-        onSelectBlock={(applyToBlock) => onSelectBlock(applyToBlock)}
+        onSelectBlock={(applyToBlock) => this.onSelectBlock(applyToBlock)}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)}
         onRemove={this.handleOnRemove.bind(this)} />
