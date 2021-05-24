@@ -144,7 +144,7 @@ class CombinedTable extends Component<{}, TableState> {
                         tableCell.classNames.push(`role-${entry.type}`);
                     }
                     catch {
-
+                        console.log("catch");
                     }
                 }
             }
@@ -173,15 +173,20 @@ class CombinedTable extends Component<{}, TableState> {
             if (!this.state.tableData) {
                 return;
             }
-            const tableData = { ...this.state.tableData }
+            const { tableData: tableDataTmp } = this.state;
+            tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
-            tableData.forEach(row => {
+            try {
+                tableData.forEach(row => {
                 row.forEach(cell => {
                     cell.classNames = cell.classNames.filter(function (value, index, arr) {
                         return !value.startsWith("role-")
+                        })
                     })
                 })
-            })
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         if (wikiStore.annotations.blocks && tableData) {
