@@ -240,7 +240,7 @@ class Output extends Component<{}, OutputComponentState> {
             </div>
 
             {/* output */}
-            <div className="w-100 p-3" style={{ height: "1px" }}>
+            <div className="w-100 p-3" style={{ height: "100px" }}>
               <ShowOutput
                 statement={this.state.statement}
                 errors={this.state.errors}

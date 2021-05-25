@@ -292,48 +292,8 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
         <Card
           className="w-100 shadow-sm"
-          style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
+          style={{ height: "50vh" }}
         >
-
-          {/* header */}
-          <Card.Header
-            style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.YAML }}
-            onClick={() => wikiStore.editors.nowShowing = "YamlEditor"}
-          >
-
-            {/* title */}
-            <div
-              className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 75px)", cursor: "default" }}
-            >
-              YAML&nbsp;Editor&nbsp;({currentFilesService.currentState.mappingFile})
-            </div>
-
-            {/* button of open yaml file */}
-            <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-              <Button
-                className="d-inline-block float-right"
-                variant="outline-light"
-                size="sm"
-                style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document.getElementById("file_yaml")?.click(); }}
-              >
-                Import
-                </Button>
-            </OverlayTrigger>
-
-            {/* hidden input of yaml file */}
-            <input
-              type="file"
-              id="file_yaml"
-              accept=".yaml"
-              style={{ display: "none" }}
-              disabled={this.state.disableYaml || wikiStore.yaml.showSpinner}
-              onChange={this.handleOpenYamlFile}
-              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
-            />
-
-          </Card.Header>
 
           {/* loading spinner */}
           <div className="mySpinner" hidden={!wikiStore.yaml.showSpinner}>

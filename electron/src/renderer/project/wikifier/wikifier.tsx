@@ -17,6 +17,7 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { getColumnTitleFromIndex } from '../../common/utils'
 import Table from '../table/table';
 import { TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
+import "../project.css";
 
 
 interface WikifierState extends IStateWithError {
@@ -402,9 +403,11 @@ class Wikifier extends Component<{}, WikifierState> {
 
 
             {/* wikifier output */}
-            <Table
-            tableData={this.state.partialCsv}
-            setTableReference={()=>(null)}/>
+            <div className="wikifier-tab">
+              <Table
+              tableData={this.state.partialCsv}
+              setTableReference={()=>(null)}/>
+            </div>
           </Card.Body>
 
         </Card >
