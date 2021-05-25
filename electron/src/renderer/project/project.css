@@ -118,16 +118,6 @@ body {
   margin-left: 0px;
 }
 
-.scroll-tab {
-  /* TODO- fill the correct max-height */
-  /* max-height: 40vh; 
-  overflow-y: auto;
-  width: 100%; */
-  position: relative;
-  height: 100%;
-  overflow-y: auto;
-  width: 100%;
-}
 
 .wikifier-tab {
   /* TODO- fill the correct max-height */
