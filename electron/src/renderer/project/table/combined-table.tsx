@@ -4,7 +4,7 @@ import React, { ChangeEvent, Component } from 'react';
 import * as path from 'path';
 import './table-component.css';
 
-import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
@@ -13,9 +13,9 @@ import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 
-import { checkSelectedAnnotationBlocks, standardizeSelection } from './table-utils';
+import { checkSelectedAnnotationBlocks } from './table-utils';
 import { observer } from 'mobx-react';
-import wikiStore, { TableMode } from '../../data/store';
+import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
 import Table from './table';
@@ -79,8 +79,8 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
         this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
         this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelectionStyle(selection)));
-        this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateSelectedCellStyle(cell)));
-        this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => {wikiStore.table.selection=block?.selection}));
+        this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateActiveCellStyle(cell)));
+        this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => { wikiStore.table.selection = block?.selection }));
     }
 
     componentWillUnmount() {
@@ -91,6 +91,40 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
+    updateProjectInfo() {
+        if (wikiStore.project.projectDTO) {
+            const project = wikiStore.project.projectDTO;
+            const filename = currentFilesService.currentState.dataFile;
+            let multipleSheets = false;
+            let sheetNames = [] as string[];
+            let currSheetName = '';
+            if (project.data_files[filename] && currentFilesService.currentState.sheetName) { // If there are datafile and sheet name (not a new project)
+                sheetNames = project.data_files[filename].val_arr;
+                currSheetName = currentFilesService.currentState.sheetName;
+                multipleSheets = sheetNames && sheetNames.length > 1;
+            }
+
+            this.setState({ filename, sheetNames, currSheetName, multipleSheets });
+        }
+
+        { this.createAnnotationIfDoesNotExist(); }
+    }
+
+    async createAnnotationIfDoesNotExist() {
+        if (!currentFilesService.currentState.dataFile) { return; }
+        if (!currentFilesService.currentState.mappingFile) {
+            //create a mapping file
+            const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation");
+            const data = {
+                "title": title,
+                "sheetName": currentFilesService.currentState.sheetName,
+                "dataFile": currentFilesService.currentState.dataFile
+            };
+
+            await this.requestService.createAnnotation(data)
+            currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
+        }
+    }
 
     getClasslessTableData(table?: TableDTO): TableData {
         if (!table) { table = wikiStore.table.table }
@@ -117,9 +151,8 @@ class CombinedTable extends Component<{}, TableState> {
         }
         const tableData = this.getClasslessTableData(table);
         this.updateLayers(tableData);
-        wikiStore.table.selectedCell= undefined;
-        wikiStore.table.selectedBlock=undefined;
-        wikiStore.table.selection=undefined;
+        console.log("resetting wikistore selections from update table data")
+        wikiStore.table.resetSelections();
     }
 
     updateLayers(tableData?: TableData) {
@@ -135,22 +168,9 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-        if (currentFilesService.currentState.mappingType == "Yaml") {
-            const types = wikiStore.layers.type;
-            for (const entry of types.entries) {
-                for (const indexPair of entry.indices) {
-                    try {
-                        const tableCell = tableData[indexPair[0]][indexPair[1]];
-                        tableCell.classNames.push(`role-${entry.type}`);
-                    }
-                    catch {
-                        console.log("catch");
-                    }
-                }
-            }
-        }
 
-        else { this.setAnnotationColors(tableData) }
+
+        this.setAnnotationColors(tableData)
 
         const qnodes = wikiStore.layers.qnode;
         for (const entry of qnodes.entries) {
@@ -178,9 +198,9 @@ class CombinedTable extends Component<{}, TableState> {
             //if we're taking existing table data, gotta clean it:
             try {
                 tableData.forEach(row => {
-                row.forEach(cell => {
-                    cell.classNames = cell.classNames.filter(function (value, index, arr) {
-                        return !value.startsWith("role-")
+                    row.forEach(cell => {
+                        cell.classNames = cell.classNames.filter(function (value, index, arr) {
+                            return !value.startsWith("role-") && !value.startsWith("error")
                         })
                     })
                 })
@@ -189,9 +209,25 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
+        if (currentFilesService.currentState.mappingType == "Yaml") {
+            const types = wikiStore.layers.type;
+            for (const entry of types.entries) {
+                for (const indexPair of entry.indices) {
+                    try {
+                        const tableCell = tableData[indexPair[0]][indexPair[1]];
+                        tableCell.classNames.push(`role-${entry.type}`);
+                    }
+                    catch {
+                        console.log("catch");
+                    }
+                }
+            }
+            return;
+        }
+
         if (wikiStore.annotations.blocks && tableData) {
             for (const block of wikiStore.annotations.blocks) {
-                const { role, type, selection, property, links, subject, link } = block;
+                const { role, selection, property, links, subject, link } = block;
                 const classNames: string[] = [];
                 if (role) {
                     if ((role == "qualifier") && !property && !links?.property) {
@@ -246,7 +282,7 @@ class CombinedTable extends Component<{}, TableState> {
         while (rowIndex <= bottomRow) {
             let colIndex = leftCol;
             while (colIndex <= rightCol) {
-                this.applyCsstoBlockCells(
+                this.applyCsstoBlockCell(
                     rows[rowIndex].children[colIndex],
                     rowIndex,
                     colIndex,
@@ -262,7 +298,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    applyCsstoBlockCells(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
+    applyCsstoBlockCell(cell: Element, rowIndex: number, colIndex: number, topRow: number, leftCol: number, rightCol: number, bottomRow: number, classNames: string[] = []) {
         // Apply class names to the selected cell
         classNames.map(className => cell.classList.add(className));
 
@@ -295,7 +331,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
 
         // Add resize corner to the active selection areas
-        if (classNames.includes('active')) {
+        if (classNames.includes('selected')) {
             if (rowIndex === bottomRow && colIndex === rightCol) {
                 const resizeCorner = document.createElement('div');
                 resizeCorner.classList.add('cell-resize-corner');
@@ -304,24 +340,18 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    applyCsstoSelectedCell(cell: Element, classNames: string[] = []) {
-        // Activate the current cell
-        cell.classList.add('selected');
-        classNames.map(className => cell.classList.add(className));
 
-    }
-
-    updateSelectedCellStyle(selectedCell?: Cell) {
-        if (!selectedCell){return;}
+    updateActiveCellStyle(selectedCell?: Cell) {
+        if (!selectedCell) { return; }
         // Get a reference to the table elements
         const table: any = this.tableRef;
         if (!table) { return; }
-        this.resetCellSelections()
+        this.resetActiveCellCss()
         const rows = table!.querySelectorAll('tr');
         const statement = wikiStore.layers.statement.find(selectedCell);
 
-        let tableCell=rows[selectedCell.row+1].children[selectedCell.col+1]
-        this.applyCsstoSelectedCell(tableCell, [])
+        let activeCell = rows[selectedCell.row + 1].children[selectedCell.col + 1]
+        activeCell.classList.add('active-cell');
 
         //select related cells
         if (statement && statement.cells) {
@@ -331,8 +361,8 @@ class CombinedTable extends Component<{}, TableState> {
                     for (const key in cell) {
                         const y = cell[key][0];
                         const x = cell[key][1];
-                        tableCell = rows[y + 1].children[x + 1];
-                        this.applyCsstoSelectedCell(tableCell, []);
+                        let qualCell = rows[y + 1].children[x + 1];
+                        qualCell.classList.add('linked-cell');
                     }
                 });
             }
@@ -341,23 +371,30 @@ class CombinedTable extends Component<{}, TableState> {
                 if (key === 'qualifiers') { continue; }
                 const y = statement.cells[key][0];
                 const x = statement.cells[key][1];
-                tableCell = rows[y + 1].children[x + 1];
-                this.applyCsstoSelectedCell(tableCell, []);
+                let keyCell = rows[y + 1].children[x + 1];
+                keyCell.classList.add('linked-cell');
             }
         }
 
-        //select block:
-        table.classList.add('active');
+        if (currentFilesService.currentState.mappingType == "Yaml") { return;}
 
-        const classNames: string[] = ['active'];
-        const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
-        const selectedBlock = checkSelectedAnnotationBlocks({ x1: selectedCell.col+1,
-                                                            y1: selectedCell.row+1,
-                                                            x2: selectedCell.col+1,
-                                                            y2: selectedCell.row+1});
+        const selectedBlock = checkSelectedAnnotationBlocks({
+            x1: selectedCell.col + 1,
+            y1: selectedCell.row + 1,
+            x2: selectedCell.col + 1,
+            y2: selectedCell.row + 1
+        });
 
-        if (selectedBlock && selectedBlock!=wikiStore.table.selectedBlock) {
-            this.resetBlockSelections()
+        if (selectedBlock != wikiStore.table.selectedBlock){
+            this.resetActiveBlockCss()
+        }
+
+        if (selectedBlock && selectedBlock != wikiStore.table.selectedBlock) {
+             //select block:
+            table.classList.add('highlight');
+            const classNames: string[] = ['active-block'];
+            const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
+
             const { role, property, links, subject, link } = selectedBlock;
             if (role) {
                 if ((role == "qualifier") && !property && !links?.property) {
@@ -376,7 +413,7 @@ class CombinedTable extends Component<{}, TableState> {
                     if ((links.property && block.id == links.property) || (links.mainSubject && block.id == links.mainSubject)
                         || (links.unit && block.id == links.unit)) {
                         const linkedBlock = { ...block };
-                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+                        linksBlocks.push({ classNames: ['linked-block', `role-${linkedBlock.role}`], block: linkedBlock })
                     }
                 }
             }
@@ -384,7 +421,7 @@ class CombinedTable extends Component<{}, TableState> {
                 for (const block of wikiStore.annotations.blocks) {
                     if (block.id == link) {
                         const linkedBlock = { ...block };
-                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+                        linksBlocks.push({ classNames: ['linked-block', `role-${linkedBlock.role}`], block: linkedBlock })
                     }
                 }
             }
@@ -400,37 +437,59 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateSelectionStyle(selection?: CellSelection) {
+        if (currentFilesService.currentState.mappingType == "Yaml"){return;}
         const table: any = this.tableRef;
         if (!table) { return; }
-        this.resetBlockSelections()
-        if (!selection) {return}
+        this.resetSelectionCss()
+        if (!selection) { return }
+        const classNames: string[] = ['selected'];
+        this.applyCsstoBlock(selection, table, classNames);
+    }
 
-        const classNames: string[] = ['active'];
-        const selectedBlock = this.checkOverlaps(selection)
 
-        if (selectedBlock) {
-            const { role, property, links, subject, link } = selectedBlock;
-            if (role) {
-                if ((role == "qualifier") && !property && !links?.property) {
-                    classNames.push(`role-${role}-no-property`);
-                } else if (role == "dependentVar" && ((!property && !links?.property) || (!subject && !links?.mainSubject))) {
-                    classNames.push(`role-${role}-no-property`);
-                } else if ((role == "unit" || role == "mainSubject" || role == "property") && !link) {
-                    classNames.push(`role-${role}-no-link`);
-                }
-                {
-                    classNames.push(`role-${role}`);
-                }
+    async getAnnotationSuggestedBlocks() {
+        if (wikiStore.annotations.blocks.length > 0) {
+            if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
+                return;
             }
         }
-        this.applyCsstoBlock(selection, table, classNames);
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
+        try {
+            await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
+        } finally {
+            wikiStore.yaml.showSpinner = false;
+        }
+
+        let data = {} as any;
+        let hasSubject = false;
+        for (const block of wikiStore.annotations.blocks) {
+            if (block.role == "mainSubject") {
+                hasSubject = true;
+                data = { "selection": block.selection };
+            }
+        }
+
+        if (hasSubject)
+            try {
+                await this.requestService.call(this, () => this.requestService.callCountryWikifier(data))
+            } finally {
+                //
+            }
+        wikiStore.table.showSpinner = false;
+        wikiStore.wikifier.showSpinner = true;
+        try {
+            await this.requestService.getPartialCsv();
+        }
+        finally {
+            wikiStore.wikifier.showSpinner = false;
+        }
     }
 
     async addFile(file: File) {
         this.setState({
             errorMessage: {} as ErrorMessage,
             showToast: false,
-            selectedCell: undefined,
         });
         console.log(file)
 
@@ -473,9 +532,10 @@ class CombinedTable extends Component<{}, TableState> {
     async handleSelectSheet(event: React.MouseEvent) {
         this.setState({
             errorMessage: {} as ErrorMessage,
-            showToast: false,
-            selectedCell: undefined,
+            showToast: false
         });
+        console.log("resetting wikistore selections from handle select sheet")
+        wikiStore.table.resetSelections();
 
         const sheetName = (event.target as HTMLInputElement).innerHTML;
         await wikiStore.yaml.saveYaml();
@@ -510,95 +570,12 @@ class CombinedTable extends Component<{}, TableState> {
 
     }
 
-    updateProjectInfo() {
-        if (wikiStore.project.projectDTO) {
-            const project = wikiStore.project.projectDTO;
-            const filename = currentFilesService.currentState.dataFile;
-            let multipleSheets = false;
-            let sheetNames = [] as string[];
-            let currSheetName = '';
-            if (project.data_files[filename] && currentFilesService.currentState.sheetName) { // If there are datafile and sheet name (not a new project)
-                sheetNames = project.data_files[filename].val_arr;
-                currSheetName = currentFilesService.currentState.sheetName;
-                multipleSheets = sheetNames && sheetNames.length > 1;
-            }
-
-            this.setState({ filename, sheetNames, currSheetName, multipleSheets });
-        }
-
-        { this.createAnnotationIfDoesNotExist(); }
-    }
-
-
-    async createAnnotationIfDoesNotExist() {
-        if (!currentFilesService.currentState.dataFile) { return; }
-        if (!currentFilesService.currentState.mappingFile) {
-            //create a mapping file
-            const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation");
-            const data = {
-                "title": title,
-                "sheetName": currentFilesService.currentState.sheetName,
-                "dataFile": currentFilesService.currentState.dataFile
-            };
-
-            await this.requestService.createAnnotation(data)
-            currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
-        }
-    }
-
-    async getAnnotationSuggestedBlocks() {
-        if (wikiStore.annotations.blocks.length > 0) {
-            if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
-                return;
-            }
-        }
-        wikiStore.table.showSpinner = true;
-        wikiStore.yaml.showSpinner = true;
-        try {
-            await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
-        } finally {
-            wikiStore.yaml.showSpinner = false;
-        }
-
-        let data = {} as any;
-        let hasSubject = false;
-        for (const block of wikiStore.annotations.blocks) {
-            if (block.role == "mainSubject") {
-                hasSubject = true;
-                data = { "selection": block.selection };
-            }
-        }
-
-        if (hasSubject)
-            try {
-                await this.requestService.call(this, () => this.requestService.callCountryWikifier(data))
-            } finally {
-                //
-            }
-        wikiStore.table.showSpinner = false;
-        wikiStore.wikifier.showSpinner = true;
-        try {
-            await this.requestService.getPartialCsv();
-        }
-        finally {
-            wikiStore.wikifier.showSpinner = false;
-        }
-    }
-
-    resetBlockSelections() {
+    resetSelectionCss(){
         const table = this.tableRef;
         if (table) {
-            table.classList.remove('active');
-            table.querySelectorAll('td[class*="active"]').forEach(e => {
+            table.querySelectorAll('td[class*="selected"]').forEach(e => {
                 e.classList.forEach(className => {
-                    if (className.startsWith('active')) {
-                        e.classList.remove(className);
-                    }
-                });
-            });
-            table.querySelectorAll('td[class*="linked"]').forEach(e => {
-                e.classList.forEach(className => {
-                    if (className.startsWith('linked')) {
+                    if (className.startsWith('selected')) {
                         e.classList.remove(className);
                     }
                 });
@@ -611,23 +588,53 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    resetCellSelections() {
+    resetActiveBlockCss() {
         const table = this.tableRef;
         if (table) {
-        table.querySelectorAll('td[class*="selected"]').forEach(e => {
-            e.classList.forEach(className => {
-                if (className.startsWith('selected')) {
-                    e.classList.remove(className);
-                }
+            table.classList.remove('highlight');
+            table.querySelectorAll('td[class*="active-block"]').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('active-block')) {
+                        e.classList.remove(className);
+                    }
+                });
             });
-        });
-      }
+            table.querySelectorAll('td[class*="linked-block"]').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('linked-block')) {
+                        e.classList.remove(className);
+                    }
+                });
+            });
+            table.querySelectorAll('.cell-border-top').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-left').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-right').forEach(e => e.remove());
+            table.querySelectorAll('.cell-border-bottom').forEach(e => e.remove());
+            table.querySelectorAll('.cell-resize-corner').forEach(e => e.remove());
+        }
+    }
+
+    resetActiveCellCss() {
+        const table = this.tableRef;
+        if (table) {
+            table.querySelectorAll('td[class*="active-cell"]').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('active-cell')) {
+                        e.classList.remove(className);
+                    }
+                });
+            });
+            table.querySelectorAll('td[class*="linked-cell"]').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('linked-cell')) {
+                        e.classList.remove(className);
+                    }
+                });
+            });
+        }
     }
 
     checkOverlaps(selection?: CellSelection) {
-        if (!selection){
-            selection = wikiStore.table.selection;
-        }
         if (!selection) { return; }
         const { x1, y1, x2, y2 } = selection;
 
@@ -690,23 +697,19 @@ class CombinedTable extends Component<{}, TableState> {
         const x: number = element.cellIndex;
         const y: number = element.parentElement.rowIndex;
 
-        wikiStore.table.selectedCell = new Cell(x - 1, y - 1);
+        wikiStore.table.selectedCell = { ...new Cell(x - 1, y - 1), value: element.textContent};
 
         // check if the user is selecting an annotation block
         const selectedBlock = checkSelectedAnnotationBlocks({ x1: x, y1: y, x2: x, y2: y });
-        if (selectedBlock) {
-            wikiStore.table.selectedBlock = selectedBlock;
-            wikiStore.table.selection = selectedBlock.selection;
-        }
-
-        else {
+        wikiStore.table.selectBlock(selectedBlock);
+        if (!selectedBlock) {
             // Activate the selection mode
             this.selecting = true;
             const x1 = x, x2 = x, y1 = y, y2 = y;
-            const selection = wikiStore.table.selection;
 
             // Extend the previous selection if user is holding down Shift key
-            if (event.shiftKey && selection) {
+            if (event.shiftKey && wikiStore.table.selection) {
+                const selection = {...wikiStore.table.selection};
 
                 // Extend the previous selection left or right
                 if (x1 !== selection['x1']) {
@@ -729,7 +732,7 @@ class CombinedTable extends Component<{}, TableState> {
                 wikiStore.table.selection = selection;
             } else {
                 wikiStore.table.selection = { x1, x2, y1, y2 };
-            };
+            }
         }
 
         // Initialize the previous element with the one selected
@@ -747,10 +750,10 @@ class CombinedTable extends Component<{}, TableState> {
         }
 
         if (this.selecting && !event.shiftKey) {
-            if (!wikiStore.table.selection){
+            if (!wikiStore.table.selection) {
                 return;
             }
-            const selection = {...wikiStore.table.selection};
+            const selection = { ...wikiStore.table.selection };
 
 
             // Update the last x coordinate of the selection
@@ -772,9 +775,7 @@ class CombinedTable extends Component<{}, TableState> {
 
         // remove selections
         if (event.code === 'Escape') {
-            wikiStore.table.selectedCell = undefined;
-            wikiStore.table.selectedBlock = undefined;
-            wikiStore.table.selection = undefined;
+            wikiStore.table.resetSelections()
             return;
         }
 
@@ -803,20 +804,26 @@ class CombinedTable extends Component<{}, TableState> {
 
                 // arrow down
                 if (event.code === 'ArrowDown') {
-                    if (row < rows.length) { row = row + 1; }
+                    if (row < rows.length) {
+                        row = row + 1;
+                    }
                 }
 
                 // arrow left
                 if (event.code === 'ArrowLeft') {
-                    if (col > 0) { col = col - 1; }
+                    if (col > 0) {
+                        col = col - 1;
+                    }
                 }
 
                 // arrow right
                 if (event.code === 'ArrowRight') {
-                    if (col < rows[row].children.length) { col = col + 1; }
+                    if (col < rows[row].children.length) {
+                        col = col + 1;
+                    }
                 }
 
-                wikiStore.table.selectedCell = new Cell(col, row);
+                wikiStore.table.selectedCell = {...new Cell(col, row), value: wikiStore.table.selectedCell.value};
 
 
                 if (event.shiftKey) {
@@ -890,8 +897,7 @@ class CombinedTable extends Component<{}, TableState> {
                 }
                 else { //moved arrow potentially into new block;
                     const selectedBlock = checkSelectedAnnotationBlocks({ x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 });
-                    wikiStore.table.selectedBlock = selectedBlock;
-                    wikiStore.table.selection = selectedBlock?.selection || undefined;
+                    wikiStore.table.selectBlock(selectedBlock);
                 }
             }
         }

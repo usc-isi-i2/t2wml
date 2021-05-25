@@ -12,10 +12,7 @@ class CellTab extends Component {
             <Container className="scroll-tab">
                 <Row>
                     <Col>
-                        <WikifyMenu
-                            onSelectBlock={() => { return true; }}
-                            wikifyCellContent={"1"}
-                        />
+                        <WikifyMenu />
                     </Col>
                 </Row>
                 <Row>
