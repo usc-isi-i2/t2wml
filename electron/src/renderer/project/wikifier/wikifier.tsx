@@ -17,10 +17,8 @@ import { reaction, IReactionDisposer } from 'mobx';
 import { getColumnTitleFromIndex } from '../../common/utils'
 import Table from '../table/table';
 import { TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
+import "../project.css";
 
-interface WikifierProperties {
-  isShowing: boolean;
-}
 
 interface WikifierState extends IStateWithError {
   partialCsv?: TableData;
@@ -33,13 +31,13 @@ interface WikifierState extends IStateWithError {
 }
 
 @observer
-class Wikifier extends Component<WikifierProperties, WikifierState> {
+class Wikifier extends Component<{}, WikifierState> {
   public gridApi: any;
   public gridColumnApi: any;
 
   private requestService: RequestService;
 
-  constructor(props: WikifierProperties) {
+  constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
 
@@ -307,7 +305,7 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
 
         <Card
           className="w-100 shadow-sm"
-          // style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
+          style={{ height: "50vh" }}
         >
 
           <CallWikifier
@@ -395,20 +393,21 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
           <Card.Body
             className="w-100 h-100 p-0"
             style={
-              // (this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }
               { display: "flex", overflow: "hidden" }
             }
           >
 
-            <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner} style={(this.props.isShowing) ? {} : { display: "none" }}>
+            <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner}>
               <Spinner animation="border" />
             </div>
 
 
             {/* wikifier output */}
-            <Table
-            tableData={this.state.partialCsv}
-            setTableReference={()=>(null)}/>
+            <div className="wikifier-tab">
+              <Table
+              tableData={this.state.partialCsv}
+              setTableReference={()=>(null)}/>
+            </div>
           </Card.Body>
 
         </Card >

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
-import wikiStore from '../data/store';
 import { Tab, Tabs } from 'react-bootstrap';
 import YamlEditor from './yaml-editor/yaml-editor';
 import CellTab from './cell-tab';
