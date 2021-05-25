@@ -12,8 +12,6 @@ import { ErrorMessage, t2wmlColors } from '../common/general';
 
 
 // components
-import Editors from './editor';
-import Output from './output/output';
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
 
@@ -23,7 +21,6 @@ import wikiStore from '../data/store';
 import Settings from './modals/project-settings';
 import { ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
-import TableContainer from './table/table-container';
 import { currentFilesService } from '../common/current-file-service';
 import EntitiesWindow from './entities/entities-window';
 import CombinedTable from './table/combined-table';
@@ -263,9 +260,7 @@ class Project extends Component<ProjectProps, ProjectState> {
               <CombinedTable />
               <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
                 <BlockCellYamlMenu />
-                <Wikifier isShowing={true} />
-                {/* <Editors /> */}
-                {/* <Output /> */}
+                <Wikifier />
               </SplitPane>
             </SplitPane>
           </SplitPane>

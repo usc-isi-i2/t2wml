@@ -28,7 +28,7 @@ class Editors extends Component<{}, EditorState> {
     
     return (
       <div className="w-100 h-100 p-1">
-        <Wikifier isShowing={nowShowing === "Wikifier"} />
+        <Wikifier />
         <YamlEditor
             isShowing={nowShowing === "YamlEditor"}/>
       </div>

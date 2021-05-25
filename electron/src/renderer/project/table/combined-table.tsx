@@ -4,7 +4,7 @@ import React, { ChangeEvent, Component } from 'react';
 import * as path from 'path';
 import './table-component.css';
 
-import { Button, ButtonGroup, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
@@ -13,9 +13,9 @@ import SheetSelector from '../sheet-selector/sheet-selector';
 import ToastMessage from '../../common/toast';
 import TableLegend from './table-legend';
 
-import { checkSelectedAnnotationBlocks, standardizeSelection } from './table-utils';
+import { checkSelectedAnnotationBlocks } from './table-utils';
 import { observer } from 'mobx-react';
-import wikiStore, { TableMode } from '../../data/store';
+import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
 import Table from './table';
@@ -191,7 +191,7 @@ class CombinedTable extends Component<{}, TableState> {
 
         if (wikiStore.annotations.blocks && tableData) {
             for (const block of wikiStore.annotations.blocks) {
-                const { role, type, selection, property, links, subject, link } = block;
+                const { role, selection, property, links, subject, link } = block;
                 const classNames: string[] = [];
                 if (role) {
                     if ((role == "qualifier") && !property && !links?.property) {
@@ -729,7 +729,7 @@ class CombinedTable extends Component<{}, TableState> {
                 wikiStore.table.selection = selection;
             } else {
                 wikiStore.table.selection = { x1, x2, y1, y2 };
-            };
+            }
         }
 
         // Initialize the previous element with the one selected

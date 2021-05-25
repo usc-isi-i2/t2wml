@@ -13,7 +13,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 interface WikifyFormProperties {
   selectedCell: Cell;
   onSelectBlock: (applyToBlock: boolean) => void;
-  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>; 
+  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
   onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
   onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
 }
@@ -25,57 +25,40 @@ interface WikifyFormState {
   instanceOfSearch?: string;
   searchProperties: boolean;
   applyToBlock: boolean;
-  selectedType: string;
   selected?: QNode;
   qnodes: QNode[];
+  prevCell?: Cell;
 }
 
 
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
 
   private timeoutId?: number;
+  private disposers: IReactionDisposer[] = [];
 
   constructor(props: WikifyFormProperties) {
     super(props);
 
     const { selectedCell } = this.props;
     const selected = wikiStore.layers.qnode.find(selectedCell);
-    // console.log("selectedCell", selectedCell.value);
-    // console.log("selected", selected?.id, selected?.label);
 
     const cellType = wikiStore.layers.type.find(selectedCell);
-    const selectedType = cellType ? cellType.type : "";
-    const searchProperties = cellType ? cellType.type === 'property': false;
-    
+    const searchProperties = cellType ? cellType.type === 'property' : false;
+
     this.state = {
       search: undefined,
       instanceOf: undefined,
       instanceOfSearch: undefined,
       searchProperties: searchProperties,
       applyToBlock: false,
-      selectedType: selectedType,
       selected: selected,
       qnodes: [],
+      prevCell: undefined
     };
   }
 
-  private disposers: IReactionDisposer[] = [];
-
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
-
-    // const { selectedCell } = this.props;
-    // const qnode = wikiStore.layers.qnode.find(selectedCell);
-    // if ( qnode ) {
-    //   this.setState({selected: qnode});
-    // }
-    // const cellType = wikiStore.layers.type.find(selectedCell);
-    // if ( cellType ) {
-    //   this.setState({
-    //     selectedType: cellType.type,
-    //     searchProperties: cellType.type === 'property',
-    //   });
-    // }
   }
 
   componentWillUnmount() {
@@ -84,19 +67,36 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
+  static getDerivedStateFromProps(props: WikifyFormProperties, state: WikifyFormState) {
+    const qnode = wikiStore.layers.qnode.find(props.selectedCell);
+    if ((!qnode && (state.prevCell !== props.selectedCell)) || (qnode && (qnode !== state.selected))) {
+      const cellType = wikiStore.layers.type.find(props.selectedCell);
+      console.log("cellType", cellType)
+      return { 
+        selected: qnode, 
+        instanceOf: undefined, 
+        search: "", instanceOfSearch: "", 
+        prevCell: props.selectedCell,
+        searchProperties: cellType ? cellType.type === 'property' : state.searchProperties
+      };
+    }
+    return null;
+  }
+
+
   toggleApplyToBlock() {
     const { applyToBlock } = this.state;
     this.props.onSelectBlock(!applyToBlock);
-    this.setState({applyToBlock: !applyToBlock});
+    this.setState({ applyToBlock: !applyToBlock });
   }
 
   toggleSearchProperties() {
     const { searchProperties } = this.state;
-    this.setState({searchProperties: !searchProperties});
+    this.setState({ searchProperties: !searchProperties });
   }
 
   updateQNodes(qnodes: QNode[]) {
-    this.setState({qnodes});
+    this.setState({ qnodes });
   }
 
   handleOnFocusSearch() {
@@ -108,8 +108,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { instanceOf, searchProperties } = this.state;
     const value: string = (event.target as HTMLInputElement).value;
 
-    this.setState({search: value}, () => {
-      if ( !value ) {
+    this.setState({ search: value }, () => {
+      if (!value) {
         this.clearSearch();
       } else {
         if (this.timeoutId) {
@@ -124,8 +124,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   handleOnChangeInstanceOfSearch(event: any) {
     const value: string = (event.target as HTMLInputElement).value;
-    this.setState({instanceOfSearch: value}, () => {
-      if ( !value ) {
+    this.setState({ instanceOfSearch: value }, () => {
+      if (!value) {
         this.clearInstanceOfSearch();
       } else {
         if (this.timeoutId) {
@@ -142,20 +142,26 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     event.preventDefault();
     const { onSubmit } = this.props;
     const { selected, applyToBlock } = this.state;
-    if(!selected) { return; }
+    if (!selected) { return; }
     onSubmit(selected, applyToBlock);
   }
 
   handleOnRemove() {
     const { onRemove } = this.props;
     const { selected, applyToBlock } = this.state;
-    if(!selected) { return; }
+    if (!selected) { return; }
     onRemove(selected, applyToBlock);
+    this.setState({
+      selected: undefined, 
+      instanceOf: undefined
+    });
+    this.clearSearch()
+    this.clearInstanceOfSearch()
   }
 
   handleOnClick(qnode: QNode) {
     const { instanceOfSearch } = this.state;
-    if ( instanceOfSearch ) {
+    if (instanceOfSearch) {
       this.setState({
         instanceOfSearch: '',
         instanceOf: qnode,
@@ -198,24 +204,21 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       search,
       instanceOfSearch,
       searchProperties,
-      selectedType,
     } = this.state;
     return (
       <Form.Group as={Row}>
-        {selectedType !== 'property' && (
-          <Col sm="12" className="search-properties">
-            <input id="check-property-search"
-              type="checkbox"
-              defaultChecked={searchProperties}
-              onChange={this.toggleSearchProperties.bind(this)} />
-            <Form.Label
-              htmlFor="check-property-search"
-              className="text-muted">
-              Search Properties
-            </Form.Label>
-          </Col>
-        )}
-        <Col sm="12" md={selectedType !== 'property' ? '8' : '12'}>
+        <Col sm="12" className="search-properties">
+          <input id="check-property-search"
+            type="checkbox"
+            defaultChecked={searchProperties}
+            onChange={this.toggleSearchProperties.bind(this)} />
+          <Form.Label
+            htmlFor="check-property-search"
+            className="text-muted">
+            Search Properties
+          </Form.Label>
+        </Col>
+        <Col sm="12" md={!searchProperties ? '8' : '12'}>
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
@@ -223,14 +226,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             value={search}
             onFocus={this.handleOnFocusSearch.bind(this)}
             onChange={(event: any) => this.handleOnChangeSearch(event)} />
-            {search && qnodes.length ? (
-              <FontAwesomeIcon
-                icon={faTimes}
-                className="clear-button"
-                onClick={this.clearSearch.bind(this)} />
-            ) : null}
+          {search && qnodes.length ? (
+            <FontAwesomeIcon
+              icon={faTimes}
+              className="clear-button"
+              onClick={this.clearSearch.bind(this)} />
+          ) : null}
         </Col>
-        {selectedType !== 'property' && (
+        {!searchProperties && (
           <Col sm="12" md="4">
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
@@ -240,12 +243,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               onChange={(event: any) => {
                 this.handleOnChangeInstanceOfSearch(event)
               }} />
-              {instanceOfSearch && qnodes.length ? (
-                <FontAwesomeIcon
-                  icon={faTimes}
-                  className="clear-button"
-                  onClick={this.clearInstanceOfSearch.bind(this)} />
-              ) : null}
+            {instanceOfSearch && qnodes.length ? (
+              <FontAwesomeIcon
+                icon={faTimes}
+                className="clear-button"
+                onClick={this.clearInstanceOfSearch.bind(this)} />
+            ) : null}
           </Col>
         )}
       </Form.Group>
@@ -254,18 +257,18 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   renderQNodeResults() {
     const { qnodes } = this.state;
-    if ( qnodes.length ) {
+    if (qnodes.length) {
       return (
         <div className="results">
           {qnodes.map((item, index) => (
-      <Row className={"qnode"} key={index}
-        onClick={() => this.handleOnClick(item)}>
-        <Col sm="12" md="12">
-          <div className="label">{item.label} ({item.id})</div>
-          <div className="description">{item.description}</div>
-        </Col>
-      </Row>
-        ))}
+            <Row className={"qnode"} key={index}
+              onClick={() => this.handleOnClick(item)}>
+              <Col sm="12" md="12">
+                <div className="label">{item.label} ({item.id})</div>
+                <div className="description">{item.description}</div>
+              </Col>
+            </Row>
+          ))}
         </div>
       )
     }
@@ -273,7 +276,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   renderInstanceOf() {
     const { instanceOf } = this.state;
-    if ( instanceOf ) {
+    if (instanceOf) {
       return (
         <div className="instance-of">
           Results shown are limited to instances of <strong>{instanceOf.label} ({instanceOf.id})</strong>
@@ -281,16 +284,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             onClick={this.removeInstanceOf.bind(this)}>Remove</span>
         </div>
       )
-    }
+    } else { return null; }
   }
 
   renderSelectedNode() {
-    // const { qnodes, selected } = this.state;
-    const { qnodes } = this.state;
-    const { selectedCell } = this.props;
-    const selected = wikiStore.layers.qnode.find(selectedCell);
-    
-    if ( !qnodes.length && selected ) {
+    const { qnodes, selected } = this.state;
+
+    if (!qnodes.length && selected) {
       return (
         <div className="selected-node">
           <strong>{selected.label}</strong>&nbsp;
@@ -304,12 +304,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           {selected.description}
         </div>
       )
-    }
+    } else { return null; }
   }
 
   renderApplyOptions() {
     const { qnodes, applyToBlock } = this.state;
-    if ( !qnodes.length ) {
+    if (!qnodes.length) {
       return (
         <Form.Group as={Row} className="apply-options">
           <Col sm="12" md="12">
@@ -326,7 +326,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   renderSubmitButton() {
     const { qnodes } = this.state;
-    if ( !qnodes.length ) {
+    if (!qnodes.length) {
       return (
         <Form.Group as={Row}>
           <Col sm="12" md="12">
@@ -344,8 +344,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderRemoveButton() {
-    const { qnodes } = this.state;
-    if ( !qnodes.length ) {
+    const { qnodes, selected } = this.state;
+    if (!qnodes.length && selected) {
       return (
         <Button
           size="sm"
@@ -373,6 +373,5 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     )
   }
 }
-
 
 export default WikifyForm;

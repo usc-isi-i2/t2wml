@@ -187,8 +187,6 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
-
-
     }
   }
 
