@@ -91,6 +91,9 @@ class Output extends Component<{}, OutputComponentState> {
 
 
   render() {
+    if (!this.state.statement){
+      return null;
+    }
     return (
       <div className="w-100 h-100 p-1" style={{height: "100vh"}}>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
@@ -104,7 +107,7 @@ class Output extends Component<{}, OutputComponentState> {
             <div
               className="text-white font-weight-bold d-inline-block text-truncate"
               style={{ width: "calc(100% - 290px)", cursor: "default" }}
-            >Output</div>
+            >Statement Preview</div>
 
           </Card.Header>
 
