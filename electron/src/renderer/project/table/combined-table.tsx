@@ -655,11 +655,8 @@ class CombinedTable extends Component<{}, TableState> {
 
         // check if the user is selecting an annotation block
         const selectedBlock = checkSelectedAnnotationBlocks({ x1: x, y1: y, x2: x, y2: y });
-        if (selectedBlock) {
-            wikiStore.table.selectBlock(selectedBlock);
-        }
-
-        else {
+        wikiStore.table.selectBlock(selectedBlock);
+        if (!selectedBlock) {
             // Activate the selection mode
             this.selecting = true;
             const x1 = x, x2 = x, y1 = y, y2 = y;
