@@ -422,7 +422,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             type="text" size="sm"
             defaultValue={this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""}
           />
-
+{type.value=="format"? <Form.Label> (must be enclosed in quotes eg "%Y")</Form.Label>: null}
         </Col>
         {
           key == "property" && propertyBlockId ?
