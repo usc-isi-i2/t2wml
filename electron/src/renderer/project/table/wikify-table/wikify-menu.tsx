@@ -220,6 +220,8 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
   }
 
   render() {
+    const { selectedCell } = this.state;
+    if (!selectedCell) { return <div>Please select a cell</div> }
     return (
       <Card className="wikify-menu">
         {this.renderHeader()}

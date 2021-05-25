@@ -845,7 +845,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const { selection } = this.state;
     if (currentFilesService.currentState.mappingType == "Yaml")
     {return <div>Block mode not relevant when working with a yaml file</div>}
-    if (!selection) { return <div>Select a block to start editing</div>; }
+    if (!selection) { return <div>Please select a block</div>; }
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
