@@ -307,7 +307,8 @@ class Wikifier extends Component<WikifierProperties, WikifierState> {
         {this.state.wikifyRegionMessage != '' ? <ToastMessage message={this.state.wikifyRegionMessage} /> : null}
 
         <Card
-          className="w-100 shadow-sm"
+          className="w-100 h-100 shadow-sm"
+          style={{ height: "calc(100% - 40px)"}}
           // style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
 
