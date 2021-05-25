@@ -140,27 +140,29 @@ relevant classes:
 **/
 
 /* if table is active, fade everything out */
-.table-wrapper table.active tr td {
+
+.table-wrapper table.highlight tr td {
   opacity: 0.4;
 }
 
-.table-wrapper table.active tr td.linked-block{
-  opacity: 0.75;
+.table-wrapper table.highlight tr td.linked-block {
+  opacity: 0.90;
 }
 
-.table-wrapper table.active tr td.active-cell{
-  filter: brightness(85%);
-  opacity: 0.75;
-}
-
-.table-wrapper table.active tr td.linked-cell{
-  filter: brightness(85%);
-  opacity: 0.75;
-}
-
-.table-wrapper table.active tr td.active-block {
+.table-wrapper table.highlight tr td.active-block {
   opacity: 1;
 }
+
+.table-wrapper tr td.active-cell {
+  filter: brightness(80%);
+}
+
+.table-wrapper tr td.linked-cell {
+  filter: brightness(90%);
+}
+
+
+
 
 
 /** borders **/
@@ -402,3 +404,4 @@ z-index: 15;
 .table-wrapper table tr td.type-wikibaseitem {
   color: #006699;
 }
+

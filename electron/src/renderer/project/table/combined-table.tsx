@@ -156,7 +156,6 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateLayers(tableData?: TableData) {
-        console.log("entered update layers")
         if (!tableData) {
             tableData = this.getClasslessTableData()
         }
@@ -203,7 +202,6 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     setAnnotationColors(tableData?: TableData) {
-        console.log("entered set annotation colors")
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
@@ -382,10 +380,13 @@ class CombinedTable extends Component<{}, TableState> {
             y2: selectedCell.row + 1
         });
 
-        if (selectedBlock && selectedBlock != wikiStore.table.selectedBlock) {
+        if (selectedBlock != wikiStore.table.selectedBlock){
             this.resetActiveBlockCss()
+        }
+
+        if (selectedBlock && selectedBlock != wikiStore.table.selectedBlock) {
              //select block:
-            table.classList.add('active');
+            table.classList.add('highlight');
             const classNames: string[] = ['active-block'];
             const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
 
@@ -415,7 +416,7 @@ class CombinedTable extends Component<{}, TableState> {
                 for (const block of wikiStore.annotations.blocks) {
                     if (block.id == link) {
                         const linkedBlock = { ...block };
-                        linksBlocks.push({ classNames: ['linked', `role-${linkedBlock.role}`], block: linkedBlock })
+                        linksBlocks.push({ classNames: ['linked-block', `role-${linkedBlock.role}`], block: linkedBlock })
                     }
                 }
             }
@@ -526,7 +527,6 @@ class CombinedTable extends Component<{}, TableState> {
     resetSelectionCss(){
         const table = this.tableRef;
         if (table) {
-            table.classList.remove('active');
             table.querySelectorAll('td[class*="selected"]').forEach(e => {
                 e.classList.forEach(className => {
                     if (className.startsWith('selected')) {
@@ -545,7 +545,7 @@ class CombinedTable extends Component<{}, TableState> {
     resetActiveBlockCss() {
         const table = this.tableRef;
         if (table) {
-            table.classList.remove('active');
+            table.classList.remove('highlight');
             table.querySelectorAll('td[class*="active-block"]').forEach(e => {
                 e.classList.forEach(className => {
                     if (className.startsWith('active-block')) {
@@ -573,7 +573,7 @@ class CombinedTable extends Component<{}, TableState> {
         if (table) {
             table.querySelectorAll('td[class*="active-cell"]').forEach(e => {
                 e.classList.forEach(className => {
-                    if (className.startsWith('selected-cell')) {
+                    if (className.startsWith('active-cell')) {
                         e.classList.remove(className);
                     }
                 });
@@ -729,7 +729,6 @@ class CombinedTable extends Component<{}, TableState> {
 
         // remove selections
         if (event.code === 'Escape') {
-            console.log("resetting wikistore selections from escape")
             wikiStore.table.resetSelections()
             return;
         }
