@@ -374,7 +374,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           onChange={
             (event: KeyboardEvent) => this.handleOnChange(event, type.value)
           }>
-          <Form.Label column sm="12" md="3" className="text-muted">{type.label}5</Form.Label>
+          <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
           <Col sm="12" md="9">
             <Form.Control size="sm" as="select" defaultValue={defaultValue}>
               <option disabled selected defaultValue="--">--</option>
