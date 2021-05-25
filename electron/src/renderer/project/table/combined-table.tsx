@@ -168,22 +168,9 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-        if (currentFilesService.currentState.mappingType == "Yaml") {
-            const types = wikiStore.layers.type;
-            for (const entry of types.entries) {
-                for (const indexPair of entry.indices) {
-                    try {
-                        const tableCell = tableData[indexPair[0]][indexPair[1]];
-                        tableCell.classNames.push(`role-${entry.type}`);
-                    }
-                    catch {
-                        console.log("catch");
-                    }
-                }
-            }
-        }
 
-        else { this.setAnnotationColors(tableData) }
+
+        this.setAnnotationColors(tableData)
 
         const qnodes = wikiStore.layers.qnode;
         for (const entry of qnodes.entries) {
@@ -220,6 +207,22 @@ class CombinedTable extends Component<{}, TableState> {
             } catch (error) {
                 console.log(error);
             }
+        }
+
+        if (currentFilesService.currentState.mappingType == "Yaml") {
+            const types = wikiStore.layers.type;
+            for (const entry of types.entries) {
+                for (const indexPair of entry.indices) {
+                    try {
+                        const tableCell = tableData[indexPair[0]][indexPair[1]];
+                        tableCell.classNames.push(`role-${entry.type}`);
+                    }
+                    catch {
+                        console.log("catch");
+                    }
+                }
+            }
+            return;
         }
 
         if (wikiStore.annotations.blocks && tableData) {
@@ -373,6 +376,8 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
+        if (currentFilesService.currentState.mappingType == "Yaml") { return;}
+
         const selectedBlock = checkSelectedAnnotationBlocks({
             x1: selectedCell.col + 1,
             y1: selectedCell.row + 1,
@@ -432,12 +437,53 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateSelectionStyle(selection?: CellSelection) {
+        if (currentFilesService.currentState.mappingType == "Yaml"){return;}
         const table: any = this.tableRef;
         if (!table) { return; }
         this.resetSelectionCss()
         if (!selection) { return }
         const classNames: string[] = ['selected'];
         this.applyCsstoBlock(selection, table, classNames);
+    }
+
+
+    async getAnnotationSuggestedBlocks() {
+        if (wikiStore.annotations.blocks.length > 0) {
+            if (!confirm("This will clear the existing annotation, are you sure you want to continue?")) {
+                return;
+            }
+        }
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
+        try {
+            await this.requestService.call(this, () => this.requestService.getSuggestedAnnotationBlocks())
+        } finally {
+            wikiStore.yaml.showSpinner = false;
+        }
+
+        let data = {} as any;
+        let hasSubject = false;
+        for (const block of wikiStore.annotations.blocks) {
+            if (block.role == "mainSubject") {
+                hasSubject = true;
+                data = { "selection": block.selection };
+            }
+        }
+
+        if (hasSubject)
+            try {
+                await this.requestService.call(this, () => this.requestService.callCountryWikifier(data))
+            } finally {
+                //
+            }
+        wikiStore.table.showSpinner = false;
+        wikiStore.wikifier.showSpinner = true;
+        try {
+            await this.requestService.getPartialCsv();
+        }
+        finally {
+            wikiStore.wikifier.showSpinner = false;
+        }
     }
 
     async addFile(file: File) {
