@@ -24,7 +24,7 @@ import Sidebar from './sidebar/sidebar';
 import { currentFilesService } from '../common/current-file-service';
 import EntitiesWindow from './entities/entities-window';
 import CombinedTable from './table/combined-table';
-import Wikifier from './wikifier/wikifier';
+import PartialCsvPreview from './wikifier/wikifier';
 import BlockCellYamlMenu from './block-cell-yaml-menu';
 
 
@@ -260,7 +260,7 @@ class Project extends Component<ProjectProps, ProjectState> {
               <CombinedTable />
               <SplitPane className="" split="horizontal" defaultSize="60%" minSize="40%" maxSize="70%">
                 <BlockCellYamlMenu />
-                <Wikifier />
+                <PartialCsvPreview />
               </SplitPane>
             </SplitPane>
           </SplitPane>
