@@ -104,7 +104,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   updateSelection(selection?: CellSelection) {
     const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
-    this.setState({ selection: selection, fields: { selectedArea: selectedArea, ...this.state.fields,} },
+    const fields = {...this.state.fields}
+    fields["selectedArea"] = selectedArea
+    this.setState({ selection, fields},
       () => this.getAnnotationSuggestionsForSelection(selection))
   }
 
@@ -338,6 +340,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     let blockSelection = undefined;
     if (this.state.selectedBlock?.selection) { blockSelection = utils.humanReadableSelection(this.state.selectedBlock?.selection); }
     if (!selectedArea && !blockSelection) { return null; }
+    const value = selectedArea || blockSelection
+    console.log("render selection areas", value, selectedArea, blockSelection)
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}>
         <Form.Label column sm="12" md="3" className="text-muted">
@@ -347,7 +351,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           <Form.Control
             required
             type="text" size="sm"
-            value={selectedArea || blockSelection}
+            value={value}
             onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
             isInvalid={!this.state.validArea} />
           <Form.Control.Feedback type="invalid">
