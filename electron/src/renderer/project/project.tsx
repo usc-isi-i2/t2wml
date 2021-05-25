@@ -258,11 +258,9 @@ class Project extends Component<ProjectProps, ProjectState> {
             <Sidebar />
             <SplitPane className="" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
               <CombinedTable />
-              <SplitPane className="" split="horizontal" defaultSize="60%"  minSize={300} maxSize={-600}>
+              <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
                 <BlockCellYamlMenu />
-                {/* // <div style={{minHeight:'50vh', maxHeight:'auto', backgroundColor: 'red'}}> */}
                 <PartialCsvPreview />
-                {/* </div> */}
               </SplitPane>
             </SplitPane>
           </SplitPane>

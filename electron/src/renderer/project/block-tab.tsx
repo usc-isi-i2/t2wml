@@ -12,7 +12,7 @@ class BlockTab extends Component {
 
     render() {
         return (
-            <div className="scroll-tab">
+            <div>
                 <AnnotationForm />
             </div>
         );
