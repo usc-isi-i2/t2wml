@@ -25,7 +25,7 @@ class TableState {
     @observable public selectedCell?: Cell;
     @observable public selectedBlock?: AnnotationBlock;
     @observable public selection?: CellSelection;
-    
+
     @observable public showCleanedData: boolean;
 
     constructor() {
@@ -37,7 +37,19 @@ class TableState {
 
     updateTable(table: TableDTO){
         this.table=table;
+        console.log("resetting wikistore selections from wikistore update table")
+        this.resetSelections();
+    }
+
+    resetSelections(){
         this.selectedCell = undefined;
+        this.selectedBlock= undefined;
+        this.selection = undefined;
+    }
+
+    selectBlock(block?: AnnotationBlock){
+        this.selectedBlock = block;
+        this.selection = block?.selection || undefined;
     }
 }
 
