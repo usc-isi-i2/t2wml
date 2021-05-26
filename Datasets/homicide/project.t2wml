@@ -35,12 +35,14 @@ data_files:
     - Total Count and Rate
     - By Sex Count and Rate
     - Sources Codes
+description: ''
 entity_files:
 - homicide_extra_edges.tsv
 - homicide_properties.tsv
 handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: homicide
+url: ''
 warn_for_empty_cells: false
 wikifier_files:
 - wikifier_homicide.csv

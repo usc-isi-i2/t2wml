@@ -294,6 +294,7 @@ def call_wikifier_service():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
     df, entities_dict = wikify_selection(calc_params, selection)
 
     create_wikifier_file(project, df, os.path.join(project.directory, "wikify_service_output.csv"))

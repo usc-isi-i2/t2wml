@@ -106,25 +106,34 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
     const fields = { ...this.state.fields }
     fields["selectedArea"] = selectedArea
-    this.setState({ selection, fields },
+    this.setState({ selection: selection, fields },
       () => this.getAnnotationSuggestionsForSelection(selection))
   }
 
   updateSelectedBlock(selectedBlock?: AnnotationBlock) {
-
     if (selectedBlock) {
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
       const fields = { ...selectedBlock }
-      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: { selectedArea: selectedArea, ...fields } })
+      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: { 
+        selectedArea: selectedArea,
+        role: fields.role,
+        type: fields.type,
+        unit: fields.unit,
+        format: fields.format,
+        calendar: fields.calendar,
+        property: fields.property,
+        language: fields.language,
+        precision: fields.precision,
+        subject: fields.subject,
+      }, showExtraFields: false })
     } else {
       this.setState({
-        selectedBlock,
+        selectedBlock: undefined,
         selection: undefined,
         fields: {
           ...this.state.fields,
           selectedArea: undefined
         }
-
       });
     }
   }
@@ -276,15 +285,20 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.setState({ errorMessage: error });
     }
 
-    if (annotation && annotation.role && annotation.selection && annotation.role == "mainSubject") {
-      try {
-        await this.requestService.call(this, () => (
-          this.requestService.callCountryWikifier({ "selection": annotation.selection })
-        ))
+    if (annotation) {
+      if (annotation.role && annotation.selection && annotation.role == "mainSubject") {
+        try {
+          await this.requestService.call(this, () => (
+            this.requestService.callCountryWikifier({ "selection": annotation.selection })
+          ))
+        }
+        catch (error) {
+          //do nothing...
+        }
       }
-      catch (error) {
-        //do nothing...
-      }
+      wikiStore.table.selectBlock(utils.checkSelectedAnnotationBlocks(annotation.selection))
+    } else {
+      wikiStore.table.resetSelections();
     }
 
     wikiStore.table.showSpinner = false;
@@ -296,18 +310,17 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     finally {
       wikiStore.wikifier.showSpinner = false;
     }
-
   }
 
   handleOnSubmit(event: any) {
     event.preventDefault();
     const { fields, selectedBlock, selection } = this.state;
-    if (!fields.selectedArea) { return null; }
+    if (!fields.selectedArea || !(selection && fields.role)) { return null; }
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock?.id;
     });
     const annotation: any = {
-      'selection': selection
+      selection: selection
     };
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
@@ -315,8 +328,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
 
     annotations.push(annotation);
-
     this.postAnnotations(annotations, annotation);
+
   }
 
   handleOnDelete(event: React.MouseEvent) {
@@ -326,12 +339,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (!selectedBlock) { return; }
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
-      return block !== selectedBlock;
+      return block.id !== selectedBlock.id;
     });
-    this.setState({ selectedBlock: undefined });
     this.postAnnotations(annotations);
-
-    // onDelete(selectedAnnotationBlock);
 
   }
 
@@ -381,7 +391,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
           <Col sm="12" md="9">
             <Form.Control size="sm" as="select" key={defaultValue} defaultValue={defaultValue}>
-              <option disabled selected defaultValue="--">--</option>
+              <option disabled value="--">--</option>
               {type.children.map((option: AnnotationOption) => (
                 <option key={option.value}
                   value={option.value}>
@@ -415,8 +425,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
     }
 
-    const defaultValue2 = this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""
-
+    defaultValue = defaultValue == "--" ? "" : defaultValue;
     return (
       <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
@@ -426,10 +435,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           {/* || (key == 'unit' && unitBlockId) ? '9' : '12'}> */}
           <Form.Control
             type="text" size="sm"
-            key={defaultValue2}
-            defaultValue={defaultValue2}
+            key={defaultValue}
+            defaultValue={defaultValue}
           />
-          {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg "%Y")</Form.Label> : null}
+          {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg &quot;%Y&quot;)</Form.Label> : null}
         </Col>
         {
           key == "property" && propertyBlockId ?
@@ -450,7 +459,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               </Col>
               : null
         }
-
 
       </Form.Group>
     )
@@ -535,9 +543,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   renderRolesDropdown() {
     const { selectedBlock, annotationSuggestions } = this.state;
 
-
     const rolesList = ROLES;
-
     let selectedAnnotationRole = selectedBlock ? selectedBlock.role as string : rolesList[0].value;
     if (!selectedBlock && annotationSuggestions.role) {
       selectedAnnotationRole = annotationSuggestions.role;
@@ -568,13 +574,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   renderSearchResults() {
+    const { showResult1 } = this.state
     return (
-      <div>{
-        this.state.showResult1 ?
-          <SearchResults onSelect={this.handleOnSelect.bind(this)} />
-          : null
-      }
-
+      <div>
+        {
+          showResult1 ?
+            <SearchResults onSelect={this.handleOnSelect.bind(this)} />
+            : null
+        }
       </div>
     )
   }
@@ -733,7 +740,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   renderSelectedNode() {
     const { qnodes, selected } = this.state.subject;
-    // const { subject } = {...this.state.fields};
     if (!qnodes.length && selected) {
       return (
         <div className="selected-node">

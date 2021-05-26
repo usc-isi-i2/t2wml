@@ -310,7 +310,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSubmitButton() {
-    const { qnodes } = this.state;
+    const { qnodes, selected } = this.state;
     if (!qnodes.length) {
       return (
         <Form.Group as={Row}>
@@ -318,7 +318,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             <Button
               size="sm"
               type="submit"
-              variant="outline-dark">
+              variant="outline-dark"
+              disabled={!selected}>
               Submit
             </Button>
             {this.renderRemoveButton()}
