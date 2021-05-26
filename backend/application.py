@@ -297,7 +297,7 @@ def call_wikifier_service():
     selection = request.get_json()['selection']
     df, entities_dict = wikify_selection(calc_params, selection)
 
-    create_wikifier_file(project, df, os.path.join(project.directory, "wikify_region_output.csv"))
+    create_wikifier_file(project, df, os.path.join(project.directory, "wikify_service_output.csv"))
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
