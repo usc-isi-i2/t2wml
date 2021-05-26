@@ -216,7 +216,6 @@ class RequestService {
   public async callWikifierService(data: any) {
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
     this.updateProjectandQnode(response);
-    wikiStore.wikifier.wikifierError = response.wikifierError;
   }
 
   public async callCountryWikifier(data: any){
@@ -225,7 +224,6 @@ class RequestService {
     updater.update(() => { this.updateProjectandQnode(response);
       wikiStore.wikifier.wikifierError = response.wikifierError; })
   }
-
 
   public async getTable() {
     const updater = currentFilesService.createUpdater();

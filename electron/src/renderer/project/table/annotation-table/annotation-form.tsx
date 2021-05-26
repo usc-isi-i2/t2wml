@@ -104,9 +104,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   updateSelection(selection?: CellSelection) {
     const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
-    const fields = {...this.state.fields}
+    const fields = { ...this.state.fields }
     fields["selectedArea"] = selectedArea
-    this.setState({ selection, fields},
+    this.setState({ selection, fields },
       () => this.getAnnotationSuggestionsForSelection(selection))
   }
 
@@ -114,19 +114,19 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     if (selectedBlock) {
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
-      const fields = {...selectedBlock}
-      this.setState({selectedBlock: fields, selection: selectedBlock.selection, fields: {selectedArea:selectedArea, ...fields}})
-    }else{
-    this.setState({
-      selectedBlock,
-      selection:  undefined,
-      fields: {
-        ...this.state.fields,
-        selectedArea: undefined
-      }
+      const fields = { ...selectedBlock }
+      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: { selectedArea: selectedArea, ...fields } })
+    } else {
+      this.setState({
+        selectedBlock,
+        selection: undefined,
+        fields: {
+          ...this.state.fields,
+          selectedArea: undefined
+        }
 
-    });
-  }
+      });
+    }
   }
 
   async updateSuggestion(suggestion: ResponseWithSuggestion) {
@@ -145,7 +145,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   async getAnnotationSuggestionsForSelection(selection?: { 'x1': number, 'x2': number, 'y1': number, 'y2': number }) {
     if (!selection) { return; }
-    if (this.state.selectedBlock){console.log("returned because state had a block"); return;}
+    if (this.state.selectedBlock) { console.log("returned because state had a block"); return; }
     //data should be a json dictionary, with fields:
     // {
     //   "selection": The block,
@@ -415,7 +415,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
     }
 
-    const defaultValue2=this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""
+    const defaultValue2 = this.state.fields[key as keyof AnnotationFields] ? this.state.fields[key as keyof AnnotationFields] : ""
 
     return (
       <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}
@@ -689,6 +689,19 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     });
   }
 
+  handleOnWikify() {
+    const data = { "selection": this.state.selection };
+    wikiStore.table.showSpinner = true;
+    try {
+      this.requestService.call(this, () => (
+        this.requestService.callWikifierService(data)
+      ));
+    }
+    finally {
+      wikiStore.table.showSpinner = false;
+    }
+  }
+
   removeInstanceOf() {
     const subject = { ...this.state.subject };
     subject.instanceOf = undefined;
@@ -816,6 +829,16 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
   }
 
+  renderWikifyButton() {
+    return (<Button
+      size="sm"
+      type="button"
+      variant="outline-dark"
+      onClick={() => this.handleOnWikify()}>
+      Send this block for wikification
+    </Button>)
+  }
+
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
@@ -827,6 +850,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             Submit
           </Button>
           {this.renderDeleteButton()}
+          {this.renderWikifyButton()}
         </Col>
       </Form.Group>
     )
