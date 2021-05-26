@@ -81,7 +81,7 @@ def get_empty_layers():
                 qnode=qnodeLayer)
 
 
-def create_wikification_entry(calc_params, project, selection, value, context, item):
+def create_user_wikification(calc_params, project, selection, value, context, item):
     top_left, bottom_right = selection
     col1, row1 = top_left
     col2, row2 = bottom_right

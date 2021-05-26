@@ -696,6 +696,19 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     });
   }
 
+  handleOnWikify() {
+    const data = { "selection": this.state.selection };
+    wikiStore.table.showSpinner = true;
+    try {
+      this.requestService.call(this, () => (
+        this.requestService.callWikifierService(data)
+      ));
+    }
+    finally {
+      wikiStore.table.showSpinner = false;
+    }
+  }
+
   removeInstanceOf() {
     const subject = { ...this.state.subject };
     subject.instanceOf = undefined;
@@ -822,6 +835,16 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
   }
 
+  renderWikifyButton() {
+    return (<Button
+      size="sm"
+      type="button"
+      variant="outline-dark"
+      onClick={() => this.handleOnWikify()}>
+      Send this block for wikification
+    </Button>)
+  }
+
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
@@ -833,6 +856,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             Submit
           </Button>
           {this.renderDeleteButton()}
+          {this.renderWikifyButton()}
         </Col>
       </Form.Group>
     )

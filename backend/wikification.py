@@ -21,12 +21,15 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     for col in range(col1, col2+1):
         for row in range(row1, row2+1):
             value=sheet[row, col]
-            df_rows.append([col, row, value, data_file_name, sheet_name])
+            df_rows.append([col, row, value, data_file_name, sheet_name, ""])
     df = pd.DataFrame(df_rows, columns=[
-                      "column", "row", "value", "file", "sheet"])
-    csv_str = df.to_csv(index=None)
-    binary = csv_str.encode()
-    url += f'?k=1&columns={"value"}'
+                      "column", "row", "value", "file", "sheet", "context"])
+    string_stream = StringIO("", newline="")
+    df.to_csv(string_stream, index=None, line_terminator="\n")
+    output = string_stream.getvalue()
+    string_stream.close()
+    binary = output.encode()
+    url += f'?k=1&columns=value'
 
     files = {
         'file': (sheet.data_file_name, binary, 'application/octet-stream')
