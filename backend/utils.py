@@ -3,6 +3,8 @@ from pathlib import Path
 import numpy as np
 from string import punctuation
 from flask import request
+import os
+import pandas as pd
 
 import web_exceptions
 
@@ -77,3 +79,36 @@ def get_empty_layers():
                 cleaned=cleanedLayer,
                 type=typeLayer,
                 qnode=qnodeLayer)
+
+
+def create_wikification_entry(calc_params, project, selection, value, context, item):
+    top_left, bottom_right = selection
+    col1, row1 = top_left
+    col2, row2 = bottom_right
+    sheet_name = calc_params.sheet.name
+    data_file_name = calc_params.sheet.data_file_name
+    df_rows = []
+    for col in range(col1, col2+1):
+        for row in range(row1, row2+1):
+            df_rows.append([col, row, value, context, item,
+                            data_file_name, sheet_name])
+    df = pd.DataFrame(df_rows, columns=[
+                      "column", "row", "value", "context", "item", "file", "sheet"])
+    filepath = os.path.join(project.directory, "user-input-wikification.csv")
+    create_wikifier_file(project, df, filepath)
+
+def create_wikifier_file(project, df, filepath):
+    if os.path.exists(filepath):
+        #clear any clashes/duplicates
+        org_df=pd.read_csv(filepath)
+        if 'file' not in org_df:
+            org_df['file']=''
+        if 'sheet' not in org_df:
+            org_df['sheet']=''
+
+        df=pd.concat([org_df, df]).drop_duplicates(subset=['row', 'column', 'value', 'file', 'sheet'], keep='last').reset_index(drop=True)
+
+    df.to_csv(filepath, index=False, header=True)
+
+    project.add_wikifier_file(filepath)
+    project.save()

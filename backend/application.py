@@ -10,15 +10,15 @@ from app_config import app
 from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file
 from t2wml.input_processing.annotation_suggesting import annotation_suggester
-from t2wml_web import (create_wikification_entry, get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
-                   get_yaml_content, save_yaml)
+                   get_yaml_content, save_yaml, create_wikification_entry, create_wikifier_file)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
 import path_utils
-from wikification import wikify_countries
+from wikification import wikify_countries, wikify_selection
 
 debug_mode = False
 
@@ -293,24 +293,18 @@ def call_wikifier_service():
     :return:
     """
     project = get_project()
-    region = request.get_json()["region"]
-    context = request.get_json()["context"]
     calc_params = get_calc_params(project)
+    selection = request.get_json()['selection']
+    df, entities_dict = wikify_selection(calc_params, selection)
 
-    cell_qnode_map, problem_cells = wikify(calc_params, region, context)
-    file_path = save_dataframe(
-        project, cell_qnode_map, "wikify_region_output.csv")
-    file_path = project.add_wikifier_file(
-        file_path,  copy_from_elsewhere=True, overwrite=True)
-    project.save()
+    create_wikifier_file(project, df, os.path.join(project.directory, "wikify_region_output.csv"))
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
+    #if problem_cells:
+    #    response['wikifierError'] = "Failed to wikify: " + ",".join(problem_cells)
 
     return response, 200
 

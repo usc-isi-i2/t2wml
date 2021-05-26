@@ -1,12 +1,56 @@
-import json
+import os
+import pandas as pd
+import requests
+from io import StringIO
+##
 import logging
 import numpy as np
 from functools import partial
 import rltk.similarity as sim
-import os
 from abc import ABC, abstractmethod
-import pandas as pd
 from t2wml.wikification.country_wikifier_cache import countries
+
+
+def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/wikifier/wikify"):
+    (col1, row1), (col2, row2) = selection
+    sheet_name = calc_params.sheet.name
+    data_file_name = calc_params.sheet.data_file_name
+    sheet=calc_params.sheet
+
+    df_rows = []
+    for col in range(col1, col2+1):
+        for row in range(row1, row2+1):
+            value=sheet[row, col]
+            df_rows.append([col, row, value, data_file_name, sheet_name])
+    df = pd.DataFrame(df_rows, columns=[
+                      "column", "row", "value", "file", "sheet"])
+    csv_str = df.to_csv(index=None)
+    binary = csv_str.encode()
+    url += f'?k=1&columns={"value"}'
+
+    files = {
+        'file': (sheet.data_file_name, binary, 'application/octet-stream')
+    }
+
+    resp = requests.post(url, files=files)
+
+    s = str(resp.content, 'utf-8')
+    data = StringIO(s)
+
+    df = pd.read_csv(data)
+    ids=df.pop("value_kg_id")
+    df["item"]=ids
+    labels= df.pop("value_kg_label")
+    scores= df.pop("value_score")
+    #description= df.pop("value_kg_description")
+    entity_df=pd.DataFrame()
+    entity_df["label"]=labels
+    entity_df["id"]=ids
+    entity_df.set_index("id", inplace=True)
+    entities_dict = entity_df.to_json(orient='index')
+    return df, entities_dict
+
+
 
 FILE_FOLDER=os.path.abspath(os.path.dirname(__file__))
 
