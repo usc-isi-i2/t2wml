@@ -28,7 +28,6 @@ interface WikifyFormState {
   selected?: QNode;
   qnodes: QNode[];
   prevCell?: Cell;
-  remove: boolean;
 }
 
 
@@ -54,8 +53,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       applyToBlock: false,
       selected: selected,
       qnodes: [],
-      prevCell: undefined,
-      remove: false,
+      prevCell: undefined
     };
   }
 
@@ -67,30 +65,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     for (const disposer of this.disposers) {
       disposer();
     }
-  }
-
-  static getDerivedStateFromProps(props: WikifyFormProperties, state: WikifyFormState) {
-    const qnode = wikiStore.layers.qnode.find(props.selectedCell);
-    if(state.remove){
-      return { 
-        selected: undefined, 
-        instanceOf: undefined, 
-        search: "",
-        instanceOfSearch: "", 
-        remove: false
-      };
-    }
-    if ((!qnode && (state.prevCell !== props.selectedCell)) || (qnode && (qnode !== state.selected))) {
-      const cellType = wikiStore.layers.type.find(props.selectedCell);
-      return { 
-        selected: qnode, 
-        instanceOf: undefined, 
-        search: "", instanceOfSearch: "", 
-        prevCell: props.selectedCell,
-        searchProperties: cellType ? cellType.type === 'property' : state.searchProperties
-      };
-    }
-    return null;
   }
 
 
@@ -162,7 +136,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     if (!selected) { return; }
     onRemove(selected, applyToBlock);
     this.setState({
-      remove: true,
       selected: undefined, 
       instanceOf: undefined,
       search: '',

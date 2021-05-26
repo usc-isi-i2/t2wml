@@ -210,7 +210,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     const { selectedCell } = this.state;
     if (!selectedCell) { return; }
     return (
-      <WikifyForm
+      <WikifyForm key={selectedCell.row.toString() + selectedCell.col.toString()}
         selectedCell={selectedCell}
         onSelectBlock={(applyToBlock) => this.onSelectBlock(applyToBlock)}
         onChange={this.handleOnChange.bind(this)}
