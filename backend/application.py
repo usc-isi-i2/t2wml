@@ -8,12 +8,11 @@ from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
-from t2wml.api import add_entities_from_file
-from t2wml.input_processing.annotation_suggesting import annotation_suggester
+from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
-                   get_yaml_content, save_yaml, create_wikification_entry, create_wikifier_file)
+                   get_yaml_content, save_yaml, create_user_wikification, create_wikifier_file)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
@@ -297,7 +296,7 @@ def call_wikifier_service():
     selection = request.get_json()['selection']
     df, entities_dict = wikify_selection(calc_params, selection)
 
-    create_wikifier_file(project, df, os.path.join(project.directory, "wikify_region_output.csv"))
+    create_wikifier_file(project, df, os.path.join(project.directory, "wikify_service_output.csv"))
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -585,7 +584,7 @@ def set_qnode():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-    create_wikification_entry(calc_params, project, selection, value, context, item)
+    create_user_wikification(calc_params, project, selection, value, context, item)
     # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
@@ -641,7 +640,6 @@ def create_qnode():
     project = get_project()
     request_json=request.get_json()
     try:
-        id=request_json.pop("id")
         label=request_json.pop("label")
         is_prop=request_json.pop("isProperty") # is_prop=id[0].lower()=="p"
         if is_prop:
@@ -650,6 +648,11 @@ def create_qnode():
                 raise web_exceptions.InvalidRequestException("Invalid data type")
     except KeyError:
         raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
+
+    if is_prop:
+        id = get_Pnode(project, label)
+    else:
+        id = get_Qnode(project, label)
 
     entity_dict={
         "label":label
@@ -677,7 +680,7 @@ def create_qnode():
     if selection:
         calc_params=get_calc_params()
         context = request.get_json().get("context", "")
-        create_wikification_entry(calc_params, project, selection, label, context, id)
+        create_user_wikification(calc_params, project, selection, label, context, id)
         response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200
