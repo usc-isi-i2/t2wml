@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AnnotationBlock, AnnotationBlockRole, ResponseWithSuggestion } from '../../../common/dtos';
+import { AnnotationBlock, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -106,7 +106,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
     const fields = { ...this.state.fields }
     fields["selectedArea"] = selectedArea
-    this.setState({ selection, fields },
+    this.setState({ selection: selection, fields },
       () => this.getAnnotationSuggestionsForSelection(selection))
   }
 
@@ -114,11 +114,21 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (selectedBlock) {
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
       const fields = { ...selectedBlock }
-      console.log("update fields:", { selectedBlock: fields, selection: selectedBlock.selection, fields: { selectedArea: selectedArea, ...fields } })
-      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: { selectedArea: selectedArea, ...fields }, showExtraFields: false })
+      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: { 
+        selectedArea: selectedArea,
+        role: fields.role,
+        type: fields.type,
+        unit: fields.unit,
+        format: fields.format,
+        calendar: fields.calendar,
+        property: fields.property,
+        language: fields.language,
+        precision: fields.precision,
+        subject: fields.subject,
+      }, showExtraFields: false })
     } else {
       this.setState({
-        selectedBlock,
+        selectedBlock: undefined,
         selection: undefined,
         fields: {
           ...this.state.fields,
@@ -286,8 +296,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           //do nothing...
         }
       }
-      wikiStore.table.selectedBlock = utils.checkSelectedAnnotationBlocks(annotation.selection);
-      wikiStore.table.selection = annotation.selection;
+      wikiStore.table.selectBlock(utils.checkSelectedAnnotationBlocks(annotation.selection))
+    } else {
+      wikiStore.table.resetSelections();
     }
 
     wikiStore.table.showSpinner = false;
@@ -299,7 +310,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     finally {
       wikiStore.wikifier.showSpinner = false;
     }
-
   }
 
   handleOnSubmit(event: any) {
@@ -310,14 +320,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       return block.id !== selectedBlock?.id;
     });
     const annotation: any = {
-      'selection': selection
+      selection: selection
     };
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
-    annotations.push(annotation);
 
+    annotations.push(annotation);
     this.postAnnotations(annotations, annotation);
 
   }
@@ -332,9 +342,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       return block.id !== selectedBlock.id;
     });
     this.postAnnotations(annotations);
-
-    wikiStore.table.selectedBlock = undefined;
-    wikiStore.table.selection = undefined;
 
   }
 
