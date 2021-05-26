@@ -836,19 +836,26 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   renderWikifyButton() {
-    return (<Button
-      size="sm"
-      type="button"
-      variant="outline-dark"
-      onClick={() => this.handleOnWikify()}>
-      Send this block for wikification
-    </Button>)
+    const role = this.state.fields['role'];
+    const type = this.state.fields['type'];
+    if (role === 'property' || role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
+      return (<Button
+        size="sm"
+        type="button"
+        variant="outline-dark"
+        onClick={() => this.handleOnWikify()}>
+        Send this block for wikification
+      </Button>)
+    }
   }
 
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
         <Col sm="12" md="12">
+          {this.renderWikifyButton()}
+        </Col>
+        <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
           <Button
             size="sm"
             type="submit"
@@ -856,7 +863,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             Submit
           </Button>
           {this.renderDeleteButton()}
-          {this.renderWikifyButton()}
         </Col>
       </Form.Group>
     )
