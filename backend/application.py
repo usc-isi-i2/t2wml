@@ -759,7 +759,7 @@ def causx_wikify():
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
     file_path = save_dataframe(
-        project, cell_qnode_map, "wikify_region_output.csv")
+        project, cell_qnode_map, "country_wikifier_output.csv")
     file_path = project.add_wikifier_file(
         file_path,  copy_from_elsewhere=True, overwrite=True)
     project.save()
