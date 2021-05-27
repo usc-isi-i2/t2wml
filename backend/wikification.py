@@ -43,11 +43,9 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     labels= df.pop("value_kg_label")
     scores= df.pop("value_score")
     #description= df.pop("value_kg_description")
-    entity_df=pd.DataFrame()
-    entity_df["label"]=labels
-    entity_df["id"]=ids
-    entity_df.set_index("id", inplace=True)
-    entities_dict = entity_df.to_json(orient='index')
+    entities_dict={}
+    for index, id in enumerate(ids):
+        entities_dict[id]={"label": labels[index]}
     return df, entities_dict
 
 
