@@ -114,7 +114,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (selectedBlock) {
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
       const fields = { ...selectedBlock }
-      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: { 
+      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: {
         selectedArea: selectedArea,
         role: fields.role,
         type: fields.type,
@@ -696,11 +696,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     });
   }
 
-  handleOnWikify() {
+  async handleOnWikify() {
     const data = { "selection": this.state.selection };
     wikiStore.table.showSpinner = true;
     try {
-      this.requestService.call(this, () => (
+      await this.requestService.call(this, () => (
         this.requestService.callWikifierService(data)
       ));
     }
