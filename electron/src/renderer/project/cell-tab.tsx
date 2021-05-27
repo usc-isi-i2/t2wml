@@ -9,7 +9,7 @@ import "./project.css";
 class CellTab extends Component {
     render() {
         return (
-            <Container className="scroll-tab">
+            <Container>
                 <Row>
                     <Col>
                         <WikifyMenu />

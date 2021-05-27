@@ -193,8 +193,9 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
 
         <Card
-          className="w-100 shadow-sm"
-          style={{ height: "50vh" }}
+          className="w-100 h-100 shadow-sm"
+          style={{ height: "calc(100% - 40px)"}}
+          // style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
 
           {/* header */}

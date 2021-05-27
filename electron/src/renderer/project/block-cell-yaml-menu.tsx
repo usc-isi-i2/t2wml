@@ -21,6 +21,7 @@ class BlockCellYamlMenu extends Component {
     render() {
         const { showEntityMenu } = this.state;
         return (
+<<<<<<< HEAD
             <div className="w-100 shadow-sm h-100" style={{ margin: "2px" }}>
                 <Button
                     type="button"
@@ -33,6 +34,9 @@ class BlockCellYamlMenu extends Component {
                     : null
                 }
                 
+=======
+            <div className="w-100 shadow-sm h-100 block-menu" style={{ margin: "2px" }}>
+>>>>>>> table-refactor-css
                 <Tabs defaultActiveKey="block" id="tabs" transition={false}>
                 <Tab eventKey="block" title="Block">
                         <BlockTab />
