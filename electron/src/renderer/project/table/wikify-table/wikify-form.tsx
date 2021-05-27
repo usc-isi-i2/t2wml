@@ -4,11 +4,11 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { QNode } from '@/renderer/common/dtos';
+import { EntityFields, QNode } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import EntityMenu from '../entity-menu';
+import EntityForm from '../entity-form';
 
 
 interface WikifyFormProperties {
@@ -19,7 +19,6 @@ interface WikifyFormProperties {
   onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
 }
 
-
 interface WikifyFormState {
   search?: string;
   instanceOf?: QNode;
@@ -29,8 +28,9 @@ interface WikifyFormState {
   selected?: QNode;
   qnodes: QNode[];
   prevCell?: Cell;
-  showEntityMenu: boolean;
+  entityFields: EntityFields;
 }
+
 
 
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
@@ -56,7 +56,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       selected: selected,
       qnodes: [],
       prevCell: undefined,
-      showEntityMenu: false
+      entityFields:{
+        isProperty: true,
+        label: "",
+        description: "",
+        datatype: "",
+      }
     };
   }
 
@@ -70,15 +75,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
-  changeShowEntityMenu(close = false) {
-    console.log("changeShowEntityMenu")
-    if (close) {
-      this.setState({ showEntityMenu: false });
-    } else {
-      const { showEntityMenu } = this.state;
-      this.setState({ showEntityMenu: !showEntityMenu });
-    }
-  }
 
   toggleApplyToBlock() {
     const { applyToBlock } = this.state;
@@ -321,6 +317,22 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
+  renderEntityForm() {
+    const { entityFields } = this.state;
+    return <EntityForm
+      entityFields={entityFields}
+      handleOnChange={(event: KeyboardEvent, key:"label" | "description" | "datatype" | "isProperty") => this.handleOnChangeEntity(event, key)}
+    />;
+  }
+
+  handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty"){
+    const value = (event.target as HTMLInputElement).value;
+    const updatedEntityFields = { ...this.state.entityFields };
+    // updatedEntityFields[key as keyof EntityFields] = value;
+
+
+  }
+
   renderSubmitButton() {
     const { qnodes, selected } = this.state;
     if (!qnodes.length) {
@@ -358,34 +370,21 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   render() {
-    const { showEntityMenu } = this.state;
-    const { selectedCell } = this.props;
     return (
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
-        {this.renderSearchInputs()}
-        {this.renderInstanceOf()}
-        {this.renderQNodeResults()}
-        {this.renderSelectedNode()}
-        {this.renderApplyOptions()}
         <Form.Group as={Row}>
           <Col sm="12" md="12">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline-dark"
-              onClick={() => this.changeShowEntityMenu()}>
-              Create entity
-            </Button>
+            {this.renderSearchInputs()}
+            {this.renderInstanceOf()}
+            {this.renderQNodeResults()}
+          </Col>
+          <Col sm="12" md="12">
+            {this.renderEntityForm()}
           </Col>
         </Form.Group>
-        {
-          showEntityMenu && selectedCell ?
-            <EntityMenu key={selectedCell.col.toString() + selectedCell.row.toString()} 
-            selection={{x1:selectedCell.col, x2:selectedCell.col, y1:selectedCell.row, y2:selectedCell.row}} 
-            onClose={() => this.changeShowEntityMenu(true)} />
-            : null
-        }
+        {this.renderSelectedNode()}
+        {this.renderApplyOptions()}
         {this.renderSubmitButton()}
       </Form>
     )
