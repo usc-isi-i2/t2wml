@@ -656,7 +656,8 @@ def create_qnode():
         node_id = get_Qnode(project, label)
 
     entity_dict={
-        "label":label
+        "id": node_id,
+        "label": label,
     }
     if is_prop:
         entity_dict["data_type"]=data_type
