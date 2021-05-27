@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './project.css';
 import './ag-grid.css'
 import './ag-theme-balham.css'
+import './edit.css';
 import Navbar from '../common/navbar/navbar';
 
 
@@ -14,7 +15,6 @@ import { ErrorMessage, t2wmlColors } from '../common/general';
 // components
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
-
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
@@ -258,7 +258,7 @@ class Project extends Component<ProjectProps, ProjectState> {
             <Sidebar />
             <SplitPane className="" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
               <CombinedTable />
-              <SplitPane className="" split="horizontal" defaultSize="60%" minSize="40%" maxSize="70%">
+              <SplitPane className="" split="horizontal" defaultSize="60%" minSize={300} maxSize={-300}>
                 <BlockCellYamlMenu />
                 <PartialCsvPreview />
               </SplitPane>

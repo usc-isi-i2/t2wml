@@ -117,17 +117,3 @@ body {
 .table-sidebar-close {
   margin-left: 0px;
 }
-
-.scroll-tab {
-  /* TODO- fill the correct max-height */
-  max-height: 50vh; 
-  overflow-y: auto;
-  width: 100%;
-}
-
-.wikifier-tab {
-  /* TODO- fill the correct max-height */
-  max-height: 30vh; 
-  overflow-y: auto;
-  width: 100%;
-}
