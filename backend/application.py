@@ -295,7 +295,7 @@ def call_wikifier_service():
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
     selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
-    df, entities_dict = wikify_selection(calc_params, selection)
+    df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
 
     create_wikifier_file(project, df, os.path.join(project.directory, "wikify_service_output.csv"))
 
@@ -303,8 +303,8 @@ def call_wikifier_service():
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
-    #if problem_cells:
-    #    response['wikifierError'] = "Failed to wikify: " + ",".join(problem_cells)
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + ",".join(problem_cells)
 
     return response, 200
 
@@ -642,7 +642,7 @@ def create_qnode():
     request_json=request.get_json()
     try:
         label=request_json.pop("label")
-        is_prop=request_json.pop("isProperty") # is_prop=id[0].lower()=="p"
+        is_prop=request_json.pop("isProperty") # is_prop=node_id[0].lower()=="p"
         if is_prop:
             data_type=request_json.pop("datatype")
             if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
@@ -651,12 +651,13 @@ def create_qnode():
         raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
 
     if is_prop:
-        id = get_Pnode(project, label)
+        node_id = get_Pnode(project, label)
     else:
-        id = get_Qnode(project, label)
+        node_id = get_Qnode(project, label)
 
     entity_dict={
-        "label":label
+        "id": node_id,
+        "label": label,
     }
     if is_prop:
         entity_dict["data_type"]=data_type
@@ -670,18 +671,19 @@ def create_qnode():
         custom_nodes=kgtk_to_dict(filepath)
     else:
         custom_nodes=dict()
-    custom_nodes[id]=entity_dict
+    custom_nodes[node_id]=entity_dict
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
 
-    response=dict(entity=id, project=get_project_dict(project))
+    response=dict(entity=entity_dict, project=get_project_dict(project))
 
     selection=request_json.get("selection", None)
     if selection:
         calc_params=get_calc_params()
         context = request.get_json().get("context", "")
-        create_user_wikification(calc_params, project, selection, label, context, id)
+        create_user_wikification(calc_params, project, selection, label,
+                context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200
@@ -757,7 +759,7 @@ def causx_wikify():
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
     file_path = save_dataframe(
-        project, cell_qnode_map, "wikify_region_output.csv")
+        project, cell_qnode_map, "country_wikifier_output.csv")
     file_path = project.add_wikifier_file(
         file_path,  copy_from_elsewhere=True, overwrite=True)
     project.save()

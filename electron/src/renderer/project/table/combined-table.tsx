@@ -76,6 +76,8 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
         this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
+        this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateQnode()));
+        this.disposers.push(reaction(() => wikiStore.layers.statement, () => this.updateStatement()));
         this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
         this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
         this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelectionStyle(selection)));
@@ -160,6 +162,32 @@ class CombinedTable extends Component<{}, TableState> {
             tableData = this.getClasslessTableData()
         }
 
+
+        this.setState({ tableData });
+    }
+
+    updateStatement(tableData?: TableData){
+        if (!tableData) {
+            if (!this.state.tableData) {
+                return;
+            }
+            const { tableData: tableDataTmp } = this.state;
+            tableData = tableDataTmp;
+            //if we're taking existing table data, gotta clean it:
+            try {
+                tableData.forEach(row => {
+                    row.forEach(cell => {
+                        cell.classNames = cell.classNames.filter(function (value, index, arr) {
+                            return !value.startsWith("error")
+                        })
+                    })
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+
         const errors = wikiStore.layers.error;
         for (const entry of errors.entries) {
             for (const indexPair of entry.indices) {
@@ -168,24 +196,44 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-
-
         this.setAnnotationColors(tableData)
+        this.updateQnode(tableData);
+    }
+
+    updateQnode(tableData?: TableData){
+        if (!tableData) {
+            if (!this.state.tableData) {
+                return;
+            }
+            const { tableData: tableDataTmp } = this.state;
+            tableData = tableDataTmp;
+            //if we're taking existing table data, gotta clean it:
+            try {
+                tableData.forEach(row => {
+                    row.forEach(cell => {
+                        cell.classNames = cell.classNames.filter(function (value, index, arr) {
+                            return !value.startsWith("wikified")
+                        })
+                    })
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
 
         const qnodes = wikiStore.layers.qnode;
         for (const entry of qnodes.entries) {
             for (const indexPair of entry.indices) {
                 try {
                     const tableCell = tableData[indexPair[0]][indexPair[1]];
-                    tableCell.classNames.push(`type-wikibaseitem`);
+                    tableCell.classNames.push(`wikified`);
                 }
                 catch {
                     //pass
                 }
             }
         }
-
-        this.setState({ tableData });
     }
 
     setAnnotationColors(tableData?: TableData) {
@@ -200,7 +248,7 @@ class CombinedTable extends Component<{}, TableState> {
                 tableData.forEach(row => {
                     row.forEach(cell => {
                         cell.classNames = cell.classNames.filter(function (value, index, arr) {
-                            return !value.startsWith("role-") && !value.startsWith("error")
+                            return !value.startsWith("role-") && !value.startsWith("error") && !value.startsWith("expects-wiki")
                         })
                     })
                 })
@@ -227,7 +275,7 @@ class CombinedTable extends Component<{}, TableState> {
 
         if (wikiStore.annotations.blocks && tableData) {
             for (const block of wikiStore.annotations.blocks) {
-                const { role, selection, property, links, subject, link } = block;
+                const { role, selection, property, links, subject, link, type } = block;
                 const classNames: string[] = [];
                 if (role) {
                     if ((role == "qualifier") && !property && !links?.property) {
@@ -240,11 +288,15 @@ class CombinedTable extends Component<{}, TableState> {
                     else {
                         classNames.push(`role-${role}`);
                     }
+
+                    if  (role == "unit" || role == "mainSubject" || role == "property"){
+                        classNames.push("expects-wiki")
+                    }
                 }
-                //TODO: set to "needs wikification"?
-                //if (type=="wikibaseitem") {
-                //  classNames.push(`type-${type}`);
-                //}
+
+                if (type=="wikibaseitem") {
+                    classNames.push("expects-wiki")
+                }
 
 
                 const { x1, y1, x2, y2 } = selection;

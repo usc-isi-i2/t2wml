@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import requests
 from io import StringIO
 ##
@@ -8,6 +9,7 @@ import numpy as np
 from functools import partial
 import rltk.similarity as sim
 from abc import ABC, abstractmethod
+from t2wml.spreadsheets.conversions import to_excel
 from t2wml.wikification.country_wikifier_cache import countries
 
 
@@ -21,15 +23,13 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     for col in range(col1, col2+1):
         for row in range(row1, row2+1):
             value=sheet[row, col]
-            df_rows.append([col, row, value, data_file_name, sheet_name, ""])
+            if (value):
+                df_rows.append([col, row, value, data_file_name, sheet_name, ""])
     df = pd.DataFrame(df_rows, columns=[
                       "column", "row", "value", "file", "sheet", "context"])
-    string_stream = StringIO("", newline="")
-    df.to_csv(string_stream, index=None, line_terminator="\n")
-    output = string_stream.getvalue()
-    string_stream.close()
-    binary = output.encode()
-    url += f'?k=1&columns=value'
+    csv_str = df.to_csv(index=None)
+    binary = csv_str.encode()
+    url += f'?k=1&columns={"value"}'
 
     files = {
         'file': (sheet.data_file_name, binary, 'application/octet-stream')
@@ -41,17 +41,21 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     data = StringIO(s)
 
     df = pd.read_csv(data)
+    check_na = df['value_kg_id'].notna()
+    missing_values = df[np.invert(check_na)]
+    df = df[check_na] #trim anything that didn't wikify successfully
     ids=df.pop("value_kg_id")
     df["item"]=ids
     labels= df.pop("value_kg_label")
     scores= df.pop("value_score")
     #description= df.pop("value_kg_description")
-    entity_df=pd.DataFrame()
-    entity_df["label"]=labels
-    entity_df["id"]=ids
-    entity_df.set_index("id", inplace=True)
-    entities_dict = entity_df.to_json(orient='index')
-    return df, entities_dict
+    entities_dict={}
+    for index, id in enumerate(ids):
+        entities_dict[id]={"label": labels.iloc[index]}
+    problem_cells=[]
+    for index, line in missing_values.iterrows():
+        problem_cells.append(to_excel(line.column, line.row))
+    return df, entities_dict, problem_cells
 
 
 
