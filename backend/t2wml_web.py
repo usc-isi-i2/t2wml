@@ -58,8 +58,8 @@ def get_kg(calc_params):
             return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
-        ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
-        ang.preload(calc_params.sheet, wikifier)
+        #ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
+        #ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
     with t2wml_settings.wikidata_provider as p:
