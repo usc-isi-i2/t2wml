@@ -1,0 +1,12 @@
+.entity-menu {
+    position: absolute;
+    min-width: 300px;
+    z-index: 250;
+    left: 50px;
+    top: 70px;
+  }
+  
+  .entity-menu .handle {
+    background: whitesmoke;
+    cursor: pointer;
+  }
