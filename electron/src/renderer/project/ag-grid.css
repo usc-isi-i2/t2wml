@@ -2430,3 +2430,8 @@ ag-grid, ag-grid-angular, ag-grid-ng2, ag-grid-polymer, ag-grid-aurelia {
     .ag-chart-tabbed-menu .ag-chart-settings .ag-chart-settings-nav-bar .ag-nav-card-selector .ag-nav-card-item {
       cursor: pointer; }
 
+.block-menu {
+  position: relative;
+  overflow-y: scroll;
+  height: 100%;
+}
