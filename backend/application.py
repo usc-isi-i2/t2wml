@@ -642,7 +642,7 @@ def create_qnode():
     request_json=request.get_json()
     try:
         label=request_json.pop("label")
-        is_prop=request_json.pop("isProperty") # is_prop=id[0].lower()=="p"
+        is_prop=request_json.pop("isProperty") # is_prop=node_id[0].lower()=="p"
         if is_prop:
             data_type=request_json.pop("datatype")
             if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
@@ -651,12 +651,13 @@ def create_qnode():
         raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
 
     if is_prop:
-        id = get_Pnode(project, label)
+        node_id = get_Pnode(project, label)
     else:
-        id = get_Qnode(project, label)
+        node_id = get_Qnode(project, label)
 
     entity_dict={
-        "label":label
+        "id": node_id,
+        "label": label,
     }
     if is_prop:
         entity_dict["data_type"]=data_type
@@ -670,18 +671,19 @@ def create_qnode():
         custom_nodes=kgtk_to_dict(filepath)
     else:
         custom_nodes=dict()
-    custom_nodes[id]=entity_dict
+    custom_nodes[node_id]=entity_dict
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
 
-    response=dict(entity=id, project=get_project_dict(project))
+    response=dict(entity=entity_dict, project=get_project_dict(project))
 
     selection=request_json.get("selection", None)
     if selection:
         calc_params=get_calc_params()
         context = request.get_json().get("context", "")
-        create_user_wikification(calc_params, project, selection, label, context, id)
+        create_user_wikification(calc_params, project, selection, label,
+                context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200

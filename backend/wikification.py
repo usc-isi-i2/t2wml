@@ -24,12 +24,9 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
             df_rows.append([col, row, value, data_file_name, sheet_name, ""])
     df = pd.DataFrame(df_rows, columns=[
                       "column", "row", "value", "file", "sheet", "context"])
-    string_stream = StringIO("", newline="")
-    df.to_csv(string_stream, index=None, line_terminator="\n")
-    output = string_stream.getvalue()
-    string_stream.close()
-    binary = output.encode()
-    url += f'?k=1&columns=value'
+    csv_str = df.to_csv(index=None)
+    binary = csv_str.encode()
+    url += f'?k=1&columns={"value"}'
 
     files = {
         'file': (sheet.data_file_name, binary, 'application/octet-stream')
@@ -46,11 +43,9 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     labels= df.pop("value_kg_label")
     scores= df.pop("value_score")
     #description= df.pop("value_kg_description")
-    entity_df=pd.DataFrame()
-    entity_df["label"]=labels
-    entity_df["id"]=ids
-    entity_df.set_index("id", inplace=True)
-    entities_dict = entity_df.to_json(orient='index')
+    entities_dict={}
+    for index, id in enumerate(ids):
+        entities_dict[id]={"label": labels[index]}
     return df, entities_dict
 
 
