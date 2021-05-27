@@ -676,7 +676,7 @@ def create_qnode():
     project.add_entity_file(filepath)
     project.save()
 
-    response=dict(entity=node_id, project=get_project_dict(project))
+    response=dict(entity=entity_dict, project=get_project_dict(project))
 
     selection=request_json.get("selection", None)
     if selection:
