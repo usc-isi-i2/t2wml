@@ -8,6 +8,7 @@ import { QNode } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import EntityMenu from '../entity-menu';
 
 
 interface WikifyFormProperties {
@@ -28,6 +29,7 @@ interface WikifyFormState {
   selected?: QNode;
   qnodes: QNode[];
   prevCell?: Cell;
+  showEntityMenu: boolean;
 }
 
 
@@ -53,7 +55,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       applyToBlock: false,
       selected: selected,
       qnodes: [],
-      prevCell: undefined
+      prevCell: undefined,
+      showEntityMenu: false
     };
   }
 
@@ -67,6 +70,15 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
+  changeShowEntityMenu(close = false) {
+    console.log("changeShowEntityMenu")
+    if (close) {
+      this.setState({ showEntityMenu: false });
+    } else {
+      const { showEntityMenu } = this.state;
+      this.setState({ showEntityMenu: !showEntityMenu });
+    }
+  }
 
   toggleApplyToBlock() {
     const { applyToBlock } = this.state;
@@ -136,7 +148,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     if (!selected) { return; }
     onRemove(selected, applyToBlock);
     this.setState({
-      selected: undefined, 
+      selected: undefined,
       instanceOf: undefined,
       search: '',
       instanceOfSearch: '',
@@ -346,6 +358,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   render() {
+    const { showEntityMenu } = this.state;
+    const { selectedCell } = this.props;
     return (
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
@@ -354,6 +368,24 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         {this.renderQNodeResults()}
         {this.renderSelectedNode()}
         {this.renderApplyOptions()}
+        <Form.Group as={Row}>
+          <Col sm="12" md="12">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline-dark"
+              onClick={() => this.changeShowEntityMenu()}>
+              Create entity
+            </Button>
+          </Col>
+        </Form.Group>
+        {
+          showEntityMenu && selectedCell ?
+            <EntityMenu key={selectedCell.col.toString() + selectedCell.row.toString()} 
+            selection={{x1:selectedCell.col, x2:selectedCell.col, y1:selectedCell.row, y2:selectedCell.row}} 
+            onClose={() => this.changeShowEntityMenu(true)} />
+            : null
+        }
         {this.renderSubmitButton()}
       </Form>
     )
