@@ -44,6 +44,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     }
   }
 
+
   onSelectBlock(applyToBlock: boolean) {
     const { selectedCell } = this.state;
     if ( applyToBlock && selectedCell ) {

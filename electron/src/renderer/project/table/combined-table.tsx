@@ -166,7 +166,7 @@ class CombinedTable extends Component<{}, TableState> {
         this.setState({ tableData });
     }
 
-    updateStatement(tableData?: TableData){
+    updateStatement(tableData?: TableData) {
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
@@ -200,7 +200,7 @@ class CombinedTable extends Component<{}, TableState> {
         this.updateQnode(tableData);
     }
 
-    updateQnode(tableData?: TableData){
+    updateQnode(tableData?: TableData) {
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
@@ -289,12 +289,12 @@ class CombinedTable extends Component<{}, TableState> {
                         classNames.push(`role-${role}`);
                     }
 
-                    if  (role == "unit" || role == "mainSubject" || role == "property"){
+                    if (role == "unit" || role == "mainSubject" || role == "property") {
                         classNames.push("expects-wiki")
                     }
                 }
 
-                if (type=="wikibaseitem") {
+                if (type == "wikibaseitem") {
                     classNames.push("expects-wiki")
                 }
 
@@ -394,10 +394,13 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     updateActiveCellStyle(selectedCell?: Cell) {
-        if (!selectedCell) { return; }
         // Get a reference to the table elements
         const table: any = this.tableRef;
         if (!table) { return; }
+        table.classList.remove('highlight');
+
+        if (!selectedCell) { return; }
+
         this.resetActiveCellCss()
         const rows = table!.querySelectorAll('tr');
         const statement = wikiStore.layers.statement.find(selectedCell);
@@ -428,7 +431,7 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-        if (currentFilesService.currentState.mappingType == "Yaml") { return;}
+        if (currentFilesService.currentState.mappingType == "Yaml") { return; }
 
         const selectedBlock = checkSelectedAnnotationBlocks({
             x1: selectedCell.col + 1,
@@ -437,12 +440,12 @@ class CombinedTable extends Component<{}, TableState> {
             y2: selectedCell.row + 1
         });
 
-        if (selectedBlock != wikiStore.table.selectedBlock){
+        if (selectedBlock != wikiStore.table.selectedBlock) {
             this.resetActiveBlockCss()
         }
 
         if (selectedBlock && selectedBlock != wikiStore.table.selectedBlock) {
-             //select block:
+            //select block:
             table.classList.add('highlight');
             const classNames: string[] = ['active-block'];
             const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
@@ -489,7 +492,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateSelectionStyle(selection?: CellSelection) {
-        if (currentFilesService.currentState.mappingType == "Yaml"){return;}
+        if (currentFilesService.currentState.mappingType == "Yaml") { return; }
         const table: any = this.tableRef;
         if (!table) { return; }
         this.resetSelectionCss()
@@ -622,7 +625,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     }
 
-    resetSelectionCss(){
+    resetSelectionCss() {
         const table = this.tableRef;
         if (table) {
             table.querySelectorAll('td[class*="selected"]').forEach(e => {
@@ -643,7 +646,6 @@ class CombinedTable extends Component<{}, TableState> {
     resetActiveBlockCss() {
         const table = this.tableRef;
         if (table) {
-            table.classList.remove('highlight');
             table.querySelectorAll('td[class*="active-block"]').forEach(e => {
                 e.classList.forEach(className => {
                     if (className.startsWith('active-block')) {
@@ -749,7 +751,7 @@ class CombinedTable extends Component<{}, TableState> {
         const x: number = element.cellIndex;
         const y: number = element.parentElement.rowIndex;
 
-        wikiStore.table.selectedCell = { ...new Cell(x - 1, y - 1), value: element.textContent};
+        wikiStore.table.selectedCell = { ...new Cell(x - 1, y - 1), value: element.textContent };
 
         // check if the user is selecting an annotation block
         const selectedBlock = checkSelectedAnnotationBlocks({ x1: x, y1: y, x2: x, y2: y });
@@ -761,7 +763,7 @@ class CombinedTable extends Component<{}, TableState> {
 
             // Extend the previous selection if user is holding down Shift key
             if (event.shiftKey && wikiStore.table.selection) {
-                const selection = {...wikiStore.table.selection};
+                const selection = { ...wikiStore.table.selection };
 
                 // Extend the previous selection left or right
                 if (x1 !== selection['x1']) {
@@ -875,7 +877,7 @@ class CombinedTable extends Component<{}, TableState> {
                     }
                 }
 
-                wikiStore.table.selectedCell = {...new Cell(col, row), value: wikiStore.table.selectedCell.value};
+                wikiStore.table.selectedCell = { ...new Cell(col, row), value: wikiStore.table.selectedCell.value };
 
 
                 if (event.shiftKey) {

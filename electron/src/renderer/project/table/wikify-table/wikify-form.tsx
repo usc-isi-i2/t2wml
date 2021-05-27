@@ -4,10 +4,11 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { QNode } from '@/renderer/common/dtos';
+import { EntityFields, QNode } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import EntityForm from '../entity-form';
 
 
 interface WikifyFormProperties {
@@ -18,7 +19,6 @@ interface WikifyFormProperties {
   onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
 }
 
-
 interface WikifyFormState {
   search?: string;
   instanceOf?: QNode;
@@ -28,7 +28,9 @@ interface WikifyFormState {
   selected?: QNode;
   qnodes: QNode[];
   prevCell?: Cell;
+  entityFields: EntityFields;
 }
+
 
 
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
@@ -53,7 +55,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       applyToBlock: false,
       selected: selected,
       qnodes: [],
-      prevCell: undefined
+      prevCell: undefined,
+      entityFields:{
+        isProperty: true,
+        label: "",
+        description: "",
+        datatype: "",
+      }
     };
   }
 
@@ -136,7 +144,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     if (!selected) { return; }
     onRemove(selected, applyToBlock);
     this.setState({
-      selected: undefined, 
+      selected: undefined,
       instanceOf: undefined,
       search: '',
       instanceOfSearch: '',
@@ -309,6 +317,22 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
+  renderEntityForm() {
+    const { entityFields } = this.state;
+    return <EntityForm
+      entityFields={entityFields}
+      handleOnChange={(event: KeyboardEvent, key:"label" | "description" | "datatype" | "isProperty") => this.handleOnChangeEntity(event, key)}
+    />;
+  }
+
+  handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty"){
+    const value = (event.target as HTMLInputElement).value;
+    const updatedEntityFields = { ...this.state.entityFields };
+    // updatedEntityFields[key as keyof EntityFields] = value;
+
+
+  }
+
   renderSubmitButton() {
     const { qnodes, selected } = this.state;
     if (!qnodes.length) {
@@ -349,9 +373,16 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return (
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
-        {this.renderSearchInputs()}
-        {this.renderInstanceOf()}
-        {this.renderQNodeResults()}
+        <Form.Group as={Row}>
+          <Col sm="12" md="12">
+            {this.renderSearchInputs()}
+            {this.renderInstanceOf()}
+            {this.renderQNodeResults()}
+          </Col>
+          <Col sm="12" md="12">
+            {this.renderEntityForm()}
+          </Col>
+        </Form.Group>
         {this.renderSelectedNode()}
         {this.renderApplyOptions()}
         {this.renderSubmitButton()}
