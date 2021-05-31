@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 
 // App
-import { Button, Card, Spinner } from 'react-bootstrap';
+import { Card, Spinner } from 'react-bootstrap';
 
-// console.log
-import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
+import {  ErrorMessage, t2wmlColors } from '../../common/general';
 import RequestService, { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 

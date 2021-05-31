@@ -8,7 +8,7 @@ import {
   TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO,
   EntityFields
 } from './dtos';
-import { CellSelection, ErrorMessage } from './general';
+import { ErrorMessage } from './general';
 
 
 

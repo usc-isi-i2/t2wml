@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
-import {  Col, Form, Row } from 'react-bootstrap';
+import {  Form, Row } from 'react-bootstrap';
 import './entity-menu.css'
 import { isValidLabel } from './table-utils';
 

@@ -6,7 +6,7 @@ import MonacoEditor from 'react-monaco-editor';
 import yaml from 'js-yaml';
 
 // App
-import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, Card, Spinner } from 'react-bootstrap';
 
 // console.log
 import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
@@ -276,16 +276,6 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
         'editor.background': '#CBCBCB',
       },
     });
-
-    // render upload tooltip
-    const uploadToolTipHtml = (
-      <Tooltip style={{ width: "fit-content" }} id="upload">
-        <div className="text-left small">
-          <b>Accepted file types:</b><br />
-          • YAML Ain&apos;t Markup Language (.yaml)
-        </div>
-      </Tooltip>
-    );
 
     return (
       <Fragment>
