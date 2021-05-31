@@ -94,3 +94,15 @@ export function checkSelectedAnnotationBlocks(selection: CellSelection): Annotat
   }
   return undefined;
 }
+
+function isLetter(char: string) {
+  return char.length === 1 && char.toLowerCase().match(/[a-z]/i);
+  // return char.length === 1 && char.toLowerCase() != char.toUpperCase();
+}
+
+export function isValidLabel(label: string){
+  for(const char of label){
+    if (isLetter(char)) return true;
+  }
+  return false;
+}

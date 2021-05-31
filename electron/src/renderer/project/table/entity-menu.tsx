@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from "mobx-react"
 // import './project.css';
 import Draggable from 'react-draggable';
-import { Button, Col, Form, Row, Toast } from 'react-bootstrap';
+import { Button, Toast } from 'react-bootstrap';
 import './entity-menu.css'
 import * as utils from './table-utils';
 import { CellSelection } from '@/renderer/common/general';
@@ -25,15 +25,11 @@ class EntityMenu extends Component<{ onClose: () => void, selection: CellSelecti
         this.state = {
             entityFields:{
                 isProperty: true,
-            label: "",
-            description: "",
-            datatype: "string"
+                label: "",
+                description: "",
+                datatype: "string"
             }
         }
-    }
-
-    updateLabelFieldWithErrorCheck(value: string) {
-        console.log(value);
     }
 
     handleOnChange(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") {

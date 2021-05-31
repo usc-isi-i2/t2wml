@@ -5,9 +5,11 @@ import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO,
+  EntityFields
 } from './dtos';
-import { ErrorMessage } from './general';
+import { CellSelection, ErrorMessage } from './general';
+
 
 
 export interface IStateWithError {
@@ -292,6 +294,24 @@ class RequestService {
   public async removeOrDeleteFile(folder: string, data: any) {
     const response = await backendPost(`/files/delete?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
+  }
+
+  public async createQnode(data:EntityFields, selection?: number[][]){
+    // const response1 = await backendPost(`/api/create_node`, data) as {
+    // ...ResponseWithProjectDTO
+    // entity:{
+      // isProperty: boolean;
+    //   label: string;
+    //   description?: string;
+    //   data_type?: string;
+    //  }
+  
+    // };
+    // const datatype = response1.data_type;
+    // delete response1.data_type;
+    // const response = {...response1, datatype:datatype};
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, {...data, selection: selection})
+    console.log(response)
   }
 
 

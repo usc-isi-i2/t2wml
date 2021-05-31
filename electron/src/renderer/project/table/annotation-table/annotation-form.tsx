@@ -366,7 +366,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (this.state.selectedBlock?.selection) { blockSelection = utils.humanReadableSelection(this.state.selectedBlock?.selection); }
     if (!selectedArea && !blockSelection) { return null; }
     const value = selectedArea || blockSelection
-    console.log("render selection areas", value, selectedArea, blockSelection)
+    // console.log("render selection areas", value, selectedArea, blockSelection)
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}>
         <Form.Label column sm="12" md="3" className="text-muted">
