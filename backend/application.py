@@ -8,7 +8,7 @@ from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
-from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode
+from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
@@ -650,10 +650,19 @@ def create_qnode():
     except KeyError:
         raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
 
-    if is_prop:
-        node_id = get_Pnode(project, label)
+    filepath= Path(project.directory)/"user_input_properties.tsv"
+    if os.path.isfile(filepath):
+        custom_nodes=kgtk_to_dict(filepath)
     else:
-        node_id = get_Qnode(project, label)
+        custom_nodes=dict()
+
+    id = request.json.get("id", None)
+    if not id:
+        if is_prop:
+            node_id = get_Pnode(project, label)
+        else:
+            node_id = get_Qnode(project, label)
+
 
     entity_dict={
         "id": node_id,
@@ -666,23 +675,22 @@ def create_qnode():
         if request_json.get(key, None):
             entity_dict[key]=request_json[key]
 
-    filepath= Path(project.directory)/"user_input_properties.tsv"
-    if os.path.isfile(filepath):
-        custom_nodes=kgtk_to_dict(filepath)
-    else:
-        custom_nodes=dict()
+
     custom_nodes[node_id]=entity_dict
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
+    t2wml_settings.wikidata_provider.save_entry(**entity_dict)
 
     response=dict(entity=entity_dict, project=get_project_dict(project))
 
     selection=request_json.get("selection", None)
     if selection:
-        calc_params=get_calc_params()
+        calc_params=get_calc_params(project)
         context = request.get_json().get("context", "")
-        create_user_wikification(calc_params, project, selection, label,
+        (col1, row1), (col2, row2) = selection
+        value=calc_params.sheet[row1, col1]
+        create_user_wikification(calc_params, project, selection, value,
                 context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
 
@@ -759,7 +767,7 @@ def causx_wikify():
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
     file_path = save_dataframe(
-        project, cell_qnode_map, "wikify_region_output.csv")
+        project, cell_qnode_map, "country_wikifier_output.csv")
     file_path = project.add_wikifier_file(
         file_path,  copy_from_elsewhere=True, overwrite=True)
     project.save()
