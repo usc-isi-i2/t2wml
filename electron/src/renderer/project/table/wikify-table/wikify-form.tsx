@@ -4,10 +4,12 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { QNode } from '@/renderer/common/dtos';
+import { EntityFields, QNode } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import EntityForm from '../entity-form';
+import { isValidLabel } from '../table-utils';
 
 
 interface WikifyFormProperties {
@@ -16,8 +18,8 @@ interface WikifyFormProperties {
   onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
   onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
   onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
+  onCreateQnode?: (entityFields: EntityFields, applyToBlock: boolean)=> Promise<void>;
 }
-
 
 interface WikifyFormState {
   search?: string;
@@ -28,12 +30,16 @@ interface WikifyFormState {
   selected?: QNode;
   qnodes: QNode[];
   prevCell?: Cell;
+  entityFields: EntityFields;
+  customQnode: boolean;
 }
+
 
 
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
 
   private timeoutId?: number;
+  private timeoutIdCreateQnode?: number;
   private disposers: IReactionDisposer[] = [];
 
   constructor(props: WikifyFormProperties) {
@@ -53,7 +59,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       applyToBlock: false,
       selected: selected,
       qnodes: [],
-      prevCell: undefined
+      prevCell: undefined,
+      entityFields: {
+        isProperty: true,
+        label: "",
+        description: "",
+        datatype: "quantity",
+      },
+      customQnode: false
     };
   }
 
@@ -122,10 +135,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     });
   }
 
-  handleOnSubmit(event: any) {
-    event.preventDefault();
-    const { onSubmit } = this.props;
-    const { selected, applyToBlock } = this.state;
+  handleOnSubmit(event?: any) {
+    event?.preventDefault();
+    const { onSubmit, onCreateQnode } = this.props;
+    const { selected, applyToBlock, customQnode, entityFields } = this.state;
+    if(customQnode && onCreateQnode && isValidLabel(entityFields.label)){
+      onCreateQnode(entityFields, applyToBlock);
+      return;
+    }
     if (!selected) { return; }
     onSubmit(selected, applyToBlock);
   }
@@ -136,7 +153,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     if (!selected) { return; }
     onRemove(selected, applyToBlock);
     this.setState({
-      selected: undefined, 
+      selected: undefined,
       instanceOf: undefined,
       search: '',
       instanceOfSearch: '',
@@ -189,6 +206,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       search,
       instanceOfSearch,
       searchProperties,
+      customQnode
     } = this.state;
     return (
       <Form.Group as={Row}>
@@ -196,7 +214,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <input id="check-property-search"
             type="checkbox"
             defaultChecked={searchProperties}
-            onChange={this.toggleSearchProperties.bind(this)} />
+            onChange={this.toggleSearchProperties.bind(this)} 
+            disabled={customQnode}/>
           <Form.Label
             htmlFor="check-property-search"
             className="text-muted">
@@ -210,7 +229,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             placeholder={searchProperties ? 'property' : 'qnode'}
             value={search}
             onFocus={this.handleOnFocusSearch.bind(this)}
-            onChange={(event: any) => this.handleOnChangeSearch(event)} />
+            onChange={(event: any) => this.handleOnChangeSearch(event)} 
+            disabled={customQnode}/>
           {search && qnodes.length ? (
             <FontAwesomeIcon
               icon={faTimes}
@@ -225,9 +245,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               type="text" size="sm"
               placeholder="qnode"
               value={instanceOfSearch}
-              onChange={(event: any) => {
-                this.handleOnChangeInstanceOfSearch(event)
-              }} />
+              onChange={(event: any) => {this.handleOnChangeInstanceOfSearch(event)}} 
+              disabled={customQnode}/>
             {instanceOfSearch && qnodes.length ? (
               <FontAwesomeIcon
                 icon={faTimes}
@@ -309,55 +328,116 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
-  renderSubmitButton() {
-    const { qnodes, selected } = this.state;
-    if (!qnodes.length) {
-      return (
-        <Form.Group as={Row}>
-          <Col sm="12" md="12">
-            <Button
-              size="sm"
-              type="submit"
-              variant="outline-dark"
-              disabled={!selected}>
-              Submit
-            </Button>
-            {this.renderRemoveButton()}
-          </Col>
-        </Form.Group>
-      )
-    }
+  renderEntityForm() {
+    const { entityFields, customQnode } = this.state;
+    return <EntityForm isReadOnly={!customQnode}
+      entityFields={entityFields}
+      handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") => this.handleOnChangeEntity(event, key)}
+    />;
   }
 
-  renderRemoveButton() {
-    const { qnodes, selected } = this.state;
-    if (!qnodes.length && selected) {
-      return (
-        <Button
-          size="sm"
-          type="button"
-          variant="link"
-          className="delete"
-          onClick={this.handleOnRemove.bind(this)}>
-          remove wikification
-        </Button>
-      )
+  handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") {
+    const value = (event.target as HTMLInputElement).value;
+    console.log("value:", value)
+    const updatedEntityFields = { ...this.state.entityFields };
+    switch (key) {
+      case "isProperty": {
+        updatedEntityFields.isProperty = !updatedEntityFields.isProperty
+        break;
+      }
+      case "description": {
+        updatedEntityFields.description = value;
+        break;
+      }
+      case "datatype": {
+        updatedEntityFields.datatype = value;
+        break;
+      }
+      case "label": {
+        updatedEntityFields.label = value;
+        break;
+      }
+      default: {
+        break;
+      }
     }
-  }
+    this.setState({ entityFields: updatedEntityFields }, () => {
+      const { entityFields, customQnode} = this.state;
+      if (entityFields.label && customQnode) {
+        if (this.timeoutIdCreateQnode) {
+          window.clearTimeout(this.timeoutIdCreateQnode);
+        }
+        this.timeoutIdCreateQnode = window.setTimeout(() => {
+          // this.setState({ selected: { label: entityFields.label, description: entityFields.description, id: "try" } })
+          if (isValidLabel(entityFields.label)){
+            this.handleOnSubmit()
+          }
+        }, 300);
+      }
+    });
+}
 
-  render() {
+renderSubmitButton() {
+  const { qnodes, selected } = this.state;
+  if (!qnodes.length) {
     return (
-      <Form className="container wikify-form"
-        onSubmit={(event: any) => this.handleOnSubmit(event)}>
-        {this.renderSearchInputs()}
-        {this.renderInstanceOf()}
-        {this.renderQNodeResults()}
-        {this.renderSelectedNode()}
-        {this.renderApplyOptions()}
-        {this.renderSubmitButton()}
-      </Form>
+      <Form.Group as={Row}>
+        <Col sm="12" md="12">
+          <Button
+            size="sm"
+            type="submit"
+            variant="outline-dark"
+            disabled={!selected}>
+            Submit
+            </Button>
+          {this.renderRemoveButton()}
+        </Col>
+      </Form.Group>
     )
   }
+}
+
+renderRemoveButton() {
+  const { qnodes, selected } = this.state;
+  if (!qnodes.length && selected) {
+    return (
+      <Button
+        size="sm"
+        type="button"
+        variant="link"
+        className="delete"
+        onClick={this.handleOnRemove.bind(this)}>
+        remove wikification
+      </Button>
+    )
+  }
+}
+
+render() {
+  const { customQnode } = this.state;
+  return (
+    <Form className="container wikify-form"
+      onSubmit={(event: any) => this.handleOnSubmit(event)}>
+      <Form.Group as={Row} style={{ marginTop: "1rem" }}
+        onChange={() => this.setState({customQnode: !customQnode, qnodes: []})}>
+        <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode} />
+      </Form.Group>
+      <Form.Group as={Row}>
+        <Col sm="6" md="6">
+          {this.renderSearchInputs()}
+          {this.renderInstanceOf()}
+          {this.renderQNodeResults()}
+        </Col>
+        <Col sm="6" md="6">
+          {this.renderEntityForm()}
+        </Col>
+      </Form.Group>
+      {this.renderSelectedNode()}
+      {this.renderApplyOptions()}
+      {this.renderSubmitButton()}
+    </Form>
+  )
+}
 }
 
 export default WikifyForm;

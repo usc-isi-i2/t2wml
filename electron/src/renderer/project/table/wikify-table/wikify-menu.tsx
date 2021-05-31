@@ -5,7 +5,7 @@ import WikifyForm from './wikify-form';
 
 import { ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
-import { QNode } from '@/renderer/common/dtos';
+import { EntityFields, QNode } from '@/renderer/common/dtos';
 import { Cell, CellSelection } from '../../../common/general';
 import wikiStore from '../../../data/store';
 import * as utils from '../table-utils';
@@ -43,6 +43,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       disposer();
     }
   }
+
 
   onSelectBlock(applyToBlock: boolean) {
     const { selectedCell } = this.state;
@@ -190,6 +191,68 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     }
   }
 
+  async handleOnCreateQnode(entityFields: EntityFields, applyToBlock: boolean){
+    console.log('WikifyMenu handleOnCreateQnode triggered for -> ', entityFields);
+
+    let hasError = false;
+
+    wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+
+    const { selectedCell } = this.state;
+    if (!selectedCell) { return; }
+    const { col, row } = selectedCell;
+
+    let selection = [[col, row], [col, row]];
+    if (applyToBlock) {
+      const cellSelection: CellSelection = { x1: col + 1, x2: col + 1, y1: row + 1, y2: row + 1 };
+      const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
+      if (selectedBlock) {
+        selection = [
+          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
+          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+        ];
+      }
+    }
+
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.createQnode(entityFields, selection)
+      ));
+    } catch (error) {
+      error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;
+      console.log(error.errorDescription)
+      this.setState({ errorMessage: error });
+      hasError = true;
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.wikifier.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+
+    //also update results:
+    if (!hasError) {
+      try {
+        wikiStore.output.showSpinner = true;
+        await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+      }
+      catch (error) {
+        console.log(error) //don't break on this
+      }
+      finally {
+        wikiStore.output.showSpinner = false;
+      }
+      wikiStore.wikifier.showSpinner = true;
+      try {
+        await this.requestService.getPartialCsv();
+      }
+      finally {
+        wikiStore.wikifier.showSpinner = false;
+      }
+    }
+  }
+
   renderHeader() {
     const { selectedCell } = this.state;
     if (!selectedCell) { return null; }
@@ -215,7 +278,8 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
         onSelectBlock={(applyToBlock) => this.onSelectBlock(applyToBlock)}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)}
-        onRemove={this.handleOnRemove.bind(this)} />
+        onRemove={this.handleOnRemove.bind(this)} 
+        onCreateQnode={this.handleOnCreateQnode.bind(this)}/>
     )
   }
 

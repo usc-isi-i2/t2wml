@@ -1,7 +1,7 @@
 .annotation-menu {
   position: absolute;
   min-width: 500px;
-  z-index: 250;
+  z-index: 200;
   left: 50px;
   top: 70px;
 }

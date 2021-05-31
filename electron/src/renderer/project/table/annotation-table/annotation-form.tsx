@@ -15,6 +15,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { columnToLetter } from '../table-utils';
 import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
+import EntityMenu from '../entity-menu';
 
 
 interface AnnotationFields {
@@ -48,6 +49,7 @@ interface AnnotationFormState {
     selected?: QNode;
   };
   errorMessage: ErrorMessage;
+  showEntityMenu: boolean;
 }
 
 
@@ -85,7 +87,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       showExtraFields: false,
       showResult1: false,
       showResult2: false,
-      errorMessage: {} as ErrorMessage
+      errorMessage: {} as ErrorMessage,
+      showEntityMenu: false
     };
     this.changed = false;
   }
@@ -102,6 +105,16 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
+  changeShowEntityMenu(close = false) {
+    console.log("changeShowEntityMenu")
+    if (close) {
+      this.setState({ showEntityMenu: false });
+    } else {
+      const { showEntityMenu } = this.state;
+      this.setState({ showEntityMenu: !showEntityMenu });
+    }
+  }
+
   updateSelection(selection?: CellSelection) {
     const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
     const fields = { ...this.state.fields }
@@ -114,18 +127,20 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (selectedBlock) {
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
       const fields = { ...selectedBlock }
-      this.setState({ selectedBlock: fields, selection: selectedBlock.selection, fields: {
-        selectedArea: selectedArea,
-        role: fields.role,
-        type: fields.type,
-        unit: fields.unit,
-        format: fields.format,
-        calendar: fields.calendar,
-        property: fields.property,
-        language: fields.language,
-        precision: fields.precision,
-        subject: fields.subject,
-      }, showExtraFields: false })
+      this.setState({
+        selectedBlock: fields, selection: selectedBlock.selection, fields: {
+          selectedArea: selectedArea,
+          role: fields.role,
+          type: fields.type,
+          unit: fields.unit,
+          format: fields.format,
+          calendar: fields.calendar,
+          property: fields.property,
+          language: fields.language,
+          precision: fields.precision,
+          subject: fields.subject,
+        }, showExtraFields: false
+      })
     } else {
       this.setState({
         selectedBlock: undefined,
@@ -351,7 +366,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (this.state.selectedBlock?.selection) { blockSelection = utils.humanReadableSelection(this.state.selectedBlock?.selection); }
     if (!selectedArea && !blockSelection) { return null; }
     const value = selectedArea || blockSelection
-    console.log("render selection areas", value, selectedArea, blockSelection)
+    // console.log("render selection areas", value, selectedArea, blockSelection)
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}>
         <Form.Label column sm="12" md="3" className="text-muted">
@@ -424,7 +439,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         }
       }
     }
-
+    const { showEntityMenu, selection } = this.state;
     defaultValue = defaultValue == "--" ? "" : defaultValue;
     return (
       <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}
@@ -440,6 +455,23 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           />
           {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg &quot;%Y&quot;)</Form.Label> : null}
         </Col>
+
+        <Col sm="12" md="3">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline-dark"
+            onClick={() => this.changeShowEntityMenu()}>
+            Create entity
+          </Button>
+        </Col>
+        {
+          showEntityMenu && selection ?
+            <EntityMenu key={selection.toString()}
+              selection={selection}
+              onClose={() => this.changeShowEntityMenu(true)} />
+            : null
+        }
         {
           key == "property" && propertyBlockId ?
             <Col sm="12" md='3'>
@@ -836,8 +868,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   renderWikifyButton() {
-    const role = this.state.fields['role'];
-    const type = this.state.fields['type'];
+    const { role, type } = this.state.fields;
     if (role === 'property' || role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
       return (<Button
         size="sm"
