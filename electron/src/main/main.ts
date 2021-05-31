@@ -98,6 +98,7 @@ function createMainWindow(): void {
     }
 
     rendererNotifier.toggleShowCleanedData(uiState.showCleanedData);
+    rendererNotifier.toggleShowQnodes(uiState.showQnodes);
   });
 
   mainWindow.once('close', () => {

@@ -11,10 +11,12 @@ class UIState {
 
     public displayMode: DisplayMode;
     public showCleanedData: boolean;
+    public showQnodes: boolean;
 
     private constructor() {
         this.displayMode = 'project-list';
         this.showCleanedData = false;
+        this.showQnodes = false;
     }
 }
 

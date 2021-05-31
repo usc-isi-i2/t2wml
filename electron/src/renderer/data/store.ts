@@ -27,12 +27,14 @@ class TableState {
     @observable public selection?: CellSelection;
 
     @observable public showCleanedData: boolean;
+    @observable public showQnodes: boolean;
 
     constructor() {
         this.mode = 'annotation';
         this.table = {} as TableDTO;
         this.showSpinner = false;
         this.showCleanedData = false;
+        this.showQnodes = false;
     }
 
     updateTable(table: TableDTO){

@@ -6,7 +6,7 @@ import './table-component.css';
 
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
-import { AnnotationBlock, TableCell, TableData, TableDTO } from '../../common/dtos';
+import { AnnotationBlock, QNode, QNodeEntry, TableCell, TableData, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -15,7 +15,7 @@ import TableLegend from './table-legend';
 
 import { checkSelectedAnnotationBlocks } from './table-utils';
 import { observer } from 'mobx-react';
-import wikiStore from '../../data/store';
+import wikiStore, { Layer } from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
 import Table from './table';
@@ -83,6 +83,7 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelectionStyle(selection)));
         this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateActiveCellStyle(cell)));
         this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => { wikiStore.table.selection = block?.selection }));
+        this.disposers.push(reaction(() => wikiStore.table.showQnodes, (showQnode) => this.updateQnodeCells(showQnode)));
     }
 
     componentWillUnmount() {
@@ -128,6 +129,60 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
+    getQnodeCellContent(qnode: QNode, rawContent?: string) {
+        return (
+            <span>
+                {rawContent}
+                <br />
+                <strong>{qnode.label}</strong> ({qnode.url ? (
+                    <a target="_blank"
+                        rel="noopener noreferrer"
+                        className="type-qnode"
+                        href={qnode.url}>
+                        {qnode.id}
+                    </a>
+                ) : (
+                    <span>{qnode.id}</span>
+                )})
+                <br />
+                {qnode.description}
+            </span>
+        );
+    }
+
+    updateQnodeCells(showQnode: boolean) {
+        const { tableData } = this.state;
+        if (!tableData) {
+            return;
+        }
+
+        const qnodes = wikiStore.layers.qnode;
+
+        //clear any existing qnode coloration
+        const table = this.tableRef;
+        if (table) {
+            table.querySelectorAll('td').forEach(e => {
+                e.classList.forEach(className => {
+                    if (className.startsWith('type-qNode')) {
+                        e.classList.remove(className);
+                    }
+                });
+            });
+        }
+
+        if (showQnode) {
+            for (const entry of qnodes.entries) {
+                for (const indexPair of entry.indices) {
+                    const tableCell = tableData[indexPair[0]][indexPair[1]];
+                    tableCell.content = this.getQnodeCellContent(entry, tableCell.rawContent);
+                    tableCell.classNames.push('type-qNode');
+                }
+            }
+        }
+        this.setState({ tableData });
+    }
+
+
     getClasslessTableData(table?: TableDTO): TableData {
         if (!table) { table = wikiStore.table.table }
         const tableData = [];
@@ -136,6 +191,7 @@ class CombinedTable extends Component<{}, TableState> {
             for (let j = 0; j < table.cells[i].length; j++) {
                 const cell: TableCell = {
                     content: table.cells[i][j],
+                    rawContent: table.cells[i][j],
                     classNames: [],
                 };
                 rowData.push(cell);
@@ -234,6 +290,8 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
+
+        this.updateQnodeCells(wikiStore.table.showQnodes);
     }
 
     setAnnotationColors(tableData?: TableData) {
