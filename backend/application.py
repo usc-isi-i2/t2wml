@@ -8,7 +8,7 @@ from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
-from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode
+from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
 from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
@@ -680,14 +680,17 @@ def create_qnode():
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
+    t2wml_settings.wikidata_provider.save_entry(**entity_dict)
 
     response=dict(entity=entity_dict, project=get_project_dict(project))
 
     selection=request_json.get("selection", None)
     if selection:
-        calc_params=get_calc_params()
+        calc_params=get_calc_params(project)
         context = request.get_json().get("context", "")
-        create_user_wikification(calc_params, project, selection, label,
+        (col1, row1), (col2, row2) = selection
+        value=calc_params.sheet[row1, col1]
+        create_user_wikification(calc_params, project, selection, value,
                 context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
 
