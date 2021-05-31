@@ -27,7 +27,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
         const { isProperty, label, description, datatype } = this.props.entityFields;
         const { isReadOnly } = this.props;
         return (
-            <Form className="container">
+            <Form.Group as={Row}>
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
                     onChange={(event: KeyboardEvent) => handleOnChange(event, "label")}>
                     <Form.Label column sm="12" md="12" className="text-muted">Label</Form.Label>
@@ -68,7 +68,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
                     : null
                 }
                 
-            </Form>
+            </Form.Group>
 
         );
     }

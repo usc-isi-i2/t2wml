@@ -2,23 +2,19 @@ import React, { Component } from 'react';
 import { observer } from "mobx-react"
 // import './project.css';
 import Draggable from 'react-draggable';
-import { Button, Toast } from 'react-bootstrap';
+import { Button, Form, Toast } from 'react-bootstrap';
 import './entity-menu.css'
 import * as utils from './table-utils';
 import { CellSelection } from '@/renderer/common/general';
 import EntityForm from './entity-form';
+import { EntityFields } from '@/renderer/common/dtos';
 
 interface EntityMenuState {
-    entityFields: {
-    isProperty: boolean;
-    label: string;
-    description: string;
-    datatype: string;
-    }
+    entityFields: EntityFields
 }
 
 @observer
-class EntityMenu extends Component<{ onClose: () => void, selection: CellSelection }, EntityMenuState> {
+class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => void, selection: CellSelection }, EntityMenuState> {
 
     constructor(props: any) {
         super(props);
@@ -61,8 +57,9 @@ class EntityMenu extends Component<{ onClose: () => void, selection: CellSelecti
 
 
     handleOnSubmit() {
+        const { entityFields } = this.state;
         console.log(this.state);
-        this.props.onClose();
+        this.props.onClose(entityFields);
     }
 
     render() {
@@ -79,10 +76,12 @@ class EntityMenu extends Component<{ onClose: () => void, selection: CellSelecti
                         </Toast.Header>
 
                         <Toast.Body>
-                            <EntityForm 
-                            entityFields = {entityFields}
-                            handleOnChange={() => this.handleOnChange.bind(this)}
-                            />
+                            <Form className="container">
+                                <EntityForm 
+                                entityFields = {entityFields}
+                                handleOnChange={() => this.handleOnChange.bind(this)}
+                                />
+                            </Form>
                             <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}>
                                 Save
                             </Button>
