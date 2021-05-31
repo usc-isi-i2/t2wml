@@ -650,10 +650,19 @@ def create_qnode():
     except KeyError:
         raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
 
-    if is_prop:
-        node_id = get_Pnode(project, label)
+    filepath= Path(project.directory)/"user_input_properties.tsv"
+    if os.path.isfile(filepath):
+        custom_nodes=kgtk_to_dict(filepath)
     else:
-        node_id = get_Qnode(project, label)
+        custom_nodes=dict()
+
+    id = request.json.get("id", None)
+    if not id:
+        if is_prop:
+            node_id = get_Pnode(project, label)
+        else:
+            node_id = get_Qnode(project, label)
+
 
     entity_dict={
         "id": node_id,
@@ -666,11 +675,7 @@ def create_qnode():
         if request_json.get(key, None):
             entity_dict[key]=request_json[key]
 
-    filepath= Path(project.directory)/"user_input_properties.tsv"
-    if os.path.isfile(filepath):
-        custom_nodes=kgtk_to_dict(filepath)
-    else:
-        custom_nodes=dict()
+
     custom_nodes[node_id]=entity_dict
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
