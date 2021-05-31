@@ -97,7 +97,7 @@ def create_user_wikification(calc_params, project, selection, value, context, it
     filepath = os.path.join(project.directory, "user-input-wikification.csv")
     create_wikifier_file(project, df, filepath)
 
-def create_wikifier_file(project, df, filepath):
+def create_wikifier_file(project, df, filepath, precedence=True):
     if os.path.exists(filepath):
         #clear any clashes/duplicates
         org_df=pd.read_csv(filepath)
@@ -110,5 +110,5 @@ def create_wikifier_file(project, df, filepath):
 
     df.to_csv(filepath, index=False, header=True)
 
-    project.add_wikifier_file(filepath)
+    project.add_wikifier_file(filepath, precedence=precedence)
     project.save()
