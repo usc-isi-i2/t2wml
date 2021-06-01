@@ -926,7 +926,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   render() {
     const { selection } = this.state;
-    console.log("state:", this.state)
     if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (

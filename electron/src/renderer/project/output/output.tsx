@@ -63,7 +63,6 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
 
-
   updateStateFromStore() {
     this.setState({
       statement: undefined,
@@ -78,9 +77,7 @@ class Output extends Component<{}, OutputComponentState> {
     if (error) {
       this.setState({ errors: JSON.stringify(error.error) }); //TODO: fix to work better.
     }
-
     if (!statement) { return; }
-
     this.setState({ statement: statement });
   }
 
