@@ -202,8 +202,6 @@ export class CurrentFilesService {
 
     @action
     changeAnnotation(newAnnotation: string, sheetName: string, dataFile: string) {
-
-        const project = wikiStore.project.projectDTO!;
         const newState = {...currentFilesService.currentState}
         newState.dataFile = dataFile;
         newState.sheetName = sheetName;
