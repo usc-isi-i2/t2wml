@@ -1015,8 +1015,12 @@ class CombinedTable extends Component<{}, TableState> {
                     }
                 }
                 else { //moved arrow potentially into new block;
-                    const selectedBlock = checkSelectedAnnotationBlocks({ x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 });
+                    const selection = { x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 }
+                    const selectedBlock = checkSelectedAnnotationBlocks(selection);
                     wikiStore.table.selectBlock(selectedBlock);
+                    if (!selectedBlock){
+                        wikiStore.table.selection = selection;
+                    }
                 }
             }
         }
