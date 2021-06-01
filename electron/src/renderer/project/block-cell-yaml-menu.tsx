@@ -4,6 +4,7 @@ import { Tab, Tabs } from 'react-bootstrap';
 import YamlEditor from './yaml-editor/yaml-editor';
 import CellTab from './cell-tab';
 import BlockTab from './block-tab';
+import PartialCsvPreview from './wikifier/wikifier';
 
 @observer
 class BlockCellYamlMenu extends Component {
@@ -22,6 +23,11 @@ class BlockCellYamlMenu extends Component {
                     <Tab eventKey="yaml" title="YAML">
                         <YamlEditor isShowing={true} />
                     </Tab>
+                    <Tab eventKey="output" title="Output Preview">
+                        <PartialCsvPreview />
+                    </Tab>
+
+                    
                 </Tabs>
             </div>
         );
