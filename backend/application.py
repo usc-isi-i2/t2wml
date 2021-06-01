@@ -644,7 +644,7 @@ def create_qnode():
         label=request_json.pop("label")
         is_prop=request_json.pop("isProperty") # is_prop=node_id[0].lower()=="p"
         if is_prop:
-            data_type=request_json.pop("datatype")
+            data_type=request_json.pop("dataType")
             if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
                 raise web_exceptions.InvalidRequestException("Invalid data type")
     except KeyError:
@@ -682,7 +682,7 @@ def create_qnode():
     project.save()
     t2wml_settings.wikidata_provider.save_entry(**entity_dict)
 
-    response=dict(entity=entity_dict, project=get_project_dict(project))
+    response=dict(id=node_id, project=get_project_dict(project))
 
     selection=request_json.get("selection", None)
     if selection:
@@ -693,7 +693,8 @@ def create_qnode():
         create_user_wikification(calc_params, project, selection, value,
                 context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
-
+    else:
+        response["layers"] = {}
     return response, 200
 
 
