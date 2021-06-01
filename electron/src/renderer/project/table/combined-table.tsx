@@ -74,6 +74,7 @@ class CombinedTable extends Component<{}, TableState> {
         document.addEventListener('keydown', this.handleOnKeyDown);
         document.addEventListener('mouseup', this.handleOnMouseUp);
         this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateProjectInfo()));
+        this.disposers.push(reaction(() => currentFilesService.currentState.sheetName, () => this.updateProjectInfo()));
         this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
         this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateQnode()));
@@ -109,15 +110,13 @@ class CombinedTable extends Component<{}, TableState> {
 
             this.setState({ filename, sheetNames, currSheetName, multipleSheets });
         }
-
-        { this.createAnnotationIfDoesNotExist(); }
     }
 
     async createAnnotationIfDoesNotExist() {
         if (!currentFilesService.currentState.dataFile) { return; }
         if (!currentFilesService.currentState.mappingFile) {
-            //create a mapping file
-            const title = path.join("annotations", path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation");
+            //create a mapping file - needs to be forward slash so title matches whats returned from backend
+            const title = "annotations" + "/" + path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation";
             const data = {
                 "title": title,
                 "sheetName": currentFilesService.currentState.sheetName,
@@ -211,6 +210,8 @@ class CombinedTable extends Component<{}, TableState> {
         this.updateLayers(tableData);
         console.log("resetting wikistore selections from update table data")
         wikiStore.table.resetSelections();
+
+        { this.createAnnotationIfDoesNotExist(); }
     }
 
     updateLayers(tableData?: TableData) {

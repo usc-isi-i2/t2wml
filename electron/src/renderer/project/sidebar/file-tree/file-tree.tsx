@@ -40,6 +40,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.updateFileTree()));
     //until we figure out why reactions to currentState aren't working, just subscribing inidivually
+    this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState.sheetName, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingFile, () => this.updateFileTree()));

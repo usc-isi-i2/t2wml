@@ -202,23 +202,15 @@ export class CurrentFilesService {
 
     @action
     changeAnnotation(newAnnotation: string, sheetName: string, dataFile: string) {
-        const project = wikiStore.project.projectDTO!;
-        currentFilesService.currentState.dataFile = dataFile;
-        currentFilesService.currentState.sheetName = sheetName;
-        // If this yaml is not part of current datafile, search the relevant data file and sheet.
-        if (project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr.indexOf(newAnnotation) < 0) {
-            for (const df of Object.keys(project.annotations)) {
-                for (const sheet of Object.keys(project.annotations[df])) {
-                    if (project.annotations[df][sheet].val_arr.indexOf(newAnnotation) > -1) {
-                        this.currentState.dataFile = df;
-                        this.currentState.sheetName = sheet;
-                    }
-                }
-            }
-        }
 
-        this.currentState.mappingFile = newAnnotation;
-        this.currentState.mappingType = 'Annotation';
+        const project = wikiStore.project.projectDTO!;
+        const newState = {...currentFilesService.currentState}
+        newState.dataFile = dataFile;
+        newState.sheetName = sheetName;
+        newState.mappingFile = newAnnotation;
+        newState.mappingType = 'Annotation';
+        this.currentState=newState;
+
 
         this.saveCurrentFileSelections();
     }
