@@ -15,7 +15,7 @@ import TableLegend from './table-legend';
 
 import { checkSelectedAnnotationBlocks } from './table-utils';
 import { observer } from 'mobx-react';
-import wikiStore, { Layer } from '../../data/store';
+import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
 import Table from './table';
@@ -231,6 +231,7 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
+            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
@@ -242,6 +243,7 @@ class CombinedTable extends Component<{}, TableState> {
             } catch (error) {
                 console.log(error);
             }
+            /* eslint-enable */
         }
 
 
@@ -265,6 +267,7 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
+            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
@@ -276,6 +279,7 @@ class CombinedTable extends Component<{}, TableState> {
             } catch (error) {
                 console.log(error);
             }
+            /* eslint-enable */
         }
 
 
@@ -303,6 +307,7 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
+            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
@@ -314,6 +319,7 @@ class CombinedTable extends Component<{}, TableState> {
             } catch (error) {
                 console.log(error);
             }
+            /* eslint-enable */
         }
 
         if (currentFilesService.currentState.mappingType == "Yaml") {
@@ -1009,8 +1015,12 @@ class CombinedTable extends Component<{}, TableState> {
                     }
                 }
                 else { //moved arrow potentially into new block;
-                    const selectedBlock = checkSelectedAnnotationBlocks({ x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 });
+                    const selection = { x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 }
+                    const selectedBlock = checkSelectedAnnotationBlocks(selection);
                     wikiStore.table.selectBlock(selectedBlock);
+                    if (!selectedBlock){
+                        wikiStore.table.selection = selection;
+                    }
                 }
             }
         }
