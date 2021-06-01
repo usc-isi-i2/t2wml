@@ -55,10 +55,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       isProperty: true,
       label: "",
       description: "",
-      datatype: "quantity",
+      dataType: "quantity",
     }
     let customQnode = false;
-    if (selected && isValidLabel(selected.id.substring(1, selected.id.length))){
+    if (selected && isValidLabel(selected.label.substring(1, selected.label.length))){
       entityFields.isProperty = selected.id.startsWith("P");
       entityFields.description = selected.description;
       entityFields.label = selected.label;
@@ -151,8 +151,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { selected, applyToBlock, customQnode, entityFields } = this.state;
     if (customQnode && onCreateQnode && isValidLabel(entityFields.label)) {
       onCreateQnode(entityFields, applyToBlock);
-
-      return;
     }
     if (!selected) { return; }
     onSubmit(selected, applyToBlock);
@@ -169,6 +167,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       search: '',
       instanceOfSearch: '',
       qnodes: [],
+      entityFields: {
+        isProperty: true,
+        label: "",
+        description: "",
+        dataType: "quantity",
+      },
+      customQnode: false
     });
   }
 
@@ -344,12 +349,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return (
       <EntityForm isReadOnly={!customQnode}
         entityFields={entityFields}
-        handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") => this.handleOnChangeEntity(event, key)}
+        handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") => this.handleOnChangeEntity(event, key)}
       />
     );
   }
 
-  handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") {
+  handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") {
     const value = (event.target as HTMLInputElement).value;
     console.log("value:", value)
     const updatedEntityFields = { ...this.state.entityFields };
@@ -362,8 +367,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         updatedEntityFields.description = value;
         break;
       }
-      case "datatype": {
-        updatedEntityFields.datatype = value;
+      case "dataType": {
+        updatedEntityFields.dataType = value;
         break;
       }
       case "label": {
@@ -393,7 +398,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   onChangecustomQnode(){
     const { selected, entityFields, customQnode } = this.state;
     this.setState({ customQnode: !customQnode, qnodes: [] });
-    if(selected && customQnode){
+    if(selected && customQnode && isValidLabel(selected.label.substring(1, selected.label.length))){
       entityFields.isProperty = selected.id.startsWith("P");
       entityFields.description = selected.description;
       entityFields.label = selected.label;

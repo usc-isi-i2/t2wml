@@ -6,7 +6,8 @@ import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
   TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO,
-  EntityFields
+  EntityFields,
+  ResponseWithQNodeLayerAndId
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -307,11 +308,12 @@ class RequestService {
     //  }
   
     // };
-    // const datatype = response1.data_type;
+    // const dataType = response1.data_type;
     // delete response1.data_type;
-    // const response = {...response1, datatype:datatype};
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, {...data, selection: selection})
-    console.log(response)
+    // const response = {...response1, dataType:dataType};
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, {...data, selection: selection}) as ResponseWithQNodeLayerAndId;
+    this.updateProjectandQnode(response)
+    return response;
   }
 
 

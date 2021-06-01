@@ -14,45 +14,52 @@ interface EntityMenuState {
 }
 
 @observer
-class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => void, selection: CellSelection }, EntityMenuState> {
+class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => void, selection: CellSelection, title?:string }, EntityMenuState> {
+
 
     constructor(props: any) {
         super(props);
         this.state = {
-            entityFields:{
+            entityFields: {
                 isProperty: true,
                 label: "",
                 description: "",
-                datatype: "string"
+                dataType: "string"
             }
         }
     }
 
-    handleOnChange(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") {
+    handleOnChange(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") {
         if (event.code === 'Enter') {
             event.preventDefault();
             this.handleOnSubmit();
         }
         const value = (event.target as HTMLInputElement).value;
-        
-        console.log(key, value)
-        // const updatedFields = { ...this.state.fields }
-        // updatedFields[key as keyof AnnotationFields] = value;
-        // this.changed = true;
-
-        // this.setState({ fields: updatedFields }, () => {
-        //   if (this.timeoutId) {
-        //     window.clearTimeout(this.timeoutId);
-        //   }
-        //   this.timeoutId = window.setTimeout(() => {
-        //     let { type } = this.state.fields;
-        //     if (key === 'unit' || key === 'property') {
-        //       this.setState({ showResult1: true, showResult2: false })
-        //     }
-        //     if (!type) { type = "string"; }
-        //     this.handleOnPropertyUnit(key, value, type);
-        //   }, 300);
-        // });
+        console.log("value:", value)
+        const updatedEntityFields = { ...this.state.entityFields };
+        switch (key) {
+            case "isProperty": {
+                updatedEntityFields.isProperty = !updatedEntityFields.isProperty
+                break;
+            }
+            case "description": {
+                updatedEntityFields.description = value;
+                break;
+            }
+            case "dataType": {
+                updatedEntityFields.dataType = value;
+                break;
+            }
+            case "label": {
+                updatedEntityFields.label = value;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        console.log("Entity menu handleOnChange:", updatedEntityFields)
+        this.setState({ entityFields: updatedEntityFields });
     }
 
 
@@ -64,7 +71,7 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
 
     render() {
         const { entityFields } = this.state;
-        const { onClose, selection } = this.props;
+        const { onClose, selection, title } = this.props;
         const position = { x: window.innerWidth * 0.10, y: 0 };
         return (
             <Draggable handle=".handle"
@@ -72,17 +79,18 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
                 <div className="entity-menu">
                     <Toast onClose={onClose}>
                         <Toast.Header className="handle">
-                            {utils.humanReadableSelection(selection)}
+                            {utils.humanReadableSelection(selection)}  {title}
                         </Toast.Header>
 
                         <Toast.Body>
-                            <Form className="container">
-                                <EntityForm 
-                                entityFields = {entityFields}
-                                handleOnChange={() => this.handleOnChange.bind(this)}
+                            {/* <Form className="container"> */}
+                                <EntityForm
+                                    entityFields={entityFields}
+                                    handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") => this.handleOnChange(event, key)}
                                 />
-                            </Form>
-                            <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}>
+                            {/* </Form> */}
+                            <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}
+                                disabled={!utils.isValidLabel(entityFields.label)}>
                                 Save
                             </Button>
                         </Toast.Body>

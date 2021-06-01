@@ -3,15 +3,11 @@ import { observer } from "mobx-react"
 import { Form, Row } from 'react-bootstrap';
 import './entity-menu.css'
 import { isValidLabel } from './table-utils';
+import { EntityFields } from '@/renderer/common/dtos';
 
 interface EntityFormProp {
-    entityFields: {
-        isProperty: boolean;
-        label: string;
-        description: string;
-        datatype: string;
-    }
-    handleOnChange: (event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") => void;
+    entityFields: EntityFields;
+    handleOnChange: (event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") => void;
     isReadOnly?: boolean;
 }
 
@@ -24,7 +20,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
 
     render() {
         const { handleOnChange } = this.props;
-        const { isProperty, label, description, datatype } = this.props.entityFields;
+        const { isProperty, label, description, dataType } = this.props.entityFields;
         const { isReadOnly } = this.props;
         return (
             <Form.Group as={Row}>
@@ -50,10 +46,10 @@ class EntityForm extends Component<EntityFormProp, {}> {
                 {
                     isProperty ?
                         <Form.Group as={Row} style={{ marginTop: "1rem" }}
-                            onChange={(event: KeyboardEvent) => handleOnChange(event, "datatype")}>
-                            <Form.Label className="text-muted">Data type</Form.Label>
+                            onChange={(event: KeyboardEvent) => handleOnChange(event, "dataType")}>
+                            <Form.Label column sm="12" md="12" className="text-muted">Data type</Form.Label>
                             <Form.Control as="select" disabled={isReadOnly}
-                                value={datatype}>
+                                value={dataType}>
                                 <option value="quantity">Quantity</option>
                                 <option value="time">Time</option>
                                 <option value="monolingualtext">Monolingual text</option>

@@ -13,4 +13,6 @@
 
   .entity-menu .toast .toast-body {
     background: #fefefe;
+    margin-left: 2rem;
+    margin-right: 2rem;
   }

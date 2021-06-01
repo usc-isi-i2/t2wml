@@ -128,8 +128,8 @@ export interface EntityFields {
     isProperty: boolean;
     label: string;
     description: string;
-    datatype: string;
-  }
+    dataType: string;
+}
 
 export interface AnnotationBlock{
     selection: CellSelection;
@@ -243,4 +243,8 @@ export interface ResponseWithSuggestion {
     role: string;
     type?: string;
     children: any;
+}
+
+export interface ResponseWithQNodeLayerAndId extends ResponseWithQNodeLayerDTO{
+    id: string;
 }
