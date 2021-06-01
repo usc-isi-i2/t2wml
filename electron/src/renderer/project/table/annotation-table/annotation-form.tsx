@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AnnotationBlock, ResponseWithSuggestion } from '../../../common/dtos';
+import { AnnotationBlock, EntityFields, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -105,41 +105,51 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  changeShowEntityMenu(close = false) {
-    console.log("changeShowEntityMenu")
-    if (close) {
-      this.setState({ showEntityMenu: false });
-    } else {
-      const { showEntityMenu } = this.state;
-      this.setState({ showEntityMenu: !showEntityMenu });
+  changeShowEntityMenu() {
+    const { showEntityMenu } = this.state;
+    this.setState({ showEntityMenu: !showEntityMenu });
+  }
+
+  handleOnCloseEntityMenu(entityFields?: EntityFields){
+    this.setState({ showEntityMenu: false });
+    if (entityFields){
+      console.log(entityFields);
     }
   }
 
   updateSelection(selection?: CellSelection) {
-    const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
+    if((!wikiStore.table.selectedBlock) || wikiStore.table.selectedBlock.selection!==selection){
+      const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
     const fields = { ...this.state.fields }
-    fields["selectedArea"] = selectedArea
+    fields["selectedArea"] = selectedArea;
     this.setState({ selection: selection, fields },
       () => this.getAnnotationSuggestionsForSelection(selection))
+    } 
+    // else{
+    //   this.setState({ selection: selection});
+    // }
   }
 
   updateSelectedBlock(selectedBlock?: AnnotationBlock) {
+    this.changed = false;
     if (selectedBlock) {
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
-      const fields = { ...selectedBlock }
       this.setState({
-        selectedBlock: fields, selection: selectedBlock.selection, fields: {
+        selectedBlock: selectedBlock,
+        selection: selectedBlock.selection, 
+        fields: {
           selectedArea: selectedArea,
-          role: fields.role,
-          type: fields.type,
-          unit: fields.unit,
-          format: fields.format,
-          calendar: fields.calendar,
-          property: fields.property,
-          language: fields.language,
-          precision: fields.precision,
-          subject: fields.subject,
-        }, showExtraFields: false
+          role: selectedBlock.role,
+          type: selectedBlock.type,
+          unit: selectedBlock.unit,
+          format: selectedBlock.format,
+          calendar: selectedBlock.calendar,
+          property: selectedBlock.property,
+          language: selectedBlock.language,
+          precision: selectedBlock.precision,
+          subject: selectedBlock.subject,
+        }, 
+        showExtraFields: false
       })
     } else {
       this.setState({
@@ -261,6 +271,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnSelectionChange(event: React.ChangeEvent) {
     const value = (event.target as HTMLInputElement).value;
+    this.changed = true;
     const fields = { ...this.state.fields }
     fields.selectedArea = value;
     this.setState({ fields });
@@ -362,11 +373,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   renderSelectionAreas() {
     const { selectedArea } = this.state.fields;
-    let blockSelection = undefined;
-    if (this.state.selectedBlock?.selection) { blockSelection = utils.humanReadableSelection(this.state.selectedBlock?.selection); }
-    if (!selectedArea && !blockSelection) { return null; }
-    const value = selectedArea || blockSelection
-    // console.log("render selection areas", value, selectedArea, blockSelection)
+    if (!selectedArea ) { return null; }
+    // console.log("render selection areas", selectedArea)
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}>
         <Form.Label column sm="12" md="3" className="text-muted">
@@ -376,7 +384,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           <Form.Control
             required
             type="text" size="sm"
-            value={value}
+            value={selectedArea}
             onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
             isInvalid={!this.state.validArea} />
           <Form.Control.Feedback type="invalid">
@@ -469,7 +477,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           showEntityMenu && selection ?
             <EntityMenu key={selection.toString()}
               selection={selection}
-              onClose={() => this.changeShowEntityMenu(true)} />
+              onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)} />
             : null
         }
         {
@@ -693,7 +701,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const value: string = (event.target as HTMLInputElement).value;
     const subject = { ...this.state.subject };
     subject.value = value;
-
+    this.changed = true;
     this.setState({ subject: subject }, () => {
 
       if (!value) {
@@ -712,6 +720,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnChangeInstanceOfSearch(event: any) {
     const value: string = (event.target as HTMLInputElement).value;
+    this.changed = true;
     const subject = { ...this.state.subject };
     subject.instanceOfSearch = value;
     this.setState({ subject: subject }, () => {
@@ -770,7 +779,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  renderSelectedNode() {
+  renderSelectedSubjectNode() {
     const { qnodes, selected } = this.state.subject;
     if (!qnodes.length && selected) {
       return (
@@ -862,7 +871,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             this.renderSubjectQNodeResults()
             : null
         }
-        {this.renderSelectedNode()}
+        {this.renderSelectedSubjectNode()}
       </div>
     )
   }
@@ -917,6 +926,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   render() {
     const { selection } = this.state;
+    console.log("state:", this.state)
     if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (

@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Card, Spinner } from 'react-bootstrap';
 
 import {  ErrorMessage, t2wmlColors } from '../../common/general';
-import RequestService, { IStateWithError } from '../../common/service';
+import { IStateWithError } from '../../common/service';
 import ToastMessage from '../../common/toast';
 
 import { observer } from "mobx-react";
@@ -28,11 +28,9 @@ interface OutputComponentState extends IStateWithError {
 
 @observer
 class Output extends Component<{}, OutputComponentState> {
-  private requestService: RequestService;
 
   constructor(props: {}) {
     super(props);
-    this.requestService = new RequestService();
 
     // init state
     this.state = {
