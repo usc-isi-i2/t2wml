@@ -44,7 +44,7 @@ class WebDictionaryProvider(FallbackSparql):
         except KeyError:
             raise ValueError(wikidata_property+" not found")
 
-    def save_entry(self, property, data_type, *args, **kwargs):
+    def save_entry(self, property, data_type=None, *args, **kwargs):
         added=True
         if property in self.cache:
             added=False
