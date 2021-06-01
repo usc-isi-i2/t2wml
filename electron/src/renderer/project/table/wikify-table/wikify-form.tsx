@@ -220,7 +220,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       customQnode
     } = this.state;
     return (
-      <Form.Group as={Row}>
+      <Form.Group as={Row} style={{ marginTop: "1rem" }}>
         <Col sm="12" className="search-properties">
           <input id="check-property-search"
             type="checkbox"
@@ -233,7 +233,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             Search Properties
           </Form.Label>
         </Col>
-        <Col sm="12" md={!searchProperties ? '8' : '12'}>
+        <Col sm="12" md='12'>
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
@@ -250,7 +250,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           ) : null}
         </Col>
         {!searchProperties && (
-          <Col sm="12" md="4">
+          <Col sm="12" md="12">
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
               type="text" size="sm"
@@ -447,12 +447,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             onChange={() => this.onChangecustomQnode()} />
         </Form.Group>
         <Form.Group as={Row}>
-          <Col sm="6" md="6">
+          <Col sm="5" md="5">
             {this.renderSearchInputs()}
             {this.renderInstanceOf()}
             {this.renderQNodeResults()}
           </Col>
-          <Col sm="6" md="6">
+          <Col sm="5" md="5" style={{ marginLeft: "1rem" }}>
             {this.renderEntityForm()}
           </Col>
         </Form.Group>

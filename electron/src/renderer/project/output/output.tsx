@@ -82,8 +82,6 @@ class Output extends Component<{}, OutputComponentState> {
   }
 
 
-
-
   render() {
     if (!this.state.statement){
       return null;
