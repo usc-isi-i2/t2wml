@@ -6,7 +6,7 @@ import './table-component.css';
 
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
-import { AnnotationBlock, QNode, QNodeEntry, TableCell, TableData, TableDTO } from '../../common/dtos';
+import { AnnotationBlock, QNode, TableCell, TableData, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -463,7 +463,7 @@ class CombinedTable extends Component<{}, TableState> {
         const rows = table!.querySelectorAll('tr');
         const statement = wikiStore.layers.statement.find(selectedCell);
 
-        let activeCell = rows[selectedCell.row + 1].children[selectedCell.col + 1]
+        const activeCell = rows[selectedCell.row + 1].children[selectedCell.col + 1]
         activeCell.classList.add('active-cell');
 
         //select related cells
@@ -474,7 +474,7 @@ class CombinedTable extends Component<{}, TableState> {
                     for (const key in cell) {
                         const y = cell[key][0];
                         const x = cell[key][1];
-                        let qualCell = rows[y + 1].children[x + 1];
+                        const qualCell = rows[y + 1].children[x + 1];
                         qualCell.classList.add('linked-cell');
                     }
                 });
@@ -484,7 +484,7 @@ class CombinedTable extends Component<{}, TableState> {
                 if (key === 'qualifiers') { continue; }
                 const y = statement.cells[key][0];
                 const x = statement.cells[key][1];
-                let keyCell = rows[y + 1].children[x + 1];
+                const keyCell = rows[y + 1].children[x + 1];
                 keyCell.classList.add('linked-cell');
             }
         }

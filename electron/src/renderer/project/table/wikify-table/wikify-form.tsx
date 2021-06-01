@@ -51,6 +51,20 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const cellType = wikiStore.layers.type.find(selectedCell);
     const searchProperties = cellType ? cellType.type === 'property' : false;
 
+    const entityFields = {
+      isProperty: true,
+      label: "",
+      description: "",
+      datatype: "quantity",
+    }
+    let customQnode = false;
+    if (selected && isValidLabel(selected.id.substring(1, selected.id.length))){
+      entityFields.isProperty = selected.id.startsWith("P");
+      entityFields.description = selected.description;
+      entityFields.label = selected.label;
+      customQnode = true;
+    }
+
     this.state = {
       search: undefined,
       instanceOf: undefined,
@@ -60,18 +74,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       selected: selected,
       qnodes: [],
       prevCell: undefined,
-      entityFields: {
-        isProperty: true,
-        label: "",
-        description: "",
-        datatype: "quantity",
-      },
-      customQnode: false
+      entityFields: entityFields,
+      customQnode: customQnode
     };
   }
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.setState({ selected: qnodes.find(this.props.selectedCell) })));
   }
 
   componentWillUnmount() {
@@ -141,6 +151,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { selected, applyToBlock, customQnode, entityFields } = this.state;
     if (customQnode && onCreateQnode && isValidLabel(entityFields.label)) {
       onCreateQnode(entityFields, applyToBlock);
+
       return;
     }
     if (!selected) { return; }
@@ -331,11 +342,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   renderEntityForm() {
     const { entityFields, customQnode } = this.state;
     return (
-        <EntityForm isReadOnly={!customQnode}
-          entityFields={entityFields}
-          handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") => this.handleOnChangeEntity(event, key)}
-        />
-        );
+      <EntityForm isReadOnly={!customQnode}
+        entityFields={entityFields}
+        handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") => this.handleOnChangeEntity(event, key)}
+      />
+    );
   }
 
   handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "datatype" | "isProperty") {
@@ -377,6 +388,17 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         }, 300);
       }
     });
+  }
+
+  onChangecustomQnode(){
+    const { selected, entityFields, customQnode } = this.state;
+    this.setState({ customQnode: !customQnode, qnodes: [] });
+    if(selected && customQnode){
+      entityFields.isProperty = selected.id.startsWith("P");
+      entityFields.description = selected.description;
+      entityFields.label = selected.label;
+    }
+    this.setState({entityFields})
   }
 
   renderSubmitButton() {
@@ -421,8 +443,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode} 
-          onChange={() => this.setState({ customQnode: !customQnode, qnodes: [] })}/>
+          <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode}
+            onChange={() => this.onChangecustomQnode()} />
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="6" md="6">

@@ -32,7 +32,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
                     onChange={(event: KeyboardEvent) => handleOnChange(event, "label")}>
                     <Form.Label column sm="12" md="12" className="text-muted">Label</Form.Label>
                     {/* <Col sm="12" md='9'> */}
-                        <Form.Control value={label} required isInvalid={!isValidLabel(label)} disabled={isReadOnly} />
+                        <Form.Control value={label} required isInvalid={!isReadOnly && !isValidLabel(label)} disabled={isReadOnly} />
                         <Form.Control.Feedback type="invalid">
                         The label must contain an alphabetic char.
                                         </Form.Control.Feedback>
