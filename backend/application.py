@@ -9,7 +9,7 @@ import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
-from t2wml_web import (get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (autocreate_items, get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml, create_user_wikification, create_wikifier_file)
@@ -307,6 +307,28 @@ def call_wikifier_service():
         response['wikifierError'] = "Failed to wikify: " + ",".join(problem_cells)
 
     return response, 200
+
+
+@app.route('/api/auto_wikinodes', methods=['PUT'])
+@json_response
+def create_auto_nodes():
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
+    is_property=request.get_json()['is_property']
+    data_type=request.get_json().get("data_type", None)
+    autocreate_items(calc_params, selection, is_property, data_type)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+
 
 
 @app.route('/api/yaml/save', methods=['POST'])
