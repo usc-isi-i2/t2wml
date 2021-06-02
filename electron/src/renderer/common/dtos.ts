@@ -60,7 +60,7 @@ export interface LayerDTO<T extends Entry> {
     entries: T[];
 }
 
-export interface WikiNode{
+export interface QNode{
     label: string;
     description: string;
     id: string;
@@ -74,7 +74,7 @@ export interface WikiNode{
 
 
 export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
-    qnodes: {[key: string]: WikiNode };
+    qnodes: {[key: string]: QNode };
 }
 
 export interface LayersDTO {
@@ -86,7 +86,7 @@ export interface LayersDTO {
 }
 
 
-export interface QNodeEntry extends Entry, WikiNode {
+export interface QNodeEntry extends Entry, QNode {
     context: string; // null or ""
 }
 
@@ -211,7 +211,7 @@ export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
 }
 
 export interface ResponseEntitiesPropertiesDTO {
-    [file: string]: { [property: string] : WikiNode };
+    [file: string]: { [property: string] : QNode };
 }
 
 export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {
@@ -227,7 +227,7 @@ export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, Respo
 }
 
 export interface ResponseWithQNodesDTO {
-    qnodes: WikiNode[];
+    qnodes: QNode[];
 }
 
 export interface ResponseWithSuggestion {

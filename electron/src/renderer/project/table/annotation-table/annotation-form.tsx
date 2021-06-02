@@ -6,7 +6,7 @@ import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
 import SearchResults from './search-results';
-import { WikiNode } from '@/renderer/common/dtos';
+import { QNode } from '@/renderer/common/dtos';
 import wikiStore from '../../../data/store';
 
 import { IReactionDisposer, reaction } from 'mobx';
@@ -21,7 +21,7 @@ interface AnnotationFormProperties {
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions: ResponseWithSuggestion;
   onChange: (key: string, value: string, type: string) => Promise<void>; // Use the actual function type: (arg: argType) => returnType
-  onChangeSubject: (key: string, value?: string, instanceOf?: WikiNode) => Promise<void>;
+  onChangeSubject: (key: string, value?: string, instanceOf?: QNode) => Promise<void>;
   onDelete: () => void;
   onSubmit: (values: {[key: string]: string | undefined;}) => void;
 }
@@ -49,9 +49,9 @@ interface AnnotationFormState {
   subject: {
     value?: string;
     instanceOfSearch?: string;
-    instanceOf?: WikiNode;
-    qnodes: WikiNode[];
-    selected?: WikiNode;
+    instanceOf?: QNode;
+    qnodes: QNode[];
+    selected?: QNode;
   };
 }
 
@@ -449,14 +449,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     this.props.onChangeSubject('subject', value, instanceOf);
   }
 
-  updateSubjectQNodes(qnodes: WikiNode[]) {
+  updateSubjectQNodes(qnodes: QNode[]) {
     this.setState({ showResult1: false, showResult2: true })
     const subject = { ...this.state.subject };
     subject.qnodes = qnodes;
     this.setState({ subject: subject });
   }
 
-  handleOnClickQnode(qnode: WikiNode) {
+  handleOnClickQnode(qnode: QNode) {
     const subject = { ...this.state.subject };
     console.log(subject);
     subject.qnodes = [];

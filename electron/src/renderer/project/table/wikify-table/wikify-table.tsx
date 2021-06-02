@@ -4,7 +4,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import Table from '../table';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell, CellSelection } from '../../../common/general';
-import { AnnotationBlock, QNodeEntry, WikiNode, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
+import { AnnotationBlock, QNodeEntry, QNode, TableCell, TableData, TableDTO, TypeEntry } from '../../../common/dtos';
 import WikifyMenu from './wikify-menu';
 import { settings } from '../../../../main/settings';
 import * as utils from '../table-utils';
@@ -63,7 +63,7 @@ class WikifyTable extends Component<{}, TableState> {
     }
   }
 
-  getCellContent(qnode: WikiNode, rawContent?: string) {
+  getCellContent(qnode: QNode, rawContent?: string) {
     return (
       <span>
         {rawContent}
