@@ -125,10 +125,10 @@ export type AnnotationBlockType = "string" | "quantity" | "time" | "wikibaseitem
 
 
 export interface EntityFields {
-    isProperty: boolean;
+    is_property: boolean;
     label: string;
     description: string;
-    dataType: string;
+    data_type: string;
 }
 
 export interface AnnotationBlock{

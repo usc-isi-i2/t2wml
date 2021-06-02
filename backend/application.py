@@ -641,10 +641,10 @@ def create_qnode():
     project = get_project()
     request_json=request.get_json()
     try:
-        label=request_json.pop("label") 
-        is_prop=request_json.pop("isProperty") # is_prop=node_id[0].lower()=="p"
+        label=request_json.pop("label")
+        is_prop=request_json.pop("is_property") # is_prop=node_id[0].lower()=="p"
         if is_prop:
-            data_type=request_json.pop("dataType")
+            data_type=request_json.pop("data_type")
             if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
                 raise web_exceptions.InvalidRequestException("Invalid data type")
     except KeyError:

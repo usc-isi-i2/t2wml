@@ -21,15 +21,15 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
         super(props);
         this.state = {
             entityFields: {
-                isProperty: true,
+                is_property: true,
                 label: "",
                 description: "",
-                dataType: "string"
+                data_type: "string"
             }
         }
     }
 
-    handleOnChange(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") {
+    handleOnChange(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") {
         if (event.code === 'Enter') {
             event.preventDefault();
             this.handleOnSubmit();
@@ -38,16 +38,16 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
         console.log("value:", value)
         const updatedEntityFields = { ...this.state.entityFields };
         switch (key) {
-            case "isProperty": {
-                updatedEntityFields.isProperty = !updatedEntityFields.isProperty
+            case "is_property": {
+                updatedEntityFields.is_property = !updatedEntityFields.is_property
                 break;
             }
             case "description": {
                 updatedEntityFields.description = value;
                 break;
             }
-            case "dataType": {
-                updatedEntityFields.dataType = value;
+            case "data_type": {
+                updatedEntityFields.data_type = value;
                 break;
             }
             case "label": {
@@ -86,7 +86,7 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
                             {/* <Form className="container"> */}
                                 <EntityForm
                                     entityFields={entityFields}
-                                    handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") => this.handleOnChange(event, key)}
+                                    handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChange(event, key)}
                                 />
                             {/* </Form> */}
                             <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}

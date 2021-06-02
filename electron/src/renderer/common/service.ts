@@ -301,16 +301,16 @@ class RequestService {
     // const response1 = await backendPost(`/api/create_node`, data) as {
     // ...ResponseWithProjectDTO
     // entity:{
-      // isProperty: boolean;
+      // is_property: boolean;
     //   label: string;
     //   description?: string;
     //   data_type?: string;
     //  }
-  
+
     // };
-    // const dataType = response1.data_type;
+    // const data_type = response1.data_type;
     // delete response1.data_type;
-    // const response = {...response1, dataType:dataType};
+    // const response = {...response1, data_type:data_type};
     const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, {...data, selection: selection}) as ResponseWithQNodeLayerAndId;
     this.updateProjectandQnode(response)
     return response;
