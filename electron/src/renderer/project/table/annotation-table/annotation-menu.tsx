@@ -7,9 +7,9 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
-import wikiStore from '../WikiNode/data/store';
-import { AnnotationBlock, QNode, ResponseWithSuggestion } from '../../../common/dtos';
+import { AnnotationBlock, WikiNode, ResponseWithSuggestion } from '../../../common/dtos';
 import { currentFilesService } from '@/renderer/common/current-file-service';
+import wikiStore from '@/renderer/data/store';
 
 interface AnnotationMenuProperties {
   selection?: CellSelection;
@@ -39,7 +39,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
     };WikiNode
   }
 
-  async handleOnChangeSubject(key: string, value?: string, instanceOf?: QNode){
+  async handleOnChangeSubject(key: string, value?: string, instanceOf?: WikiNode){
 
     if (!value) { return; }
 
@@ -74,7 +74,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 WikiNode
     if ( key === 'unit' ) {
 
-      const instanceOf: QNode = {
+      const instanceOf: WikiNode = {
         label: 'unit of measurement',
         description: 'quantity, defined and adopted by convention',
         id: 'Q47574',

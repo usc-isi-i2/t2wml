@@ -134,36 +134,36 @@ export class Layer<T extends Entry> {
 }
 
 class StatementLayer extends Layer<StatementEntry>{
-    qnodes: Map<string, QNode>
+    qnodes: Map<string, WikiNode>
 
     constructor(responseLayer?: StatementLayerDTO) {
         super(responseLayer);
         if (responseLayer && responseLayer.qnodes) {
-            this.qnodes = new Map<string, QNode>(Object.entries(responseLayer.qnodes));
+            this.qnodes = new Map<string, WikiNode>(Object.entries(responseLayer.qnodes));
         }
         else {
-            this.qnodes = new Map<string, QNode>();
+            this.qnodes = new Map<string, WikiNode>();
         }
     }
 
-    public getQNode(id: string): QNode {
+    public getQNode(id: string): WikiNode {
         const return_val = this.qnodes.get(id);
         if (return_val) {
             return return_val;
         }
-        return { "label"WikiNode "url": "", description: "", "id": id };
+        return { "label": id, "url": "", description: "", "id": id };
     }
 }
 
 
-export class LayerState {WikiNode
+export class LayerState {
     @observable public qnode: Layer<QNodeEntry>;
     @observable public type: Layer<TypeEntry>;
-    @observable public statement: StatemenWikiNoder;
+    @observable public statement: StatementLayer;
     @observable public error: Layer<ErrorEntry>;
     @observable public cleaned: Layer<CleanEntry>;
     @observable public partialCsv: TableDTO;
-WikiNode
+
     constructor() {
         this.qnode = new Layer<QNodeEntry>();
         this.type = new Layer<TypeEntry>();
@@ -228,11 +228,11 @@ export class EntitiesData {
 }
 
 export class WikifyQnodes {
-    @observable qnodes: QNode[] = [];
+    @observable qnodes: WikiNode[] = [];
 }
 
 export class AnnotateProperties {
-    @observable properties: QNode[] = [];
+    @observable properties: WikiNode[] = [];
 }
 
 class WikiStore {
@@ -245,11 +245,11 @@ class WikiStore {
     @observable public annotations = new AnnotationState();
 
     @observable public displayMode: DisplayMode = 'project-list';
-    @observable public pWikiNodets = new ProjectList();
+    @observable public projects = new ProjectList();
     @observable public project = new ProjectState();
     @observable public globalSettings = new GlobalSettings();
     @observable public entitiesData = new EntitiesData();
-    @observable public wikifWikiNodees = new WikifyQnodes();
+    @observable public wikifyQnodes = new WikifyQnodes();
     @observable public subjectQnodes = new WikifyQnodes();
     @observable public annotateProperties = new AnnotateProperties();
 

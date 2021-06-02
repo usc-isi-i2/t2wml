@@ -21,7 +21,7 @@ interface AnnotationFormProperties {
   selectedAnnotationBlock?: AnnotationBlock;
   annotationSuggestions: ResponseWithSuggestion;
   onChange: (key: string, value: string, type: string) => Promise<void>; // Use the actual function type: (arg: argType) => returnType
-  onChangeSubject: (key: string, value?: string, instanceOf?: QNode) => Promise<void>;
+  onChangeSubject: (key: string, value?: string, instanceOf?: WikiNode) => Promise<void>;
   onDelete: () => void;
   onSubmit: (values: {[key: string]: string | undefined;}) => void;
 }
@@ -44,14 +44,14 @@ interface AnnotationFormState {
   fields: AnnotationFields;
   showExtraFields: boolean;
   validArea: boolean;
-  showResult1: boWikiNode;
-  showResultWikiNodeolean;
-  subject: {WikiNode
+  showResult1: boolean;
+  showResult2: boolean;
+  subject: {
     value?: string;
     instanceOfSearch?: string;
-    instanceOf?: QNode;
-    qnodes: QNode[];
-    selected?: QNode;
+    instanceOf?: WikiNode;
+    qnodes: WikiNode[];
+    selected?: WikiNode;
   };
 }
 
@@ -201,7 +201,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
             type="text" size="sm"
             value={selectedArea || defaultValue}
             onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
-            isInvalid={!WikiNodestate.validArea} />
+            isInvalid={!this.state.validArea} />
           <Form.Control.Feedback type="invalid">
             Please choose a valid range.
             </Form.Control.Feedback>
@@ -449,14 +449,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
     this.props.onChangeSubject('subject', value, instanceOf);
   }
 
-  updateSubjectQNodes(qnodes: QNode[]) {
+  updateSubjectQNodes(qnodes: WikiNode[]) {
     this.setState({ showResult1: false, showResult2: true })
     const subject = { ...this.state.subject };
     subject.qnodes = qnodes;
     this.setState({ subject: subject });
   }
 
-  handleOnClickQnode(qnode: QNode) {
+  handleOnClickQnode(qnode: WikiNode) {
     const subject = { ...this.state.subject };
     console.log(subject);
     subject.qnodes = [];
@@ -639,7 +639,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       </div>
     )
   }
-WikiNode
+
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
@@ -664,14 +664,14 @@ WikiNode
           size="sm"
           type="button"
           variant="link"
-          className="delete"WikiNode
+          className="delete"
           onClick={(event: React.MouseEvent) => this.handleOnDelete(event)}>
           delete this annotation block
         </Button>
       )
     }
   }
-WikiNode
+
   render() {
     return (
       <Form className="container annotation-form"

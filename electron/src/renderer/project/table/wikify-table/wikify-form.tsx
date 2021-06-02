@@ -4,7 +4,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { QNode } from 'WikiNodederer/common/dtos';
+import { WikiNode } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -13,22 +13,22 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 interface WikifyFormProperties {
   selectedCell: Cell;
   onSelectBlock: (applyToBlock: boolean) => void;
-  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
-  onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-  onRemove: (qnode: QNode, applyToBlock: boolean) => PrWikiNode<void>;
-}WikiNode
-WikiNode
+  onChange: (key: string, value?: string, instanceOf?: WikiNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
+  onSubmit: (qnode: WikiNode, applyToBlock: boolean) => Promise<void>;
+  onRemove: (qnode: WikiNode, applyToBlock: boolean) => Promise<void>;
+}
+
 
 interface WikifyFormState {
   search?: string;
-  instanceOf?: QNode;
+  instanceOf?: WikiNode;
   instanceOfSearch?: string;
-  searchPropertWikiNodeboolean;
+  searchProperties: boolean;
   applyToBlock: boolean;
   selectedType: string;
-  selected?: QNode;
-  qnodes: QNoWikiNode
-}WikiNode
+  selected?: WikiNode;
+  qnodes: WikiNode[];
+}
 
 
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
@@ -86,13 +86,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({searchProperties: !searchProperties});
   }
 
-  updateQNodes(qnodes: QNode[]) {
+  updateQNodes(qnodes: WikiNode[]) {
     this.setState({qnodes});
   }
 
   handleOnFocusSearch() {
     const { search, instanceOf, searchProperties } = this.state;
-    this.props.onChangeWikiNoderch', search, instanceOf, searchProperties);
+    this.props.onChange('search', search, instanceOf, searchProperties);
   }
 
   handleOnChangeSearch(event: any) {
@@ -144,7 +144,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     onRemove(selected, applyToBlock);
   }
 
-  handleOnClick(qnode: QNode) {
+  handleOnClick(qnode: WikiNode) {
     const { instanceOfSearch } = this.state;
     if ( instanceOfSearch ) {
       this.setState({
@@ -161,7 +161,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   clearSearch() {
-    this.setState({WikiNode
+    this.setState({
       search: '',
       qnodes: [],
     });
