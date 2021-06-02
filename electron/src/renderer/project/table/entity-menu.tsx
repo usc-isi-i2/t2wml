@@ -58,7 +58,7 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
                 break;
             }
         }
-        console.log("Entity menu handleOnChange:", updatedEntityFields)
+        // console.log("Entity menu handleOnChange:", updatedEntityFields)
         this.setState({ entityFields: updatedEntityFields });
     }
 
@@ -83,12 +83,10 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
                         </Toast.Header>
 
                         <Toast.Body>
-                            {/* <Form className="container"> */}
                                 <EntityForm
                                     entityFields={entityFields}
                                     handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChange(event, key)}
                                 />
-                            {/* </Form> */}
                             <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}
                                 disabled={!utils.isValidLabel(entityFields.label)}>
                                 Save

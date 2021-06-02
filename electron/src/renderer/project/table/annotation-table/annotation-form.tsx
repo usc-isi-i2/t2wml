@@ -16,6 +16,7 @@ import { columnToLetter } from '../table-utils';
 import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
 import EntityMenu from '../entity-menu';
+import './annotation-form.css'
 
 
 interface AnnotationFields {
@@ -135,7 +136,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       const response = await this.requestService.call(this, () => (
         this.requestService.createQnode(entityFields, selection)
       ));
-      this.handleOnSelect(typeEntityMenu?.toLowerCase()|| 'property', response.id)
+      debugger;
+      this.handleOnSelect(typeEntityMenu?.toLowerCase() || 'property', response.id)
     } catch (error) {
       error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;
       console.log(error.errorDescription)
@@ -297,6 +299,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.handleOnSubmit(event);
     }
 
+    this.setState({showEntityMenu: false});
     const value = (event.target as HTMLInputElement).value;
     const updatedFields = { ...this.state.fields }
     updatedFields[key as keyof AnnotationFields] = value;
@@ -468,13 +471,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     if (type.children) {
       return (
-        <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}
-          onChange={
-            (event: KeyboardEvent) => this.handleOnChange(event, type.value)
-          }>
+        <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}>
           <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
           <Col sm="12" md="9">
-            <Form.Control size="sm" as="select" key={defaultValue} defaultValue={defaultValue}>
+            <Form.Control size="sm" as="select" key={defaultValue} defaultValue={defaultValue}
+              onChange={(event: any) => this.handleOnChange(event, type.value)}>
               <option disabled value="--">--</option>
               {type.children.map((option: AnnotationOption) => (
                 <option key={option.value}
@@ -508,17 +509,16 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         }
       }
     }
-    const { showEntityMenu, selection, typeEntityMenu } = this.state;
     defaultValue = defaultValue == "--" ? "" : defaultValue;
     return (
-      <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}
-        onChange={(event: KeyboardEvent) => this.handleOnChange(event, type.value)}>
+      <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}>
         <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
         <Col sm='12' md={(key == 'property' && propertyBlockId) || (key == 'unit' && unitBlockId) ? '4' : '6'}>
           <Form.Control
             type="text" size="sm"
             key={defaultValue}
             defaultValue={defaultValue}
+            onChange={(event: any) => this.handleOnChange(event, type.value)}
           />
           {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg &quot;%Y&quot;)</Form.Label> : null}
         </Col>
@@ -532,16 +532,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             Create entity
           </Button>
         </Col>
-        {
-          showEntityMenu && selection ?
-            <EntityMenu 
-            // key={selection.toString()}
-              selection={selection}
-              onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)}
-              title={typeEntityMenu}
-            />
-            : null
-        }
         {
           key == "property" && propertyBlockId ?
             <Col sm="12" md='2'>
@@ -615,26 +605,26 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
-      if (this.state.showExtraFields && selectedType.children.length > 1)
-        return (
-          <React.Fragment>
-            {optionsDropdown}
-            <Form.Label style={{ color: 'grey' }}
-              onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label>
-            {selectedType?.children?.map(type => {
-              return this.renderNestedOptionsChildren(type);
-            })}
-          </React.Fragment>
-        )
-      else return ( //show property field regardless of extra field toggle
+      return ( //show property field regardless of extra field toggle
         <React.Fragment>
           {optionsDropdown}
-          {selectedType.children.length > 1 ? <Form.Label style={{ color: 'grey' }}
-            onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>Toggle additional fields</Form.Label> : null}
-          {this.renderNestedOptionsChildren({
-            'label': 'Property',
-            'value': 'property',
-          })}
+          {
+            selectedType.children.length > 1 ?
+              <Form.Label style={{ color: 'grey' }} onClick={() => { this.setState({ showExtraFields: !this.state.showExtraFields }) }}>
+                Toggle additional fields
+              </Form.Label>
+              : null
+          }
+          {
+            this.state.showExtraFields && selectedType.children.length > 1
+              ?
+              selectedType?.children?.map(type => { return this.renderNestedOptionsChildren(type); })
+              :
+              this.renderNestedOptionsChildren({
+                'label': 'Property',
+                'value': 'property',
+              })
+          }
         </React.Fragment>
       )
     }
@@ -986,6 +976,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   render() {
     const { selection } = this.state;
+    const { showEntityMenu, typeEntityMenu } = this.state;
     if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (
@@ -997,6 +988,17 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         {this.renderSearchResults()}
         {this.renderSubject()}
         {this.renderSubmitButton()}
+
+        {
+          showEntityMenu && selection ?
+            <EntityMenu
+              selection={selection}
+              onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)}
+              title={typeEntityMenu}
+            />
+            : null
+        }
+
       </Form>
     )
   }

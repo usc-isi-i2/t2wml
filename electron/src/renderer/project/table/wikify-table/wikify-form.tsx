@@ -448,8 +448,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode}
-            onChange={() => this.onChangecustomQnode()} />
+          <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode} onChange={() => this.onChangecustomQnode()}/>
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="5" md="5">

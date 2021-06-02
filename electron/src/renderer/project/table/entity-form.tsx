@@ -27,7 +27,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
                     onChange={(event: KeyboardEvent) => handleOnChange(event, "label")}>
                     <Form.Label className="text-muted">Label</Form.Label>
-                    <Form.Control value={label} required isInvalid={!isReadOnly && !isValidLabel(label)} disabled={isReadOnly} />
+                    <Form.Control defaultValue={label} required isInvalid={!isReadOnly && !isValidLabel(label)} disabled={isReadOnly} />
                     <Form.Control.Feedback type="invalid">
                         The label must contain an alphabetic char.
                                         </Form.Control.Feedback>
@@ -36,12 +36,12 @@ class EntityForm extends Component<EntityFormProp, {}> {
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
                     onChange={(event: KeyboardEvent) => handleOnChange(event, "description")}>
                     <Form.Label className="text-muted">Description</Form.Label>
-                    <Form.Control value={description} disabled={isReadOnly} />
+                    <Form.Control defaultValue={description} disabled={isReadOnly} />
                 </Form.Group>
 
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
                     onChange={(event: KeyboardEvent) => handleOnChange(event, "is_property")}>
-                    <Form.Check type="checkbox" label="Is property?" checked={is_property} disabled={isReadOnly} />
+                    <Form.Check type="checkbox" label="Is property?" defaultChecked={is_property} disabled={isReadOnly} />
                 </Form.Group>
                 {
                     is_property ?
@@ -49,7 +49,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
                             onChange={(event: KeyboardEvent) => handleOnChange(event, "data_type")}>
                             <Form.Label column sm="12" md="12" className="text-muted">Data type</Form.Label>
                             <Form.Control as="select" disabled={isReadOnly}
-                                value={data_type}>
+                                defaultValue={data_type}>
                                 <option value="quantity">Quantity</option>
                                 <option value="time">Time</option>
                                 <option value="monolingualtext">Monolingual text</option>
