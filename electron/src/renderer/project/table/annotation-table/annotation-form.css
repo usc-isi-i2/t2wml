@@ -1,0 +1,117 @@
+.annotation-menu {
+  position: absolute;
+  min-width: 500px;
+  z-index: 200;
+  left: 50px;
+  top: 70px;
+}
+
+.annotation-menu .toast {
+  max-width: 500px;
+  min-width: 500px;
+}
+
+.annotation-menu .toast .handle {
+  background: whitesmoke;
+  cursor: pointer;
+}
+
+.annotation-menu .annotation-form button.delete {
+  cursor: pointer;
+  float: right;
+  padding: 0px;
+  color: red;
+}
+
+.annotation-menu .toast .toast-body {
+  background: #fefefe;
+}
+
+ /* q-node search results */
+.annotation-menu .annotation-form .results {
+  max-height: 350px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.annotation-menu .annotation-form .results .property,
+.annotation-menu .annotation-form .results .qnode {
+  user-select: none;
+  padding: 5px 0;
+}
+.annotation-menu .annotation-form .results .property:hover,
+.annotation-menu .annotation-form .results .qnode:hover {
+  cursor: pointer;
+  background: #f9f9f9;
+}
+.annotation-menu .annotation-form .results .property .label,
+.annotation-menu .annotation-form .results .qnode .label {
+  display: block;
+  font-weight: bold;
+  width: 100%;
+}
+.annotation-menu .annotation-form .results .property .description,
+.annotation-menu .annotation-form .results .qnode .description {
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+/* Input field clear button */
+.annotation-menu .annotation-form .clear-button {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  color: #555;
+  cursor: pointer;
+  z-index: 125;
+}
+.annotation-menu .annotation-form .clear-button:hover {
+  color: #000;
+}
+
+/* annotation Menu - Instance OF node */
+.annotation-menu .annotation-form .instance-of {
+  margin-bottom: 1em;
+}
+.annotation-menu .annotation-form .instance-of .remove-instance-of-button {
+  margin-left: 5px;
+  color: red;
+}
+.annotation-menu .annotation-form .instance-of .remove-instance-of-button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* annotation Menu - Selected node */
+.annotation-menu .annotation-form .selected-node {
+  margin-bottom: 1em;
+}
+
+ /* annotation Menu Qnode results */
+ .annotation-menu .annotation-form .results-subject {
+  max-height: 500px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.annotation-menu .annotation-form .results-subject .qnode {
+  user-select: none;
+  padding: 5px 0;
+}
+.annotation-menu .annotation-form .results-subject .qnode:hover {
+  cursor: pointer;
+  background: #f9f9f9;
+}
+.annotation-menu .annotation-form .results-subject .qnode .label {
+  display: block;
+  font-weight: bold;
+  width: 100%;
+}
+.annotation-menu .annotation-form .results-subject .qnode .description {
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
