@@ -6,7 +6,7 @@ import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection } from '@/renderer/common/general';
 import SearchResults from './search-results';
-import { QNode } from '@/renderer/common/dtos';
+import { WikiNode } from '@/renderer/common/dtos';
 import wikiStore from '../../../data/store';
 
 import { IReactionDisposer, reaction } from 'mobx';
@@ -44,9 +44,9 @@ interface AnnotationFormState {
   fields: AnnotationFields;
   showExtraFields: boolean;
   validArea: boolean;
-  showResult1: boolean;
-  showResult2: boolean;
-  subject: {
+  showResult1: boWikiNode;
+  showResultWikiNodeolean;
+  subject: {WikiNode
     value?: string;
     instanceOfSearch?: string;
     instanceOf?: QNode;
@@ -201,7 +201,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
             type="text" size="sm"
             value={selectedArea || defaultValue}
             onChange={(event: React.ChangeEvent) => this.handleOnSelectionChange(event)}
-            isInvalid={!this.state.validArea} />
+            isInvalid={!WikiNodestate.validArea} />
           <Form.Control.Feedback type="invalid">
             Please choose a valid range.
             </Form.Control.Feedback>
@@ -639,7 +639,7 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
       </div>
     )
   }
-
+WikiNode
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
@@ -664,14 +664,14 @@ class AnnotationForm extends React.Component<AnnotationFormProperties, Annotatio
           size="sm"
           type="button"
           variant="link"
-          className="delete"
+          className="delete"WikiNode
           onClick={(event: React.MouseEvent) => this.handleOnDelete(event)}>
           delete this annotation block
         </Button>
       )
     }
   }
-
+WikiNode
   render() {
     return (
       <Form className="container annotation-form"

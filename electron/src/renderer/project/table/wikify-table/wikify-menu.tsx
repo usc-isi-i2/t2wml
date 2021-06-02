@@ -5,7 +5,7 @@ import WikifyForm from './wikify-form';
 
 import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
-import { ErrorMessage } from '../../../common/general';
+import { ErrorMessage }WikiNode '../../../common/general';
 import RequestService from '../../../common/service';
 import { QNode } from '@/renderer/common/dtos';
 import { Cell, CellSelection } from '../../../common/general';
@@ -64,7 +64,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
 
     let hasError=false;
 
-    wikiStore.table.showSpinner = true;
+    wikiStore.table.showSpinner = true;WikiNode
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
@@ -82,7 +82,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
         ];
       }
     }
-
+WikiNode
     try {
       await this.requestService.call(this, () => (
         this.requestService.postQNodes({
@@ -148,7 +148,7 @@ class WikifyMenu extends React.Component<WikifyMenuProperties, WikifyMenuState> 
     }
 
     try {
-      await this.requestService.call(this, () => (
+      await this.requestServicWikiNodel(this, () => (
         this.requestService.removeQNodes({
           value: wikifyCellContent,
           selection,

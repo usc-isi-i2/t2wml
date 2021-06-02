@@ -11,7 +11,7 @@ import wikiStore from '@/renderer/data/store';
 import EntitiesList from './entities-list';
 import EntityFields from './entity-fields';
 import Tags from './tags';
-import { Entity } from '@/renderer/common/dtos';
+import { WikiNode } from '@/renderer/common/dtos';
 
 interface EntitiesProperties {
     showEntities: boolean;
@@ -25,7 +25,7 @@ interface EntitiesProperties {
 interface EntitiesState {
     selectedProperty: string | undefined;
     entityFile: string;
-    propertyData?: Entity;
+    propertyData?: WikiNode;
     labelContent: string;
     hasError: boolean;
 }

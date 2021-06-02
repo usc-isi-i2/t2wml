@@ -4,7 +4,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { QNode } from '@/renderer/common/dtos';
+import { QNode } from 'WikiNodederer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -13,22 +13,22 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 interface WikifyFormProperties {
   selectedCell: Cell;
   onSelectBlock: (applyToBlock: boolean) => void;
-  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>; 
+  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
   onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-  onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-}
-
+  onRemove: (qnode: QNode, applyToBlock: boolean) => PrWikiNode<void>;
+}WikiNode
+WikiNode
 
 interface WikifyFormState {
   search?: string;
   instanceOf?: QNode;
   instanceOfSearch?: string;
-  searchProperties: boolean;
+  searchPropertWikiNodeboolean;
   applyToBlock: boolean;
   selectedType: string;
   selected?: QNode;
-  qnodes: QNode[];
-}
+  qnodes: QNoWikiNode
+}WikiNode
 
 
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
@@ -92,7 +92,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   handleOnFocusSearch() {
     const { search, instanceOf, searchProperties } = this.state;
-    this.props.onChange('search', search, instanceOf, searchProperties);
+    this.props.onChangeWikiNoderch', search, instanceOf, searchProperties);
   }
 
   handleOnChangeSearch(event: any) {
@@ -161,7 +161,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   clearSearch() {
-    this.setState({
+    this.setState({WikiNode
       search: '',
       qnodes: [],
     });

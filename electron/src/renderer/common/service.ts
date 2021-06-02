@@ -5,7 +5,7 @@ import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, WikiNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -114,7 +114,7 @@ class RequestService {
     wikiStore.annotateProperties.properties = response.qnodes;
   }
 
-  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean, isSubject = false) {
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: WikiNode, searchProperties?: boolean, isSubject = false) {
     let url = `/qnodes?q=${search}`;
     if (searchProperties) {
       url = `/properties?q=${search}`;

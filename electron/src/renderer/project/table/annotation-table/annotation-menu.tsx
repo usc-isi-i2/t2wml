@@ -7,7 +7,7 @@ import Draggable from 'react-draggable';
 import { Toast } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';
-import wikiStore from '../../../data/store';
+import wikiStore from '../WikiNode/data/store';
 import { AnnotationBlock, QNode, ResponseWithSuggestion } from '../../../common/dtos';
 import { currentFilesService } from '@/renderer/common/current-file-service';
 
@@ -36,7 +36,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
 
     this.state = {
       errorMessage: {} as ErrorMessage,
-    };
+    };WikiNode
   }
 
   async handleOnChangeSubject(key: string, value?: string, instanceOf?: QNode){
@@ -71,7 +71,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
         console.log('properties request finished');
       }
     }
-
+WikiNode
     if ( key === 'unit' ) {
 
       const instanceOf: QNode = {
