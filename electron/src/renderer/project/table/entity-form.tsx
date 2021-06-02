@@ -3,11 +3,11 @@ import { observer } from "mobx-react"
 import { Form, Row } from 'react-bootstrap';
 import './entity-menu.css'
 import { isValidLabel } from './table-utils';
-import { EntityFields } from '@/renderer/common/dtos';
+import { WikiNode } from '@/renderer/common/dtos';
 
 interface EntityFormProp {
-    entityFields: EntityFields;
-    handleOnChange: (event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") => void;
+    entityFields: WikiNode;
+    handleOnChange: (event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => void;
     isReadOnly?: boolean;
 }
 
@@ -20,7 +20,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
 
     render() {
         const { handleOnChange } = this.props;
-        const { isProperty, label, description, dataType } = this.props.entityFields;
+        const { is_property, label, description, data_type } = this.props.entityFields;
         const { isReadOnly } = this.props;
         return (
             <Form.Group as={Row}>
@@ -40,16 +40,16 @@ class EntityForm extends Component<EntityFormProp, {}> {
                 </Form.Group>
 
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
-                    onChange={(event: KeyboardEvent) => handleOnChange(event, "isProperty")}>
-                    <Form.Check type="checkbox" label="Is property?" checked={isProperty} disabled={isReadOnly} />
+                    onChange={(event: KeyboardEvent) => handleOnChange(event, "is_property")}>
+                    <Form.Check type="checkbox" label="Is property?" checked={is_property} disabled={isReadOnly} />
                 </Form.Group>
                 {
-                    isProperty ?
+                    is_property ?
                         <Form.Group as={Row} style={{ marginTop: "1rem" }}
-                            onChange={(event: KeyboardEvent) => handleOnChange(event, "dataType")}>
+                            onChange={(event: KeyboardEvent) => handleOnChange(event, "data_type")}>
                             <Form.Label column sm="12" md="12" className="text-muted">Data type</Form.Label>
                             <Form.Control as="select" disabled={isReadOnly}
-                                value={dataType}>
+                                value={data_type}>
                                 <option value="quantity">Quantity</option>
                                 <option value="time">Time</option>
                                 <option value="monolingualtext">Monolingual text</option>

@@ -1,12 +1,11 @@
 import React from 'react';
 
-import { AnnotationBlock, EntityFields, ResponseWithSuggestion } from '../../../common/dtos';
+import { AnnotationBlock, WikiNode, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
 import SearchResults from './search-results';
-import { WikiNode } from '@/renderer/common/dtos';
 import wikiStore from '../../../data/store';
 
 import { IReactionDisposer, reaction } from 'mobx';
@@ -114,7 +113,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.setState({ typeEntityMenu: newTypeEntityMenu });
   }
 
-  async handleOnCreateQnode(entityFields: EntityFields) {
+  async handleOnCreateQnode(entityFields: WikiNode) {
     console.log('Annotationn Menu handleOnCreateQnode triggered for -> ', entityFields);
 
     let hasError = false;
@@ -169,7 +168,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  handleOnCloseEntityMenu(entityFields?: EntityFields) {
+  handleOnCloseEntityMenu(entityFields?: WikiNode) {
     this.setState({ showEntityMenu: false });
     if (entityFields) {
       if (utils.isValidLabel(entityFields.label)) {
@@ -534,10 +533,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         </Col>
         {
           showEntityMenu && selection ?
-            <EntityMenu 
+            <EntityMenu
             // key={selection.toString()}
               selection={selection}
-              onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)}
+              onClose={(entityFields?: WikiNode) => this.handleOnCloseEntityMenu(entityFields)}
               title={typeEntityMenu}
             />
             : null

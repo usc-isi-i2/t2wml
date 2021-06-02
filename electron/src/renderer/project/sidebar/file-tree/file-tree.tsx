@@ -369,7 +369,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     if (!project || !project.data_files) { return files; }
     for (const df of Object.keys(project.data_files).sort()) {
       const sheet_arr = project.data_files[df].val_arr;
-      let dataType= "DataFile"
+      let data_type= "DataFile"
       if (sheet_arr.length<2){
         dataType="SingleSheetDataFile"
       }

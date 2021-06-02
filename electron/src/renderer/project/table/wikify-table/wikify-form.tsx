@@ -168,10 +168,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       instanceOfSearch: '',
       qnodes: [],
       entityFields: {
-        isProperty: true,
+        is_property: true,
         label: "",
         description: "",
-        dataType: "quantity",
+        data_type: "quantity",
       },
       customQnode: false
     });
@@ -349,26 +349,26 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     return (
       <EntityForm isReadOnly={!customQnode}
         entityFields={entityFields}
-        handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") => this.handleOnChangeEntity(event, key)}
+        handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChangeEntity(event, key)}
       />
     );
   }
 
-  handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "dataType" | "isProperty") {
+  handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") {
     const value = (event.target as HTMLInputElement).value;
     console.log("value:", value)
     const updatedEntityFields = { ...this.state.entityFields };
     switch (key) {
-      case "isProperty": {
-        updatedEntityFields.isProperty = !updatedEntityFields.isProperty
+      case "is_property": {
+        updatedEntityFields.is_property = !updatedEntityFields.is_property
         break;
       }
       case "description": {
         updatedEntityFields.description = value;
         break;
       }
-      case "dataType": {
-        updatedEntityFields.dataType = value;
+      case "data_type": {
+        updatedEntityFields.data_type = value;
         break;
       }
       case "label": {
@@ -399,7 +399,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { selected, entityFields, customQnode } = this.state;
     this.setState({ customQnode: !customQnode, qnodes: [] });
     if(selected && customQnode && isValidLabel(selected.label.substring(1, selected.label.length))){
-      entityFields.isProperty = selected.id.startsWith("P");
+      entityFields.is_property = selected.id.startsWith("P");
       entityFields.description = selected.description;
       entityFields.label = selected.label;
     }

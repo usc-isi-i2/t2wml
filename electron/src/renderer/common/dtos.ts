@@ -129,14 +129,6 @@ export interface StatementEntry extends Entry{
 export type AnnotationBlockRole = "dependentVar" | "qualifier" | "metadata" | "property" | "mainSubject" | "unit";
 export type AnnotationBlockType = "string" | "quantity" | "time" | "wikibaseitem";
 
-
-export interface EntityFields {
-    isProperty: boolean;
-    label: string;
-    description: string;
-    dataType: string;
-}
-
 export interface AnnotationBlock{
     selection: CellSelection;
     role: AnnotationBlockRole;
