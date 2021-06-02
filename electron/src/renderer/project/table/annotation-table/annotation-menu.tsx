@@ -69,6 +69,7 @@ class AnnotationMenu extends React.Component<AnnotationMenuProperties, Annotatio
       }
     }
 
+
     if ( key === 'unit' ) {
 
       const instanceOf: QNode = {
