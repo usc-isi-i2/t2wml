@@ -938,7 +938,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   renderWikifyButton() {
     const { role, type } = this.state.fields;
-    if (role === 'property' || role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
+    if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
       return (<Button
         size="sm"
         type="button"
