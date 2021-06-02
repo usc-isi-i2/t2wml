@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import pandas as pd
+from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
 from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                         kgtk_to_dict, dict_to_kgtk, AnnotationNodeGenerator, Annotation, block_finder,
@@ -46,6 +47,9 @@ def update_t2wml_settings(project):
     elif t2wml_settings.wikidata_provider.sparql_endpoint!=project.sparql_endpoint:
                 t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
 
+
+def autocreate_items(calc_params, selection, is_property=False, data_type=None):
+    create_nodes_from_selection(selection, calc_params.project, calc_params.sheet, calc_params.wikifier, is_property, data_type)
 
 
 

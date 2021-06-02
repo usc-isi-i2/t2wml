@@ -82,9 +82,7 @@ def get_empty_layers():
 
 
 def create_user_wikification(calc_params, project, selection, value, context, item):
-    top_left, bottom_right = selection
-    col1, row1 = top_left
-    col2, row2 = bottom_right
+    (col1, row1), (col2, row2) = selection
     sheet_name = calc_params.sheet.name
     data_file_name = calc_params.sheet.data_file_name
     df_rows = []
