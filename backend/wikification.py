@@ -44,14 +44,16 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     check_na = df['value_kg_id'].notna()
     missing_values = df[np.invert(check_na)]
     df = df[check_na] #trim anything that didn't wikify successfully
+    df = df[df["value_score"] > 0.9] #trim anything whose score is too low
     ids=df.pop("value_kg_id")
     df["item"]=ids
     labels= df.pop("value_kg_label")
     scores= df.pop("value_score")
-    #description= df.pop("value_kg_description")
+    aliases=df.pop("value_kg_aliases", None)
+    descriptions= df.pop("value_kg_descriptions")
     entities_dict={}
     for index, id in enumerate(ids):
-        entities_dict[id]={"label": labels.iloc[index]}
+        entities_dict[id]={"label": labels.iloc[index], "description": descriptions.iloc[index]}
     problem_cells=[]
     for index, line in missing_values.iterrows():
         problem_cells.append(to_excel(line.column, line.row))

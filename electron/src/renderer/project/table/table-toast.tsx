@@ -3,12 +3,12 @@ import React from 'react';
 // App
 import './table-toast.css';
 import { Toast } from 'react-bootstrap';
-import { QNode } from '@/renderer/common/dtos';
+import { WikiNode } from '@/renderer/common/dtos';
 
 
 interface TableToastProperties {
   message?: string,
-  qnode: QNode,
+  qnode: WikiNode,
   text: string,
   onClose: () => void;
 }

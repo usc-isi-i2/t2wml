@@ -6,7 +6,7 @@ import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
 import SearchResults from './search-results';
-import { QNode } from '@/renderer/common/dtos';
+import { WikiNode } from '@/renderer/common/dtos';
 import wikiStore from '../../../data/store';
 
 import { IReactionDisposer, reaction } from 'mobx';
@@ -44,9 +44,9 @@ interface AnnotationFormState {
   subject: {
     value?: string;
     instanceOfSearch?: string;
-    instanceOf?: QNode;
-    qnodes: QNode[];
-    selected?: QNode;
+    instanceOf?: WikiNode;
+    qnodes: WikiNode[];
+    selected?: WikiNode;
   };
   errorMessage: ErrorMessage;
   showEntityMenu: boolean;
@@ -732,14 +732,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.SearchSubject("subject", value, instanceOf)
   }
 
-  updateSubjectQNodes(qnodes: QNode[]) {
+  updateSubjectQNodes(qnodes: WikiNode[]) {
     this.setState({ showResult1: false, showResult2: true })
     const subject = { ...this.state.subject };
     subject.qnodes = qnodes;
     this.setState({ subject: subject });
   }
 
-  handleOnClickQnode(qnode: QNode) {
+  handleOnClickQnode(qnode: WikiNode) {
     const subject = { ...this.state.subject };
     console.log(subject);
     subject.qnodes = [];

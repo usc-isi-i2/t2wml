@@ -2,7 +2,7 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
+import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, WikiNode, QNodeEntry,
         StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
 import { Cell, CellSelection } from '../common/general';
 import RequestService from '../common/service';
@@ -151,19 +151,19 @@ export class Layer<T extends Entry> {
 }
 
 class StatementLayer extends Layer<StatementEntry>{
-    qnodes: Map<string, QNode>
+    qnodes: Map<string, WikiNode>
 
     constructor(responseLayer?: StatementLayerDTO) {
         super(responseLayer);
         if (responseLayer && responseLayer.qnodes) {
-            this.qnodes = new Map<string, QNode>(Object.entries(responseLayer.qnodes));
+            this.qnodes = new Map<string, WikiNode>(Object.entries(responseLayer.qnodes));
         }
         else {
-            this.qnodes = new Map<string, QNode>();
+            this.qnodes = new Map<string, WikiNode>();
         }
     }
 
-    public getQNode(id: string): QNode {
+    public getQNode(id: string): WikiNode {
         const return_val = this.qnodes.get(id);
         if (return_val) {
             return return_val;
@@ -245,11 +245,11 @@ export class EntitiesData {
 }
 
 export class WikifyQnodes {
-    @observable qnodes: QNode[] = [];
+    @observable qnodes: WikiNode[] = [];
 }
 
 export class AnnotateProperties {
-    @observable properties: QNode[] = [];
+    @observable properties: WikiNode[] = [];
 }
 
 class WikiStore {

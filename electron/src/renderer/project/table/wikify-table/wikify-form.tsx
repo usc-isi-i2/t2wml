@@ -4,7 +4,7 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { EntityFields, QNode } from '@/renderer/common/dtos';
+import { WikiNode } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -15,22 +15,22 @@ import { isValidLabel } from '../table-utils';
 interface WikifyFormProperties {
   selectedCell: Cell;
   onSelectBlock: (applyToBlock: boolean) => void;
-  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
-  onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-  onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-  onCreateQnode?: (entityFields: EntityFields, applyToBlock: boolean) => Promise<void>;
+  onChange: (key: string, value?: string, instanceOf?: WikiNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
+  onSubmit: (qnode: WikiNode, applyToBlock: boolean) => Promise<void>;
+  onRemove: (qnode: WikiNode, applyToBlock: boolean) => Promise<void>;
+  onCreateQnode?: (entityFields: WikiNode, applyToBlock: boolean) => Promise<void>;
 }
 
 interface WikifyFormState {
   search?: string;
-  instanceOf?: QNode;
+  instanceOf?: WikiNode;
   instanceOfSearch?: string;
   searchProperties: boolean;
   applyToBlock: boolean;
-  selected?: QNode;
-  qnodes: QNode[];
+  selected?: WikiNode;
+  qnodes: WikiNode[];
   prevCell?: Cell;
-  entityFields: EntityFields;
+  entityFields: WikiNode;
   customQnode: boolean;
 }
 
@@ -52,14 +52,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const searchProperties = cellType ? cellType.type === 'property' : false;
 
     const entityFields = {
-      isProperty: true,
+      is_property: true,
       label: "",
       description: "",
-      dataType: "quantity",
+      data_type: "quantity",
     }
     let customQnode = false;
     if (selected && isValidLabel(selected.label.substring(1, selected.label.length))){
-      entityFields.isProperty = selected.id.startsWith("P");
+      entityFields.is_property = selected.id.startsWith("P");
       entityFields.description = selected.description;
       entityFields.label = selected.label;
       customQnode = true;
@@ -74,7 +74,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       selected: selected,
       qnodes: [],
       prevCell: undefined,
-      entityFields: entityFields,
+      entityFields: WikiNode,
       customQnode: customQnode
     };
   }
@@ -102,7 +102,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({ searchProperties: !searchProperties });
   }
 
-  updateQNodes(qnodes: QNode[]) {
+  updateQNodes(qnodes: WikiNode[]) {
     this.setState({ qnodes });
   }
 
@@ -177,7 +177,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     });
   }
 
-  handleOnClick(qnode: QNode) {
+  handleOnClick(qnode: WikiNode) {
     const { instanceOfSearch } = this.state;
     if (instanceOfSearch) {
       this.setState({
