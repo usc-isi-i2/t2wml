@@ -65,7 +65,12 @@ export interface QNode{
     description: string;
     id: string;
     url?: string;
+
+    //for property
+    data_type?: string;
+    tags?: string[];
 }
+
 
 export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
     qnodes: {[key: string]: QNode };
@@ -212,15 +217,9 @@ export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
     entitiesStats: EntitiesStatsDTO;
 }
 
-export interface Entity{
-    label: string;
-    description: string;
-    data_type?: string;
-    tags?: string[];
-}
 
 export interface ResponseEntitiesPropertiesDTO {
-    [file: string]: { [property: string] : Entity };
+    [file: string]: { [property: string] : QNode };
 }
 
 export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {
