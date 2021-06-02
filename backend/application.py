@@ -642,7 +642,7 @@ def create_qnode():
     request_json=request.get_json()
     try:
         label=request_json.pop("label")
-        is_prop=request_json.pop("isProperty") # is_prop=node_id[0].lower()=="p"
+        is_prop=request_json.pop("isProperty") # is_prop=node_id[0].lower()=="p" 
         if is_prop:
             data_type=request_json.pop("dataType")
             if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
