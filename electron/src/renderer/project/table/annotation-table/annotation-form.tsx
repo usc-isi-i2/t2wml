@@ -11,7 +11,7 @@ import wikiStore from '../../../data/store';
 
 import { IReactionDisposer, reaction } from 'mobx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { columnToLetter } from '../table-utils';
 import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
@@ -502,15 +502,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
     }
     const { fields, searchFields } = this.state;
-    let label = type.label;
+    let selectedValue = "";
     if (fields && (fields as any)[type.value]) {
-      label += ", " + (fields as any)[type.value];
+      selectedValue = (fields as any)[type.value];
     }
     defaultValue = (searchFields as any)[type.value] || "";
     return (
 
-      <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}>
-        <Form.Label column sm="12" md="3" className="text-muted">{label}</Form.Label>
+      <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }} noGutters>
+        <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
         <Col sm='12' md={(key == 'property' && propertyBlockId) || (key == 'unit' && unitBlockId) ? '4' : '6'}>
           <Form.Control
             type="text" size="sm"
@@ -546,7 +546,25 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               </Col>
               : null
         }
-
+        {
+          selectedValue ?
+          <Col sm="12" md="12">
+            <FontAwesomeIcon
+              icon={faTimesCircle}
+              className="clear-button"
+              onClick={() => { 
+                const updatedFields = { ...this.state.fields };
+                updatedFields[type.value as keyof AnnotationFields] = undefined;
+                this.setState({fields: updatedFields})
+               }} />
+            <Form.Control
+              type="text"
+              defaultValue={selectedValue}
+              readOnly 
+              plaintext />
+          </Col>
+          : null
+        }
       </Form.Group>
     )
   }
