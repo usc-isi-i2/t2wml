@@ -15,7 +15,7 @@ import TableLegend from './table-legend';
 
 import { checkSelectedAnnotationBlocks } from './table-utils';
 import { observer } from 'mobx-react';
-import wikiStore, { Layer } from '../../data/store';
+import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
 import Table from './table';

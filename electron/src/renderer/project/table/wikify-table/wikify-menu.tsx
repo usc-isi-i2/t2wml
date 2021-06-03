@@ -194,8 +194,6 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
   async handleOnCreateQnode(entityFields: EntityFields, applyToBlock: boolean){
     console.log('WikifyMenu handleOnCreateQnode triggered for -> ', entityFields);
 
-    let hasError = false;
-
     wikiStore.table.showSpinner = true;
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
@@ -224,32 +222,10 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;
       console.log(error.errorDescription)
       this.setState({ errorMessage: error });
-      hasError = true;
     } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.wikifier.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
-    }
-
-    //also update results:
-    if (!hasError) {
-      try {
-        wikiStore.output.showSpinner = true;
-        await this.requestService.call(this, () => this.requestService.getMappingCalculation())
-      }
-      catch (error) {
-        console.log(error) //don't break on this
-      }
-      finally {
-        wikiStore.output.showSpinner = false;
-      }
-      wikiStore.wikifier.showSpinner = true;
-      try {
-        await this.requestService.getPartialCsv();
-      }
-      finally {
-        wikiStore.wikifier.showSpinner = false;
-      }
     }
   }
 

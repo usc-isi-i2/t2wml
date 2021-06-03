@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import PartialCsvPreview from './wikifier/wikifier';
 import YamlEditor from './yaml-editor/yaml-editor';
 import { observer } from "mobx-react"
-import wikiStore from '../data/store';
 
 interface EditorState {
   nowShowing: string;
@@ -19,18 +18,15 @@ class Editors extends Component<{}, EditorState> {
 
     // init state
     this.state = {
-      nowShowing: "Wikifier",
+      nowShowing: "",
     };
   }
 
   render() {
-    const nowShowing = wikiStore.editors.nowShowing;
-
     return (
       <div className="w-100 h-100 p-1">
         <PartialCsvPreview />
-        <YamlEditor
-            isShowing={nowShowing === "YamlEditor"}/>
+        <YamlEditor/>
       </div>
     );
   }
