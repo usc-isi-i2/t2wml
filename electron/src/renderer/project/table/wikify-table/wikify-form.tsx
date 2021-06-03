@@ -53,9 +53,9 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
     const entityFields = {
       is_property: true,
-      label: "",
+      label: selectedCell.value || "",
       description: "",
-      data_type: "quantity",
+      data_type: "string",
     }
     let customQnode = false;
     if (selected && isValidLabel(selected.label.substring(1, selected.label.length))){
@@ -157,7 +157,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnRemove() {
-    const { onRemove } = this.props;
+    const { onRemove, selectedCell } = this.props;
     const { selected, applyToBlock } = this.state;
     if (!selected) { return; }
     onRemove(selected, applyToBlock);
@@ -169,7 +169,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       qnodes: [],
       entityFields: {
         is_property: true,
-        label: "",
+        label: selectedCell.value || "",
         description: "",
         data_type: "quantity",
       },
@@ -386,7 +386,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           window.clearTimeout(this.timeoutIdCreateQnode);
         }
         this.timeoutIdCreateQnode = window.setTimeout(() => {
-          // this.setState({ selected: { label: entityFields.label, description: entityFields.description, id: "try" } })
           if (isValidLabel(entityFields.label)) {
             this.handleOnSubmit()
           }

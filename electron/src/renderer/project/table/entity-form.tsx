@@ -9,6 +9,7 @@ interface EntityFormProp {
     entityFields: EntityFields;
     handleOnChange: (event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => void;
     isReadOnly?: boolean;
+    canToggleProperty?: boolean;
 }
 
 @observer
@@ -21,7 +22,7 @@ class EntityForm extends Component<EntityFormProp, {}> {
     render() {
         const { handleOnChange } = this.props;
         const { is_property, label, description, data_type } = this.props.entityFields;
-        const { isReadOnly } = this.props;
+        const { isReadOnly, canToggleProperty } = this.props;
         return (
             <Form.Group as={Row}>
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
@@ -39,10 +40,14 @@ class EntityForm extends Component<EntityFormProp, {}> {
                     <Form.Control defaultValue={description} disabled={isReadOnly} />
                 </Form.Group>
 
-                <Form.Group as={Row} style={{ marginTop: "1rem" }}
-                    onChange={(event: KeyboardEvent) => handleOnChange(event, "is_property")}>
-                    <Form.Check type="checkbox" label="Is property?" defaultChecked={is_property} disabled={isReadOnly} />
-                </Form.Group>
+                {
+                    canToggleProperty===false ?
+                        null
+                        : <Form.Group as={Row} style={{ marginTop: "1rem" }}
+                            onChange={(event: KeyboardEvent) => handleOnChange(event, "is_property")}>
+                            <Form.Check type="checkbox" label="Is property?" defaultChecked={is_property} disabled={isReadOnly} />
+                        </Form.Group>
+                }
                 {
                     is_property ?
                         <Form.Group as={Row} style={{ marginTop: "1rem" }}
