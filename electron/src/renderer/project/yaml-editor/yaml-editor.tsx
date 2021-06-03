@@ -20,9 +20,6 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
 import { remote } from 'electron';
 
-interface yamlProperties {
-  isShowing: boolean;
-}
 
 interface yamlState extends IStateWithError {
   yamlJson?: JSON;
@@ -37,13 +34,13 @@ interface yamlState extends IStateWithError {
 
 
 @observer
-class YamlEditor extends Component<yamlProperties, yamlState> {
+class YamlEditor extends Component<{}, yamlState> {
   private requestService: RequestService;
 
   monacoRef: any = React.createRef();
   private disposeReaction?: IReactionDisposer;
 
-  constructor(props: yamlProperties) {
+  constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
 
@@ -291,10 +288,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           </div>
 
           {/* yaml editor */}
-          <Card.Body
-            className="w-100 h-100 p-0"
-            style={(this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }}
-          >
+          <Card.Body className="w-100 h-100 p-0">
             {!this.state.disableYaml ?
               <MonacoEditor ref={this.monacoRef}
                 width="100%"
@@ -332,9 +326,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
           {/* card footer */}
           <Card.Footer
-            style={
-              (this.props.isShowing) ? { background: "whitesmoke" } : { display: "none" }
-            }
+            style={{ background: "whitesmoke" }}
           >
 
             {/* error message */}

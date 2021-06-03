@@ -7,7 +7,7 @@ import {
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
   TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO,
   EntityFields,
-  ResponseWithQNodeLayerAndId
+  ResponseWithQNodeLayerAndQnode
 } from './dtos';
 import { ErrorMessage } from './general';
 
@@ -297,22 +297,11 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async createQnode(data:EntityFields, selection?: number[][]){
-    // const response1 = await backendPost(`/api/create_node`, data) as {
-    // ...ResponseWithProjectDTO
-    // entity:{
-      // is_property: boolean;
-    //   label: string;
-    //   description?: string;
-    //   data_type?: string;
-    //  }
-
-    // };
-    // const data_type = response1.data_type;
-    // delete response1.data_type;
-    // const response = {...response1, data_type:data_type};
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, {...data, selection: selection}) as ResponseWithQNodeLayerAndId;
-    this.updateProjectandQnode(response)
+  public async createQnode(entityFields: EntityFields, selection?: number[][]){
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, {...entityFields, selection: selection}) as ResponseWithQNodeLayerAndQnode;
+    if(response.layers.qnode){
+      this.updateProjectandQnode(response);
+    }
     return response;
   }
 

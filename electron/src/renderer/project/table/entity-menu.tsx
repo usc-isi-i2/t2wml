@@ -19,9 +19,11 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
 
     constructor(props: any) {
         super(props);
+        const { title } = this.props;
+        const is_property = title?.toLowerCase()==="property";
         this.state = {
             entityFields: {
-                is_property: true,
+                is_property: is_property,
                 label: "",
                 description: "",
                 data_type: "string"

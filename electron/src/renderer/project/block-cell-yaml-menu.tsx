@@ -21,7 +21,7 @@ class BlockCellYamlMenu extends Component {
                         <CellTab />
                     </Tab>
                     <Tab eventKey="yaml" title="YAML">
-                        <YamlEditor isShowing={true} />
+                        <YamlEditor />
                     </Tab>
                     <Tab eventKey="output" title="Output Preview">
                         <PartialCsvPreview />

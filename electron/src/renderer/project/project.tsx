@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './project.css';
 import './ag-grid.css'
 import './ag-theme-balham.css'
-import './edit.css';
 import Navbar from '../common/navbar/navbar';
 
 

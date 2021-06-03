@@ -244,6 +244,6 @@ export interface ResponseWithSuggestion {
     children: any;
 }
 
-export interface ResponseWithQNodeLayerAndId extends ResponseWithQNodeLayerDTO{
-    id: string;
+export interface ResponseWithQNodeLayerAndQnode extends ResponseWithQNodeLayerDTO, ResponseWithProjectDTO{
+    entity: QNode;
 }
