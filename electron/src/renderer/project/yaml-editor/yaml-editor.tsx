@@ -279,7 +279,7 @@ class YamlEditor extends Component<{}, yamlState> {
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
         <Card
           className="w-100 shadow-sm"
-          style={{ height: "50vh" }}
+          style={{ height: "90vh" }}
         >
 
           {/* loading spinner */}
