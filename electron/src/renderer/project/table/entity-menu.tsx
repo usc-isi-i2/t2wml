@@ -14,19 +14,24 @@ interface EntityMenuState {
 }
 
 @observer
-class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => void, selection: CellSelection, title?:string }, EntityMenuState> {
+class EntityMenu extends Component<{ 
+    onClose: (entityFields?: EntityFields) => void, 
+    selection: CellSelection, 
+    title?:string,
+    data_type?: string
+}, EntityMenuState> {
 
 
     constructor(props: any) {
         super(props);
-        const { title } = this.props;
+        const { title, data_type } = this.props;
         const is_property = title?.toLowerCase()==="property";
         this.state = {
             entityFields: {
                 is_property: is_property,
                 label: "",
                 description: "",
-                data_type: "string"
+                data_type: data_type ? data_type.toLowerCase().replaceAll(' ', '') : "string"
             }
         }
     }
@@ -88,6 +93,7 @@ class EntityMenu extends Component<{ onClose: (entityFields?: EntityFields) => v
                                 <EntityForm
                                     entityFields={entityFields}
                                     handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChange(event, key)}
+                                    canToggleProperty={false}
                                 />
                             <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}
                                 disabled={!utils.isValidLabel(entityFields.label)}>

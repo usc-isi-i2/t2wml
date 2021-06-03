@@ -393,7 +393,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnSubmit(event?: any) {
     if (event) event.preventDefault();
-    const { fields, selectedBlock, selection } = this.state;
+    const { fields, selectedBlock, selection, searchFields } = this.state;
     if (!fields.selectedArea || !(selection && fields.role)) { return null; }
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock?.id;
@@ -401,10 +401,13 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const annotation: any = {
       selection: selection
     };
+
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
+    if(!fields.property && searchFields.property) annotation["property"] = searchFields.property;
+    if(!fields.unit && searchFields.unit) annotation["unit"] = searchFields.unit;
 
     annotations.push(annotation);
     this.postAnnotations(annotations, annotation);
@@ -975,8 +978,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selection } = this.state;
-    const { showEntityMenu, typeEntityMenu } = this.state;
+    const { selection, showEntityMenu, typeEntityMenu  } = this.state;
+    const { type: data_type } = this.state.fields;
     if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (
@@ -995,6 +998,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               selection={selection}
               onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)}
               title={typeEntityMenu}
+              data_type={data_type}
             />
             : null
         }
