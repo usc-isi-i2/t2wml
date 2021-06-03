@@ -8,11 +8,11 @@ import PartialCsvPreview from './wikifier/wikifier';
 
 @observer
 class BlockCellYamlMenu extends Component {
-    
+
 
     render() {
         return (
-            <div className="w-100 shadow-sm h-100 block-menu" style={{ margin: "2px" }}>
+            <div className="shadow-sm h-100 block-menu" style={{ margin: "2px" }}>
                 <Tabs defaultActiveKey="block" id="tabs" transition={false}>
                 <Tab eventKey="block" title="Block">
                         <BlockTab />
@@ -27,7 +27,7 @@ class BlockCellYamlMenu extends Component {
                         <PartialCsvPreview />
                     </Tab>
 
-                    
+
                 </Tabs>
             </div>
         );
