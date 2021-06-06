@@ -193,8 +193,8 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
 
         <Card
-          className="w-100 h-100 shadow-sm"
-          style={{ height: "calc(100% - 40px)"}}
+          className="shadow-sm"
+          style={{ height: "88vh"}}
           // style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
 
@@ -240,10 +240,7 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
 
           {/* wikifier */}
           <Card.Body
-            className="w-100 h-100 p-0"
-            style={
-              { display: "flex", overflow: "hidden" }
-            }
+            className="p-0"
           >
 
             <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner}>
@@ -252,13 +249,12 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
 
 
             {/* wikifier output */}
-            <div>
+            <div className="w-100 h-100">
               <Table
               tableData={this.state.partialCsv}
               setTableReference={()=>(null)}/>
             </div>
           </Card.Body>
-
         </Card >
       </Fragment>
     );

@@ -12,7 +12,7 @@ class BlockCellYamlMenu extends Component {
 
     render() {
         return (
-            <div className="shadow-sm h-100 block-menu" style={{ margin: "2px" }}>
+            <div className="shadow-sm block-menu" style={{ margin: "2px", overflow: "auto"}}>
                 <Tabs defaultActiveKey="block" id="tabs" transition={false}>
                 <Tab eventKey="block" title="Block">
                         <BlockTab />

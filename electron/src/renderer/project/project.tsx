@@ -254,8 +254,10 @@ class Project extends Component<ProjectProps, ProjectState> {
           <SplitPane className="" split="vertical" defaultSize="15%" minSize={200} maxSize={-1000}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
             <Sidebar />
-            <SplitPane className="" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
+            <SplitPane className="" primary="second" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
+            <SplitPane className="" split="horizontal" defaultSize="100%">
               <CombinedTable />
+              </SplitPane>
                 <BlockCellYamlMenu />
             </SplitPane>
           </SplitPane>
