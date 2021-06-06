@@ -1141,7 +1141,7 @@ class CombinedTable extends Component<{}, TableState> {
                             setTableReference={this.setTableReference.bind(this)} /> </div>:
                             <div className="dropcontainer w-100 h-100">
                                 <input {...getInputProps()} />
-                                <p>Drag-and-drop some files here, or click to select files</p>
+                                <p>Drag-and-drop a spreadsheet file here, or click to select file</p>
                             </div>
                         }
 
