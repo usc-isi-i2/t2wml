@@ -65,7 +65,9 @@
       "icon": "icons/t2wml-windows.ico"
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "react-dropzone": "^11.3.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.11.1",
     "@babel/plugin-proposal-class-properties": "^7.10.4",

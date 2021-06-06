@@ -3,7 +3,8 @@
 import React, { ChangeEvent, Component } from 'react';
 import * as path from 'path';
 import './table-component.css';
-
+import './drop-container.css';
+import Dropzone from 'react-dropzone';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
 import { AnnotationBlock, QNode, TableCell, TableData, TableDTO } from '../../common/dtos';
@@ -270,14 +271,14 @@ class CombinedTable extends Component<{}, TableState> {
                 tableData.forEach(row => {
                     row.forEach(cell => {
                         cell.classNames = cell.classNames.filter((value) =>
-                             !value.startsWith("wikified")
+                            !value.startsWith("wikified")
                         )
                     })
                 })
             } catch (error) {
                 console.log(error);
             }
-                        //if we're taking existing table data, gotta clean it:
+            //if we're taking existing table data, gotta clean it:
         }
 
 
@@ -1124,14 +1125,32 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     renderTable() {
+        const { tableData } = this.state;
+
         return (
-            <Table
-                tableData={this.state.tableData}
-                onMouseUp={this.handleOnMouseUp.bind(this)}
-                onMouseDown={this.handleOnMouseDown.bind(this)}
-                onMouseMove={this.handleOnMouseMove.bind(this)}
-                onClickHeader={this.handleOnClickHeader.bind(this)}
-                setTableReference={this.setTableReference.bind(this)} />
+            <Dropzone maxFiles={1} accept=".csv, .tsv, .xls, .xlsx" onDrop={(files) => this.onDrop(files)}>
+                {({ getRootProps, getInputProps }) => (
+                    <div {...getRootProps({ className: 'dropzone w-100 h-100' })}>
+
+                        {tableData ? <div className="w-100 h-100"><Table
+                            tableData={this.state.tableData}
+                            onMouseUp={this.handleOnMouseUp.bind(this)}
+                            onMouseDown={this.handleOnMouseDown.bind(this)}
+                            onMouseMove={this.handleOnMouseMove.bind(this)}
+                            onClickHeader={this.handleOnClickHeader.bind(this)}
+                            setTableReference={this.setTableReference.bind(this)} /> </div>:
+                            <div className="dropcontainer w-100 h-100">
+                                <input {...getInputProps()} />
+                                <p>Drag-and-drop some files here, or click to select files</p>
+                            </div>
+                        }
+
+                    </div>
+                )}
+            </Dropzone>
+
+
+
         )
     }
 

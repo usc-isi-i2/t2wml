@@ -195,7 +195,6 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
         <Card
           className="shadow-sm"
           style={{ height: "88vh"}}
-          // style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
         >
 
           {/* header */}

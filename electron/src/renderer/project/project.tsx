@@ -256,7 +256,7 @@ class Project extends Component<ProjectProps, ProjectState> {
             <Sidebar />
             <SplitPane className="" primary="second" split="vertical" defaultSize="35%" minSize={300} maxSize={-300}>
             <SplitPane className="" split="horizontal" defaultSize="100%">
-              <CombinedTable />
+              <CombinedTable /> <div></div>
               </SplitPane>
                 <BlockCellYamlMenu />
             </SplitPane>
