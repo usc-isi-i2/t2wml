@@ -231,19 +231,17 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
-            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
-                        cell.classNames = cell.classNames.filter(function (value, index, arr) {
-                            return !value.startsWith("error")
-                        })
+                        cell.classNames = cell.classNames.filter((value) =>
+                            !value.startsWith("error")
+                        )
                     })
                 })
             } catch (error) {
                 console.log(error);
             }
-            /* eslint-enable */
         }
 
 
@@ -267,20 +265,19 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
-            /* eslint-disable */
+
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
-                        cell.classNames = cell.classNames.filter(function (value, index, arr) {
-                            return !value.startsWith("wikified")
-                        })
+                        cell.classNames = cell.classNames.filter((value) =>
+                             !value.startsWith("wikified")
+                        )
                     })
                 })
             } catch (error) {
                 console.log(error);
             }
                         //if we're taking existing table data, gotta clean it:
-            /* eslint-disable */
         }
 
 
@@ -308,19 +305,17 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
-            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
-                        cell.classNames = cell.classNames.filter(function (value, index, arr) {
-                            return !value.startsWith("role-") && !value.startsWith("error") && !value.startsWith("expects-wiki")
-                        })
+                        cell.classNames = cell.classNames.filter((value) =>
+                            !value.startsWith("role-") && !value.startsWith("error") && !value.startsWith("expects-wiki")
+                        )
                     })
                 })
             } catch (error) {
                 console.log(error);
             }
-            /* eslint-enable */
         }
 
         if (currentFilesService.currentState.mappingType == "Yaml") {
