@@ -305,6 +305,18 @@ class RequestService {
     return response;
   }
 
+  public async getQnodeById(id?: string){
+    if ( !id ){ return; }
+    try {
+      const response = await backendGet(`/query_node/${id}?${this.getDataFileParams()}`)as QNode;
+      return response;
+    } catch (error) {
+      if(error.errorCode === 404){
+        return;
+      }
+    }
+  }
+
 
   public async call<IProp, IState extends IStateWithError, ReturnValue>(
     component: React.Component<IProp, IState>,

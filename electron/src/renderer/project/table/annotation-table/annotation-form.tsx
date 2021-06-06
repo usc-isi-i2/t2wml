@@ -396,9 +396,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  handleOnSubmit(event?: any) {
+  async handleOnSubmit(event?: any) {
     if (event) event.preventDefault();
-    const { fields, selectedBlock, selection } = this.state;
+    const { fields, selectedBlock, selection, searchFields } = this.state;
     if (!fields.selectedArea || !(selection && fields.role)) { return null; }
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
@@ -412,12 +412,38 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
-    // if(!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
-    //   annotation["property"] = searchFields.property;
-    // }
-    // if(!fields.unit && searchFields.unit && searchFields.unit.startsWith("Q")){
-    //   annotation["unit"] = searchFields.unit;
-    // }
+    
+    if(!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
+      try {
+        const response = await this.requestService.call(this, () => (
+          this.requestService.getQnodeById(searchFields.property)
+        ));
+        debugger;
+        if(response?.id){
+          annotation["property"] = response;
+        }
+      } catch (error) {
+        error.errorDescription = `Wasn't able to found the qnode!\n` + error.errorDescription;
+        console.log(error.errorDescription)
+        this.setState({ errorMessage: error });
+      }
+    }
+    if(!fields.unit && searchFields.unit && searchFields.unit.startsWith("Q")){
+      try {
+        const response = await this.requestService.call(this, () => (
+          this.requestService.getQnodeById(searchFields.unit)
+        ));
+        debugger;
+        if(response?.id){
+          annotation["unit"] = response;
+        }
+        
+      } catch (error) {
+        error.errorDescription = `Wasn't able to found the qnode!\n` + error.errorDescription;
+        console.log(error.errorDescription)
+        this.setState({ errorMessage: error });
+      }
+    }
     this.setState({ searchFields: { property: '', unit: '' } });
 
     annotations.push(annotation);
