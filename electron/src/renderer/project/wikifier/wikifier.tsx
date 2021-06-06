@@ -251,6 +251,7 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
             {/* wikifier output */}
             <div className="w-100 h-100">
               <Table
+              minCols={6}
               tableData={this.state.partialCsv}
               setTableReference={()=>(null)}/>
             </div>

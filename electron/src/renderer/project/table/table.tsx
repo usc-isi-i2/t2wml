@@ -15,6 +15,7 @@ interface TableProperties {
   onClickHeader?: (event: React.MouseEvent) => void;
   setTableReference: any;
   optionalClassNames?: string;
+  minCols?: number;
 }
 
 
@@ -31,7 +32,12 @@ class Table extends React.Component<TableProperties>{
       onMouseMove,
       setTableReference,
       optionalClassNames,
+      minCols
     } = this.props;
+    let minimumColumns = 26;
+    if (minCols){
+      minimumColumns = minCols
+    }
     return (
       <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
         <table ref={setTableReference}
@@ -41,14 +47,14 @@ class Table extends React.Component<TableProperties>{
           <thead>
             <tr>
               <th></th>
-              {CHARACTERS.map(c => <th key={c}><div>{c}</div></th>)}
+              {CHARACTERS.slice(0, minimumColumns).map(c => <th key={c}><div>{c}</div></th>)}
             </tr>
           </thead>
           <tbody>
             {[...Array(MIN_NUM_ROWS)].map((e, i) => (
               <tr key={`row-${i}`}>
                 <td>{i + 1}</td>
-                {CHARACTERS.map((c, j) => (
+                {CHARACTERS.slice(0, minimumColumns).map((c, j) => (
                   <td key={`cell-${j}`}></td>
                 ))}
               </tr>
@@ -68,14 +74,20 @@ class Table extends React.Component<TableProperties>{
       onClickHeader,
       setTableReference,
       optionalClassNames,
+      minCols
     } = this.props;
+
+    let minimumColumns = 26;
+    if (minCols){
+      minimumColumns = minCols
+    }
 
     if (!tableData) {
       return this.renderEmptyTable();
     }
 
     const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-    const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, 26))];
+    const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
 
     return (
       <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
