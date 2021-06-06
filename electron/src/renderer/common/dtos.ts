@@ -143,9 +143,9 @@ export interface AnnotationBlock{
 
     language?: string;
 
-    unit?: string;
-    subject?: string;
-    property?: string;
+    unit?: QNode;
+    subject?: QNode;
+    property?: QNode;
     links?: {
         property?: string;// the ID of the block with the property of this block
         mainSubject?: string; // the ID of the block with the subject of this block
