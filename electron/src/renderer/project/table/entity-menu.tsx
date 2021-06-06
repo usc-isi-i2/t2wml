@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from "mobx-react"
 // import './project.css';
 import Draggable from 'react-draggable';
-import { Button, Form, Toast } from 'react-bootstrap';
+import { Button, Toast } from 'react-bootstrap';
 import './entity-menu.css'
 import * as utils from './table-utils';
 import { CellSelection } from '@/renderer/common/general';

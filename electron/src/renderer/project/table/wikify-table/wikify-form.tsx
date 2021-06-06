@@ -18,7 +18,7 @@ interface WikifyFormProperties {
   onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
   onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
   onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-  onCreateQnode?: (entityFields: EntityFields, applyToBlock: boolean) => Promise<void>;
+  onCreateQnode: (entityFields: EntityFields, applyToBlock: boolean) => Promise<void>;
 }
 
 interface WikifyFormState {
@@ -149,8 +149,9 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     event?.preventDefault();
     const { onSubmit, onCreateQnode } = this.props;
     const { selected, applyToBlock, customQnode, entityFields } = this.state;
-    if (customQnode && onCreateQnode && isValidLabel(entityFields.label)) {
+    if (customQnode && isValidLabel(entityFields.label)) {
       onCreateQnode(entityFields, applyToBlock);
+      return;
     }
     if (!selected) { return; }
     onSubmit(selected, applyToBlock);
@@ -356,7 +357,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") {
     const value = (event.target as HTMLInputElement).value;
-    console.log("value:", value)
     const updatedEntityFields = { ...this.state.entityFields };
     switch (key) {
       case "is_property": {
@@ -406,7 +406,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderSubmitButton() {
-    const { qnodes, selected } = this.state;
+    const { qnodes, selected, customQnode, entityFields } = this.state;
     if (!qnodes.length) {
       return (
         <Form.Group as={Row}>
@@ -415,7 +415,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               size="sm"
               type="submit"
               variant="outline-dark"
-              disabled={!selected}>
+              disabled={!(selected || (customQnode && isValidLabel(entityFields.label)) )}>
               Submit
             </Button>
             {this.renderRemoveButton()}

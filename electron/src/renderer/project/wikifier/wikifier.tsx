@@ -200,9 +200,7 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
 
           {/* header */}
           <Card.Header
-            style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.WIKIFIER }}
-            onClick={() => wikiStore.editors.nowShowing = "Wikifier"}
-          >
+            style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.WIKIFIER }}>
 
             {/* title */}
             <div

@@ -10,12 +10,6 @@ import { defaultYamlContent } from '../project/default-values';
 import { currentFilesService } from '../common/current-file-service';
 
 
-type EditorsStatus = "Wikifier" | "YamlEditor";
-class EditorsState {
-    @observable public nowShowing: EditorsStatus = "Wikifier";
-}
-
-
 export type TableMode = 'annotation' | 'output' | 'wikify';
 class TableState {
 
@@ -253,7 +247,6 @@ export class AnnotateProperties {
 }
 
 class WikiStore {
-    @observable public editors = new EditorsState();
     @observable public table = new TableState();
     @observable public wikifier = new WikifierState();
     @observable public output = new OutputState();
