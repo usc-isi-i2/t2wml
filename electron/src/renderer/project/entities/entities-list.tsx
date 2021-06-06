@@ -8,7 +8,7 @@ import wikiStore from '@/renderer/data/store';
 
 
 interface EntitiesProperties {
-    selectedProperty: string | undefined;
+    selectedProperty?: string;
     handleSelectEntity: (file: string, property: string) => void;
 }
 

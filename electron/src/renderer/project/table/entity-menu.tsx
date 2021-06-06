@@ -14,10 +14,10 @@ interface EntityMenuState {
 }
 
 @observer
-class EntityMenu extends Component<{ 
-    onClose: (entityFields?: EntityFields) => void, 
-    selection: CellSelection, 
-    title?:string,
+class EntityMenu extends Component<{
+    onClose: (entityFields?: EntityFields) => void,
+    selection: CellSelection,
+    title?: string,
     data_type?: string
 }, EntityMenuState> {
 
@@ -25,7 +25,7 @@ class EntityMenu extends Component<{
     constructor(props: any) {
         super(props);
         const { title, data_type } = this.props;
-        const is_property = title?.toLowerCase()==="property";
+        const is_property = title?.toLowerCase() === "property";
         this.state = {
             entityFields: {
                 is_property: is_property,
@@ -42,30 +42,17 @@ class EntityMenu extends Component<{
             this.handleOnSubmit();
         }
         const value = (event.target as HTMLInputElement).value;
-        console.log("value:", value)
         const updatedEntityFields = { ...this.state.entityFields };
         switch (key) {
             case "is_property": {
                 updatedEntityFields.is_property = !updatedEntityFields.is_property
                 break;
             }
-            case "description": {
-                updatedEntityFields.description = value;
-                break;
-            }
-            case "data_type": {
-                updatedEntityFields.data_type = value;
-                break;
-            }
-            case "label": {
-                updatedEntityFields.label = value;
-                break;
-            }
             default: {
+                (updatedEntityFields as any)[key] = value;
                 break;
             }
         }
-        // console.log("Entity menu handleOnChange:", updatedEntityFields)
         this.setState({ entityFields: updatedEntityFields });
     }
 
@@ -90,11 +77,11 @@ class EntityMenu extends Component<{
                         </Toast.Header>
 
                         <Toast.Body>
-                                <EntityForm
-                                    entityFields={entityFields}
-                                    handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChange(event, key)}
-                                    canToggleProperty={false}
-                                />
+                            <EntityForm
+                                entityFields={entityFields}
+                                handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChange(event, key)}
+                                canToggleProperty={false}
+                            />
                             <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}
                                 disabled={!utils.isValidLabel(entityFields.label)}>
                                 Save

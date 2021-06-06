@@ -221,7 +221,7 @@ class YamlEditor extends Component<{}, yamlState> {
     });
   }
 
-  updateYamlContent(yamlContent: string | undefined) {
+  updateYamlContent(yamlContent?: string) {
     if (yamlContent == undefined) {
       yamlContent = defaultYamlContent;
     }

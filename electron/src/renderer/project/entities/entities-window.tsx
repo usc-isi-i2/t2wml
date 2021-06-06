@@ -23,7 +23,7 @@ interface EntitiesProperties {
 
 
 interface EntitiesState {
-    selectedProperty: string | undefined;
+    selectedProperty?: string;
     entityFile: string;
     propertyData?: QNode;
     labelContent: string;

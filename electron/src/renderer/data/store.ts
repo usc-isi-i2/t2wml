@@ -79,7 +79,7 @@ class YamlEditorState {
     // @observable public yamlList: string[] = [];
     @observable public showSpinner = false;
     @observable public yamlContent: string = defaultYamlContent;
-    @observable public yamlError?: string | undefined;
+    @observable public yamlError?: string;
     @observable public yamlhasChanged = false;
 
     @observable public async saveYaml() {
@@ -135,7 +135,7 @@ export class Layer<T extends Entry> {
         }
     }
 
-    public find(cell: Cell | undefined): T | undefined {
+    public find(cell?: Cell): T | undefined {
         if (cell) {
             const index = `${cell.row},${cell.col}`;
             return this.entryMap.get(index);

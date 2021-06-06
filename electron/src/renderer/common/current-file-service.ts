@@ -6,8 +6,8 @@ import wikiStore from '../data/store';
 export class CurrentFiles {
     @observable dataFile = "";
     @observable sheetName = "";
-    @observable mappingFile: string | undefined;
-    @observable mappingType: 'Yaml' | 'Annotation' | undefined;
+    @observable mappingFile?: string;
+    @observable mappingType?: 'Yaml' | 'Annotation';
 }
 
 const filename = 't2wmlproj.user.json';

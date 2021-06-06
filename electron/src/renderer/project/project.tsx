@@ -178,7 +178,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
-  async handleSaveSettings(endpoint: string, warn: boolean, calendar: string, title: string, description: string | undefined, url: string | undefined) {
+  async handleSaveSettings(endpoint: string, warn: boolean, calendar: string, title: string, description?: string, url?: string) {
     // update settings
     this.setState({ showSettings: false });
 
