@@ -26,9 +26,7 @@ def suggest(client, selection, annotations):
                 "title": title
             }
     children=data.pop("children", {})
-    property=children.pop("property", None)
-    if property:
-        children["property"]=property["id"]
+
     annotation.update(data)
     annotation.update(children)
 
