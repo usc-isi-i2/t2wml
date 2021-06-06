@@ -17,6 +17,7 @@ from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
 import path_utils
+from wikidata_utils import get_labels_and_descriptions
 from wikification import wikify_countries, wikify_selection
 
 debug_mode = False
@@ -721,6 +722,16 @@ def create_qnode():
     return response, 200
 
 
+
+
+
+@app.route('/api/query_node/<id>', methods=['GET'])
+@json_response
+def query_qnode(id):
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response = get_labels_and_descriptions(t2wml_settings.wikidata_provider, [id], calc_params.sparql_endpoint)
+    return response
 
 
 
