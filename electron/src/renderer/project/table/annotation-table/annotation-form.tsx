@@ -22,15 +22,19 @@ import './annotation-form.css'
 interface AnnotationFields {
   role?: string;
   type?: string;
-  unit?: string;
+  unit?: QNode;
   format?: string;
   calendar?: string;
-  property?: string;
+  property?: QNode;
   language?: string;
   precision?: string;
   selectedArea?: string;
-  subject?: string;
+  subject?: QNode;
 }
+
+export type nameQNodeFields = "unit" | "property" | "subject";
+const listQNodeFields = ["unit", "property", "subject"];
+export type nameStrFields = "role" | 'type' | 'format' | 'calendar' | 'language' | 'precision' | "selectedArea";
 
 
 interface AnnotationFormState {
@@ -52,6 +56,7 @@ interface AnnotationFormState {
   searchFields: {
     property?: string;
     unit?: string;
+    subject?: string;
   }
   errorMessage: ErrorMessage;
   showEntityMenu: boolean;
@@ -91,7 +96,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       },
       searchFields: {
         property: '',
-        unit: ''
+        unit: '',
+        subject: ''
       },
       validArea: true,
       showExtraFields: false,
@@ -130,14 +136,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     wikiStore.wikifier.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
-    const { typeEntityMenu } = this.state;
-
     try {
       const response: ResponseWithQNodeLayerAndQnode = await this.requestService.call(this, () => (
         this.requestService.createQnode(entityFields)
       ));
-      this.handleOnSelect(typeEntityMenu?.toLowerCase() || 'property', response.entity.id)
-      this.handleOnSubmit();
+      this.handleOnSelect(entityFields.is_property ? 'property' : 'unit', response.entity)
+      // this.handleOnSubmit();
     } catch (error) {
       error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;
       console.log(error.errorDescription)
@@ -151,10 +155,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnCloseEntityMenu(entityFields?: EntityFields) {
     this.setState({ showEntityMenu: false });
-    if (entityFields) {
-      if (utils.isValidLabel(entityFields.label)) {
-        this.handleOnCreateQnode(entityFields); // applyToBlock=true
-      }
+    if (entityFields && utils.isValidLabel(entityFields.label)) {
+      this.handleOnCreateQnode(entityFields); // applyToBlock=true
     }
   }
 
@@ -162,10 +164,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if ((!wikiStore.table.selectedBlock) || wikiStore.table.selectedBlock.selection !== selection) {
       const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
       const fields = { ...this.state.fields }
-      if ((!wikiStore.table.selectedBlock)){
+      if ((!wikiStore.table.selectedBlock)) {
         /* eslint-disable */
         for (const [key, val] of Object.entries(fields)) {
-          (fields as any)[key] = undefined;
+          fields[key as keyof AnnotationFields] = undefined;
         }
         /* eslint-enable */
       }
@@ -210,6 +212,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   async updateSuggestion(suggestion: ResponseWithSuggestion) {
     if (suggestion) {
+      console.log("suggestion:", suggestion)
       this.setState({
         annotationSuggestions: suggestion,
         fields: {
@@ -283,15 +286,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const value = (event.target as HTMLInputElement).value;
     const updatedFields = { ...this.state.fields }
 
-    if (key == "property" || key == "unit" ) {
+    if (listQNodeFields.includes(key)) {
       const searchFields = { ...this.state.searchFields };
-      searchFields[key] = value;
-      if (!value || value.length===0){
-        updatedFields[key as keyof AnnotationFields] = value;
+      searchFields[key as nameQNodeFields] = value;
+      if (!value || value.length === 0) {
+        updatedFields[(key as keyof AnnotationFields) as nameQNodeFields] = undefined;
       }
       this.setState({ searchFields, showEntityMenu: false });
     } else {
-      updatedFields[key as keyof AnnotationFields] = value;
+      updatedFields[(key as keyof AnnotationFields) as nameStrFields] = value;
     }
 
     this.changed = true;
@@ -395,8 +398,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnSubmit(event?: any) {
     if (event) event.preventDefault();
-    const { fields, selectedBlock, selection, searchFields } = this.state;
+    const { fields, selectedBlock, selection } = this.state;
     if (!fields.selectedArea || !(selection && fields.role)) { return null; }
+
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock?.id;
     });
@@ -408,8 +412,13 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
-    if(!fields.property && searchFields.property) annotation["property"] = searchFields.property;
-    if(!fields.unit && searchFields.unit) annotation["unit"] = searchFields.unit;
+    // if(!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
+    //   annotation["property"] = searchFields.property;
+    // }
+    // if(!fields.unit && searchFields.unit && searchFields.unit.startsWith("Q")){
+    //   annotation["unit"] = searchFields.unit;
+    // }
+    this.setState({ searchFields: { property: '', unit: '' } });
 
     annotations.push(annotation);
     this.postAnnotations(annotations, annotation);
@@ -504,16 +513,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
     }
     const { fields, searchFields } = this.state;
-    let selectedValue = "";
-    if (fields && (fields as any)[type.value]) {
-      selectedValue = (fields as any)[type.value];
-    }
+    const selectedValue = (fields && fields[type.value as nameQNodeFields]) ? fields[(type.value as nameQNodeFields)] : undefined;
+    console.log('selectedValue:', selectedValue)
     defaultValue = (searchFields as any)[type.value] || "";
+
     return (
 
       <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }} noGutters>
         <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
-        <Col sm='12' md={(key == 'property' && propertyBlockId) || (key == 'unit' && unitBlockId) ? '4' : '6'}>
+        <Col sm='12' md={key == 'property' || key == 'unit' ? '4' : '6'}>
           <Form.Control
             type="text" size="sm"
             value={defaultValue}
@@ -532,14 +540,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           </Button>
         </Col>
         {
-          key == "property" && propertyBlockId ?
+          key == "property" ?
             <Col sm="12" md='2'>
               <Form.Control
                 type="text" size="sm"
                 value={propertyBlockSelection}
                 readOnly />
             </Col>
-            : key == "unit" && unitBlockId ?
+            : key == "unit" ?
               <Col sm="12" md='2'>
                 <Form.Control
                   type="text" size="sm"
@@ -550,22 +558,25 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         }
         {
           selectedValue ?
-          <Col sm="12" md="12">
-            <FontAwesomeIcon
-              icon={faTimesCircle}
-              className="clear-button"
-              onClick={() => {
-                const updatedFields = { ...this.state.fields };
-                updatedFields[type.value as keyof AnnotationFields] = undefined;
-                this.setState({fields: updatedFields})
-               }} />
-            <Form.Control
-              type="text"
-              defaultValue={selectedValue}
-              readOnly
-              plaintext />
-          </Col>
-          : null
+            <Col sm="12" md="12">
+              <FontAwesomeIcon
+                icon={faTimesCircle}
+                className="clear-button"
+                onClick={() => {
+                  const updatedFields = { ...this.state.fields };
+                  updatedFields[type.value as keyof AnnotationFields] = undefined;
+                  this.setState({ fields: updatedFields })
+                }} />
+              <Form.Control
+                key={selectedValue.id}
+                type="text"
+                defaultValue={selectedValue.id + ", " + selectedValue.label + ", " + selectedValue.description}
+                readOnly
+                plaintext />
+              {/* <Form.Text 
+              defaultValue={selectedValue.label + ", " + selectedValue.description } /> */}
+            </Col>
+            : null
         }
       </Form.Group>
     )
@@ -674,9 +685,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
   }
 
-  handleOnSelect(key: string, value?: string) {
+  handleOnSelect(key: string, value?: QNode) {
     const fields = { ...this.state.fields };
-    fields[key as keyof AnnotationFields] = value;
+    fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
     this.setState({ fields }, () => {
       if (key == "property" || key == "unit") {
         const searchFields = { ...this.state.searchFields };
@@ -740,7 +751,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnFocusSubject() {
     const { value, instanceOf } = this.state.subject;
-    if (!value || value === this.state.fields.subject) { return; }
+    if (!value || value === this.state.fields.subject?.id) { return; }
 
     this.SearchSubject("subject", value, instanceOf)
   }
@@ -763,7 +774,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       subject.value = "";
       subject.selected = undefined;
     } else {
-      this.handleOnSelect("subject", qnode.id)
+      this.handleOnSelect("subject", qnode)
       subject.value = qnode.id;
       subject.selected = qnode;
     }
@@ -784,7 +795,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           window.clearTimeout(this.timeoutId);
         }
         this.timeoutId = window.setTimeout(() => {
-          if (subject.value && subject.value == this.state.fields.subject) { return; }
+          if (subject.value && subject.value == this.state.fields.subject?.id) { return; }
           this.SearchSubject('subject', value, subject.instanceOf);
         }, 300);
       }
@@ -998,7 +1009,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selection, showEntityMenu, typeEntityMenu  } = this.state;
+    const { selection, showEntityMenu, typeEntityMenu } = this.state;
     const { type: data_type } = this.state.fields;
     if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
