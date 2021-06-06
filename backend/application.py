@@ -731,7 +731,10 @@ def query_qnode(id):
     project = get_project()
     calc_params = get_calc_params(project)
     response = get_labels_and_descriptions(t2wml_settings.wikidata_provider, [id], calc_params.sparql_endpoint)
-    return response
+    try:
+        return response[id], 200
+    except:
+        return {}, 404
 
 
 
