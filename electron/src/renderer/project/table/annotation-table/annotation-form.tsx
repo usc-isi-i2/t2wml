@@ -163,9 +163,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
       const fields = { ...this.state.fields }
       if ((!wikiStore.table.selectedBlock)){
+        /* eslint-disable */
         for (const [key, val] of Object.entries(fields)) {
           (fields as any)[key] = undefined;
         }
+        /* eslint-enable */
       }
       fields["selectedArea"] = selectedArea;
       this.setState({ selection: selection, fields },
@@ -552,7 +554,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             <FontAwesomeIcon
               icon={faTimesCircle}
               className="clear-button"
-              onClick={() => { 
+              onClick={() => {
                 const updatedFields = { ...this.state.fields };
                 updatedFields[type.value as keyof AnnotationFields] = undefined;
                 this.setState({fields: updatedFields})
@@ -560,7 +562,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
             <Form.Control
               type="text"
               defaultValue={selectedValue}
-              readOnly 
+              readOnly
               plaintext />
           </Col>
           : null

@@ -231,6 +231,7 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
+            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
@@ -242,6 +243,7 @@ class CombinedTable extends Component<{}, TableState> {
             } catch (error) {
                 console.log(error);
             }
+            /* eslint-enable */
         }
 
 
@@ -265,6 +267,7 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
+            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
@@ -276,6 +279,8 @@ class CombinedTable extends Component<{}, TableState> {
             } catch (error) {
                 console.log(error);
             }
+                        //if we're taking existing table data, gotta clean it:
+            /* eslint-disable */
         }
 
 
@@ -303,6 +308,7 @@ class CombinedTable extends Component<{}, TableState> {
             const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
+            /* eslint-disable */
             try {
                 tableData.forEach(row => {
                     row.forEach(cell => {
@@ -314,6 +320,7 @@ class CombinedTable extends Component<{}, TableState> {
             } catch (error) {
                 console.log(error);
             }
+            /* eslint-enable */
         }
 
         if (currentFilesService.currentState.mappingType == "Yaml") {
