@@ -2,7 +2,7 @@ import React from 'react';
 
 import { AnnotationBlock, EntityFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../table-utils';
-import { ROLES, AnnotationOption } from './annotation-options';
+import { ROLES, AnnotationOption, TYPES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
 import SearchResults from './search-results';
@@ -855,10 +855,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  async handleOnAutoCreateMissingQnode(){
-    const data = { 
-      "selection": this.state.selection, 
-      "is_property" : this.state.fields.role == "property",
+  async handleOnAutoCreateMissingQnode() {
+    const data = {
+      "selection": this.state.selection,
+      "is_property": this.state.fields.role == "property",
       "data_type": this.state.fields.role == "property" ? this.state.fields.type : undefined
     };
     wikiStore.table.showSpinner = true;
@@ -1002,29 +1002,56 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const { role, type } = this.state.fields;
     let buttonWikify = null;
     let buttonAutoQnode = null;
+    let dropdownTypes = null;
     if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
-      buttonWikify = (<Button
-        size="sm"
-        type="button"
-        variant="outline-dark"
-        onClick={() => this.handleOnWikify()}>
-        Send this block for wikification
-      </Button>)
+      buttonWikify = (
+        <Col sm="6" md="6">
+          <Button
+            size="sm"
+            type="button"
+            variant="outline-dark"
+            onClick={() => this.handleOnWikify()}>
+            Send this block for wikification
+      </Button>
+        </Col>)
     }
-    if(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role=="property"){
-      buttonAutoQnode = (<Button
-        size="sm"
-        type="button"
-        variant="outline-dark"
-        style={{ marginLeft: "1rem" }}
-        onClick={() => this.handleOnAutoCreateMissingQnode()}>
-        Auto-create missing nodes
-      </Button>)
+    if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role == "property") {
+      buttonAutoQnode = (
+        <Col sm="12" md="5">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline-dark"
+            style={{ marginLeft: "1rem", marginTop: "1rem" }}
+            onClick={() => this.handleOnAutoCreateMissingQnode()}>
+            Auto-create missing nodes
+      </Button>
+        </Col>
+      )
+    }
+    if (role == "property") {
+      dropdownTypes = (
+        <Col sm="12" md="5">
+          <Form.Label className="text-muted">Type</Form.Label>
+            <Form.Control as="select" value={type} key={type}
+              onChange={(event: any) => this.handleOnChange(event, 'type')}>
+              {TYPES.map((type, i) => (
+                <option key={i}
+                  value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </Form.Control>
+        </Col>
+      )
     }
     const buttons = (
       <Col sm="12" md="12">
-        { buttonWikify }
-        { buttonAutoQnode }
+        <Row>
+          {buttonWikify}
+          {buttonAutoQnode}
+          {dropdownTypes}
+        </Row>
       </Col>);
     return buttons;
   }
