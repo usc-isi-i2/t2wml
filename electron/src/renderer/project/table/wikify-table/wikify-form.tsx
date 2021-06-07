@@ -2,9 +2,9 @@ import React from 'react';
 
 import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import wikiStore from '../../../data/store';
+import wikiStore, { Layer } from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { EntityFields, QNode } from '@/renderer/common/dtos';
+import { EntityFields, QNode, QNodeEntry } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -39,7 +39,7 @@ interface WikifyFormState {
 class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> {
 
   private timeoutId?: number;
-  private timeoutIdCreateQnode?: number;
+  // private timeoutIdCreateQnode?: number;
   private disposers: IReactionDisposer[] = [];
 
   constructor(props: WikifyFormProperties) {
@@ -53,18 +53,18 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
     const entityFields = {
       is_property: true,
-      label: selectedCell.value || "",
+      label: selectedCell.value ? selectedCell.value : "",
       description: "",
       data_type: "string",
     }
+    
     let customQnode = false;
-    if (selected && isValidLabel(selected.label.substring(1, selected.label.length))){
+    if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
       entityFields.is_property = selected.id.startsWith("P");
       entityFields.description = selected.description;
       entityFields.label = selected.label;
       customQnode = true;
     }
-
     this.state = {
       search: undefined,
       instanceOf: undefined,
@@ -81,13 +81,26 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
-    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.setState({ selected: qnodes.find(this.props.selectedCell) })));
+    this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.onChangeQnodes(qnodes)));
   }
 
   componentWillUnmount() {
     for (const disposer of this.disposers) {
       disposer();
     }
+  }
+
+  onChangeQnodes(qnodes: Layer<QNodeEntry>){
+    const { entityFields } = this.state;
+    const selected = qnodes.find(this.props.selectedCell);
+    let customQnode = false;
+    if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
+      entityFields.is_property = selected.id.startsWith("P");
+      entityFields.description = selected.description;
+      entityFields.label = selected.label;
+      customQnode = true;
+    }
+    this.setState({ customQnode, entityFields, selected })
   }
 
 
@@ -379,30 +392,33 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         break;
       }
     }
-    this.setState({ entityFields: updatedEntityFields }, () => {
-      const { entityFields, customQnode } = this.state;
-      if (entityFields.label && customQnode) {
-        if (this.timeoutIdCreateQnode) {
-          window.clearTimeout(this.timeoutIdCreateQnode);
-        }
-        this.timeoutIdCreateQnode = window.setTimeout(() => {
-          if (isValidLabel(entityFields.label)) {
-            this.handleOnSubmit()
-          }
-        }, 300);
-      }
-    });
+    this.setState({ entityFields: updatedEntityFields });
+    // , () => {
+    //   const { entityFields, customQnode } = this.state;
+    //   if (entityFields.label && customQnode) {
+    //     if (this.timeoutIdCreateQnode) {
+    //       window.clearTimeout(this.timeoutIdCreateQnode);
+    //     }
+    //     this.timeoutIdCreateQnode = window.setTimeout(() => {
+    //       if (isValidLabel(entityFields.label)) {
+    //         this.handleOnSubmit()
+    //       }
+    //     }, 300);
+    //   }
+    // });
   }
 
-  onChangecustomQnode(){
+  onChangeCustomQnode() {
     const { selected, entityFields, customQnode } = this.state;
     this.setState({ customQnode: !customQnode, qnodes: [] });
-    if(selected && customQnode && isValidLabel(selected.label.substring(1, selected.label.length))){
-      entityFields.is_property = selected.id.startsWith("P");
-      entityFields.description = selected.description;
-      entityFields.label = selected.label;
+    if (selected && customQnode) {
+      if (isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
+        entityFields.is_property = selected.id.startsWith("P");
+        entityFields.description = selected.description;
+        entityFields.label = selected.label;
+      }
     }
-    this.setState({entityFields})
+    this.setState({ entityFields })
   }
 
   renderSubmitButton() {
@@ -415,7 +431,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               size="sm"
               type="submit"
               variant="outline-dark"
-              disabled={!(selected || (customQnode && isValidLabel(entityFields.label)) )}>
+              disabled={!(selected || (customQnode && isValidLabel(entityFields.label)))}>
               Submit
             </Button>
             {this.renderRemoveButton()}
@@ -447,7 +463,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode} onChange={() => this.onChangecustomQnode()}/>
+          <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="5" md="5">

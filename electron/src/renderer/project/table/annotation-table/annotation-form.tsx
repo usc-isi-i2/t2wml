@@ -212,7 +212,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   async updateSuggestion(suggestion: ResponseWithSuggestion) {
     if (suggestion) {
-      console.log("suggestion:", suggestion)
       this.setState({
         annotationSuggestions: suggestion,
         fields: {
@@ -418,7 +417,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         const response = await this.requestService.call(this, () => (
           this.requestService.getQnodeById(searchFields.property)
         ));
-        debugger;
         if(response?.id){
           annotation["property"] = response;
         }
@@ -433,7 +431,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         const response = await this.requestService.call(this, () => (
           this.requestService.getQnodeById(searchFields.unit)
         ));
-        debugger;
         if(response?.id){
           annotation["unit"] = response;
         }
@@ -540,7 +537,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     const { fields, searchFields } = this.state;
     const selectedValue = (fields && fields[type.value as nameQNodeFields]) ? fields[(type.value as nameQNodeFields)] : undefined;
-    console.log('selectedValue:', selectedValue)
     defaultValue = (searchFields as any)[type.value] || "";
 
     return (
@@ -791,7 +787,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   handleOnClickQnode(qnode: QNode) {
     const subject = { ...this.state.subject };
-    console.log(subject);
     subject.qnodes = [];
     if (subject.instanceOfSearch) {
       subject.instanceOfSearch = '';
