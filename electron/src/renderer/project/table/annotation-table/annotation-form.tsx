@@ -141,7 +141,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         this.requestService.createQnode(entityFields)
       ));
       this.handleOnSelect(entityFields.is_property ? 'property' : 'unit', response.entity)
-      // this.handleOnSubmit();
     } catch (error) {
       error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;
       console.log(error.errorDescription)
@@ -1090,13 +1089,16 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selection, showEntityMenu, typeEntityMenu } = this.state;
+    const { selection, showEntityMenu, typeEntityMenu, errorMessage } = this.state;
     const { type: data_type } = this.state.fields;
     if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
+          <div style={{ color: 'red' }}>
+            { errorMessage.errorDescription }
+          </div>
         {this.renderSelectionAreas()}
         {this.renderRolesDropdown()}
         {this.renderNestedOptions()}
