@@ -1004,11 +1004,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     let dropdownTypes = null;
     if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
       buttonWikify = (
-        <Col sm="6" md="6">
+        <Col>
           <Button
             size="sm"
             type="button"
             variant="outline-dark"
+            style={{ marginLeft: "1rem", marginTop: "1rem" }}
             onClick={() => this.handleOnWikify()}>
             Send this block for wikification
       </Button>
@@ -1016,7 +1017,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role == "property") {
       buttonAutoQnode = (
-        <Col sm="12" md="5">
+        <Col>
           <Button
             type="button"
             size="sm"
@@ -1030,7 +1031,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     if (role == "property") {
       dropdownTypes = (
-        <Col sm="12" md="5">
+        <Col>
           <Form.Label className="text-muted">Type</Form.Label>
             <Form.Control as="select" value={type} key={type}
               onChange={(event: any) => this.handleOnChange(event, 'type')}>
