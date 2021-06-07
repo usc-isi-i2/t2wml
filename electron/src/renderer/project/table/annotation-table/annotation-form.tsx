@@ -411,13 +411,13 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
-    
-    if(!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
+
+    if (!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
       try {
         const response = await this.requestService.call(this, () => (
           this.requestService.getQnodeById(searchFields.property)
         ));
-        if(response?.id){
+        if (response?.id) {
           annotation["property"] = response;
         }
       } catch (error) {
@@ -426,15 +426,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         this.setState({ errorMessage: error });
       }
     }
-    if(!fields.unit && searchFields.unit && searchFields.unit.startsWith("Q")){
+    if (!fields.unit && searchFields.unit && searchFields.unit.startsWith("Q")) {
       try {
         const response = await this.requestService.call(this, () => (
           this.requestService.getQnodeById(searchFields.unit)
         ));
-        if(response?.id){
+        if (response?.id) {
           annotation["unit"] = response;
         }
-        
+
       } catch (error) {
         error.errorDescription = `Wasn't able to found the qnode!\n` + error.errorDescription;
         console.log(error.errorDescription)
@@ -855,6 +855,23 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
+  async handleOnAutoCreateMissingQnode(){
+    const data = { 
+      "selection": this.state.selection, 
+      "is_property" : this.state.fields.role == "property",
+      "data_type": this.state.fields.role == "property" ? this.state.fields.type : undefined
+    };
+    wikiStore.table.showSpinner = true;
+    try {
+      await this.requestService.call(this, () => (
+        this.requestService.callAutoCreateWikinodes(data)
+      ));
+    }
+    finally {
+      wikiStore.table.showSpinner = false;
+    }
+  }
+
   removeInstanceOf() {
     const subject = { ...this.state.subject };
     subject.instanceOf = undefined;
@@ -981,10 +998,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
   }
 
-  renderWikifyButton() {
+  renderWikifyAutoQnodeButton() {
     const { role, type } = this.state.fields;
+    let buttonWikify = null;
+    let buttonAutoQnode = null;
     if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
-      return (<Button
+      buttonWikify = (<Button
         size="sm"
         type="button"
         variant="outline-dark"
@@ -992,14 +1011,28 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         Send this block for wikification
       </Button>)
     }
+    if(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role=="property"){
+      buttonAutoQnode = (<Button
+        size="sm"
+        type="button"
+        variant="outline-dark"
+        style={{ marginLeft: "1rem" }}
+        onClick={() => this.handleOnAutoCreateMissingQnode()}>
+        Auto-create missing nodes
+      </Button>)
+    }
+    const buttons = (
+      <Col sm="12" md="12">
+        { buttonWikify }
+        { buttonAutoQnode }
+      </Col>);
+    return buttons;
   }
 
   renderSubmitButton() {
     return (
       <Form.Group as={Row}>
-        <Col sm="12" md="12">
-          {this.renderWikifyButton()}
-        </Col>
+        {this.renderWikifyAutoQnodeButton()}
         <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
           <Button
             size="sm"

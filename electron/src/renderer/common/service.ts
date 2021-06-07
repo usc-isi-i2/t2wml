@@ -221,6 +221,11 @@ class RequestService {
     this.updateProjectandQnode(response);
   }
 
+  public async callAutoCreateWikinodes(data: any) {
+    const response = await backendPut(`/auto_wikinodes?${this.getDataFileParams()}`, data) as ResponseWithQNodeLayerDTO;
+    this.updateProjectandQnode(response);
+  }
+
   public async callCountryWikifier(data: any){
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
