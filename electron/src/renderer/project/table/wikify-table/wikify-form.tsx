@@ -15,7 +15,7 @@ import { isValidLabel } from '../table-utils';
 interface WikifyFormProperties {
   selectedCell: Cell;
   onSelectBlock: (applyToBlock: boolean) => void;
-  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean | undefined) => Promise<void>;
+  onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean) => Promise<void>;
   onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
   onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
   onCreateQnode: (entityFields: EntityFields, applyToBlock: boolean) => Promise<void>;
@@ -25,7 +25,6 @@ interface WikifyFormState {
   search?: string;
   instanceOf?: QNode;
   instanceOfSearch?: string;
-  searchProperties: boolean;
   applyToBlock: boolean;
   selected?: QNode;
   qnodes: QNode[];
@@ -48,15 +47,15 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { selectedCell } = this.props;
     const selected = wikiStore.layers.qnode.find(selectedCell);
 
-    const cellType = wikiStore.layers.type.find(selectedCell);
-    const searchProperties = cellType ? cellType.type === 'property' : false;
-
     const entityFields = {
-      is_property: true,
+      is_property: false,
       label: selectedCell.value ? selectedCell.value : "",
       description: "",
       data_type: "string",
     }
+
+    const cellType = wikiStore.layers.type.find(selectedCell);
+    entityFields.is_property = cellType ? cellType.type === 'property' : false;
     
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
@@ -69,7 +68,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       search: undefined,
       instanceOf: undefined,
       instanceOfSearch: undefined,
-      searchProperties: searchProperties,
       applyToBlock: false,
       selected: selected,
       qnodes: [],
@@ -110,22 +108,17 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({ applyToBlock: !applyToBlock });
   }
 
-  toggleSearchProperties() {
-    const { searchProperties } = this.state;
-    this.setState({ searchProperties: !searchProperties });
-  }
-
   updateQNodes(qnodes: QNode[]) {
     this.setState({ qnodes });
   }
 
   handleOnFocusSearch() {
-    const { search, instanceOf, searchProperties } = this.state;
-    this.props.onChange('search', search, instanceOf, searchProperties);
+    const { search, instanceOf, entityFields } = this.state;
+    this.props.onChange('search', search, instanceOf, entityFields.is_property);
   }
 
   handleOnChangeSearch(event: any) {
-    const { instanceOf, searchProperties } = this.state;
+    const { instanceOf, entityFields } = this.state;
     const value: string = (event.target as HTMLInputElement).value;
 
     this.setState({ search: value }, () => {
@@ -136,7 +129,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           window.clearTimeout(this.timeoutId);
         }
         this.timeoutId = window.setTimeout(() => {
-          this.props.onChange('search', value, instanceOf, searchProperties);
+          this.props.onChange('search', value, instanceOf, entityFields.is_property);
         }, 300);
       }
     });
@@ -235,28 +228,16 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       qnodes,
       search,
       instanceOfSearch,
-      searchProperties,
-      customQnode
+      customQnode,
+      entityFields
     } = this.state;
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-        <Col sm="12" className="search-properties">
-          <input id="check-property-search"
-            type="checkbox"
-            defaultChecked={searchProperties}
-            onChange={this.toggleSearchProperties.bind(this)}
-            disabled={customQnode} />
-          <Form.Label
-            htmlFor="check-property-search"
-            className="text-muted">
-            Search Properties
-          </Form.Label>
-        </Col>
         <Col sm="12" md='12'>
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder={searchProperties ? 'property' : 'qnode'}
+            placeholder={entityFields.is_property ? 'property' : 'qnode'}
             value={search}
             onFocus={this.handleOnFocusSearch.bind(this)}
             onChange={(event: any) => this.handleOnChangeSearch(event)}
@@ -268,7 +249,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               onClick={this.clearSearch.bind(this)} />
           ) : null}
         </Col>
-        {!searchProperties && (
+        {!entityFields.is_property && (
           <Col sm="12" md="12">
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
@@ -458,12 +439,16 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   render() {
-    const { customQnode } = this.state;
+    const { customQnode, entityFields } = this.state;
     return (
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" label="Custom Qnode?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
+          <Form.Check type="checkbox" inline  label="Custom Qnode?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
+        </Form.Group>
+        <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
+        onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
+          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" checked={entityFields.is_property} />
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="5" md="5">

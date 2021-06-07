@@ -80,7 +80,6 @@ class EntityMenu extends Component<{
                             <EntityForm
                                 entityFields={entityFields}
                                 handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChange(event, key)}
-                                canToggleProperty={false}
                             />
                             <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}
                                 disabled={!utils.isValidLabel(entityFields.label)}>
