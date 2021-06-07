@@ -938,8 +938,11 @@ class CombinedTable extends Component<{}, TableState> {
                         col = col + 1;
                     }
                 }
+                const irow = row < rows.length ? row+1 : row;
+                const icol = col < rows[row].children.length ? col+1 : col;
+                const textContent = rows[irow].children[icol].textContent
 
-                wikiStore.table.selectedCell = { ...new Cell(col, row), value: wikiStore.table.selectedCell.value };
+                wikiStore.table.selectedCell = { ...new Cell(col, row), value: textContent };
 
 
                 if (event.shiftKey) {
