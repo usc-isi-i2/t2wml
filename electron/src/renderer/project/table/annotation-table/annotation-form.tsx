@@ -2,7 +2,7 @@ import React from 'react';
 
 import { AnnotationBlock, EntityFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../table-utils';
-import { ROLES, AnnotationOption } from './annotation-options';
+import { ROLES, AnnotationOption, TYPES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
 import SearchResults from './search-results';
@@ -141,7 +141,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         this.requestService.createQnode(entityFields)
       ));
       this.handleOnSelect(entityFields.is_property ? 'property' : 'unit', response.entity)
-      // this.handleOnSubmit();
     } catch (error) {
       error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;
       console.log(error.errorDescription)
@@ -464,7 +463,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   renderSelectionAreas() {
     const { selectedArea } = this.state.fields;
     if (!selectedArea) { return null; }
-    // console.log("render selection areas", selectedArea)
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}>
         <Form.Label column sm="12" md="3" className="text-muted">
@@ -537,6 +535,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     const { fields, searchFields } = this.state;
     const selectedValue = (fields && fields[type.value as nameQNodeFields]) ? fields[(type.value as nameQNodeFields)] : undefined;
+    const url = utils.isValidLabel(selectedValue?.id.substring(1, selectedValue?.id.length)) ? "" : `https://www.wikidata.org/wiki/${selectedValue?.id}`
+    const linkedId = selectedValue ? (url ? (
+                <a target="_blank"
+                  rel="noopener noreferrer"
+                  className="type-qnode"
+                  href={url}>
+                  {selectedValue.id}
+                </a>
+    ) : (<a>{selectedValue.id}</a>)) : null;
     defaultValue = (searchFields as any)[type.value] || "";
 
     return (
@@ -589,14 +596,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
                   updatedFields[type.value as keyof AnnotationFields] = undefined;
                   this.setState({ fields: updatedFields })
                 }} />
-              <Form.Control
-                key={selectedValue.id}
-                type="text"
-                defaultValue={selectedValue.id + ", " + selectedValue.label + ", " + selectedValue.description}
-                readOnly
-                plaintext />
-              {/* <Form.Text 
-              defaultValue={selectedValue.label + ", " + selectedValue.description } /> */}
+              <div className="selected-node" key={selectedValue.id}>
+                <strong>{selectedValue.label}</strong>&nbsp;
+                { linkedId }
+                <br />
+                {selectedValue.description}
+              </div>
             </Col>
             : null
         }
@@ -855,17 +860,19 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  async handleOnAutoCreateMissingQnode(){
-    const data = { 
-      "selection": this.state.selection, 
-      "is_property" : this.state.fields.role == "property",
-      "data_type": this.state.fields.role == "property" ? this.state.fields.type : undefined
+  async handleOnAutoCreateMissingQnode() {
+    const { selection, fields } = this.state;
+    const data = {
+      "selection": selection,
+      "is_property": fields.role == "property",
+      "data_type": fields.role == "property" ? fields.type : undefined
     };
     wikiStore.table.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
         this.requestService.callAutoCreateWikinodes(data)
       ));
+      this.handleOnSubmit();
     }
     finally {
       wikiStore.table.showSpinner = false;
@@ -1002,29 +1009,57 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const { role, type } = this.state.fields;
     let buttonWikify = null;
     let buttonAutoQnode = null;
+    let dropdownTypes = null;
     if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
-      buttonWikify = (<Button
-        size="sm"
-        type="button"
-        variant="outline-dark"
-        onClick={() => this.handleOnWikify()}>
-        Send this block for wikification
-      </Button>)
+      buttonWikify = (
+        <Col>
+          <Button
+            size="sm"
+            type="button"
+            variant="outline-dark"
+            style={{ marginLeft: "1rem", marginTop: "1rem" }}
+            onClick={() => this.handleOnWikify()}>
+            Send this block for wikification
+      </Button>
+        </Col>)
     }
-    if(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role=="property"){
-      buttonAutoQnode = (<Button
-        size="sm"
-        type="button"
-        variant="outline-dark"
-        style={{ marginLeft: "1rem" }}
-        onClick={() => this.handleOnAutoCreateMissingQnode()}>
-        Auto-create missing nodes
-      </Button>)
+    if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role == "property") {
+      buttonAutoQnode = (
+        <Col>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline-dark"
+            style={{ marginLeft: "1rem", marginTop: "1rem" }}
+            onClick={() => this.handleOnAutoCreateMissingQnode()}>
+            Auto-create missing nodes
+      </Button>
+        </Col>
+      )
+    }
+    if (role == "property") {
+      dropdownTypes = (
+        <Col>
+          <Form.Label className="text-muted">Type</Form.Label>
+          <Form.Control as="select" value={type} key={type}
+            onChange={(event: any) => this.handleOnChange(event, 'type')}>
+            {TYPES.map((type, i) => (
+              <option key={i}
+                value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </Form.Control>
+        </Col>
+      )
     }
     const buttons = (
       <Col sm="12" md="12">
-        { buttonWikify }
-        { buttonAutoQnode }
+        <Row>
+          {buttonWikify}
+          {buttonAutoQnode}
+          {dropdownTypes}
+        </Row>
       </Col>);
     return buttons;
   }
@@ -1063,13 +1098,16 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selection, showEntityMenu, typeEntityMenu } = this.state;
+    const { selection, showEntityMenu, typeEntityMenu, errorMessage } = this.state;
     const { type: data_type } = this.state.fields;
     if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
+        <div style={{ color: 'red' }}>
+          {errorMessage.errorDescription}
+        </div>
         {this.renderSelectionAreas()}
         {this.renderRolesDropdown()}
         {this.renderNestedOptions()}

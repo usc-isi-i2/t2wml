@@ -1017,6 +1017,13 @@ class CombinedTable extends Component<{}, TableState> {
                 else { //moved arrow potentially into new block;
                     const selectedBlock = checkSelectedAnnotationBlocks({ x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 });
                     wikiStore.table.selectBlock(selectedBlock);
+                    if (!selectedBlock){
+                        wikiStore.table.selection = {
+                            x1: wikiStore.table.selectedCell.col + 1,
+                            y1: wikiStore.table.selectedCell.row + 1,
+                            x2: wikiStore.table.selectedCell.col + 1,
+                            y2: wikiStore.table.selectedCell.row + 1}
+                    }
                 }
             }
         }
