@@ -536,6 +536,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     const { fields, searchFields } = this.state;
     const selectedValue = (fields && fields[type.value as nameQNodeFields]) ? fields[(type.value as nameQNodeFields)] : undefined;
+    const url = utils.isValidLabel(selectedValue?.id.substring(1, selectedValue?.id.length)) ? "" : `https://www.wikidata.org/wiki/${selectedValue?.id}`
+    const linkedId = selectedValue ? (url ? (
+                <a target="_blank"
+                  rel="noopener noreferrer"
+                  className="type-qnode"
+                  href={url}>
+                  {selectedValue.id}
+                </a>
+    ) : (<a>{selectedValue.id}</a>)) : null;
     defaultValue = (searchFields as any)[type.value] || "";
 
     return (
@@ -588,14 +597,18 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
                   updatedFields[type.value as keyof AnnotationFields] = undefined;
                   this.setState({ fields: updatedFields })
                 }} />
-              <Form.Control
+              {/* <Form.Control
                 key={selectedValue.id}
                 type="text"
                 defaultValue={selectedValue.id + ", " + selectedValue.label + ", " + selectedValue.description}
                 readOnly
-                plaintext />
-              {/* <Form.Text 
-              defaultValue={selectedValue.label + ", " + selectedValue.description } /> */}
+                plaintext /> */}
+              <div className="selected-node" key={selectedValue.id}>
+                <strong>{selectedValue.label}</strong>&nbsp;
+                { linkedId }
+                <br />
+                {selectedValue.description}
+              </div>
             </Col>
             : null
         }
@@ -1035,15 +1048,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       dropdownTypes = (
         <Col>
           <Form.Label className="text-muted">Type</Form.Label>
-            <Form.Control as="select" value={type} key={type}
-              onChange={(event: any) => this.handleOnChange(event, 'type')}>
-              {TYPES.map((type, i) => (
-                <option key={i}
-                  value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </Form.Control>
+          <Form.Control as="select" value={type} key={type}
+            onChange={(event: any) => this.handleOnChange(event, 'type')}>
+            {TYPES.map((type, i) => (
+              <option key={i}
+                value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </Form.Control>
         </Col>
       )
     }
@@ -1099,9 +1112,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
-          <div style={{ color: 'red' }}>
-            { errorMessage.errorDescription }
-          </div>
+        <div style={{ color: 'red' }}>
+          {errorMessage.errorDescription}
+        </div>
         {this.renderSelectionAreas()}
         {this.renderRolesDropdown()}
         {this.renderNestedOptions()}
