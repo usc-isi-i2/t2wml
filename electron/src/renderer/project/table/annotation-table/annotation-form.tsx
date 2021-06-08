@@ -844,14 +844,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   async handleOnWikify() {
     const data = { "selection": this.state.selection };
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
         this.requestService.callWikifierService(data)
       ));
     }
     finally {
-      wikiStore.wikifier.showSpinner = false;
       wikiStore.table.showSpinner = false;
     }
   }
@@ -864,7 +862,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       "data_type": fields.role == "property" ? fields.type : undefined
     };
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
         this.requestService.callAutoCreateWikinodes(data)
@@ -872,7 +869,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.handleOnSubmit();
     }
     finally {
-      wikiStore.wikifier.showSpinner = false;
       wikiStore.table.showSpinner = false;
     }
   }
