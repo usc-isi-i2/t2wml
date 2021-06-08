@@ -90,7 +90,7 @@ class Sidebar extends Component<{}, SidebarState> {
             console.log(json);
 
             if (downloadAll) {
-                
+                Downloader(json, filename);
             } else {
                 // do something here
                 const { error } = json;
