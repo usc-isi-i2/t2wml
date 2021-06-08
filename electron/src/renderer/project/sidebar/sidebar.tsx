@@ -87,10 +87,9 @@ class Sidebar extends Component<{}, SidebarState> {
         try {
             const json = await this.requestService.call(this, () => this.requestService.downloadResults(fileType, downloadAll));
             console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
-            console.log(json);
 
             if (downloadAll) {
-                Downloader(json, filename);
+                Downloader(json, filename, 'application/zip');
             } else {
                 // do something here
                 const { error } = json;
@@ -245,7 +244,7 @@ class Sidebar extends Component<{}, SidebarState> {
                             type="button"
                             style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
                             onClick={() => this.setState({ showDownload: true })}
-                            disabled={wikiStore.output.isDownloadDisabled || this.state.isDownloading} >
+                            disabled={this.state.isDownloading} >
                             {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Save to file"}
                         </Button>
                     </Card.Header>

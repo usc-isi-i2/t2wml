@@ -1,5 +1,5 @@
 import json
-from flask.helpers import make_response
+from flask.helpers import make_response, send_file
 import pandas as pd
 import os
 from io import BytesIO
@@ -426,9 +426,8 @@ def download_results(filetype):
                             internalErrors.append(kg.errors)
         zf.writestr("errors.json", json.dumps(internalErrors))
         zf.close()
-        bstream_out = bstream.getvalue()
-        bstream.close()
-        response = make_response(bstream_out)
+        bstream.seek(0)
+        return send_file(bstream, attachment_filename= "", as_attachment=True, mimetype='application/zip')
         response.headers.set('Content-Type', 'application/zip')
         response.headers.set('Content-Disposition', 'attachment')
         return response, 200
