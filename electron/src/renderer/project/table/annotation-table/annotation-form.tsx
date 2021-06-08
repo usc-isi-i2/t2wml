@@ -463,7 +463,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   renderSelectionAreas() {
     const { selectedArea } = this.state.fields;
     if (!selectedArea) { return null; }
-    // console.log("render selection areas", selectedArea)
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}>
         <Form.Label column sm="12" md="3" className="text-muted">
@@ -597,12 +596,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
                   updatedFields[type.value as keyof AnnotationFields] = undefined;
                   this.setState({ fields: updatedFields })
                 }} />
-              {/* <Form.Control
-                key={selectedValue.id}
-                type="text"
-                defaultValue={selectedValue.id + ", " + selectedValue.label + ", " + selectedValue.description}
-                readOnly
-                plaintext /> */}
               <div className="selected-node" key={selectedValue.id}>
                 <strong>{selectedValue.label}</strong>&nbsp;
                 { linkedId }

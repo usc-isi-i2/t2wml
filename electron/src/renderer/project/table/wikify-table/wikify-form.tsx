@@ -444,11 +444,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" inline  label="Custom Qnode?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
+          <Form.Check type="checkbox" inline  label="Custom Qnode?" defaultChecked={customQnode} onChange={() => this.onChangeCustomQnode()} />
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
         onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" checked={entityFields.is_property} />
+          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" defaultChecked={entityFields.is_property} />
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="5" md="5">
