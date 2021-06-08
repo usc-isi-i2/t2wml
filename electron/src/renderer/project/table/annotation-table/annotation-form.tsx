@@ -844,29 +844,35 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   async handleOnWikify() {
     const data = { "selection": this.state.selection };
     wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
         this.requestService.callWikifierService(data)
       ));
     }
     finally {
+      wikiStore.wikifier.showSpinner = false;
       wikiStore.table.showSpinner = false;
     }
   }
 
   async handleOnAutoCreateMissingQnode() {
+    const { selection, fields } = this.state;
     const data = {
-      "selection": this.state.selection,
-      "is_property": this.state.fields.role == "property",
-      "data_type": this.state.fields.role == "property" ? this.state.fields.type : undefined
+      "selection": selection,
+      "is_property": fields.role == "property",
+      "data_type": fields.role == "property" ? fields.type : undefined
     };
     wikiStore.table.showSpinner = true;
+    wikiStore.wikifier.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
         this.requestService.callAutoCreateWikinodes(data)
       ));
+      this.handleOnSubmit();
     }
     finally {
+      wikiStore.wikifier.showSpinner = false;
       wikiStore.table.showSpinner = false;
     }
   }
