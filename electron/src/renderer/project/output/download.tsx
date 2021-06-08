@@ -6,16 +6,17 @@ import { Button, Col, Form, Modal, OverlayTrigger, Row, Tooltip } from 'react-bo
 import { observer } from "mobx-react";
 
 interface DownloadProperties {
-    showDownload: boolean;
-    filename: string;
+  showDownload: boolean;
+  filename: string;
 
-    handleDoDownload: (fileName: string, fileType: string) => void;
-    cancelDownload: () => void;
+  handleDoDownload: (fileName: string, fileType: string, downloadAll:boolean) => void;
+  cancelDownload: () => void;
 }
 
 interface DownloadState {
   downloadFileName: string;
   downloadFileType: string;
+  downloadAll: boolean;
 }
 
 @observer
@@ -27,14 +28,17 @@ class Download extends Component<DownloadProperties, DownloadState> {
     this.state = {
       downloadFileName: props.filename,
       downloadFileType: "json",
+      downloadAll: false
     };
   }
 
   download() {
-      this.props.handleDoDownload(this.state.downloadFileName, this.state.downloadFileType);
-    }
+    const { downloadFileName, downloadFileType, downloadAll } = this.state;
+    this.props.handleDoDownload(downloadFileName, downloadFileType, downloadAll);
+  }
 
   render() {
+    const { downloadAll } = this.state;
     return (
       <Modal show={this.props.showDownload} onHide={() => { /* do nothing */ }}>
 
@@ -61,6 +65,10 @@ class Download extends Component<DownloadProperties, DownloadState> {
                   <option value="csv">canonical spreadsheet (.csv)</option>
                 </Form.Control>
               </Col>
+            </Form.Group>
+            <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
+              onChange={() => { this.setState({ downloadAll: !downloadAll }) }}>
+              <Form.Check id="customSwitchesChecked" type="switch" label="Save all the project" defaultChecked={downloadAll} />
             </Form.Group>
           </Form>
         </Modal.Body>
