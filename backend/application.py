@@ -1,6 +1,10 @@
+import json
+from flask.helpers import make_response
 import pandas as pd
 import os
+from io import BytesIO
 import sys
+import zipfile
 import requests
 from pathlib import Path
 from flask import request
@@ -9,7 +13,7 @@ import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
-from t2wml_web import (autocreate_items, get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (get_kg, autocreate_items, get_kgtk_download_and_variables, set_web_settings, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml, create_user_wikification, create_wikifier_file)
@@ -365,7 +369,7 @@ def apply_yaml():
     response.update(calc_response)
     return response, code
 
-
+@app.route('/api/project/download/<filetype>/all', methods=['GET'])
 @app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response
 def download_results(filetype):
@@ -374,24 +378,78 @@ def download_results(filetype):
     :return:
     """
     project = get_project()
-    calc_params = get_calc_params(project)
-    # the frontend disables this, this is just another layer of checking
-    if not calc_params.yaml_path and not calc_params.annotation_path:
-        raise web_exceptions.CellResolutionWithoutYAMLFileException(
-            "Cannot download report without uploading mapping file first")
     if filetype == "csv":
-        from t2wml_web import get_kg
         from t2wml.settings import t2wml_settings
         t2wml_settings.no_wikification = True
+
+    response = dict()
+
+    if str(request.url_rule)[-3:]=="all":
+        bstream=BytesIO()
+        zf = zipfile.ZipFile(bstream, mode='w',compression=zipfile.ZIP_DEFLATED)
+        internalErrors=[]
+        for filename, df in project.annotations.items():
+            for sheet_name, sheet in df.items():
+                calc_params=CalcParams(project, filename, sheet_name)
+                for annotation_file in sheet["val_arr"]:
+                    calc_params._annotation_path = annotation_file
+                    try:
+                        kg = get_kg(calc_params)
+                    except:
+                        internalErrors.append(f"failed to generate kg for {filename} {sheet_name} {annotation_file}")
+                        kg = None
+
+                    if kg:
+                        zip_filename = filename + "_" + sheet_name + "_" + annotation_file + "." + filetype
+                        output= kg.get_output(filetype, calc_params.project)
+                        zf.writestr(zip_filename, output)
+                        if kg.errors:
+                            internalErrors.append(kg.errors)
+
+        calc_params._annotation_path=""
+        for filename, df in project.yaml_sheet_associations.items():
+            for sheet_name, sheet in df.items():
+                calc_params=CalcParams(project, filename, sheet_name)
+                for yaml_file in sheet["val_arr"]:
+                    calc_params._yaml_path = yaml_file
+                    try:
+                        kg = get_kg(calc_params)
+                    except:
+                        internalErrors.append(f"failed to generate kg for {filename} {sheet_name} {yaml_file}")
+                        kg = None
+
+                    if kg:
+                        zip_filename = filename + "_" + sheet_name + "_" + yaml_file + "." + filetype
+                        output= kg.get_output(filetype, calc_params.project)
+                        zf.writestr(zip_filename, output)
+                        if kg.errors:
+                            internalErrors.append(kg.errors)
+        zf.writestr("errors.json", json.dumps(internalErrors))
+        zf.close()
+        bstream_out = bstream.getvalue()
+        bstream.close()
+        response = make_response(bstream_out)
+        response.headers.set('Content-Type', 'application/zip')
+        response.headers.set('Content-Disposition', 'attachment')
+        return response, 200
+
+
+        #response["data"]=bstream_out.decode("utf-8")
+        #response["error"] = None
+        #response["internalErrors"]=internalErrors if internalErrors else None
+        #return response, 200
+
+
+    else:
+        calc_params = get_calc_params(project)
+        if not calc_params.yaml_path and not calc_params.annotation_path:
+            raise web_exceptions.CellResolutionWithoutYAMLFileException(
+                "Cannot download report without uploading mapping file first")
         kg = get_kg(calc_params)
-        response = dict()
-        response["data"] = kg.get_output("csv")
+        response["data"] = kg.get_output(filetype, calc_params.project)
         response["error"] = None
         response["internalErrors"] = kg.errors if kg.errors else None
         return response, 200
-
-    response = download(calc_params, filetype)
-    return response, 200
 
 
 @app.route('/api/project/datamart', methods=['GET'])

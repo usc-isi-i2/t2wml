@@ -73,14 +73,6 @@ def get_kg(calc_params):
 
 
 
-def download(calc_params, filetype):
-    response = dict()
-    kg = get_kg(calc_params)
-    response["data"] = kg.get_output(filetype, calc_params.project)
-    response["error"] = None
-    response["internalErrors"] = kg.errors if kg.errors else None
-    return response
-
 def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
     kg = get_kg(calc_params)
     download_output = kg.get_output("tsv", calc_params.project)
