@@ -281,7 +281,7 @@ class RequestService {
     wikiStore.entitiesData.entities = response;
   }
 
-  public async downloadResults(fileType: string, allResults: boolean) {
+  public async downloadResults(fileType: string, allResults: boolean=false) {
     //returns "data" (the download), "error": None, and "internalErrors"
     let url=""
     if (allResults){
