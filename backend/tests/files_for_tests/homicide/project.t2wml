@@ -42,8 +42,6 @@ handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: homicide
 warn_for_empty_cells: false
-wikifier_files:
-- wikifier_general.csv
 yaml_files:
 - t2wml/table-1a.yaml
 - t2wml/table-1b.yaml
