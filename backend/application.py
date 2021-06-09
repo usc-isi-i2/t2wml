@@ -293,7 +293,7 @@ def call_wikifier_service():
     """
     project = get_project()
     calc_params = get_calc_params(project)
-    overwrite_existing = request.get_json.get("overwrite", False)
+    overwrite_existing = request.get_json().get("overwrite", False)
     selection = request.get_json()['selection']
     selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
     df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
@@ -801,7 +801,7 @@ def add_mapping_file():
 def causx_wikify():
     project = get_project()
     region = request.get_json()["selection"]
-    overwrite_existing = request.get_json.get("overwrite", False)
+    overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
 
