@@ -63,7 +63,8 @@ def json_response(func):
         except Exception as e:
             print(e)
             if "Permission denied" in str(e):
-                e=web_exceptions.FileOpenElsewhereError("Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
+                e = web_exceptions.FileOpenElsewhereError(
+                    "Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
                 data = {"error": e.error_dict}
                 return data, 403
 
@@ -150,7 +151,7 @@ def get_data():
     project = get_project()
     data_file = request.args.get('data_file')
     if not data_file:
-        response=dict(layers=get_empty_layers(), table=[[]])
+        response = dict(layers=get_empty_layers(), table=[[]])
         return response, 200
     calc_params = get_calc_params(project)
     response = dict()
@@ -159,19 +160,20 @@ def get_data():
     response.update(calc_response)
     return response, code
 
+
 @app.route('/api/partialcsv', methods=['GET'])
 @json_response
 def partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
-    response=dict()
+    response = dict()
     try:
-        response["partialCsv"]=get_partial_csv(calc_params)
+        response["partialCsv"] = get_partial_csv(calc_params)
     except Exception as e:
         print(e)
-        response["partialCsv"]=dict(dims=[1,3],
-                                    firstRowIndex=0,
-                                    cells=[["subject", "property", "value"]])
+        response["partialCsv"] = dict(dims=[1, 3],
+                                      firstRowIndex=0,
+                                      cells=[["subject", "property", "value"]])
     return response, 200
 
 
@@ -209,7 +211,8 @@ def upload_data_file():
     project = get_project()
 
     file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
-    data_file = project.add_data_file(file_path, copy_from_elsewhere=True, overwrite=True)
+    data_file = project.add_data_file(
+        file_path, copy_from_elsewhere=True, overwrite=True)
     project.save()
     response = dict(project=get_project_dict(project))
     sheet_name = project.data_files[data_file]["val_arr"][0]
@@ -298,17 +301,20 @@ def call_wikifier_service():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
+    selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
     df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
 
-    create_wikifier_file(project, df, os.path.join(project.directory, "wikify_service_output.csv"), precedence=False)
+    create_wikifier_file(project, df, os.path.join(
+        project.directory, "wikify_service_output.csv"), precedence=False)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
     if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + ",".join(problem_cells)
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
 
     return response, 200
 
@@ -323,16 +329,14 @@ def create_auto_nodes():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
-    is_property=request.get_json()['is_property']
-    data_type=request.get_json().get("data_type", None)
+    selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+    is_property = request.get_json()['is_property']
+    data_type = request.get_json().get("data_type", None)
     autocreate_items(calc_params, selection, is_property, data_type)
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
     return response, 200
-
-
-
 
 
 @app.route('/api/yaml/save', methods=['POST'])
@@ -368,7 +372,8 @@ def apply_yaml():
     response.update(calc_response)
     return response, code
 
-# @app.route('/api/project/download/<filetype>/all', methods=['GET'])
+
+@app.route('/api/project/download/<filetype>/all', methods=['GET'])
 @app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response
 def download_results(filetype):
@@ -383,61 +388,54 @@ def download_results(filetype):
 
     response = dict()
 
-    if str(request.url_rule)[-3:]=="all":
-        bstream=BytesIO()
-        zf = zipfile.ZipFile(bstream, mode='w',compression=zipfile.ZIP_DEFLATED)
-        internalErrors=[]
-        for filename, df in project.annotations.items():
-            for sheet_name, sheet in df.items():
-                calc_params=CalcParams(project, filename, sheet_name)
-                for annotation_file in sheet["val_arr"]:
-                    calc_params._annotation_path = annotation_file
-                    try:
-                        kg = get_kg(calc_params)
-                    except:
-                        internalErrors.append(f"failed to generate kg for {filename} {sheet_name} {annotation_file}")
-                        kg = None
+    if str(request.url_rule)[-3:] == "all":
+        bstream = BytesIO()
+        with zipfile.ZipFile(bstream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+            internalErrors = []
+            for filename, df in project.annotations.items():
+                for sheet_name, sheet in df.items():
+                    calc_params = CalcParams(project, filename, sheet_name)
+                    for annotation_file in sheet["val_arr"]:
+                        calc_params._annotation_path = annotation_file
+                        try:
+                            kg = get_kg(calc_params)
+                        except:
+                            internalErrors.append(
+                                f"failed to generate kg for {filename} {sheet_name} {annotation_file}")
+                            kg = None
 
-                    if kg:
-                        zip_filename = filename + "_" + sheet_name + "_" + annotation_file + "." + filetype
-                        output= kg.get_output(filetype, calc_params.project)
-                        zf.writestr(zip_filename, output)
-                        if kg.errors:
-                            internalErrors.append(kg.errors)
+                        if kg:
+                            zip_filename = filename + "_" + sheet_name + \
+                                "_" + annotation_file + "." + filetype
+                            output = kg.get_output(filetype, calc_params.project)
+                            zf.writestr(zip_filename, output)
+                            if kg.errors:
+                                internalErrors.append(kg.errors)
 
-        calc_params._annotation_path=""
-        for filename, df in project.yaml_sheet_associations.items():
-            for sheet_name, sheet in df.items():
-                calc_params=CalcParams(project, filename, sheet_name)
-                for yaml_file in sheet["val_arr"]:
-                    calc_params._yaml_path = yaml_file
-                    try:
-                        kg = get_kg(calc_params)
-                    except:
-                        internalErrors.append(f"failed to generate kg for {filename} {sheet_name} {yaml_file}")
-                        kg = None
+            calc_params._annotation_path = ""
+            for filename, df in project.yaml_sheet_associations.items():
+                for sheet_name, sheet in df.items():
+                    calc_params = CalcParams(project, filename, sheet_name)
+                    for yaml_file in sheet["val_arr"]:
+                        calc_params._yaml_path = yaml_file
+                        try:
+                            kg = get_kg(calc_params)
+                        except:
+                            internalErrors.append(
+                                f"failed to generate kg for {filename} {sheet_name} {yaml_file}")
+                            kg = None
 
-                    if kg:
-                        zip_filename = filename + "_" + sheet_name + "_" + yaml_file + "." + filetype
-                        output= kg.get_output(filetype, calc_params.project)
-                        zf.writestr(zip_filename, output)
-                        if kg.errors:
-                            internalErrors.append(kg.errors)
-        zf.writestr("errors.json", json.dumps(internalErrors))
-        zf.close()
+                        if kg:
+                            zip_filename = filename + "_" + sheet_name + "_" + yaml_file + "." + filetype
+                            output = kg.get_output(filetype, calc_params.project)
+                            zf.writestr(zip_filename, output)
+                            if kg.errors:
+                                internalErrors.append(kg.errors)
+            zf.writestr("errors.json", json.dumps(internalErrors))
+        # with open("out.zip", "wb") as outfile:
+        #     outfile.write(bstream.getvalue())
         bstream.seek(0)
-        # bstream save TODO
-        return send_file(bstream, attachment_filename= "", as_attachment=True, mimetype='application/zip')
-        response.headers.set('Content-Type', 'application/zip')
-        response.headers.set('Content-Disposition', 'attachment')
-        return response, 200
-
-
-        #response["data"]=bstream_out.decode("utf-8")
-        #response["error"] = None
-        #response["internalErrors"]=internalErrors if internalErrors else None
-        #return response, 200
-
+        return send_file(bstream, attachment_filename='', as_attachment=True, mimetype='application/zip'), 200
 
     else:
         calc_params = get_calc_params(project)
@@ -456,7 +454,8 @@ def download_results(filetype):
 def load_to_datamart():
     project = get_project()
     calc_params = get_calc_params(project)
-    download_output, variables = get_kgtk_download_and_variables(calc_params, validate_for_datamart=True)
+    download_output, variables = get_kgtk_download_and_variables(
+        calc_params, validate_for_datamart=True)
     files = {"edges.tsv": download_output}
     datamart_api_endpoint = global_settings.datamart_api
     dataset_id = project.dataset_id
@@ -513,9 +512,11 @@ def suggest_annotation_block():
     block = request.get_json()["selection"]
     annotation = request.get_json()["annotations"]
 
-    response={ #fallback response
-        "roles": ["dependentVar", "mainSubject", "property", "qualifier", "unit"], #drop metadata
-        "types": ["string", "quantity", "time", "wikibaseitem"], #drop monolingual string
+    response = {  # fallback response
+        # drop metadata
+        "roles": ["dependentVar", "mainSubject", "property", "qualifier", "unit"],
+        # drop monolingual string
+        "types": ["string", "quantity", "time", "wikibaseitem"],
         "children": {}
     }
 
@@ -532,11 +533,11 @@ def suggest_annotation_block():
 def guess_annotation_blocks():
     project = get_project()
     calc_params = get_calc_params(project)
-    annotation_blocks=suggest_annotations(calc_params)
-    response=dict()
-    response["annotations"], response["yamlContent"] = get_annotations(calc_params)
+    annotation_blocks = suggest_annotations(calc_params)
+    response = dict()
+    response["annotations"], response["yamlContent"] = get_annotations(
+        calc_params)
     return response, 200
-
 
 
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
@@ -599,6 +600,7 @@ def update_settings():
     response = dict(project=get_project_dict(project))
     return response, 200
 
+
 @app.route('/api/properties', methods=['GET'])
 @app.route('/api/qnodes', methods=['GET'])
 @json_response
@@ -614,11 +616,11 @@ def get_qnodes():
         url += '&type=ngram&extra_info=true&language=en&item=property'
         data_type = request.args.get('data_type')
         if data_type:
-            if data_type=="wikibaseitem":
-                data_type="wikibase-item"
+            if data_type == "wikibaseitem":
+                data_type = "wikibase-item"
             url += '&data_type={}'.format(data_type)
 
-    else: #qnodes
+    else:  # qnodes
         # get the optional parameters for the url
         is_class = request.args.get('is_class')
         url += '&extra_info=true&language=en'
@@ -665,7 +667,8 @@ def set_qnode():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-    create_user_wikification(calc_params, project, selection, value, context, item)
+    create_user_wikification(calc_params, project,
+                             selection, value, context, item)
     # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
@@ -674,67 +677,70 @@ def set_qnode():
 
     return response, 200
 
+
 @app.route('/api/remove_qnode', methods=['POST'])
 @json_response
 def remove_qnode():
     project = get_project()
     calc_params = get_calc_params(project)
-    sheet_name=calc_params.sheet.name
-    data_file_name=calc_params.sheet.data_file_name
+    sheet_name = calc_params.sheet.name
+    data_file_name = calc_params.sheet.data_file_name
     qnode_dict = request.get_json()['qnode']
     if not qnode_dict:
         raise web_exceptions.InvalidRequestException('No qnode provided')
 
-    item=qnode_dict["id"]
+    item = qnode_dict["id"]
     value = request.get_json()['value']
     context = request.get_json().get("context", "")
     selection = request.get_json()['selection']
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-    top_left, bottom_right=selection
+    top_left, bottom_right = selection
     col1, row1 = top_left
     col2, row2 = bottom_right
 
-    filepath=os.path.join(project.directory, "user-input-wikification.csv")
+    filepath = os.path.join(project.directory, "user-input-wikification.csv")
     if os.path.exists(filepath):
-        df=pd.read_csv(filepath)
+        df = pd.read_csv(filepath)
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
-                df= df.drop(df[(df['column'] == col)
+                df = df.drop(df[(df['column'] == col)
                                 & (df['row'] == row)
                                 & (df['value'] == value)
                                 & (df['file'] == data_file_name)
                                 & (df['sheet'] == sheet_name)].index)
         df.to_csv(filepath, index=False, header=True)
 
-    response= dict(project=get_project_dict(project))
+    response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
     return response, 200
-
 
 
 @app.route('/api/create_node', methods=['POST'])
 @json_response
 def create_qnode():
     project = get_project()
-    request_json=request.get_json()
+    request_json = request.get_json()
     try:
-        label=request_json.pop("label")
-        is_prop=request_json.pop("is_property") # is_prop=node_id[0].lower()=="p"
+        label = request_json.pop("label")
+        # is_prop=node_id[0].lower()=="p"
+        is_prop = request_json.pop("is_property")
         if is_prop:
-            data_type=request_json.pop("data_type")
+            data_type = request_json.pop("data_type")
             if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
-                raise web_exceptions.InvalidRequestException("Invalid data type")
+                raise web_exceptions.InvalidRequestException(
+                    "Invalid data type")
     except KeyError:
-        raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
+        raise web_exceptions.InvalidRequestException(
+            "Missing required fields in entity definition")
 
-    filepath= Path(project.directory)/"user_input_properties.tsv"
+    filepath = Path(project.directory)/"user_input_properties.tsv"
     if os.path.isfile(filepath):
-        custom_nodes=kgtk_to_dict(filepath)
+        custom_nodes = kgtk_to_dict(filepath)
     else:
-        custom_nodes=dict()
+        custom_nodes = dict()
 
     id = request.json.get("id", None)
     if not id:
@@ -743,43 +749,38 @@ def create_qnode():
         else:
             node_id = get_Qnode(project, label)
 
-
-    entity_dict={
+    entity_dict = {
         "id": node_id,
         "label": label,
     }
     if is_prop:
-        entity_dict["data_type"]=data_type
+        entity_dict["data_type"] = data_type
     entity_dict["description"] = request_json.get("description", "")
 
-    for key in ["P31"]: #may add more
+    for key in ["P31"]:  # may add more
         if request_json.get(key, None):
-            entity_dict[key]=request_json[key]
+            entity_dict[key] = request_json[key]
 
-
-    custom_nodes[node_id]=entity_dict
+    custom_nodes[node_id] = entity_dict
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
     t2wml_settings.wikidata_provider.save_entry(**entity_dict)
 
-    response=dict(entity=entity_dict, project=get_project_dict(project))
+    response = dict(entity=entity_dict, project=get_project_dict(project))
 
-    selection=request_json.get("selection", None)
+    selection = request_json.get("selection", None)
     if selection:
-        calc_params=get_calc_params(project)
+        calc_params = get_calc_params(project)
         context = request.get_json().get("context", "")
         (col1, row1), (col2, row2) = selection
-        value=calc_params.sheet[row1, col1]
+        value = calc_params.sheet[row1, col1]
         create_user_wikification(calc_params, project, selection, value,
-                context, node_id)
+                                 context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
     else:
         response["layers"] = {}
     return response, 200
-
-
-
 
 
 @app.route('/api/query_node/<id>', methods=['GET'])
@@ -787,18 +788,12 @@ def create_qnode():
 def query_qnode(id):
     project = get_project()
     calc_params = get_calc_params(project)
-    response = get_labels_and_descriptions(t2wml_settings.wikidata_provider, [id], calc_params.sparql_endpoint)
+    response = get_labels_and_descriptions(t2wml_settings.wikidata_provider, [
+                                           id], calc_params.sparql_endpoint)
     try:
         return response[id], 200
     except:
         return {}, 404
-
-
-
-
-
-
-
 
 
 @app.route('/api/files/rename', methods=['POST'])
@@ -878,8 +873,7 @@ def causx_wikify():
     return response, 200
 
 
-
-##for web version
+# for web version
 
 @app.route('/api/upload/<type>', methods=['POST'])
 @json_response
@@ -916,43 +910,46 @@ def upload_file(type):
     file_path = folder/filename
     in_file.save(str(file_path))
 
-    response= dict()
-    code=200
+    response = dict()
+    code = 200
 
     if type == "data":
-        file_path=project.add_data_file(file_path)
-        sheet_name=project.data_files[file_path]["val_arr"][0]
+        file_path = project.add_data_file(file_path)
+        sheet_name = project.data_files[file_path]["val_arr"][0]
         project.save()
-        response["sheetName"]=sheet_name
-        calc_params=CalcParams(project, file_path, sheet_name)
+        response["sheetName"] = sheet_name
+        calc_params = CalcParams(project, file_path, sheet_name)
         response["table"] = get_table(calc_params)
 
     if type == "wikifier":
-        file_path=project.add_wikifier_file(file_path)
+        file_path = project.add_wikifier_file(file_path)
     if type == "entities":
-        file_path=project.add_entity_file(file_path)
+        file_path = project.add_entity_file(file_path)
     if type == "annotation":
         calc_params = get_calc_params(project)
-        file_path=project.add_annotation_file(file_path, calc_params.data_path, calc_params.sheet_name)
+        file_path = project.add_annotation_file(
+            file_path, calc_params.data_path, calc_params.sheet_name)
         mapping_response, code = get_mapping(file_path, "Annotation")
         response.update(mapping_response)
 
     project.save()
-    response.update(dict(project=get_project_dict(project), filepath=file_path))
+    response.update(
+        dict(project=get_project_dict(project), filepath=file_path))
     return response, code
 
 
-
-##app utils
+# app utils
 
 @app.route('/api/is-alive')
 def is_alive():
     return 'Backend is here', 200
 
+
 @app.route('/api/get-version', methods=["GET"])
 def get_api_version():
     import pkg_resources
     return pkg_resources.get_distribution('t2wml-api').version, 200
+
 
 @app.route('/api/windows/add-to-path', methods=['POST'])
 def windows_add_to_path():
