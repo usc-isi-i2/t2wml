@@ -131,13 +131,13 @@ class CombinedTable extends Component<{}, TableState> {
 
     getQnodeCellContent(qnode: QNode, rawContent?: string) {
         return (
-            <span>
+            <span className="qnode-cell-content">
                 {rawContent}
                 <br />
-                <strong>{qnode.label}</strong> ({qnode.url ? (
+                <strong className="qnode-cell-content">{qnode.label}</strong> ({qnode.url ? (
                     <a target="_blank"
                         rel="noopener noreferrer"
-                        className="type-qnode"
+                        className="qnode-cell-content type-qnode"
                         href={qnode.url}>
                         {qnode.id}
                     </a>
@@ -176,6 +176,13 @@ class CombinedTable extends Component<{}, TableState> {
                     const tableCell = tableData[indexPair[0]][indexPair[1]];
                     tableCell.content = this.getQnodeCellContent(entry, tableCell.rawContent);
                     tableCell.classNames.push('type-qNode');
+                }
+            }
+        } else {
+            for (const entry of qnodes.entries) {
+                for (const indexPair of entry.indices) {
+                    const tableCell = tableData[indexPair[0]][indexPair[1]];
+                    tableCell.content = tableCell.rawContent || '';
                 }
             }
         }
@@ -799,14 +806,25 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     handleOnMouseDown(event: React.MouseEvent) {
-        const element = event.target as any;
-
+        let element = event.target as any;
+        
         // Allow users to select the resize-corner of the cell
         if (element.className === 'cell-resize-corner') {
             this.prevElement = element.parentElement;
             this.selecting = true;
             return;
-        } else if (element.nodeName !== 'TD') { return; }
+        } else if (element.nodeName !== 'TD') {
+            // if the "show qnode" is selecting in the menu.
+            if (element.className.startsWith("qnode-cell-content")){
+                let count = 2
+                while (element.nodeName !== 'TD' && count && element.parentNode) {
+                    element = element.parentNode
+                    count -= 1
+                }
+                if (element.nodeName !== 'TD') return;
+                
+            } else { return; }
+        }
 
 
         // get coordinates

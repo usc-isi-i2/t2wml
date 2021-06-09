@@ -300,7 +300,10 @@ def get_annotations(calc_params):
         yamlContent=dga.generate_yaml()[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
-    return dga.annotation_block_array, yamlContent
+    annotation_block_array = dga.annotation_block_array
+    if annotations_path:
+        dga.save(annotations_path)
+    return annotation_block_array, yamlContent
 
 def suggest_annotations(calc_params):
     annotations_path=calc_params.annotation_path
