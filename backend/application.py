@@ -81,16 +81,15 @@ def json_response(func):
 
 def update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type):
     if mapping_type == "Annotation":
-        calc_params.annotation_path = Path(project.directory) / mapping_file
+        calc_params._annotation_path = mapping_file
     if mapping_type == "Yaml":
-        calc_params.yaml_path = Path(project.directory) / mapping_file
+        calc_params._yaml_path = mapping_file
 
 
 def get_calc_params(project, data_required=True, mapping_type=None, mapping_file=None):
     try:
         try:
             data_file = request.args['data_file']
-            data_file = data_file
         except KeyError:
             raise web_exceptions.InvalidRequestException(
                 "data file parameter not specified")
@@ -369,7 +368,7 @@ def apply_yaml():
     response.update(calc_response)
     return response, code
 
-@app.route('/api/project/download/<filetype>/all', methods=['GET'])
+# @app.route('/api/project/download/<filetype>/all', methods=['GET'])
 @app.route('/api/project/download/<filetype>', methods=['GET'])
 @json_response
 def download_results(filetype):
@@ -427,6 +426,7 @@ def download_results(filetype):
         zf.writestr("errors.json", json.dumps(internalErrors))
         zf.close()
         bstream.seek(0)
+        # bstream save TODO
         return send_file(bstream, attachment_filename= "", as_attachment=True, mimetype='application/zip')
         response.headers.set('Content-Type', 'application/zip')
         response.headers.set('Content-Disposition', 'attachment')
