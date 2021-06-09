@@ -620,7 +620,7 @@ def set_qnode():
 
 @app.route('/api/remove_qnode', methods=['POST'])
 @json_response
-def remove_qnode():
+def delete_wikification():
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name=calc_params.sheet.name
@@ -640,8 +640,8 @@ def remove_qnode():
     col1, row1 = top_left
     col2, row2 = bottom_right
 
-    filepath=os.path.join(project.directory, "user-input-wikification.csv")
-    if os.path.exists(filepath):
+    filepath, exists=project.get_wikifier_file(calc_params.data_path)
+    if exists:
         df=pd.read_csv(filepath)
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
