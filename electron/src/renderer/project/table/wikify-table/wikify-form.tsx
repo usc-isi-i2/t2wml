@@ -237,7 +237,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder={entityFields.is_property ? 'property' : 'qnode'}
+            placeholder={entityFields.is_property ? 'property' : 'node'}
             value={search}
             onFocus={this.handleOnFocusSearch.bind(this)}
             onChange={(event: any) => this.handleOnChangeSearch(event)}
@@ -254,7 +254,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
               type="text" size="sm"
-              placeholder="qnode"
+              placeholder="node"
               value={instanceOfSearch}
               onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
               disabled={customQnode} />
@@ -444,7 +444,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" inline  label="Custom Qnode?" defaultChecked={customQnode} onChange={() => this.onChangeCustomQnode()} />
+          <Form.Check type="checkbox" inline  label="Custom?" defaultChecked={customQnode} onChange={() => this.onChangeCustomQnode()} />
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
         onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
