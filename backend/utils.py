@@ -92,21 +92,5 @@ def create_user_wikification(calc_params, project, selection, value, context, it
                             data_file_name, sheet_name])
     df = pd.DataFrame(df_rows, columns=[
                       "column", "row", "value", "context", "item", "file", "sheet"])
-    filepath = os.path.join(project.directory, "user-input-wikification.csv")
-    create_wikifier_file(project, df, filepath)
-
-def create_wikifier_file(project, df, filepath, precedence=True):
-    if os.path.exists(filepath):
-        #clear any clashes/duplicates
-        org_df=pd.read_csv(filepath)
-        if 'file' not in org_df:
-            org_df['file']=''
-        if 'sheet' not in org_df:
-            org_df['sheet']=''
-
-        df=pd.concat([org_df, df]).drop_duplicates(subset=['row', 'column', 'value', 'file', 'sheet'], keep='last').reset_index(drop=True)
-
-    df.to_csv(filepath, index=False, header=True)
-
-    project.add_wikifier_file(filepath, precedence=precedence)
-    project.save()
+    project.add_df_to_wikifier_file(calc_params.data_path, df, overwrite_existing=True)
+    return df
