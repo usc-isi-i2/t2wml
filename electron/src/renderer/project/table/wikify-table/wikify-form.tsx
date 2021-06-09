@@ -54,8 +54,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       data_type: "string",
     }
 
-    const cellType = wikiStore.layers.type.find(selectedCell);
-    entityFields.is_property = cellType ? cellType.type === 'property' : false;
+    entityFields.is_property = wikiStore.table.selectedBlock?.role === 'property'? true : false;
     
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
@@ -448,7 +447,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
         onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" defaultChecked={entityFields.is_property} />
+          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" defaultChecked={entityFields.is_property} 
+            disabled={wikiStore.table.selectedBlock?.role ? true : false}/>
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="5" md="5">
