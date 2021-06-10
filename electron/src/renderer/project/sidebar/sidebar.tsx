@@ -128,7 +128,6 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     render() {
-
         return (
             <div className=''>
             {
@@ -149,7 +148,7 @@ class Sidebar extends Component<{}, SidebarState> {
 
                         {/* card body */}
                         <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 40px)"}}>
-                                <FileTree />
+                            <FileTree />
                         </Card.Body>
                     </Card>
             </div>

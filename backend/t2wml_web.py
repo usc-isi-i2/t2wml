@@ -378,4 +378,3 @@ def get_partial_csv(calc_params):
     cells.insert(0, list(df.columns))
     return dict(dims=dims, firstRowIndex=0, cells=cells)
 
-

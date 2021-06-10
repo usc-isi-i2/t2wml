@@ -57,4 +57,3 @@ class WebDictionaryProvider(FallbackSparql):
             properties=json.dumps(self.cache)
             with open(self.project.entity_file, 'w') as f:
                 f.write(properties)
-
