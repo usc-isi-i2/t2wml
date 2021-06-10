@@ -33,16 +33,10 @@ class CalcParams:
 
     @property
     def wikifier(self):
-        project = self.project
-        if project.wikifier_files:
-            wikifier_files = [project.get_full_path(wf)
-                              for wf in project.wikifier_files]
-            #wikifier_files= [wikifier_files[-1]] #temporary solution where we only use the last-added wikifier
-        else:
-            wikifier_files = []
         wikifier = Wikifier()
-        for path in wikifier_files:
-            wikifier.add_file(path)
+        wikifier_file, exists = self.project.get_wikifier_file(self.data_path)
+        if exists:
+            wikifier.add_file(wikifier_file)
         return wikifier
 
     @property

@@ -2,15 +2,14 @@ import os
 import json
 import numpy as np
 import pandas as pd
+from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
 from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
-                        kgtk_to_dict, dict_to_kgtk)
+                        kgtk_to_dict, dict_to_kgtk, AnnotationNodeGenerator, Annotation, block_finder,
+                        Project)
 from t2wml.mapping.kgtk import get_all_variables
-from t2wml.input_processing.annotation_parsing import AnnotationNodeGenerator, Annotation
-from t2wml.input_processing.annotation_suggesting import block_finder
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
-from t2wml.api import Project
 from app_config import CACHE_FOLDER
 from web_dict_provider import WebDictionaryProvider
 from utils import get_empty_layers
@@ -48,6 +47,9 @@ def update_t2wml_settings(project):
     elif t2wml_settings.wikidata_provider.sparql_endpoint!=project.sparql_endpoint:
                 t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
 
+
+def autocreate_items(calc_params, selection, is_property=False, data_type=None):
+    create_nodes_from_selection(selection, calc_params.project, calc_params.sheet, calc_params.wikifier, is_property, data_type)
 
 
 
@@ -376,34 +378,3 @@ def get_partial_csv(calc_params):
     cells.insert(0, list(df.columns))
     return dict(dims=dims, firstRowIndex=0, cells=cells)
 
-
-def create_wikification_entry(calc_params, project, selection, value, context, item):
-    top_left, bottom_right = selection
-    col1, row1 = top_left
-    col2, row2 = bottom_right
-    sheet_name = calc_params.sheet.name
-    data_file_name = calc_params.sheet.data_file_name
-
-    df_rows = []
-    for col in range(col1, col2+1):
-        for row in range(row1, row2+1):
-            df_rows.append([col, row, value, context, item,
-                            data_file_name, sheet_name])
-    df = pd.DataFrame(df_rows, columns=[
-                      "column", "row", "value", "context", "item", "file", "sheet"])
-
-    filepath = os.path.join(project.directory, "user-input-wikification.csv")
-    if os.path.exists(filepath):
-        #clear any clashes/duplicates
-        org_df=pd.read_csv(filepath)
-        if 'file' not in org_df:
-            org_df['file']=''
-        if 'sheet' not in org_df:
-            org_df['sheet']=''
-
-        df=pd.concat([org_df, df]).drop_duplicates(subset=['row', 'column', 'value', 'file', 'sheet'], keep='last').reset_index(drop=True)
-
-    df.to_csv(filepath, index=False, header=True)
-
-    project.add_wikifier_file(filepath)
-    project.save()
