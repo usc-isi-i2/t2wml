@@ -51,14 +51,10 @@ class Download extends Component<DownloadProperties, DownloadState> {
         <Modal.Body>
           <Form className="container">
             <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-              <Col xs="9" md="9" className="pr-0">
-                <Form.Control
-                  type="text"
-                  defaultValue={this.state.downloadFileName}
-                  onChange={(event) => this.setState({ downloadFileName: event.target.value })}
-                />
+              <Col xs="4" md="4" className="pr-0">
+                <Form.Label>Format:</Form.Label>
               </Col>
-              <Col xs="3" md="3" className="pl-0">
+              <Col xs="4" md="4" className="pl-0">
                 <Form.Control as="select" onChange={(event) => this.setState({ downloadFileType: event.target.value })}>
                   <option value="json">.json</option>
                   <option value="tsv">kgtk (.tsv)</option>

@@ -85,7 +85,7 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     async handleDoDownload(fileName: string, fileType: string, downloadAll: boolean) {
-        const filename = downloadAll ? fileName + ".zip" : fileName + "." + fileType;
+        const filename = downloadAll ? path.basename(wikiStore.project.projectDTO!.directory) + ".zip" : fileName + "." + fileType;
 
         // before sending request
         this.setState({ isDownloading: true, showDownload: false });
@@ -105,9 +105,8 @@ class Sidebar extends Component<{}, SidebarState> {
         }
 
         try {
-            const response = await this.requestService.call(this, () => this.requestService.downloadResults(fileType, file_path, downloadAll));
+            await this.requestService.call(this, () => this.requestService.downloadResults(fileType, file_path, downloadAll));
             console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
-            console.log(response);
         } catch (error) {
             console.log(error);
         } finally {

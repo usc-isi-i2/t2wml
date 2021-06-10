@@ -293,7 +293,7 @@ class RequestService {
     } else {
       url = `/project/export/${fileType}?${this.getMappingParams()}`
     }
-    const data = {path: path}
+    const data = {'filepath': path}
     const response = await backendPost(url, data);
     return response;
   }

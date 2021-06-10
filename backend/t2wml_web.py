@@ -420,4 +420,4 @@ def create_zip(project, filetype, filestream):
                             if kg.errors:
                                 internalErrors.append(kg.errors)
             zf.writestr("errors.json", json.dumps(internalErrors))
-        return bstream
+        return filestream
