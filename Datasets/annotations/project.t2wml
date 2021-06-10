@@ -21,8 +21,6 @@ handle_calendar: leave
 sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
 title: annotations
 warn_for_empty_cells: false
-wikifier_files:
-- wikify_region_output.csv
 yaml_files:
 - canonical.yaml
 - relational.yaml

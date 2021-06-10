@@ -1,0 +1,253 @@
+row,column,value,context,item,sheet,file
+8,1,Kenya,main subject,Q114,00_region,region.xlsx
+9,1,Tanzania,main subject,Q924,00_region,region.xlsx
+10,1,Zambia,main subject,Q953,00_region,region.xlsx
+8,2,Maize,main subject,Q25618328,00_region,region.xlsx
+9,2,Maize,main subject,Q25618328,00_region,region.xlsx
+10,2,Maize,main subject,Q25618328,00_region,region.xlsx
+7,3,Production,property,PProduction,00_region,region.xlsx
+7,2,Crop,property,PCropType,00_region,region.xlsx
+7,1,Country,property,P17,00_region,region.xlsx
+8,1,Kenya,main subject,Q114,01_region,region.xlsx
+13,1,Kenya,main subject,Q114,01_region,region.xlsx
+9,1,Tanzania,main subject,Q924,01_region,region.xlsx
+14,1,Tanzania,main subject,Q924,01_region,region.xlsx
+10,1,Zambia,main subject,Q953,01_region,region.xlsx
+15,1,Zambia,main subject,Q953,01_region,region.xlsx
+11,1,Zimbabwe,main subject,Q954,01_region,region.xlsx
+12,1,Mozambique,main subject,Q1029,01_region,region.xlsx
+8,2,Maize,main subject,Q25618328,01_region,region.xlsx
+9,2,Maize,main subject,Q25618328,01_region,region.xlsx
+10,2,Maize,main subject,Q25618328,01_region,region.xlsx
+11,2,Maize,main subject,Q25618328,01_region,region.xlsx
+12,2,Maize,main subject,Q25618328,01_region,region.xlsx
+13,2,Teff,main subject,Q843942,01_region,region.xlsx
+14,2,Teff,main subject,Q843942,01_region,region.xlsx
+15,2,Teff,main subject,Q843942,01_region,region.xlsx
+7,3,Production,property,PProduction,01_region,region.xlsx
+7,2,Crop,property,PCropType,01_region,region.xlsx
+7,1,Country,property,P17,01_region,region.xlsx
+8,1,Kenya,main subject,Q114,02_region,region.xlsx
+13,1,Kenya,main subject,Q114,02_region,region.xlsx
+9,1,Tanzania,main subject,Q924,02_region,region.xlsx
+14,1,Tanzania,main subject,Q924,02_region,region.xlsx
+10,1,Zambia,main subject,Q953,02_region,region.xlsx
+15,1,Zambia,main subject,Q953,02_region,region.xlsx
+11,1,Zimbabwe,main subject,Q954,02_region,region.xlsx
+12,1,Mozambique,main subject,Q1029,02_region,region.xlsx
+8,2,Maize,main subject,Q25618328,02_region,region.xlsx
+9,2,Maize,main subject,Q25618328,02_region,region.xlsx
+10,2,Maize,main subject,Q25618328,02_region,region.xlsx
+11,2,Maize,main subject,Q25618328,02_region,region.xlsx
+12,2,Maize,main subject,Q25618328,02_region,region.xlsx
+13,2,Teff,main subject,Q843942,02_region,region.xlsx
+14,2,Teff,main subject,Q843942,02_region,region.xlsx
+15,2,Teff,main subject,Q843942,02_region,region.xlsx
+7,3,Production,property,PProduction,02_region,region.xlsx
+7,4,Total area,property,PTotalArea,02_region,region.xlsx
+7,2,Crop,property,PCropType,02_region,region.xlsx
+7,1,Country,property,P17,02_region,region.xlsx
+10,1,Kenya,main subject,Q114,03_region_exercise,region.xlsx
+15,1,Kenya,main subject,Q114,03_region_exercise,region.xlsx
+11,1,Tanzania,main subject,Q924,03_region_exercise,region.xlsx
+16,1,Tanzania,main subject,Q924,03_region_exercise,region.xlsx
+12,1,Zambia,main subject,Q953,03_region_exercise,region.xlsx
+17,1,Zambia,main subject,Q953,03_region_exercise,region.xlsx
+13,1,Zimbabwe,main subject,Q954,03_region_exercise,region.xlsx
+14,1,Mozambique,main subject,Q1029,03_region_exercise,region.xlsx
+10,2,Maize,main subject,Q25618328,03_region_exercise,region.xlsx
+11,2,Maize,main subject,Q25618328,03_region_exercise,region.xlsx
+12,2,Maize,main subject,Q25618328,03_region_exercise,region.xlsx
+13,2,Maize,main subject,Q25618328,03_region_exercise,region.xlsx
+14,2,Maize,main subject,Q25618328,03_region_exercise,region.xlsx
+15,2,Teff,main subject,Q843942,03_region_exercise,region.xlsx
+16,2,Teff,main subject,Q843942,03_region_exercise,region.xlsx
+17,2,Teff,main subject,Q843942,03_region_exercise,region.xlsx
+9,3,Production,property,PProduction,03_region_exercise,region.xlsx
+9,4,Total area,property,PTotalArea,03_region_exercise,region.xlsx
+9,2,Crop,property,PCropType,03_region_exercise,region.xlsx
+9,1,Country,property,P17,03_region_exercise,region.xlsx
+10,1,Kenya,main subject,Q114,03_region_solution,region.xlsx
+15,1,Kenya,main subject,Q114,03_region_solution,region.xlsx
+11,1,Tanzania,main subject,Q924,03_region_solution,region.xlsx
+16,1,Tanzania,main subject,Q924,03_region_solution,region.xlsx
+12,1,Zambia,main subject,Q953,03_region_solution,region.xlsx
+17,1,Zambia,main subject,Q953,03_region_solution,region.xlsx
+13,1,Zimbabwe,main subject,Q954,03_region_solution,region.xlsx
+14,1,Mozambique,main subject,Q1029,03_region_solution,region.xlsx
+10,2,Maize,main subject,Q25618328,03_region_solution,region.xlsx
+11,2,Maize,main subject,Q25618328,03_region_solution,region.xlsx
+12,2,Maize,main subject,Q25618328,03_region_solution,region.xlsx
+13,2,Maize,main subject,Q25618328,03_region_solution,region.xlsx
+14,2,Maize,main subject,Q25618328,03_region_solution,region.xlsx
+15,2,Teff,main subject,Q843942,03_region_solution,region.xlsx
+16,2,Teff,main subject,Q843942,03_region_solution,region.xlsx
+17,2,Teff,main subject,Q843942,03_region_solution,region.xlsx
+9,3,Production,property,PProduction,03_region_solution,region.xlsx
+9,4,Total area,property,PTotalArea,03_region_solution,region.xlsx
+9,2,Crop,property,PCropType,03_region_solution,region.xlsx
+9,1,Country,property,P17,03_region_solution,region.xlsx
+10,1,Kenya,main subject,Q114,04_region,region.xlsx
+15,1,Kenya,main subject,Q114,04_region,region.xlsx
+11,1,Tanzania,main subject,Q924,04_region,region.xlsx
+16,1,Tanzania,main subject,Q924,04_region,region.xlsx
+12,1,Zambia,main subject,Q953,04_region,region.xlsx
+17,1,Zambia,main subject,Q953,04_region,region.xlsx
+13,1,Zimbabwe,main subject,Q954,04_region,region.xlsx
+14,1,Mozambique,main subject,Q1029,04_region,region.xlsx
+10,2,Maize,main subject,Q25618328,04_region,region.xlsx
+11,2,Maize,main subject,Q25618328,04_region,region.xlsx
+12,2,Maize,main subject,Q25618328,04_region,region.xlsx
+13,2,Maize,main subject,Q25618328,04_region,region.xlsx
+14,2,Maize,main subject,Q25618328,04_region,region.xlsx
+18,2,Maize,main subject,Q25618328,04_region,region.xlsx
+15,2,Teff,main subject,Q843942,04_region,region.xlsx
+16,2,Teff,main subject,Q843942,04_region,region.xlsx
+17,2,Teff,main subject,Q843942,04_region,region.xlsx
+19,2,Teff,main subject,Q843942,04_region,region.xlsx
+9,3,Production,property,PProduction,04_region,region.xlsx
+9,4,Total area,property,PTotalArea,04_region,region.xlsx
+9,2,Crop,property,PCropType,04_region,region.xlsx
+9,1,Country,property,P17,04_region,region.xlsx
+8,1,Kenya,main subject,Q114,05_region,region.xlsx
+13,1,Kenya,main subject,Q114,05_region,region.xlsx
+9,1,Tanzania,main subject,Q924,05_region,region.xlsx
+14,1,Tanzania,main subject,Q924,05_region,region.xlsx
+10,1,Zambia,main subject,Q953,05_region,region.xlsx
+15,1,Zambia,main subject,Q953,05_region,region.xlsx
+11,1,Zimbabwe,main subject,Q954,05_region,region.xlsx
+12,1,Mozambique,main subject,Q1029,05_region,region.xlsx
+8,2,Maize,main subject,Q25618328,05_region,region.xlsx
+9,2,Maize,main subject,Q25618328,05_region,region.xlsx
+10,2,Maize,main subject,Q25618328,05_region,region.xlsx
+11,2,Maize,main subject,Q25618328,05_region,region.xlsx
+12,2,Maize,main subject,Q25618328,05_region,region.xlsx
+13,2,Teff,main subject,Q843942,05_region,region.xlsx
+14,2,Teff,main subject,Q843942,05_region,region.xlsx
+15,2,Teff,main subject,Q843942,05_region,region.xlsx
+7,3,Production,property,PProduction,05_region,region.xlsx
+7,5,Total area,property,PTotalArea,05_region,region.xlsx
+7,2,Crop,property,PCropType,05_region,region.xlsx
+7,1,Country,property,P17,05_region,region.xlsx
+8,1,Kenya,main subject,Q114,06_region_exercise,region.xlsx
+13,1,Kenya,main subject,Q114,06_region_exercise,region.xlsx
+9,1,Tanzania,main subject,Q924,06_region_exercise,region.xlsx
+14,1,Tanzania,main subject,Q924,06_region_exercise,region.xlsx
+10,1,Zambia,main subject,Q953,06_region_exercise,region.xlsx
+15,1,Zambia,main subject,Q953,06_region_exercise,region.xlsx
+11,1,Zimbabwe,main subject,Q954,06_region_exercise,region.xlsx
+12,1,Mozambique,main subject,Q1029,06_region_exercise,region.xlsx
+8,2,Maize,main subject,Q25618328,06_region_exercise,region.xlsx
+9,2,Maize,main subject,Q25618328,06_region_exercise,region.xlsx
+10,2,Maize,main subject,Q25618328,06_region_exercise,region.xlsx
+11,2,Maize,main subject,Q25618328,06_region_exercise,region.xlsx
+12,2,Maize,main subject,Q25618328,06_region_exercise,region.xlsx
+13,2,Teff,main subject,Q843942,06_region_exercise,region.xlsx
+14,2,Teff,main subject,Q843942,06_region_exercise,region.xlsx
+15,2,Teff,main subject,Q843942,06_region_exercise,region.xlsx
+7,3,Production,property,PProduction,06_region_exercise,region.xlsx
+7,4,Total area,property,PTotalArea,06_region_exercise,region.xlsx
+7,2,Crop,property,PCropType,06_region_exercise,region.xlsx
+7,1,Country,property,P17,06_region_exercise,region.xlsx
+8,1,Kenya,main subject,Q114,06_region_solution,region.xlsx
+13,1,Kenya,main subject,Q114,06_region_solution,region.xlsx
+9,1,Tanzania,main subject,Q924,06_region_solution,region.xlsx
+14,1,Tanzania,main subject,Q924,06_region_solution,region.xlsx
+10,1,Zambia,main subject,Q953,06_region_solution,region.xlsx
+15,1,Zambia,main subject,Q953,06_region_solution,region.xlsx
+11,1,Zimbabwe,main subject,Q954,06_region_solution,region.xlsx
+12,1,Mozambique,main subject,Q1029,06_region_solution,region.xlsx
+8,2,Maize,main subject,Q25618328,06_region_solution,region.xlsx
+9,2,Maize,main subject,Q25618328,06_region_solution,region.xlsx
+10,2,Maize,main subject,Q25618328,06_region_solution,region.xlsx
+11,2,Maize,main subject,Q25618328,06_region_solution,region.xlsx
+12,2,Maize,main subject,Q25618328,06_region_solution,region.xlsx
+13,2,Teff,main subject,Q843942,06_region_solution,region.xlsx
+14,2,Teff,main subject,Q843942,06_region_solution,region.xlsx
+15,2,Teff,main subject,Q843942,06_region_solution,region.xlsx
+7,3,Production,property,PProduction,06_region_solution,region.xlsx
+7,4,Total area,property,PTotalArea,06_region_solution,region.xlsx
+7,2,Crop,property,PCropType,06_region_solution,region.xlsx
+7,1,Country,property,P17,06_region_solution,region.xlsx
+10,1,Kenya,main subject,Q114,07_region,region.xlsx
+15,1,Kenya,main subject,Q114,07_region,region.xlsx
+11,1,Tanzania,main subject,Q924,07_region,region.xlsx
+16,1,Tanzania,main subject,Q924,07_region,region.xlsx
+12,1,Zambia,main subject,Q953,07_region,region.xlsx
+17,1,Zambia,main subject,Q953,07_region,region.xlsx
+13,1,Zimbabwe,main subject,Q954,07_region,region.xlsx
+14,1,Mozambique,main subject,Q1029,07_region,region.xlsx
+10,2,Maize,main subject,Q25618328,07_region,region.xlsx
+11,2,Maize,main subject,Q25618328,07_region,region.xlsx
+12,2,Maize,main subject,Q25618328,07_region,region.xlsx
+13,2,Maize,main subject,Q25618328,07_region,region.xlsx
+14,2,Maize,main subject,Q25618328,07_region,region.xlsx
+18,2,Maize,main subject,Q25618328,07_region,region.xlsx
+15,2,Teff,main subject,Q843942,07_region,region.xlsx
+16,2,Teff,main subject,Q843942,07_region,region.xlsx
+17,2,Teff,main subject,Q843942,07_region,region.xlsx
+19,2,Teff,main subject,Q843942,07_region,region.xlsx
+9,3,Production,property,PProduction,07_region,region.xlsx
+9,4,Total area,property,PTotalArea,07_region,region.xlsx
+9,2,Crop,property,PCropType,07_region,region.xlsx
+9,1,Country,property,P17,07_region,region.xlsx
+8,1,Kenya,main subject,Q114,08_region,region.xlsx
+13,1,Kenya,main subject,Q114,08_region,region.xlsx
+9,1,Tanzania,main subject,Q924,08_region,region.xlsx
+14,1,Tanzania,main subject,Q924,08_region,region.xlsx
+10,1,Zambia,main subject,Q953,08_region,region.xlsx
+15,1,Zambia,main subject,Q953,08_region,region.xlsx
+11,1,Zimbabwe,main subject,Q954,08_region,region.xlsx
+12,1,Mozambique,main subject,Q1029,08_region,region.xlsx
+8,2,Maize,main subject,Q25618328,08_region,region.xlsx
+9,2,Maize,main subject,Q25618328,08_region,region.xlsx
+10,2,Maize,main subject,Q25618328,08_region,region.xlsx
+11,2,Maize,main subject,Q25618328,08_region,region.xlsx
+12,2,Maize,main subject,Q25618328,08_region,region.xlsx
+13,2,Teff,main subject,Q843942,08_region,region.xlsx
+14,2,Teff,main subject,Q843942,08_region,region.xlsx
+15,2,Teff,main subject,Q843942,08_region,region.xlsx
+7,3,Production,property,PProduction,08_region,region.xlsx
+7,5,Total area,property,PTotalArea,08_region,region.xlsx
+7,2,Crop,property,PCropType,08_region,region.xlsx
+7,1,Country,property,P17,08_region,region.xlsx
+8,1,Kenya,main subject,Q114,09_region_exercise,region.xlsx
+13,1,Kenya,main subject,Q114,09_region_exercise,region.xlsx
+9,1,Tanzania,main subject,Q924,09_region_exercise,region.xlsx
+14,1,Tanzania,main subject,Q924,09_region_exercise,region.xlsx
+10,1,Zambia,main subject,Q953,09_region_exercise,region.xlsx
+15,1,Zambia,main subject,Q953,09_region_exercise,region.xlsx
+11,1,Zimbabwe,main subject,Q954,09_region_exercise,region.xlsx
+12,1,Mozambique,main subject,Q1029,09_region_exercise,region.xlsx
+8,2,Maize,main subject,Q25618328,09_region_exercise,region.xlsx
+9,2,Maize,main subject,Q25618328,09_region_exercise,region.xlsx
+10,2,Maize,main subject,Q25618328,09_region_exercise,region.xlsx
+11,2,Maize,main subject,Q25618328,09_region_exercise,region.xlsx
+12,2,Maize,main subject,Q25618328,09_region_exercise,region.xlsx
+13,2,Teff,main subject,Q843942,09_region_exercise,region.xlsx
+14,2,Teff,main subject,Q843942,09_region_exercise,region.xlsx
+15,2,Teff,main subject,Q843942,09_region_exercise,region.xlsx
+7,3,Production,property,PProduction,09_region_exercise,region.xlsx
+7,4,Total area,property,PTotalArea,09_region_exercise,region.xlsx
+7,2,Crop,property,PCropType,09_region_exercise,region.xlsx
+7,1,Country,property,P17,09_region_exercise,region.xlsx
+8,1,Kenya,main subject,Q114,09_region_solution,region.xlsx
+13,1,Kenya,main subject,Q114,09_region_solution,region.xlsx
+9,1,Tanzania,main subject,Q924,09_region_solution,region.xlsx
+14,1,Tanzania,main subject,Q924,09_region_solution,region.xlsx
+10,1,Zambia,main subject,Q953,09_region_solution,region.xlsx
+15,1,Zambia,main subject,Q953,09_region_solution,region.xlsx
+11,1,Zimbabwe,main subject,Q954,09_region_solution,region.xlsx
+12,1,Mozambique,main subject,Q1029,09_region_solution,region.xlsx
+8,2,Maize,main subject,Q25618328,09_region_solution,region.xlsx
+9,2,Maize,main subject,Q25618328,09_region_solution,region.xlsx
+10,2,Maize,main subject,Q25618328,09_region_solution,region.xlsx
+11,2,Maize,main subject,Q25618328,09_region_solution,region.xlsx
+12,2,Maize,main subject,Q25618328,09_region_solution,region.xlsx
+13,2,Teff,main subject,Q843942,09_region_solution,region.xlsx
+14,2,Teff,main subject,Q843942,09_region_solution,region.xlsx
+15,2,Teff,main subject,Q843942,09_region_solution,region.xlsx
+7,3,Production,property,PProduction,09_region_solution,region.xlsx
+7,4,Total area,property,PTotalArea,09_region_solution,region.xlsx
+7,2,Crop,property,PCropType,09_region_solution,region.xlsx
+7,1,Country,property,P17,09_region_solution,region.xlsx

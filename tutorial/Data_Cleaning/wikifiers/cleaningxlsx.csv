@@ -1,0 +1,37 @@
+row,column,value,context,item,sheet,file
+8,1,Kenya,main subject,Q114,00_cleaning,cleaning.xlsx
+9,1,Kenya,main subject,Q114,00_cleaning,cleaning.xlsx
+10,1,Tanzania,main subject,Q924,00_cleaning,cleaning.xlsx
+11,1,Tanzania,main subject,Q924,00_cleaning,cleaning.xlsx
+8,2,Maize,main subject,Q25618328,00_cleaning,cleaning.xlsx
+10,2,Maize,main subject,Q25618328,00_cleaning,cleaning.xlsx
+9,2,Teff,main subject,Q843942,00_cleaning,cleaning.xlsx
+11,2,Teff,main subject,Q843942,00_cleaning,cleaning.xlsx
+7,3,Production,property,PProduction,00_cleaning,cleaning.xlsx
+7,2,Crop,property,PCropType,00_cleaning,cleaning.xlsx
+7,1,Country,property,P17,00_cleaning,cleaning.xlsx
+8,1,Kenya,main subject,Q114,01_cleaning,cleaning.xlsx
+10,1,Tanzania,main subject,Q924,01_cleaning,cleaning.xlsx
+7,2,Production,property,PProduction,01_cleaning,cleaning.xlsx
+7,1,Country,property,P17,01_cleaning,cleaning.xlsx
+7,3,Product,property,Pproduct,01_cleaning,cleaning.xlsx
+8,1,Kenya,main subject,Q114,02_cleaning,cleaning.xlsx
+12,1,Tanzania,main subject,Q924,02_cleaning,cleaning.xlsx
+8,2,Maize,main subject,Q25618328,02_cleaning,cleaning.xlsx
+12,2,Maize,main subject,Q25618328,02_cleaning,cleaning.xlsx
+10,2,Teff,main subject,Q843942,02_cleaning,cleaning.xlsx
+14,2,Teff,main subject,Q843942,02_cleaning,cleaning.xlsx
+7,4,Production,property,PProduction,02_cleaning,cleaning.xlsx
+7,2,Crop,property,PCropType,02_cleaning,cleaning.xlsx
+7,1,Country,property,P17,02_cleaning,cleaning.xlsx
+7,5,Product,property,Pproduct,02_cleaning,cleaning.xlsx
+8,1,Kenya,main subject,Q114,03_cleaning_exercise,cleaning.xlsx
+13,1,Tanzania,main subject,Q924,03_cleaning_exercise,cleaning.xlsx
+7,3,Production,property,PProduction,03_cleaning_exercise,cleaning.xlsx
+7,1,Country,property,P17,03_cleaning_exercise,cleaning.xlsx
+7,4,Product,property,Pproduct,03_cleaning_exercise,cleaning.xlsx
+8,1,Kenya,main subject,Q114,03_cleaning_solution,cleaning.xlsx
+13,1,Tanzania,main subject,Q924,03_cleaning_solution,cleaning.xlsx
+7,3,Production,property,PProduction,03_cleaning_solution,cleaning.xlsx
+7,1,Country,property,P17,03_cleaning_solution,cleaning.xlsx
+7,4,Product,property,Pproduct,03_cleaning_solution,cleaning.xlsx
