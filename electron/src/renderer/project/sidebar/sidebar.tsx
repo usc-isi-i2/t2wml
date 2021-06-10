@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import Downloader from 'js-file-download';
 import wikiStore from '@/renderer/data/store';
 import { observer } from 'mobx-react';
 import { IReactionDisposer, reaction } from 'mobx';
@@ -13,6 +12,8 @@ import EntitiesTree from './file-tree/entities-tree';
 import SheetSelector from '../sheet-selector/sheet-selector';
 import Download from '../output/download';
 import ToastMessage from '../../common/toast';
+import { remote } from 'electron';
+import path from 'path';
 
 
 // interface SidebarProperties {
@@ -75,6 +76,14 @@ class Sidebar extends Component<{}, SidebarState> {
         }
     }
 
+    str2bytes (str: string) {
+        const bytes = new Uint8Array(str.length);
+        for (let i=0; i<str.length; i++) {
+            bytes[i] = str.charCodeAt(i);
+        }
+        return bytes;
+    }
+
     async handleDoDownload(fileName: string, fileType: string, downloadAll: boolean) {
         const filename = downloadAll ? fileName + ".zip" : fileName + "." + fileType;
 
@@ -84,39 +93,21 @@ class Sidebar extends Component<{}, SidebarState> {
         // send request
         console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
 
+        let file_path = "";
+        const filter = downloadAll ? { name: 'compressed file', extensions: ['zip'] } : { name: '', extensions: [fileType] }
+        const result = await remote.dialog.showSaveDialog({
+            defaultPath: path.join(wikiStore.project.projectDTO!.directory, filename),
+            // properties: ['createDirectory'],
+            filters: [ filter ],
+            });
+        if (!result.canceled && result.filePath) {
+            file_path = result.filePath;
+        }
+
         try {
-            const json = await this.requestService.call(this, () => this.requestService.downloadResults(fileType, downloadAll));
+            const response = await this.requestService.call(this, () => this.requestService.downloadResults(fileType, file_path, downloadAll));
             console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
-
-            if (downloadAll) {
-                Downloader(json, filename, 'application/zip');
-            } else {
-                // do something here
-                const { error } = json;
-
-                // if failure
-                if (error) {
-                    throw Error(error);
-                }
-
-                // else, success
-                const { data, internalErrors } = json;
-                if (internalErrors) {
-                    console.log("ERRORS in input to download:")
-                    console.log(internalErrors);
-                    this.setState({
-                        errorMessage:
-                            {
-                                errorCode: 400,
-                                errorTitle: "Problems within statements",
-                                errorDescription: "Although the file downloaded, there were errors in the input, check console for details"
-                            } as ErrorMessage
-                    })
-                }
-                Downloader(data, filename);
-            }
-
-
+            console.log(response);
         } catch (error) {
             console.log(error);
         } finally {

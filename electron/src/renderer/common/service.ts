@@ -285,15 +285,16 @@ class RequestService {
     wikiStore.entitiesData.entities = response;
   }
 
-  public async downloadResults(fileType: string, allResults?: boolean) {
+  public async downloadResults(fileType: string, path:string, allResults?: boolean) {
     //returns "data" (the download), "error": None, and "internalErrors"
     let url = ""
     if (allResults) {
-      url = `/project/download/${fileType}/all?${this.getProjectFolder()}`
+      url = `/project/export/${fileType}/all?${this.getProjectFolder()}`
     } else {
-      url = `/project/download/${fileType}?${this.getMappingParams()}`
+      url = `/project/export/${fileType}?${this.getMappingParams()}`
     }
-    const response = await backendGet(url);
+    const data = {path: path}
+    const response = await backendPost(url, data);
     return response;
   }
 
