@@ -128,15 +128,6 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     render() {
-        let currentFileTree;
-        if (this.state.currFiles === filesTypes[0]) {
-            currentFileTree = <FileTree />; // <DataFiles />
-        } else if (this.state.currFiles === filesTypes[1]) { // entities
-            currentFileTree = <EntitiesTree />;
-        } else { // wikifiers
-            currentFileTree = <FileTree /> ;// <Wikifiers />
-        }
-
         return (
             <div className=''>
             {
@@ -157,13 +148,7 @@ class Sidebar extends Component<{}, SidebarState> {
 
                         {/* card body */}
                         <Card.Body className="w-100 p-0" style={{ height: "calc(100vh - 100px)"}}>
-                            <SheetSelector
-                                sheetNames={filesTypes}
-                                currSheetName={this.state.currFiles}
-                                disabled={wikiStore.yaml.showSpinner}
-                                handleSelectSheet={(event: any) => this.setState({currFiles: event.target!.innerHTML})}/>
-
-                            {currentFileTree}
+                            <FileTree />
                         </Card.Body>
                     </Card>
             </div>
