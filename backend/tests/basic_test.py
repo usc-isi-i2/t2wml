@@ -2,6 +2,7 @@ from io import StringIO
 import json
 import os
 import csv
+import tempfile
 from tests.utils import (client, BaseClass, create_project,
                 load_data_file, load_yaml_file, url_builder,
                 load_wikifier_file, load_item_file)
@@ -78,20 +79,18 @@ class TestBasicWorkflow(BaseClass):
 
     def test_11_get_download(self, client):
         #GET '/api/project/{project_folder}/download/<filetype>'
-        url=url_builder(f'/api/project/download/tsv', project_folder, self.data_file, self.sheet_name, self.yaml_file)
-        response=client.get(url)
-        data = response.data.decode("utf-8")
-        data = json.loads(data)
-        data= data["data"]
-        expected_reader= csv.DictReader(StringIO(data), delimiter="\t")
-        with open(os.path.join(self.files_dir, "download.tsv"), 'r', encoding="utf-8") as f:
+        url=url_builder(f'/api/project/export/tsv', project_folder, self.data_file, self.sheet_name, self.yaml_file)
+        tf =   os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
+        response=client.post(url, json=dict(filepath=tf))
+        with open(tf, 'r') as ef, open(os.path.join(self.files_dir, "download.tsv"), 'r', encoding="utf-8") as f:
+            expected_reader= csv.DictReader(ef, delimiter="\t")
             reader = csv.DictReader(f, delimiter="\t")
             for e_row_dict, o_row_dict in zip(expected_reader, reader):
                 if e_row_dict["label"]=="P5017": #edit timestamp, always changes
                     continue
                 if e_row_dict["id"] in ["47-label", "475-label", "103-label", "782-label", "22-label", "73-label"]:
                     continue
-                assert e_row_dict==o_row_dict
+            assert e_row_dict==o_row_dict
     def test_12_change_sheet(self, client):
         #GET /api/data/{project_folder}/<sheet_name>
         url=url_builder('/api/table', project_folder, self.data_file, "Sheet4")

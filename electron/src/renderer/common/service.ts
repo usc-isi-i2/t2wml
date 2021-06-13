@@ -188,8 +188,10 @@ class RequestService {
   public async getSuggestedAnnotationBlocks() {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithAnnotationsDTO;
-    updater.update(() => { wikiStore.annotations.blocks = response.annotations || [];
-                           wikiStore.yaml.yamlContent = response.yamlContent;}, "getsuggestedAnnotationBlocks")
+    updater.update(() => {
+      wikiStore.annotations.blocks = response.annotations || [];
+      wikiStore.yaml.yamlContent = response.yamlContent;
+    }, "getsuggestedAnnotationBlocks")
   }
 
   public async createProject(folder: string, data?: any) {
@@ -227,11 +229,13 @@ class RequestService {
     this.updateProjectandQnode(response);
   }
 
-  public async callCountryWikifier(data: any){
+  public async callCountryWikifier(data: any) {
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
-    updater.update(() => { this.updateProjectandQnode(response);
-      wikiStore.wikifier.wikifierError = response.wikifierError; })
+    updater.update(() => {
+      this.updateProjectandQnode(response);
+      wikiStore.wikifier.wikifierError = response.wikifierError;
+    })
   }
 
   public async getTable() {
@@ -282,15 +286,16 @@ class RequestService {
     wikiStore.entitiesData.entities = response;
   }
 
-  public async downloadResults(fileType: string, allResults?: boolean) {
+  public async downloadResults(fileType: string, path:string, allResults?: boolean) {
     //returns "data" (the download), "error": None, and "internalErrors"
-    let url=""
-    if (allResults){
-      url=`/project/download/${fileType}/all?${this.getProjectFolder()}`
-    }else{
-      url=`/project/download/${fileType}?${this.getMappingParams()}`
+    let url = ""
+    if (allResults) {
+      url = `/project/export/${fileType}/all?${this.getProjectFolder()}`
+    } else {
+      url = `/project/export/${fileType}?${this.getMappingParams()}`
     }
-    const response = await backendGet(url);
+    const data = {'filepath': path}
+    const response = await backendPost(url, data);
     return response;
   }
 
@@ -309,21 +314,21 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async createQnode(entityFields: EntityFields, selection?: number[][]){
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, {...entityFields, selection: selection}) as ResponseWithQNodeLayerAndQnode;
-    if(response.layers.qnode){
+  public async createQnode(entityFields: EntityFields, selection?: number[][]) {
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields, selection: selection }) as ResponseWithQNodeLayerAndQnode;
+    if (response.layers.qnode) {
       this.updateProjectandQnode(response);
     }
     return response;
   }
 
-  public async getQnodeById(id?: string){
-    if ( !id ){ return; }
+  public async getQnodeById(id?: string) {
+    if (!id) { return; }
     try {
-      const response = await backendGet(`/query_node/${id}?${this.getDataFileParams()}`)as QNode;
+      const response = await backendGet(`/query_node/${id}?${this.getDataFileParams()}`) as QNode;
       return response;
     } catch (error) {
-      if(error.errorCode === 404){
+      if (error.errorCode === 404) {
         return;
       }
     }

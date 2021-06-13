@@ -202,7 +202,7 @@ export default class MainMenuManager {
             enabled,
         },*/
         {
-            label: 'Show Qnodes',
+            label: 'Show nodes',
             type: 'checkbox',
             checked: uiState.showQnodes,
             click: (checkbox) => this.onShowQnodesClick(checkbox.checked),

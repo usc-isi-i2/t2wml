@@ -54,8 +54,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       data_type: "string",
     }
 
-    const cellType = wikiStore.layers.type.find(selectedCell);
-    entityFields.is_property = cellType ? cellType.type === 'property' : false;
+    entityFields.is_property = wikiStore.table.selectedBlock?.role === 'property'? true : false;
     
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
@@ -237,7 +236,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <Form.Label className="text-muted">Search</Form.Label>
           <Form.Control
             type="text" size="sm"
-            placeholder={entityFields.is_property ? 'property' : 'qnode'}
+            placeholder={entityFields.is_property ? 'property' : 'node'}
             value={search}
             onFocus={this.handleOnFocusSearch.bind(this)}
             onChange={(event: any) => this.handleOnChangeSearch(event)}
@@ -254,7 +253,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             <Form.Label className="text-muted">Instance Of</Form.Label>
             <Form.Control
               type="text" size="sm"
-              placeholder="qnode"
+              placeholder="node"
               value={instanceOfSearch}
               onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
               disabled={customQnode} />
@@ -444,11 +443,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" inline  label="Custom Qnode?" defaultChecked={customQnode} onChange={() => this.onChangeCustomQnode()} />
+          <Form.Check type="checkbox" inline  label="Custom?" defaultChecked={customQnode} onChange={() => this.onChangeCustomQnode()} />
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
         onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" defaultChecked={entityFields.is_property} />
+          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" defaultChecked={entityFields.is_property} 
+            disabled={wikiStore.table.selectedBlock?.role ? true : false}/>
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="5" md="5">
