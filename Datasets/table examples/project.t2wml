@@ -1,9 +1,3 @@
-_saved_state:
-  current_data_file: Table Annotation Examples.xlsx
-  current_sheet: largest biotech
-  current_wikifiers:
-  - wikifier.csv
-  current_yaml: largest biotech.yaml
 cache_id: ae7eff8a-e840-4928-8b0f-5d605bed7315
 data_files:
   Table Annotation Examples.xlsx:
@@ -18,14 +12,14 @@ data_files:
     - tallest buildings
     - world tennis players
     - largest biotech
+description: ''
 entity_files:
-- entities.tsv
+- properties.tsv
 handle_calendar: leave
 sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
 title: table examples
+url: ''
 warn_for_empty_cells: false
-wikifier_files:
-- wikifier.csv
 yaml_files:
 - Colombian Elections 2018.yaml
 - FC Barcelona Current Squad.yaml

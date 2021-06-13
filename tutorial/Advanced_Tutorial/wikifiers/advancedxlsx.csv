@@ -1,0 +1,50 @@
+row,column,value,context,item,sheet,file
+8,1,Kenya,main subject,Q114,00_advanced,advanced.xlsx
+9,1,Kenya,main subject,Q114,00_advanced,advanced.xlsx
+10,1,Tanzania,main subject,Q924,00_advanced,advanced.xlsx
+11,1,Tanzania,main subject,Q924,00_advanced,advanced.xlsx
+8,2,Maize,main subject,Q25618328,00_advanced,advanced.xlsx
+10,2,Maize,main subject,Q25618328,00_advanced,advanced.xlsx
+9,2,Teff,main subject,Q843942,00_advanced,advanced.xlsx
+11,2,Teff,main subject,Q843942,00_advanced,advanced.xlsx
+7,3,Production,property,PProduction,00_advanced,advanced.xlsx
+7,2,Crop,property,PCropType,00_advanced,advanced.xlsx
+7,1,Country,property,P17,00_advanced,advanced.xlsx
+8,1,Kenya,main subject,Q114,01_advanced,advanced.xlsx
+10,1,Tanzania,main subject,Q924,01_advanced,advanced.xlsx
+8,2,Maize,main subject,Q25618328,01_advanced,advanced.xlsx
+10,2,Maize,main subject,Q25618328,01_advanced,advanced.xlsx
+9,2,Teff,main subject,Q843942,01_advanced,advanced.xlsx
+11,2,Teff,main subject,Q843942,01_advanced,advanced.xlsx
+7,3,Production,property,PProduction,01_advanced,advanced.xlsx
+7,2,Crop,property,PCropType,01_advanced,advanced.xlsx
+7,1,Country,property,P17,01_advanced,advanced.xlsx
+8,1,Kenya,main subject,Q114,02_advanced,advanced.xlsx
+12,1,Tanzania,main subject,Q924,02_advanced,advanced.xlsx
+8,2,Maize,main subject,Q25618328,02_advanced,advanced.xlsx
+12,2,Maize,main subject,Q25618328,02_advanced,advanced.xlsx
+10,2,Teff,main subject,Q843942,02_advanced,advanced.xlsx
+14,2,Teff,main subject,Q843942,02_advanced,advanced.xlsx
+7,4,Production,property,PProduction,02_advanced,advanced.xlsx
+7,2,Crop,property,PCropType,02_advanced,advanced.xlsx
+7,1,Country,property,P17,02_advanced,advanced.xlsx
+8,1,Kenya,main subject,Q114,03_advanced_exercise,advanced.xlsx
+16,1,Tanzania,main subject,Q924,03_advanced_exercise,advanced.xlsx
+8,2,Maize,main subject,Q25618328,03_advanced_exercise,advanced.xlsx
+16,2,Maize,main subject,Q25618328,03_advanced_exercise,advanced.xlsx
+12,2,Teff,main subject,Q843942,03_advanced_exercise,advanced.xlsx
+20,2,Teff,main subject,Q843942,03_advanced_exercise,advanced.xlsx
+7,5,Production,property,PProduction,03_advanced_exercise,advanced.xlsx
+7,2,Crop,property,PCropType,03_advanced_exercise,advanced.xlsx
+7,1,Country,property,P17,03_advanced_exercise,advanced.xlsx
+7,3,Fertilizer,property,PFertilizer,03_advanced_exercise,advanced.xlsx
+8,1,Kenya,main subject,Q114,03_advanced_solution,advanced.xlsx
+16,1,Tanzania,main subject,Q924,03_advanced_solution,advanced.xlsx
+8,2,Maize,main subject,Q25618328,03_advanced_solution,advanced.xlsx
+16,2,Maize,main subject,Q25618328,03_advanced_solution,advanced.xlsx
+12,2,Teff,main subject,Q843942,03_advanced_solution,advanced.xlsx
+20,2,Teff,main subject,Q843942,03_advanced_solution,advanced.xlsx
+7,5,Production,property,PProduction,03_advanced_solution,advanced.xlsx
+7,2,Crop,property,PCropType,03_advanced_solution,advanced.xlsx
+7,1,Country,property,P17,03_advanced_solution,advanced.xlsx
+7,3,Fertilizer,property,PFertilizer,03_advanced_solution,advanced.xlsx
