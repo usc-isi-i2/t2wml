@@ -270,6 +270,7 @@ export default class MainMenuManager {
     }
 
     private onShowQnodesClick(checked: boolean) {
+        uiState.showQnodes=checked;
         rendererNotifier.toggleShowQnodes(checked);
     }
 
