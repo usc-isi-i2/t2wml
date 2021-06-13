@@ -1,0 +1,111 @@
+row,column,value,context,item,sheet,file
+8,1,Kenya,main subject,Q114,00_time,qualifier.xlsx
+9,1,Kenya,main subject,Q114,00_time,qualifier.xlsx
+10,1,Kenya,main subject,Q114,00_time,qualifier.xlsx
+11,1,Tanzania,main subject,Q924,00_time,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,00_time,qualifier.xlsx
+13,1,Tanzania,main subject,Q924,00_time,qualifier.xlsx
+7,3,Production,property,PProduction,00_time,qualifier.xlsx
+7,1,Country,property,P17,00_time,qualifier.xlsx
+8,1,Kenya,main subject,Q114,01_time,qualifier.xlsx
+9,1,Kenya,main subject,Q114,01_time,qualifier.xlsx
+10,1,Kenya,main subject,Q114,01_time,qualifier.xlsx
+11,1,Tanzania,main subject,Q924,01_time,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,01_time,qualifier.xlsx
+13,1,Tanzania,main subject,Q924,01_time,qualifier.xlsx
+7,4,Production,property,PProduction,01_time,qualifier.xlsx
+7,1,Country,property,P17,01_time,qualifier.xlsx
+8,1,Kenya,main subject,Q114,02_time,qualifier.xlsx
+9,1,Kenya,main subject,Q114,02_time,qualifier.xlsx
+10,1,Kenya,main subject,Q114,02_time,qualifier.xlsx
+11,1,Tanzania,main subject,Q924,02_time,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,02_time,qualifier.xlsx
+13,1,Tanzania,main subject,Q924,02_time,qualifier.xlsx
+7,5,Production,property,PProduction,02_time,qualifier.xlsx
+7,1,Country,property,P17,02_time,qualifier.xlsx
+8,1,Kenya,main subject,Q114,03_time_exercise,qualifier.xlsx
+9,1,Kenya,main subject,Q114,03_time_exercise,qualifier.xlsx
+10,1,Kenya,main subject,Q114,03_time_exercise,qualifier.xlsx
+11,1,Tanzania,main subject,Q924,03_time_exercise,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,03_time_exercise,qualifier.xlsx
+13,1,Tanzania,main subject,Q924,03_time_exercise,qualifier.xlsx
+7,3,Production,property,PProduction,03_time_exercise,qualifier.xlsx
+7,1,Country,property,P17,03_time_exercise,qualifier.xlsx
+8,1,Kenya,main subject,Q114,03_time_solution,qualifier.xlsx
+9,1,Kenya,main subject,Q114,03_time_solution,qualifier.xlsx
+10,1,Kenya,main subject,Q114,03_time_solution,qualifier.xlsx
+11,1,Tanzania,main subject,Q924,03_time_solution,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,03_time_solution,qualifier.xlsx
+13,1,Tanzania,main subject,Q924,03_time_solution,qualifier.xlsx
+7,3,Production,property,PProduction,03_time_solution,qualifier.xlsx
+7,1,Country,property,P17,03_time_solution,qualifier.xlsx
+8,1,Kenya,main subject,Q114,10_qualifier,qualifier.xlsx
+9,1,Tanzania,main subject,Q924,10_qualifier,qualifier.xlsx
+10,1,Zambia,main subject,Q953,10_qualifier,qualifier.xlsx
+8,2,Maize,main subject,Q25618328,10_qualifier,qualifier.xlsx
+9,2,Maize,main subject,Q25618328,10_qualifier,qualifier.xlsx
+10,2,Maize,main subject,Q25618328,10_qualifier,qualifier.xlsx
+7,3,Production,property,PProduction,10_qualifier,qualifier.xlsx
+7,2,Crop,property,PCropType,10_qualifier,qualifier.xlsx
+7,1,Country,property,P17,10_qualifier,qualifier.xlsx
+8,1,Kenya,main subject,Q114,11_qualifier,qualifier.xlsx
+9,1,Tanzania,main subject,Q924,11_qualifier,qualifier.xlsx
+10,1,Zambia,main subject,Q953,11_qualifier,qualifier.xlsx
+8,2,Maize,main subject,Q25618328,11_qualifier,qualifier.xlsx
+9,2,Maize,main subject,Q25618328,11_qualifier,qualifier.xlsx
+10,2,Maize,main subject,Q25618328,11_qualifier,qualifier.xlsx
+7,3,Production,property,PProduction,11_qualifier,qualifier.xlsx
+7,2,Crop,property,PCropType,11_qualifier,qualifier.xlsx
+7,1,Country,property,P17,11_qualifier,qualifier.xlsx
+7,4,Estimated,property,PEstimated,11_qualifier,qualifier.xlsx
+8,1,Kenya,main subject,Q114,12_qualifier,qualifier.xlsx
+11,1,Kenya,main subject,Q114,12_qualifier,qualifier.xlsx
+9,1,Tanzania,main subject,Q924,12_qualifier,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,12_qualifier,qualifier.xlsx
+10,1,Zambia,main subject,Q953,12_qualifier,qualifier.xlsx
+13,1,Zambia,main subject,Q953,12_qualifier,qualifier.xlsx
+8,2,Maize,main subject,Q25618328,12_qualifier,qualifier.xlsx
+9,2,Maize,main subject,Q25618328,12_qualifier,qualifier.xlsx
+10,2,Maize,main subject,Q25618328,12_qualifier,qualifier.xlsx
+11,2,Teff,main subject,Q843942,12_qualifier,qualifier.xlsx
+12,2,Teff,main subject,Q843942,12_qualifier,qualifier.xlsx
+13,2,Teff,main subject,Q843942,12_qualifier,qualifier.xlsx
+7,3,Production,property,PProduction,12_qualifier,qualifier.xlsx
+7,4,Total area,property,PTotalArea,12_qualifier,qualifier.xlsx
+7,2,Crop,property,PCropType,12_qualifier,qualifier.xlsx
+7,1,Country,property,P17,12_qualifier,qualifier.xlsx
+7,5,Estimated,property,PEstimated,12_qualifier,qualifier.xlsx
+8,1,Kenya,main subject,Q114,13_qualifier_exercise,qualifier.xlsx
+11,1,Kenya,main subject,Q114,13_qualifier_exercise,qualifier.xlsx
+9,1,Tanzania,main subject,Q924,13_qualifier_exercise,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,13_qualifier_exercise,qualifier.xlsx
+10,1,Zambia,main subject,Q953,13_qualifier_exercise,qualifier.xlsx
+13,1,Zambia,main subject,Q953,13_qualifier_exercise,qualifier.xlsx
+8,2,Maize,main subject,Q25618328,13_qualifier_exercise,qualifier.xlsx
+9,2,Maize,main subject,Q25618328,13_qualifier_exercise,qualifier.xlsx
+10,2,Maize,main subject,Q25618328,13_qualifier_exercise,qualifier.xlsx
+11,2,Teff,main subject,Q843942,13_qualifier_exercise,qualifier.xlsx
+12,2,Teff,main subject,Q843942,13_qualifier_exercise,qualifier.xlsx
+13,2,Teff,main subject,Q843942,13_qualifier_exercise,qualifier.xlsx
+7,3,Production,property,PProduction,13_qualifier_exercise,qualifier.xlsx
+7,4,Total area,property,PTotalArea,13_qualifier_exercise,qualifier.xlsx
+7,2,Crop,property,PCropType,13_qualifier_exercise,qualifier.xlsx
+7,1,Country,property,P17,13_qualifier_exercise,qualifier.xlsx
+7,5,Estimated,property,PEstimated,13_qualifier_exercise,qualifier.xlsx
+8,1,Kenya,main subject,Q114,13_qualifier_solution,qualifier.xlsx
+11,1,Kenya,main subject,Q114,13_qualifier_solution,qualifier.xlsx
+9,1,Tanzania,main subject,Q924,13_qualifier_solution,qualifier.xlsx
+12,1,Tanzania,main subject,Q924,13_qualifier_solution,qualifier.xlsx
+10,1,Zambia,main subject,Q953,13_qualifier_solution,qualifier.xlsx
+13,1,Zambia,main subject,Q953,13_qualifier_solution,qualifier.xlsx
+8,2,Maize,main subject,Q25618328,13_qualifier_solution,qualifier.xlsx
+9,2,Maize,main subject,Q25618328,13_qualifier_solution,qualifier.xlsx
+10,2,Maize,main subject,Q25618328,13_qualifier_solution,qualifier.xlsx
+11,2,Teff,main subject,Q843942,13_qualifier_solution,qualifier.xlsx
+12,2,Teff,main subject,Q843942,13_qualifier_solution,qualifier.xlsx
+13,2,Teff,main subject,Q843942,13_qualifier_solution,qualifier.xlsx
+7,3,Production,property,PProduction,13_qualifier_solution,qualifier.xlsx
+7,4,Total area,property,PTotalArea,13_qualifier_solution,qualifier.xlsx
+7,2,Crop,property,PCropType,13_qualifier_solution,qualifier.xlsx
+7,1,Country,property,P17,13_qualifier_solution,qualifier.xlsx
+7,5,Estimated,property,PEstimated,13_qualifier_solution,qualifier.xlsx

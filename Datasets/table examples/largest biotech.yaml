@@ -4,5 +4,5 @@ statementMapping:
             range: D2:J6
         template:
             subject: =value[B, $row-$n]
-            property: =value[$col-$n, 1]
+            property: =item[$col-$n, 1]
             value: =value[$col, $row]

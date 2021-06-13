@@ -1,12 +1,65 @@
-import json
+import os
+import pandas as pd
+import numpy as np
+import requests
+from io import StringIO
+##
 import logging
 import numpy as np
 from functools import partial
 import rltk.similarity as sim
-import os
 from abc import ABC, abstractmethod
-import pandas as pd
+from t2wml.spreadsheets.conversions import to_excel
 from t2wml.wikification.country_wikifier_cache import countries
+
+
+def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/wikifier/wikify"):
+    (col1, row1), (col2, row2) = selection
+    sheet_name = calc_params.sheet.name
+    data_file_name = calc_params.sheet.data_file_name
+    sheet=calc_params.sheet
+
+    df_rows = []
+    for col in range(col1, col2+1):
+        for row in range(row1, row2+1):
+            value=sheet[row, col]
+            if (value):
+                df_rows.append([col, row, value, data_file_name, sheet_name, ""])
+    df = pd.DataFrame(df_rows, columns=[
+                      "column", "row", "value", "file", "sheet", "context"])
+    csv_str = df.to_csv(index=None)
+    binary = csv_str.encode()
+    url += f'?k=1&columns={"value"}'
+
+    files = {
+        'file': (sheet.data_file_name, binary, 'application/octet-stream')
+    }
+
+    resp = requests.post(url, files=files)
+
+    s = str(resp.content, 'utf-8')
+    data = StringIO(s)
+
+    df = pd.read_csv(data)
+    check_na = df['value_kg_id'].notna()
+    missing_values = df[np.invert(check_na)]
+    df = df[check_na] #trim anything that didn't wikify successfully
+    df = df[df["value_score"] > 0.9] #trim anything whose score is too low
+    ids=df.pop("value_kg_id")
+    df["item"]=ids
+    labels= df.pop("value_kg_label")
+    scores= df.pop("value_score")
+    aliases=df.pop("value_kg_aliases")
+    descriptions= df.pop("value_kg_descriptions")
+    entities_dict={}
+    for index, id in enumerate(ids):
+        entities_dict[id]={"label": labels.iloc[index], "description": descriptions.iloc[index]}
+    problem_cells=[]
+    for index, line in missing_values.iterrows():
+        problem_cells.append(to_excel(line.column, line.row))
+    return df, entities_dict, problem_cells
+
+
 
 FILE_FOLDER=os.path.abspath(os.path.dirname(__file__))
 
@@ -92,18 +145,33 @@ class DatamartCountryWikifier:
         self._logger = logging.getLogger(__name__)
         self.memo=countries
 
-    def wikify(self, input_countries: list) -> dict:
+    def wikify(self, sheet, start_row, end_row, start_col, end_col) -> dict:
         no_wifiy_memo = set()
         wikifier_result = []
         wikified = {}
-        for each in input_countries:
-            if isinstance(each, str) or not np.isnan(each):
+
+        df_rows = [] #"column", "row", "value", "context", "item", "file", "sheet"
+        context = ""
+        file=sheet.data_file_name
+        sheet_name=sheet.name
+
+        #for value, item in result_dict.items():
+        #    if item:
+        #        df_rows.append(["", "", value, "", item, "", ""])
+
+
+        flattened_sheet_data = sheet[start_row:end_row,
+                                     start_col:end_col].to_numpy().flatten()
+        for row in range(start_row, end_row):
+            for column in range(start_col, end_col):
+                value = sheet[row, column]
+                item=None
                 # skip those input we already confirm no candidate
-                if each in no_wifiy_memo:
-                    wikifier_result.append("")
+                if value in no_wifiy_memo:
                     continue
 
-                input_str = " ".join(str(each).lower().strip().split())
+
+                input_str = " ".join(str(value).lower().strip().split())
                 input_str_processed = " ".join(
                     input_str.replace("&", "and").replace("-", " ").replace(".", " ").replace(",", " ").strip().split())
                 input_str_processed_no_bracket = input_str.split("(")[0].strip()
@@ -113,11 +181,11 @@ class DatamartCountryWikifier:
                         input_str_processed_no_bracket not in self.memo:
                     # if not exact matched and the length is less than 4, ignore it
                     if len(input_str) < 4:
-                        no_wifiy_memo.add(each)
+                        no_wifiy_memo.add(value)
                         wikifier_result.append("")
                         continue
 
-                    self._logger.warning("`{}` not in record, will try to find the closest result".format(each))
+                    self._logger.warning("`{}` not in record, will try to find the closest result".format(value))
                     highest_score = 0
                     best_res = ""
                     for each_candidate in self.memo.keys():
@@ -130,18 +198,20 @@ class DatamartCountryWikifier:
                         self._logger.info("get best match: `{}` with score `{}`".format(best_res, highest_score))
                         if highest_score > 0.9:
                             self._logger.info("will add `{}` to memo as `{}`".format(input_str, best_res))
-                            wikified[each] = self.memo[best_res]
+                            item = self.memo[best_res]
 
                         else:
-                            no_wifiy_memo.add(each)
-                            wikified[each] = None
-                            self._logger.warning("Not wikify for input value `{}`".format(each))
+                            no_wifiy_memo.add(value)
+                            self._logger.warning("Not wikify for input value `{}`".format(value))
                 else:
-                    wikified[each] = self.memo.get(input_str, None) or self.memo.get(input_str_processed,
+                    item = self.memo.get(input_str, None) or self.memo.get(input_str_processed,
                                                                                      None) or self.memo.get(
                         input_str_processed_no_bracket, None)
 
-        return wikified
+                if item:
+                    df_rows.append([column, row, value, context, item, file, sheet_name])
+
+        return df_rows, no_wifiy_memo
 
     def wikify_region(self, selection, sheet):
         (start_col, start_row), (end_col, end_row) = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
@@ -149,19 +219,13 @@ class DatamartCountryWikifier:
         end_row += 1
 
 
-        flattened_sheet_data = sheet[start_row:end_row,
-                                     start_col:end_col].to_numpy().flatten()
+        df_rows, not_wikified = self.wikify(sheet, start_row, end_row, start_col, end_col)
 
-        result_dict = self.wikify(flattened_sheet_data)
 
-        df_rows = []
-        for value, item in result_dict.items():
-            if item:
-                df_rows.append(["", "", value, "", item, "", ""])
         df = pd.DataFrame(df_rows, columns=[
                         "column", "row", "value", "context", "item", "file", "sheet"])
 
-        return df, []
+        return df, list(not_wikified)
 
 
 

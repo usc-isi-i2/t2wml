@@ -8,17 +8,17 @@ from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
-from t2wml.api import add_entities_from_file
-from t2wml.input_processing.annotation_suggesting import annotation_suggester
-from t2wml_web import (create_wikification_entry, get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
+from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
+from t2wml_web import (autocreate_items, get_kgtk_download_and_variables, set_web_settings, download, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
-                   get_yaml_content, save_yaml)
+                   get_yaml_content, save_yaml, create_user_wikification)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
 import path_utils
-from wikification import wikify_countries
+from wikidata_utils import get_labels_and_descriptions
+from wikification import wikify_countries, wikify_selection
 
 debug_mode = False
 
@@ -274,8 +274,7 @@ def upload_wikifier_output():
     project = get_project()
 
     file_path = file_upload_validator({".csv"})
-    file_path = project.add_wikifier_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
+    project.add_old_style_wikifier_to_project(file_path)
     project.save()
 
     response = dict(project=get_project_dict(project))
@@ -293,26 +292,44 @@ def call_wikifier_service():
     :return:
     """
     project = get_project()
-    region = request.get_json()["region"]
-    context = request.get_json()["context"]
     calc_params = get_calc_params(project)
+    overwrite_existing = request.get_json().get("overwrite", False)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
+    df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
 
-    cell_qnode_map, problem_cells = wikify(calc_params, region, context)
-    file_path = save_dataframe(
-        project, cell_qnode_map, "wikify_region_output.csv")
-    file_path = project.add_wikifier_file(
-        file_path,  copy_from_elsewhere=True, overwrite=True)
-    project.save()
+    project.add_df_to_wikifier_file(calc_params.data_path, df, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
 
     if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
+        response['wikifierError'] = "Failed to wikify: " + ",".join(problem_cells)
 
     return response, 200
+
+
+@app.route('/api/auto_wikinodes', methods=['PUT'])
+@json_response
+def create_auto_nodes():
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
+    is_property=request.get_json()['is_property']
+    data_type=request.get_json().get("data_type", None)
+    autocreate_items(calc_params, selection, is_property, data_type)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+
 
 
 @app.route('/api/yaml/save', methods=['POST'])
@@ -591,7 +608,8 @@ def set_qnode():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-    create_wikification_entry(calc_params, project, selection, value, context, item)
+    create_user_wikification(calc_params, project, selection, value, context, item)
+
     # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
@@ -602,7 +620,7 @@ def set_qnode():
 
 @app.route('/api/remove_qnode', methods=['POST'])
 @json_response
-def remove_qnode():
+def delete_wikification():
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name=calc_params.sheet.name
@@ -622,8 +640,8 @@ def remove_qnode():
     col1, row1 = top_left
     col2, row2 = bottom_right
 
-    filepath=os.path.join(project.directory, "user-input-wikification.csv")
-    if os.path.exists(filepath):
+    filepath, exists=project.get_wikifier_file(calc_params.data_path)
+    if exists:
         df=pd.read_csv(filepath)
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
@@ -647,48 +665,77 @@ def create_qnode():
     project = get_project()
     request_json=request.get_json()
     try:
-        id=request_json.pop("id")
         label=request_json.pop("label")
-        is_prop=request_json.pop("isProperty") # is_prop=id[0].lower()=="p"
+        is_prop=request_json.pop("is_property") # is_prop=node_id[0].lower()=="p"
         if is_prop:
-            data_type=request_json.pop("datatype")
+            data_type=request_json.pop("data_type")
             if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
                 raise web_exceptions.InvalidRequestException("Invalid data type")
     except KeyError:
         raise web_exceptions.InvalidRequestException("Missing required fields in entity definition")
-
-    entity_dict={
-        "label":label
-    }
-    if is_prop:
-        entity_dict["data_type"]=data_type
-
-    for key in ["description", "P31"]: #more to be added
-        if request_json.get(key, None):
-            entity_dict[key]=request_json[key]
 
     filepath= Path(project.directory)/"user_input_properties.tsv"
     if os.path.isfile(filepath):
         custom_nodes=kgtk_to_dict(filepath)
     else:
         custom_nodes=dict()
-    custom_nodes[id]=entity_dict
+
+    id = request.json.get("id", None)
+    if not id:
+        if is_prop:
+            node_id = get_Pnode(project, label)
+        else:
+            node_id = get_Qnode(project, label)
+
+
+    entity_dict={
+        "id": node_id,
+        "label": label,
+    }
+    if is_prop:
+        entity_dict["data_type"]=data_type
+    entity_dict["description"] = request_json.get("description", "")
+
+    for key in ["P31"]: #may add more
+        if request_json.get(key, None):
+            entity_dict[key]=request_json[key]
+
+
+    custom_nodes[node_id]=entity_dict
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
+    t2wml_settings.wikidata_provider.save_entry(**entity_dict)
 
-    response=dict(entity=id, project=get_project_dict(project))
+    response=dict(entity=entity_dict, project=get_project_dict(project))
 
     selection=request_json.get("selection", None)
     if selection:
-        calc_params=get_calc_params()
+        calc_params=get_calc_params(project)
         context = request.get_json().get("context", "")
-        create_wikification_entry(calc_params, project, selection, label, context, id)
+        (col1, row1), (col2, row2) = selection
+        value=calc_params.sheet[row1, col1]
+        create_user_wikification(calc_params, project, selection, value,
+                context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
-
+    else:
+        response["layers"] = {}
     return response, 200
 
 
+
+
+
+@app.route('/api/query_node/<id>', methods=['GET'])
+@json_response
+def query_qnode(id):
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response = get_labels_and_descriptions(t2wml_settings.wikidata_provider, [id], calc_params.sparql_endpoint)
+    try:
+        return response[id], 200
+    except:
+        return {}, 404
 
 
 
@@ -754,15 +801,12 @@ def add_mapping_file():
 def causx_wikify():
     project = get_project()
     region = request.get_json()["selection"]
+    overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    file_path = save_dataframe(
-        project, cell_qnode_map, "wikify_region_output.csv")
-    file_path = project.add_wikifier_file(
-        file_path,  copy_from_elsewhere=True, overwrite=True)
-    project.save()
+    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -786,7 +830,6 @@ def upload_file(type):
     allowed_types_map = {
         "data": [".csv", ".xlsx"],
         "annotation": [".json", ".annotation"],
-        "wikifier": [".csv"],
         "entities": [".tsv"]
     }
 
@@ -824,8 +867,6 @@ def upload_file(type):
         calc_params=CalcParams(project, file_path, sheet_name)
         response["table"] = get_table(calc_params)
 
-    if type == "wikifier":
-        file_path=project.add_wikifier_file(file_path)
     if type == "entities":
         file_path=project.add_entity_file(file_path)
     if type == "annotation":

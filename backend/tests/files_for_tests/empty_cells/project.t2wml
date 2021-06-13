@@ -14,8 +14,6 @@ sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
 title: empty cells
 url: ''
 warn_for_empty_cells: true
-wikifier_files:
-- consolidated-wikifier.csv
 yaml_files:
 - t2wml.yaml
 yaml_sheet_associations:
