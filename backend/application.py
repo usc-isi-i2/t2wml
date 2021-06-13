@@ -1,4 +1,3 @@
-from backend.t2wml_web import create_zip
 from flask.helpers import send_file
 import pandas as pd
 import os
@@ -12,7 +11,7 @@ import web_exceptions
 from app_config import app
 from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
-from t2wml_web import (get_kg, autocreate_items, get_kgtk_download_and_variables, set_web_settings, get_layers, get_annotations, get_table, save_annotations,
+from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables, set_web_settings, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
                    get_yaml_content, save_yaml, create_user_wikification)
