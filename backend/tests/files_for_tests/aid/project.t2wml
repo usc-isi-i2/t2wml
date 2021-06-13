@@ -9,6 +9,8 @@ handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: Unit test renamed
 warn_for_empty_cells: false
+wikifier_files:
+- consolidated-wikifier.csv
 yaml_files:
 - test.yaml
 yaml_sheet_associations:
