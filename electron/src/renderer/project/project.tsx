@@ -165,13 +165,11 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 
   async uploadWikifier() {
-    let title = "Open Existing Wikifier File"
-    let filters = [{ name: "wikifier", extensions: ["csv"] }]
     const result = await remote.dialog.showOpenDialog({
-      title: title,
+      title: "Open Existing Wikifier File",
       defaultPath: wikiStore.project.projectDTO!.directory,
       properties: ['createDirectory'],
-      filters: filters,
+      filters: [{ name: "wikifier", extensions: ["csv"] }],
     });
     if (!result.canceled && result.filePaths) {
       try {
