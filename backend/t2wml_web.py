@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import pandas as pd
+import zipfile
 from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
 from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
@@ -10,6 +11,7 @@ from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapp
 from t2wml.mapping.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
+from calc_params import CalcParams
 from app_config import CACHE_FOLDER
 from web_dict_provider import WebDictionaryProvider
 from utils import get_empty_layers
@@ -72,14 +74,6 @@ def get_kg(calc_params):
 
 
 
-
-def download(calc_params, filetype):
-    response = dict()
-    kg = get_kg(calc_params)
-    response["data"] = kg.get_output(filetype, calc_params.project)
-    response["error"] = None
-    response["internalErrors"] = kg.errors if kg.errors else None
-    return response
 
 def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
     kg = get_kg(calc_params)
@@ -382,3 +376,48 @@ def get_partial_csv(calc_params):
     return dict(dims=dims, firstRowIndex=0, cells=cells)
 
 
+
+def create_zip(project, filetype, filestream):
+        with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+            internalErrors = []
+            for filename, df in project.annotations.items():
+                for sheet_name, sheet in df.items():
+                    calc_params = CalcParams(project, filename, sheet_name)
+                    for annotation_file in sheet["val_arr"]:
+                        calc_params._annotation_path = annotation_file
+                        try:
+                            kg = get_kg(calc_params)
+                        except:
+                            internalErrors.append(
+                                f"failed to generate kg for {filename} {sheet_name} {annotation_file}")
+                            kg = None
+
+                        if kg:
+                            zip_filename = filename + "_" + sheet_name + \
+                                "_" + annotation_file + "." + filetype
+                            output = kg.get_output(filetype, calc_params.project)
+                            zf.writestr(zip_filename, output)
+                            if kg.errors:
+                                internalErrors.append(kg.errors)
+
+            calc_params._annotation_path = ""
+            for filename, df in project.yaml_sheet_associations.items():
+                for sheet_name, sheet in df.items():
+                    calc_params = CalcParams(project, filename, sheet_name)
+                    for yaml_file in sheet["val_arr"]:
+                        calc_params._yaml_path = yaml_file
+                        try:
+                            kg = get_kg(calc_params)
+                        except:
+                            internalErrors.append(
+                                f"failed to generate kg for {filename} {sheet_name} {yaml_file}")
+                            kg = None
+
+                        if kg:
+                            zip_filename = filename + "_" + sheet_name + "_" + yaml_file + "." + filetype
+                            output = kg.get_output(filetype, calc_params.project)
+                            zf.writestr(zip_filename, output)
+                            if kg.errors:
+                                internalErrors.append(kg.errors)
+            zf.writestr("errors.json", json.dumps(internalErrors))
+        return filestream

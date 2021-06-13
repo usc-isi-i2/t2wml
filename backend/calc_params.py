@@ -1,6 +1,5 @@
 from pathlib import Path
 from t2wml.api import Sheet, SpreadsheetFile, Wikifier
-from t2wml.api import Project
 from caching import CacheHolder
 
 
@@ -11,12 +10,21 @@ class CalcParams:
         self.data_path = Path(project.directory) / data_path
         self.sheet_name = sheet_name
         self._sheet = None
-        self.yaml_path = None
-        if yaml_path:
-            self.yaml_path = Path(project.directory) / yaml_path
-        self.annotation_path = annotation_path or ""
-        if annotation_path:
-            self.annotation_path= Path(project.directory) / annotation_path
+        self._yaml_path = yaml_path
+        self._annotation_path = annotation_path or ""
+
+
+    @property
+    def yaml_path(self):
+        if self._yaml_path:
+            return  Path(self.project.directory) / self._yaml_path
+        return self._yaml_path #None
+
+    @property
+    def annotation_path(self):
+        if self._annotation_path:
+            return Path(self.project.directory) / self._annotation_path
+        return self._annotation_path #empty string
 
 
     @property
