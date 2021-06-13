@@ -5,11 +5,11 @@ Qtest-label	Qtest	label	test	string													"test"
 Qtest-P1476	Qtest	P1476	test	string													"test"	
 Qtest-description	Qtest	description		string														
 Qtest-P2699	Qtest	P2699		string														
-Qtest-P5017	Qtest	P5017	2021-04-25T10:14:13.585516	date_and_times					"2021-04-25T10:14:13.585516"									
+Qtest-P5017	Qtest	P5017	2021-06-13T10:43:31.384796	date_and_times					"2021-06-13T10:43:31.384796"									
 Qtest-P2006020003-Qaid-security-002	Qtest	P2006020003	Qtest-Qaid-security-002	symbol									Qtest-Qaid-security-002					
 Qtest-Qaid-security-002-P2006020004	Qtest-Qaid-security-002	P2006020004	Qtest	symbol									Qtest					
 Qtest-Qaid-security-002-P31	Qtest-Qaid-security-002	P31	Q50701	symbol									Q50701					
-Qtest-Qaid-security-002-P1813	Qtest-Qaid-security-002	P1813	un	string													"un"	
+Qtest-Qaid-security-002-P1813	Qtest-Qaid-security-002	P1813	UN	string													"UN"	
 Qtest-Qaid-security-002-label	Qtest-Qaid-security-002	label	UN	string													"UN"	
 Qtest-Qaid-security-002-P1476	Qtest-Qaid-security-002	P1476	UN	string													"UN"	
 Qtest-Qaid-security-002-description	Qtest-Qaid-security-002	description		string														
@@ -23,7 +23,7 @@ Paid-security-002-wikidata_data_type	Paid-security-002	wikidata_data_type	Quanti
 Qtest-P2006020003-Qaid-security-003	Qtest	P2006020003	Qtest-Qaid-security-003	symbol									Qtest-Qaid-security-003					
 Qtest-Qaid-security-003-P2006020004	Qtest-Qaid-security-003	P2006020004	Qtest	symbol									Qtest					
 Qtest-Qaid-security-003-P31	Qtest-Qaid-security-003	P31	Q50701	symbol									Q50701					
-Qtest-Qaid-security-003-P1813	Qtest-Qaid-security-003	P1813	ingo	string													"ingo"	
+Qtest-Qaid-security-003-P1813	Qtest-Qaid-security-003	P1813	INGO	string													"INGO"	
 Qtest-Qaid-security-003-label	Qtest-Qaid-security-003	label	INGO	string													"INGO"	
 Qtest-Qaid-security-003-P1476	Qtest-Qaid-security-003	P1476	INGO	string													"INGO"	
 Qtest-Qaid-security-003-description	Qtest-Qaid-security-003	description		string														
@@ -37,7 +37,7 @@ Paid-security-003-wikidata_data_type	Paid-security-003	wikidata_data_type	Quanti
 Qtest-P2006020003-Qaid-security-004	Qtest	P2006020003	Qtest-Qaid-security-004	symbol									Qtest-Qaid-security-004					
 Qtest-Qaid-security-004-P2006020004	Qtest-Qaid-security-004	P2006020004	Qtest	symbol									Qtest					
 Qtest-Qaid-security-004-P31	Qtest-Qaid-security-004	P31	Q50701	symbol									Q50701					
-Qtest-Qaid-security-004-P1813	Qtest-Qaid-security-004	P1813	lngonrcs	string													"lngonrcs"	
+Qtest-Qaid-security-004-P1813	Qtest-Qaid-security-004	P1813	LNGO/NRCS	string													"LNGO/NRCS"	
 Qtest-Qaid-security-004-label	Qtest-Qaid-security-004	label	LNGO/NRCS	string													"LNGO/NRCS"	
 Qtest-Qaid-security-004-P1476	Qtest-Qaid-security-004	P1476	LNGO/NRCS	string													"LNGO/NRCS"	
 Qtest-Qaid-security-004-description	Qtest-Qaid-security-004	description		string														
