@@ -63,8 +63,8 @@ class Sidebar extends Component<{}, SidebarState> {
     }
 
     componentDidMount() {
+        this.updateFilename()
         this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.getFilesData()));
-
         this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateFilename()));
         this.disposers.push(reaction(() => currentFilesService.currentState.sheetName, () => this.updateFilename()));
     }
@@ -101,7 +101,7 @@ class Sidebar extends Component<{}, SidebarState> {
             });
         if (!result.canceled && result.filePath) {
             file_path = result.filePath;
-        }
+
 
         try {
             await this.requestService.call(this, () => this.requestService.downloadResults(fileType, file_path, downloadAll));
@@ -111,6 +111,7 @@ class Sidebar extends Component<{}, SidebarState> {
         } finally {
             this.setState({ isDownloading: false });
         }
+    }
     }
 
     cancelDownload() {
@@ -224,7 +225,7 @@ class Sidebar extends Component<{}, SidebarState> {
                             type="button"
                             style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
                             onClick={() => this.setState({ showDownload: true })}
-                            disabled={this.state.isDownloading} >
+                            disabled={this.state.isDownloading || this.state.filename=="_"} >
                             {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Save to file"}
                         </Button>
                     </Card.Header>
