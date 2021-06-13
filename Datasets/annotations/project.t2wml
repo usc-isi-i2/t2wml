@@ -1,9 +1,4 @@
-_saved_state:
-  current_data_file: Challenge Datasets.xlsx
-  current_sheet: colombia-elections
-  current_wikifiers:
-  - wikify_region_output.csv
-  current_yaml: colombia-elections-2.yaml
+annotations: {}
 cache_id: 3491203f-3a48-4346-87db-6abb86bcb624
 data_files:
   Challenge Datasets.xlsx:
@@ -16,10 +11,12 @@ data_files:
     - multi-header
     - country-main-subject
     - colombia-elections
+description: ''
 entity_files: []
 handle_calendar: leave
 sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
 title: annotations
+url: ''
 warn_for_empty_cells: false
 yaml_files:
 - canonical.yaml
