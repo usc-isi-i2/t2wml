@@ -868,7 +868,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const data = {
       "selection": selection,
       "is_property": fields.role == "property",
-      "data_type": fields.role == "property" ? fields.type : undefined
+      "data_type": fields.role == "property" ? ( fields.type ? fields.type : "string") : undefined
     };
     wikiStore.table.showSpinner = true;
     try {
@@ -1098,10 +1098,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         </Button>
       )
     }
-  }
-
-  renderForYaml(){
-
   }
 
   render() {
