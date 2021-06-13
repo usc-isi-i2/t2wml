@@ -61,6 +61,7 @@ interface AnnotationFormState {
   errorMessage: ErrorMessage;
   showEntityMenu: boolean;
   typeEntityMenu?: string;
+  mappingType?: string;
 }
 
 
@@ -104,12 +105,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       showResult1: false,
       showResult2: false,
       errorMessage: {} as ErrorMessage,
-      showEntityMenu: false
+      showEntityMenu: false,
+      mappingType: currentFilesService.currentState.mappingType
     };
     this.changed = false;
   }
 
   componentDidMount() {
+    this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, (mappingType) => {this.setState({mappingType})}));
     this.disposers.push(reaction(() => wikiStore.subjectQnodes.qnodes, (qnodes) => this.updateSubjectQNodes(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
     this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection)));
@@ -1097,10 +1100,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
+  renderForYaml(){
+
+  }
+
   render() {
     const { selection, showEntityMenu, typeEntityMenu, errorMessage } = this.state;
     const { type: data_type } = this.state.fields;
-    if (currentFilesService.currentState.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
+    if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (
       <Form className="container annotation-form"
