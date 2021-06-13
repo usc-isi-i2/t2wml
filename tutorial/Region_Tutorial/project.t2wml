@@ -1,9 +1,3 @@
-_saved_state:
-  current_data_file: region.xlsx
-  current_sheet: 00_region
-  current_wikifiers:
-  - wikifier.csv
-  current_yaml: 00_region_id299.yaml
 cache_id: ffcfd63e-2db2-4c15-9739-772eef97d6c7
 data_files:
   region.xlsx:
@@ -22,14 +16,14 @@ data_files:
     - 08_region
     - 09_region_exercise
     - 09_region_solution
+description: ''
 entity_files:
 - properties.tsv
 handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: Region_Tutorial
+url: ''
 warn_for_empty_cells: false
-wikifier_files:
-- wikifier.csv
 yaml_files:
 - 00_region_id299.yaml
 - 01_region_id300.yaml

@@ -20,9 +20,6 @@ handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: Cleaning_Tutorial
 warn_for_empty_cells: false
-wikifier_files:
-- wikifier.csv
-- wikify_region_output.csv
 yaml_files:
 - 00_cleaning_id339.yaml
 - 01_cleaning_id338.yaml

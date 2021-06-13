@@ -1,9 +1,3 @@
-_saved_state:
-  current_data_file: dataset.xlsx
-  current_sheet: Sheet3
-  current_wikifiers:
-  - consolidated-wikifier.csv
-  current_yaml: test.yaml
 cache_id: 5bafaa72-5ea7-438b-9992-dea5a60adb98
 data_files:
   dataset.xlsx:

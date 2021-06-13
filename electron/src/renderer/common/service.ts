@@ -214,6 +214,7 @@ class RequestService {
   }
 
   public async uploadWikifierOutput(data: any) {
+    debugger
     const response = await backendPost(`/wikifier?${this.getDataFileParams(false)}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }

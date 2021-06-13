@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import numpy as np
 import pandas as pd
 import zipfile
@@ -393,14 +394,14 @@ def create_zip(project, filetype, filestream):
                             kg = None
 
                         if kg:
-                            zip_filename = filename + "_" + sheet_name + \
-                                "_" + annotation_file + "." + filetype
+                            zip_filename = filename + "_" + sheet_name + "_a_" + annotation_file
+                            zip_filename= re.sub(r'[^A-Za-z0-9\s]+', '_', zip_filename)
+                            zip_filename = zip_filename + "." + filetype
                             output = kg.get_output(filetype, calc_params.project)
                             zf.writestr(zip_filename, output)
                             if kg.errors:
                                 internalErrors.append(kg.errors)
 
-            calc_params._annotation_path = ""
             for filename, df in project.yaml_sheet_associations.items():
                 for sheet_name, sheet in df.items():
                     calc_params = CalcParams(project, filename, sheet_name)
@@ -414,7 +415,9 @@ def create_zip(project, filetype, filestream):
                             kg = None
 
                         if kg:
-                            zip_filename = filename + "_" + sheet_name + "_" + yaml_file + "." + filetype
+                            zip_filename = filename + "_" + sheet_name + "_y_" + yaml_file
+                            zip_filename= re.sub(r'[^A-Za-z0-9\s]+', '_', zip_filename)
+                            zip_filename = zip_filename + "." + filetype
                             output = kg.get_output(filetype, calc_params.project)
                             zf.writestr(zip_filename, output)
                             if kg.errors:

@@ -15,7 +15,6 @@ handle_calendar: leave
 sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
 title: user-annotation-example
 warn_for_empty_cells: false
-wikifier_files: []
 yaml_files:
 - Inputs_FertilizersProduct_E.20.yaml
 yaml_sheet_associations:

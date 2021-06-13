@@ -1,0 +1,89 @@
+id	node1	label	node2
+Ptable_examples-percent-id	Ptable_examples-percent	id	Ptable_examples-percent
+Ptable_examples-percent-label	Ptable_examples-percent	label	Percent
+Ptable_examples-percent-data_type	Ptable_examples-percent	data_type	quantity
+Ptable_examples-percent-description	Ptable_examples-percent	description	%
+Ptable_examples-votes-data_type	Ptable_examples-votes	data_type	quantity
+Ptable_examples-votes-label	Ptable_examples-votes	label	Votes
+Ptable_examples-votes-description	Ptable_examples-votes	description	
+Ptable_examples-percent-data_type	Ptable_examples-percent	data_type	quantity
+Ptable_examples-percent-label	Ptable_examples-percent	label	%
+Ptable_examples-percent-description	Ptable_examples-percent	description	
+Ptable_examples-nation-data_type	Ptable_examples-nation	data_type	string
+Ptable_examples-nation-label	Ptable_examples-nation	label	Nation
+Ptable_examples-nation-description	Ptable_examples-nation	description	
+Ptable_examples-pos-data_type	Ptable_examples-pos	data_type	string
+Ptable_examples-pos-label	Ptable_examples-pos	label	Pos.
+Ptable_examples-pos-description	Ptable_examples-pos	description	
+Ptable_examples-no-data_type	Ptable_examples-no	data_type	string
+Ptable_examples-no-label	Ptable_examples-no	label	No.
+Ptable_examples-no-description	Ptable_examples-no	description	
+Qtable_examples-marcandr_ter_stegen-label	Qtable_examples-marcandr_ter_stegen	label	Marc-André ter Stegen
+Qtable_examples-sergio_dest-label	Qtable_examples-sergio_dest	label	Sergiño Dest
+Qtable_examples-sergio_busquets_vicecaptain-label	Qtable_examples-sergio_busquets_vicecaptain	label	Sergio Busquets (vice-captain)
+Qtable_examples-ousmane_dembl-label	Qtable_examples-ousmane_dembl	label	Ousmane Dembélé
+Qtable_examples-carles_ale-label	Qtable_examples-carles_ale	label	Carles Aleñá
+Qtable_examples-miralem_pjani-label	Qtable_examples-miralem_pjani	label	Miralem Pjanić
+Qtable_examples-lionel_messi_captain-label	Qtable_examples-lionel_messi_captain	label	Lionel Messi (captain)
+Qtable_examples-martin_braithwaite-label	Qtable_examples-martin_braithwaite	label	Martin Braithwaite
+Qtable_examples-gerard_piqu_3rd_captain-label	Qtable_examples-gerard_piqu_3rd_captain	label	Gerard Piqué (3rd captain)
+Qtable_examples-antoine_griezmann-label	Qtable_examples-antoine_griezmann	label	Antoine Griezmann
+Qtable_examples-riqui_puig-label	Qtable_examples-riqui_puig	label	Riqui Puig
+Qtable_examples-ronald_arajo-label	Qtable_examples-ronald_arajo	label	Ronald Araújo
+Ptable_examples-fat_g-data_type	Ptable_examples-fat_g	data_type	quantity
+Ptable_examples-fat_g-label	Ptable_examples-fat_g	label	Fat (g)
+Ptable_examples-fat_g-description	Ptable_examples-fat_g	description	
+Ptable_examples-fiber_g-data_type	Ptable_examples-fiber_g	data_type	quantity
+Ptable_examples-fiber_g-label	Ptable_examples-fiber_g	label	Fiber (g)
+Ptable_examples-fiber_g-description	Ptable_examples-fiber_g	description	
+Ptable_examples-sugar_g-data_type	Ptable_examples-sugar_g	data_type	quantity
+Ptable_examples-sugar_g-label	Ptable_examples-sugar_g	label	Sugar (g)
+Ptable_examples-sugar_g-description	Ptable_examples-sugar_g	description	
+Ptable_examples-protein_g-data_type	Ptable_examples-protein_g	data_type	quantity
+Ptable_examples-protein_g-label	Ptable_examples-protein_g	label	Protein (g)
+Ptable_examples-protein_g-description	Ptable_examples-protein_g	description	
+Ptable_examples-carbohydrates_g-data_type	Ptable_examples-carbohydrates_g	data_type	quantity
+Ptable_examples-carbohydrates_g-label	Ptable_examples-carbohydrates_g	label	Carbohydrates (g)
+Ptable_examples-carbohydrates_g-description	Ptable_examples-carbohydrates_g	description	
+Ptable_examples-energy_kj-data_type	Ptable_examples-energy_kj	data_type	quantity
+Ptable_examples-energy_kj-label	Ptable_examples-energy_kj	label	Energy (kJ)
+Ptable_examples-energy_kj-description	Ptable_examples-energy_kj	description	
+Ptable_examples-water_g-data_type	Ptable_examples-water_g	data_type	quantity
+Ptable_examples-water_g-label	Ptable_examples-water_g	label	Water (g)
+Ptable_examples-water_g-description	Ptable_examples-water_g	description	
+Ptable_examples-country-data_type	Ptable_examples-country	data_type	string
+Ptable_examples-country-label	Ptable_examples-country	label	Country
+Ptable_examples-country-description	Ptable_examples-country	description	
+Ptable_examples-floors-data_type	Ptable_examples-floors	data_type	string
+Ptable_examples-floors-label	Ptable_examples-floors	label	Floors
+Ptable_examples-floors-description	Ptable_examples-floors	description	
+Ptable_examples-city-data_type	Ptable_examples-city	data_type	string
+Ptable_examples-city-label	Ptable_examples-city	label	City
+Ptable_examples-city-description	Ptable_examples-city	description	
+Ptable_examples-built-data_type	Ptable_examples-built	data_type	string
+Ptable_examples-built-label	Ptable_examples-built	label	Built
+Ptable_examples-built-description	Ptable_examples-built	description	
+Ptable_examples-height-data_type	Ptable_examples-height	data_type	string
+Ptable_examples-height-label	Ptable_examples-height	label	Height
+Ptable_examples-height-description	Ptable_examples-height	description	
+Ptable_examples-market_cap_in_2017_usd_billions-data_type	Ptable_examples-market_cap_in_2017_usd_billions	data_type	quantity
+Ptable_examples-market_cap_in_2017_usd_billions-label	Ptable_examples-market_cap_in_2017_usd_billions	label	Market Cap in 2017 (USD billions)
+Ptable_examples-market_cap_in_2017_usd_billions-description	Ptable_examples-market_cap_in_2017_usd_billions	description	
+Ptable_examples-market_cap_in_2014_usd_billions4-data_type	Ptable_examples-market_cap_in_2014_usd_billions4	data_type	quantity
+Ptable_examples-market_cap_in_2014_usd_billions4-label	Ptable_examples-market_cap_in_2014_usd_billions4	label	Market Cap in 2014 (USD billions)[4]
+Ptable_examples-market_cap_in_2014_usd_billions4-description	Ptable_examples-market_cap_in_2014_usd_billions4	description	
+Ptable_examples-market_cap_in_2018_usd_billions-data_type	Ptable_examples-market_cap_in_2018_usd_billions	data_type	quantity
+Ptable_examples-market_cap_in_2018_usd_billions-label	Ptable_examples-market_cap_in_2018_usd_billions	label	Market Cap in 2018 (USD billions)
+Ptable_examples-market_cap_in_2018_usd_billions-description	Ptable_examples-market_cap_in_2018_usd_billions	description	
+Ptable_examples-market_cap_in_2015_usd_billions3-data_type	Ptable_examples-market_cap_in_2015_usd_billions3	data_type	quantity
+Ptable_examples-market_cap_in_2015_usd_billions3-label	Ptable_examples-market_cap_in_2015_usd_billions3	label	Market Cap in 2015 (USD billions)[3]
+Ptable_examples-market_cap_in_2015_usd_billions3-description	Ptable_examples-market_cap_in_2015_usd_billions3	description	
+Ptable_examples-market_cap_in_2019_usd_billions-data_type	Ptable_examples-market_cap_in_2019_usd_billions	data_type	quantity
+Ptable_examples-market_cap_in_2019_usd_billions-label	Ptable_examples-market_cap_in_2019_usd_billions	label	Market Cap in 2019 (USD billions)
+Ptable_examples-market_cap_in_2019_usd_billions-description	Ptable_examples-market_cap_in_2019_usd_billions	description	
+Ptable_examples-market_cap_in_2013_usd_billions-data_type	Ptable_examples-market_cap_in_2013_usd_billions	data_type	quantity
+Ptable_examples-market_cap_in_2013_usd_billions-label	Ptable_examples-market_cap_in_2013_usd_billions	label	Market Cap in 2013 (USD billions)
+Ptable_examples-market_cap_in_2013_usd_billions-description	Ptable_examples-market_cap_in_2013_usd_billions	description	
+Ptable_examples-market_cap_in_2016_usd_billions12-data_type	Ptable_examples-market_cap_in_2016_usd_billions12	data_type	quantity
+Ptable_examples-market_cap_in_2016_usd_billions12-label	Ptable_examples-market_cap_in_2016_usd_billions12	label	Market Cap in 2016 (USD billions)[1][2]
+Ptable_examples-market_cap_in_2016_usd_billions12-description	Ptable_examples-market_cap_in_2016_usd_billions12	description	

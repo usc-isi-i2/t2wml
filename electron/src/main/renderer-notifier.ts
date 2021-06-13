@@ -39,6 +39,15 @@ class RendererNotifier {
         this.mainWindow.webContents.send('refresh-project');
     }
 
+
+    public uploadWikifier() {
+        if(!this.mainWindow) {
+            console.warn("mainWindow not set on RendererNotifier");
+            return;
+        }
+        this.mainWindow.webContents.send('upload-wikifier');
+    }
+
     public projectSettings() {
         if(!this.mainWindow) {
             console.warn("mainWindow not set on RendererNotifier");

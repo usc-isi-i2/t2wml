@@ -18,7 +18,7 @@ import ToastMessage from '../common/toast';
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './modals/project-settings';
-import { ipcRenderer } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
 import { currentFilesService } from '../common/current-file-service';
 import EntitiesWindow from './entities/entities-window';
@@ -76,6 +76,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
     this.onRefreshProject = this.onRefreshProject.bind(this);
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
+    this.onUploadWikifier = this.onUploadWikifier.bind(this)
   }
 
   componentDidMount() {
@@ -86,6 +87,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       console.error("There is no project id.")
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
+    ipcRenderer.on('upload-wikifier', this.onUploadWikifier);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
     ipcRenderer.on('project-entities', () => this.onShowEntitiesClicked());
   }
@@ -95,6 +97,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     await wikiStore.yaml.saveYaml();
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
+    ipcRenderer.removeListener('upload-wikifier', this.onUploadWikifier);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('project-entities', () => this.onShowEntitiesClicked());
   }
@@ -155,6 +158,35 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   onRefreshProject() {
     this.loadProject();
+  }
+
+  onUploadWikifier(){
+    this.uploadWikifier();
+  }
+
+  async uploadWikifier() {
+    const result = await remote.dialog.showOpenDialog({
+      title: "Open Existing Wikifier File",
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['createDirectory'],
+      filters: [{ name: "wikifier", extensions: ["csv"] }],
+    });
+    if (!result.canceled && result.filePaths) {
+      try {
+        debugger
+        const data = { "filepath": result.filePaths[0] };
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
+        await this.requestService.uploadWikifierOutput(data);
+        await this.requestService.getTable();
+        this.requestService.getPartialCsv();
+      } catch (error) {
+        console.log(error);
+      }finally{
+        wikiStore.table.showSpinner = false;
+        wikiStore.yaml.showSpinner = false;
+      }
+    }
   }
 
   onShowSettingsClicked() {

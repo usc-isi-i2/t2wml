@@ -1,8 +1,6 @@
 import React, { Component, Fragment } from 'react';
 
 import { Card, Spinner} from 'react-bootstrap';
-
-import RequestService, { IStateWithError } from '../../common/service';
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { reaction, IReactionDisposer } from 'mobx';
@@ -22,11 +20,8 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
   public gridApi: any;
   public gridColumnApi: any;
 
-  private requestService: RequestService;
-
   constructor(props: {}) {
     super(props);
-    this.requestService = new RequestService();
 
     // init state
     this.state = {

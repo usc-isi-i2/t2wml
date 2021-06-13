@@ -1,9 +1,4 @@
-_saved_state:
-  current_data_file: advanced.xlsx
-  current_sheet: 00_advanced
-  current_wikifiers:
-  - wikifier.csv
-  current_yaml: 00_advanced_id339.yaml
+annotations: {}
 cache_id: 410df160-96c8-4722-bcb4-27b0dd67e12f
 data_files:
   advanced.xlsx:
@@ -14,20 +9,19 @@ data_files:
     - 02_advanced
     - 03_advanced_exercise
     - 03_advanced_solution
+description: ''
 entity_files:
 - properties.tsv
 handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: Advanced_Tutorial
+url: ''
 warn_for_empty_cells: false
-wikifier_files:
-- wikifier.csv
 yaml_files:
 - 00_advanced_id339.yaml
 - 01_advanced_id338.yaml
 - 02_advanced_id340.yaml
 - 03_advanced_exercise_id341.yaml
-- 03_advanced_solution_id342.yaml
 - 03_advanced_solution.yaml
 yaml_sheet_associations:
   advanced.xlsx:
@@ -50,5 +44,4 @@ yaml_sheet_associations:
     03_advanced_solution:
       selected: 03_advanced_solution.yaml
       val_arr:
-      - 03_advanced_solution_id342.yaml
       - 03_advanced_solution.yaml

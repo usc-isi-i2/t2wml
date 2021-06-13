@@ -184,6 +184,10 @@ export default class MainMenuManager {
             accelerator: 'CmdOrCtrl+,',
             click: () => this.onProjectSettingsClick(),
             enabled,
+        }, {
+            label: 'Upload old-style wikifier file',
+            click: () => this.onUploadWikifierClick(),
+            enabled,
         },
         {
             label: 'Entities',
@@ -241,6 +245,10 @@ export default class MainMenuManager {
 
     private onProjectSettingsClick() {
         rendererNotifier.projectSettings();
+    }
+
+    private onUploadWikifierClick() {
+        rendererNotifier.uploadWikifier();
     }
 
     private onProjectEntitiesClick() {

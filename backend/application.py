@@ -15,7 +15,7 @@ from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, g
 from t2wml_web import (get_kg, autocreate_items, get_kgtk_download_and_variables, set_web_settings, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
 from utils import (file_upload_validator, get_empty_layers, save_dataframe,
-                   get_yaml_content, save_yaml, create_user_wikification, create_wikifier_file)
+                   get_yaml_content, save_yaml, create_user_wikification)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
@@ -279,8 +279,7 @@ def upload_wikifier_output():
     project = get_project()
 
     file_path = file_upload_validator({".csv"})
-    file_path = project.add_wikifier_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
+    project.add_old_style_wikifier_to_project(file_path)
     project.save()
 
     response = dict(project=get_project_dict(project))
@@ -299,13 +298,14 @@ def call_wikifier_service():
     """
     project = get_project()
     calc_params = get_calc_params(project)
+    overwrite_existing = request.get_json().get("overwrite", False)
     selection = request.get_json()['selection']
     selection = (selection["x1"]-1, selection["y1"] -
                  1), (selection["x2"]-1, selection["y2"]-1)
+
     df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
 
-    create_wikifier_file(project, df, os.path.join(
-        project.directory, "wikify_service_output.csv"), precedence=False)
+    project.add_df_to_wikifier_file(calc_params.data_path, df, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -660,8 +660,8 @@ def set_qnode():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-    create_user_wikification(calc_params, project,
-                             selection, value, context, item)
+    create_user_wikification(calc_params, project, selection, value, context, item)
+
     # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
 
@@ -673,7 +673,7 @@ def set_qnode():
 
 @app.route('/api/remove_qnode', methods=['POST'])
 @json_response
-def remove_qnode():
+def delete_wikification():
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name = calc_params.sheet.name
@@ -693,9 +693,9 @@ def remove_qnode():
     col1, row1 = top_left
     col2, row2 = bottom_right
 
-    filepath = os.path.join(project.directory, "user-input-wikification.csv")
-    if os.path.exists(filepath):
-        df = pd.read_csv(filepath)
+    filepath, exists=project.get_wikifier_file(calc_params.data_path)
+    if exists:
+        df=pd.read_csv(filepath)
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
                 df = df.drop(df[(df['column'] == col)
@@ -845,15 +845,12 @@ def add_mapping_file():
 def causx_wikify():
     project = get_project()
     region = request.get_json()["selection"]
+    overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    file_path = save_dataframe(
-        project, cell_qnode_map, "country_wikifier_output.csv")
-    file_path = project.add_wikifier_file(
-        file_path,  copy_from_elsewhere=True, overwrite=True)
-    project.save()
+    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -876,7 +873,6 @@ def upload_file(type):
     allowed_types_map = {
         "data": [".csv", ".xlsx"],
         "annotation": [".json", ".annotation"],
-        "wikifier": [".csv"],
         "entities": [".tsv"]
     }
 
@@ -914,8 +910,6 @@ def upload_file(type):
         calc_params = CalcParams(project, file_path, sheet_name)
         response["table"] = get_table(calc_params)
 
-    if type == "wikifier":
-        file_path = project.add_wikifier_file(file_path)
     if type == "entities":
         file_path = project.add_entity_file(file_path)
     if type == "annotation":
