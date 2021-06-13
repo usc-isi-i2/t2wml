@@ -538,7 +538,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     const { fields, searchFields } = this.state;
     const selectedValue = (fields && fields[type.value as nameQNodeFields]) ? fields[(type.value as nameQNodeFields)] : undefined;
-    const url = utils.isValidLabel(selectedValue?.id.substring(1, selectedValue?.id.length)) ? "" : `https://www.wikidata.org/wiki/${selectedValue?.id}`
+    let url = ""
+    if (selectedValue?.id)
+      {url = utils.isValidLabel(selectedValue?.id.substring(1, selectedValue?.id.length)) ? "" : `https://www.wikidata.org/wiki/${selectedValue?.id}`}
     const linkedId = selectedValue ? (url ? (
                 <a target="_blank"
                   rel="noopener noreferrer"
@@ -1098,10 +1100,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         </Button>
       )
     }
-  }
-
-  renderForYaml(){
-
   }
 
   render() {
