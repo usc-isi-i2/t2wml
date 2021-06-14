@@ -1,10 +1,7 @@
 
-.annotation-form button.delete {
-  cursor: pointer;
+/* .annotation-form button.delete {
   float: right;
-  padding: 0px;
-  color: red;
-}
+} */
 
  /* q-node search results */
 .annotation-form .results {

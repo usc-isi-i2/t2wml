@@ -143,7 +143,7 @@ class RequestService {
   }
 
   public async removeQNodes(values: any) {
-    const response = await backendPost(`/remove_qnode?${this.getDataFileParams(false)}`, values) as ResponseWithQNodeLayerDTO;
+    const response = await backendPost(`/delete_wikification?${this.getDataFileParams(false)}`, values) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
 
