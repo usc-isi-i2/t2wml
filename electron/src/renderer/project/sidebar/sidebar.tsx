@@ -75,19 +75,9 @@ class Sidebar extends Component<{}, SidebarState> {
         }
     }
 
-    str2bytes (str: string) {
-        const bytes = new Uint8Array(str.length);
-        for (let i=0; i<str.length; i++) {
-            bytes[i] = str.charCodeAt(i);
-        }
-        return bytes;
-    }
 
     async handleDoDownload(fileName: string, fileType: string, downloadAll: boolean) {
         const filename = downloadAll ? path.basename(wikiStore.project.projectDTO!.directory) + ".zip" : fileName + "." + fileType;
-
-        // before sending request
-        this.setState({ isDownloading: true, showDownload: false });
 
         // send request
         console.debug("<Output> -> %c/download%c for file: %c" + filename, LOG.link, LOG.default, LOG.highlight);
@@ -97,25 +87,26 @@ class Sidebar extends Component<{}, SidebarState> {
         const result = await remote.dialog.showSaveDialog({
             defaultPath: path.join(wikiStore.project.projectDTO!.directory, filename),
             // properties: ['createDirectory'],
-            filters: [ filter ],
-            });
+            filters: [filter],
+        });
         if (!result.canceled && result.filePath) {
             file_path = result.filePath;
+            // before sending request
+            this.setState({ isDownloading: true, showDownload: false });
 
-
-        try {
-            await this.requestService.call(this, () => this.requestService.downloadResults(fileType, file_path, downloadAll));
-            console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            this.setState({ isDownloading: false });
+            try {
+                await this.requestService.call(this, () => this.requestService.downloadResults(fileType, file_path, downloadAll));
+                console.log("<Output> <- %c/download%c with:", LOG.link, LOG.default);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.setState({ isDownloading: false });
+            }
         }
-    }
     }
 
     cancelDownload() {
-        this.setState({ showDownload: false });
+        this.setState({ showDownload: false, isDownloading: false });
     }
 
     updateFilename() {
@@ -225,7 +216,7 @@ class Sidebar extends Component<{}, SidebarState> {
                             type="button"
                             style={{ padding: "0rem 0.5rem", marginRight: "0.5rem" }}
                             onClick={() => this.setState({ showDownload: true })}
-                            disabled={this.state.isDownloading || this.state.filename=="_"} >
+                            disabled={this.state.isDownloading || this.state.filename == "_"} >
                             {this.state.isDownloading ? <Spinner as="span" animation="border" size="sm" /> : "Save to file"}
                         </Button>
                     </Card.Header>
