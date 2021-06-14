@@ -275,6 +275,7 @@ class WikiStore {
         } else {
             this.displayMode = 'project-list';
             ipcRenderer.send('show-project', null);
+            currentFilesService.reset()
         }
     }
 }
