@@ -173,7 +173,6 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
     if (!result.canceled && result.filePaths) {
       try {
-        debugger
         const data = { "filepath": result.filePaths[0] };
         wikiStore.table.showSpinner = true;
         wikiStore.yaml.showSpinner = true;

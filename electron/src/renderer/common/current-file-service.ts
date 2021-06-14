@@ -50,6 +50,11 @@ export class CurrentFilesService {
     @observable currentState = new CurrentFiles();
     @observable prevSelections = {};
 
+    reset(){
+        console.log("resetting current state");
+        this.currentState = new CurrentFiles();
+    }
+
     getAnnotationFileFromProject() {
         const project = wikiStore.project.projectDTO!;
         if (Object.keys(project.annotations).length && project.annotations[this.currentState.dataFile!]) {
