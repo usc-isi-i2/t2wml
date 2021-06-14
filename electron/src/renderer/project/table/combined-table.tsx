@@ -807,7 +807,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     handleOnMouseDown(event: React.MouseEvent) {
         let element = event.target as any;
-        
+
         // Allow users to select the resize-corner of the cell
         if (element.className === 'cell-resize-corner') {
             this.prevElement = element.parentElement;
@@ -822,7 +822,7 @@ class CombinedTable extends Component<{}, TableState> {
                     count -= 1
                 }
                 if (element.nodeName !== 'TD') return;
-                
+
             } else { return; }
         }
 
@@ -1153,14 +1153,14 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     renderTable() {
-        const { tableData } = this.state;
+        const { showSpinner, tableData } = this.state;
 
         return (
             <Dropzone maxFiles={1} accept=".csv, .tsv, .xls, .xlsx" onDrop={(files) => this.onDrop(files)}>
                 {({ getRootProps, getInputProps }) => (
                     <div {...getRootProps({ className: 'dropzone w-100 h-100' })}>
 
-                        {tableData ? <div className="w-100 h-100"><Table
+                        {tableData || showSpinner ? <div className="w-100 h-100"><Table
                             tableData={this.state.tableData}
                             onMouseUp={this.handleOnMouseUp.bind(this)}
                             onMouseDown={this.handleOnMouseDown.bind(this)}
