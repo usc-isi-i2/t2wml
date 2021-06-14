@@ -670,23 +670,22 @@ def set_qnode():
     return response, 200
 
 
-@app.route('/api/remove_qnode', methods=['POST'])
+@app.route('/api/delete_wikification', methods=['POST'])
 @json_response
 def delete_wikification():
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name = calc_params.sheet.name
     data_file_name = calc_params.sheet.data_file_name
-    qnode_dict = request.get_json()['qnode']
-    if not qnode_dict:
-        raise web_exceptions.InvalidRequestException('No qnode provided')
 
-    item = qnode_dict["id"]
-    value = request.get_json()['value']
-    context = request.get_json().get("context", "")
     selection = request.get_json()['selection']
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
+
+
+    value = request.get_json().get('value', None)
+    #context = request.get_json().get("context", "")
+
 
     top_left, bottom_right = selection
     col1, row1 = top_left
@@ -697,11 +696,17 @@ def delete_wikification():
         df=pd.read_csv(filepath)
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
-                df = df.drop(df[(df['column'] == col)
-                                & (df['row'] == row)
-                                & (df['value'] == value)
-                                & (df['file'] == data_file_name)
-                                & (df['sheet'] == sheet_name)].index)
+                if value:
+                    df = df.drop(df[(df['column'] == col)
+                                    & (df['row'] == row)
+                                    & (df['value'] == value)
+                                    & (df['file'] == data_file_name)
+                                    & (df['sheet'] == sheet_name)].index)
+                else:
+                    df = df.drop(df[(df['column'] == col)
+                                    & (df['row'] == row)
+                                    & (df['file'] == data_file_name)
+                                    & (df['sheet'] == sheet_name)].index)
         df.to_csv(filepath, index=False, header=True)
 
     response = dict(project=get_project_dict(project))
