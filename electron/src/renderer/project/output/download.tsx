@@ -38,7 +38,7 @@ class Download extends Component<DownloadProperties, DownloadState> {
   }
 
   render() {
-    const { downloadAll } = this.state;
+    const { downloadAll, downloadFileType } = this.state;
     return (
       <Modal show={this.props.showDownload} onHide={() => { /* do nothing */ }}>
 
@@ -55,7 +55,8 @@ class Download extends Component<DownloadProperties, DownloadState> {
                 <Form.Label>Format:</Form.Label>
               </Col>
               <Col xs="4" md="4" className="pl-0">
-                <Form.Control as="select" onChange={(event) => this.setState({ downloadFileType: event.target.value })}>
+                <Form.Control as="select" onChange={(event) => this.setState({ downloadFileType: event.target.value })}
+                  defaultValue={downloadFileType}>
                   <option value="json">.json</option>
                   <option value="tsv">kgtk (.tsv)</option>
                   <option value="csv">canonical spreadsheet (.csv)</option>

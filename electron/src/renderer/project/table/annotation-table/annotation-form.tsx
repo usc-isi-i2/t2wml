@@ -906,10 +906,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     };
     wikiStore.table.showSpinner = true;
     try {
-      await this.requestService.call(this, () => (
-        this.requestService.callAutoCreateWikinodes(data)
-      ));
-      this.handleOnSubmit();
+      await this.requestService.callAutoCreateWikinodes(data)
+      await this.handleOnSubmit();
     }
     finally {
       wikiStore.table.showSpinner = false;
@@ -1043,13 +1041,13 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   renderWikifyAutoQnodeButton() {
-    const { selectedBlock } = this.state;
+    const { selectedBlock, selection } = this.state;
     const { role, type } = this.state.fields;
     let buttonWikify = null;
     let buttonAutoQnode = null;
     let dropdownTypes = null;
     let buttonRemoveWiki = null;
-    if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem') {
+    if (selection &&(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem')) {
       buttonWikify = (
         <Col>
           <Button
@@ -1062,7 +1060,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       </Button>
         </Col>)
     }
-    if (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role == "property") {
+    if (selection && (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role == "property")) {
       buttonAutoQnode = (
         <Col>
           <Button
@@ -1089,7 +1087,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
 
     }
-    if (role == "property") {
+    if (selection && role == "property") {
       dropdownTypes = (
         <Col>
           <Form.Label className="text-muted">Type</Form.Label>
