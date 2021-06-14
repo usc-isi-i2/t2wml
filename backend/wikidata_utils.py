@@ -52,8 +52,7 @@ def get_labels_and_descriptions(provider, items, sparql_endpoint):
             with provider as p:
                 for item in additional_items:
                     prop_dict=additional_items[item]
-                    data_type=prop_dict.pop("data_type", None)
-                    p.save_entry(item, data_type, **prop_dict)
+                    p.save_entry(item, **prop_dict)
     except:  # eg 502 bad gateway error
         pass
     return response
