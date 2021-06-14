@@ -17,6 +17,7 @@ import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
 import EntityMenu from '../entity-menu';
 import './annotation-form.css'
+import ToastMessage from '@/renderer/common/toast';
 
 
 interface AnnotationFields {
@@ -1159,9 +1160,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
-        <div style={{ color: 'red' }}>
-          {errorMessage.errorDescription}
-        </div>
+
+        {errorMessage.errorDescription ? <ToastMessage message={errorMessage} /> : null}
         {this.renderSelectionAreas()}
         {this.renderRolesDropdown()}
         {this.renderNestedOptions()}

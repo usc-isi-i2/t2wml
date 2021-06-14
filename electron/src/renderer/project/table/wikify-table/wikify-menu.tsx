@@ -11,6 +11,7 @@ import wikiStore from '../../../data/store';
 import * as utils from '../table-utils';
 import { Card } from 'react-bootstrap';
 import { IReactionDisposer, reaction } from 'mobx';
+import ToastMessage from '@/renderer/common/toast';
 
 
 interface WikifyMenuState {
@@ -266,9 +267,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       <Card className="wikify-menu">
         {this.renderHeader()}
         <Card.Body className="body">
-          <div style={{ color: 'red' }}>
-            {this.state.errorMessage.errorDescription}
-          </div>
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
           {this.renderWikifyForms()}
         </Card.Body>
       </Card>
