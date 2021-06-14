@@ -37,7 +37,7 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
 
     resp = requests.post(url, files=files)
     if resp.status_code==500:
-        raise ValueError("Failed to get response form wikifier service")
+        raise ValueError("Failed to get response from wikifier service")
 
 
     s = str(resp.content, 'utf-8')
