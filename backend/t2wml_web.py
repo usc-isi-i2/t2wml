@@ -394,11 +394,12 @@ def create_zip(project, filetype, filestream):
                             kg = None
 
                         if kg:
-                            zip_filename = filename + "_" + sheet_name + "_a_" + annotation_file
-                            zip_filename= re.sub(r'[^A-Za-z0-9\s]+', '_', zip_filename)
-                            zip_filename = zip_filename + "." + filetype
-                            output = kg.get_output(filetype, calc_params.project)
-                            zf.writestr(zip_filename, output)
+                            if kg.statements:
+                                zip_filename = filename + "_" + sheet_name + "_a_" + annotation_file
+                                zip_filename= re.sub(r'[^A-Za-z0-9\s]+', '_', zip_filename)
+                                zip_filename = zip_filename + "." + filetype
+                                output = kg.get_output(filetype, calc_params.project)
+                                zf.writestr(zip_filename, output)
                             if kg.errors:
                                 internalErrors.append(kg.errors)
 
