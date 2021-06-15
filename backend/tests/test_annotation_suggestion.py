@@ -53,7 +53,7 @@ def create_nodes(client, selection, is_property=False, data_type=None):
         "is_property":is_property,
         "data_type": data_type
     }
-    client.put(url, json=payload)
+    client.post(url, json=payload)
 
 
 def test_one(client):
