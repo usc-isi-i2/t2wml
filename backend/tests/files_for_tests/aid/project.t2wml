@@ -1,16 +1,17 @@
+annotations: {}
 cache_id: 5bafaa72-5ea7-438b-9992-dea5a60adb98
 data_files:
   dataset.xlsx:
   - Sheet3
   - Sheet4
+description: ''
 entity_files:
 - kgtk_item_defs.tsv
 handle_calendar: leave
 sparql_endpoint: https://dsbox02.isi.edu:8888/bigdata/namespace/wdq/sparql
 title: Unit test renamed
+url: ''
 warn_for_empty_cells: false
-wikifier_files:
-- consolidated-wikifier.csv
 yaml_files:
 - test.yaml
 yaml_sheet_associations:
