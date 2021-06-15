@@ -183,7 +183,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   updateSelectedBlock(selectedBlock?: AnnotationBlock) {
     this.changed = false;
     if (selectedBlock) {
+      if (this.timeoutSuggest) {
+        window.clearTimeout(this.timeoutSuggest);
+      }
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
+      
       this.setState({
         selectedBlock: selectedBlock,
         selection: selectedBlock.selection,
@@ -214,7 +218,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   async updateSuggestion(suggestion: ResponseWithSuggestion) {
-    if (suggestion) {
+    if (suggestion && !wikiStore.table.selectBlock) {
       this.setState({
         annotationSuggestions: suggestion,
         fields: {
@@ -229,7 +233,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   async getAnnotationSuggestionsForSelection(selection?: { 'x1': number, 'x2': number, 'y1': number, 'y2': number }) {
     if (!selection) { return; }
-    if (this.state.selectedBlock) { console.log("returned because state had a block"); return; }
+    if (wikiStore.table.selectedBlock) { console.log("returned because state had a block"); return; }
     //data should be a json dictionary, with fields:
     // {
     //   "selection": The block,
