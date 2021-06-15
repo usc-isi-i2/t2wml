@@ -14,6 +14,8 @@ url: ''
 warn_for_empty_cells: false
 yaml_files:
 - test.yaml
+wikifier_files:
+- consolidated-wikifier.csv
 yaml_sheet_associations:
   dataset.xlsx:
     Sheet3:

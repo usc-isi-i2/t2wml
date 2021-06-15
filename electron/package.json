@@ -65,9 +65,7 @@
       "icon": "icons/t2wml-windows.ico"
     }
   },
-  "dependencies": {
-    "react-dropzone": "^11.3.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.11.1",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -130,6 +128,7 @@
     "react-bootstrap": "1.4.0",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
+    "react-dropzone": "^11.3.2",
     "react-monaco-editor": "^0.36.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
