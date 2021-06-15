@@ -141,6 +141,7 @@ relevant classes:
 
 /* if table is active, fade everything out */
 
+/*
 .table-wrapper table.highlight tr td {
   opacity: 0.4;
 }
@@ -159,7 +160,7 @@ relevant classes:
 
 .table-wrapper tr td.linked-cell {
   filter: brightness(90%);
-}
+}*/
 
 
 
