@@ -224,7 +224,7 @@ class RequestService {
   }
 
   public async callAutoCreateWikinodes(data: any) {
-    const response = await backendPut(`/auto_wikinodes?${this.getDataFileParams()}`, data) as ResponseWithQNodeLayerDTO;
+    const response = await backendPost(`/auto_wikinodes?${this.getDataFileParams()}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
 
