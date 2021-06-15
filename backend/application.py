@@ -317,7 +317,7 @@ def call_wikifier_service():
     return response, 200
 
 
-@app.route('/api/auto_wikinodes', methods=['PUT'])
+@app.route('/api/auto_wikinodes', methods=['POST'])
 @json_response
 def create_auto_nodes():
     """

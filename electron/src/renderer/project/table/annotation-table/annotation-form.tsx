@@ -241,7 +241,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.timeoutSuggest = window.setTimeout(async () => {
       const suggestion = await this.requestService.getAnnotationSuggestions({ "selection": selection, "annotations": wikiStore.annotations.blocks });
       this.updateSuggestion(suggestion)
-    }, 200);
+    }, 150);
   }
 
   async handleOnPropertyUnit(key: string, value: string, type: string) {
@@ -648,33 +648,18 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   renderNestedOptions() {
     const { role, type } = this.state.fields;
-    const { annotationSuggestions } = this.state;
-    const { selectedBlock } = this.state;
-    const selectedAnnotationRole = selectedBlock && !this.changed ? selectedBlock.role : role;
-    let selectedAnnotationType = selectedBlock && !this.changed ? selectedBlock.type : type;
-    if (!selectedAnnotationType) {
-      // default to string:
-      selectedAnnotationType = annotationSuggestions.type ? annotationSuggestions.type : "string";
-    }
-    let selectedOption = null;
-    if (selectedAnnotationRole) {
-      selectedOption = ROLES.find(option => (
-        option.value === selectedAnnotationRole
-      ));
-    } else {
-      selectedOption = ROLES.find(option => option.value === role);
-      if (!selectedOption) {
-        selectedOption = ROLES.find(option => option.value === annotationSuggestions.role);
-      }
-    }
-    if (!selectedOption || !('children' in selectedOption)) { return null; }
+
+    let selectedOptionRole = null;
+    selectedOptionRole = ROLES.find(option => option.value === role);
+    
+    if (!selectedOptionRole || !('children' in selectedOptionRole)) { return null; }
     const optionsDropdown = (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}
         onChange={(event: KeyboardEvent) => this.handleOnChange(event, 'type')}>
         <Form.Label column sm="12" md="3" className="text-muted">Type</Form.Label>
         <Col sm="12" md="9">
-          <Form.Control size="sm" as="select" key={selectedAnnotationType} defaultValue={selectedAnnotationType}>
-            {selectedOption?.children?.map((type, i) => (
+          <Form.Control size="sm" as="select" key={type} defaultValue={type}>
+            {selectedOptionRole?.children?.map((type, i) => (
               <option key={i}
                 value={type.value}>
                 {type.label}
@@ -685,12 +670,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       </Form.Group>
     )
     let selectedType = null;
-    if (selectedAnnotationType) {
-      selectedType = selectedOption?.children?.find(option => (
-        option.value === selectedAnnotationType
+    if (type) {
+      selectedType = selectedOptionRole?.children?.find(option => (
+        option.value === type
       ));
     } else {
-      selectedType = selectedOption?.children?.find(option => (
+      selectedType = selectedOptionRole?.children?.find(option => (
         option.value === type
       ));
     }
@@ -1043,11 +1028,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   renderWikifyAutoQnodeButton() {
     const { selectedBlock, selection } = this.state;
     const { role, type } = this.state.fields;
+
     let buttonWikify = null;
     let buttonAutoQnode = null;
     let dropdownTypes = null;
     let buttonRemoveWiki = null;
-    if (selection &&(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem')) {
+    if (selection && (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem')) {
       buttonWikify = (
         <Col>
           <Button
