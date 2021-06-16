@@ -131,7 +131,7 @@ class EntitiesTree extends Component<TreeProps, TreeState> {
     const result = await remote.dialog.showOpenDialog({
       title: title,
       defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
+      properties: ['openFile'],
       filters: filters,
     });
     if (!result.canceled && result.filePaths) {

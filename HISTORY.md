@@ -1,6 +1,39 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.10.0:
+------------------------
+* t2wml-api version 0.5.0 (NOT BACKWARDS COMPATIBLE)
+
+* complete overhaul of UI. 
+   - The entire left panel was removed/replaced with a tabbed control for block, cell, output preview, and yaml. various fields were added to the block and cell tabs with the added room (mostly related to changes in wikification, below)
+   - the modes were removed from the table, the table is now one combined table
+   - download button has been moved to file sidebar. entities filetree has been removed, there is only the main project file tree now.
+   - upload to datamart button removed
+   - wikify region button removed
+   - upload wikifier button moved to project menu, see below complete overhaul of wikification
+   - Show nodes toggle has been added to project menu. Show cleaned toggle has been removed for now-- will be added back once the cleaning feature is more mature.
+
+* complete overhaul of wikification. NOT BACKWARDS COMPATIBLE. 
+   - when loading old projects, the backend will try to convert old wikifier files to the new style -- this process may take a long time. it may be more efficient to remove the wikifier files from the project.t2wml file, and then re-upload by hand as needed
+   - upload wikifier added to project menu. this allows uploading old-style wikifier files, and having them converted to the new style. 
+   - the new style is a file per datafile in the project folder / sub folder "wikifiers", and col+row+ file name + sheet name are all required columns. ALL wikification is saved to this file, instead of multiple wikification files being able to be applied to the same sheet. a specific cell cannot have multiple rows in the wikification file.
+   - can send a block to wikifier service 
+   - can send a block to have nodes auto-created (automatic auto-creation has been removed)
+   - can delete wikification on a block or cell level
+   - can create custom nodes, for a cell, or for the property/unit/main subject of a block
+   - as before, can search for existing nodes and hand-wikify cells
+   - blue/orange text for blocks that have been wikified/are lacking needed wikification
+
+* added ability to download a zipped file of all mapping file outputs from the project
+
+* tweaks:
+    - various tweaks to css
+    - enable drag and drop loading of data files
+    - various bug fixes-- the overall changes were too many to keep a detailed list
+
+
+
 Changes in version 2.9.4:
 -------------------------
 * t2wml-api version 0.4.0
