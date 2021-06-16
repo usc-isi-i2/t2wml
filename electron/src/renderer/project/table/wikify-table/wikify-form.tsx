@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import EntityForm from '../entity-form';
 import { isValidLabel } from '../table-utils';
-import { toHtml } from '@fortawesome/fontawesome-svg-core';
 
 
 interface WikifyFormProperties {
