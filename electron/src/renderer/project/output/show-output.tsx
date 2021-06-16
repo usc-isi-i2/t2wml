@@ -10,7 +10,6 @@ import wikiStore from '@/renderer/data/store';
 import dayjs from 'dayjs';
 
 interface ShowOutputProperties {
-  errors: string;
   statement?: StatementEntry;
 }
 
@@ -100,13 +99,6 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
   render() {
     const outputDiv = [];
-
-    let errorsDiv;
-    if (this.props.errors) {
-      errorsDiv = <div key="errors" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
-        Errors: {this.props.errors}
-      </div>
-    }
 
     const statement = this.props.statement
     if (statement) {
@@ -201,8 +193,6 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       );
 
     }
-
-    outputDiv.push(errorsDiv);
 
     return outputDiv;
   }
