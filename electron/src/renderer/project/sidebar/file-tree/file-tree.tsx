@@ -240,7 +240,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     const result = await remote.dialog.showOpenDialog({
       title: "Open Existing Yaml File",
       defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
+      properties: ['openFile'],
       filters: [
         { name: "Yaml", extensions: ["yaml"] }
       ],
@@ -269,7 +269,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     const result = await remote.dialog.showOpenDialog({
       title: "Open Existing Annotation File",
       defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
+      properties: ['openFile'],
       filters: [
         { name: "annotation", extensions: ["annotation", "json"] }
       ],

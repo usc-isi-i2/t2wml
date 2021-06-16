@@ -168,7 +168,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     const result = await remote.dialog.showOpenDialog({
       title: "Open Existing Wikifier File",
       defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
+      properties: ['openFile'],
       filters: [{ name: "wikifier", extensions: ["csv"] }],
     });
     if (!result.canceled && result.filePaths) {
