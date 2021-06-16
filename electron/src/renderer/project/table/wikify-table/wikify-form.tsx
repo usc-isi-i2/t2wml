@@ -4,12 +4,13 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore, { Layer } from '../../../data/store';
 import { Cell } from '../../../common/general';
-import { EntityFields, QNode, QNodeEntry } from '@/renderer/common/dtos';
+import { AnnotationBlock, EntityFields, QNode, QNodeEntry } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import EntityForm from '../entity-form';
 import { isValidLabel } from '../table-utils';
+import { toHtml } from '@fortawesome/fontawesome-svg-core';
 
 
 interface WikifyFormProperties {
@@ -31,6 +32,7 @@ interface WikifyFormState {
   prevCell?: Cell;
   entityFields: EntityFields;
   customQnode: boolean;
+  disabledIsProperty:boolean;
 }
 
 
@@ -72,13 +74,16 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       qnodes: [],
       prevCell: undefined,
       entityFields: entityFields,
-      customQnode: customQnode
+      customQnode: customQnode,
+      disabledIsProperty: wikiStore.table.selectedBlock?.role ? true : false
     };
   }
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
     this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.onChangeQnodes(qnodes)));
+    this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.onChangeRole(selectedBlock)));
+
   }
 
   componentWillUnmount() {
@@ -98,6 +103,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       customQnode = true;
     }
     this.setState({ customQnode, entityFields, selected })
+  }
+
+  onChangeRole(selectedBlock?: AnnotationBlock){
+    this.setState({ disabledIsProperty: selectedBlock?.role ? true: false})
   }
 
 
@@ -390,15 +399,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   onChangeCustomQnode() {
     const { selected, entityFields, customQnode } = this.state;
-    this.setState({ customQnode: !customQnode, qnodes: [] });
-    if (selected && customQnode) {
+    if (selected && !customQnode) {
       if (isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
         entityFields.is_property = selected.id.startsWith("P");
         entityFields.description = selected.description;
         entityFields.label = selected.label;
       }
     }
-    this.setState({ entityFields })
+    this.setState({ entityFields, customQnode: !customQnode, qnodes: [] })
   }
 
   renderSubmitButton() {
@@ -438,17 +446,17 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   render() {
-    const { customQnode, entityFields } = this.state;
+    const { customQnode, entityFields, disabledIsProperty } = this.state;
     return (
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" inline  label="Custom?" defaultChecked={customQnode} onChange={() => this.onChangeCustomQnode()} />
+          <Form.Check type="checkbox" inline  label="Custom?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
         onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" defaultChecked={entityFields.is_property} 
-            disabled={wikiStore.table.selectedBlock?.role ? true : false}/>
+          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" checked={entityFields.is_property} 
+            disabled={ disabledIsProperty }/>
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="5" md="5">
