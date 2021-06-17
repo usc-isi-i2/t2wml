@@ -31,7 +31,7 @@ interface WikifyFormState {
   prevCell?: Cell;
   entityFields: EntityFields;
   customQnode: boolean;
-  disabledIsProperty:boolean;
+  disabledIsProperty: boolean;
 }
 
 
@@ -55,8 +55,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       data_type: "string",
     }
 
-    entityFields.is_property = wikiStore.table.selectedBlock?.role === 'property'? true : false;
-    
+    entityFields.is_property = wikiStore.table.selectedBlock?.role === 'property' ? true : false;
+
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
       entityFields.is_property = selected.id.startsWith("P");
@@ -91,7 +91,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
-  onChangeQnodes(qnodes: Layer<QNodeEntry>){
+  onChangeQnodes(qnodes: Layer<QNodeEntry>) {
     const { entityFields } = this.state;
     const selected = qnodes.find(this.props.selectedCell);
     let customQnode = false;
@@ -104,8 +104,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({ customQnode, entityFields, selected })
   }
 
-  onChangeRole(selectedBlock?: AnnotationBlock){
-    this.setState({ disabledIsProperty: selectedBlock?.role ? true: false})
+  onChangeRole(selectedBlock?: AnnotationBlock) {
+    this.setState({ disabledIsProperty: selectedBlock?.role ? true : false })
   }
 
 
@@ -238,43 +238,45 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       customQnode,
       entityFields
     } = this.state;
-    return (
-      <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-        <Col sm="12" md='12'>
-          <Form.Label className="text-muted">Search</Form.Label>
-          <Form.Control
-            type="text" size="sm"
-            placeholder={entityFields.is_property ? 'property' : 'node'}
-            value={search}
-            onFocus={this.handleOnFocusSearch.bind(this)}
-            onChange={(event: any) => this.handleOnChangeSearch(event)}
-            disabled={customQnode} />
-          {search && qnodes.length ? (
-            <FontAwesomeIcon
-              icon={faTimes}
-              className="clear-button"
-              onClick={this.clearSearch.bind(this)} />
-          ) : null}
-        </Col>
-        {!entityFields.is_property && (
-          <Col sm="12" md="12">
-            <Form.Label className="text-muted">Instance Of</Form.Label>
+    if (!customQnode) {
+      return (
+        <Form.Group as={Row} style={{ marginTop: "1rem" }}>
+          <Col sm="12" md='12'>
+            <Form.Label className="text-muted">Search</Form.Label>
             <Form.Control
               type="text" size="sm"
-              placeholder="node"
-              value={instanceOfSearch}
-              onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
+              placeholder={entityFields.is_property ? 'property' : 'node'}
+              value={search}
+              onFocus={this.handleOnFocusSearch.bind(this)}
+              onChange={(event: any) => this.handleOnChangeSearch(event)}
               disabled={customQnode} />
-            {instanceOfSearch && qnodes.length ? (
+            {search && qnodes.length ? (
               <FontAwesomeIcon
                 icon={faTimes}
                 className="clear-button"
-                onClick={this.clearInstanceOfSearch.bind(this)} />
+                onClick={this.clearSearch.bind(this)} />
             ) : null}
           </Col>
-        )}
-      </Form.Group>
-    )
+          {!entityFields.is_property && (
+            <Col sm="12" md="12">
+              <Form.Label className="text-muted">Instance Of</Form.Label>
+              <Form.Control
+                type="text" size="sm"
+                placeholder="node"
+                value={instanceOfSearch}
+                onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
+                disabled={customQnode} />
+              {instanceOfSearch && qnodes.length ? (
+                <FontAwesomeIcon
+                  icon={faTimes}
+                  className="clear-button"
+                  onClick={this.clearInstanceOfSearch.bind(this)} />
+              ) : null}
+            </Col>
+          )}
+        </Form.Group>
+      )
+    }
   }
 
   renderQNodeResults() {
@@ -348,12 +350,17 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   renderEntityForm() {
     const { entityFields, customQnode } = this.state;
-    return (
-      <EntityForm isReadOnly={!customQnode}
-        entityFields={entityFields}
-        handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChangeEntity(event, key)}
-      />
-    );
+    if (customQnode) {
+      return (
+        <Col sm="12" md="12">
+          <EntityForm
+            entityFields={entityFields}
+            handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChangeEntity(event, key)}
+          />
+        </Col>
+      );
+    }
+
   }
 
   handleOnChangeEntity(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") {
@@ -450,21 +457,22 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       <Form className="container wikify-form"
         onSubmit={(event: any) => this.handleOnSubmit(event)}>
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
-          <Form.Check type="checkbox" inline  label="Custom?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
+          <Form.Check type="checkbox" inline label="Custom?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
-        onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline  label="Is property?" checked={entityFields.is_property} 
-            disabled={ disabledIsProperty }/>
+          onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
+          <Form.Check id="check-property-search" type="checkbox" inline label="Is property?" checked={entityFields.is_property}
+            disabled={disabledIsProperty} />
         </Form.Group>
         <Form.Group as={Row}>
-          <Col sm="5" md="5">
-            {this.renderSearchInputs()}
+          <Col sm="12" md="12">
+            {customQnode ?
+              this.renderEntityForm()
+              :
+              this.renderSearchInputs()
+            }
             {this.renderInstanceOf()}
             {this.renderQNodeResults()}
-          </Col>
-          <Col sm="5" md="5" style={{ marginLeft: "1rem" }}>
-            {this.renderEntityForm()}
           </Col>
         </Form.Group>
         {this.renderSelectedNode()}

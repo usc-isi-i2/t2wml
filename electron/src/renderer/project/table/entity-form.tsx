@@ -8,7 +8,6 @@ import { EntityFields } from '@/renderer/common/dtos';
 interface EntityFormProp {
     entityFields: EntityFields;
     handleOnChange: (event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => void;
-    isReadOnly?: boolean;
 }
 
 @observer
@@ -21,13 +20,12 @@ class EntityForm extends Component<EntityFormProp, {}> {
     render() {
         const { handleOnChange } = this.props;
         const { is_property, label, description, data_type } = this.props.entityFields;
-        const { isReadOnly } = this.props;
         return (
             <Form.Group as={Row}>
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
                     onChange={(event: KeyboardEvent) => handleOnChange(event, "label")}>
                     <Form.Label className="text-muted">Label</Form.Label>
-                    <Form.Control defaultValue={label} required isInvalid={!isReadOnly && !isValidLabel(label)} disabled={isReadOnly} />
+                    <Form.Control defaultValue={label} required isInvalid={!isValidLabel(label)} />
                     <Form.Control.Feedback type="invalid">
                         The label must contain an alphabetic char.
                                         </Form.Control.Feedback>
@@ -36,14 +34,14 @@ class EntityForm extends Component<EntityFormProp, {}> {
                 <Form.Group as={Row} style={{ marginTop: "1rem" }}
                     onChange={(event: KeyboardEvent) => handleOnChange(event, "description")}>
                     <Form.Label className="text-muted">Description</Form.Label>
-                    <Form.Control defaultValue={description} disabled={isReadOnly} />
+                    <Form.Control defaultValue={description} />
                 </Form.Group>
                 {
                     is_property ?
                         <Form.Group as={Row} style={{ marginTop: "1rem" }}
                             onChange={(event: KeyboardEvent) => handleOnChange(event, "data_type")}>
                             <Form.Label column sm="12" md="12" className="text-muted">Data type</Form.Label>
-                            <Form.Control as="select" disabled={isReadOnly}
+                            <Form.Control as="select"
                                 defaultValue={data_type}>
                                 <option value="quantity">Quantity</option>
                                 <option value="time">Time</option>
