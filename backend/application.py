@@ -303,7 +303,7 @@ def call_wikifier_service():
                  1), (selection["x2"]-1, selection["y2"]-1)
 
     df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
-
+    t2wml_settings.wikidata_provider.cache.update(entities_dict)
     project.add_df_to_wikifier_file(calc_params.data_path, df, overwrite_existing)
 
     calc_params = get_calc_params(project)
