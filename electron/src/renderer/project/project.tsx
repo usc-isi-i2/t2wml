@@ -23,7 +23,7 @@ import Sidebar from './sidebar/sidebar';
 import { currentFilesService } from '../common/current-file-service';
 import EntitiesWindow from './entities/entities-window';
 import CombinedTable from './table/combined-table';
-import BlockCellYamlMenu from './block-cell-yaml-menu';
+import BlockCellYamlMenu from './tab-menu/block-cell-yaml-menu';
 
 
 interface ProjectState extends IStateWithError {

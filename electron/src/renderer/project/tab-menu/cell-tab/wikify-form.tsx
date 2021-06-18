@@ -8,8 +8,8 @@ import { AnnotationBlock, EntityFields, QNode, QNodeEntry } from '@/renderer/com
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import EntityForm from '../entity-form';
-import { isValidLabel } from '../table-utils';
+import EntityForm from '../../table/entity-form';
+import { isValidLabel } from '../../table/table-utils';
 
 
 interface WikifyFormProperties {

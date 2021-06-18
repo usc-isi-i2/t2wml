@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 // App
 import { Card, Spinner } from 'react-bootstrap';
 
-import { t2wmlColors } from '../../common/general';
+import { t2wmlColors } from '../../../../common/general';
 
 import { observer } from "mobx-react";
-import wikiStore from '../../data/store';
+import wikiStore from '../../../../data/store';
 import ShowOutput from './show-output';
 import { reaction, IReactionDisposer } from 'mobx';
 import { StatementEntry, Error } from '@/renderer/common/dtos';
@@ -115,9 +115,9 @@ class Output extends Component<{}, OutputComponentState> {
             {
               !statement && wikiStore.table.selectedBlock?.role == "dependentVar" ?
                 (
-                  <div className="w-100 p-3" 
+                  <div className="w-100 p-3"
                     style={{ height: "150px", color: 'red', fontSize: "14px", fontWeight: "bold"}}>
-                    { "There is no statement to display" } 
+                    { "There is no statement to display" }
                       <br/>
                     { message }
                   </div>

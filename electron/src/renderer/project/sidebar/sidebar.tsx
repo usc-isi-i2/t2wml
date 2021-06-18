@@ -8,7 +8,7 @@ import { Button, Card, Spinner } from 'react-bootstrap';
 import { currentFilesService } from '../../common/current-file-service';
 import FileTree from './file-tree/file-tree';
 import { ErrorMessage, LOG, t2wmlColors } from '@/renderer/common/general';
-import Download from '../output/download';
+import Download from '../tab-menu/cell-tab/cell-output/download';
 import ToastMessage from '../../common/toast';
 import { remote } from 'electron';
 import path from 'path';

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { AnnotationBlock, EntityFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
-import * as utils from '../table-utils';
+import * as utils from '../../table/table-utils';
 import { ROLES, AnnotationOption, TYPES } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
@@ -12,10 +12,10 @@ import wikiStore from '../../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { columnToLetter } from '../table-utils';
+import { columnToLetter } from '../../table/table-utils';
 import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
-import EntityMenu from '../entity-menu';
+import EntityMenu from '../../table/entity-menu';
 import './annotation-form.css'
 import ToastMessage from '@/renderer/common/toast';
 
@@ -187,7 +187,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         window.clearTimeout(this.timeoutSuggest);
       }
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
-      
+
       this.setState({
         selectedBlock: selectedBlock,
         selection: selectedBlock.selection,
@@ -655,7 +655,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     let selectedOptionRole = null;
     selectedOptionRole = ROLES.find(option => option.value === role);
-    
+
     if (!selectedOptionRole || !('children' in selectedOptionRole)) { return null; }
     const optionsDropdown = (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}

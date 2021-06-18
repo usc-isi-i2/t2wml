@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
 import { Tab, Tabs } from 'react-bootstrap';
-import YamlEditor from './yaml-editor/yaml-editor';
-import CellTab from './cell-tab';
-import BlockTab from './block-tab';
-import PartialCsvPreview from './wikifier/wikifier';
+import YamlEditor from './yaml-editor';
+import CellTab from './cell-tab/cell-tab';
+import BlockTab from './block-tab/block-tab';
+import PartialCsvPreview from './partial-csv-preview';
 
 @observer
 class BlockCellYamlMenu extends Component {

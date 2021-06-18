@@ -8,7 +8,7 @@ import RequestService from '../../../common/service';
 import { EntityFields, QNode } from '@/renderer/common/dtos';
 import { Cell, CellSelection } from '../../../common/general';
 import wikiStore from '../../../data/store';
-import * as utils from '../table-utils';
+import * as utils from '../../table/table-utils';
 import { Card } from 'react-bootstrap';
 import { IReactionDisposer, reaction } from 'mobx';
 import ToastMessage from '@/renderer/common/toast';
@@ -255,7 +255,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
         onSelectBlock={(applyToBlock) => this.onSelectBlock(applyToBlock)}
         onChange={this.handleOnChange.bind(this)}
         onSubmit={this.handleOnSubmit.bind(this)}
-        onRemove={this.handleOnRemove.bind(this)} 
+        onRemove={this.handleOnRemove.bind(this)}
         onCreateQnode={this.handleOnCreateQnode.bind(this)}/>
     )
   }

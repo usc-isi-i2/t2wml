@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
-import AnnotationForm from './table/annotation-table/annotation-form';
-import './project.css';
+import AnnotationForm from './annotation-form';
+import '../../project.css';
 
 @observer
 class BlockTab extends Component {
