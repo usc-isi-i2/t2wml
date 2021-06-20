@@ -80,7 +80,6 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
         this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateQnode()));
         this.disposers.push(reaction(() => wikiStore.layers.statement, () => this.updateStatement()));
-        this.disposers.push(reaction(() => wikiStore.layers, () => this.updateLayers()));
         this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
         this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelectionStyle(selection)));
         this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateActiveCellStyle(cell)));
@@ -210,26 +209,18 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateTableData(table?: TableDTO) {
+        wikiStore.table.resetSelections();
         if (!table || !table.cells) {
             this.setState({ tableData: undefined });
             return;
         }
         const tableData = this.getClasslessTableData(table);
-        this.updateLayers(tableData);
+        this.setState({tableData})
+        //this.updateStatement(tableData);
         console.log("resetting wikistore selections from update table data")
-        wikiStore.table.resetSelections();
-
         { this.createAnnotationIfDoesNotExist(); }
     }
 
-    updateLayers(tableData?: TableData) {
-        if (!tableData) {
-            tableData = this.getClasslessTableData()
-        }
-
-
-        this.setState({ tableData });
-    }
 
     updateStatement(tableData?: TableData) {
         if (!tableData) {
@@ -252,6 +243,7 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
+        this.setAnnotationColors(tableData)
 
         const errors = wikiStore.layers.error;
         for (const entry of errors.entries) {
@@ -261,7 +253,6 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-        this.setAnnotationColors(tableData)
         this.updateQnode(tableData);
     }
 
@@ -317,7 +308,7 @@ class CombinedTable extends Component<{}, TableState> {
                 tableData.forEach(row => {
                     row.forEach(cell => {
                         cell.classNames = cell.classNames.filter((value) =>
-                            !value.startsWith("role-") && !value.startsWith("error") && !value.startsWith("expects-wiki")
+                            !value.startsWith("role-") && !value.startsWith("expects-wiki")
                         )
                     })
                 })
@@ -390,6 +381,7 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
+
     }
 
     applyCsstoBlock(selection: CellSelection, table: any, classNames: string[]) {
