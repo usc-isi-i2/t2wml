@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from "mobx-react"
 import { Form, Row } from 'react-bootstrap';
 import './entity-menu.css'
-import { isValidLabel } from './table-utils';
+import { isValidLabel } from '../table/table-utils';
 import { EntityFields } from '@/renderer/common/dtos';
 
 interface EntityFormProp {

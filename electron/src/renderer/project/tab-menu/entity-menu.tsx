@@ -4,10 +4,11 @@ import { observer } from "mobx-react"
 import Draggable from 'react-draggable';
 import { Button, Toast } from 'react-bootstrap';
 import './entity-menu.css'
-import * as utils from './table-utils';
+
 import { CellSelection } from '@/renderer/common/general';
 import EntityForm from './entity-form';
 import { EntityFields } from '@/renderer/common/dtos';
+import { humanReadableSelection, isValidLabel } from '../table/table-utils';
 
 interface EntityMenuState {
     entityFields: EntityFields
@@ -73,7 +74,7 @@ class EntityMenu extends Component<{
                 <div className="entity-menu">
                     <Toast onClose={onClose}>
                         <Toast.Header className="handle">
-                            {utils.humanReadableSelection(selection)}  {title}
+                            {humanReadableSelection(selection)}  {title}
                         </Toast.Header>
 
                         <Toast.Body>
@@ -82,7 +83,7 @@ class EntityMenu extends Component<{
                                 handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChange(event, key)}
                             />
                             <Button variant="primary" type="button" onClick={() => this.handleOnSubmit()}
-                                disabled={!utils.isValidLabel(entityFields.label)}>
+                                disabled={!isValidLabel(entityFields.label)}>
                                 Save
                             </Button>
                         </Toast.Body>

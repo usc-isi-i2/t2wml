@@ -3,14 +3,14 @@ import React from 'react';
 import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import wikiStore, { Layer } from '../../../data/store';
-import { Cell } from '../../../common/general';
+import { Cell, CellSelection } from '../../../common/general';
 import { AnnotationBlock, EntityFields, QNode, QNodeEntry } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import EntityForm from '../../table/entity-form';
-import { isValidLabel } from '../../table/table-utils';
 
+import EntityForm from '../entity-form';
+import { isValidLabel, checkSelectedAnnotationBlocks } from '../../table/table-utils';
 
 interface WikifyFormProperties {
   selectedCell: Cell;
@@ -105,7 +105,20 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   onChangeRole(selectedBlock?: AnnotationBlock) {
-    this.setState({ disabledIsProperty: selectedBlock?.role ? true : false })
+    if (selectedBlock) {
+      this.setState({ disabledIsProperty: selectedBlock?.role ? true : false })
+    } else {
+      const { selectedCell } = this.props;
+      const { col, row } = selectedCell;
+        const selection: CellSelection = {
+          x1: col + 1,
+          x2: col + 1,
+          y1: row + 1,
+          y2: row + 1,
+        };
+        const cellInBlock = checkSelectedAnnotationBlocks(selection);
+        this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })  
+    }
   }
 
 

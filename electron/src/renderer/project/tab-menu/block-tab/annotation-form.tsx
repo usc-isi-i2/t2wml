@@ -2,7 +2,7 @@ import React from 'react';
 
 import { AnnotationBlock, EntityFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../../table/table-utils';
-import { ROLES, AnnotationOption, TYPES } from './annotation-options';
+import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
 import SearchResults from './search-results';
@@ -15,9 +15,11 @@ import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { columnToLetter } from '../../table/table-utils';
 import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
-import EntityMenu from '../../table/entity-menu';
 import './annotation-form.css'
 import ToastMessage from '@/renderer/common/toast';
+import WikiBlockMenu from './wiki-block-menu';
+import EntityMenu from '../entity-menu';
+
 
 
 interface AnnotationFields {
@@ -60,6 +62,7 @@ interface AnnotationFormState {
   }
   errorMessage: ErrorMessage;
   showEntityMenu: boolean;
+  showWikifyBlockMenu: boolean;
   typeEntityMenu?: string;
   mappingType?: string;
 }
@@ -104,6 +107,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       showResult2: false,
       errorMessage: {} as ErrorMessage,
       showEntityMenu: false,
+      showWikifyBlockMenu: false,
       mappingType: currentFilesService.currentState.mappingType
     };
     this.changed = false;
@@ -129,6 +133,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
     this.setState({ typeEntityMenu: newTypeEntityMenu });
   }
+
+  changeShowWikifyBlockMenu() {
+    const { showWikifyBlockMenu } = this.state;
+    this.setState({ showWikifyBlockMenu: !showWikifyBlockMenu });
+  }
+
 
   async handleOnCreateQnode(entityFields: EntityFields) {
     console.log('Annotationn Menu handleOnCreateQnode triggered for -> ', entityFields);
@@ -159,6 +169,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.handleOnCreateQnode(entityFields); // applyToBlock=true
     }
   }
+
+  handleOnCloseWikifyBlockMenu() {
+    this.setState({ showWikifyBlockMenu: false });
+  }
+
 
   updateSelection(selection?: CellSelection) {
     if ((!wikiStore.table.selectedBlock) || wikiStore.table.selectedBlock.selection !== selection) {
@@ -230,7 +245,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   async getAnnotationSuggestionsForSelection(selection?: { 'x1': number, 'x2': number, 'y1': number, 'y2': number }) {
     if (!selection) { return; }
     if (wikiStore.table.selectedBlock) { console.log("returned because state had a block"); return; }
-    //data should be a json dictionary, with fields:
+    // data should be a json dictionary, with fields:
     // {
     //   "selection": The block,
     //   "annotations": the existing annotations (a list of blocks, for the first block this would be an empty list)
@@ -294,7 +309,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       if (!value || value.length === 0) {
         updatedFields[(key as keyof AnnotationFields) as nameQNodeFields] = undefined;
       }
-      this.setState({ searchFields, showEntityMenu: false });
+      this.setState({ searchFields, showEntityMenu: false, showWikifyBlockMenu: false });
     } else {
       updatedFields[(key as keyof AnnotationFields) as nameStrFields] = value;
     }
@@ -464,37 +479,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   }
 
-  async handleOnRemoveWikification(event: React.MouseEvent) {
-    event.preventDefault();
-
-    const { selectedBlock } = this.state
-    if (!selectedBlock) { return; }
-
-    wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
-    wikiStore.yaml.showSpinner = true;
-
-    const selection = [
-      [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
-      [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
-    ];
-
-    try {
-      await this.requestService.call(this, () => (
-        this.requestService.removeQNodes({
-          selection
-        })
-      ));
-    } catch (error) {
-      error.errorDescription += `Wasn't able to submit the qnode!\n` + error.errorDescription;
-      console.log(error.errorDescription)
-      this.setState({ errorMessage: error });
-    } finally {
-      wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
-      wikiStore.yaml.showSpinner = false;
-    }
-  }
 
   renderSelectionAreas() {
     const { selectedArea } = this.state.fields;
@@ -866,35 +850,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     });
   }
 
-  async handleOnWikify() {
-    const data = { "selection": this.state.selection };
-    wikiStore.table.showSpinner = true;
-    try {
-      await this.requestService.call(this, () => (
-        this.requestService.callWikifierService(data)
-      ));
-    }
-    finally {
-      wikiStore.table.showSpinner = false;
-    }
-  }
 
-  async handleOnAutoCreateMissingQnode() {
-    const { selection, fields } = this.state;
-    const data = {
-      "selection": selection,
-      "is_property": fields.role == "property",
-      "data_type": fields.role == "property" ? (fields.type ? fields.type : "string") : undefined
-    };
-    wikiStore.table.showSpinner = true;
-    try {
-      await this.requestService.callAutoCreateWikinodes(data)
-      await this.handleOnSubmit();
-    }
-    finally {
-      wikiStore.table.showSpinner = false;
-    }
-  }
 
   removeInstanceOf() {
     const subject = { ...this.state.subject };
@@ -1022,88 +978,23 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
   }
 
-  renderWikifyAutoQnodeButton() {
-    const { selectedBlock, selection } = this.state;
-    const { role, type } = this.state.fields;
-
-    let buttonWikify = null;
-    let buttonAutoQnode = null;
-    let dropdownTypes = null;
-    let buttonRemoveWiki = null;
-    if (selection && (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem')) {
-      buttonWikify = (
-        <Col>
-          <Button
-            size="sm"
-            type="button"
-            variant="outline-dark"
-            style={{ marginLeft: "1rem", marginTop: "1rem" }}
-            onClick={() => this.handleOnWikify()}>
-            Send this block for wikification
-      </Button>
-        </Col>)
-    }
-    if (selection && (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role == "property")) {
-      buttonAutoQnode = (
-        <Col>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline-dark"
-            style={{ marginLeft: "1rem", marginTop: "1rem" }}
-            onClick={() => this.handleOnAutoCreateMissingQnode()}>
-            Auto-create missing nodes
-          </Button>
-        </Col>
-      );
-      if (selectedBlock) {
-        buttonRemoveWiki = (
-          <Button
-            size="sm"
-            type="button"
-            variant="link"
-            style={{ marginLeft: "1rem", color: "red" }}
-            onClick={(event: React.MouseEvent) => this.handleOnRemoveWikification(event)}>
-            remove wikification
-          </Button>
-        );
-      }
-
-    }
-    if (selection && role == "property") {
-      dropdownTypes = (
-        <Col>
-          <Form.Label className="text-muted">Type</Form.Label>
-          <Form.Control as="select" value={type} key={type}
-            onChange={(event: any) => this.handleOnChange(event, 'type')}>
-            {TYPES.map((type, i) => (
-              <option key={i}
-                value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </Form.Control>
-        </Col>
-      )
-    }
-    const buttons = (
-      <Col sm="12" md="12">
-        <Row>
-          {buttonWikify}
-          {buttonAutoQnode}
-          {dropdownTypes}
-        </Row>
-        <Row>
-          {buttonRemoveWiki}
-        </Row>
-      </Col>);
-    return buttons;
-  }
 
   renderSubmitButton() {
+    const { role, type } = this.state.fields;
     return (
       <Form.Group as={Row}>
-        {this.renderWikifyAutoQnodeButton()}
+        {(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role === "property") ?
+          <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
+            <Button
+              size="sm"
+              type="button"
+              variant="outline-dark"
+              onClick={() => this.changeShowWikifyBlockMenu()}>
+              Edit block wikification
+            </Button>
+          </Col>
+          : null
+        }
         <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
           <Button
             size="sm"
@@ -1134,7 +1025,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selection, showEntityMenu, typeEntityMenu, errorMessage } = this.state;
+    const { selection, showEntityMenu, typeEntityMenu, errorMessage, fields, showWikifyBlockMenu } = this.state;
     const { type: data_type } = this.state.fields;
     if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
@@ -1157,6 +1048,22 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)}
               title={typeEntityMenu}
               data_type={data_type}
+            />
+            : null
+        }
+        {
+          showWikifyBlockMenu ?
+            <WikiBlockMenu
+              selection={selection}
+              onClose={(notSubmit) => {
+                this.setState({ showWikifyBlockMenu: false });
+                if (!notSubmit) {
+                  this.handleOnSubmit();
+                }
+              }}
+              onGetError={(error:ErrorMessage) => {this.setState({ errorMessage: error });}}
+              role={fields.role}
+              type={fields.type}
             />
             : null
         }
