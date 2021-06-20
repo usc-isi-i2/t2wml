@@ -245,11 +245,24 @@ class CombinedTable extends Component<{}, TableState> {
 
         this.setAnnotationColors(tableData)
 
+        for (const row of tableData){
+            for (const cell of row){
+                cell.overlay = undefined;
+            }
+        }
+
         const errors = wikiStore.layers.error;
         for (const entry of errors.entries) {
             for (const indexPair of entry.indices) {
                 const tableCell = tableData[indexPair[0]][indexPair[1]];
                 tableCell.classNames.push('error');
+                let errMsg=""
+                for (const err of entry.error){
+                    errMsg+=err.message
+                    errMsg+=","
+                }
+                errMsg=errMsg.slice(0, -1) //get rid of last comma
+                tableCell.overlay = errMsg;
             }
         }
 

@@ -171,6 +171,7 @@ export interface TableCell {
   rawContent?: string;
   content: string | JSX.Element;
   classNames: string[];
+  overlay?: string;
 }
 
 export type TableData = TableCell[][];

@@ -1,6 +1,7 @@
 import React from 'react';
 import * as utils from './table-utils';
 import { TableData } from '../../common/dtos';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 
 const MIN_NUM_ROWS = 100;
@@ -35,7 +36,7 @@ class Table extends React.Component<TableProperties>{
       minCols
     } = this.props;
     let minimumColumns = 26;
-    if (minCols){
+    if (minCols) {
       minimumColumns = minCols
     }
     return (
@@ -78,7 +79,7 @@ class Table extends React.Component<TableProperties>{
     } = this.props;
 
     let minimumColumns = 26;
-    if (minCols){
+    if (minCols) {
       minimumColumns = minCols
     }
 
@@ -112,14 +113,31 @@ class Table extends React.Component<TableProperties>{
               <tr key={`row-${i}`}>
                 <td>{i + 1}</td>
                 {cols.map((r, j) => {
-                  if ( i < tableData.length && j < tableData[i].length && tableData[i][j] ) {
-                    const { content, classNames } = tableData[i][j];
-                    return (
-                      <td key={`cell-${j}`}
-                        className={classNames ? classNames.join(' ') : ''}>
-                        {content}
-                      </td>
-                    )
+                  if (i < tableData.length && j < tableData[i].length && tableData[i][j]) {
+                    const { rawContent, content, classNames, overlay } = tableData[i][j];
+                    if (overlay) {
+                      return (
+                        <OverlayTrigger
+                          placement="right"
+                          delay={{ show: 50, hide: 200 }}
+                          overlay={(props) => (
+                            <Tooltip id="button-tooltip" {...props} >
+                              {overlay}
+                            </Tooltip>
+                          )}
+                        >
+                          <td key={`cell-${j}`} title={rawContent}
+                            className={classNames ? classNames.join(' ') : ''}>
+                            {content}
+
+                          </td>
+                        </OverlayTrigger>
+                      )
+                    }
+                    else return (<td key={`cell-${j}`} title={rawContent}
+                      className={classNames ? classNames.join(' ') : ''}>
+                      {content}
+                    </td>)
                   } else {
                     return <td key={`cell-${j}`} />
                   }
