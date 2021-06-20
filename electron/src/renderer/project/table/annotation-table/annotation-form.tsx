@@ -41,7 +41,6 @@ export type nameStrFields = "role" | 'type' | 'format' | 'calendar' | 'language'
 interface AnnotationFormState {
   selectedBlock?: AnnotationBlock;
   selection?: CellSelection;
-  annotationSuggestions: ResponseWithSuggestion;
   fields: AnnotationFields;
   showExtraFields: boolean;
   validArea: boolean;
@@ -85,10 +84,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       id: 'Q6256',
       url: 'https://www.wikidata.org/wiki/Q6256'
     }
-    const annotationSuggestions = { role: '', type: undefined, children: {} };
 
     this.state = {
-      annotationSuggestions: annotationSuggestions,
       fields: {},
       subject: {
         value: undefined,
@@ -218,9 +215,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   async updateSuggestion(suggestion: ResponseWithSuggestion) {
-    if (suggestion && !wikiStore.table.selectBlock) {
+    if (suggestion && !wikiStore.table.selectedBlock) {
       this.setState({
-        annotationSuggestions: suggestion,
         fields: {
           ...this.state.fields,
           role: suggestion.role,
@@ -712,13 +708,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   renderRolesDropdown() {
-    const { selectedBlock, annotationSuggestions } = this.state;
+    const { role } = this.state.fields;
 
     const rolesList = ROLES;
-    let selectedAnnotationRole = selectedBlock ? selectedBlock.role as string : rolesList[0].value;
-    if (!selectedBlock && annotationSuggestions.role) {
-      selectedAnnotationRole = annotationSuggestions.role;
-    }
+    const selectedAnnotationRole = role ? role : rolesList[0].value;
 
     return (
       <Form.Group as={Row} style={{ marginTop: "1rem" }}
