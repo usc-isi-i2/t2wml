@@ -317,9 +317,13 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     this.changed = true;
 
-    // Reset the role if the type has changed
     if (key === 'role') {
-      updatedFields['type'] = undefined;
+      if(value==="dependentVar" || value==="qualifier"){
+        updatedFields['type'] = "string";
+      } else  { //| "metadata" | "property" | "mainSubject" | "unit"
+        updatedFields['type'] = undefined;
+      }
+      
     }
 
     this.setState({ fields: updatedFields }, () => {
@@ -644,10 +648,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         <Form.Label column sm="12" md="3" className="text-muted">Type</Form.Label>
         <Col sm="12" md="9">
           <Form.Control size="sm" as="select" key={type} defaultValue={type}>
-            {selectedOptionRole?.children?.map((type, i) => (
+            {selectedOptionRole?.children?.map((optionType, i) => (
               <option key={i}
-                value={type.value}>
-                {type.label}
+                value={optionType.value}>
+                {optionType.label}
               </option>
             ))}
           </Form.Control>
@@ -655,15 +659,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       </Form.Group>
     )
     let selectedType = null;
-    if (type) {
-      selectedType = selectedOptionRole?.children?.find(option => (
-        option.value === type
-      ));
-    } else {
-      selectedType = selectedOptionRole?.children?.find(option => (
-        option.value === type
-      ));
-    }
+    selectedType = selectedOptionRole?.children?.find(option => (option.value === type));
+    
     if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
