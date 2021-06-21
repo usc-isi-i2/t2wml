@@ -248,7 +248,7 @@ export class AnnotateProperties {
 
 class WikiStore {
     @observable public table = new TableState();
-    @observable public wikifier = new WikifierState();
+    @observable public partialCsv = new WikifierState();
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
     @observable public layers = new LayerState();

@@ -89,7 +89,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     let hasError = false;
 
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
+    wikiStore.partialCsv.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
     const { selectedCell } = this.state;
@@ -123,7 +123,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       hasError = true;
     } finally {
       wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
+      wikiStore.partialCsv.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
 
@@ -139,12 +139,12 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       finally {
         wikiStore.output.showSpinner = false;
       }
-      wikiStore.wikifier.showSpinner = true;
+      wikiStore.partialCsv.showSpinner = true;
       try {
         await this.requestService.getPartialCsv();
       }
       finally {
-        wikiStore.wikifier.showSpinner = false;
+        wikiStore.partialCsv.showSpinner = false;
       }
     }
   }
@@ -153,7 +153,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     console.log('WikifyMenu OnRemove triggered for -> ', qnode);
 
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
+    wikiStore.partialCsv.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
     const { selectedCell } = this.state;
@@ -187,7 +187,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       this.setState({ errorMessage: error });
     } finally {
       wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
+      wikiStore.partialCsv.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
   }
@@ -196,7 +196,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     console.log('WikifyMenu handleOnCreateQnode triggered for -> ', entityFields);
 
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
+    wikiStore.partialCsv.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
     const { selectedCell } = this.state;
@@ -225,9 +225,28 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       this.setState({ errorMessage: error });
     } finally {
       wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
+      wikiStore.partialCsv.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
+
+        //also update results:
+        try {
+          wikiStore.output.showSpinner = true;
+          await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+        }
+        catch (error) {
+          console.log(error) //don't break on this
+        }
+        finally {
+          wikiStore.output.showSpinner = false;
+        }
+        wikiStore.partialCsv.showSpinner = true;
+        try {
+          await this.requestService.getPartialCsv();
+        }
+        finally {
+          wikiStore.partialCsv.showSpinner = false;
+        }
   }
 
   renderHeader() {

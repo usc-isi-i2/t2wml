@@ -145,12 +145,12 @@ class Project extends Component<ProjectProps, ProjectState> {
       wikiStore.yaml.showSpinner = false;
     }
     if (currentFilesService.currentState.dataFile && currentFilesService.currentState.sheetName) {
-      wikiStore.wikifier.showSpinner = true;
+      wikiStore.partialCsv.showSpinner = true;
       try {
         await this.requestService.getPartialCsv();
       }
       finally {
-        wikiStore.wikifier.showSpinner = false;
+        wikiStore.partialCsv.showSpinner = false;
       }
     }
 

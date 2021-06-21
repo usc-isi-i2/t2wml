@@ -132,11 +132,11 @@ class Sidebar extends Component<{}, SidebarState> {
 
         // Does nothing when clicking on the current file
         if (!node.children && node.name !== currentFilesService.currentState.dataFile) {
-            wikiStore.wikifier.showSpinner = true;
+            wikiStore.partialCsv.showSpinner = true;
             this.setState({ showSpinner: true });
 
             await this.changeDataFile(node.name);
-            wikiStore.wikifier.showSpinner = false;
+            wikiStore.partialCsv.showSpinner = false;
             this.setState({ showSpinner: false });
         }
 
@@ -155,12 +155,12 @@ class Sidebar extends Component<{}, SidebarState> {
             wikiStore.table.showSpinner = false;
             wikiStore.yaml.showSpinner = false;
         }
-        wikiStore.wikifier.showSpinner = true;
+        wikiStore.partialCsv.showSpinner = true;
         try {
             await this.requestService.getPartialCsv();
         }
         finally {
-            wikiStore.wikifier.showSpinner = false;
+            wikiStore.partialCsv.showSpinner = false;
         }
     }
 

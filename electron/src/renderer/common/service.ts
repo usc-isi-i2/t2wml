@@ -245,7 +245,7 @@ class RequestService {
     const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
     updater.update(() => {
       this.updateProjectandQnode(response);
-      wikiStore.wikifier.wikifierError = response.wikifierError;
+      wikiStore.partialCsv.wikifierError = response.wikifierError;
     })
   }
 
@@ -284,7 +284,7 @@ class RequestService {
   public async uploadEntities(data: any) {
     const response = await backendPost(`/project/entities?${this.getDataFileParams(false)}`, data) as ResponseUploadEntitiesDTO;
     this.updateProjectandQnode(response);
-    wikiStore.wikifier.entitiesStats = response.entitiesStats;
+    wikiStore.partialCsv.entitiesStats = response.entitiesStats;
   }
 
   public async getEntities() {

@@ -169,7 +169,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         if (!selectedBlock) { return; }
 
         wikiStore.table.showSpinner = true;
-        wikiStore.wikifier.showSpinner = true;
+        wikiStore.partialCsv.showSpinner = true;
         wikiStore.yaml.showSpinner = true;
 
         const selection = [
@@ -185,7 +185,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
             this.props.onGetError(error);
         } finally {
             wikiStore.table.showSpinner = false;
-            wikiStore.wikifier.showSpinner = false;
+            wikiStore.partialCsv.showSpinner = false;
             wikiStore.yaml.showSpinner = false;
         }
     }

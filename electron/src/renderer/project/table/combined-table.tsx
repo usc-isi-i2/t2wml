@@ -606,12 +606,12 @@ class CombinedTable extends Component<{}, TableState> {
                 //
             }
         wikiStore.table.showSpinner = false;
-        wikiStore.wikifier.showSpinner = true;
+        wikiStore.partialCsv.showSpinner = true;
         try {
             await this.requestService.getPartialCsv();
         }
         finally {
-            wikiStore.wikifier.showSpinner = false;
+            wikiStore.partialCsv.showSpinner = false;
         }
     }
 
@@ -624,7 +624,7 @@ class CombinedTable extends Component<{}, TableState> {
 
         // before sending request
         wikiStore.table.showSpinner = true;
-        wikiStore.wikifier.showSpinner = true;
+        wikiStore.partialCsv.showSpinner = true;
 
         // send request
         console.log("<TableComponent> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
@@ -641,7 +641,7 @@ class CombinedTable extends Component<{}, TableState> {
             this.setState({ errorMessage: error });
         } finally {
             wikiStore.table.showSpinner = false;
-            wikiStore.wikifier.showSpinner = false;
+            wikiStore.partialCsv.showSpinner = false;
         }
     }
 
@@ -688,12 +688,12 @@ class CombinedTable extends Component<{}, TableState> {
             error.errorDescription += "\n\nCannot change sheet!";
             this.setState({ errorMessage: error });
         }
-        wikiStore.wikifier.showSpinner = true;
+        wikiStore.partialCsv.showSpinner = true;
         try {
             await this.requestService.getPartialCsv();
         }
         finally {
-            wikiStore.wikifier.showSpinner = false;
+            wikiStore.partialCsv.showSpinner = false;
         }
         wikiStore.table.showSpinner = false;
 
