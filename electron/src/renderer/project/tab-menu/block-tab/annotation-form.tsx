@@ -331,7 +331,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           this.setState({ showResult1: true, showResult2: false })
         }
         if (!type) { type = "string"; }
-        this.handleOnPropertyUnit(key, value, type);
+        this.handleOnPropertyUnit(key, value.trim(), type);
       }, 300);
     });
   }
@@ -1055,13 +1055,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           showWikifyBlockMenu ?
             <WikiBlockMenu
               selection={selection}
-              onClose={(notSubmit) => {
-                this.setState({ showWikifyBlockMenu: false });
-                if (!notSubmit) {
-                  this.handleOnSubmit();
-                }
-              }}
-              onGetError={(error:ErrorMessage) => {this.setState({ errorMessage: error });}}
+              onClose={() => { this.setState({ showWikifyBlockMenu: false }); }}
+              onGetError={(error: ErrorMessage) => { this.setState({ errorMessage: error }); }}
               role={fields.role}
               type={fields.type}
             />

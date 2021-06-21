@@ -132,10 +132,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({ qnodes });
   }
 
-  handleOnFocusSearch() {
-    const { search, instanceOf, entityFields } = this.state;
-    this.props.onChange('search', search, instanceOf, entityFields.is_property);
-  }
+  // handleOnFocusSearch() {
+  //   const { search, instanceOf, entityFields } = this.state;
+  //   this.props.onChange('search', search, instanceOf, entityFields.is_property);
+  // }
 
   handleOnChangeSearch(event: any) {
     const { instanceOf, entityFields } = this.state;
@@ -260,7 +260,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               type="text" size="sm"
               placeholder={entityFields.is_property ? 'property' : 'node'}
               value={search}
-              onFocus={this.handleOnFocusSearch.bind(this)}
+              // onFocus={this.handleOnFocusSearch.bind(this)}
               onChange={(event: any) => this.handleOnChangeSearch(event)}
               disabled={customQnode} />
             {search && qnodes.length ? (
