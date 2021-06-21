@@ -79,14 +79,16 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
             );
             if (selectedBlock) {
                 buttonRemoveWiki = (
+                    <Col>
+                    <hr></hr>
                     <Button
                         size="sm"
                         type="button"
-                        variant="link"
-                        style={{ color: "red", marginTop: "1rem" }}
+                        variant="outline-danger"
                         onClick={(event: React.MouseEvent) => this.handleOnRemoveWikification(event)}>
-                        remove wikification
+                        Remove Wikification
                     </Button>
+                    </Col>
                 );
             }
 
@@ -124,7 +126,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
             </Col>);
         return buttons;
     }
-    
+
     handleOnChangeDataType(event: any): void {
         this.setState({dataType: event.target.value})
     }

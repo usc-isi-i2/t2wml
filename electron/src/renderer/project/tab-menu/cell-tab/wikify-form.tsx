@@ -117,7 +117,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           y2: row + 1,
         };
         const cellInBlock = checkSelectedAnnotationBlocks(selection);
-        this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })  
+        this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })
     }
   }
 
@@ -455,10 +455,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         <Button
           size="sm"
           type="button"
-          variant="link"
+          variant="outline-danger"
           className="delete"
           onClick={this.handleOnRemove.bind(this)}>
-          remove wikification
+          Remove Wikification
         </Button>
       )
     }
