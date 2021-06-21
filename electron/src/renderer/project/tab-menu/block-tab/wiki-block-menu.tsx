@@ -10,19 +10,18 @@ import RequestService from '@/renderer/common/service';
 import wikiStore from '@/renderer/data/store';
 import { TYPES } from './annotation-options';
 
-// interface WikiBlockMenuState {
-// }
+
 
 interface WikiBlockMenuProps {
     onClose: (notSubmit?: boolean) => void,
-    onGetError: (error:ErrorMessage) => void,
+    onGetError: (error: ErrorMessage) => void,
     selection: CellSelection,
     role?: string,
     type?: string
 }
 
 @observer
-class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
+class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }> {
 
     private requestService: RequestService;
 
@@ -30,12 +29,15 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
         super(props);
 
         this.requestService = new RequestService();
-        this.state = {}
+        this.state = {
+            overwrite: false
+        }
     }
 
 
     renderWikifyAutoQnodeButton() {
         const { selection, role, type } = this.props;
+        const { overwrite } = this.state;
 
         const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
 
@@ -45,15 +47,20 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
         let buttonRemoveWiki = null;
         if (selection && (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem')) {
             buttonWikify = (
-                <Col>
-                    <Button
-                        size="sm"
-                        type="button"
-                        variant="outline-dark"
-                        style={{ marginTop: "1rem" }}
-                        onClick={() => this.handleOnWikify()}>
-                        Send this block for wikification
-                    </Button>
+                <Col sm="12" md="12">
+                    <Form.Group as={Row}>
+                        <Button
+                            size="sm"
+                            type="button"
+                            variant="outline-dark"
+                            style={{ marginTop: "1rem" }}
+                            onClick={() => this.handleOnWikify()}>
+                            Send this block for wikification
+                        </Button>
+                        <Form.Check type="checkbox" style={{ marginTop: "0.5rem" }} inline label="Overwrite existing wikification?" checked={overwrite}
+                            onChange={() => this.setState({ overwrite: !overwrite })} />
+                    </Form.Group>
+                    <hr></hr>
                 </Col>)
         }
         if (selection && (role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role == "property")) {
@@ -75,7 +82,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
                         size="sm"
                         type="button"
                         variant="link"
-                        style={{ color: "red" }}
+                        style={{ color: "red", marginTop: "1rem" }}
                         onClick={(event: React.MouseEvent) => this.handleOnRemoveWikification(event)}>
                         remove wikification
                     </Button>
@@ -88,8 +95,8 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
                 <Col>
                     <Form.Label className="text-muted">Type</Form.Label>
                     <Form.Control as="select" value={type} key={type}
-                        // onChange={(event: any) => this.handleOnChange(event, 'type')}
-                        >
+                    // onChange={(event: any) => this.handleOnChange(event, 'type')}
+                    >
                         {TYPES.map((type, i) => (
                             <option key={i}
                                 value={type.value}>
@@ -100,7 +107,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
                 </Col>
             )
         }
-        if (! (buttonWikify || buttonAutoQnode || dropdownTypes || buttonRemoveWiki)){
+        if (!(buttonWikify || buttonAutoQnode || dropdownTypes || buttonRemoveWiki)) {
             const notSubmit = false;
             this.props.onClose(notSubmit)
         }
@@ -119,7 +126,10 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
     }
 
     async handleOnWikify() {
-        const data = { "selection": this.props.selection };
+        const data = {
+            "selection": this.props.selection,
+            "overwrite": this.state.overwrite
+        };
         wikiStore.table.showSpinner = true;
         try {
             await this.requestService.callWikifierService(data);
@@ -147,37 +157,37 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, {}> {
 
     async handleOnRemoveWikification(event: React.MouseEvent) {
         event.preventDefault();
-    
+
         const { selection: selectionProps } = this.props
         const selectedBlock = utils.checkSelectedAnnotationBlocks(selectionProps);
         console.log(selectedBlock)
         if (!selectedBlock) { return; }
-    
+
         wikiStore.table.showSpinner = true;
         wikiStore.wikifier.showSpinner = true;
         wikiStore.yaml.showSpinner = true;
-    
+
         const selection = [
-          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
-          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+            [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
+            [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
         ];
-    
+
         try {
-          this.requestService.removeQNodes({selection});
+            this.requestService.removeQNodes({ selection });
         } catch (error) {
-          error.errorDescription += `Wasn't able to submit the qnode!\n` + error.errorDescription;
-          console.log(error.errorDescription)
-          this.props.onGetError(error);
+            error.errorDescription += `Wasn't able to submit the qnode!\n` + error.errorDescription;
+            console.log(error.errorDescription)
+            this.props.onGetError(error);
         } finally {
-          wikiStore.table.showSpinner = false;
-          wikiStore.wikifier.showSpinner = false;
-          wikiStore.yaml.showSpinner = false;
+            wikiStore.table.showSpinner = false;
+            wikiStore.wikifier.showSpinner = false;
+            wikiStore.yaml.showSpinner = false;
         }
-      }
+    }
 
     render() {
         const { onClose, selection } = this.props;
-        const position = { x: window.innerWidth * 0.10, y: 0 };
+        const position = { x: window.innerWidth * 0.05, y: 0 };
         return (
             <Draggable handle=".handle"
                 defaultPosition={position}>
