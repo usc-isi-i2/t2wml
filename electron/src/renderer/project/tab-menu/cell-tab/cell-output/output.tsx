@@ -3,17 +3,19 @@ import React, { Component } from 'react';
 // App
 import { Card, Spinner } from 'react-bootstrap';
 
-import { t2wmlColors } from '../../../../common/general';
+import {  ErrorMessage, t2wmlColors } from '@/renderer/common/general';
+import { IStateWithError } from '@/renderer/common/service';
+import ToastMessage from '@/renderer/common/toast';
 
 import { observer } from "mobx-react";
-import wikiStore from '../../../../data/store';
+import wikiStore from '@/renderer/data/store';
 import ShowOutput from './show-output';
 import { reaction, IReactionDisposer } from 'mobx';
-import { StatementEntry, Error } from '@/renderer/common/dtos';
-interface OutputComponentState {
+import { StatementEntry } from '@/renderer/common/dtos';
+interface OutputComponentState extends IStateWithError {
   // statement
   statement?: StatementEntry;
-  error?: Error;
+  errors: string;
 
   // download
   filename: string;
@@ -33,13 +35,15 @@ class Output extends Component<{}, OutputComponentState> {
     // init state
     this.state = {
       statement: undefined,
-      error: undefined,
+      errors: "",
 
       // download
       filename: "",
       showDownload: false,
       isDownloading: false,
       isLoadDatamart: false,
+
+      errorMessage: {} as ErrorMessage,
     } as OutputComponentState;
   }
 
@@ -62,16 +66,16 @@ class Output extends Component<{}, OutputComponentState> {
   updateStateFromStore() {
     this.setState({
       statement: undefined,
-      error: undefined
+      errors: ""
     });
 
     if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row) { return; } //no cell selected
     const selectedCell = wikiStore.table.selectedCell;
-    const errors = wikiStore.layers.error.find(selectedCell);
+    const error = wikiStore.layers.error.find(selectedCell);
     const statement = wikiStore.layers.statement.find(selectedCell);
 
-    if (errors) {
-      this.setState({ error: errors.error[0] }); //TODO: fix to work better.
+    if (error) {
+      this.setState({ errors: JSON.stringify(error.error) }); //TODO: fix to work better.
     }
     if (!statement) { return; }
     this.setState({ statement: statement });
@@ -79,16 +83,12 @@ class Output extends Component<{}, OutputComponentState> {
 
 
   render() {
-    const { statement, error } = this.state;
-
-    let message = ""
-    if (error){
-      if ( error.message ){
-        message = error.message
-      }
+    if (!this.state.statement){
+      return null;
     }
     return (
-      <div className="w-100 h-100 p-1" style={{ height: "100vh" }}>
+      <div className="w-100 h-100 p-1" style={{height: "100vh"}}>
+        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
 
         <Card className="w-100 h-100 shadow-sm">
 
@@ -98,9 +98,8 @@ class Output extends Component<{}, OutputComponentState> {
             {/* title */}
             <div
               className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 20px)", cursor: "default" }}>
-              Statement Preview
-            </div>
+              style={{ width: "calc(100% - 290px)", cursor: "default" }}
+            >Statement Preview</div>
 
           </Card.Header>
 
@@ -112,24 +111,13 @@ class Output extends Component<{}, OutputComponentState> {
               <Spinner animation="border" />
             </div>
 
-            {
-              !statement && wikiStore.table.selectedBlock?.role == "dependentVar" ?
-                (
-                  <div className="w-100 p-3"
-                    style={{ height: "150px", color: 'red', fontSize: "14px", fontWeight: "bold"}}>
-                    { "There is no statement to display" }
-                      <br/>
-                    { message }
-                  </div>
-                )
-                :
-                (
-                  // output
-                  <div className="w-100 p-3" style={{ height: "150px" }}>
-                    <ShowOutput statement={statement}/>
-                  </div>
-                )
-            }
+            {/* output */}
+            <div className="w-100 p-3" style={{ height: "150px" }}>
+              <ShowOutput
+                statement={this.state.statement}
+                errors={this.state.errors}
+              />
+            </div>
           </Card.Body>
         </Card>
       </div>

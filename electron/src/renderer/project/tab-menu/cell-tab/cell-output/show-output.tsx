@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 // App
 import { Card } from 'react-bootstrap';
 
-
 import { observer } from "mobx-react";
 import { StatementEntry } from '@/renderer/common/dtos';
 import wikiStore from '@/renderer/data/store';
 import dayjs from 'dayjs';
 
 interface ShowOutputProperties {
+  errors: string;
   statement?: StatementEntry;
 }
 
@@ -17,7 +17,7 @@ interface ShowOutputProperties {
 function ordinal_suffix_of(i: number): string {
   const j = i % 10,
         k = i % 100;
-        
+
   if (j == 1 && k != 11) {
     return i + "st";
   }
@@ -99,6 +99,13 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
 
   render() {
     const outputDiv = [];
+
+    let errorsDiv;
+    if (this.props.errors) {
+      errorsDiv = <div key="errors" style={{ fontSize: "14px", fontWeight: "bold", color: 'red' }}>
+        Errors: {this.props.errors}
+      </div>
+    }
 
     const statement = this.props.statement
     if (statement) {
@@ -193,6 +200,8 @@ class ShowOutput extends Component<ShowOutputProperties, {}> {
       );
 
     }
+
+    outputDiv.push(errorsDiv);
 
     return outputDiv;
   }
