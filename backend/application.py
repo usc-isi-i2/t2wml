@@ -59,7 +59,7 @@ def json_response(func):
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
-            print(e)
+            #print(e)
             if "Permission denied" in str(e):
                 e = web_exceptions.FileOpenElsewhereError(
                     "Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
@@ -168,7 +168,7 @@ def partial_csv():
     try:
         response["partialCsv"] = get_partial_csv(calc_params)
     except Exception as e:
-        print(e)
+        #print(e)
         response["partialCsv"] = dict(dims=[1, 3],
                                       firstRowIndex=0,
                                       cells=[["subject", "property", "value"]])
@@ -515,8 +515,7 @@ def suggest_annotation_block():
     try:
         response = annotation_suggester(calc_params.sheet, block, annotation)
     except Exception as e:
-        print(e)
-        pass
+        pass #print(e)
     return response, 200
 
 
