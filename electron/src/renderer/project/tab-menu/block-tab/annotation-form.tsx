@@ -144,7 +144,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     console.log('Annotationn Menu handleOnCreateQnode triggered for -> ', entityFields);
 
     wikiStore.table.showSpinner = true;
-    wikiStore.wikifier.showSpinner = true;
+    wikiStore.partialCsv.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
 
     try {
@@ -158,9 +158,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.setState({ errorMessage: error });
     } finally {
       wikiStore.table.showSpinner = false;
-      wikiStore.wikifier.showSpinner = false;
+      wikiStore.partialCsv.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
+
   }
 
   handleOnCloseEntityMenu(entityFields?: EntityFields) {
@@ -404,12 +405,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
     wikiStore.table.showSpinner = false;
 
-    wikiStore.wikifier.showSpinner = true;
+    wikiStore.partialCsv.showSpinner = true;
     try {
       await this.requestService.getPartialCsv();
     }
     finally {
-      wikiStore.wikifier.showSpinner = false;
+      wikiStore.partialCsv.showSpinner = false;
     }
   }
 

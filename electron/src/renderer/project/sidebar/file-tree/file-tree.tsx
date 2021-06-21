@@ -63,12 +63,12 @@ class FileTree extends Component<TreeProps, TreeState> {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
-    wikiStore.wikifier.showSpinner = true;
+    wikiStore.partialCsv.showSpinner = true;
     try{
       await this.requestService.getPartialCsv();
     }
     finally{
-      wikiStore.wikifier.showSpinner = false;
+      wikiStore.partialCsv.showSpinner = false;
     }
   }
 

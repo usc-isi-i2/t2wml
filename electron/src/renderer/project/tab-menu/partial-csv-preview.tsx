@@ -27,7 +27,7 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
     this.state = {
       partialCsv: undefined,
       // appearance
-      showSpinner: wikiStore.wikifier.showSpinner, //false,
+      showSpinner: wikiStore.partialCsv.showSpinner, //false,
 
       // table data
       rowData: [],
@@ -76,7 +76,7 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
           {/* wikifier */}
           <Card.Body className="p-0">
 
-            <div className="mySpinner" hidden={!wikiStore.wikifier.showSpinner}>
+            <div className="mySpinner" hidden={!wikiStore.partialCsv.showSpinner}>
               <Spinner animation="border" />
             </div>
 
