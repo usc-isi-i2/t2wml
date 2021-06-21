@@ -331,7 +331,9 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           this.setState({ showResult1: true, showResult2: false })
         }
         if (!type) { type = "string"; }
-        this.handleOnPropertyUnit(key, value, type);
+        if(value && value.trim()){
+          this.handleOnPropertyUnit(key, value.trim(), type);
+        }
       }, 300);
     });
   }
