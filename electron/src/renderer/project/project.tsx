@@ -12,20 +12,18 @@ import { ErrorMessage, t2wmlColors } from '../common/general';
 
 
 // components
-import Editors from './editor';
-import Output from './output/output';
 import RequestService, { IStateWithError } from '../common/service';
 import ToastMessage from '../common/toast';
-
 
 import { observer } from "mobx-react";
 import wikiStore from '../data/store';
 import Settings from './modals/project-settings';
-import { ipcRenderer } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import Sidebar from './sidebar/sidebar';
-import TableContainer from './table/table-container';
 import { currentFilesService } from '../common/current-file-service';
 import EntitiesWindow from './entities/entities-window';
+import CombinedTable from './table/combined-table';
+import BlockCellYamlMenu from './tab-menu/block-cell-yaml-menu';
 
 
 interface ProjectState extends IStateWithError {
@@ -78,6 +76,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     // Bind the handlers that are tied to ipcRenderer and needs to be removed
     this.onRefreshProject = this.onRefreshProject.bind(this);
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
+    this.onUploadWikifier = this.onUploadWikifier.bind(this)
   }
 
   componentDidMount() {
@@ -88,6 +87,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       console.error("There is no project id.")
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
+    ipcRenderer.on('upload-wikifier', this.onUploadWikifier);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
     ipcRenderer.on('project-entities', () => this.onShowEntitiesClicked());
   }
@@ -97,6 +97,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     await wikiStore.yaml.saveYaml();
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
+    ipcRenderer.removeListener('upload-wikifier', this.onUploadWikifier);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('project-entities', () => this.onShowEntitiesClicked());
   }
@@ -144,12 +145,12 @@ class Project extends Component<ProjectProps, ProjectState> {
       wikiStore.yaml.showSpinner = false;
     }
     if (currentFilesService.currentState.dataFile && currentFilesService.currentState.sheetName) {
-      wikiStore.wikifier.showSpinner = true;
+      wikiStore.partialCsv.showSpinner = true;
       try {
         await this.requestService.getPartialCsv();
       }
       finally {
-        wikiStore.wikifier.showSpinner = false;
+        wikiStore.partialCsv.showSpinner = false;
       }
     }
 
@@ -157,6 +158,34 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   onRefreshProject() {
     this.loadProject();
+  }
+
+  onUploadWikifier(){
+    this.uploadWikifier();
+  }
+
+  async uploadWikifier() {
+    const result = await remote.dialog.showOpenDialog({
+      title: "Open Existing Wikifier File",
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['openFile'],
+      filters: [{ name: "wikifier", extensions: ["csv"] }],
+    });
+    if (!result.canceled && result.filePaths) {
+      try {
+        const data = { "filepath": result.filePaths[0] };
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
+        await this.requestService.uploadWikifierOutput(data);
+        await this.requestService.getTable();
+        this.requestService.getPartialCsv();
+      } catch (error) {
+        console.log(error);
+      }finally{
+        wikiStore.table.showSpinner = false;
+        wikiStore.yaml.showSpinner = false;
+      }
+    }
   }
 
   onShowSettingsClicked() {
@@ -180,7 +209,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     });
   }
 
-  async handleSaveSettings(endpoint: string, warn: boolean, calendar: string, title: string, description: string | undefined, url: string | undefined) {
+  async handleSaveSettings(endpoint: string, warn: boolean, calendar: string, title: string, description?: string, url?: string) {
     // update settings
     this.setState({ showSettings: false });
 
@@ -256,12 +285,11 @@ class Project extends Component<ProjectProps, ProjectState> {
           <SplitPane className="" split="vertical" defaultSize="15%" minSize={200} maxSize={-1000}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
             <Sidebar />
-            <SplitPane className="" split="vertical" defaultSize="55%" minSize={300} maxSize={-300}>
-              <TableContainer />
-              <SplitPane className="" split="horizontal" defaultSize="60%" minSize={200} maxSize={-200}>
-                <Editors />
-                <Output />
+            <SplitPane className="" primary="second" split="vertical" defaultSize="35%" minSize={300} maxSize={-300}>
+            <SplitPane className="" split="horizontal" defaultSize="100%">
+              <CombinedTable /> <div></div>
               </SplitPane>
+                <BlockCellYamlMenu />
             </SplitPane>
           </SplitPane>
         </div>

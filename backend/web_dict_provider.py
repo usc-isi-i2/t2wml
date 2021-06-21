@@ -23,7 +23,6 @@ class WebDictionaryProvider(FallbackSparql):
             with open(project.entity_file, 'r') as f:
                 self.cache.update(json.load(f))
 
-
     def try_get_property_type(self, wikidata_property, *args, **kwargs):
             property_dict=self.cache.get(wikidata_property, None)
             if not property_dict:
@@ -34,12 +33,12 @@ class WebDictionaryProvider(FallbackSparql):
                 raise ValueError("No datatype defined for that id")
             return data_type
 
-    def get_entity(self, wikidata_id, *args, **kwargs):
+    def get_entity(self, wikidata_property, *args, **kwargs):
         try:
-            property_dict=self.cache[wikidata_id]
+            property_dict=self.cache[wikidata_property]
             return property_dict
         except KeyError:
-            raise ValueError(wikidata_id+" not found")
+            raise ValueError(wikidata_property+" not found")
 
     def save_entry(self, id, data_type=None, *args, **kwargs):
         added=True

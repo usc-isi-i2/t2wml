@@ -6,8 +6,8 @@ import wikiStore from '../data/store';
 export class CurrentFiles {
     @observable dataFile = "";
     @observable sheetName = "";
-    @observable mappingFile: string | undefined;
-    @observable mappingType: 'Yaml' | 'Annotation' | undefined;
+    @observable mappingFile?: string;
+    @observable mappingType?: 'Yaml' | 'Annotation';
 }
 
 const filename = 't2wmlproj.user.json';
@@ -49,6 +49,11 @@ export class CurrentFilesService {
 
     @observable currentState = new CurrentFiles();
     @observable prevSelections = {};
+
+    reset(){
+        console.log("resetting current state");
+        this.currentState = new CurrentFiles();
+    }
 
     getAnnotationFileFromProject() {
         const project = wikiStore.project.projectDTO!;
@@ -202,23 +207,13 @@ export class CurrentFilesService {
 
     @action
     changeAnnotation(newAnnotation: string, sheetName: string, dataFile: string) {
-        const project = wikiStore.project.projectDTO!;
-        currentFilesService.currentState.dataFile = dataFile;
-        currentFilesService.currentState.sheetName = sheetName;
-        // If this yaml is not part of current datafile, search the relevant data file and sheet.
-        if (project.annotations[this.currentState.dataFile][this.currentState.sheetName].val_arr.indexOf(newAnnotation) < 0) {
-            for (const df of Object.keys(project.annotations)) {
-                for (const sheet of Object.keys(project.annotations[df])) {
-                    if (project.annotations[df][sheet].val_arr.indexOf(newAnnotation) > -1) {
-                        this.currentState.dataFile = df;
-                        this.currentState.sheetName = sheet;
-                    }
-                }
-            }
-        }
 
-        this.currentState.mappingFile = newAnnotation;
-        this.currentState.mappingType = 'Annotation';
+        const newState = {...currentFilesService.currentState}
+        newState.dataFile = dataFile;
+        newState.sheetName = sheetName;
+        newState.mappingFile = newAnnotation;
+        newState.mappingType = 'Annotation';
+        this.currentState=newState;
 
         this.saveCurrentFileSelections();
     }

@@ -24,9 +24,9 @@ class Tags extends Component <TagsProperties, {}> {
     private listItemKey = 0; // list-item key - for making sure each <li> has a specific key
     constructor(props: TagsProperties) {
         super(props);
-        /*let isProperty = false;
+        /*let is_property = false;
 
-        if (isProperty) {
+        if (is_property) {
 
         } */
     }

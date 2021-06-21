@@ -25,7 +25,8 @@ def suggest(client, selection, annotations):
                 "selection":selection,
                 "title": title
             }
-    children=data.pop("children")
+    children=data.pop("children", {})
+
     annotation.update(data)
     annotation.update(children)
 
@@ -45,6 +46,14 @@ def annotate(client, annotations):
     data = json.loads(data)
     return data["annotations"], data
 
+def create_nodes(client, selection, is_property=False, data_type=None):
+    url=f"/api/auto_wikinodes"+url_appendix
+    payload={
+        "selection": selection,
+        "is_property":is_property,
+        "data_type": data_type
+    }
+    client.post(url, json=payload)
 
 
 def test_one(client):
@@ -57,6 +66,10 @@ def test_one(client):
     annotations.append({"selection":{"x1":3,"x2":4,"y1":1,"y2":1},
         "role":"property"})
     annotations, data=annotate(client, annotations)
+
+
+    #create nodes for property
+    create_nodes(client, {"x1":3,"x2":4,"y1":1,"y2":1}, True, "quantity")
 
     #qualifier
     selection={"x1":2,"x2":2,"y1":2,"y2":7}
@@ -71,7 +84,10 @@ def test_one(client):
     #main subject
     selection={"x1":1,"x2":1,"y1":2,"y2":7}
     annotations=suggest(client, selection, annotations)
+    #create nodes for main subject
+    create_nodes(client, {"x1":1,"x2":1,"y1":2,"y2":7})
+    #final round of annotating
     annotations, data=annotate(client, annotations)
-    assert data["layers"]["statement"]["entries"][0]["value"]=='10000000'
 
+    assert data["layers"]["statement"]["entries"][0]["value"]=='10000000'
 

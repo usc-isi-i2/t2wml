@@ -11,7 +11,7 @@ import wikiStore from '@/renderer/data/store';
 import EntitiesList from './entities-list';
 import EntityFields from './entity-fields';
 import Tags from './tags';
-import { Entity } from '@/renderer/common/dtos';
+import { QNode } from '@/renderer/common/dtos';
 
 interface EntitiesProperties {
     showEntities: boolean;
@@ -23,9 +23,9 @@ interface EntitiesProperties {
 
 
 interface EntitiesState {
-    selectedProperty: string | undefined;
+    selectedProperty?: string;
     entityFile: string;
-    propertyData?: Entity;
+    propertyData?: QNode;
     labelContent: string;
     hasError: boolean;
 }

@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 // App
 import { Card } from 'react-bootstrap';
 
-
 import { observer } from "mobx-react";
 import { StatementEntry } from '@/renderer/common/dtos';
 import wikiStore from '@/renderer/data/store';
@@ -18,7 +17,7 @@ interface ShowOutputProperties {
 function ordinal_suffix_of(i: number): string {
   const j = i % 10,
         k = i % 100;
-        
+
   if (j == 1 && k != 11) {
     return i + "st";
   }

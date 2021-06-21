@@ -51,7 +51,7 @@ class EntityFields extends Component<EntitiesProperties, {}> {
                 </Form.Group>
                 </li>
                 {this.props.propertyData.data_type!=undefined ?
-                <li key={"datatype"+this.props.property}>
+                <li key={"data_type"+this.props.property}>
                 <Form.Group>
                     <Form.Label>Data type</Form.Label><br></br>
                     <Form.Control as="select"

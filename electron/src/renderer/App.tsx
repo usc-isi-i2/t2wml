@@ -48,6 +48,9 @@ class App extends Component<{}, AppState> {
     ipcRenderer.on('toggle-cleaned', (sender: IpcRendererEvent, checked: boolean) => {
       this.onToggleCleaned(checked);
     });
+    ipcRenderer.on('toggle-qnodes', (sender: IpcRendererEvent, checked: boolean) => {
+      this.onToggleQnodes(checked);
+    });
     ipcRenderer.on('global-settings', () => {
       this.onShowGlobalSettings();
     });
@@ -82,6 +85,10 @@ class App extends Component<{}, AppState> {
 
   onToggleCleaned(checked: boolean) {
     wikiStore.table.showCleanedData = checked;
+  }
+
+  onToggleQnodes(checked: boolean) {
+    wikiStore.table.showQnodes = checked;
   }
 
   async onShowGlobalSettings() {

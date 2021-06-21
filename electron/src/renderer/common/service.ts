@@ -5,9 +5,12 @@ import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO,
+  EntityFields,
+  ResponseWithQNodeLayerAndQnode
 } from './dtos';
 import { ErrorMessage } from './general';
+
 
 
 export interface IStateWithError {
@@ -109,12 +112,24 @@ class RequestService {
 
 
   public async getProperties(search: string, type: string) {
+    if (!search || !search.trim()) {
+      wikiStore.annotateProperties.properties = [];
+      return;
+    }
     const url = `/properties?q=${search}&data_type=${type}`;
     const response = await backendGet(url) as ResponseWithQNodesDTO;
     wikiStore.annotateProperties.properties = response.qnodes;
   }
 
   public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean, isSubject = false) {
+    if (!search || !search.trim()) {
+      if (isSubject) {
+        wikiStore.subjectQnodes.qnodes = [];
+      } else {
+        wikiStore.wikifyQnodes.qnodes = [];
+      }
+      return;
+    }
     let url = `/qnodes?q=${search}`;
     if (searchProperties) {
       url = `/properties?q=${search}`;
@@ -140,7 +155,7 @@ class RequestService {
   }
 
   public async removeQNodes(values: any) {
-    const response = await backendPost(`/remove_qnode?${this.getDataFileParams(false)}`, values) as ResponseWithQNodeLayerDTO;
+    const response = await backendPost(`/delete_wikification?${this.getDataFileParams()}`, values) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
 
@@ -185,8 +200,10 @@ class RequestService {
   public async getSuggestedAnnotationBlocks() {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithAnnotationsDTO;
-    updater.update(() => { wikiStore.annotations.blocks = response.annotations || [];
-                           wikiStore.yaml.yamlContent = response.yamlContent;}, "getsuggestedAnnotationBlocks")
+    updater.update(() => {
+      wikiStore.annotations.blocks = response.annotations || [];
+      wikiStore.yaml.yamlContent = response.yamlContent;
+    }, "getsuggestedAnnotationBlocks")
   }
 
   public async createProject(folder: string, data?: any) {
@@ -216,16 +233,21 @@ class RequestService {
   public async callWikifierService(data: any) {
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
     this.updateProjectandQnode(response);
-    wikiStore.wikifier.wikifierError = response.wikifierError;
   }
 
-  public async callCountryWikifier(data: any){
+  public async callAutoCreateWikinodes(data: any) {
+    const response = await backendPost(`/auto_wikinodes?${this.getDataFileParams()}`, data) as ResponseWithQNodeLayerDTO;
+    this.updateProjectandQnode(response);
+  }
+
+  public async callCountryWikifier(data: any) {
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
-    updater.update(() => { this.updateProjectandQnode(response);
-      wikiStore.wikifier.wikifierError = response.wikifierError; })
+    updater.update(() => {
+      this.updateProjectandQnode(response);
+      wikiStore.partialCsv.wikifierError = response.wikifierError;
+    })
   }
-
 
   public async getTable() {
     const updater = currentFilesService.createUpdater();
@@ -262,7 +284,7 @@ class RequestService {
   public async uploadEntities(data: any) {
     const response = await backendPost(`/project/entities?${this.getDataFileParams(false)}`, data) as ResponseUploadEntitiesDTO;
     this.updateProjectandQnode(response);
-    wikiStore.wikifier.entitiesStats = response.entitiesStats;
+    wikiStore.partialCsv.entitiesStats = response.entitiesStats;
   }
 
   public async getEntities() {
@@ -275,9 +297,16 @@ class RequestService {
     wikiStore.entitiesData.entities = response;
   }
 
-  public async downloadResults(fileType: string) {
+  public async downloadResults(fileType: string, path: string, allResults?: boolean) {
     //returns "data" (the download), "error": None, and "internalErrors"
-    const response = await backendGet(`/project/download/${fileType}?${this.getMappingParams()}`);
+    let url = ""
+    if (allResults) {
+      url = `/project/export/${fileType}/all?${this.getProjectFolder()}`
+    } else {
+      url = `/project/export/${fileType}?${this.getMappingParams()}`
+    }
+    const data = { 'filepath': path }
+    const response = await backendPost(url, data);
     return response;
   }
 
@@ -294,6 +323,26 @@ class RequestService {
   public async removeOrDeleteFile(folder: string, data: any) {
     const response = await backendPost(`/files/delete?project_folder=${folder}`, data) as ResponseWithProjectDTO;
     wikiStore.project.projectDTO = response.project;
+  }
+
+  public async createQnode(entityFields: EntityFields, selection?: number[][]) {
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields, selection: selection }) as ResponseWithQNodeLayerAndQnode;
+    if (response.layers.qnode) {
+      this.updateProjectandQnode(response);
+    }
+    return response;
+  }
+
+  public async getQnodeById(id?: string) {
+    if (!id) { return; }
+    try {
+      const response = await backendGet(`/query_node/${id}?${this.getDataFileParams()}`) as QNode;
+      return response;
+    } catch (error) {
+      if (error.errorCode === 404) {
+        return;
+      }
+    }
   }
 
 

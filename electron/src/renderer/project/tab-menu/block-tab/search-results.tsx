@@ -8,7 +8,7 @@ import { QNode } from '@/renderer/common/dtos';
 
 
 interface SearchResultsProps {
-  onSelect: (key: string, value: string) => void;
+  onSelect: (key: string, value: QNode) => void;
 }
 
 
@@ -57,7 +57,7 @@ class SearchResults extends React.Component<SearchResultsProps, SearchResultsSta
     this.setState({qnodes});
   }
 
-  handleOnClick(key: string, value: string) {
+  handleOnClick(key: string, value: QNode) {
     const {onSelect} = this.props;
     this.setState({properties: [], qnodes: []}, () => {
       onSelect(key, value);
@@ -70,7 +70,7 @@ class SearchResults extends React.Component<SearchResultsProps, SearchResultsSta
       <div className="results">
         {properties.map((item, index) => (
           <Row className={'property'} key={index}
-            onClick={() => this.handleOnClick('property', item.id)}>
+            onClick={() => this.handleOnClick('property', item)}>
             <Col sm="12" md="12">
               <div className="label">{item.label} ({item.id})</div>
               <div className="description">{item.description}</div>
@@ -79,7 +79,7 @@ class SearchResults extends React.Component<SearchResultsProps, SearchResultsSta
         ))}
         {qnodes.map((item, index) => (
           <Row className={'qnode'} key={index}
-            onClick={() => this.handleOnClick('unit', item.id)}>
+            onClick={() => this.handleOnClick('unit', item)}>
             <Col sm="12" md="12">
               <div className="label">{item.label} ({item.id})</div>
               <div className="description">{item.description}</div>

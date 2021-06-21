@@ -6,7 +6,7 @@ import MonacoEditor from 'react-monaco-editor';
 import yaml from 'js-yaml';
 
 // App
-import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
+import { Button, Card, Spinner } from 'react-bootstrap';
 
 // console.log
 import { LOG, ErrorMessage, t2wmlColors } from '../../common/general';
@@ -20,9 +20,6 @@ import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
 import { remote } from 'electron';
 
-interface yamlProperties {
-  isShowing: boolean;
-}
 
 interface yamlState extends IStateWithError {
   yamlJson?: JSON;
@@ -37,13 +34,13 @@ interface yamlState extends IStateWithError {
 
 
 @observer
-class YamlEditor extends Component<yamlProperties, yamlState> {
+class YamlEditor extends Component<{}, yamlState> {
   private requestService: RequestService;
 
   monacoRef: any = React.createRef();
   private disposeReaction?: IReactionDisposer;
 
-  constructor(props: yamlProperties) {
+  constructor(props: {}) {
     super(props);
     this.requestService = new RequestService();
 
@@ -224,7 +221,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
     });
   }
 
-  updateYamlContent(yamlContent: string | undefined) {
+  updateYamlContent(yamlContent?: string) {
     if (yamlContent == undefined) {
       yamlContent = defaultYamlContent;
     }
@@ -277,63 +274,13 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
       },
     });
 
-    // render upload tooltip
-    const uploadToolTipHtml = (
-      <Tooltip style={{ width: "fit-content" }} id="upload">
-        <div className="text-left small">
-          <b>Accepted file types:</b><br />
-          • YAML Ain&apos;t Markup Language (.yaml)
-        </div>
-      </Tooltip>
-    );
-
     return (
       <Fragment>
         {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
         <Card
           className="w-100 shadow-sm"
-          style={(this.props.isShowing) ? { height: "calc(100% - 40px)" } : { height: "40px" }}
+          style={{ height: "90vh" }}
         >
-
-          {/* header */}
-          <Card.Header
-            style={{ height: "40px", padding: "0.5rem 1rem", background: t2wmlColors.YAML }}
-            onClick={() => wikiStore.editors.nowShowing = "YamlEditor"}
-          >
-
-            {/* title */}
-            <div
-              className="text-white font-weight-bold d-inline-block text-truncate"
-              style={{ width: "calc(100% - 75px)", cursor: "default" }}
-            >
-              YAML&nbsp;Editor&nbsp;({currentFilesService.currentState.mappingFile})
-            </div>
-
-            {/* button of open yaml file */}
-            <OverlayTrigger overlay={uploadToolTipHtml} placement="bottom" trigger={["hover", "focus"]}>
-              <Button
-                className="d-inline-block float-right"
-                variant="outline-light"
-                size="sm"
-                style={{ padding: "0rem 0.5rem" }}
-                onClick={() => { document.getElementById("file_yaml")?.click(); }}
-              >
-                Import
-                </Button>
-            </OverlayTrigger>
-
-            {/* hidden input of yaml file */}
-            <input
-              type="file"
-              id="file_yaml"
-              accept=".yaml"
-              style={{ display: "none" }}
-              disabled={this.state.disableYaml || wikiStore.yaml.showSpinner}
-              onChange={this.handleOpenYamlFile}
-              onClick={(event) => { (event.target as HTMLInputElement).value = '' }}
-            />
-
-          </Card.Header>
 
           {/* loading spinner */}
           <div className="mySpinner" hidden={!wikiStore.yaml.showSpinner}>
@@ -341,10 +288,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
           </div>
 
           {/* yaml editor */}
-          <Card.Body
-            className="w-100 h-100 p-0"
-            style={(this.props.isShowing) ? { overflow: "hidden" } : { display: "none" }}
-          >
+          <Card.Body className="w-100 h-100 p-0">
             {!this.state.disableYaml ?
               <MonacoEditor ref={this.monacoRef}
                 width="100%"
@@ -382,9 +326,7 @@ class YamlEditor extends Component<yamlProperties, yamlState> {
 
           {/* card footer */}
           <Card.Footer
-            style={
-              (this.props.isShowing) ? { background: "whitesmoke" } : { display: "none" }
-            }
+            style={{ background: "whitesmoke" }}
           >
 
             {/* error message */}

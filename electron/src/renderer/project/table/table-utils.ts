@@ -92,5 +92,17 @@ export function checkSelectedAnnotationBlocks(selection: CellSelection): Annotat
       }
     }
   }
-  return;
+  return undefined;
+}
+
+function isLetter(char: string) {
+  return char.length === 1 && char.toLowerCase().match(/[a-z]/i);
+}
+
+export function isValidLabel(label?: string){
+  if(!label || label.length===0){ return false; }
+  for(const char of label){
+    if (isLetter(char)) return true;
+  }
+  return false;
 }

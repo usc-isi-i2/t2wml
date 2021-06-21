@@ -40,6 +40,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.project.projectDTO, () => this.updateFileTree()));
     //until we figure out why reactions to currentState aren't working, just subscribing inidivually
+    this.disposers.push(reaction(() => currentFilesService.currentState, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState.dataFile, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState.sheetName, () => this.updateFileTree()));
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingFile, () => this.updateFileTree()));
@@ -62,12 +63,12 @@ class FileTree extends Component<TreeProps, TreeState> {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
-    wikiStore.wikifier.showSpinner = true;
+    wikiStore.partialCsv.showSpinner = true;
     try{
       await this.requestService.getPartialCsv();
     }
     finally{
-      wikiStore.wikifier.showSpinner = false;
+      wikiStore.partialCsv.showSpinner = false;
     }
   }
 
@@ -138,7 +139,6 @@ class FileTree extends Component<TreeProps, TreeState> {
     let filename = this.state.clickedNode!.label;
 
     if (currentFilesService.currentState.mappingFile == filename &&
-      wikiStore.table.mode=="annotation" &&
       currentFilesService.getAnnotationsLength()<2){
       alert("Cannot remove only annotation on sheet while in annotation mode. Clearing annotation instead.")
       const sheetName = this.state.clickedNode!.parentNode!.label;
@@ -240,7 +240,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     const result = await remote.dialog.showOpenDialog({
       title: "Open Existing Yaml File",
       defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
+      properties: ['openFile'],
       filters: [
         { name: "Yaml", extensions: ["yaml"] }
       ],
@@ -269,7 +269,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     const result = await remote.dialog.showOpenDialog({
       title: "Open Existing Annotation File",
       defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
+      properties: ['openFile'],
       filters: [
         { name: "annotation", extensions: ["annotation", "json"] }
       ],

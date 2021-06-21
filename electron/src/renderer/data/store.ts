@@ -4,16 +4,10 @@ import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
 import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
         StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
-import { Cell } from '../common/general';
+import { Cell, CellSelection } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
 import { currentFilesService } from '../common/current-file-service';
-
-
-type EditorsStatus = "Wikifier" | "YamlEditor";
-class EditorsState {
-    @observable public nowShowing: EditorsStatus = "Wikifier";
-}
 
 
 export type TableMode = 'annotation' | 'output' | 'wikify';
@@ -23,18 +17,35 @@ class TableState {
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
     @observable public selectedCell?: Cell;
+    @observable public selectedBlock?: AnnotationBlock;
+    @observable public selection?: CellSelection;
+
     @observable public showCleanedData: boolean;
+    @observable public showQnodes: boolean;
 
     constructor() {
         this.mode = 'annotation';
         this.table = {} as TableDTO;
         this.showSpinner = false;
         this.showCleanedData = false;
+        this.showQnodes = false;
     }
 
     updateTable(table: TableDTO){
         this.table=table;
+        console.log("resetting wikistore selections from wikistore update table")
+        this.resetSelections();
+    }
+
+    resetSelections(){
         this.selectedCell = undefined;
+        this.selectedBlock= undefined;
+        this.selection = undefined;
+    }
+
+    selectBlock(block?: AnnotationBlock){
+        this.selectedBlock = block;
+        this.selection = block?.selection || undefined;
     }
 }
 
@@ -68,7 +79,7 @@ class YamlEditorState {
     // @observable public yamlList: string[] = [];
     @observable public showSpinner = false;
     @observable public yamlContent: string = defaultYamlContent;
-    @observable public yamlError?: string | undefined;
+    @observable public yamlError?: string;
     @observable public yamlhasChanged = false;
 
     @observable public async saveYaml() {
@@ -124,7 +135,7 @@ export class Layer<T extends Entry> {
         }
     }
 
-    public find(cell: Cell | undefined): T | undefined {
+    public find(cell?: Cell): T | undefined {
         if (cell) {
             const index = `${cell.row},${cell.col}`;
             return this.entryMap.get(index);
@@ -236,9 +247,8 @@ export class AnnotateProperties {
 }
 
 class WikiStore {
-    @observable public editors = new EditorsState();
     @observable public table = new TableState();
-    @observable public wikifier = new WikifierState();
+    @observable public partialCsv = new WikifierState();
     @observable public output = new OutputState();
     @observable public yaml = new YamlEditorState();
     @observable public layers = new LayerState();
@@ -265,6 +275,7 @@ class WikiStore {
         } else {
             this.displayMode = 'project-list';
             ipcRenderer.send('show-project', null);
+            currentFilesService.reset()
         }
     }
 }

@@ -184,17 +184,28 @@ export default class MainMenuManager {
             accelerator: 'CmdOrCtrl+,',
             click: () => this.onProjectSettingsClick(),
             enabled,
+        }, {
+            label: 'Upload old-style wikifier file',
+            click: () => this.onUploadWikifierClick(),
+            enabled,
         },
         {
             label: 'Entities',
             click: () => this.onProjectEntitiesClick(),
             enabled,
         },
-        {
+        /*{ //will be returned once cleaning is back on agenda
             label: 'Show Cleaned Data',
             type: 'checkbox',
             checked: uiState.showCleanedData,
             click: (checkbox) => this.onShowCleanedClick(checkbox.checked),
+            enabled,
+        },*/
+        {
+            label: 'Show nodes',
+            type: 'checkbox',
+            checked: uiState.showQnodes,
+            click: (checkbox) => this.onShowQnodesClick(checkbox.checked),
             enabled,
         }
     ];
@@ -236,6 +247,10 @@ export default class MainMenuManager {
         rendererNotifier.projectSettings();
     }
 
+    private onUploadWikifierClick() {
+        rendererNotifier.uploadWikifier();
+    }
+
     private onProjectEntitiesClick() {
         rendererNotifier.projectEntities();
     }
@@ -252,6 +267,11 @@ export default class MainMenuManager {
 
     private onShowCleanedClick(checked: boolean) {
         rendererNotifier.toggleShowCleanedData(checked);
+    }
+
+    private onShowQnodesClick(checked: boolean) {
+        uiState.showQnodes=checked;
+        rendererNotifier.toggleShowQnodes(checked);
     }
 
     private async onAddToPath() {

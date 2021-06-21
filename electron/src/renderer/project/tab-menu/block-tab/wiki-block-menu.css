@@ -1,0 +1,18 @@
+.wiki-block-menu {
+    position: absolute;
+    min-width: 600px;
+    z-index: 500;
+    left: 10px;
+    top: 50px;
+  }
+  
+  .wiki-block-menu .handle {
+    background: whitesmoke;
+    cursor: pointer;
+  }
+
+  .wiki-block-menu .toast .toast-body {
+    background: #fefefe;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }

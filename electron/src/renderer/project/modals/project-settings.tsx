@@ -34,8 +34,8 @@ interface SettingsProperties {
 interface SettingsState {
   tmpWarnEmpty: boolean;
   title: string;
-  description: string | undefined;
-  url: string | undefined;
+  description?: string;
+  url?: string;
 }
 
 const calendarOptions = [

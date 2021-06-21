@@ -65,7 +65,12 @@ export interface QNode{
     description: string;
     id: string;
     url?: string;
+
+    //for property
+    data_type?: string;
+    tags?: string[];
 }
+
 
 export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
     qnodes: {[key: string]: QNode };
@@ -123,6 +128,14 @@ export interface StatementEntry extends Entry{
 export type AnnotationBlockRole = "dependentVar" | "qualifier" | "metadata" | "property" | "mainSubject" | "unit";
 export type AnnotationBlockType = "string" | "quantity" | "time" | "wikibaseitem";
 
+
+export interface EntityFields {
+    is_property: boolean;
+    label: string;
+    description: string;
+    data_type: string;
+}
+
 export interface AnnotationBlock{
     selection: CellSelection;
     role: AnnotationBlockRole;
@@ -130,9 +143,9 @@ export interface AnnotationBlock{
 
     language?: string;
 
-    unit?: string;
-    subject?: string;
-    property?: string;
+    unit?: QNode;
+    subject?: QNode;
+    property?: QNode;
     links?: {
         property?: string;// the ID of the block with the property of this block
         mainSubject?: string; // the ID of the block with the subject of this block
@@ -158,6 +171,7 @@ export interface TableCell {
   rawContent?: string;
   content: string | JSX.Element;
   classNames: string[];
+  overlay?: string;
 }
 
 export type TableData = TableCell[][];
@@ -204,15 +218,9 @@ export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
     entitiesStats: EntitiesStatsDTO;
 }
 
-export interface Entity{
-    label: string;
-    description: string;
-    data_type?: string;
-    tags?: string[];
-}
 
 export interface ResponseEntitiesPropertiesDTO {
-    [file: string]: { [property: string] : Entity };
+    [file: string]: { [property: string] : QNode };
 }
 
 export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {
@@ -235,4 +243,8 @@ export interface ResponseWithSuggestion {
     role: string;
     type?: string;
     children: any;
+}
+
+export interface ResponseWithQNodeLayerAndQnode extends ResponseWithQNodeLayerDTO, ResponseWithProjectDTO{
+    entity: QNode;
 }

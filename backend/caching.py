@@ -55,7 +55,7 @@ class CacheHolder:
                 with open(self.cache_path, 'w', encoding="utf-8") as f:
                     f.write(s)
             except Exception as e: #I really don't want bugs in this optional section breaking the program
-                print("error when caching:", str(e))
+                pass #print("error when caching:", str(e))
 
     def load_kg(self):
         if use_cache():
