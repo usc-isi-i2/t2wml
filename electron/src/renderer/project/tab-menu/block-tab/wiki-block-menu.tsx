@@ -21,7 +21,7 @@ interface WikiBlockMenuProps {
 }
 
 @observer
-class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }> {
+class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, dataType: string }> {
 
     private requestService: RequestService;
 
@@ -30,14 +30,15 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }
 
         this.requestService = new RequestService();
         this.state = {
-            overwrite: false
+            overwrite: false,
+            dataType: this.props.type ? this.props.type : "string"
         }
     }
 
 
     renderWikifyAutoQnodeButton() {
         const { selection, role, type } = this.props;
-        const { overwrite } = this.state;
+        const { overwrite, dataType } = this.state;
 
         const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
 
@@ -94,8 +95,8 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }
             dropdownTypes = (
                 <Col>
                     <Form.Label className="text-muted">Type</Form.Label>
-                    <Form.Control as="select" value={type} key={type}
-                    // onChange={(event: any) => this.handleOnChange(event, 'type')}
+                    <Form.Control as="select" value={dataType} key={dataType}
+                    onChange={(event: any) => this.handleOnChangeDataType(event)}
                     >
                         {TYPES.map((type, i) => (
                             <option key={i}
@@ -123,6 +124,10 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }
             </Col>);
         return buttons;
     }
+    
+    handleOnChangeDataType(event: any): void {
+        this.setState({dataType: event.target.value})
+    }
 
     async handleOnWikify() {
         const data = {
@@ -139,11 +144,12 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }
     }
 
     async handleOnAutoCreateMissingQnode() {
-        const { selection, role, type } = this.props;
+        const { selection, role } = this.props;
+        const { dataType } = this.state;
         const data = {
             "selection": selection,
             "is_property": role == "property",
-            "data_type": role == "property" ? (type ? type : "string") : undefined
+            "data_type": role == "property" ? (dataType ? dataType : "string") : undefined
         };
         wikiStore.table.showSpinner = true;
         try {
