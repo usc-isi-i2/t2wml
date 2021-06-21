@@ -112,14 +112,24 @@ class RequestService {
 
 
   public async getProperties(search: string, type: string) {
-    if(!search || ! search.trim()) { return; }
+    if (!search || !search.trim()) {
+      wikiStore.annotateProperties.properties = [];
+      return;
+    }
     const url = `/properties?q=${search}&data_type=${type}`;
     const response = await backendGet(url) as ResponseWithQNodesDTO;
     wikiStore.annotateProperties.properties = response.qnodes;
   }
 
   public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean, isSubject = false) {
-    if(!search || ! search.trim()) { return; }
+    if (!search || !search.trim()) {
+      if (isSubject) {
+        wikiStore.subjectQnodes.qnodes = [];
+      } else {
+        wikiStore.wikifyQnodes.qnodes = [];
+      }
+      return;
+    }
     let url = `/qnodes?q=${search}`;
     if (searchProperties) {
       url = `/properties?q=${search}`;
@@ -287,7 +297,7 @@ class RequestService {
     wikiStore.entitiesData.entities = response;
   }
 
-  public async downloadResults(fileType: string, path:string, allResults?: boolean) {
+  public async downloadResults(fileType: string, path: string, allResults?: boolean) {
     //returns "data" (the download), "error": None, and "internalErrors"
     let url = ""
     if (allResults) {
@@ -295,7 +305,7 @@ class RequestService {
     } else {
       url = `/project/export/${fileType}?${this.getMappingParams()}`
     }
-    const data = {'filepath': path}
+    const data = { 'filepath': path }
     const response = await backendPost(url, data);
     return response;
   }

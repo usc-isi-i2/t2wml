@@ -10,19 +10,21 @@ import wikiStore from '@/renderer/data/store';
 @observer
 class BlockCellYamlMenu extends Component {
 
-    onSwitchTab(){
-        wikiStore.annotateProperties.properties = [];
-        wikiStore.wikifyQnodes.qnodes = [];
-        wikiStore.subjectQnodes.qnodes = []
-
+    onSwitchTab(key?: string|null) {
+        console.log("onSwitchTab", key);
+        if (key === "block" || key === "cell") {
+            wikiStore.annotateProperties.properties = [];
+            wikiStore.wikifyQnodes.qnodes = [];
+            wikiStore.subjectQnodes.qnodes = []
+        }
     }
 
 
     render() {
         return (
-            <div className="shadow-sm block-menu" style={{ margin: "2px", overflow: "auto"}}>
-                <Tabs defaultActiveKey="block" id="tabs" transition={false}>
-                <Tab eventKey="block" title="Block" onSelect={() => this.onSwitchTab()}>
+            <div className="shadow-sm block-menu" style={{ margin: "2px", overflow: "auto" }}>
+                <Tabs defaultActiveKey="block" id="tabs" transition={false} onSelect={(key) => this.onSwitchTab(key)}>
+                    <Tab eventKey="block" title="Block" >
                         <BlockTab />
                     </Tab>
                     <Tab eventKey="cell" title="Cell">
