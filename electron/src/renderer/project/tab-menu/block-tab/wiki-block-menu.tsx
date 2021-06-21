@@ -13,7 +13,7 @@ import { TYPES } from './annotation-options';
 
 
 interface WikiBlockMenuProps {
-    onClose: (notSubmit?: boolean) => void,
+    onClose: () => void,
     onGetError: (error: ErrorMessage) => void,
     selection: CellSelection,
     role?: string,
@@ -108,8 +108,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }
             )
         }
         if (!(buttonWikify || buttonAutoQnode || dropdownTypes || buttonRemoveWiki)) {
-            const notSubmit = false;
-            this.props.onClose(notSubmit)
+            this.props.onClose();
         }
         const buttons = (
             <Col sm="12" md="12">
@@ -194,11 +193,22 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean }
                 <div className="wiki-block-menu">
                     <Toast onClose={onClose}>
                         <Toast.Header className="handle">
-                            {utils.humanReadableSelection(selection)}
+                            <strong className="mr-auto">{utils.humanReadableSelection(selection)}</strong>
                         </Toast.Header>
 
                         <Toast.Body>
                             {this.renderWikifyAutoQnodeButton()}
+
+                            {/* <Button
+                                size="sm"
+                                type="button"
+                                variant="outline-dark"
+                                onClick={() => onClose()}
+                                style={{ marginTop: "1rem", marginRight: "0rem" }}>
+                                OK
+                            </Button> */}
+
+
                         </Toast.Body>
                     </Toast>
                 </div>

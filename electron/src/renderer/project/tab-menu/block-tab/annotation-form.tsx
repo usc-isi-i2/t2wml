@@ -1055,12 +1055,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           showWikifyBlockMenu ?
             <WikiBlockMenu
               selection={selection}
-              onClose={(notSubmit) => {
-                this.setState({ showWikifyBlockMenu: false });
-                if (!notSubmit) {
-                  this.handleOnSubmit();
-                }
-              }}
+              onClose={() => {this.setState({ showWikifyBlockMenu: false });}}
               onGetError={(error:ErrorMessage) => {this.setState({ errorMessage: error });}}
               role={fields.role}
               type={fields.type}
