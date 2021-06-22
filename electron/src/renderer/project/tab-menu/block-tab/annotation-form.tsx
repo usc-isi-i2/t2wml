@@ -1,17 +1,16 @@
 import React from 'react';
 
-import { AnnotationBlock, EntityFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
+import { AnnotationBlock, AnnotationFields, EntityFields, nameQNodeFields, nameStrFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../../table/table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
-import SearchResults from './search-results';
 import { QNode } from '@/renderer/common/dtos';
 import wikiStore from '../../../data/store';
 
 import { IReactionDisposer, reaction } from 'mobx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { columnToLetter } from '../../table/table-utils';
 import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
@@ -19,26 +18,11 @@ import './annotation-form.css'
 import ToastMessage from '@/renderer/common/toast';
 import WikiBlockMenu from './wiki-block-menu';
 import EntityMenu from '../entity-menu';
+import NodeField from './node-field';
 
 
 
-interface AnnotationFields {
-  role?: string;
-  type?: string;
-  unit?: QNode;
-  format?: string;
-  calendar?: string;
-  property?: QNode;
-  language?: string;
-  precision?: string;
-  selectedArea?: string;
-  subject?: QNode;
-}
-
-export type nameQNodeFields = "unit" | "property" | "subject";
 const listQNodeFields = ["unit", "property", "subject"];
-export type nameStrFields = "role" | 'type' | 'format' | 'calendar' | 'language' | 'precision' | "selectedArea";
-
 
 interface AnnotationFormState {
   selectedBlock?: AnnotationBlock;
@@ -318,12 +302,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.changed = true;
 
     if (key === 'role') {
-      if(value==="dependentVar" || value==="qualifier"){
+      if (value === "dependentVar" || value === "qualifier") {
         updatedFields['type'] = "string";
-      } else  { //| "metadata" | "property" | "mainSubject" | "unit"
+      } else { //| "metadata" | "property" | "mainSubject" | "unit"
         updatedFields['type'] = undefined;
       }
-      
+
     }
 
     this.setState({ fields: updatedFields }, () => {
@@ -538,101 +522,39 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       )
     }
     // type is property or unit OR format/Language!
-    const propertyBlockId = selectedBlock?.links?.property;
-    let propertyBlockSelection = "";
-    if (propertyBlockId) {
-      for (const block of wikiStore.annotations.blocks) {
-        if (block.id == propertyBlockId) {
-          const { x1, x2, y1, y2 } = block.selection;
-          propertyBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
-        }
-      }
-    }
-    const unitBlockId = selectedBlock?.links?.unit;
-    let unitBlockSelection = "";
-    if (unitBlockId) {
-      for (const block of wikiStore.annotations.blocks) {
-        if (block.id == unitBlockId) {
-          const { x1, x2, y1, y2 } = block.selection;
-          unitBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
-        }
-      }
-    }
     const { fields, searchFields } = this.state;
-    const selectedValue = (fields && fields[type.value as nameQNodeFields]) ? fields[(type.value as nameQNodeFields)] : undefined;
-    let url = ""
-    if (selectedValue?.id) { url = utils.isValidLabel(selectedValue?.id.substring(1, selectedValue?.id.length)) ? "" : `https://www.wikidata.org/wiki/${selectedValue?.id}` }
-    const linkedId = selectedValue ? (url ? (
-      <a target="_blank"
-        rel="noopener noreferrer"
-        className="type-qnode"
-        href={url}>
-        {selectedValue.id}
-      </a>
-    ) : (<a>{selectedValue.id}</a>)) : null;
-    defaultValue = (searchFields as any)[type.value] || "";
+    if (key === "property" || key === "unit") {
+      return (
+        <NodeField
+          selectedBlock={selectedBlock}
+          searchFields={searchFields}
+          fields={fields}
+          type={type}
+          onChangeFields={(fields:AnnotationFields) => this.setState({fields: fields})}
+          changeShowEntityMenu={(newTypeEntityMenu: string) => this.changeShowEntityMenu(newTypeEntityMenu)}
+        />
 
-    return (
-
-      <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }} noGutters>
-        <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
-        <Col sm='12' md={key == 'property' || key == 'unit' ? '4' : '6'}>
-          <Form.Control
-            type="text" size="sm"
-            value={defaultValue}
-            onChange={(event: any) => this.handleOnChange(event, type.value)}
-          />
-          {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg &quot;%Y&quot;)</Form.Label> : null}
-        </Col>
-
-        <Col sm="12" md="3">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline-dark"
-            onClick={() => this.changeShowEntityMenu(type.label)}>
-            Create entity
-          </Button>
-        </Col>
-        {
-          key == "property" ?
-            <Col sm="12" md='2'>
-              <Form.Control
-                type="text" size="sm"
-                value={propertyBlockSelection}
-                readOnly />
-            </Col>
-            : key == "unit" ?
-              <Col sm="12" md='2'>
-                <Form.Control
-                  type="text" size="sm"
-                  value={unitBlockSelection}
-                  readOnly />
-              </Col>
-              : null
-        }
-        {
-          selectedValue ?
-            <Col sm="12" md="12">
-              <FontAwesomeIcon
-                icon={faTimesCircle}
-                className="clear-button"
-                onClick={() => {
-                  const updatedFields = { ...this.state.fields };
-                  updatedFields[type.value as keyof AnnotationFields] = undefined;
-                  this.setState({ fields: updatedFields })
-                }} />
-              <div className="selected-node" key={selectedValue.id}>
-                <strong>{selectedValue.label}</strong>&nbsp;
-                {linkedId}
-                <br />
-                {selectedValue.description}
-              </div>
-            </Col>
-            : null
-        }
-      </Form.Group>
-    )
+      )
+    } else {
+      if (fields && (fields as any)[type.value]) {
+        defaultValue = (fields as any)[type.value];
+      } else {
+        defaultValue = "";
+      }
+      return (
+        <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }} noGutters>
+          <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
+          <Col sm='12' md='9'>
+            <Form.Control
+              type="text" size="sm"
+              value={defaultValue}
+              onChange={(event: any) => this.handleOnChange(event, type.value)}
+            />
+            {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg &quot;%Y&quot;)</Form.Label> : null}
+          </Col>
+        </Form.Group>
+      )
+    }
   }
 
   renderNestedOptions() {
@@ -660,7 +582,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
     let selectedType = null;
     selectedType = selectedOptionRole?.children?.find(option => (option.value === type));
-    
+
     if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
@@ -723,19 +645,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         this.setState({ searchFields });
       }
     });
-  }
-
-  renderSearchResults() {
-    const { showResult1 } = this.state
-    return (
-      <div>
-        {
-          showResult1 ?
-            <SearchResults onSelect={this.handleOnSelect.bind(this)} />
-            : null
-        }
-      </div>
-    )
   }
 
   clearSubject() {
@@ -1035,7 +944,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         {this.renderSelectionAreas()}
         {this.renderRolesDropdown()}
         {this.renderNestedOptions()}
-        {this.renderSearchResults()}
         {this.renderSubject()}
         {this.renderSubmitButton()}
 
@@ -1046,6 +954,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)}
               title={typeEntityMenu}
               data_type={data_type}
+              showResult1={this.state.showResult1}
+              onSelectNode={this.handleOnSelect.bind(this)}
             />
             : null
         }
