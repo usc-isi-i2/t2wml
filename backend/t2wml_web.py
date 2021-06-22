@@ -423,5 +423,6 @@ def create_zip(project, filetype, filestream):
                             zf.writestr(zip_filename, output)
                             if kg.errors:
                                 internalErrors.append(kg.errors)
-            zf.writestr("errors.json", json.dumps(internalErrors))
+            if internalErrors:
+                zf.writestr("errors.json", json.dumps(internalErrors))
         return filestream
