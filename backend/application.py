@@ -524,11 +524,8 @@ def suggest_annotation_block():
 def guess_annotation_blocks():
     project = get_project()
     calc_params = get_calc_params(project)
-    annotation_blocks = suggest_annotations(calc_params)
-    response = dict()
-    response["annotations"], response["yamlContent"] = get_annotations(
-        calc_params)
-    return response, 200
+    suggest_annotations(calc_params)
+    return get_mapping()
 
 
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])

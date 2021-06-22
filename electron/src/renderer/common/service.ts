@@ -5,7 +5,7 @@ import { backendGet, backendPost, backendPut } from './comm';
 import {
   ResponseWithProjectDTO, ResponseWithMappingDTO, ResponseWithTableDTO, ResponseWithQNodeLayerDTO,
   ResponseCallWikifierServiceDTO, ResponseUploadEntitiesDTO, ResponseWithEverythingDTO, ResponseWithProjectAndMappingDTO,
-  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO, ResponseWithAnnotationsDTO,
+  TableDTO, GlobalSettingsDTO, ResponseEntitiesPropertiesDTO, QNode, ResponseWithProjectandFileName, ResponseWithQNodesDTO, ResponseWithSuggestion, ResponseWithPartialCsvDTO,
   EntityFields,
   ResponseWithQNodeLayerAndQnode
 } from './dtos';
@@ -199,10 +199,8 @@ class RequestService {
 
   public async getSuggestedAnnotationBlocks() {
     const updater = currentFilesService.createUpdater();
-    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithAnnotationsDTO;
-    updater.update(() => {
-      wikiStore.annotations.blocks = response.annotations || [];
-      wikiStore.yaml.yamlContent = response.yamlContent;
+    const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithMappingDTO;
+    updater.update(() => {this.fillMapping(response)
     }, "getsuggestedAnnotationBlocks")
   }
 

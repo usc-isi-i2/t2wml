@@ -193,11 +193,6 @@ export interface ResponseWithPartialCsvDTO{
     partialCsv: TableDTO;
 }
 
-export interface ResponseWithAnnotationsDTO{
-    annotations: AnnotationBlock[];
-    yamlContent: string;
-}
-
 export interface ResponseWithMappingDTO{
     project: ProjectDTO;
     layers: LayersDTO;
