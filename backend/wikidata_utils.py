@@ -15,7 +15,7 @@ def query_wikidata_for_properties(props, sparql_endpoint):
                         ?wpid rdfs:label         ?label.
                         ?wpid schema:description   ?desc.
                     }}
-                }}""".format(properties)
+                }}""".format(properties= properties)
 
     sparql = SPARQLWrapper(sparql_endpoint, agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
     sparql.setQuery(query)
@@ -82,13 +82,13 @@ def get_labels_and_descriptions(provider, entities, sparql_endpoint):
                 missing_properties[entity_id]=True
 
     try:
-        combined_missing = missing_items | missing_properties
+        combined_missing = {**missing_items, **missing_properties}
         if combined_missing:
             wikidata_label_query_cache.update(combined_missing)
             missing_items=list(combined_missing.keys())
             additional_items = query_wikidata_for_items(missing_items, sparql_endpoint)
             additional_properties = query_wikidata_for_properties(missing_properties, sparql_endpoint)
-            combined_additional = additional_items | additional_properties
+            combined_additional = {**additional_items, **additional_properties}
             response.update(combined_additional)
             with provider as p:
                 for id in combined_additional:
@@ -97,7 +97,8 @@ def get_labels_and_descriptions(provider, entities, sparql_endpoint):
                     p.save_entry(id, data_type, **prop_dict)
 
 
-    except:  # eg 502 bad gateway error
+    except Exception as e:  # eg 502 bad gateway error
+        print(e)
         pass
     return response
 
