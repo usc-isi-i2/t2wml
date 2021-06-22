@@ -355,7 +355,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const fields = { ...this.state.fields }
     fields.selectedArea = value;
     this.setState({ fields });
-    const regex = /^.?([a-z]+)([0-9]+):([a-z]+)([0-9]+).?$/gmi;
+    const regex = /^([a-z]+)([0-9]+):([a-z]+)([0-9]+)$/gmi;
     const groups = regex.exec(value);
     if (groups && groups[1] && groups[2] && groups[3] && groups[4]) {
       const selection: CellSelection = {
@@ -537,7 +537,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         </Form.Group>
       )
     }
-    // type is property or unit
+    // type is property or unit OR format/Language!
     const propertyBlockId = selectedBlock?.links?.property;
     let propertyBlockSelection = "";
     if (propertyBlockId) {
