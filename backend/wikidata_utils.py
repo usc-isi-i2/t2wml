@@ -3,7 +3,41 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 wikidata_label_query_cache = {}
 
-def query_wikidata_for_label_and_description(items, sparql_endpoint):
+def query_wikidata_for_properties(props, sparql_endpoint):
+    properties=' wd:'.join(props)
+    properties="wd:"+properties
+    query = """SELECT ?wpid ?label ?desc ?type
+                WHERE
+                {{
+                  VALUES ?wpid {{{properties}}}
+                ?wpid wikibase:propertyType ?type;
+                SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en".
+                        ?wpid rdfs:label         ?label.
+                        ?wpid schema:description   ?desc.
+                    }}
+                }}""".format(properties)
+
+    sparql = SPARQLWrapper(sparql_endpoint, agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    try:
+        results = sparql.query().convert()
+    except Exception as e:
+        raise e
+    response = dict()
+    for i in range(len(results["results"]["bindings"])):
+        try:
+            result = results["results"]["bindings"][i]
+            qnode = result["wpid"]["value"].split("/")[-1]
+            data_type = result["type"]["value"].split("#")[1]
+            label=result["label"]["value"]
+            description=results["desc"]["value"]
+            response[qnode] = {'label': label, 'description': description, 'data_type':data_type}
+        except (IndexError, KeyError):
+            pass
+    return response
+
+def query_wikidata_for_items(items, sparql_endpoint):
     items = ' wd:'.join(items)
     items = "wd:" + items
 
@@ -33,27 +67,36 @@ def query_wikidata_for_label_and_description(items, sparql_endpoint):
     return response
 
 
-def get_labels_and_descriptions(provider, items, sparql_endpoint):
+def get_labels_and_descriptions(provider, entities, sparql_endpoint):
     response=dict()
     missing_items={}
-    for item in items:
+    missing_properties={}
+    for entity_id in entities:
         try:
-            wp=provider.get_entity(item)
-            response[item]=wp
+            wp=provider.get_entity(entity_id)
+            response[entity_id]=wp
         except:
-            missing_items[item]=True
+            if entity_id[0]=="Q":
+                missing_items[entity_id]=True
+            if entity_id[0]=="P":
+                missing_properties[entity_id]=True
+
     try:
-        if missing_items:
-            wikidata_label_query_cache.update(missing_items)
-            missing_items=list(missing_items.keys())
-            additional_items = query_wikidata_for_label_and_description(
-                missing_items, sparql_endpoint)
-            response.update(additional_items)
+        combined_missing = missing_items | missing_properties
+        if combined_missing:
+            wikidata_label_query_cache.update(combined_missing)
+            missing_items=list(combined_missing.keys())
+            additional_items = query_wikidata_for_items(missing_items, sparql_endpoint)
+            additional_properties = query_wikidata_for_properties(missing_properties, sparql_endpoint)
+            combined_additional = additional_items | additional_properties
+            response.update(combined_additional)
             with provider as p:
-                for item in additional_items:
-                    prop_dict=additional_items[item]
+                for id in combined_additional:
+                    prop_dict=dict(combined_additional[id])
                     data_type=prop_dict.pop("data_type", None)
-                    p.save_entry(item, data_type, **prop_dict)
+                    p.save_entry(id, data_type, **prop_dict)
+
+
     except:  # eg 502 bad gateway error
         pass
     return response
