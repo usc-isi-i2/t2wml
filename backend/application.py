@@ -434,7 +434,7 @@ def export_results(filetype):
             raise web_exceptions.CellResolutionWithoutYAMLFileException(
                 "Cannot download report without uploading mapping file first")
         kg = get_kg(calc_params)
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding="utf-8") as f:
             f.write(kg.get_output(filetype, calc_params.project))
         #response["error"] = None
         #response["internalErrors"] = kg.errors if kg.errors else None
