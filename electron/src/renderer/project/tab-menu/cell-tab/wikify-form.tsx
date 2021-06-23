@@ -63,6 +63,9 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       entityFields.description = selected.description;
       entityFields.label = selected.label;
       customQnode = true;
+      if (selected.data_type && entityFields.is_property) {
+        entityFields.data_type = selected.data_type.toString();
+      }
     }
     this.state = {
       search: undefined,
@@ -100,6 +103,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       entityFields.description = selected.description;
       entityFields.label = selected.label;
       customQnode = true;
+      if (selected.data_type && entityFields.is_property) {
+        entityFields.data_type = selected.data_type.toString();
+      }
+
     }
     this.setState({ customQnode, entityFields, selected })
   }
@@ -110,14 +117,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     } else {
       const { selectedCell } = this.props;
       const { col, row } = selectedCell;
-        const selection: CellSelection = {
-          x1: col + 1,
-          x2: col + 1,
-          y1: row + 1,
-          y2: row + 1,
-        };
-        const cellInBlock = checkSelectedAnnotationBlocks(selection);
-        this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })
+      const selection: CellSelection = {
+        x1: col + 1,
+        x2: col + 1,
+        y1: row + 1,
+        y2: row + 1,
+      };
+      const cellInBlock = checkSelectedAnnotationBlocks(selection);
+      this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })
     }
   }
 
@@ -198,7 +205,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         is_property: true,
         label: selectedCell.value || "",
         description: "",
-        data_type: "quantity",
+        data_type: "string",
       },
       customQnode: false
     });
@@ -423,6 +430,9 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         entityFields.is_property = selected.id.startsWith("P");
         entityFields.description = selected.description;
         entityFields.label = selected.label;
+        if (selected.data_type && entityFields.is_property) {
+          entityFields.data_type = selected.data_type.toString();
+        }
       }
     }
     this.setState({ entityFields, customQnode: !customQnode, qnodes: [] })
