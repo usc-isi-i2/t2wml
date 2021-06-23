@@ -59,7 +59,7 @@ class NodeField extends Component<NodeFieldProps, {}> {
 
         return (
             <div>
-                <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }} noGutters>
+                <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }}>
                     <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
                     {
                         selectedValue ?
@@ -90,24 +90,14 @@ class NodeField extends Component<NodeFieldProps, {}> {
                                     </Col>
                                     :
                                     <Col sm='12' md='9'>
-                                        <Col>
-                                            <Form.Control
-                                                type="text" size="sm"
-                                                value={defaultValue}
-                                            // onChange={(event: any) => this.handleOnChange(event, type.value)}
-                                            />
-                                        </Col>
-
-                                        <Col>
                                             <Button
                                                 type="button"
                                                 size="sm"
                                                 variant="outline-dark"
                                             onClick={() => this.props.changeShowEntityMenu(type.label)}
                                             >
-                                                Create entity
+                                                Edit entity
                                             </Button>
-                                        </Col>
                                     </Col>
                             )
                     }

@@ -4,33 +4,44 @@ import Draggable from 'react-draggable';
 import { Button, Col, Form, Toast } from 'react-bootstrap';
 import './entity-menu.css'
 
-import { CellSelection } from '@/renderer/common/general';
+import { CellSelection, ErrorMessage } from '@/renderer/common/general';
 import EntityForm from './entity-form';
-import { AnnotationFields, EntityFields, QNode } from '@/renderer/common/dtos';
+import { EntityFields, QNode } from '@/renderer/common/dtos';
 import { humanReadableSelection, isValidLabel } from '../table/table-utils';
 import SearchResults from './block-tab/search-results';
+import RequestService, { IStateWithError } from '@/renderer/common/service';
+import ToastMessage from '@/renderer/common/toast';
 
-interface EntityMenuState {
+interface EntityMenuState extends IStateWithError {
     entityFields: EntityFields,
     searchText?: string,
 }
 
-@observer
-class EntityMenu extends Component<{
+interface EntityMenuProps {
     onClose: (entityFields?: EntityFields) => void,
     selection: CellSelection,
     title?: string,
     data_type?: string,
-    showResult1: boolean,
+    // showResults: boolean,
     onSelectNode: (key: string, value?: QNode | undefined) => void,
-}, EntityMenuState> {
+}
+
+@observer
+class EntityMenu extends Component<EntityMenuProps, EntityMenuState> {
+
+    private requestService: RequestService;
+    private timeoutSearch?: number;
 
 
     constructor(props: any) {
         super(props);
+
+        this.requestService = new RequestService();
+
         const { title, data_type } = this.props;
         const is_property = title?.toLowerCase() === "property";
         this.state = {
+            errorMessage: {} as ErrorMessage,
             entityFields: {
                 is_property: is_property,
                 label: "",
@@ -62,6 +73,60 @@ class EntityMenu extends Component<{
     }
 
 
+    async handleOnSearch(key: string, value: string, type: string) {
+
+        if (key === 'property') {
+            try {
+                await this.requestService.call(this, () => (
+                    this.requestService.getProperties(value, type)
+                ));
+            } catch (error) {
+                error.errorDescription += `\nWasn't able to find any properties for ${value}`;
+                this.setState({ errorMessage: error });
+            } finally {
+                console.log('properties request finished');
+            }
+        }
+
+        if (key === 'unit') {
+
+            const instanceOf: QNode = {
+                label: 'unit of measurement',
+                description: 'quantity, defined and adopted by convention',
+                id: 'Q47574',
+            }
+
+            try {
+                await this.requestService.call(this, () => (
+                    this.requestService.getQNodes(value, false, instanceOf)
+                ));
+            } catch (error) {
+                error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
+                this.setState({ errorMessage: error });
+            } finally {
+                console.log('qnodes request finished');
+            }
+        }
+    }
+
+    handleOnChangeSearchText(event: any, key?: string): void {
+        if (!key) {return;}
+        const value = (event.target as HTMLInputElement).value;
+
+        this.setState({ searchText: !value || value.trim().length === 0 ? undefined : value }, () => {
+            if (this.timeoutSearch) {
+                window.clearTimeout(this.timeoutSearch);
+            }
+            this.timeoutSearch = window.setTimeout(() => {
+                let { data_type } = this.state.entityFields;
+                if (!data_type) { data_type = "string"; }
+
+                this.handleOnSearch(key, value.trim(), data_type);
+            }, 300);
+        });
+    }
+
+
     handleOnSubmit() {
         const { entityFields } = this.state;
         console.log(this.state);
@@ -69,14 +134,14 @@ class EntityMenu extends Component<{
     }
 
     renderSearchResults() {
-        const { showResult1 } = this.props
+        // const { showResults } = this.props
         return (
             <div>
-                {
-                    showResult1 ?
-                        <SearchResults onSelect={(key: string, value: QNode) => this.props.onSelectNode(key, value)} />
-                        : null
-                }
+                {/* {
+                    showResults ? */}
+                <SearchResults onSelect={(key: string, value: QNode) => this.props.onSelectNode(key, value)} />
+                {/* : null
+                } */}
             </div>
         )
     }
@@ -89,6 +154,7 @@ class EntityMenu extends Component<{
             <Draggable handle=".handle"
                 defaultPosition={position}>
                 <div className="entity-menu">
+                    {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
                     <Toast onClose={onClose}>
                         <Toast.Header className="handle">
                             {humanReadableSelection(selection)}  {title}
@@ -106,16 +172,16 @@ class EntityMenu extends Component<{
                                 />
                             </Col>
                             <Col >
-                            <Form.Group
-                                onChange={(event: any) => this.handleOnChangeSearchText(event, title?.toLowerCase())}>
-                                <Form.Label>
-                                    Search for existing node:
-                                </Form.Label>
-                                <Form.Control
-                                    type="text" size="sm"
-                                    value={searchText}
-                                />
-                            </Form.Group>
+                                <Form.Group
+                                    onChange={(event: any) => this.handleOnChangeSearchText(event, title?.toLowerCase())}>
+                                    <Form.Label>
+                                        Search for existing node:
+                                    </Form.Label>
+                                    <Form.Control
+                                        type="text" size="sm"
+                                        value={searchText}
+                                    />
+                                </Form.Group>
                             </Col>
                             <Col sm="12" md="12">
                                 {this.renderSearchResults()}
@@ -132,15 +198,8 @@ class EntityMenu extends Component<{
         );
     }
 
-    handleOnChangeSearchText(event: any, key?: string): void {
-        const value = (event.target as HTMLInputElement).value;
-        
-        if (!value || value.trim().length === 0) {
-            this.setState({searchText: undefined});
-        } else {
-            this.setState({searchText: value})
-        }
-    }
+
 }
+
 
 export default EntityMenu;
