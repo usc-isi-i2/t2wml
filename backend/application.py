@@ -981,22 +981,24 @@ def causx_download_project():
     project = get_project()
     calc_params = get_calc_params(project)
     data_path = calc_params.data_path
+    data_path_arcname=str(Path(data_path).name)
     sheet_name=calc_params.sheet_name
     annotation_path=calc_params.annotation_path
-    entities_path= Path(project.directory) / project.entity_files[0]
-    #TODO: entities
+    annotation_path_arcname = str(calc_params._annotation_path)
+    entities_path= Path(project.directory) / project.entity_files[0] #TODO: entities
+    entities_path_arcname=str(project.entity_files[0])
 
     attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
 
     filestream=BytesIO()
     with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
-            zf.write(data_path)
-            zf.write(annotation_path)
-            zf.write(entities_path)
-            zf.writestr("filemap.json", json.dumps(dict(data=str(data_path),
+            zf.write(data_path, arcname=data_path_arcname)
+            zf.write(annotation_path, arcname=annotation_path_arcname)
+            zf.write(entities_path, arcname=entities_path_arcname)
+            zf.writestr("filemap.json", json.dumps(dict(data=data_path_arcname,
                                                         sheet=sheet_name,
-                                                        annotation=str(annotation_path),
-                                                        entity=str(entities_path))))
+                                                        annotation=annotation_path_arcname,
+                                                        entity=entities_path_arcname)))
 
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
