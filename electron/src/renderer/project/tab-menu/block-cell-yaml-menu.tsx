@@ -13,9 +13,7 @@ class BlockCellYamlMenu extends Component {
     onSwitchTab(key?: string|null) {
         console.log("onSwitchTab", key);
         if (key === "block" || key === "cell") {
-            wikiStore.annotateProperties.properties = [];
             wikiStore.wikifyQnodes.qnodes = [];
-            wikiStore.subjectQnodes.qnodes = []
         }
     }
 

@@ -10,13 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 interface NodeFieldProps {
     selectedBlock?: AnnotationBlock;
     fields: AnnotationFields;
-    searchFields: {
-        property?: string;
-        unit?: string;
-        subject?: string;
-    };
     type: any;
-    onChangeFields: (fields:AnnotationFields) => void;
+    onChangeFields: (fields: AnnotationFields) => void;
     changeShowEntityMenu: (newTypeEntityMenu: string) => void;
 }
 
@@ -30,10 +25,10 @@ class NodeField extends Component<NodeFieldProps, {}> {
     }
 
     render() {
-        const { selectedBlock, fields, searchFields, type } = this.props;
-        const key: string = type.label.toLowerCase();
+        const { selectedBlock, fields, type } = this.props;
+        const typeLabel: string = type.label.toLowerCase();
 
-        const linkedBlockId = key === "property" ? selectedBlock?.links?.property : (key === "unit" ? selectedBlock?.links?.unit : undefined);
+        const linkedBlockId = typeLabel === "property" ? selectedBlock?.links?.property : (typeLabel === "unit" ? selectedBlock?.links?.unit : undefined);
         let linkedBlockSelection = "";
         if (linkedBlockId) {
             for (const block of wikiStore.annotations.blocks) {
@@ -55,7 +50,6 @@ class NodeField extends Component<NodeFieldProps, {}> {
                 {selectedValue.id}
             </a>
         ) : (<a>{selectedValue.id}</a>)) : null;
-        const defaultValue = (searchFields as any)[type.value] || "";
 
         return (
             <div>
@@ -90,14 +84,14 @@ class NodeField extends Component<NodeFieldProps, {}> {
                                     </Col>
                                     :
                                     <Col sm='12' md='9'>
-                                            <Button
-                                                type="button"
-                                                size="sm"
-                                                variant="outline-dark"
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="outline-dark"
                                             onClick={() => this.props.changeShowEntityMenu(type.label)}
-                                            >
-                                                Edit entity
-                                            </Button>
+                                        >
+                                            Edit entity
+                                        </Button>
                                     </Col>
                             )
                     }

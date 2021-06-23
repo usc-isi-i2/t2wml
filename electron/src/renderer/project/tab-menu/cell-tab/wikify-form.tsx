@@ -14,11 +14,12 @@ import { isValidLabel, checkSelectedAnnotationBlocks } from '../../table/table-u
 
 interface WikifyFormProperties {
   selectedCell: Cell;
-  onSelectBlock: (applyToBlock: boolean) => void;
+  onSelectBlock?: (applyToBlock: boolean) => void;
   onChange: (key: string, value?: string, instanceOf?: QNode | undefined, searchProperties?: boolean) => Promise<void>;
-  onSubmit: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-  onRemove: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
-  onCreateQnode: (entityFields: EntityFields, applyToBlock: boolean) => Promise<void>;
+  onSubmit: (qnode: QNode, applyToBlock?: boolean) => Promise<void>;
+  onRemove?: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
+  onCreateQnode: (entityFields: EntityFields, applyToBlock?: boolean) => Promise<void>;
+  iPopupMenu?: boolean;
 }
 
 interface WikifyFormState {
@@ -131,7 +132,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   toggleApplyToBlock() {
     const { applyToBlock } = this.state;
-    this.props.onSelectBlock(!applyToBlock);
+    const { onSelectBlock } = this.props;
+    if (onSelectBlock) onSelectBlock(!applyToBlock);
     this.setState({ applyToBlock: !applyToBlock });
   }
 
@@ -194,7 +196,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     const { onRemove, selectedCell } = this.props;
     const { selected, applyToBlock } = this.state;
     if (!selected) { return; }
-    onRemove(selected, applyToBlock);
+    if (onRemove) onRemove(selected, applyToBlock);
     this.setState({
       selected: undefined,
       instanceOf: undefined,
@@ -446,12 +448,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <Col sm="12" md="12">
             <Button
               size="sm"
-              type="submit"
+              type="button"
               variant="outline-dark"
-              disabled={!(selected || (customQnode && isValidLabel(entityFields.label)))}>
-              Submit
+              disabled={!(selected || (customQnode && isValidLabel(entityFields.label)))}
+              onClick={(event) => this.handleOnSubmit(event)}
+            >
+              {this.props.iPopupMenu ? "OK" : "Submit"}
             </Button>
-            {this.renderRemoveButton()}
+            { this.props.iPopupMenu ? this.renderRemoveButton() : null}
           </Col>
         </Form.Group>
       )
@@ -477,8 +481,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   render() {
     const { customQnode, entityFields, disabledIsProperty } = this.state;
     return (
-      <Form className="container wikify-form"
-        onSubmit={(event: any) => this.handleOnSubmit(event)}>
+      <div className="wikify-form">
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
           <Form.Check type="checkbox" inline label="Custom?" checked={customQnode} onChange={() => this.onChangeCustomQnode()} />
         </Form.Group>
@@ -499,9 +502,11 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           </Col>
         </Form.Group>
         {this.renderSelectedNode()}
-        {this.renderApplyOptions()}
+        {
+          this.props.iPopupMenu ? this.renderApplyOptions() : null
+        }
         {this.renderSubmitButton()}
-      </Form>
+      </div>
     )
   }
 }

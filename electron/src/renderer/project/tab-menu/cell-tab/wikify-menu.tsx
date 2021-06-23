@@ -9,7 +9,7 @@ import { EntityFields, QNode } from '@/renderer/common/dtos';
 import { Cell, CellSelection } from '../../../common/general';
 import wikiStore from '../../../data/store';
 import * as utils from '../../table/table-utils';
-import { Card } from 'react-bootstrap';
+import { Card, Form } from 'react-bootstrap';
 import { IReactionDisposer, reaction } from 'mobx';
 import ToastMessage from '@/renderer/common/toast';
 
@@ -48,7 +48,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
 
   onSelectBlock(applyToBlock: boolean) {
     const { selectedCell } = this.state;
-    if ( applyToBlock && selectedCell ) {
+    if (applyToBlock && selectedCell) {
       const { col, row } = selectedCell;
       const selection: CellSelection = {
         x1: col + 1,
@@ -57,7 +57,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
         y2: row + 1,
       };
       const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
-      if ( selectedBlock ) {
+      if (selectedBlock) {
         wikiStore.table.selectedBlock = selectedBlock;
       }
     } else {
@@ -83,7 +83,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     }
   }
 
-  async handleOnSubmit(qnode: QNode, applyToBlock: boolean) {
+  async handleOnSubmit(qnode: QNode, applyToBlock?: boolean) {
     console.log('WikifyMenu OnSubmit triggered for -> ', qnode);
 
     let hasError = false;
@@ -192,7 +192,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     }
   }
 
-  async handleOnCreateQnode(entityFields: EntityFields, applyToBlock: boolean){
+  async handleOnCreateQnode(entityFields: EntityFields, applyToBlock?: boolean) {
     console.log('WikifyMenu handleOnCreateQnode triggered for -> ', entityFields);
 
     wikiStore.table.showSpinner = true;
@@ -229,24 +229,24 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       wikiStore.yaml.showSpinner = false;
     }
 
-        //also update results:
-        try {
-          wikiStore.output.showSpinner = true;
-          await this.requestService.call(this, () => this.requestService.getMappingCalculation())
-        }
-        catch (error) {
-          console.log(error) //don't break on this
-        }
-        finally {
-          wikiStore.output.showSpinner = false;
-        }
-        wikiStore.partialCsv.showSpinner = true;
-        try {
-          await this.requestService.getPartialCsv();
-        }
-        finally {
-          wikiStore.partialCsv.showSpinner = false;
-        }
+    //also update results:
+    try {
+      wikiStore.output.showSpinner = true;
+      await this.requestService.call(this, () => this.requestService.getMappingCalculation())
+    }
+    catch (error) {
+      console.log(error) //don't break on this
+    }
+    finally {
+      wikiStore.output.showSpinner = false;
+    }
+    wikiStore.partialCsv.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.partialCsv.showSpinner = false;
+    }
   }
 
   renderHeader() {
@@ -257,8 +257,8 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       <div className="header">
         <strong className="mr-auto">
           Selected: {selectedCell ?
-          utils.columnToLetter(col + 1) + (row + 1)
-          : ""
+            utils.columnToLetter(col + 1) + (row + 1)
+            : ""
           }
         </strong>
       </div>
@@ -269,13 +269,15 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     const { selectedCell } = this.state;
     if (!selectedCell) { return; }
     return (
-      <WikifyForm key={selectedCell.row.toString() + selectedCell.col.toString()}
-        selectedCell={selectedCell}
-        onSelectBlock={(applyToBlock) => this.onSelectBlock(applyToBlock)}
-        onChange={this.handleOnChange.bind(this)}
-        onSubmit={this.handleOnSubmit.bind(this)}
-        onRemove={this.handleOnRemove.bind(this)}
-        onCreateQnode={this.handleOnCreateQnode.bind(this)}/>
+      <Form className="container">
+        <WikifyForm key={selectedCell.row.toString() + selectedCell.col.toString()}
+          selectedCell={selectedCell}
+          onSelectBlock={(applyToBlock) => this.onSelectBlock(applyToBlock)}
+          onChange={this.handleOnChange.bind(this)}
+          onSubmit={this.handleOnSubmit.bind(this)}
+          onRemove={this.handleOnRemove.bind(this)}
+          onCreateQnode={this.handleOnCreateQnode.bind(this)} />
+      </Form>
     )
   }
 
@@ -286,7 +288,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       <Card className="wikify-menu">
         {this.renderHeader()}
         <Card.Body className="body">
-        {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
+          {this.state.errorMessage.errorDescription ? <ToastMessage message={this.state.errorMessage} /> : null}
           {this.renderWikifyForms()}
         </Card.Body>
       </Card>
