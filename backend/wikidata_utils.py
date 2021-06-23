@@ -119,14 +119,17 @@ def get_qnode_url(id):
     return url
 
 class QNode:
-    def __init__(self, id, value, context="", label="", description=""):
+    def __init__(self, id, value, context="", label="", description="", data_type=None):
         self.id = id
         self.value = value
         self.context = context
         self.label = label
         self.description = description
+        self.data_type=data_type
         self.url=get_qnode_url(self.id)
 
     def update(self, label="", description="", **kwargs):
         self.label=label
         self.description=description
+        if kwargs.get("data_type"):
+            self.data_type = kwargs["data_type"]
