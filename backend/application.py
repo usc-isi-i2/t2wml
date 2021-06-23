@@ -2,8 +2,10 @@ from flask.helpers import send_file
 import pandas as pd
 import os
 import sys
+import tempfile
 import json
 import zipfile
+from t2wml.api import Project
 import requests
 from io import BytesIO
 from pathlib import Path
@@ -960,19 +962,43 @@ def causx_upload_data():
     response.update(dict(project=get_project_dict(project), filepath=file_path))
     return response, code
 
-@app.route('/api/upload/project', methods=['POST'])
+@app.route('/api/causx/upload/project', methods=['POST'])
 @json_response
 def causx_upload_project():
     #upload a project zip and load it as the active project
     project = get_project()
-    in_file = causx_get_file(["t2wmlz"])
+    in_file = causx_get_file([".t2wmlz"])
 
-@app.route('/api/upload/annotation', methods=['POST'])
+    proj_dir=Path(project.directory)
+
+    new_project=Project(project.directory)
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
+        in_file.save(str(file_path))
+        with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
+            filemap=json.loads(zf.read("filemap.json"))
+            data_file_path=proj_dir/filemap["data"]
+            data_file_path.parent.mkdir(parents=True, exist_ok=True)
+            zf.extract(filemap["data"], data_file_path.parent)
+            new_project.add_data_file(data_file_path)
+            annotation_file_path=proj_dir/filemap["annotation"]
+            annotation_file_path.parent.mkdir(parents=True, exist_ok=True)
+            zf.extract(filemap["annotation"], annotation_file_path.parent)
+            new_project.add_annotation_file(annotation_file_path, data_file_path, filemap["sheet"])
+            entity_file_path=proj_dir/filemap["entity"]
+            entity_file_path.parent.mkdir(parents=True, exist_ok=True)
+            zf.extract(filemap["entity"], entity_file_path.parent)
+            new_project.add_entity_file(entity_file_path)
+        new_project.save()
+    
+
+
+@app.route('/api/causx/upload/annotation', methods=['POST'])
 @json_response
 def causx_upload_annotation():
     #upload a project zip, extract the annotation file, and apply it to the current project
     project = get_project()
-    in_file = causx_get_file(["t2wmlz"])
+    in_file = causx_get_file([".t2wmlz"])
 
 @app.route('/api/causx/download_project', methods=['GET'])
 @json_response
@@ -981,12 +1007,12 @@ def causx_download_project():
     project = get_project()
     calc_params = get_calc_params(project)
     data_path = calc_params.data_path
-    data_path_arcname=str(Path(data_path).name)
+    data_path_arcname=(Path(data_path).name)
     sheet_name=calc_params.sheet_name
     annotation_path=calc_params.annotation_path
-    annotation_path_arcname = str(calc_params._annotation_path)
+    annotation_path_arcname = Path(calc_params._annotation_path).as_posix()
     entities_path= Path(project.directory) / project.entity_files[0] #TODO: entities
-    entities_path_arcname=str(project.entity_files[0])
+    entities_path_arcname=Path(project.entity_files[0]).as_posix()
 
     attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
 
@@ -1003,10 +1029,6 @@ def causx_download_project():
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
 
-
-
-###################end of causx section##############################
-
 @app.route('/api/causx/download_zip_results', methods=['GET'])
 @json_response
 def causx_save_zip_results():
@@ -1018,6 +1040,10 @@ def causx_save_zip_results():
     annotation.json
     '''
     pass
+
+###################end of causx section##############################
+
+
 
 
 if __name__ == "__main__":
