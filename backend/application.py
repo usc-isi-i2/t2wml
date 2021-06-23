@@ -395,7 +395,7 @@ def download_results(filetype, filename):
         t2wml_settings.no_wikification = True
 
     if str(request.url_rule)[-3:] == "all":
-        with BytesIO() as binary_stream:
+            binary_stream=BytesIO()
             create_zip(project, filetype, binary_stream)
             binary_stream.seek(0)
             return send_file(binary_stream, attachment_filename, as_attachment=True, mimetype='application/zip'), 200
@@ -969,7 +969,7 @@ def causx_upload_project():
 
 @app.route('/api/upload/annotation', methods=['POST'])
 @json_response
-def causx_upload_project():
+def causx_upload_annotation():
     #upload a project zip, extract the annotation file, and apply it to the current project
     project = get_project()
     in_file = causx_get_file(["t2wmlz"])
@@ -983,23 +983,23 @@ def causx_download_project():
     data_path = calc_params.data_path
     sheet_name=calc_params.sheet_name
     annotation_path=calc_params.annotation_path
-    entities_path= project.entity_files[0]
+    entities_path= Path(project.directory) / project.entity_files[0]
     #TODO: entities
 
     attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
 
-    with BytesIO() as filestream:
-        with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+    filestream=BytesIO()
+    with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
             zf.write(data_path)
             zf.write(annotation_path)
             zf.write(entities_path)
-            zf.writestr("filemap.json", json.dumps(dict(data=data_path,
+            zf.writestr("filemap.json", json.dumps(dict(data=str(data_path),
                                                         sheet=sheet_name,
-                                                        annotation=annotation_path,
-                                                        entity=entities_path)))
+                                                        annotation=str(annotation_path),
+                                                        entity=str(entities_path))))
 
-        filestream.seek(0)
-        return send_file(filestream, attachment_filename, as_attachment=True, mimetype='application/zip'), 200
+    filestream.seek(0)
+    return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
 
 
 
