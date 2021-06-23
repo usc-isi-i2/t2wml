@@ -971,26 +971,29 @@ def causx_upload_project():
 
     proj_dir=Path(project.directory)
 
-    new_project=Project(project.directory)
+    new_project=Project(proj_dir)
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
         with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
             filemap=json.loads(zf.read("filemap.json"))
-            data_file_path=proj_dir/filemap["data"]
-            data_file_path.parent.mkdir(parents=True, exist_ok=True)
-            zf.extract(filemap["data"], data_file_path.parent)
-            new_project.add_data_file(data_file_path)
-            annotation_file_path=proj_dir/filemap["annotation"]
-            annotation_file_path.parent.mkdir(parents=True, exist_ok=True)
-            zf.extract(filemap["annotation"], annotation_file_path.parent)
-            new_project.add_annotation_file(annotation_file_path, data_file_path, filemap["sheet"])
-            entity_file_path=proj_dir/filemap["entity"]
-            entity_file_path.parent.mkdir(parents=True, exist_ok=True)
-            zf.extract(filemap["entity"], entity_file_path.parent)
-            new_project.add_entity_file(entity_file_path)
-        new_project.save()
-    
+            zf.extract(filemap["data"], proj_dir)
+            zf.extract(filemap["annotation"], proj_dir)
+            zf.extract(filemap["entity"], proj_dir)
+
+    new_project.add_data_file(filemap["data"])
+    sheet_name=filemap["sheet"]
+    new_project.add_annotation_file(filemap["annotation"], filemap["data"], sheet_name)
+    new_project.add_entity_file(filemap["entity"])
+    new_project.save()
+    calc_params=CalcParams(new_project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
+    response=dict()
+    response["table"] = get_table(calc_params)
+    response["annotations"], response["yamlContent"] = get_annotations(
+            calc_params)
+    get_layers(response, calc_params)
+    return response, 200
+
 
 
 @app.route('/api/causx/upload/annotation', methods=['POST'])
