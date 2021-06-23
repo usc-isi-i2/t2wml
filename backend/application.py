@@ -2,6 +2,8 @@ from flask.helpers import send_file
 import pandas as pd
 import os
 import sys
+import json
+import zipfile
 import requests
 from io import BytesIO
 from pathlib import Path
@@ -842,91 +844,6 @@ def add_mapping_file():
     return response, 200
 
 
-@app.route('/api/web/wikify_region', methods=['POST'])
-@json_response
-def causx_wikify():
-    project = get_project()
-    region = request.get_json()["selection"]
-    overwrite_existing = request.get_json().get("overwrite", False)
-    #context = request.get_json()["context"]
-    calc_params = get_calc_params(project)
-
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
-
-
-# for web version
-
-@app.route('/api/upload/<type>', methods=['POST'])
-@json_response
-def upload_file(type):
-    project = get_project()
-
-    allowed_types_map = {
-        "data": [".csv", ".xlsx"],
-        "annotation": [".json", ".annotation"],
-        "entities": [".tsv"]
-    }
-
-    if 'file' not in request.files:
-        raise web_exceptions.NoFilePartException(
-            "Missing 'file' parameter in the file upload request")
-
-    in_file = request.files['file']
-    if in_file.filename == '':
-        raise web_exceptions.BlankFileNameException(
-            "No file selected for uploading")
-
-    allowed_extensions = allowed_types_map[type]
-    file_extension = Path(in_file.filename).suffix
-    file_allowed = file_extension in allowed_extensions
-    if not file_allowed:
-        raise web_exceptions.FileTypeNotSupportedException(
-            "File with extension '"+file_extension+"' is not allowed")
-
-    folder = Path(project.directory)
-    # otherwise secure_filename does weird things on linux
-    shorter_name = Path(in_file.filename).name
-    filename = secure_filename(shorter_name)
-    file_path = folder/filename
-    in_file.save(str(file_path))
-
-    response = dict()
-    code = 200
-
-    if type == "data":
-        file_path = project.add_data_file(file_path)
-        sheet_name = project.data_files[file_path]["val_arr"][0]
-        project.save()
-        response["sheetName"] = sheet_name
-        calc_params = CalcParams(project, file_path, sheet_name)
-        response["table"] = get_table(calc_params)
-
-    if type == "entities":
-        file_path = project.add_entity_file(file_path)
-    if type == "annotation":
-        calc_params = get_calc_params(project)
-        file_path = project.add_annotation_file(
-            file_path, calc_params.data_path, calc_params.sheet_name)
-        mapping_response, code = get_mapping(file_path, "Annotation")
-        response.update(mapping_response)
-
-    project.save()
-    response.update(
-        dict(project=get_project_dict(project), filepath=file_path))
-    return response, code
-
-
 # app utils
 
 @app.route('/api/is-alive')
@@ -970,6 +887,136 @@ def windows_add_to_path():
 #         return send_from_directory(app.config['STATIC_FOLDER'], path)
 #     except NotFound:
 #         return serve_home_page()
+
+
+
+
+
+########## CAUSX #################
+
+def causx_get_file(allowed_extensions):
+    if 'file' not in request.files:
+        raise web_exceptions.NoFilePartException(
+            "Missing 'file' parameter in the file upload request")
+
+    in_file = request.files['file']
+    if in_file.filename == '':
+        raise web_exceptions.BlankFileNameException(
+            "No file selected for uploading")
+
+
+    file_extension = Path(in_file.filename).suffix
+    file_allowed = file_extension in allowed_extensions
+    if not file_allowed:
+        raise web_exceptions.FileTypeNotSupportedException(
+            "File with extension '"+file_extension+"' is not allowed")
+    return in_file
+
+@app.route('/api/web/wikify_region', methods=['POST'])
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["selection"]
+    overwrite_existing = request.get_json().get("overwrite", False)
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
+
+
+@app.route('/api/upload/data', methods=['POST'])
+@json_response
+def causx_upload_data():
+    project = get_project()
+    in_file=causx_get_file([".csv", ".xlsx"])
+
+    folder = Path(project.directory)
+    shorter_name = Path(in_file.filename).name
+    filename = secure_filename(shorter_name)
+    file_path = folder/filename
+    in_file.save(str(file_path))
+
+    response = dict()
+    code = 200
+
+    file_path = project.add_data_file(file_path)
+    sheet_name = project.data_files[file_path]["val_arr"][0]
+    project.save()
+    response["sheetName"] = sheet_name
+    calc_params = CalcParams(project, file_path, sheet_name)
+    response["table"] = get_table(calc_params)
+    project.save()
+    response.update(dict(project=get_project_dict(project), filepath=file_path))
+    return response, code
+
+@app.route('/api/upload/project', methods=['POST'])
+@json_response
+def causx_upload_project():
+    #upload a project zip and load it as the active project
+    project = get_project()
+    in_file = causx_get_file(["t2wmlz"])
+
+@app.route('/api/upload/annotation', methods=['POST'])
+@json_response
+def causx_upload_project():
+    #upload a project zip, extract the annotation file, and apply it to the current project
+    project = get_project()
+    in_file = causx_get_file(["t2wmlz"])
+
+@app.route('/api/causx/download_project', methods=['GET'])
+@json_response
+def causx_download_project():
+    #download a .t2wmlz file with the files needed to restore current project state
+    project = get_project()
+    calc_params = get_calc_params(project)
+    data_path = calc_params.data_path
+    sheet_name=calc_params.sheet_name
+    annotation_path=calc_params.annotation_path
+    entities_path= project.entity_files[0]
+    #TODO: entities
+
+    attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
+
+    with BytesIO() as filestream:
+        with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
+            zf.write(data_path)
+            zf.write(annotation_path)
+            zf.write(entities_path)
+            zf.writestr("filemap.json", json.dumps(dict(data=data_path,
+                                                        sheet=sheet_name,
+                                                        annotation=annotation_path,
+                                                        entity=entities_path)))
+
+        filestream.seek(0)
+        return send_file(filestream, attachment_filename, as_attachment=True, mimetype='application/zip'), 200
+
+
+
+###################end of causx section##############################
+
+@app.route('/api/causx/download_zip_results', methods=['GET'])
+@json_response
+def causx_save_zip_results():
+    '''
+    returns:
+    canonical.csv
+    dataset-metadata.json
+    variable-metadata.json
+    annotation.json
+    '''
+    pass
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
