@@ -5,6 +5,7 @@ import sys
 import tempfile
 import json
 import zipfile
+from requests.api import get
 from t2wml.api import Project
 import requests
 from io import BytesIO
@@ -1002,6 +1003,17 @@ def causx_upload_annotation():
     #upload a project zip, extract the annotation file, and apply it to the current project
     project = get_project()
     in_file = causx_get_file([".t2wmlz"])
+
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
+        in_file.save(str(file_path))
+        with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
+            filemap=json.loads(zf.read("filemap.json"))
+            zf.extract(filemap["annotation"], project.directory)
+    calc_params=get_calc_params(project)
+    annotation_file=project.add_annotation_file(filemap["annotation"], calc_params.data_path, calc_params.sheet_name)
+    project.save()
+    return get_mapping(annotation_file, "Annotation")
 
 @app.route('/api/causx/download_project', methods=['GET'])
 @json_response
