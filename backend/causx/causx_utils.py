@@ -1,13 +1,14 @@
 import csv
+import json
 from io import StringIO
 import pandas as pd
 from t2wml.input_processing.annotation_parsing import Annotation, create_nodes
 from t2wml.mapping.datamart_edges import clean_id
+from t2wml.mapping.statement_mapper import PartialAnnotationMapper
+from t2wml.api import kgtk_to_dict, t2wml_settings, KnowledgeGraph
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
-from t2wml.api import kgtk_to_dict
-from t2wml.api import t2wml_settings
 
 class AnnotationNodeGenerator:
     def __init__(self, annotation, project):
@@ -131,8 +132,8 @@ def get_cells_and_columns(statements, project):
         main_subject_id=statement["subject"],
         main_subject=try_get_label(main_subject_id),
         country_id=main_subject_id,
-        country_cameo_code=cameos[main_subject_id],
-        region_coordinate=coords[main_subject_id],
+        country_cameo_code=cameos.get(main_subject_id, ""),
+        region_coordinate=coords.get(main_subject_id, ""),
         FactorClass="", Relevance="", Normalizer="", Units="", DocID="", time="", time_precision="")
 
         statement_dict["stated in"]=""
@@ -153,7 +154,7 @@ def get_cells_and_columns(statements, project):
 
         entities=get_entities(project)
         variable_entry=entities[statement["property"]]
-        tags=variable_entry["tags"]
+        tags=variable_entry.get("tags", [])
         for tag in tags:
             label, value = tag.split(":")
             statement_dict[label]=value
@@ -167,7 +168,7 @@ def get_cells_and_columns(statements, project):
     return column_titles, dict_values
 
 
-def create_canonical_spreadsheet(statements, project=None):
+def causx_create_canonical_spreadsheet(statements, project):
     column_titles, dict_values = get_cells_and_columns(statements, project)
 
     string_stream = StringIO("", newline="")
@@ -186,3 +187,35 @@ def create_canonical_spreadsheet(statements, project=None):
     output = string_stream.getvalue()
     string_stream.close()
     return output
+
+
+
+def get_causx_partial_csv(calc_params, start=0, end=150):
+    wikifier=calc_params.wikifier
+    cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, start, end)
+
+
+    if not kg.statements:
+        df=pd.DataFrame([], columns=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
+                    "time","time_precision", "country","country_id","country_cameo",
+                    "admin1","admin2","admin3",
+                    "region_coordinate","stated_in","stated_in_id","stated in",
+                    "FactorClass","Relevance","Normalizer","Units","DocID"])
+        df.dataset_id=calc_params.project.dataset_id
+        if cell_mapper.annotation.subject_annotations:
+            subject_cells=[]
+            (x1, y1),(x2, y2)=subject_block_cells=cell_mapper.annotation.subject_annotations[0].cell_args
+            for row in range(y1, y2+1):
+                for col in range(x1, x2+1):
+                    subject_cells.append(calc_params.sheet[row, col])
+            df.main_subject=subject_cells
+    else:
+        columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
+        df = pd.DataFrame.from_dict(dict_values)
+        df.replace(to_replace=[None], value="", inplace=True)
+        df = df[columns] # sort the columns
+    dims = list(df.shape)
+    cells = json.loads(df.to_json(orient="values"))
+    cells.insert(0, list(df.columns))
+    return dict(dims=dims, firstRowIndex=0, cells=cells)

@@ -5,7 +5,7 @@ import sys
 import tempfile
 import json
 import zipfile
-from causx.causx_utils import AnnotationNodeGenerator
+from causx.causx_utils import AnnotationNodeGenerator, get_causx_partial_csv, causx_create_canonical_spreadsheet
 from causx.wikification import wikify_countries
 from t2wml.api import Project
 import requests
@@ -917,6 +917,8 @@ def causx_get_file(allowed_extensions):
             "File with extension '"+file_extension+"' is not allowed")
     return in_file
 
+#TODO: change route
+@app.route('/api/causx/wikify_region', methods=['POST'])
 @app.route('/api/web/wikify_region', methods=['POST'])
 @json_response
 def causx_wikify():
@@ -939,7 +941,8 @@ def causx_wikify():
 
     return response, 200
 
-
+#TODO: change route
+@app.route('/api/causx/upload/data', methods=['POST'])
 @app.route('/api/upload/data', methods=['POST'])
 @json_response
 def causx_upload_data():
@@ -1061,6 +1064,26 @@ def causx_download_project():
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
 
+
+@app.route('/api/causx/partialcsv', methods=['GET'])
+@json_response
+def causx_partial_csv():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response = dict()
+    try:
+        response["partialCsv"] = get_causx_partial_csv(calc_params)
+    except Exception as e:
+        response["partialCsv"] = dict(dims=[1, 22],
+                                      firstRowIndex=0,
+                                      cells=["dataset_id", "variable_id", "variable", "main_subject",
+                                        "main_subject_id", "value",
+                                        "time","time_precision", "country","country_id","country_cameo",
+                                        "admin1","admin2","admin3",
+                                        "region_coordinate","stated_in","stated_in_id","stated in",
+                                        "FactorClass","Relevance","Normalizer","Units","DocID"])
+    return response, 200
+
 @app.route('/api/causx/download_zip_results', methods=['GET'])
 @json_response
 def causx_save_zip_results():
@@ -1075,12 +1098,10 @@ def causx_save_zip_results():
     calc_params = get_calc_params(project)
 
     annotation_path=calc_params.annotation_path
-    
-    kg = get_kg(calc_params)
-    
-    variables = get_all_variables(calc_params.project, kg.statements)
 
-    csv_data = kg.get_output("csv", calc_params.project)
+    kg = get_kg(calc_params)
+
+    csv_data = causx_create_canonical_spreadsheet(kg.statements, project)
 
     attachment_filename = project.title + '-' + Path(calc_params.data_path).stem + ".zip"
     filestream=BytesIO()
