@@ -158,7 +158,7 @@ def get_cells_and_columns(statements, project):
         variable_entry=entities[statement["property"]]
         tags=variable_entry.get("tags", [])
         for tag in tags:
-            label, value = tag.split(":")
+            label, value = tag.split(":", 1)
             statement_dict[label]=value
             if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
                 new_columns.add(label)
