@@ -10,6 +10,8 @@ from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
 
+
+
 class AnnotationNodeGenerator:
     def __init__(self, annotation, project):
         self.annotation=annotation
@@ -191,18 +193,16 @@ def causx_create_canonical_spreadsheet(statements, project):
 
 
 def get_causx_partial_csv(calc_params, start=0, end=150):
-    wikifier=calc_params.wikifier
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, start, end)
-
-
-    if not kg.statements:
-        df=pd.DataFrame([], columns=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, start, end)
+    columns=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
                     "time","time_precision", "country","country_id","country_cameo",
                     "admin1","admin2","admin3",
                     "region_coordinate","stated_in","stated_in_id","stated in",
-                    "FactorClass","Relevance","Normalizer","Units","DocID"])
-        df.dataset_id=calc_params.project.dataset_id
+                    "FactorClass","Relevance","Normalizer","Units","DocID"]
+
+    if not kg.statements:
+        df=pd.DataFrame([], columns=columns)
         if cell_mapper.annotation.subject_annotations:
             subject_cells=[]
             (x1, y1),(x2, y2)=subject_block_cells=cell_mapper.annotation.subject_annotations[0].cell_args
@@ -210,11 +210,12 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
                 for col in range(x1, x2+1):
                     subject_cells.append(calc_params.sheet[row, col])
             df.main_subject=subject_cells
+        df.dataset_id=calc_params.project.dataset_id
     else:
         columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
         df = pd.DataFrame.from_dict(dict_values)
-        df.replace(to_replace=[None], value="", inplace=True)
-        df = df[columns] # sort the columns
+        #df.replace(to_replace=[None], value="", inplace=True)
+        #df = df[columns] # sort the columns
     dims = list(df.shape)
     cells = json.loads(df.to_json(orient="values"))
     cells.insert(0, list(df.columns))
