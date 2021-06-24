@@ -12,7 +12,7 @@ interface NodeFieldProps {
     fields: AnnotationFields;
     type: any;
     onChangeFields: (fields: AnnotationFields) => void;
-    changeShowEntityMenu: (newTypeEntityMenu: string) => void;
+    changeShowEditFieldMenu: (newTypeEditFieldMenu: string) => void;
 }
 
 
@@ -88,7 +88,7 @@ class NodeField extends Component<NodeFieldProps, {}> {
                                             type="button"
                                             size="sm"
                                             variant="outline-dark"
-                                            onClick={() => this.props.changeShowEntityMenu(type.label)}
+                                            onClick={() => this.props.changeShowEditFieldMenu(type.label)}
                                         >
                                             Edit entity
                                         </Button>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import './wikify-menu.css';
-import WikifyForm from './wikify-form';
+import WikifyForm from '../wikify-form';
 
 import { ErrorMessage } from '../../../common/general';
 import RequestService from '../../../common/service';

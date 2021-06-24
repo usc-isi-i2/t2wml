@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
 import { Form, Row } from 'react-bootstrap';
-import './entity-menu.css'
 import { isValidLabel } from '../table/table-utils';
 import { EntityFields } from '@/renderer/common/dtos';
 
-interface EntityFormProp {
+interface CustomNodeFormProp {
     entityFields: EntityFields;
     handleOnChange: (event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => void;
     disableDataType?: boolean;
 }
 
 @observer
-class EntityForm extends Component<EntityFormProp, {}> {
+class CustomNodeForm extends Component<CustomNodeFormProp, {}> {
 
     constructor(props: any) {
         super(props);
@@ -60,4 +59,4 @@ class EntityForm extends Component<EntityFormProp, {}> {
     }
 }
 
-export default EntityForm;
+export default CustomNodeForm;

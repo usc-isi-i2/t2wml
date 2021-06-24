@@ -15,7 +15,7 @@ import { currentFilesService } from '@/renderer/common/current-file-service';
 import './annotation-form.css'
 import ToastMessage from '@/renderer/common/toast';
 import WikiBlockMenu from './wiki-block-menu';
-import EntityMenu from '../entity-menu';
+import EditFieldMenu from './edit-field-menu';
 import NodeField from './node-field';
 
 
@@ -31,9 +31,9 @@ interface AnnotationFormState {
   showResult1: boolean;
   showResult2: boolean;
   errorMessage: ErrorMessage;
-  showEntityMenu: boolean;
+  showEditFieldMenu: boolean;
   showWikifyBlockMenu: boolean;
-  typeEntityMenu: string;
+  typeEditFieldMenu: string;
   mappingType?: string;
 }
 
@@ -59,10 +59,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       showResult1: false,
       showResult2: false,
       errorMessage: {} as ErrorMessage,
-      showEntityMenu: false,
+      showEditFieldMenu: false,
       showWikifyBlockMenu: false,
       mappingType: currentFilesService.currentState.mappingType,
-      typeEntityMenu: ""
+      typeEditFieldMenu: ""
     };
     this.changed = false;
   }
@@ -79,12 +79,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  changeShowEntityMenu(newTypeEntityMenu: string) {
-    const { showEntityMenu, typeEntityMenu } = this.state;
-    if (typeEntityMenu === newTypeEntityMenu || !showEntityMenu) {
-      this.setState({ showEntityMenu: !showEntityMenu });
+  changeShowEditFieldMenu(newTypeEditFieldMenu: string) {
+    const { showEditFieldMenu, typeEditFieldMenu } = this.state;
+    if (typeEditFieldMenu === newTypeEditFieldMenu || !showEditFieldMenu) {
+      this.setState({ showEditFieldMenu: !showEditFieldMenu });
     }
-    this.setState({ typeEntityMenu: newTypeEntityMenu });
+    this.setState({ typeEditFieldMenu: newTypeEditFieldMenu });
   }
 
   changeShowWikifyBlockMenu() {
@@ -117,8 +117,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   }
 
-  handleOnCloseEntityMenu(key:string, entityFields?: EntityFields) {
-    this.setState({ showEntityMenu: false });
+  handleOnCloseEditFieldMenu(key:string, entityFields?: EntityFields) {
+    this.setState({ showEditFieldMenu: false });
     if (entityFields && utils.isValidLabel(entityFields.label)) {
       this.handleOnCreateQnode(key, entityFields); // applyToBlock=true
     }
@@ -443,7 +443,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           fields={fields}
           type={type}
           onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
-          changeShowEntityMenu={(newTypeEntityMenu: string) => this.changeShowEntityMenu(newTypeEntityMenu)}
+          changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
         />
 
       )
@@ -602,7 +602,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selection, showEntityMenu, typeEntityMenu, errorMessage, fields, showWikifyBlockMenu, selectedBlock } = this.state;
+    const { selection, showEditFieldMenu, typeEditFieldMenu, errorMessage, fields, showWikifyBlockMenu, selectedBlock } = this.state;
     const { type: data_type } = this.state.fields;
     if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
@@ -621,16 +621,16 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           fields={fields}
           type={{label:"Subject", value:"subject"}}
           onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
-          changeShowEntityMenu={(newTypeEntityMenu: string) => this.changeShowEntityMenu(newTypeEntityMenu)}
+          changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
         />
         {this.renderSubmitButton()}
 
         {
-          showEntityMenu && selection ?
-            <EntityMenu
+          showEditFieldMenu && selection ?
+            <EditFieldMenu
               selection={selection}
-              onClose={(key:string, entityFields?: EntityFields) => this.handleOnCloseEntityMenu(key, entityFields)}
-              title={typeEntityMenu}
+              onClose={(key:string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
+              title={typeEditFieldMenu}
               data_type={data_type}
               // showResults={this.state.showResult1}
               onSelectNode={this.handleOnSelectNode.bind(this)}

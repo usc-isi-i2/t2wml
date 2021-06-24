@@ -2,15 +2,15 @@ import React from 'react';
 
 import { IReactionDisposer, reaction } from 'mobx';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import wikiStore, { Layer } from '../../../data/store';
-import { Cell, CellSelection } from '../../../common/general';
+import wikiStore, { Layer } from '../../data/store';
+import { Cell, CellSelection } from '../../common/general';
 import { AnnotationBlock, EntityFields, QNode, QNodeEntry } from '@/renderer/common/dtos';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
-import EntityForm from '../entity-form';
-import { isValidLabel, checkSelectedAnnotationBlocks } from '../../table/table-utils';
+import CustomNodeForm from './custom-node-form';
+import { isValidLabel, checkSelectedAnnotationBlocks } from '../table/table-utils';
 
 interface WikifyFormProperties {
   selectedCell: Cell;
@@ -361,7 +361,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
           <Col sm="12" md="12">
             <input id="check-block"
               type="checkbox"
-              defaultChecked={applyToBlock}
+              checked={applyToBlock}
               onChange={this.toggleApplyToBlock.bind(this)} />
             <Form.Label htmlFor="check-block" className="text-muted">Apply to block</Form.Label>
           </Col>
@@ -370,12 +370,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
   }
 
-  renderEntityForm() {
+  renderCustomNodeForm() {
     const { entityFields, customQnode } = this.state;
     if (customQnode) {
       return (
         <Col sm="12" md="12">
-          <EntityForm
+          <CustomNodeForm
             entityFields={entityFields}
             handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChangeEntity(event, key)}
           />
@@ -493,7 +493,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         <Form.Group as={Row}>
           <Col sm="12" md="12">
             {customQnode ?
-              this.renderEntityForm()
+              this.renderCustomNodeForm()
               :
               this.renderSearchInputs()
             }
