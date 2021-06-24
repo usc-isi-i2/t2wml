@@ -113,7 +113,7 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
                                             this.handleOnSearch(key, value, instanceOf, searchProperties)}
                                         onSubmit={(qnode: QNode) => this.handleOnSubmit(qnode)}
                                         onCreateQnode = {(entityFields: EntityFields) => this.handleOnCreateNode(entityFields)}
-                                        iPopupMenu={true}
+                                        field={title.toLowerCase()}
                                     />
                             : null
                             }

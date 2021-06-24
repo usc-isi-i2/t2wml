@@ -19,7 +19,7 @@ interface WikifyFormProperties {
   onSubmit: (qnode: QNode, applyToBlock?: boolean) => Promise<void>;
   onRemove?: (qnode: QNode, applyToBlock: boolean) => Promise<void>;
   onCreateQnode: (entityFields: EntityFields, applyToBlock?: boolean) => Promise<void>;
-  iPopupMenu?: boolean;
+  field?: string;
 }
 
 interface WikifyFormState {
@@ -46,17 +46,17 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   constructor(props: WikifyFormProperties) {
     super(props);
 
-    const { selectedCell } = this.props;
-    const selected = wikiStore.layers.qnode.find(selectedCell);
+    const { selectedCell, field } = this.props;
+    const selected = field ? undefined : wikiStore.layers.qnode.find(selectedCell);
 
     const entityFields = {
       is_property: false,
-      label: selectedCell.value ? selectedCell.value : "",
+      label: selectedCell.value && !field ? selectedCell.value : "",
       description: "",
       data_type: "string",
     }
 
-    entityFields.is_property = wikiStore.table.selectedBlock?.role === 'property' ? true : false;
+    entityFields.is_property = field ? field === "property" : (wikiStore.table.selectedBlock?.role === 'property' ? true : false);
 
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
@@ -97,7 +97,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   onChangeQnodes(qnodes: Layer<QNodeEntry>) {
     const { entityFields } = this.state;
-    const selected = qnodes.find(this.props.selectedCell);
+    const { field } = this.props;
+    const selected = field ? undefined : qnodes.find(this.props.selectedCell);
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
       entityFields.is_property = selected.id.startsWith("P");
@@ -141,10 +142,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     this.setState({ qnodes });
   }
 
-  // handleOnFocusSearch() {
-  //   const { search, instanceOf, entityFields } = this.state;
-  //   this.props.onChange('search', search, instanceOf, entityFields.is_property);
-  // }
 
   handleOnChangeSearch(event: any) {
     const { instanceOf, entityFields } = this.state;
@@ -279,23 +276,28 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
                 onClick={this.clearSearch.bind(this)} />
             ) : null}
           </Col>
-          {!entityFields.is_property && (
-            <Col sm="12" md="12">
-              <Form.Label className="text-muted">Instance Of</Form.Label>
-              <Form.Control
-                type="text" size="sm"
-                placeholder="node"
-                value={instanceOfSearch}
-                onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
-                disabled={customQnode} />
-              {instanceOfSearch && qnodes.length ? (
-                <FontAwesomeIcon
-                  icon={faTimes}
-                  className="clear-button"
-                  onClick={this.clearInstanceOfSearch.bind(this)} />
-              ) : null}
-            </Col>
-          )}
+          {
+            !entityFields.is_property ? (
+              <Col sm="12" md="12">
+                <Form.Label className="text-muted">Instance Of</Form.Label>
+                <Form.Control
+                  type="text" size="sm"
+                  placeholder="node"
+                  value={instanceOfSearch}
+                  onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
+                  disabled={customQnode} />
+                {
+                  instanceOfSearch && qnodes.length ? (
+                    <FontAwesomeIcon
+                      icon={faTimes}
+                      className="clear-button"
+                      onClick={this.clearInstanceOfSearch.bind(this)} />
+                  )
+                    : null
+                }
+              </Col>
+            ) : null
+        }
         </Form.Group>
       )
     }
@@ -410,19 +412,6 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       }
     }
     this.setState({ entityFields: updatedEntityFields });
-    // , () => {
-    //   const { entityFields, customQnode } = this.state;
-    //   if (entityFields.label && customQnode) {
-    //     if (this.timeoutIdCreateQnode) {
-    //       window.clearTimeout(this.timeoutIdCreateQnode);
-    //     }
-    //     this.timeoutIdCreateQnode = window.setTimeout(() => {
-    //       if (isValidLabel(entityFields.label)) {
-    //         this.handleOnSubmit()
-    //       }
-    //     }, 300);
-    //   }
-    // });
   }
 
   onChangeCustomQnode() {
@@ -453,9 +442,9 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
               disabled={!(selected || (customQnode && isValidLabel(entityFields.label)))}
               onClick={(event) => this.handleOnSubmit(event)}
             >
-              {this.props.iPopupMenu ? "OK" : "Submit"}
+              { this.props.field ? "OK" : "Submit" }
             </Button>
-            { this.props.iPopupMenu ? this.renderRemoveButton() : null}
+            { this.props.field ? null : this.renderRemoveButton() }
           </Col>
         </Form.Group>
       )
@@ -480,6 +469,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
 
   render() {
     const { customQnode, entityFields, disabledIsProperty } = this.state;
+    const { field } = this.props;
     return (
       <div className="wikify-form">
         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
@@ -487,8 +477,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
           onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline label="Is property?" checked={entityFields.is_property}
-            disabled={disabledIsProperty} />
+          <Form.Check id="check-property-search" type="checkbox" inline label="Is property?" checked={entityFields.is_property || field==="property"}
+            disabled={disabledIsProperty || !!field} />
         </Form.Group>
         <Form.Group as={Row}>
           <Col sm="12" md="12">
@@ -503,7 +493,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </Form.Group>
         {this.renderSelectedNode()}
         {
-          this.props.iPopupMenu ? this.renderApplyOptions() : null
+          this.props.field ? null : this.renderApplyOptions()
         }
         {this.renderSubmitButton()}
       </div>
