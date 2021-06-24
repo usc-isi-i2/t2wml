@@ -3,8 +3,8 @@ from t2wml.input_processing.annotation_parsing import Annotation, create_nodes
 from wikification import DatamartCountryWikifier
 
 class AnnotationNodeGenerator:
-    def __init__(self, annotation_nodes_array, project):
-        self.annotation=Annotation(annotation_nodes_array)
+    def __init__(self, annotation, project):
+        self.annotation=annotation
         self.project=project
 
     def _get_units(self, region):
@@ -71,3 +71,14 @@ class AnnotationNodeGenerator:
         for property_indices, data_type in properties:
             if property_indices:
                 create_nodes(property_indices, self.project, sheet, wikifier, True, data_type)
+
+    @classmethod
+    def load_from_path(cls, annotation_path, project):
+        an=Annotation.load(project.get_full_path(annotation_path))
+        return cls(an, project)
+
+    @classmethod
+    def load_from_array(cls, annotation_nodes_array, project):
+        an = Annotation(annotation_nodes_array)
+        return cls(an, project)
+

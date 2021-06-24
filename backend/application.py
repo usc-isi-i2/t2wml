@@ -991,7 +991,7 @@ def causx_upload_project():
     response=dict()
     response["table"] = get_table(calc_params)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
-    ang=AnnotationNodeGenerator(response["annotations"], project)
+    ang=AnnotationNodeGenerator.load_from_array(response["annotations"], project)
     ang.preload(calc_params.sheet, calc_params.wikifier)
     get_layers(response, calc_params)
     return response, 200
@@ -1013,6 +1013,8 @@ def causx_upload_annotation():
             zf.extract(filemap["annotation"], project.directory)
     calc_params=get_calc_params(project)
     annotation_file=project.add_annotation_file(filemap["annotation"], calc_params.data_path, calc_params.sheet_name)
+    ang=AnnotationNodeGenerator.load_from_path(annotation_file, project)
+    ang.preload(calc_params.sheet, calc_params.wikifier)
     project.save()
     return get_mapping(annotation_file, "Annotation")
 
