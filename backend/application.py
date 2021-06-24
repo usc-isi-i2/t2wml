@@ -977,7 +977,7 @@ def causx_upload_project():
 
     proj_dir=Path(project.directory)
 
-    new_project=Project(proj_dir)
+    new_project=Project(project.directory)
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
@@ -1000,9 +1000,10 @@ def causx_upload_project():
     response=dict()
     response["table"] = get_table(calc_params)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
-    ang=AnnotationNodeGenerator.load_from_array(response["annotations"], project)
+    ang=AnnotationNodeGenerator.load_from_array(response["annotations"], new_project)
     ang.preload(calc_params.sheet, calc_params.wikifier)
     get_layers(response, calc_params)
+    response["project"]=get_project_dict(new_project)
     return response, 200
 
 
@@ -1025,7 +1026,9 @@ def causx_upload_annotation():
     ang=AnnotationNodeGenerator.load_from_path(annotation_file, project)
     ang.preload(calc_params.sheet, calc_params.wikifier)
     project.save()
-    return get_mapping(annotation_file, "Annotation")
+    response, code = get_mapping(annotation_file, "Annotation")
+    response["project"]=get_project_dict(project)
+    return response, code
 
 @app.route('/api/causx/download_project', methods=['GET'])
 @json_response

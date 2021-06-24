@@ -134,7 +134,7 @@ def get_cells_and_columns(statements, project):
         main_subject_id=statement["subject"],
         main_subject=try_get_label(main_subject_id),
         country_id=main_subject_id,
-        country_cameo_code=cameos.get(main_subject_id, ""),
+        country_cameo=cameos.get(main_subject_id, ""),
         region_coordinate=coords.get(main_subject_id, ""),
         FactorClass="", Relevance="", Normalizer="", Units="", DocID="", time="", time_precision="")
 
@@ -184,6 +184,9 @@ def causx_create_canonical_spreadsheet(statements, project):
                              )
     writer.writeheader()
     for entry in dict_values:
+        dict_columns=set(entry.keys())
+        extra_columns=dict_columns-set(column_titles)
+
         writer.writerow(entry)
 
     output = string_stream.getvalue()
