@@ -5,7 +5,7 @@ import sys
 import tempfile
 import json
 import zipfile
-from requests.api import get
+from causx_utils import AnnotationNodeGenerator
 from t2wml.api import Project
 import requests
 from io import BytesIO
@@ -990,8 +990,9 @@ def causx_upload_project():
     calc_params=CalcParams(new_project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
     response=dict()
     response["table"] = get_table(calc_params)
-    response["annotations"], response["yamlContent"] = get_annotations(
-            calc_params)
+    response["annotations"], response["yamlContent"] = get_annotations(calc_params)
+    ang=AnnotationNodeGenerator(response["annotations"], project)
+    ang.preload(calc_params.sheet, calc_params.wikifier)
     get_layers(response, calc_params)
     return response, 200
 
