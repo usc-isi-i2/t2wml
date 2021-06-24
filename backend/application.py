@@ -256,7 +256,7 @@ def upload_entities():
         response["layers"] = get_qnodes_layer(calc_params)
     return response, 200
 
-
+@app.route('/api/causx/project/entities', methods=['GET'])
 @app.route('/api/project/entities', methods=['GET'])
 @json_response
 def get_project_entities():
@@ -264,7 +264,7 @@ def get_project_entities():
     response = get_entities(project)
     return response, 200
 
-
+@app.route('/api/causx/project/entities', methods=['PUT'])
 @app.route('/api/project/entities', methods=['PUT'])
 @json_response
 def edit_entities():
@@ -324,6 +324,7 @@ def call_wikifier_service():
     return response, 200
 
 
+@app.route('/api/causx/auto_wikinodes', methods=['POST'])
 @app.route('/api/auto_wikinodes', methods=['POST'])
 @json_response
 def create_auto_nodes():
@@ -1004,6 +1005,8 @@ def causx_upload_project():
     ang.preload(calc_params.sheet, calc_params.wikifier)
     get_layers(response, calc_params)
     response["project"]=get_project_dict(new_project)
+    response["sheetName"]=sheet_name
+    response["filePath"]=filemap["data"]
     return response, 200
 
 
