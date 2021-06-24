@@ -980,12 +980,14 @@ def causx_upload_project():
             filemap=json.loads(zf.read("filemap.json"))
             zf.extract(filemap["data"], proj_dir)
             zf.extract(filemap["annotation"], proj_dir)
-            zf.extract(filemap["entity"], proj_dir)
+            for entity_file in filemap["entities"]:
+                zf.extract(entity_file, proj_dir)
 
     new_project.add_data_file(filemap["data"])
     sheet_name=filemap["sheet"]
     new_project.add_annotation_file(filemap["annotation"], filemap["data"], sheet_name)
-    new_project.add_entity_file(filemap["entity"])
+    for entity_file in filemap["entities"]:
+        new_project.add_entity_file(entity_file)
     new_project.save()
     calc_params=CalcParams(new_project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
     response=dict()
@@ -1029,8 +1031,6 @@ def causx_download_project():
     sheet_name=calc_params.sheet_name
     annotation_path=calc_params.annotation_path
     annotation_path_arcname = Path(calc_params._annotation_path).as_posix()
-    entities_path= Path(project.directory) / project.entity_files[0] #TODO: entities
-    entities_path_arcname=Path(project.entity_files[0]).as_posix()
 
     attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
 
@@ -1038,11 +1038,12 @@ def causx_download_project():
     with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
             zf.write(data_path, arcname=data_path_arcname)
             zf.write(annotation_path, arcname=annotation_path_arcname)
-            zf.write(entities_path, arcname=entities_path_arcname)
+            for entity_file in project.entity_files:
+                zf.write(project.get_full_path(entity_file), arcname=entity_file)
             zf.writestr("filemap.json", json.dumps(dict(data=data_path_arcname,
                                                         sheet=sheet_name,
                                                         annotation=annotation_path_arcname,
-                                                        entity=entities_path_arcname)))
+                                                        entities=project.entity_files)))
 
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
