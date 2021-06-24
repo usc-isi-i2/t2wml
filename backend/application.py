@@ -5,7 +5,8 @@ import sys
 import tempfile
 import json
 import zipfile
-from causx_utils import AnnotationNodeGenerator
+from causx.causx_utils import AnnotationNodeGenerator
+from causx.wikification import wikify_countries
 from t2wml.api import Project
 import requests
 from io import BytesIO
@@ -25,7 +26,7 @@ from calc_params import CalcParams
 from global_settings import global_settings
 import path_utils
 from wikidata_utils import get_labels_and_descriptions
-from wikification import wikify_countries, wikify_selection
+from wikification import wikify_selection
 
 debug_mode = False
 
@@ -982,6 +983,8 @@ def causx_upload_project():
             zf.extract(filemap["annotation"], proj_dir)
             for entity_file in filemap["entities"]:
                 zf.extract(entity_file, proj_dir)
+            if filemap["wikifier_exists"]:
+                zf.extract(filemap["wikifier_path"], proj_dir)
 
     new_project.add_data_file(filemap["data"])
     sheet_name=filemap["sheet"]
@@ -1031,6 +1034,11 @@ def causx_download_project():
     sheet_name=calc_params.sheet_name
     annotation_path=calc_params.annotation_path
     annotation_path_arcname = Path(calc_params._annotation_path).as_posix()
+    wikifier_path, wikifier_exists = project.get_wikifier_file(data_path)
+    if wikifier_exists:
+        wikifier_partial_path=Path(wikifier_path).relative_to(project.directory).as_posix()
+    else:
+        wikifier_partial_path=""
 
     attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
 
@@ -1040,10 +1048,14 @@ def causx_download_project():
             zf.write(annotation_path, arcname=annotation_path_arcname)
             for entity_file in project.entity_files:
                 zf.write(project.get_full_path(entity_file), arcname=entity_file)
+            if wikifier_exists:
+                zf.write(wikifier_path, arcname=wikifier_partial_path)
             zf.writestr("filemap.json", json.dumps(dict(data=data_path_arcname,
                                                         sheet=sheet_name,
                                                         annotation=annotation_path_arcname,
-                                                        entities=project.entity_files)))
+                                                        entities=project.entity_files,
+                                                        wikifier_exists=wikifier_exists,
+                                                        wikifier_path=wikifier_partial_path)))
 
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
