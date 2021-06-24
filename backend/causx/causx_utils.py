@@ -162,11 +162,10 @@ def get_cells_and_columns(statements, project):
             statement_dict[label]=value
             if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
                 new_columns.add(label)
-
-        new_columns=list(new_columns)
-        column_titles+=new_columns
-
         dict_values.append(statement_dict)
+
+    new_columns=list(new_columns)
+    column_titles+=new_columns
     return column_titles, dict_values
 
 
