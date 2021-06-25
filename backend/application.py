@@ -1082,12 +1082,12 @@ def causx_partial_csv():
     except Exception as e:
         response["partialCsv"] = dict(dims=[1, 22],
                                       firstRowIndex=0,
-                                      cells=["dataset_id", "variable_id", "variable", "main_subject",
+                                      cells=[["dataset_id", "variable_id", "variable", "main_subject",
                                         "main_subject_id", "value",
                                         "time","time_precision", "country","country_id","country_cameo",
                                         "admin1","admin2","admin3",
                                         "region_coordinate","stated_in","stated_in_id","stated in",
-                                        "FactorClass","Relevance","Normalizer","Units","DocID"])
+                                        "FactorClass","Relevance","Normalizer","Units","DocID"]])
     return response, 200
 
 @app.route('/api/causx/download_zip_results', methods=['GET'])
