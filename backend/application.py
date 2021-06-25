@@ -383,6 +383,8 @@ def apply_yaml():
 
 
 
+@app.route('/api/causx/project/download/<filetype>/<filename>/all', methods=['GET'])
+@app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
 @app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
 @app.route('/api/project/download/<filetype>/<filename>', methods=['GET'])
 def download_results(filetype, filename):
@@ -488,6 +490,7 @@ def save_annotation():
     return response, 200
 
 
+@app.route('/api/causx/annotation', methods=['POST'])
 @app.route('/api/annotation', methods=['POST'])
 @json_response
 def upload_annotation():
@@ -504,6 +507,7 @@ def upload_annotation():
     return response, code
 
 
+@app.route('/api/causx/annotation/suggest', methods=['PUT'])
 @app.route('/api/annotation/suggest', methods=['PUT'])
 @json_response
 def suggest_annotation_block():
@@ -527,6 +531,7 @@ def suggest_annotation_block():
     return response, 200
 
 
+@app.route('/api/causx/annotation/guess-blocks', methods=['GET'])
 @app.route('/api/annotation/guess-blocks', methods=['GET'])
 @json_response
 def guess_annotation_blocks():
@@ -550,6 +555,7 @@ def update_global_settings():
     return response, 200
 
 
+@app.route('/api/causx/project/settings', methods=['PUT', 'GET'])
 @app.route('/api/project/settings', methods=['PUT', 'GET'])
 @json_response
 def update_settings():
@@ -719,6 +725,7 @@ def delete_wikification():
     return response, 200
 
 
+@app.route('/api/causx/create_node', methods=['POST'])
 @app.route('/api/create_node', methods=['POST'])
 @json_response
 def create_qnode():
