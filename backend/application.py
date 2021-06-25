@@ -383,11 +383,11 @@ def apply_yaml():
 
 
 
-@app.route('/api/causx/project/download/<filetype>/<filename>/all', methods=['GET'])
-@app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
-@app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
-@app.route('/api/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results(filetype, filename):
+@app.route('/api/causx/project/download/<filetype>/all', methods=['GET'])
+@app.route('/api/causx/project/download/<filetype>/', methods=['GET'])
+@app.route('/api/project/download/<filetype>/all', methods=['GET'])
+@app.route('/api/project/download/<filetype>/', methods=['GET'])
+def download_results(filetype):
     """
     return as attachment
     """
@@ -396,7 +396,6 @@ def download_results(filetype, filename):
         "csv": "text/csv",
         "json": "application/json"
     }
-    attachment_filename=""
     project = get_project()
     if filetype == "csv":
         from t2wml.settings import t2wml_settings
@@ -406,8 +405,7 @@ def download_results(filetype, filename):
             binary_stream=BytesIO()
             create_zip(project, filetype, binary_stream)
             binary_stream.seek(0)
-            return send_file(binary_stream, attachment_filename, as_attachment=True, mimetype='application/zip'), 200
-
+            return send_file(binary_stream, as_attachment=True, mimetype='application/zip'), 200
     else:
         calc_params = get_calc_params(project)
         if not calc_params.yaml_path and not calc_params.annotation_path:
@@ -415,9 +413,7 @@ def download_results(filetype, filename):
                 "Cannot download report without uploading mapping file first")
         kg = get_kg(calc_params)
         data = kg.get_output(filetype, calc_params.project)
-        return send_file(data, attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
-
-
+        return send_file(data, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
 @app.route('/api/project/export/<filetype>/all', methods=['POST'])
