@@ -9,7 +9,7 @@ from causx.causx_utils import AnnotationNodeGenerator, get_causx_partial_csv, ca
 from causx.wikification import wikify_countries
 from t2wml.api import Project
 import requests
-from io import BytesIO
+from io import BytesIO, StringIO
 from pathlib import Path
 from flask import request
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
@@ -415,7 +415,9 @@ def download_results(filetype, filename):
                 "Cannot download report without uploading mapping file first")
         kg = get_kg(calc_params)
         data = kg.get_output(filetype, calc_params.project)
-        return send_file(data, attachment_filename = attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
+        stream= StringIO(data)
+        stream.seek(0)
+        return send_file(stream, attachment_filename = attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
 
