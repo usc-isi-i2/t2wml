@@ -90,8 +90,9 @@ class AnnotationNodeGenerator:
                 df2, problem_cells2 = dcw.wikify_region(block.selection, sheet)
                 df = pd.concat([df, df2], ignore_index=True)
                 problem_cells += problem_cells2
-        self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
-        wikifier.add_dataframe(df)
+        if not df.empty:
+            self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
+            wikifier.add_dataframe(df)
 
     @error_with_func
     def preload(self, sheet, wikifier):
@@ -249,6 +250,7 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
         df = pd.DataFrame.from_dict(dict_values)
         #df.replace(to_replace=[None], value="", inplace=True)
         #df = df[columns] # sort the columns
+    df = df.filter(columns)
     dims = list(df.shape)
     cells = json.loads(df.to_json(orient="values"))
     cells.insert(0, list(df.columns))
