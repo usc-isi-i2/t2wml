@@ -1113,6 +1113,8 @@ def causx_save_zip_results():
     calc_params = get_calc_params(project)
 
     annotation_path=calc_params.annotation_path
+    ang=AnnotationNodeGenerator.load_from_path(annotation_path, project)
+    ang.preload(calc_params.sheet, calc_params.wikifier)
 
     kg = get_kg(calc_params)
 
