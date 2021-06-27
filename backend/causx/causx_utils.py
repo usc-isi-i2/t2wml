@@ -78,9 +78,10 @@ class AnnotationNodeGenerator:
         if subject_region:
             if isinstance(subject_region, list):
                 subject_region=subject_region[0]
-            #check all main subject
-            dcw=DatamartCountryWikifier()
-            df, problem_cells = dcw.wikify_region(subject_region.selection, sheet)
+
+        #check all main subject
+        dcw=DatamartCountryWikifier()
+        df, problem_cells = dcw.wikify_region(subject_region.selection, sheet)
 
         #check anything whose type is wikibaseitem
         for block in self.annotation.annotations_array:
@@ -94,14 +95,15 @@ class AnnotationNodeGenerator:
 
     @error_with_func
     def preload(self, sheet, wikifier):
-        self.annotation.initialize()
-        self.wikify_countries(sheet, wikifier)
-        properties, items = self.get_custom_properties_and_qnodes()
-        create_nodes(items, self.project, sheet, wikifier)
-        for property_indices, data_type in properties:
-            if property_indices:
-                create_nodes(property_indices, self.project, sheet, wikifier, True, data_type)
-        self.project.save()
+        if self.annotation.data_annotations:
+            self.annotation.initialize()
+            self.wikify_countries(sheet, wikifier)
+            properties, items = self.get_custom_properties_and_qnodes()
+            create_nodes(items, self.project, sheet, wikifier)
+            for property_indices, data_type in properties:
+                if property_indices:
+                    create_nodes(property_indices, self.project, sheet, wikifier, True, data_type)
+            self.project.save()
 
     @classmethod
     @error_with_func
