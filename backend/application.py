@@ -406,7 +406,7 @@ def download_results(filetype, filename):
             binary_stream=BytesIO()
             create_zip(project, filetype, binary_stream)
             binary_stream.seek(0)
-            return send_file(binary_stream, attachment_filename, as_attachment=True, mimetype='application/zip'), 200
+            return send_file(binary_stream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
 
     else:
         calc_params = get_calc_params(project)
@@ -415,7 +415,7 @@ def download_results(filetype, filename):
                 "Cannot download report without uploading mapping file first")
         kg = get_kg(calc_params)
         data = kg.get_output(filetype, calc_params.project)
-        return send_file(data, attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
+        return send_file(data, attachment_filename = attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
 
