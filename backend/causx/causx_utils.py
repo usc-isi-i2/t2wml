@@ -291,8 +291,15 @@ def causx_create_canonical_spreadsheet(statements, project):
 
 @error_with_func
 def get_causx_partial_csv(calc_params, start=0, end=150):
-    cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, start, end)
+    try:
+        cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
+    except Exception as e:
+        raise ValueError(str(e)+"297")
+
+    try:
+        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, start, end)
+    except Exception as e:
+        raise ValueError(str(e)+"300")
     columns=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
                     "time","time_precision", "country","country_id","country_cameo",
                     "admin1","admin2","admin3",
@@ -300,26 +307,45 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
                     "FactorClass","Relevance","Normalizer","Units","DocID"]
 
     if not kg.statements: #nonetheless add at least some of the annotation
-        df=pd.DataFrame([], columns=columns)
-        role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
+        try:
+            df=pd.DataFrame([], columns=columns)
+            role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
+        except Exception as e:
+            raise ValueError(str(e)+"300")
         for block in cell_mapper.annotation.annotations_array:
             if isinstance(block, list):
                 block=block[0]
             if block.role in role_map:
-                cells=[]
-                (x1, y1),(x2, y2)=block.cell_args
-                for row in range(y1, y2+1):
-                    for col in range(x1, x2+1):
-                        cells.append(calc_params.sheet[row, col])
-            df[role_map[block.role]]=cells
-        df.dataset_id=calc_params.project.dataset_id
+                try:
+                    cells=[]
+                    (x1, y1),(x2, y2)=block.cell_args
+                    for row in range(y1, y2+1):
+                        for col in range(x1, x2+1):
+                            cells.append(calc_params.sheet[row, col])
+                    df[role_map[block.role]]=cells
+                except Exception as e:
+                    raise ValueError(str(e)+"320"+block.role)
+        try:
+            df.dataset_id=calc_params.project.dataset_id
+        except Exception as e:
+            raise ValueError(str(e)+"328")
     else:
-        columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
-        df = pd.DataFrame.from_dict(dict_values)
+        try:
+            columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
+        except Exception as e:
+            raise ValueError(str(e)+"336")
+
+        try:
+            df = pd.DataFrame.from_dict(dict_values)
+        except Exception as e:
+            raise ValueError(str(e)+"341")
         #df.replace(to_replace=[None], value="", inplace=True)
         #df = df[columns] # sort the columns
-    df = df.filter(columns)
-    dims = list(df.shape)
-    cells = json.loads(df.to_json(orient="values"))
-    cells.insert(0, list(df.columns))
+    try:
+        df = df.filter(columns)
+        dims = list(df.shape)
+        cells = json.loads(df.to_json(orient="values"))
+        cells.insert(0, list(df.columns))
+    except Exception as e:
+        raise ValueError(str(e)+"345")
     return dict(dims=dims, firstRowIndex=0, cells=cells)
