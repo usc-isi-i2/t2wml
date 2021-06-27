@@ -181,8 +181,8 @@ def get_cells_and_columns(statements, project):
     dict_values=[]
     new_columns=set()
     for cell, statement in statements.items():
-        variable=try_get_label(statement["property"])
-        main_subject_id=statement["subject"]
+        variable=try_get_label(statement.get("property", ""))
+        main_subject_id=statement.get("subject", "")
         statement_dict={}
         try:
             statement_dict=dict(dataset_id=project.dataset_id,
@@ -195,13 +195,13 @@ def get_cells_and_columns(statements, project):
             statement_dict.update(dict(
             variable=variable,
             variable_id=clean_id(variable),
-            value=statement["value"]))
+            value=statement.get("value", "")))
         except Exception as e:
             raise ValueError(str(e)+"195")
 
         try:
             statement_dict.update(dict(
-            main_subject_id=statement["subject"],
+            main_subject_id=main_subject_id,
             main_subject=try_get_label(main_subject_id),
             country_id=main_subject_id))
         except Exception as e:
