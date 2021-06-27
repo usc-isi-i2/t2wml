@@ -11,7 +11,7 @@ from causx.cameos import cameos
 from causx.coords import coords
 
 def clean_id(input):
-    if input is None:
+    if not input:
         return ""
     return _clean_id(input)
 
