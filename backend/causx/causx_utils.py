@@ -3,12 +3,17 @@ import json
 from io import StringIO
 import pandas as pd
 from t2wml.input_processing.annotation_parsing import Annotation, create_nodes
-from t2wml.mapping.datamart_edges import clean_id
+from t2wml.mapping.datamart_edges import clean_id as _clean_id
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.api import kgtk_to_dict, t2wml_settings, KnowledgeGraph
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
+
+def clean_id(input):
+    if input is None:
+        return input
+    return _clean_id(input)
 
 def error_with_func(func=None):
     def wrapper(*args, **kwargs):
