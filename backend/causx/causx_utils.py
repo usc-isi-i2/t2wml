@@ -10,6 +10,19 @@ from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
 
+def error_with_func(func=None):
+    def wrapper(*args, **kwargs):
+        try:
+            function_name = func.__func__.__qualname__
+        except:
+            function_name = func.__qualname__
+        try:
+            result= func(*args, **kwargs)
+            return result
+        except Exception as e:
+            raise ValueError(f"Error returned from {function_name}: {str(e)}")
+    return wrapper
+
 
 
 class AnnotationNodeGenerator:
@@ -17,6 +30,7 @@ class AnnotationNodeGenerator:
         self.annotation=annotation
         self.project=project
 
+    @error_with_func
     def _get_units(self, region):
         unit=region.matches.get("unit")
         if unit:
@@ -27,6 +41,7 @@ class AnnotationNodeGenerator:
             return list(units)
         return []
 
+    @error_with_func
     def _get_properties(self, region):
         range_property = region.matches.get("property")
         if range_property:
@@ -37,6 +52,7 @@ class AnnotationNodeGenerator:
             return list(range_properties), region.type
         return [], None
 
+    @error_with_func
     def get_custom_properties_and_qnodes(self):
         custom_properties=list()
         custom_items=set()
@@ -56,6 +72,7 @@ class AnnotationNodeGenerator:
 
         return custom_properties, list(custom_items)
 
+    @error_with_func
     def wikify_countries(self, sheet, wikifier):
         subject_region=self.annotation.subject_annotations
         if isinstance(subject_region, list):
@@ -74,7 +91,7 @@ class AnnotationNodeGenerator:
         self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
         wikifier.add_dataframe(df)
 
-
+    @error_with_func
     def preload(self, sheet, wikifier):
         self.annotation.initialize()
         self.wikify_countries(sheet, wikifier)
@@ -85,16 +102,18 @@ class AnnotationNodeGenerator:
                 create_nodes(property_indices, self.project, sheet, wikifier, True, data_type)
 
     @classmethod
+    @error_with_func
     def load_from_path(cls, annotation_path, project):
         an=Annotation.load(project.get_full_path(annotation_path))
         return cls(an, project)
 
     @classmethod
+    @error_with_func
     def load_from_array(cls, annotation_nodes_array, project):
         an = Annotation(annotation_nodes_array)
         return cls(an, project)
 
-
+@error_with_func
 def get_entities(project):
     entity_dict={}
     for file in project.entity_files:
@@ -102,6 +121,7 @@ def get_entities(project):
         entity_dict.update(kgtk_to_dict(full_path))
     return entity_dict
 
+@error_with_func
 def try_get_label(input):
     provider = t2wml_settings.wikidata_provider
     if not input:
@@ -115,6 +135,7 @@ def try_get_label(input):
             pass
     return input
 
+@error_with_func
 def get_cells_and_columns(statements, project):
     column_titles=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
                     "time","time_precision", "country","country_id","country_cameo",
@@ -170,7 +191,7 @@ def get_cells_and_columns(statements, project):
     column_titles+=new_columns
     return column_titles, dict_values
 
-
+@error_with_func
 def causx_create_canonical_spreadsheet(statements, project):
     column_titles, dict_values = get_cells_and_columns(statements, project)
 
@@ -195,7 +216,7 @@ def causx_create_canonical_spreadsheet(statements, project):
     return output
 
 
-
+@error_with_func
 def get_causx_partial_csv(calc_params, start=0, end=150):
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, start, end)
