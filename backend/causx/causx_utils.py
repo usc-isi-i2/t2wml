@@ -183,47 +183,60 @@ def get_cells_and_columns(statements, project):
     for cell, statement in statements.items():
         variable=try_get_label(statement["property"])
         main_subject_id=statement["subject"]
-
-        statement_dict=dict(dataset_id=project.dataset_id,
-        admin1="", admin2="", admin3="",
-        stated_in="", stated_in_id="",
-        variable=variable,
-        variable_id=clean_id(variable),
-        value=statement["value"],
-        main_subject_id=statement["subject"],
-        main_subject=try_get_label(main_subject_id),
-        country_id=main_subject_id,
-        country_cameo=cameos.get(main_subject_id, ""),
-        region_coordinate=coords.get(main_subject_id, ""),
-        FactorClass="", Relevance="", Normalizer="", Units="", DocID="", time="", time_precision="")
-
+        statement_dict={}
+        try:
+            statement_dict=dict(dataset_id=project.dataset_id,
+            admin1="", admin2="", admin3="",
+            stated_in="", stated_in_id="",
+            variable=variable,
+            variable_id=clean_id(variable),
+            value=statement["value"],
+            main_subject_id=statement["subject"],
+            main_subject=try_get_label(main_subject_id),
+            country_id=main_subject_id,
+            country_cameo=cameos.get(main_subject_id, ""),
+            region_coordinate=coords.get(main_subject_id, ""),
+            FactorClass="", Relevance="", Normalizer="", Units="", DocID="", time="", time_precision="")
+        except Exception as e:
+            raise ValueError(str(e)+"188")
         statement_dict["stated in"]=""
 
         for qualifier in statement.get("qualifier", []):
             if not qualifier.get("property"):
                 continue
             if qualifier["property"]=="P585": #time, time_precision
-                statement_dict["time"]=qualifier["value"]
-                statement_dict["time_precision"]=qualifier.get("precision", "")
-            elif qualifier["property"]=="P248": #stated_in, stated_in_id, stated in
-                statement_dict["stated in"]=try_get_label(qualifier["value"])
+                try:
+                    statement_dict["time"]=qualifier["value"]
+                    statement_dict["time_precision"]=qualifier.get("precision", "")
+                except Exception as e:
+                    raise ValueError(str(e)+"209")
+            elif qualifier["property"]=="P248": #stated_in, stated_in_id, stated
+                try:
+                    statement_dict["stated in"]=try_get_label(qualifier["value"])
+                except Exception as e:
+                    raise ValueError(str(e)+"215")
 
             else:
-                q_label=try_get_label(qualifier["property"])
-                if q_label not in new_columns:
-                    new_columns.add(q_label)
-                statement_dict[q_label]=qualifier["value"]
+                try:
+                    q_label=try_get_label(qualifier["property"])
+                    if q_label not in new_columns:
+                        new_columns.add(q_label)
+                    statement_dict[q_label]=qualifier["value"]
+                except Exception as e:
+                    raise ValueError(str(e)+"221"+str(qualifier))
 
-
-        entities=get_entities(project)
-        if statement.get("property"):
-            variable_entry=entities[statement["property"]]
-            tags=variable_entry.get("tags", [])
-            for tag in tags:
-                label, value = tag.split(":", 1)
-                statement_dict[label]=value
-                if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
-                    new_columns.add(label)
+        try:
+            entities=get_entities(project)
+            if statement.get("property"):
+                variable_entry=entities[statement["property"]]
+                tags=variable_entry.get("tags", [])
+                for tag in tags:
+                    label, value = tag.split(":", 1)
+                    statement_dict[label]=value
+                    if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
+                        new_columns.add(label)
+        except Exception as e:
+                raise ValueError(str(e)+"229")
         dict_values.append(statement_dict)
 
     new_columns=list(new_columns)
