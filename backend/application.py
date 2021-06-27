@@ -415,7 +415,7 @@ def download_results(filetype, filename):
                 "Cannot download report without uploading mapping file first")
         kg = get_kg(calc_params)
         data = kg.get_output(filetype, calc_params.project)
-        stream= StringIO(data)
+        stream= BytesIO(data.encode('utf-8'))
         stream.seek(0)
         return send_file(stream, attachment_filename = attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
