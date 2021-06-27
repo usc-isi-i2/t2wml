@@ -187,18 +187,35 @@ def get_cells_and_columns(statements, project):
         try:
             statement_dict=dict(dataset_id=project.dataset_id,
             admin1="", admin2="", admin3="",
-            stated_in="", stated_in_id="",
-            variable=variable,
-            variable_id=clean_id(variable),
-            value=statement["value"],
-            main_subject_id=statement["subject"],
-            main_subject=try_get_label(main_subject_id),
-            country_id=main_subject_id,
-            country_cameo=cameos.get(main_subject_id, ""),
-            region_coordinate=coords.get(main_subject_id, ""),
-            FactorClass="", Relevance="", Normalizer="", Units="", DocID="", time="", time_precision="")
+            stated_in="", stated_in_id="")
         except Exception as e:
             raise ValueError(str(e)+"188")
+
+        try:
+            statement_dict.update(dict(
+            variable=variable,
+            variable_id=clean_id(variable),
+            value=statement["value"]))
+        except Exception as e:
+            raise ValueError(str(e)+"195")
+
+        try:
+            statement_dict.update(dict(
+            main_subject_id=statement["subject"],
+            main_subject=try_get_label(main_subject_id),
+            country_id=main_subject_id))
+        except Exception as e:
+            raise ValueError(str(e)+"203")
+
+        try:
+            statement_dict.update(dict(
+            country_cameo=cameos.get(main_subject_id, ""),
+            region_coordinate=coords.get(main_subject_id, ""),
+            FactorClass="", Relevance="", Normalizer="", Units="", DocID="", time="", time_precision=""))
+        except Exception as e:
+            raise ValueError(str(e)+"211")
+
+
         statement_dict["stated in"]=""
 
         for qualifier in statement.get("qualifier", []):
