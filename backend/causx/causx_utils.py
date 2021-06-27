@@ -58,6 +58,8 @@ class AnnotationNodeGenerator:
 
     def wikify_countries(self, sheet, wikifier):
         subject_region=self.annotation.subject_annotations
+        if isinstance(subject_region, list):
+            subject_region=subject_region[0]
         #check all main subject
         dcw=DatamartCountryWikifier()
         df, problem_cells = dcw.wikify_region(subject_region.selection, sheet)
