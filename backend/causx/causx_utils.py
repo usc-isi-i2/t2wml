@@ -101,6 +101,7 @@ class AnnotationNodeGenerator:
         for property_indices, data_type in properties:
             if property_indices:
                 create_nodes(property_indices, self.project, sheet, wikifier, True, data_type)
+        self.project.save()
 
     @classmethod
     @error_with_func
