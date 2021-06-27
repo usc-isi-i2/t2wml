@@ -199,7 +199,7 @@ def get_cells_and_columns(statements, project):
 
         statement_dict["stated in"]=""
 
-        for qualifier in statement["qualifier"]:
+        for qualifier in statement.get("qualifier", []):
             if qualifier["property"]=="P585": #time, time_precision
                 statement_dict["time"]=qualifier["value"]
                 statement_dict["time_precision"]=qualifier.get("precision", "")
