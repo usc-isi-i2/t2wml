@@ -203,15 +203,19 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
                     "region_coordinate","stated_in","stated_in_id","stated in",
                     "FactorClass","Relevance","Normalizer","Units","DocID"]
 
-    if not kg.statements:
+    if not kg.statements: #nonetheless add at least some of the annotation
         df=pd.DataFrame([], columns=columns)
-        if cell_mapper.annotation.subject_annotations:
-            subject_cells=[]
-            (x1, y1),(x2, y2)=subject_block_cells=cell_mapper.annotation.subject_annotations[0].cell_args
-            for row in range(y1, y2+1):
-                for col in range(x1, x2+1):
-                    subject_cells.append(calc_params.sheet[row, col])
-            df.main_subject=subject_cells
+        role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
+        for block in cell_mapper.annotation.annotations_array:
+            if isinstance(block, list):
+                block=block[0]
+            if block.role in role_map:
+                cells=[]
+                (x1, y1),(x2, y2)=block.cell_args
+                for row in range(y1, y2+1):
+                    for col in range(x1, x2+1):
+                        cells.append(calc_params.sheet[row, col])
+            df[role_map[block.role]]=cells
         df.dataset_id=calc_params.project.dataset_id
     else:
         columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
