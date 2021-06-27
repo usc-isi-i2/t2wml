@@ -244,16 +244,20 @@ def get_cells_and_columns(statements, project):
 
         try:
             entities=get_entities(project)
-            if statement.get("property"):
-                variable_entry=entities[statement["property"]]
-                tags=variable_entry.get("tags", [])
-                for tag in tags:
-                    label, value = tag.split(":", 1)
-                    statement_dict[label]=value
-                    if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
-                        new_columns.add(label)
         except Exception as e:
-                raise ValueError(str(e)+"229")
+            raise ValueError(str(e)+"246")
+        if statement.get("property"):
+            try:
+                variable_entry=entities.get(statement["property"], None)
+                if variable_entry:
+                    tags=variable_entry.get("tags", [])
+                    for tag in tags:
+                        label, value = tag.split(":", 1)
+                        statement_dict[label]=value
+                        if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
+                            new_columns.add(label)
+            except Exception as e:
+                raise ValueError(str(e)+"229"+str(statement["property"])+str(variable_entry))
         dict_values.append(statement_dict)
 
     new_columns=list(new_columns)
