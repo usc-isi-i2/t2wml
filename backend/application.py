@@ -396,7 +396,7 @@ def download_results(filetype, filename):
         "csv": "text/csv",
         "json": "application/json"
     }
-    attachment_filename=""
+    attachment_filename=filename
     project = get_project()
     if filetype == "csv":
         from t2wml.settings import t2wml_settings
