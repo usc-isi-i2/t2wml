@@ -12,7 +12,7 @@ from causx.coords import coords
 
 def clean_id(input):
     if input is None:
-        return input
+        return ""
     return _clean_id(input)
 
 def error_with_func(func=None):
@@ -79,25 +79,51 @@ class AnnotationNodeGenerator:
 
     @error_with_func
     def wikify_countries(self, sheet, wikifier):
-        df = pd.DataFrame([])
-        subject_region=self.annotation.subject_annotations
+        try:
+            df = pd.DataFrame([])
+        except:
+            raise ValueError("83")
+        try:
+            subject_region=self.annotation.subject_annotations
+        except:
+            raise ValueError("89")
+
         if subject_region:
             if isinstance(subject_region, list):
                 subject_region=subject_region[0]
             #check all main subject
-            dcw=DatamartCountryWikifier()
-            df, problem_cells = dcw.wikify_region(subject_region.selection, sheet)
+            try:
+                dcw=DatamartCountryWikifier()
+            except:
+                raise ValueError("96")
+            try:
+                df, problem_cells = dcw.wikify_region(subject_region.selection, sheet)
+            except:
+                raise ValueError("100")
 
         #check anything whose type is wikibaseitem
         for block in self.annotation.annotations_array:
             type=block.type
             if type in ["wikibaseitem", "WikibaseItem", "country", "Country"]:
-                df2, problem_cells2 = dcw.wikify_region(block.selection, sheet)
-                df = pd.concat([df, df2], ignore_index=True)
+                try:
+                    df2, problem_cells2 = dcw.wikify_region(block.selection, sheet)
+                except:
+                    raise ValueError("109")
+                try:
+                    df = pd.concat([df, df2], ignore_index=True)
+                except:
+                    raise ValueError("113")
                 problem_cells += problem_cells2
         if not df.empty:
-            self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
-            wikifier.add_dataframe(df)
+            try:
+               self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
+            except:
+                raise ValueError("119")
+
+            try:
+                wikifier.add_dataframe(df)
+            except:
+                raise ValueError("124")
 
     @error_with_func
     def preload(self, sheet, wikifier):
@@ -188,13 +214,14 @@ def get_cells_and_columns(statements, project):
 
 
         entities=get_entities(project)
-        variable_entry=entities[statement["property"]]
-        tags=variable_entry.get("tags", [])
-        for tag in tags:
-            label, value = tag.split(":", 1)
-            statement_dict[label]=value
-            if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
-                new_columns.add(label)
+        if statement.get("property"):
+            variable_entry=entities[statement["property"]]
+            tags=variable_entry.get("tags", [])
+            for tag in tags:
+                label, value = tag.split(":", 1)
+                statement_dict[label]=value
+                if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
+                    new_columns.add(label)
         dict_values.append(statement_dict)
 
     new_columns=list(new_columns)

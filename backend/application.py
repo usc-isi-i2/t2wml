@@ -1084,14 +1084,11 @@ def causx_partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
 
-    ang=AnnotationNodeGenerator.load_from_path(calc_params.annotation_path, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
-    project.save()
-
     response = dict()
     try:
         response["partialCsv"] = get_causx_partial_csv(calc_params)
     except Exception as e:
+        raise e
         response["partialCsv"] = dict(dims=[1, 22],
                                       firstRowIndex=0,
                                       cells=[["dataset_id", "variable_id", "variable", "main_subject",
