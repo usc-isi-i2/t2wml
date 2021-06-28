@@ -97,7 +97,7 @@ class AnnotationNodeGenerator:
             except:
                 raise ValueError("96")
             try:
-                df, problem_cells = dcw.wikify_region(subject_region.selection, sheet)
+                df, problem_cells = dcw.wikify_region(subject_region.selection, sheet, wikifier)
             except:
                 raise ValueError("100")
 
@@ -106,7 +106,7 @@ class AnnotationNodeGenerator:
             type=block.type
             if type in ["wikibaseitem", "WikibaseItem", "country", "Country"]:
                 try:
-                    df2, problem_cells2 = dcw.wikify_region(block.selection, sheet)
+                    df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
                 except:
                     raise ValueError("109")
                 try:

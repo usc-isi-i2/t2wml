@@ -94,7 +94,7 @@ class DatamartCountryWikifier:
         self._logger = logging.getLogger(__name__)
         self.memo=countries
 
-    def wikify(self, sheet, start_row, end_row, start_col, end_col) -> dict:
+    def wikify(self, sheet, start_row, end_row, start_col, end_col, wikifier=None) -> dict:
         no_wifiy_memo = set()
         wikifier_result = []
         wikified = {}
@@ -117,6 +117,21 @@ class DatamartCountryWikifier:
                 item=None
                 # skip those input we already confirm no candidate
                 if value in no_wifiy_memo:
+                    continue
+
+                already_wikified=False
+                try:
+                    exists = wikifier.item_table.get_item(column, row, sheet=sheet, value=value)
+                    if exists[0] =="Q":
+                        try:
+                            test=int(exists[1:])
+                            already_wikified=True
+                        except:
+                            pass
+                except:
+                    pass
+
+                if already_wikified:
                     continue
 
 
@@ -151,7 +166,7 @@ class DatamartCountryWikifier:
 
                         else:
                             no_wifiy_memo.add(value)
-                            self._logger.warning("Not wikify for input value `{}`".format(value))
+                            self._logger.warning("Did not wikify input value `{}`".format(value))
                 else:
                     item = self.memo.get(input_str, None) or self.memo.get(input_str_processed,
                                                                                      None) or self.memo.get(
@@ -162,13 +177,13 @@ class DatamartCountryWikifier:
 
         return df_rows, no_wifiy_memo
 
-    def wikify_region(self, selection, sheet):
+    def wikify_region(self, selection, sheet, wikifier=None):
         (start_col, start_row), (end_col, end_row) = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
         end_col += 1
         end_row += 1
 
 
-        df_rows, not_wikified = self.wikify(sheet, start_row, end_row, start_col, end_col)
+        df_rows, not_wikified = self.wikify(sheet, start_row, end_row, start_col, end_col, wikifier)
 
 
         df = pd.DataFrame(df_rows, columns=[
