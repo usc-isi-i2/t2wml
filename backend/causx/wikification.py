@@ -8,7 +8,7 @@ import rltk.similarity as sim
 from abc import ABC, abstractmethod
 from t2wml.wikification.country_wikifier_cache import countries
 
-
+no_wifiy_memo = set()
 
 FILE_FOLDER=os.path.abspath(os.path.dirname(__file__))
 
@@ -95,7 +95,6 @@ class DatamartCountryWikifier:
         self.memo=countries
 
     def wikify(self, sheet, start_row, end_row, start_col, end_col, wikifier=None) -> dict:
-        no_wifiy_memo = set()
         wikifier_result = []
         wikified = {}
 
