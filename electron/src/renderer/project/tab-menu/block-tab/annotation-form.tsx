@@ -1,44 +1,26 @@
 import React from 'react';
 
-import { AnnotationBlock, EntityFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
+import { AnnotationBlock, AnnotationFields, EntityFields, nameQNodeFields, nameStrFields, ResponseWithQNodeLayerAndQnode, ResponseWithSuggestion } from '../../../common/dtos';
 import * as utils from '../../table/table-utils';
 import { ROLES, AnnotationOption } from './annotation-options';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CellSelection, ErrorMessage } from '@/renderer/common/general';
-import SearchResults from './search-results';
 import { QNode } from '@/renderer/common/dtos';
 import wikiStore from '../../../data/store';
 
 import { IReactionDisposer, reaction } from 'mobx';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { columnToLetter } from '../../table/table-utils';
+
 import RequestService from '@/renderer/common/service';
 import { currentFilesService } from '@/renderer/common/current-file-service';
 import './annotation-form.css'
 import ToastMessage from '@/renderer/common/toast';
 import WikiBlockMenu from './wiki-block-menu';
-import EntityMenu from '../entity-menu';
+import EditFieldMenu from './edit-field-menu';
+import NodeField from './node-field';
 
 
 
-interface AnnotationFields {
-  role?: string;
-  type?: string;
-  unit?: QNode;
-  format?: string;
-  calendar?: string;
-  property?: QNode;
-  language?: string;
-  precision?: string;
-  selectedArea?: string;
-  subject?: QNode;
-}
-
-export type nameQNodeFields = "unit" | "property" | "subject";
 const listQNodeFields = ["unit", "property", "subject"];
-export type nameStrFields = "role" | 'type' | 'format' | 'calendar' | 'language' | 'precision' | "selectedArea";
-
 
 interface AnnotationFormState {
   selectedBlock?: AnnotationBlock;
@@ -48,22 +30,10 @@ interface AnnotationFormState {
   validArea: boolean;
   showResult1: boolean;
   showResult2: boolean;
-  subject: {
-    value?: string;
-    instanceOfSearch?: string;
-    instanceOf?: QNode;
-    qnodes: QNode[];
-    selected?: QNode;
-  };
-  searchFields: {
-    property?: string;
-    unit?: string;
-    subject?: string;
-  }
   errorMessage: ErrorMessage;
-  showEntityMenu: boolean;
+  showEditFieldMenu: boolean;
   showWikifyBlockMenu: boolean;
-  typeEntityMenu?: string;
+  typeEditFieldMenu: string;
   mappingType?: string;
 }
 
@@ -81,41 +51,24 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     super(props);
 
     this.requestService = new RequestService();
-    const instanceOf = {
-      label: 'country',
-      description: 'the distinct region in geography; a broad term that can include political divisions or regions associated with distinct political characteristics',
-      id: 'Q6256',
-      url: 'https://www.wikidata.org/wiki/Q6256'
-    }
 
     this.state = {
       fields: {},
-      subject: {
-        value: undefined,
-        instanceOfSearch: undefined,
-        instanceOf: instanceOf,
-        qnodes: [],
-      },
-      searchFields: {
-        property: '',
-        unit: '',
-        subject: ''
-      },
       validArea: true,
       showExtraFields: false,
       showResult1: false,
       showResult2: false,
       errorMessage: {} as ErrorMessage,
-      showEntityMenu: false,
+      showEditFieldMenu: false,
       showWikifyBlockMenu: false,
-      mappingType: currentFilesService.currentState.mappingType
+      mappingType: currentFilesService.currentState.mappingType,
+      typeEditFieldMenu: ""
     };
     this.changed = false;
   }
 
   componentDidMount() {
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, (mappingType) => { this.setState({ mappingType }) }));
-    this.disposers.push(reaction(() => wikiStore.subjectQnodes.qnodes, (qnodes) => this.updateSubjectQNodes(qnodes)));
     this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
     this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection)));
   }
@@ -126,12 +79,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  changeShowEntityMenu(newTypeEntityMenu: string) {
-    const { showEntityMenu, typeEntityMenu } = this.state;
-    if (typeEntityMenu === newTypeEntityMenu || !showEntityMenu) {
-      this.setState({ showEntityMenu: !showEntityMenu });
+  changeShowEditFieldMenu(newTypeEditFieldMenu: string) {
+    const { showEditFieldMenu, typeEditFieldMenu } = this.state;
+    if (typeEditFieldMenu === newTypeEditFieldMenu || !showEditFieldMenu) {
+      this.setState({ showEditFieldMenu: !showEditFieldMenu });
     }
-    this.setState({ typeEntityMenu: newTypeEntityMenu });
+    this.setState({ typeEditFieldMenu: newTypeEditFieldMenu });
   }
 
   changeShowWikifyBlockMenu() {
@@ -140,7 +93,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
 
-  async handleOnCreateQnode(entityFields: EntityFields) {
+  async handleOnCreateQnode(key: string, entityFields: EntityFields) {
     console.log('Annotationn Menu handleOnCreateQnode triggered for -> ', entityFields);
 
     wikiStore.table.showSpinner = true;
@@ -151,7 +104,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       const response: ResponseWithQNodeLayerAndQnode = await this.requestService.call(this, () => (
         this.requestService.createQnode(entityFields)
       ));
-      this.handleOnSelect(entityFields.is_property ? 'property' : 'unit', response.entity)
+      this.handleOnSelectNode(key, response.entity)
     } catch (error) {
       error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;
       console.log(error.errorDescription)
@@ -164,10 +117,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   }
 
-  handleOnCloseEntityMenu(entityFields?: EntityFields) {
-    this.setState({ showEntityMenu: false });
+  handleOnCloseEditFieldMenu(key: string, entityFields?: EntityFields) {
+    this.setState({ showEditFieldMenu: false });
     if (entityFields && utils.isValidLabel(entityFields.label)) {
-      this.handleOnCreateQnode(entityFields); // applyToBlock=true
+      this.handleOnCreateQnode(key, entityFields); // applyToBlock=true
     }
   }
 
@@ -260,41 +213,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }, 150);
   }
 
-  async handleOnPropertyUnit(key: string, value: string, type: string) {
-
-    if (key === 'property') {
-      try {
-        await this.requestService.call(this, () => (
-          this.requestService.getProperties(value, type)
-        ));
-      } catch (error) {
-        error.errorDescription += `\nWasn't able to find any properties for ${value}`;
-        this.setState({ errorMessage: error });
-      } finally {
-        console.log('properties request finished');
-      }
-    }
-
-    if (key === 'unit') {
-
-      const instanceOf: QNode = {
-        label: 'unit of measurement',
-        description: 'quantity, defined and adopted by convention',
-        id: 'Q47574',
-      }
-
-      try {
-        await this.requestService.call(this, () => (
-          this.requestService.getQNodes(value, false, instanceOf)
-        ));
-      } catch (error) {
-        error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
-        this.setState({ errorMessage: error });
-      } finally {
-        console.log('qnodes request finished');
-      }
-    }
-  }
 
   handleOnChange(event: KeyboardEvent, key: string) {
     if (event.code === 'Enter') {
@@ -304,41 +222,20 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const value = (event.target as HTMLInputElement).value;
     const updatedFields = { ...this.state.fields }
 
-    if (listQNodeFields.includes(key)) {
-      const searchFields = { ...this.state.searchFields };
-      searchFields[key as nameQNodeFields] = value;
-      if (!value || value.length === 0) {
-        updatedFields[(key as keyof AnnotationFields) as nameQNodeFields] = undefined;
-      }
-      this.setState({ searchFields, showEntityMenu: false, showWikifyBlockMenu: false });
-    } else {
-      updatedFields[(key as keyof AnnotationFields) as nameStrFields] = value;
-    }
+    updatedFields[(key as keyof AnnotationFields) as nameStrFields] = value;
 
     this.changed = true;
 
     if (key === 'role') {
-      if(value==="dependentVar" || value==="qualifier"){
+      if (value === "dependentVar" || value === "qualifier") {
         updatedFields['type'] = "string";
-      } else  { //| "metadata" | "property" | "mainSubject" | "unit"
+      } else { //| "metadata" | "property" | "mainSubject" | "unit"
         updatedFields['type'] = undefined;
       }
-      
+
     }
 
-    this.setState({ fields: updatedFields }, () => {
-      if (this.timeoutId) {
-        window.clearTimeout(this.timeoutId);
-      }
-      this.timeoutId = window.setTimeout(() => {
-        let { type } = this.state.fields;
-        if (key === 'unit' || key === 'property') {
-          this.setState({ showResult1: true, showResult2: false })
-        }
-        if (!type) { type = "string"; }
-        this.handleOnPropertyUnit(key, value.trim(), type);
-      }, 300);
-    });
+    this.setState({ fields: updatedFields });
   }
 
   validationSelectionArea(selection: CellSelection) {
@@ -420,7 +317,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   async handleOnSubmit(event?: any) {
     if (event) event.preventDefault();
-    const { fields, selectedBlock, selection, searchFields } = this.state;
+    const { fields, selectedBlock, selection } = this.state;
     if (!fields.selectedArea || !(selection && fields.role)) { return null; }
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
@@ -435,36 +332,35 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       annotation[key] = value;
     }
 
-    if (!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
-      try {
-        const response = await this.requestService.call(this, () => (
-          this.requestService.getQnodeById(searchFields.property)
-        ));
-        if (response?.id) {
-          annotation["property"] = response;
-        }
-      } catch (error) {
-        error.errorDescription = `Wasn't able to found the qnode!\n` + error.errorDescription;
-        console.log(error.errorDescription)
-        this.setState({ errorMessage: error });
-      }
-    }
-    if (!fields.unit && searchFields.unit && searchFields.unit.startsWith("Q")) {
-      try {
-        const response = await this.requestService.call(this, () => (
-          this.requestService.getQnodeById(searchFields.unit)
-        ));
-        if (response?.id) {
-          annotation["unit"] = response;
-        }
+    // if (!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
+    //   try {
+    //     const response = await this.requestService.call(this, () => (
+    //       this.requestService.getQnodeById(searchFields.property)
+    //     ));
+    //     if (response?.id) {
+    //       annotation["property"] = response;
+    //     }
+    //   } catch (error) {
+    //     error.errorDescription = `Wasn't able to found the qnode!\n` + error.errorDescription;
+    //     console.log(error.errorDescription)
+    //     this.setState({ errorMessage: error });
+    //   }
+    // }
+    // if (!fields.unit && searchFields.unit && searchFields.unit.startsWith("Q")) {
+    //   try {
+    //     const response = await this.requestService.call(this, () => (
+    //       this.requestService.getQnodeById(searchFields.unit)
+    //     ));
+    //     if (response?.id) {
+    //       annotation["unit"] = response;
+    //     }
 
-      } catch (error) {
-        error.errorDescription = `Wasn't able to found the qnode!\n` + error.errorDescription;
-        console.log(error.errorDescription)
-        this.setState({ errorMessage: error });
-      }
-    }
-    this.setState({ searchFields: { property: '', unit: '' } });
+    //   } catch (error) {
+    //     error.errorDescription = `Wasn't able to found the qnode!\n` + error.errorDescription;
+    //     console.log(error.errorDescription)
+    //     this.setState({ errorMessage: error });
+    //   }
+    // }
 
     annotations.push(annotation);
     this.postAnnotations(annotations, annotation);
@@ -538,101 +434,39 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       )
     }
     // type is property or unit OR format/Language!
-    const propertyBlockId = selectedBlock?.links?.property;
-    let propertyBlockSelection = "";
-    if (propertyBlockId) {
-      for (const block of wikiStore.annotations.blocks) {
-        if (block.id == propertyBlockId) {
-          const { x1, x2, y1, y2 } = block.selection;
-          propertyBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
-        }
+    const { fields } = this.state;
+    if (listQNodeFields.includes(key)) {
+      return (
+        <NodeField
+          key={type.value}
+          selectedBlock={selectedBlock}
+          fields={fields}
+          type={type}
+          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+          changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
+        />
+
+      )
+    } else {
+      if (fields && (fields as any)[type.value]) {
+        defaultValue = (fields as any)[type.value];
+      } else {
+        defaultValue = "";
       }
+      return (
+        <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }} noGutters>
+          <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
+          <Col sm='12' md='9'>
+            <Form.Control
+              type="text" size="sm"
+              value={defaultValue}
+              onChange={(event: any) => this.handleOnChange(event, type.value)}
+            />
+            {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg &quot;%Y&quot;)</Form.Label> : null}
+          </Col>
+        </Form.Group>
+      )
     }
-    const unitBlockId = selectedBlock?.links?.unit;
-    let unitBlockSelection = "";
-    if (unitBlockId) {
-      for (const block of wikiStore.annotations.blocks) {
-        if (block.id == unitBlockId) {
-          const { x1, x2, y1, y2 } = block.selection;
-          unitBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
-        }
-      }
-    }
-    const { fields, searchFields } = this.state;
-    const selectedValue = (fields && fields[type.value as nameQNodeFields]) ? fields[(type.value as nameQNodeFields)] : undefined;
-    let url = ""
-    if (selectedValue?.id) { url = utils.isValidLabel(selectedValue?.id.substring(1, selectedValue?.id.length)) ? "" : `https://www.wikidata.org/wiki/${selectedValue?.id}` }
-    const linkedId = selectedValue ? (url ? (
-      <a target="_blank"
-        rel="noopener noreferrer"
-        className="type-qnode"
-        href={url}>
-        {selectedValue.id}
-      </a>
-    ) : (<a>{selectedValue.id}</a>)) : null;
-    defaultValue = (searchFields as any)[type.value] || "";
-
-    return (
-
-      <Form.Group as={Row} key={type.value} style={{ marginTop: "1rem" }} noGutters>
-        <Form.Label column sm="12" md="3" className="text-muted">{type.label}</Form.Label>
-        <Col sm='12' md={key == 'property' || key == 'unit' ? '4' : '6'}>
-          <Form.Control
-            type="text" size="sm"
-            value={defaultValue}
-            onChange={(event: any) => this.handleOnChange(event, type.value)}
-          />
-          {type.value == "format" ? <Form.Label> (must be enclosed in quotes eg &quot;%Y&quot;)</Form.Label> : null}
-        </Col>
-
-        <Col sm="12" md="3">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline-dark"
-            onClick={() => this.changeShowEntityMenu(type.label)}>
-            Create entity
-          </Button>
-        </Col>
-        {
-          key == "property" ?
-            <Col sm="12" md='2'>
-              <Form.Control
-                type="text" size="sm"
-                value={propertyBlockSelection}
-                readOnly />
-            </Col>
-            : key == "unit" ?
-              <Col sm="12" md='2'>
-                <Form.Control
-                  type="text" size="sm"
-                  value={unitBlockSelection}
-                  readOnly />
-              </Col>
-              : null
-        }
-        {
-          selectedValue ?
-            <Col sm="12" md="12">
-              <FontAwesomeIcon
-                icon={faTimesCircle}
-                className="clear-button"
-                onClick={() => {
-                  const updatedFields = { ...this.state.fields };
-                  updatedFields[type.value as keyof AnnotationFields] = undefined;
-                  this.setState({ fields: updatedFields })
-                }} />
-              <div className="selected-node" key={selectedValue.id}>
-                <strong>{selectedValue.label}</strong>&nbsp;
-                {linkedId}
-                <br />
-                {selectedValue.description}
-              </div>
-            </Col>
-            : null
-        }
-      </Form.Group>
-    )
   }
 
   renderNestedOptions() {
@@ -660,7 +494,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
     let selectedType = null;
     selectedType = selectedOptionRole?.children?.find(option => (option.value === type));
-    
+
     if (!selectedType || !('children' in selectedType)) {
       return optionsDropdown;
     } else {
@@ -713,267 +547,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     )
   }
 
-  handleOnSelect(key: string, value?: QNode) {
-    const fields = { ...this.state.fields };
-    fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
-    this.setState({ fields }, () => {
-      if (key == "property" || key == "unit") {
-        const searchFields = { ...this.state.searchFields };
-        searchFields[key] = "";
-        this.setState({ searchFields });
-      }
-    });
-  }
-
-  renderSearchResults() {
-    const { showResult1 } = this.state
-    return (
-      <div>
-        {
-          showResult1 ?
-            <SearchResults onSelect={this.handleOnSelect.bind(this)} />
-            : null
-        }
-      </div>
-    )
-  }
-
-  clearSubject() {
-    const subject = { ...this.state.subject };
-    const fields = { ...this.state.fields };
-    fields.subject = undefined;
-    subject.value = '';
-    this.setState({
-      subject: subject,
-      fields: fields,
-      showResult2: false
-    });
-  }
-
-  clearInstanceOfSearch() {
-    const subject = { ...this.state.subject };
-    subject.instanceOfSearch = '';
-    this.setState({
-      subject: subject,
-      showResult2: false
-    });
-  }
-
-  async SearchSubject(key: string, value?: string, instanceOf?: QNode) {
-    if (!value) { return; }
-
-    const isClass = key === 'instanceOfSearch';
-    try {
-      await this.requestService.call(this, () => (
-        this.requestService.getQNodes(value, isClass, instanceOf, false, true) // searchProperties=false, isSubject=true
-      ));
-    } catch (error) {
-      error.errorDescription += `\nWasn't able to find any qnodes for ${value}`;
-      this.setState({ errorMessage: error });
-    } finally {
-      console.log('qnodes request finished');
+  handleOnSelectNode(key: string, value?: QNode) {
+    if (listQNodeFields.includes(key)) {
+      const fields = { ...this.state.fields };
+      fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
+      this.setState({ fields });
     }
-
-
-  }
-
-  handleOnFocusSubject() {
-    const { value, instanceOf } = this.state.subject;
-    if (!value || value === this.state.fields.subject?.id) { return; }
-
-    this.SearchSubject("subject", value, instanceOf)
-  }
-
-  updateSubjectQNodes(qnodes: QNode[]) {
-    this.setState({ showResult1: false, showResult2: true })
-    const subject = { ...this.state.subject };
-    subject.qnodes = qnodes;
-    this.setState({ subject: subject });
-  }
-
-  handleOnClickQnode(qnode: QNode) {
-    const subject = { ...this.state.subject };
-    subject.qnodes = [];
-    if (subject.instanceOfSearch) {
-      subject.instanceOfSearch = '';
-      subject.instanceOf = qnode;
-      this.handleOnSelect("subject", undefined)
-      subject.value = "";
-      subject.selected = undefined;
-    } else {
-      this.handleOnSelect("subject", qnode)
-      subject.value = qnode.id;
-      subject.selected = qnode;
-    }
-    this.setState({ subject: subject, showResult2: false });
-  }
-
-  handleOnChangeSubject(event: any) {
-    const value: string = (event.target as HTMLInputElement).value;
-    const subject = { ...this.state.subject };
-    subject.value = value;
-    this.changed = true;
-    this.setState({ subject: subject }, () => {
-
-      if (!value) {
-        this.clearSubject();
-      } else {
-        if (this.timeoutId) {
-          window.clearTimeout(this.timeoutId);
-        }
-        this.timeoutId = window.setTimeout(() => {
-          if (subject.value && subject.value == this.state.fields.subject?.id) { return; }
-          this.SearchSubject('subject', value, subject.instanceOf);
-        }, 300);
-      }
-    });
-  }
-
-  handleOnChangeInstanceOfSearch(event: any) {
-    const value: string = (event.target as HTMLInputElement).value;
-    this.changed = true;
-    const subject = { ...this.state.subject };
-    subject.instanceOfSearch = value;
-    this.setState({ subject: subject }, () => {
-      if (!value) {
-        this.clearInstanceOfSearch();
-      } else {
-        if (this.timeoutId) {
-          window.clearTimeout(this.timeoutId);
-        }
-        this.timeoutId = window.setTimeout(() => {
-          this.SearchSubject('instanceOfSearch', value);
-        }, 300);
-      }
-    });
-  }
-
-
-
-  removeInstanceOf() {
-    const subject = { ...this.state.subject };
-    subject.instanceOf = undefined;
-    this.setState({
-      subject: subject,
-    }, () => {
-      this.SearchSubject('subject', subject.value);
-    });
-  }
-
-  renderSubjectQNodeResults() {
-    const { qnodes } = this.state.subject;
-    if (qnodes.length) {
-      return (
-        <div className="results-subject">
-          {qnodes.map((item, index) => (
-            <Row className={"qnode"} key={index}
-              onClick={() => this.handleOnClickQnode(item)}>
-              <Col sm="12" md="12">
-                <div className="label">{item.label} ({item.id})</div>
-                <div className="description">{item.description}</div>
-              </Col>
-            </Row>
-          ))}
-        </div>
-      )
-    }
-  }
-
-  renderSelectedSubjectNode() {
-    const { qnodes, selected } = this.state.subject;
-    if (!qnodes.length && selected) {
-      return (
-        <div className="selected-node">
-          <strong>{selected.label}</strong>&nbsp;
-          <a target="_blank"
-            rel="noopener noreferrer"
-            className="type-qnode"
-            href={`https://www.wikidata.org/wiki/${selected.id}`}>
-            {selected.id}
-          </a>
-          <br />
-          {selected.description}
-        </div>
-      )
-    }
-  }
-
-  renderSubject() {
-    const { value, instanceOfSearch, instanceOf, qnodes } = this.state.subject;
-    if (this.state.fields?.role != 'dependentVar') { return null; }
-    const { selectedBlock } = this.state;
-    const subjectBlockId = selectedBlock?.links?.mainSubject;
-    let subjectBlockSelection = "";
-    if (subjectBlockId) {
-      for (const block of wikiStore.annotations.blocks) {
-        if (block.id == subjectBlockId) {
-          const { x1, x2, y1, y2 } = block.selection;
-          subjectBlockSelection = `${columnToLetter(x1)}${y1}` + ":" + `${columnToLetter(x2)}${y2}`
-        }
-      }
-    }
-    return (
-      <div>
-        <Form.Group as={Row}>
-          <Col sm="12" md={subjectBlockSelection ? '6' : '8'}>
-            <Form.Label className="text-muted">Subject</Form.Label>
-            <Form.Control
-              type="text" size="sm"
-              placeholder='qnode'
-              value={value}
-              onFocus={this.handleOnFocusSubject.bind(this)}
-              onChange={(event: any) => this.handleOnChangeSubject(event)}
-            />
-            {value && qnodes.length ? (
-              <FontAwesomeIcon
-                icon={faTimes}
-                className="clear-button"
-                onClick={this.clearSubject.bind(this)} />
-            ) : null}
-          </Col>
-          <Col sm="12" md={subjectBlockSelection ? '3' : '4'}>
-            <Form.Label className="text-muted">Instance Of</Form.Label>
-            <Form.Control
-              type="text" size="sm"
-              placeholder="qnode"
-              value={instanceOfSearch}
-              onChange={(event: any) => {
-                this.handleOnChangeInstanceOfSearch(event)
-              }} />
-            {instanceOfSearch && qnodes.length ? (
-              <FontAwesomeIcon
-                icon={faTimes}
-                className="clear-button"
-                onClick={this.clearInstanceOfSearch.bind(this)} />
-            ) : null}
-          </Col>
-          {
-            subjectBlockSelection ?
-              <Col sm="12" md='3'>
-                <Form.Label className="text-muted">Sheet link</Form.Label>
-                <Form.Control
-                  type="text" size="sm"
-                  value={subjectBlockSelection}
-                  readOnly />
-              </Col> : null
-          }
-
-        </Form.Group>
-        {instanceOf ? (
-          <div className="instance-of">
-            Results shown are limited to instances of <strong>{instanceOf.label} ({instanceOf.id})</strong>
-            <span className="remove-instance-of-button"
-              onClick={this.removeInstanceOf.bind(this)}>Remove</span>
-          </div>
-        ) : null}
-        {
-          this.state.showResult2 ?
-            this.renderSubjectQNodeResults()
-            : null
-        }
-        {this.renderSelectedSubjectNode()}
-      </div>
-    )
   }
 
 
@@ -1023,7 +602,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   render() {
-    const { selection, showEntityMenu, typeEntityMenu, errorMessage, fields, showWikifyBlockMenu } = this.state;
+    const { selection, showEditFieldMenu, typeEditFieldMenu, errorMessage, fields, showWikifyBlockMenu, selectedBlock } = this.state;
     const { type: data_type } = this.state.fields;
     if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
@@ -1035,17 +614,30 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         {this.renderSelectionAreas()}
         {this.renderRolesDropdown()}
         {this.renderNestedOptions()}
-        {this.renderSearchResults()}
-        {this.renderSubject()}
+        {/* render subject: */}
+        {
+          fields.role === "dependentVar" ?
+            <NodeField
+              key={"subject"}
+              selectedBlock={selectedBlock}
+              fields={fields}
+              type={{ label: "Subject", value: "subject" }}
+              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+              changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
+            />
+            : null
+        }
         {this.renderSubmitButton()}
 
         {
-          showEntityMenu && selection ?
-            <EntityMenu
+          showEditFieldMenu && selection ?
+            <EditFieldMenu
               selection={selection}
-              onClose={(entityFields?: EntityFields) => this.handleOnCloseEntityMenu(entityFields)}
-              title={typeEntityMenu}
+              onClose={(key: string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
+              title={typeEditFieldMenu}
               data_type={data_type}
+              // showResults={this.state.showResult1}
+              onSelectNode={this.handleOnSelectNode.bind(this)}
             />
             : null
         }

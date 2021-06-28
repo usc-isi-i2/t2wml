@@ -243,3 +243,21 @@ export interface ResponseWithSuggestion {
 export interface ResponseWithQNodeLayerAndQnode extends ResponseWithQNodeLayerDTO, ResponseWithProjectDTO{
     entity: QNode;
 }
+
+
+export interface AnnotationFields {
+    role?: string;
+    type?: string;
+    unit?: QNode;
+    format?: string;
+    calendar?: string;
+    property?: QNode;
+    language?: string;
+    precision?: string;
+    selectedArea?: string;
+    subject?: QNode;
+}
+
+export type nameQNodeFields = "unit" | "property" | "subject";
+
+export type nameStrFields = "role" | 'type' | 'format' | 'calendar' | 'language' | 'precision' | "selectedArea";

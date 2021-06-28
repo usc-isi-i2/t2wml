@@ -111,23 +111,9 @@ class RequestService {
   }
 
 
-  public async getProperties(search: string, type: string) {
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean){
     if (!search || !search.trim()) {
-      wikiStore.annotateProperties.properties = [];
-      return;
-    }
-    const url = `/properties?q=${search}&data_type=${type}`;
-    const response = await backendGet(url) as ResponseWithQNodesDTO;
-    wikiStore.annotateProperties.properties = response.qnodes;
-  }
-
-  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean, isSubject = false) {
-    if (!search || !search.trim()) {
-      if (isSubject) {
-        wikiStore.subjectQnodes.qnodes = [];
-      } else {
-        wikiStore.wikifyQnodes.qnodes = [];
-      }
+      wikiStore.wikifyQnodes.qnodes = [];
       return;
     }
     let url = `/qnodes?q=${search}`;
@@ -141,11 +127,7 @@ class RequestService {
       url += `&instance_of=${instanceOf.id}`;
     }
     const response = await backendGet(url) as ResponseWithQNodesDTO;
-    if (isSubject) {
-      wikiStore.subjectQnodes.qnodes = response.qnodes;
-    } else {
-      wikiStore.wikifyQnodes.qnodes = response.qnodes;
-    }
+    wikiStore.wikifyQnodes.qnodes = response.qnodes;
 
   }
 

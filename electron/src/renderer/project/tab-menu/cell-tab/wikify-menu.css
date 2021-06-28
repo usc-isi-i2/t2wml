@@ -12,8 +12,6 @@
 .wikify-menu .wikify-form button.delete {
   cursor: pointer;
   float: right;
-  padding: 0px;
-  color: red;
 }
 
 /* Search Properties checkbox */

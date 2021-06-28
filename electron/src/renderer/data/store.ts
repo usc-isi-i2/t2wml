@@ -242,9 +242,6 @@ export class WikifyQnodes {
     @observable qnodes: QNode[] = [];
 }
 
-export class AnnotateProperties {
-    @observable properties: QNode[] = [];
-}
 
 class WikiStore {
     @observable public table = new TableState();
@@ -260,8 +257,6 @@ class WikiStore {
     @observable public globalSettings = new GlobalSettings();
     @observable public entitiesData = new EntitiesData();
     @observable public wikifyQnodes = new WikifyQnodes();
-    @observable public subjectQnodes = new WikifyQnodes();
-    @observable public annotateProperties = new AnnotateProperties();
 
 
     @action
