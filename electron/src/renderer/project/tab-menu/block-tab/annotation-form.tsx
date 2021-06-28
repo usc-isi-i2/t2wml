@@ -93,7 +93,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
 
-  async handleOnCreateQnode(key:string, entityFields: EntityFields) {
+  async handleOnCreateQnode(key: string, entityFields: EntityFields) {
     console.log('Annotationn Menu handleOnCreateQnode triggered for -> ', entityFields);
 
     wikiStore.table.showSpinner = true;
@@ -117,7 +117,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   }
 
-  handleOnCloseEditFieldMenu(key:string, entityFields?: EntityFields) {
+  handleOnCloseEditFieldMenu(key: string, entityFields?: EntityFields) {
     this.setState({ showEditFieldMenu: false });
     if (entityFields && utils.isValidLabel(entityFields.label)) {
       this.handleOnCreateQnode(key, entityFields); // applyToBlock=true
@@ -548,10 +548,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   handleOnSelectNode(key: string, value?: QNode) {
-    if (listQNodeFields.includes(key)){
+    if (listQNodeFields.includes(key)) {
       const fields = { ...this.state.fields };
-    fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
-    this.setState({ fields });
+      fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
+      this.setState({ fields });
     }
   }
 
@@ -615,21 +615,25 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         {this.renderRolesDropdown()}
         {this.renderNestedOptions()}
         {/* render subject: */}
-        <NodeField
-          key={"subject"}
-          selectedBlock={selectedBlock}
-          fields={fields}
-          type={{label:"Subject", value:"subject"}}
-          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
-          changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
-        />
+        {
+          fields.role === "dependentVar" ?
+            <NodeField
+              key={"subject"}
+              selectedBlock={selectedBlock}
+              fields={fields}
+              type={{ label: "Subject", value: "subject" }}
+              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+              changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
+            />
+            : null
+        }
         {this.renderSubmitButton()}
 
         {
           showEditFieldMenu && selection ?
             <EditFieldMenu
               selection={selection}
-              onClose={(key:string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
+              onClose={(key: string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
               title={typeEditFieldMenu}
               data_type={data_type}
               // showResults={this.state.showResult1}
