@@ -383,7 +383,7 @@ def apply_yaml():
 
 
 
-@app.route('/api/causx/project/download/<filetype>/<filename>/all', methods=['GET'])
+#@app.route('/api/causx/project/download/<filetype>/<filename>/all', methods=['GET'])
 @app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
 @app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
 @app.route('/api/project/download/<filetype>/<filename>', methods=['GET'])
@@ -1016,9 +1016,7 @@ def causx_upload_project():
     response=dict()
     response["table"] = get_table(calc_params)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
-    ang=AnnotationNodeGenerator.load_from_array(response["annotations"], new_project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
-    get_layers(response, calc_params)
+    response["layers"] = get_qnodes_layer(calc_params)
     response["project"]=get_project_dict(new_project)
     response["sheetName"]=sheet_name
     response["filePath"]=filemap["data"]
