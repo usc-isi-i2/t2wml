@@ -402,6 +402,8 @@ def download_results(filetype, filename):
         from t2wml.settings import t2wml_settings
         t2wml_settings.no_wikification = True
 
+
+
     if str(request.url_rule)[-3:] == "all":
             binary_stream=BytesIO()
             create_zip(project, filetype, binary_stream)
@@ -413,6 +415,10 @@ def download_results(filetype, filename):
         if not calc_params.yaml_path and not calc_params.annotation_path:
             raise web_exceptions.CellResolutionWithoutYAMLFileException(
                 "Cannot download report without uploading mapping file first")
+        if "causx" in request.path:
+            annotation_path=calc_params.annotation_path
+            ang=AnnotationNodeGenerator.load_from_path(annotation_path, project)
+            ang.preload(calc_params.sheet, calc_params.wikifier)
         kg = get_kg(calc_params)
         data = kg.get_output(filetype, calc_params.project)
         stream= BytesIO(data.encode('utf-8'))
