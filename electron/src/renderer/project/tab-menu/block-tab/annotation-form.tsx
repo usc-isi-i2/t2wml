@@ -214,7 +214,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
 
-  handleOnChange(event: KeyboardEvent, key: string) { // TODO submit
+  handleOnChange(event: KeyboardEvent, key: string) { 
     if (event.code === 'Enter') {
       event.preventDefault();
       this.handleOnSubmit(event);
@@ -234,7 +234,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
     }
 
-    this.setState({ fields: updatedFields });
+    this.setState({ fields: updatedFields }, () => this.handleOnSubmit());
   }
 
 
@@ -246,7 +246,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  handleOnSelectionChange(event: React.ChangeEvent) { // TODO submit
+  handleOnSelectionChange(event: React.ChangeEvent) {
     const value = (event.target as HTMLInputElement).value;
     this.changed = true;
     const fields = { ...this.state.fields }
@@ -268,6 +268,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
           wikiStore.table.selection = selection;
+          this.handleOnSubmit()
         }
       }, 500);
     } else {
@@ -442,7 +443,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           selectedBlock={selectedBlock}
           fields={fields}
           type={type}
-          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })} // TODO submit
+          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
           changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
         />
 
@@ -551,12 +552,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (listQNodeFields.includes(key)) {
       const fields = { ...this.state.fields };
       fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
-      this.setState({ fields });
+      this.setState({ fields }, () => this.handleOnSubmit());
     }
   }
 
 
-  renderSubmitButton() {
+  renderWikiDeleteButtons() {
     const { role, type } = this.state.fields;
     return (
       <Form.Group as={Row}>
@@ -573,12 +574,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           : null
         }
         <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
-          <Button
+          {/* <Button
             size="sm"
             type="submit"
             variant="outline-dark">
             Submit
-          </Button>
+          </Button> */}
           {this.renderDeleteButton()}
         </Col>
       </Form.Group>
@@ -622,12 +623,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               selectedBlock={selectedBlock}
               fields={fields}
               type={{ label: "Subject", value: "subject" }}
-              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })} //TODO submit
+              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
               changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
             />
             : null
         }
-        {this.renderSubmitButton()}
+        {this.renderWikiDeleteButtons()}
 
         {
           showEditFieldMenu && selection ?
