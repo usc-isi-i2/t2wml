@@ -140,6 +140,11 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         try {
             await this.requestService.callWikifierService(data);
         }
+        catch(error){
+                error.errorTitle = "Wasn't able to use wikifier service";
+                console.log(error.errorDescription);
+                this.props.onGetError(error);
+        }
         finally {
             wikiStore.table.showSpinner = false;
         }
@@ -182,8 +187,8 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         try {
             this.requestService.removeQNodes({ selection });
         } catch (error) {
-            error.errorDescription += `Wasn't able to submit the qnode!\n` + error.errorDescription;
-            console.log(error.errorDescription)
+            error.errorTitle = "Wasn't able to submit the qnode";
+            console.log(error.errorDescription);
             this.props.onGetError(error);
         } finally {
             wikiStore.table.showSpinner = false;
