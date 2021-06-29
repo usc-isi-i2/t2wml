@@ -143,7 +143,7 @@ class TestBasicWorkflow(BaseClass):
         assert project["sparql_endpoint"]=='https://query.wikidata.org/bigdata/namespace/wdq/sparql'
         assert project["warn_for_empty_cells"]==False
 
-    def test_get_entities(self, client):
+    def test_get_entities_1(self, client):
         url='/api/project/entities?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.get(url)
         data = response.data.decode("utf-8")
@@ -151,7 +151,7 @@ class TestBasicWorkflow(BaseClass):
         assert data["kgtk_item_defs.tsv"]["P2006020002"]['description']=='Qualifiers used to describe a variable. E.g., FertilizerType, Source, etc.'
 
 
-    def test_get_entities(self, client):
+    def test_get_entities_2(self, client):
         url='/api/project/entities?project_folder={project_folder}'.format(project_folder=project_folder)
         response=client.put(url,
             json=dict(

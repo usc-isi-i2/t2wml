@@ -270,6 +270,7 @@
                 "entries": [
                     {
                         "context": "main subject",
+                        "data_type": null,
                         "description": "incident related to aid worker security",
                         "id": "Qaid-security-22",
                         "indices": [
@@ -284,6 +285,7 @@
                     },
                     {
                         "context": "main subject",
+                        "data_type": null,
                         "description": "incident related to aid worker security",
                         "id": "Qaid-security-47",
                         "indices": [
@@ -298,6 +300,7 @@
                     },
                     {
                         "context": "main subject",
+                        "data_type": null,
                         "description": "incident related to aid worker security",
                         "id": "Qaid-security-73",
                         "indices": [
@@ -312,6 +315,7 @@
                     },
                     {
                         "context": "main subject",
+                        "data_type": null,
                         "description": "incident related to aid worker security",
                         "id": "Qaid-security-103",
                         "indices": [
@@ -326,6 +330,7 @@
                     },
                     {
                         "context": "main subject",
+                        "data_type": null,
                         "description": "incident related to aid worker security",
                         "id": "Qaid-security-475",
                         "indices": [
@@ -340,6 +345,7 @@
                     },
                     {
                         "context": "main subject",
+                        "data_type": null,
                         "description": "incident related to aid worker security",
                         "id": "Qaid-security-782",
                         "indices": [
@@ -354,6 +360,7 @@
                     },
                     {
                         "context": "unit",
+                        "data_type": null,
                         "description": "",
                         "id": "Qaid-security-U002",
                         "indices": [
@@ -376,6 +383,7 @@
                     },
                     {
                         "context": "property",
+                        "data_type": "Quantity",
                         "description": "",
                         "id": "Paid-security-002",
                         "indices": [
@@ -390,6 +398,7 @@
                     },
                     {
                         "context": "property",
+                        "data_type": "Quantity",
                         "description": "",
                         "id": "Paid-security-003",
                         "indices": [
@@ -404,6 +413,7 @@
                     },
                     {
                         "context": "property",
+                        "data_type": "Quantity",
                         "description": "",
                         "id": "Paid-security-004",
                         "indices": [
@@ -418,6 +428,7 @@
                     },
                     {
                         "context": "",
+                        "data_type": null,
                         "description": "island country in the Caribbean, part of the Kingdom of the Netherlands",
                         "id": "Q21203",
                         "indices": [

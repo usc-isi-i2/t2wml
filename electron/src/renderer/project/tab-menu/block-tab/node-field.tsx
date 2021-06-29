@@ -28,7 +28,10 @@ class NodeField extends Component<NodeFieldProps, {}> {
         const { selectedBlock, fields, type } = this.props;
         const typeLabel: string = type.label.toLowerCase();
 
-        const linkedBlockId = typeLabel === "property" ? selectedBlock?.links?.property : (typeLabel === "unit" ? selectedBlock?.links?.unit : undefined);
+        const linkedBlockId = typeLabel === "property" ? selectedBlock?.links?.property :
+            (typeLabel === "unit" ? selectedBlock?.links?.unit :
+                (typeLabel === "subject" ? selectedBlock?.links?.mainSubject
+                    : undefined));
         let linkedBlockSelection = "";
         if (linkedBlockId) {
             for (const block of wikiStore.annotations.blocks) {
