@@ -91,7 +91,6 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
 
     render() {
         const { onClose, selection, title } = this.props;
-        console.log(window.innerWidth)
         const position = { x: 20, y: 0 };
 
         const selectedCell = wikiStore.table.selectedCell;

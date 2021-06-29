@@ -111,7 +111,7 @@ class RequestService {
   }
 
 
-  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean){
+  public async getQNodes(search: string, isClass: boolean, instanceOf?: QNode, searchProperties?: boolean) {
     if (!search || !search.trim()) {
       wikiStore.wikifyQnodes.qnodes = [];
       return;
@@ -126,9 +126,26 @@ class RequestService {
     if (instanceOf) {
       url += `&instance_of=${instanceOf.id}`;
     }
-    const response = await backendGet(url) as ResponseWithQNodesDTO;
-    wikiStore.wikifyQnodes.qnodes = response.qnodes;
-
+    let response = undefined
+    try {
+      response = await backendGet(url) as ResponseWithQNodesDTO;
+    } catch (error) {
+      response = undefined
+    }
+    if ((!response || response.qnodes.length === 0) && search.length > 1 &&
+      ((search.toLowerCase().startsWith("q") && !searchProperties) || (search.toLowerCase().startsWith("p") && searchProperties))) {
+      const responseQnodeById = await this.getQnodeById(search)
+      if (!responseQnodeById && wikiStore.wikifyQnodes.qnodes.length === 1 && wikiStore.wikifyQnodes.qnodes.slice()[0].id.startsWith(search)) {
+        return; // if not found node and the list contain just one node that starts like what do you search, dont change the list.
+      }
+      if (responseQnodeById) {
+        wikiStore.wikifyQnodes.qnodes = [responseQnodeById]
+      } else {
+        wikiStore.wikifyQnodes.qnodes = [];
+      }
+    } else {
+      wikiStore.wikifyQnodes.qnodes = response ? response.qnodes : [];
+    }
   }
 
   public async postQNodes(values: any) {
@@ -182,7 +199,8 @@ class RequestService {
   public async getSuggestedAnnotationBlocks() {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}`) as ResponseWithMappingDTO;
-    updater.update(() => {this.fillMapping(response)
+    updater.update(() => {
+      this.fillMapping(response)
     }, "getsuggestedAnnotationBlocks")
   }
 
