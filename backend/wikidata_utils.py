@@ -76,6 +76,10 @@ def get_labels_and_descriptions(provider, entities, sparql_endpoint):
             wp=provider.get_entity(entity_id)
             response[entity_id]=wp
         except:
+            try:
+                int(entity_id[1:])
+            except:
+                continue #don't bother adding items that are custom/not sparqleable
             if entity_id[0]=="Q":
                 missing_items[entity_id]=True
             if entity_id[0]=="P":
