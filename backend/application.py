@@ -398,7 +398,8 @@ def download_results(filetype, filename):
     }
     attachment_filename=filename
     project = get_project()
-    if filetype == "csv":
+    for_causx = "causx" in request.path
+    if filetype == "csv" and not for_causx:
         from t2wml.settings import t2wml_settings
         t2wml_settings.no_wikification = True
 
@@ -415,12 +416,17 @@ def download_results(filetype, filename):
         if not calc_params.yaml_path and not calc_params.annotation_path:
             raise web_exceptions.CellResolutionWithoutYAMLFileException(
                 "Cannot download report without uploading mapping file first")
-        if "causx" in request.path:
+        if for_causx:
             annotation_path=calc_params.annotation_path
             ang=AnnotationNodeGenerator.load_from_path(annotation_path, project)
             ang.preload(calc_params.sheet, calc_params.wikifier)
+
         kg = get_kg(calc_params)
-        data = kg.get_output(filetype, calc_params.project)
+
+        if for_causx and filetype == "csv":
+            data = causx_create_canonical_spreadsheet(kg.statements, project)
+        else:
+            data = kg.get_output(filetype, calc_params.project)
         stream= BytesIO(data.encode('utf-8'))
         stream.seek(0)
         return send_file(stream, attachment_filename = attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
