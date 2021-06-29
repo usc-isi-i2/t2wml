@@ -214,7 +214,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
 
-  handleOnChange(event: KeyboardEvent, key: string) {
+  handleOnChange(event: KeyboardEvent, key: string) { // TODO submit
     if (event.code === 'Enter') {
       event.preventDefault();
       this.handleOnSubmit(event);
@@ -232,11 +232,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       } else { //| "metadata" | "property" | "mainSubject" | "unit"
         updatedFields['type'] = undefined;
       }
-
     }
 
     this.setState({ fields: updatedFields });
   }
+
 
   validationSelectionArea(selection: CellSelection) {
     if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2) {
@@ -246,7 +246,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  handleOnSelectionChange(event: React.ChangeEvent) {
+  handleOnSelectionChange(event: React.ChangeEvent) { // TODO submit
     const value = (event.target as HTMLInputElement).value;
     this.changed = true;
     const fields = { ...this.state.fields }
@@ -442,7 +442,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           selectedBlock={selectedBlock}
           fields={fields}
           type={type}
-          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })} // TODO submit
           changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
         />
 
@@ -622,7 +622,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               selectedBlock={selectedBlock}
               fields={fields}
               type={{ label: "Subject", value: "subject" }}
-              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })} //TODO submit
               changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
             />
             : null
