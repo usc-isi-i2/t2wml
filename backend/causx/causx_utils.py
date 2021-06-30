@@ -364,6 +364,7 @@ def causx_set_variable(project, id, updated_fields):
         full_contents[id]=variable
         dict_to_kgtk(full_contents, filepath)
     else:
+        raise ValueError("variable not found")
         filename="custom_user_variables.tsv"
         filepath=project.get_full_path(filename)
         if not os.path.exists(filepath):
