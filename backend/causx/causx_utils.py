@@ -1,14 +1,17 @@
 import csv
 import json
+import os
 from io import StringIO
 import pandas as pd
 from t2wml.input_processing.annotation_parsing import Annotation, create_nodes
 from t2wml.mapping.datamart_edges import clean_id as _clean_id
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.api import kgtk_to_dict, t2wml_settings, KnowledgeGraph
+from t2wml.wikification.utility_functions import dict_to_kgtk
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
+from t2wml_web import get_entities
 
 def clean_id(input):
     if not input:
@@ -149,13 +152,7 @@ class AnnotationNodeGenerator:
         an = Annotation(annotation_nodes_array)
         return cls(an, project)
 
-@error_with_func
-def get_entities(project):
-    entity_dict={}
-    for file in project.entity_files:
-        full_path=project.get_full_path(file)
-        entity_dict.update(kgtk_to_dict(full_path))
-    return entity_dict
+
 
 @error_with_func
 def try_get_label(input):
@@ -349,3 +346,57 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
     except Exception as e:
         raise ValueError(str(e)+"345")
     return dict(dims=dims, firstRowIndex=0, cells=cells)
+
+
+def causx_get_variable_dict(project):
+    entity_dict={}
+    for entity_file in project.entity_files:
+        entity_dict.update(kgtk_to_dict(project.get_full_path(entity_file)))
+    return entity_dict
+
+def causx_set_variable(project, id, updated_fields):
+    variable_dict=causx_get_variable_dict(project)
+    variable=variable_dict.get(id, None)
+    if variable:
+        filepath=variable["filename"]
+        variable.update(updated_fields)
+        full_contents = kgtk_to_dict(filepath)
+        full_contents[id]=variable
+        dict_to_kgtk(full_contents, filepath)
+    else:
+        filename="custom_user_variables.tsv"
+        filepath=project.get_full_path(filename)
+        if not os.path.exists(filepath):
+            full_contents={}
+        else:
+            full_contents = kgtk_to_dict(filepath)
+        full_contents[id]=variable
+        dict_to_kgtk(full_contents, filepath)
+        project.add_entity_file(filepath)
+        project.save()
+    return variable
+
+
+
+def causx_get_variable_metadata(calc_params, statements):
+    properties=set()
+    for statement in statements.values():
+        property = statement.get("property", None)
+        if property:
+            properties.add(property)
+
+    variables=causx_get_variable_dict(calc_params.project)
+    var_arr=[]
+    for property in properties:
+        variable = variables.get(property, None)
+        if variable:
+            var_dict=dict(
+               name=variable["label"],
+               variable_id=clean_id(variable["label"]),
+               description=variable.get("description", ""),
+               corresponds_to_property=property,
+               tag=variable.get("tags", [])
+            )
+            var_arr.append(var_dict)
+    return var_arr
+

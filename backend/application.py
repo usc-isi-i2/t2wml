@@ -5,7 +5,7 @@ import sys
 import tempfile
 import json
 import zipfile
-from causx.causx_utils import AnnotationNodeGenerator, get_causx_partial_csv, causx_create_canonical_spreadsheet
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet
 from causx.wikification import wikify_countries
 from t2wml.api import Project
 import requests
@@ -1131,6 +1131,7 @@ def causx_save_zip_results():
     kg = get_kg(calc_params)
 
     csv_data = causx_create_canonical_spreadsheet(kg.statements, project)
+    variable_data = causx_get_variable_metadata(calc_params, kg.statements)
 
     attachment_filename = project.title + '-' + Path(calc_params.data_path).stem + ".zip"
     filestream=BytesIO()
@@ -1141,13 +1142,34 @@ def causx_save_zip_results():
                                                             description=project.description,
                                                             url=project.url
                                                             )))
-        zf.writestr("variable-metadata.json", json.dumps(dict(
-                                                            )))
+        zf.writestr("variable-metadata.json", json.dumps(variable_data))
         zf.write(annotation_path, arcname="annotation.json")
 
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
 
+@app.route('/api/causx/entity/<id>', methods=['GET'])
+@json_response
+def causx_get_an_entity(id):
+    project = get_project()
+    entities_dict=causx_get_variable_dict(project)
+    entity=entities_dict.get(id, None)
+    if entity:
+        return dict(entity=entity), 200
+    else:
+        return {}, 404
+
+@app.route('/api/causx/entity/<id>', methods=['PUT'])
+@json_response
+def causx_edit_an_entity(id):
+    project = get_project()
+    updated_entry = request.get_json()["updated_entry"]
+    entity = causx_set_variable(project, id, updated_entry)
+    response=dict(entity=entity)
+    calc_params = get_calc_params(project, data_required=False)
+    if calc_params:
+        response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
 
 
 
