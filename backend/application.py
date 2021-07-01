@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import request
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
-from app_config import app
+from app_config import app, web_logger
 from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
 from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables, set_web_settings, get_layers, get_annotations, get_table, save_annotations,
@@ -24,6 +24,7 @@ from wikification import wikify_countries, wikify_selection
 
 debug_mode = False
 
+web_logger.debug("about to save web settings on app init")
 set_web_settings()
 
 

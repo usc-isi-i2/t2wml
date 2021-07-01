@@ -13,7 +13,7 @@ from t2wml.mapping.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from calc_params import CalcParams
-from app_config import CACHE_FOLDER
+from app_config import CACHE_FOLDER, web_logger
 from web_dict_provider import WebDictionaryProvider
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
@@ -35,20 +35,37 @@ def wikify(calc_params, region, context):
     return df, problem_cells
 
 def set_web_settings():
+    web_logger.debug("entered set web settings")
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.cache_data_files_folder = CACHE_FOLDER
     t2wml_settings.wikidata_provider = WebDictionaryProvider()
+    web_logger.debug("finished set web settings")
+    try:
+        prop = web_logger.debug("trying to get p585", t2wml_settings.wikidata_provider.try_get_property_type("P585"))
+        web_logger.debug("Success!", prop)
+    except Exception as e:
+        web_logger.debug("failed to get p585", str(e))
+
 
 def update_t2wml_settings(project):
+    web_logger.debug("entered update t2wml settings")
     t2wml_settings.update_from_dict(**project.__dict__)
 
     #update wikidata provider ONLY if necessary
     if not t2wml_settings.wikidata_provider.project or \
            t2wml_settings.wikidata_provider.project.directory!=project.directory:
+                web_logger.debug("creating a new web dictionary provider")
                 t2wml_settings.wikidata_provider=WebDictionaryProvider(project)
     elif t2wml_settings.wikidata_provider.sparql_endpoint!=project.sparql_endpoint:
-                t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
+            web_logger.debug("updating sparql endpoint")
+            t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
+    web_logger.debug("befor eexiting update settings, run test")
+    try:
+        prop = web_logger.debug("trying to get p585", t2wml_settings.wikidata_provider.try_get_property_type("P585"))
+        web_logger.debug("Success!", prop)
+    except Exception as e:
+        web_logger.debug("failed to get p585", str(e))
 
 
 def autocreate_items(calc_params, selection, is_property=False, data_type=None):

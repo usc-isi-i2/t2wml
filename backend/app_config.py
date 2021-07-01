@@ -48,7 +48,7 @@ DEFAULT_SPARQL_ENDPOINT = 'https://query.wikidata.org/bigdata/namespace/wdq/spar
 
 ## LOG STUFF
 
-'''
+
 import logging
 from datetime import datetime
 log_dir=os.path.join(DATADIR, "logs")
@@ -60,7 +60,7 @@ log_file=os.path.join(log_dir, dt_string+"t2wml.log")
 handler = logging.FileHandler(log_file, 'a', 'utf-8')
 logging.basicConfig(level=logging.DEBUG, handlers=[handler])
 web_logger=logging.getLogger('web-t2wml')
-'''
+
 
 
 
