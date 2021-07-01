@@ -147,6 +147,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         }
         finally {
             wikiStore.table.showSpinner = false;
+            this.props.onClose()
         }
     }
 
@@ -164,6 +165,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         }
         finally {
             wikiStore.table.showSpinner = false;
+            this.props.onClose()
         }
     }
 

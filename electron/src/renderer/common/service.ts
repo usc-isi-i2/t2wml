@@ -126,7 +126,7 @@ class RequestService {
     if (instanceOf) {
       url += `&instance_of=${instanceOf.id}`;
     }
-    
+
     let response = undefined
     try {
       response = await backendGet(url) as ResponseWithQNodesDTO;
@@ -333,9 +333,9 @@ class RequestService {
   }
 
   public async getQnodeById(id?: string) {
-    if (!id) { return; }
+    if (!id || id.length < 2) { return; }
     try {
-      const response = await backendGet(`/query_node/${id}?${this.getDataFileParams()}`) as QNode;
+      const response = await backendGet(`/query_node/${id[0].toLocaleUpperCase()+id.slice(1)}?${this.getDataFileParams()}`) as QNode;
       return response;
     } catch (error) {
       if (error.errorCode === 404) {

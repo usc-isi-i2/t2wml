@@ -190,7 +190,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   handleOnRemove() {
-    const { onRemove, selectedCell } = this.props;
+    const { onRemove, selectedCell, field } = this.props;
     const { selected, applyToBlock } = this.state;
     if (!selected) { return; }
     if (onRemove) onRemove(selected, applyToBlock);
@@ -201,7 +201,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       instanceOfSearch: '',
       qnodes: [],
       entityFields: {
-        is_property: true,
+        is_property: field ? field === "property" : (wikiStore.table.selectedBlock?.role === 'property' ? true : false),
         label: selectedCell.value || "",
         description: "",
         data_type: "string",
