@@ -182,57 +182,44 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async addYaml(clickedNode: NodeProps) {
-    const result = await remote.dialog.showSaveDialog({
-      title: "Add Empty Yaml File",
-      defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
-      filters: [
-        { name: "Yaml", extensions: ["yaml"] }
-      ],
-    });
-    if (!result.canceled && result.filePath) {
+      const sheetName = clickedNode!.label;
+      const dataFile= clickedNode!.parentNode!.label;
+      const title = "yamls/" + sheetName + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5) +".yaml"
       try {
         // send request
         const data = {
           "yaml": defaultYamlContent,
-          "title": result.filePath,
-          "sheetName": clickedNode!.label,
-          "dataFile": clickedNode!.parentNode!.label
+          "title": title,
+          "sheetName": sheetName,
+          "dataFile":dataFile,
         };
 
         const filename = await this.requestService.saveYaml(data);
-        this.changeYaml(filename, clickedNode!.label, clickedNode!.parentNode!.label)
+        this.changeYaml(filename, sheetName, dataFile)
       } catch (error) {
         console.log(error);
       }
 
-    }
+
   }
 
   async addAnnotation(clickedNode: NodeProps) {
-    const result = await remote.dialog.showSaveDialog({
-      title: "Add Empty Annotation File",
-      defaultPath: wikiStore.project.projectDTO!.directory,
-      properties: ['createDirectory'],
-      filters: [
-        { name: "annotation", extensions: ["annotation", "json"] }
-      ],
-    });
-    if (!result.canceled && result.filePath) {
-      try {
-        const data = {
-          "title":result.filePath,
-          "sheetName": clickedNode!.label,
-          "dataFile": clickedNode!.parentNode!.label
-        };
-
+    const sheetName = clickedNode!.label;
+    const dataFile= clickedNode!.parentNode!.label;
+    const title = "annotations/" + sheetName + "_"+ Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 4) +".yaml"
+    try {
+      // send request
+      const data = {
+        "title": title,
+        "sheetName": sheetName,
+        "dataFile":dataFile,
+      };
         const filename = await this.requestService.createAnnotation(data)
         this.changeAnnotation(filename, clickedNode!.label, clickedNode!.parentNode!.label)
       } catch (error) {
         console.log(error);
       } finally {
         this.setState({ showSpinner: false });
-      }
   }
   }
 

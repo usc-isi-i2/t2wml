@@ -474,6 +474,7 @@ def save_annotation():
     sheet_name = request.get_json()["sheetName"]
     title = request.get_json()["title"]
     annotations_path = Path(project.directory) / title
+    os.makedirs(Path(annotations_path.parent), exist_ok=True)
     filename = save_annotations(
         project, [], annotations_path, dataFile, sheet_name)
     response = dict(project=get_project_dict(project), filename=filename)

@@ -58,7 +58,8 @@ def save_yaml(project, yaml_data, data_file, sheet_name, yaml_title=None):
     if not yaml_title:
         yaml_title = sheet_name + ".yaml"
 
-    file_path = Path(project.directory) / yaml_title
+    file_path = Path(project.directory) / Path(yaml_title)
+    os.makedirs(file_path.parent, exist_ok=True)
     with open(file_path, 'w', newline='', encoding="utf-8") as f:
         f.write(yaml_data)
 
