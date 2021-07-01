@@ -17,7 +17,8 @@ class WebDictionaryProvider(FallbackSparql):
         web_logger.debug("setting cache to preloaded properties")
         self.cache=preloaded_properties
         try:
-            prop = web_logger.debug("trying to get p585", self.try_get_property_type("P585"))
+            web_logger.debug("trying to get p585")
+            prop = self.try_get_property_type("P585")
             web_logger.debug("Success!", prop)
         except Exception as e:
             web_logger.debug("failed to get p585", str(e))
@@ -30,7 +31,8 @@ class WebDictionaryProvider(FallbackSparql):
             with open(project.entity_file, 'r') as f:
                 self.cache.update(json.load(f))
             try:
-                prop = web_logger.debug("trying to get p585", self.try_get_property_type("P585"))
+                prop = web_logger.debug("trying to get p585")
+                self.try_get_property_type("P585")
                 web_logger.debug("Success!", prop)
             except Exception as e:
                 web_logger.debug("failed to get p585", str(e))

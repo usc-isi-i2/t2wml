@@ -42,7 +42,8 @@ def set_web_settings():
     t2wml_settings.wikidata_provider = WebDictionaryProvider()
     web_logger.debug("finished set web settings")
     try:
-        prop = web_logger.debug("trying to get p585", t2wml_settings.wikidata_provider.try_get_property_type("P585"))
+        web_logger.debug("trying to get p585")
+        prop=t2wml_settings.wikidata_provider.try_get_property_type("P585"))
         web_logger.debug("Success!", prop)
     except Exception as e:
         web_logger.debug("failed to get p585", str(e))
@@ -60,9 +61,10 @@ def update_t2wml_settings(project):
     elif t2wml_settings.wikidata_provider.sparql_endpoint!=project.sparql_endpoint:
             web_logger.debug("updating sparql endpoint")
             t2wml_settings.wikidata_provider.sparql_endpoint=project.sparql_endpoint
-    web_logger.debug("befor eexiting update settings, run test")
+    web_logger.debug("before exiting update settings, run test")
     try:
-        prop = web_logger.debug("trying to get p585", t2wml_settings.wikidata_provider.try_get_property_type("P585"))
+        web_logger.debug("entered the try/catch for p585 in update t2wml settings")
+        prop = t2wml_settings.wikidata_provider.try_get_property_type("P585")
         web_logger.debug("Success!", prop)
     except Exception as e:
         web_logger.debug("failed to get p585", str(e))
