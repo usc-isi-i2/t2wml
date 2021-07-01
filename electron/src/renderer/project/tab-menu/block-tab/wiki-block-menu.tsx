@@ -147,6 +147,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         }
         finally {
             wikiStore.table.showSpinner = false;
+            this.props.onClose()
         }
     }
 
@@ -164,6 +165,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         }
         finally {
             wikiStore.table.showSpinner = false;
+            this.props.onClose()
         }
     }
 
@@ -199,7 +201,7 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
 
     render() {
         const { onClose, selection } = this.props;
-        const position = { x: window.innerWidth * 0.05, y: 0 };
+        const position = { x: 20, y: 0 };
         return (
             <Draggable handle=".handle"
                 defaultPosition={position}>
