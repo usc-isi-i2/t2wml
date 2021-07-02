@@ -642,7 +642,7 @@ def get_qnodes():
 
 @app.route('/api/set_qnode', methods=['POST'])
 @json_response
-def set_qnode():
+def set_qnodes():
     project = get_project()
     calc_params = get_calc_params(project)
     qnode_dict = request.get_json()['qnode']
@@ -767,8 +767,7 @@ def create_qnode():
     if selection:
         calc_params = get_calc_params(project)
         context = request.get_json().get("context", "")
-        (col1, row1), (col2, row2) = selection
-        value = calc_params.sheet[row1, col1]
+        value=request_json.pop("value")
         create_user_wikification(calc_params, project, selection, value,
                                  context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
