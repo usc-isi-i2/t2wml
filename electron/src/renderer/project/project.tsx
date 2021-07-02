@@ -282,7 +282,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
           {/* defaultSize={parseInt(localStorage.getItem('splitPos'), 10) as string}
             onChange={(size) => localStorage.setItem('splitPos', size)} */}
-          <SplitPane className="" split="vertical" defaultSize="20%" minSize={200} maxSize={-1000}
+          <SplitPane className="" split="vertical" defaultSize={200} minSize={200} maxSize={-1000}
             style={{ height: "calc(100vh - 50px)", background: t2wmlColors.PROJECT }}>
             <Sidebar />
             <SplitPane className="" primary="second" split="vertical" defaultSize="35%" minSize={300} maxSize={-300}>

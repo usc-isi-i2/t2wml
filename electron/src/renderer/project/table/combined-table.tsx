@@ -1081,7 +1081,7 @@ class CombinedTable extends Component<{}, TableState> {
     renderTitle() {
         const { filename } = this.state;
         return (
-            <div style={{ width: "calc(100% - 500px)", cursor: "default" }}
+            <div style={{ width: "calc(100% - 275px)", cursor: "default" }}
                 className="text-white font-weight-bold d-inline-block text-truncate">
                 { filename ? (
                     <span>
@@ -1100,8 +1100,8 @@ class CombinedTable extends Component<{}, TableState> {
     renderSuggestButton() {
         if (currentFilesService.currentState.mappingType != "Yaml") {
             return (
-                <div style={{ cursor: "pointer", textDecoration: "underline" }}
-                    className="text-white d-inline-block">
+                <div style={{ cursor: "pointer", textDecoration: "underline", marginRight: "7px" }}
+                    className="text-white  float-right d-inline-block">
                     <span onClick={() => this.getAnnotationSuggestedBlocks()}>Suggest annotation</span>
                 </div>
             )
