@@ -77,6 +77,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.onRefreshProject = this.onRefreshProject.bind(this);
     this.onShowSettingsClicked = this.onShowSettingsClicked.bind(this);
     this.onUploadWikifier = this.onUploadWikifier.bind(this)
+    this.onUploadEntities = this.onUploadEntities.bind(this)
   }
 
   componentDidMount() {
@@ -88,6 +89,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     }
     ipcRenderer.on('refresh-project', this.onRefreshProject);
     ipcRenderer.on('upload-wikifier', this.onUploadWikifier);
+    ipcRenderer.on('upload-entities', this.onUploadEntities);
     ipcRenderer.on('project-settings', this.onShowSettingsClicked);
     ipcRenderer.on('project-entities', () => this.onShowEntitiesClicked());
   }
@@ -98,6 +100,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
     ipcRenderer.removeListener('refresh-project', this.onRefreshProject);
     ipcRenderer.removeListener('upload-wikifier', this.onUploadWikifier);
+    ipcRenderer.removeListener('upload-entities', this.onUploadEntities);
     ipcRenderer.removeListener('project-settings', this.onShowSettingsClicked);
     ipcRenderer.removeListener('project-entities', () => this.onShowEntitiesClicked());
   }
@@ -166,7 +169,7 @@ class Project extends Component<ProjectProps, ProjectState> {
 
   async uploadWikifier() {
     const result = await remote.dialog.showOpenDialog({
-      title: "Open Existing Wikifier File",
+      title: "Open Old-Style Wikifier File",
       defaultPath: wikiStore.project.projectDTO!.directory,
       properties: ['openFile'],
       filters: [{ name: "wikifier", extensions: ["csv"] }],
@@ -177,6 +180,34 @@ class Project extends Component<ProjectProps, ProjectState> {
         wikiStore.table.showSpinner = true;
         wikiStore.yaml.showSpinner = true;
         await this.requestService.uploadWikifierOutput(data);
+        await this.requestService.getTable();
+        this.requestService.getPartialCsv();
+      } catch (error) {
+        console.log(error);
+      }finally{
+        wikiStore.table.showSpinner = false;
+        wikiStore.yaml.showSpinner = false;
+      }
+    }
+  }
+
+  onUploadEntities(){
+    this.uploadEntities();
+  }
+
+  async uploadEntities() {
+    const result = await remote.dialog.showOpenDialog({
+      title: "Open Entities File",
+      defaultPath: wikiStore.project.projectDTO!.directory,
+      properties: ['openFile'],
+      filters: [{ name: "entities", extensions: ["tsv"] }],
+    });
+    if (!result.canceled && result.filePaths) {
+      try {
+        const data = { "filepath": result.filePaths[0] };
+        wikiStore.table.showSpinner = true;
+        wikiStore.yaml.showSpinner = true;
+        await this.requestService.uploadEntities(data);
         await this.requestService.getTable();
         this.requestService.getPartialCsv();
       } catch (error) {
