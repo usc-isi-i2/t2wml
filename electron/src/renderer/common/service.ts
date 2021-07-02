@@ -325,7 +325,7 @@ class RequestService {
   }
 
   public async createQnode(entityFields: EntityFields) {
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields, selection: selection, value: value}) as ResponseWithQNodeLayerAndQnode;
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields}) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);
     }
