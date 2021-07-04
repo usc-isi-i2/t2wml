@@ -215,7 +215,7 @@ class CombinedTable extends Component<{}, TableState> {
             return;
         }
         const tableData = this.getClasslessTableData(table);
-        this.setState({tableData})
+        this.setState({ tableData })
         //this.updateStatement(tableData);
         console.log("resetting wikistore selections from update table data")
         { this.createAnnotationIfDoesNotExist(); }
@@ -245,8 +245,8 @@ class CombinedTable extends Component<{}, TableState> {
 
         this.setAnnotationColors(tableData)
 
-        for (const row of tableData){
-            for (const cell of row){
+        for (const row of tableData) {
+            for (const cell of row) {
                 cell.overlay = undefined;
             }
         }
@@ -256,12 +256,12 @@ class CombinedTable extends Component<{}, TableState> {
             for (const indexPair of entry.indices) {
                 const tableCell = tableData[indexPair[0]][indexPair[1]];
                 tableCell.classNames.push('error');
-                let errMsg=""
-                for (const err of entry.error){
-                    errMsg+=err.message
-                    errMsg+=","
+                let errMsg = ""
+                for (const err of entry.error) {
+                    errMsg += err.message
+                    errMsg += ","
                 }
-                errMsg=errMsg.slice(0, -1) //get rid of last comma
+                errMsg = errMsg.slice(0, -1) //get rid of last comma
                 tableCell.overlay = errMsg;
             }
         }
@@ -820,7 +820,7 @@ class CombinedTable extends Component<{}, TableState> {
             return;
         } else if (element.nodeName !== 'TD') {
             // if the "show qnode" is selecting in the menu.
-            if (element.className.startsWith("qnode-cell-content")){
+            if (element.className.startsWith("qnode-cell-content")) {
                 let count = 2
                 while (element.nodeName !== 'TD' && count && element.parentNode) {
                     element = element.parentNode
@@ -961,8 +961,8 @@ class CombinedTable extends Component<{}, TableState> {
                         col = col + 1;
                     }
                 }
-                const irow = row < rows.length ? row+1 : row;
-                const icol = col < rows[row].children.length ? col+1 : col;
+                const irow = row < rows.length ? row + 1 : row;
+                const icol = col < rows[row].children.length ? col + 1 : col;
                 const textContent = rows[irow].children[icol].textContent
 
                 wikiStore.table.selectedCell = { ...new Cell(col, row), value: textContent };
@@ -1040,12 +1040,13 @@ class CombinedTable extends Component<{}, TableState> {
                 else { //moved arrow potentially into new block;
                     const selectedBlock = checkSelectedAnnotationBlocks({ x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 });
                     wikiStore.table.selectBlock(selectedBlock);
-                    if (!selectedBlock){
+                    if (!selectedBlock) {
                         wikiStore.table.selection = {
                             x1: wikiStore.table.selectedCell.col + 1,
                             y1: wikiStore.table.selectedCell.row + 1,
                             x2: wikiStore.table.selectedCell.col + 1,
-                            y2: wikiStore.table.selectedCell.row + 1}
+                            y2: wikiStore.table.selectedCell.row + 1
+                        }
                     }
                 }
             }
@@ -1083,12 +1084,12 @@ class CombinedTable extends Component<{}, TableState> {
         return (
             <div style={{ width: "calc(100% - 500px)", cursor: "default" }}
                 className="text-white font-weight-bold d-inline-block text-truncate">
-                { filename ? (
+                {filename ? (
                     <span>
                         {filename}
                         <span style={{ opacity: "0.5", paddingLeft: "5px" }}>
                             [Read-Only]
-            </span>
+                        </span>
                     </span>
                 ) : (
                     <span>Table&nbsp;Viewer</span>
@@ -1113,10 +1114,10 @@ class CombinedTable extends Component<{}, TableState> {
             <Tooltip style={{ width: "fit-content" }} id="upload">
                 <div className="text-left small">
                     <b>Accepted file types:</b><br />
-          • Comma-Separated Values (.csv)<br />
-          • Tab-Separated Values (.tsv)<br />
-          • Microsoft Excel (.xls/.xlsx)
-        </div>
+                    • Comma-Separated Values (.csv)<br />
+                    • Tab-Separated Values (.tsv)<br />
+                    • Microsoft Excel (.xls/.xlsx)
+                </div>
             </Tooltip>
         )
     }
@@ -1133,7 +1134,7 @@ class CombinedTable extends Component<{}, TableState> {
                         variant="outline-light"
                         onClick={() => document.getElementById("file_table")?.click()}>
                         Upload data file
-          </Button>
+                    </Button>
                 </OverlayTrigger>
 
                 {/* hidden input of table file */}
@@ -1165,17 +1166,22 @@ class CombinedTable extends Component<{}, TableState> {
                 {({ getRootProps, getInputProps }) => (
                     <div {...getRootProps({ className: 'dropzone w-100 h-100' })}>
 
-                        {tableData || showSpinner ? <div className="w-100 h-100"><Table
-                            tableData={this.state.tableData}
-                            onMouseUp={this.handleOnMouseUp.bind(this)}
-                            onMouseDown={this.handleOnMouseDown.bind(this)}
-                            onMouseMove={this.handleOnMouseMove.bind(this)}
-                            onClickHeader={this.handleOnClickHeader.bind(this)}
-                            setTableReference={this.setTableReference.bind(this)} /> </div>:
-                            <div className="dropcontainer w-100 h-100">
-                                <input {...getInputProps()} />
-                                <p>Drag-and-drop a spreadsheet file here, or click to select file</p>
-                            </div>
+                        {
+                            tableData || showSpinner ?
+                                <div className="w-100 h-100">
+                                    <Table
+                                        tableData={this.state.tableData}
+                                        onMouseUp={this.handleOnMouseUp.bind(this)}
+                                        onMouseDown={this.handleOnMouseDown.bind(this)}
+                                        onMouseMove={this.handleOnMouseMove.bind(this)}
+                                        onClickHeader={this.handleOnClickHeader.bind(this)}
+                                        setTableReference={this.setTableReference.bind(this)} />
+                                </div>
+                                :
+                                <div className="dropcontainer w-100 h-100">
+                                    <input {...getInputProps()} />
+                                    <p>Drag-and-drop a spreadsheet file here, or click to select file</p>
+                                </div>
                         }
 
                     </div>
