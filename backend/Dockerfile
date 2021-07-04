@@ -14,4 +14,4 @@ COPY . /src
 
 WORKDIR /src
 EXPOSE 13000
-ENTRYPOINT python t2wml-server.py --public-server
+ENTRYPOINT python t2wml-server.py --public-server --causx
