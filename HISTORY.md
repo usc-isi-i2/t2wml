@@ -1,6 +1,25 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.10.2:
+------------------------
+* t2wml-api 0.5.6
+* clearer flow of UI and other UI tweaks
+* some additional bug fixes, including:
+   - fix bug where property is auto-selected after deleting wikification for cell
+   - fix bug where apply to block worked incorrectly when applying a custom node
+   - fixed property type is always string in cell menu
+   - when downloading zipped results, don't crash if one file can't output results
+* display an error when wikification fails
+* do not prompt for file path when creating new empty yaml/annotation file
+* some (significant) backend performance improvements when using custom properties. this seems to have also partially improved the extreme slowness of uploading old-style wikifier files to a project.
+* add option to upload entities file in project menu
+
+Changes in version 2.10.1:
+------------------------
+* fixes to multiple bugs (#487, #490, #491, #492, #493)
+
+
 Changes in version 2.10.0:
 ------------------------
 * t2wml-api version 0.5.0 (NOT BACKWARDS COMPATIBLE)
