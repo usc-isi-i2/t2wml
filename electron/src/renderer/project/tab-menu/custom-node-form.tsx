@@ -42,7 +42,7 @@ class CustomNodeForm extends Component<CustomNodeFormProp, {}> {
                             onChange={(event: KeyboardEvent) => handleOnChange(event, "data_type")}>
                             <Form.Label column sm="12" md="12" className="text-muted">Data type</Form.Label>
                             <Form.Control as="select" disabled={disableDataType}
-                                value={data_type}>
+                                defaultValue={data_type}>
                                 <option value="quantity">Quantity</option>
                                 <option value="time">Time</option>
                                 <option value="monolingualtext">Monolingual text</option>
