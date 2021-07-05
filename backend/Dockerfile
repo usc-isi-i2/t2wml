@@ -9,7 +9,6 @@ RUN pip install -e ./t2wml-api
 
 RUN pip install -r /src/requirements.txt
 
-COPY for-docker /proj
 COPY . /src
 
 WORKDIR /src
