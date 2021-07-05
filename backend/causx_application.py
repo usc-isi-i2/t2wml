@@ -54,7 +54,7 @@ def encode_auth_token():
 
 def decode_auth_token(auth_token):
     payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
-    return payload['sub']
+    return {"token": payload['sub']}
 
 
 def get_project_folder():
