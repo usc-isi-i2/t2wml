@@ -77,7 +77,7 @@ def get_project():
     try:
         Project.load(project_folder)
     except FileNotPresentInProject:
-        p=Project(project_folder, title="Untitled_dataset")
+        p=Project(project_folder, title="Causx")
         p.save()
 
     project = get_project_instance(project_folder)
