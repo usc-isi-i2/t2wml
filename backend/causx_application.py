@@ -60,7 +60,7 @@ def decode_auth_token(auth_token):
 def get_project_folder():
     try:
         request_folder = os.path.basename(request.args['project_folder'])
-        auth_header=request.headers.get("Authorization")
+        auth_header=request.headers.get("Authentication")
         if auth_header:
             request_folder=decode_auth_token(auth_header)
         base_dir=app.config["PROJECTS_DIR"]
