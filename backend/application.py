@@ -250,7 +250,6 @@ def upload_entities():
     return response, 200
 
 
-@app.route('/api/causx/project/entities', methods=['GET'])
 @app.route('/api/project/entities', methods=['GET'])
 @json_response
 def get_project_entities():
@@ -259,7 +258,6 @@ def get_project_entities():
     return response, 200
 
 
-@app.route('/api/causx/project/entities', methods=['PUT'])
 @app.route('/api/project/entities', methods=['PUT'])
 @json_response
 def edit_entities():
@@ -320,7 +318,6 @@ def call_wikifier_service():
     return response, 200
 
 
-@app.route('/api/causx/auto_wikinodes', methods=['POST'])
 @app.route('/api/auto_wikinodes', methods=['POST'])
 @json_response
 def create_auto_nodes():
@@ -388,8 +385,7 @@ def download_results(filetype, filename):
     }
     attachment_filename = filename
     project = get_project()
-    for_causx = "causx" in request.path
-    if filetype == "csv" and not for_causx:
+    if filetype == "csv":
         from t2wml.settings import t2wml_settings
         t2wml_settings.no_wikification = True
 
@@ -404,18 +400,9 @@ def download_results(filetype, filename):
         if not calc_params.yaml_path and not calc_params.annotation_path:
             raise web_exceptions.CellResolutionWithoutYAMLFileException(
                 "Cannot download report without uploading mapping file first")
-        if for_causx:
-            annotation_path = calc_params.annotation_path
-            ang = AnnotationNodeGenerator.load_from_path(
-                annotation_path, project)
-            ang.preload(calc_params.sheet, calc_params.wikifier)
 
         kg = get_kg(calc_params)
-
-        if for_causx and filetype == "csv":
-            data = causx_create_canonical_spreadsheet(kg.statements, project)
-        else:
-            data = kg.get_output(filetype, calc_params.project)
+        data = kg.get_output(filetype, calc_params.project)
         stream = BytesIO(data.encode('utf-8'))
         stream.seek(0)
         return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
@@ -491,7 +478,6 @@ def save_annotation():
     return response, 200
 
 
-@app.route('/api/causx/annotation', methods=['POST'])
 @app.route('/api/annotation', methods=['POST'])
 @json_response
 def upload_annotation():
@@ -508,7 +494,6 @@ def upload_annotation():
     return response, code
 
 
-@app.route('/api/causx/annotation/suggest', methods=['PUT'])
 @app.route('/api/annotation/suggest', methods=['PUT'])
 @json_response
 def suggest_annotation_block():
@@ -532,7 +517,6 @@ def suggest_annotation_block():
     return response, 200
 
 
-@app.route('/api/causx/annotation/guess-blocks', methods=['GET'])
 @app.route('/api/annotation/guess-blocks', methods=['GET'])
 @json_response
 def guess_annotation_blocks():
@@ -556,7 +540,6 @@ def update_global_settings():
     return response, 200
 
 
-@app.route('/api/causx/project/settings', methods=['PUT', 'GET'])
 @app.route('/api/project/settings', methods=['PUT', 'GET'])
 @json_response
 def update_settings():
@@ -725,7 +708,6 @@ def delete_wikification():
     return response, 200
 
 
-@app.route('/api/causx/create_node', methods=['POST'])
 @app.route('/api/create_node', methods=['POST'])
 @json_response
 def create_qnode():

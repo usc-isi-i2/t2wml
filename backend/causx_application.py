@@ -33,9 +33,13 @@ debug_mode = False
 
 set_web_settings()
 
+os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
+
 def get_project_folder():
     try:
-        project_folder = request.args['project_folder']
+        request_folder = os.path.basename(request.args['project_folder'])
+        base_dir=app.config["PROJECTS_DIR"]
+        project_folder= Path(base_dir) / request_folder
         return project_folder
     except KeyError:
         raise web_exceptions.InvalidRequestException(
@@ -127,6 +131,7 @@ def get_project_files():
     return response, 200
 
 
+
 @app.route('/api/mapping', methods=['GET'])
 @json_response
 def get_mapping(mapping_file=None, mapping_type=None):
@@ -148,6 +153,7 @@ def get_mapping(mapping_file=None, mapping_type=None):
     return response, 200
 
 
+'''
 @app.route('/api/table', methods=['GET'])
 @json_response
 def get_data():
@@ -162,7 +168,7 @@ def get_data():
     calc_response, code = get_mapping()
     response.update(calc_response)
     return response, code
-
+'''
 
 @app.route('/api/partialcsv', methods=['GET'])
 @json_response
@@ -180,6 +186,7 @@ def partial_csv():
     return response, 200
 
 
+'''
 @app.route('/api/project', methods=['POST'])
 @json_response
 def create_project():
@@ -202,8 +209,10 @@ def create_project():
     project = create_api_project(project_folder, title, description, url)
     response = dict(project=get_project_dict(project))
     return response, 201
+'''
 
 
+@app.route('/api/causx/data', methods=['POST']) #V
 @app.route('/api/data', methods=['POST'])
 @json_response
 def upload_data_file():
@@ -237,8 +246,7 @@ def upload_data_file():
 
 
 
-@app.route('/api/causx/project/entities', methods=['GET'])
-@app.route('/api/project/entities', methods=['GET'])
+@app.route('/api/causx/project/entities', methods=['GET']) #V
 @json_response
 def get_project_entities():
     project = get_project()
@@ -246,7 +254,6 @@ def get_project_entities():
     return response, 200
 
 @app.route('/api/causx/project/entities', methods=['PUT'])
-@app.route('/api/project/entities', methods=['PUT'])
 @json_response
 def edit_entities():
     project = get_project()
@@ -257,7 +264,7 @@ def edit_entities():
 
 
 @app.route('/api/causx/auto_wikinodes', methods=['POST'])
-@app.route('/api/auto_wikinodes', methods=['POST'])
+@app.route('/api/auto_wikinodes', methods=['POST']) #V
 @json_response
 def create_auto_nodes():
     """
@@ -277,7 +284,7 @@ def create_auto_nodes():
     return response, 200
 
 
-
+'''
 @app.route('/api/annotation/create', methods=['POST'])
 @json_response
 def save_annotation():
@@ -290,7 +297,7 @@ def save_annotation():
         project, [], annotations_path, dataFile, sheet_name)
     response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
-
+'''
 
 @app.route('/api/causx/annotation', methods=['POST'])
 @app.route('/api/annotation', methods=['POST'])
@@ -310,7 +317,7 @@ def upload_annotation():
 
 
 @app.route('/api/causx/annotation/suggest', methods=['PUT'])
-@app.route('/api/annotation/suggest', methods=['PUT'])
+@app.route('/api/annotation/suggest', methods=['PUT']) #V
 @json_response
 def suggest_annotation_block():
     project = get_project()
@@ -333,7 +340,7 @@ def suggest_annotation_block():
     return response, 200
 
 
-@app.route('/api/causx/annotation/guess-blocks', methods=['GET'])
+@app.route('/api/causx/annotation/guess-blocks', methods=['GET']) #V
 @app.route('/api/annotation/guess-blocks', methods=['GET'])
 @json_response
 def guess_annotation_blocks():
@@ -343,7 +350,7 @@ def guess_annotation_blocks():
     return get_mapping()
 
 
-@app.route('/api/causx/project/settings', methods=['PUT', 'GET'])
+@app.route('/api/causx/project/settings', methods=['PUT', 'GET']) #V
 @app.route('/api/project/settings', methods=['PUT', 'GET'])
 @json_response
 def update_settings():
@@ -526,28 +533,6 @@ def is_alive():
 
 
 
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if sys.argv[1] == '--debug':
-            debug_mode = True
-            print('Debug mode is on!')
-        if sys.argv[1] == "--profile":
-            from werkzeug.middleware.profiler import ProfilerMiddleware
-            from app_config import DATADIR
-
-            app.config['PROFILE'] = True
-            profiles_dir = os.path.join(DATADIR, "profiles")
-            if not os.path.isdir(profiles_dir):
-                os.mkdir(profiles_dir)
-            app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
-                                              restrictions=[100],
-                                              profile_dir=profiles_dir)
-        app.run(debug=True, port=13000)
-    else:
-        app.run(threaded=True, port=13000)
-
-
-
 
 ########## CAUSX #################
 
@@ -569,9 +554,8 @@ def causx_get_file(allowed_extensions):
             "File with extension '"+file_extension+"' is not allowed")
     return in_file
 
-#TODO: change route
-@app.route('/api/causx/wikify_region', methods=['POST'])
-@app.route('/api/web/wikify_region', methods=['POST'])
+
+@app.route('/api/causx/wikify_region', methods=['POST']) #V
 @json_response
 def causx_wikify():
     project = get_project()
@@ -593,9 +577,7 @@ def causx_wikify():
 
     return response, 200
 
-#TODO: change route
 @app.route('/api/causx/upload/data', methods=['POST'])
-@app.route('/api/upload/data', methods=['POST'])
 @json_response
 def causx_upload_data():
     project = get_project()

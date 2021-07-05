@@ -39,6 +39,7 @@ class AppConfig:
                               'sqlite:///' + os.path.join(DATADIR, 'entitiesWithID.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
+    PROJECTS_DIR= os.path.join(BASEDIR, "media")
 
 
 app.config.from_object(AppConfig)
