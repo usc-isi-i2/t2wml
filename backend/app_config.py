@@ -31,7 +31,7 @@ class NumpyEncoder(json.JSONEncoder):
 app.json_encoder=NumpyEncoder
 CORS(app, supports_credentials=True)
 
-projects_dir= "/data"
+projects_dir= "/proj"
 if os.name == 'nt':
     projects_dir=os.path.join(BASEDIR, "media")
 
