@@ -54,7 +54,6 @@ def encode_auth_token():
 
 def decode_auth_token(auth_token):
     payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
-    return {"token": payload['sub']}
 
 
 def get_project_folder():
@@ -170,7 +169,7 @@ def get_mapping():
 
 @app.route('/api/causx/token', methods=['GET'])
 def get_token():
-    return encode_auth_token(), 200
+    return {"token": encode_auth_token()}, 200
 
 
 @app.route('/api/causx/project/entities', methods=['GET']) #V
