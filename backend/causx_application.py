@@ -1,16 +1,17 @@
-from flask.helpers import send_file
+from flask.helpers import make_response, send_file
 import pandas as pd
 import os
 import sys
 import tempfile
 import json
 import zipfile
+import uuid
 from io import BytesIO
 from pathlib import Path
 from flask import request
 from werkzeug.utils import secure_filename
 from app_config import app
-from t2wml.api import Project
+from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
@@ -37,9 +38,11 @@ os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
 
 def get_project_folder():
     try:
-        request_folder = os.path.basename(request.args['project_folder'])
+        #request_folder = os.path.basename(request.args['project_folder'])
+        request_folder=request.cookies.get("user-id")
         base_dir=app.config["PROJECTS_DIR"]
         project_folder= Path(base_dir) / request_folder
+        os.makedirs(project_folder, exist_ok=True)
         return project_folder
     except KeyError:
         raise web_exceptions.InvalidRequestException(
@@ -48,6 +51,12 @@ def get_project_folder():
 
 def get_project():
     project_folder = get_project_folder()
+    try:
+        Project.load(project_folder)
+    except FileNotPresentInProject:
+        p=Project(project_folder)
+        p.save()
+
     project = get_project_instance(project_folder)
     return project
 
@@ -61,19 +70,22 @@ def get_project_dict(project):
 
 def json_response(func):
     def wrapper(*args, **kwargs):
+        new_cookie=None
+        if not request.cookies.get("user-id"):
+            request.cookies=dict(request.cookies)
+            new_cookie=str(uuid.uuid4())
+            request.cookies["user-id"]=new_cookie
         try:
-            data, return_code = func(*args, **kwargs)
-            return data, return_code
+            data, code = func(*args, **kwargs)
         except WebException as e:
             data = {"error": e.error_dict}
-            return data, e.code
         except Exception as e:
             #print(e)
             if "Permission denied" in str(e):
                 e = web_exceptions.FileOpenElsewhereError(
                     "Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
                 data = {"error": e.error_dict}
-                return data, 403
+                code=403
 
             data = {"error": make_frontend_err_dict(e)}
             try:
@@ -81,7 +93,12 @@ def json_response(func):
                 data["error"]["errorCode"] = code
             except AttributeError:
                 code = 500
-            return data, code
+        finally:
+            response=make_response(data)
+            response.status_code=code
+            if new_cookie:
+                response.set_cookie("user-id", new_cookie)
+            return response
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
@@ -123,17 +140,9 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
     return calc_params
 
 
-@app.route('/api/project', methods=['GET'])
-@json_response
-def get_project_files():
-    project = get_project()
-    response = dict(project=get_project_dict(project))
-    return response, 200
 
-
-
-@app.route('/api/mapping', methods=['GET'])
-@json_response
+#@app.route('/api/mapping', methods=['GET'])
+#@json_response
 def get_mapping(mapping_file=None, mapping_type=None):
     project = get_project()
     calc_params = get_calc_params(project)
@@ -170,21 +179,6 @@ def get_data():
     return response, code
 '''
 
-@app.route('/api/partialcsv', methods=['GET'])
-@json_response
-def partial_csv():
-    project = get_project()
-    calc_params = get_calc_params(project)
-    response = dict()
-    try:
-        response["partialCsv"] = get_partial_csv(calc_params)
-    except Exception as e:
-        #print(e)
-        response["partialCsv"] = dict(dims=[1, 3],
-                                      firstRowIndex=0,
-                                      cells=[["subject", "property", "value"]])
-    return response, 200
-
 
 '''
 @app.route('/api/project', methods=['POST'])
@@ -212,40 +206,6 @@ def create_project():
 '''
 
 
-@app.route('/api/causx/data', methods=['POST']) #V
-@app.route('/api/data', methods=['POST'])
-@json_response
-def upload_data_file():
-    """
-    This function uploads the data file.
-    :return:
-    """
-    project = get_project()
-
-    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
-    data_file = project.add_data_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
-    project.save()
-    response = dict(project=get_project_dict(project))
-    sheet_name = project.data_files[data_file]["val_arr"][0]
-
-    annotations_dir = os.path.join(project.directory, "annotations")
-    if not os.path.isdir(annotations_dir):
-        os.mkdir(annotations_dir)
-    annotations_path = os.path.join(annotations_dir, Path(
-        data_file).stem+"_"+sheet_name+".annotation")
-
-    save_annotations(project, [], os.path.join(
-        annotations_path), data_file, sheet_name)
-
-    calc_params = CalcParams(project, data_file, sheet_name, None)
-    response["table"] = get_table(calc_params)
-    get_layers(response, calc_params)
-
-    return response, 200
-
-
-
 @app.route('/api/causx/project/entities', methods=['GET']) #V
 @json_response
 def get_project_entities():
@@ -253,6 +213,7 @@ def get_project_entities():
     response = get_entities(project)
     return response, 200
 
+'''
 @app.route('/api/causx/project/entities', methods=['PUT'])
 @json_response
 def edit_entities():
@@ -261,10 +222,9 @@ def edit_entities():
     updated_entries = request.get_json()["updated_entries"]
     response = update_entities(project, entity_file, updated_entries)
     return response, 200
-
+'''
 
 @app.route('/api/causx/auto_wikinodes', methods=['POST'])
-@app.route('/api/auto_wikinodes', methods=['POST']) #V
 @json_response
 def create_auto_nodes():
     """
@@ -398,7 +358,7 @@ def update_settings():
     return response, 200
 
 
-@app.route('/api/delete_wikification', methods=['POST'])
+@app.route('/api/causx/delete_wikification', methods=['POST'])
 @json_response
 def delete_wikification():
     project = get_project()
@@ -444,7 +404,6 @@ def delete_wikification():
 
 
 @app.route('/api/causx/create_node', methods=['POST'])
-@app.route('/api/create_node', methods=['POST'])
 @json_response
 def create_qnode():
     project = get_project()
@@ -508,33 +467,6 @@ def create_qnode():
         response["layers"] = {}
     return response, 200
 
-
-@app.route('/api/query_node/<id>', methods=['GET'])
-@json_response
-def query_qnode(id):
-    project = get_project()
-    calc_params = get_calc_params(project)
-    response = get_labels_and_descriptions(t2wml_settings.wikidata_provider, [
-                                           id], calc_params.sparql_endpoint)
-    result = response.get(id)
-    if result:
-        result["id"] = id
-        return result, 200
-    else:
-        return {}, 404
-
-
-
-# app utils
-
-@app.route('/api/is-alive')
-def is_alive():
-    return 'Backend is here', 200
-
-
-
-
-########## CAUSX #################
 
 def causx_get_file(allowed_extensions):
     if 'file' not in request.files:
@@ -785,7 +717,7 @@ def causx_edit_an_entity(id):
 
 
 
-###################end of causx section##############################
+###################end of section##############################
 
 
 if __name__ == "__main__":
