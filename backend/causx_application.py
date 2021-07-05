@@ -6,6 +6,8 @@ import tempfile
 import json
 import zipfile
 import uuid
+import datetime
+import jwt
 from io import BytesIO
 from pathlib import Path
 from flask import request
@@ -34,10 +36,33 @@ set_web_settings()
 
 os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
 
+def encode_auth_token():
+    """
+    Generates the Auth Token
+    :return: string
+    """
+    payload = {
+            'iat': datetime.datetime.utcnow(),
+            'sub': str(uuid.uuid4())
+        }
+    return jwt.encode(
+            payload,
+            app.config.get('SECRET_KEY'),
+            algorithm='HS256'
+        )
+
+
+def decode_auth_token(auth_token):
+    payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
+    return payload['sub']
+
+
 def get_project_folder():
     try:
-        #request_folder = os.path.basename(request.args['project_folder'])
-        request_folder=request.cookies.get("user-id")
+        request_folder = os.path.basename(request.args['project_folder'])
+        auth_header=request.headers.get("Authorization")
+        if auth_header:
+            request_folder=decode_auth_token(auth_header)
         base_dir=app.config["PROJECTS_DIR"]
         project_folder= Path(base_dir) / request_folder
         os.makedirs(project_folder, exist_ok=True)
@@ -68,11 +93,11 @@ def get_project_dict(project):
 
 def json_response(func):
     def wrapper(*args, **kwargs):
-        new_cookie=None
-        if not request.cookies.get("user-id"):
-            request.cookies=dict(request.cookies)
-            new_cookie=str(uuid.uuid4())
-            request.cookies["user-id"]=new_cookie
+        #new_cookie=None
+        #if not request.cookies.get("user-id"):
+        #    request.cookies=dict(request.cookies)
+        #    new_cookie=str(uuid.uuid4())
+        #    request.cookies["user-id"]=new_cookie
         try:
             data, code = func(*args, **kwargs)
         except WebException as e:
@@ -94,8 +119,8 @@ def json_response(func):
         finally:
             response=make_response(data)
             response.status_code=code
-            if new_cookie:
-                response.set_cookie("user-id", new_cookie)
+            #if new_cookie:
+            #    response.set_cookie("user-id", new_cookie)
             return response
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
@@ -142,6 +167,10 @@ def get_mapping():
             calc_params)
     get_layers(response, calc_params)
     return response, 200
+
+@app.route('/api/causx/token', methods=['GET'])
+def get_token():
+    return encode_auth_token(), 200
 
 
 @app.route('/api/causx/project/entities', methods=['GET']) #V

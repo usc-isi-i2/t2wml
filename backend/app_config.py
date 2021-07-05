@@ -40,6 +40,7 @@ class AppConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
     PROJECTS_DIR= os.path.join(BASEDIR, "media")
+    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious')
 
 
 app.config.from_object(AppConfig)
