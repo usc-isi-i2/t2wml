@@ -16,17 +16,15 @@ from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_layers, get_annotations, get_table, save_annotations,
-                       get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer,
-                       suggest_annotations, update_entities, update_t2wml_settings, get_entities)
+                       get_project_instance, get_qnodes_layer,
+                       suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
 from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet
 from causx.wikification import wikify_countries
-from utils import (file_upload_validator, get_empty_layers,
-                   get_yaml_content, create_user_wikification)
+from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
-from wikidata_utils import get_labels_and_descriptions
 
 
 
@@ -54,7 +52,7 @@ def get_project():
     try:
         Project.load(project_folder)
     except FileNotPresentInProject:
-        p=Project(project_folder)
+        p=Project(project_folder, title="Untitled_dataset")
         p.save()
 
     project = get_project_instance(project_folder)
@@ -103,15 +101,14 @@ def json_response(func):
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
 
+def get_annotation_name(calc_params):
+    data_file=calc_params.data_path
+    sheet_name=calc_params.sheet_name
+    annotation_path = "annotations/" + Path(data_file).stem + "_" + Path(sheet_name).stem + ".annotation"
+    os.makedirs(Path(calc_params.project.directory)/"annotations", exist_ok=True)
+    return annotation_path
 
-def update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type):
-    if mapping_type == "Annotation":
-        calc_params._annotation_path = mapping_file
-    if mapping_type == "Yaml":
-        calc_params._yaml_path = mapping_file
-
-
-def get_calc_params(project, data_required=True, mapping_type=None, mapping_file=None):
+def get_calc_params(project, data_required=True):
     try:
         try:
             data_file = request.args['data_file']
@@ -132,78 +129,19 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
 
     calc_params = CalcParams(project, data_file, sheet_name)
 
-    mapping_type = mapping_type or request.args.get("mapping_type")
-    mapping_file = mapping_file or request.args.get("mapping_file")
-    update_calc_params_mapping_files(
-        project, calc_params, mapping_file, mapping_type)
+    calc_params._annotation_path = get_annotation_name(calc_params)
 
     return calc_params
 
 
-
-#@app.route('/api/mapping', methods=['GET'])
-#@json_response
-def get_mapping(mapping_file=None, mapping_type=None):
+def get_mapping():
     project = get_project()
     calc_params = get_calc_params(project)
-    # if redirecting from a save:
-    update_calc_params_mapping_files(
-        project, calc_params, mapping_file, mapping_type)
-
     response = dict(project=get_project_dict(project))
-
-    if calc_params.yaml_path:
-        response["yamlContent"] = get_yaml_content(calc_params)
-        response["annotations"] = []
-    else:
-        response["annotations"], response["yamlContent"] = get_annotations(
+    response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
     get_layers(response, calc_params)
     return response, 200
-
-
-'''
-@app.route('/api/table', methods=['GET'])
-@json_response
-def get_data():
-    project = get_project()
-    data_file = request.args.get('data_file')
-    if not data_file:
-        response = dict(layers=get_empty_layers(), table=[[]])
-        return response, 200
-    calc_params = get_calc_params(project)
-    response = dict()
-    response["table"] = get_table(calc_params)
-    calc_response, code = get_mapping()
-    response.update(calc_response)
-    return response, code
-'''
-
-
-'''
-@app.route('/api/project', methods=['POST'])
-@json_response
-def create_project():
-    """
-    This route creates a project
-    :return:
-    """
-    project_folder = get_project_folder()
-    # check we're not overwriting existing project
-    project_file = Path(project_folder) / "project.t2wml"
-    if project_file.is_file():
-        raise web_exceptions.ProjectAlreadyExistsException(project_folder)
-    title = request.get_json()["title"]
-    if not title:
-        raise web_exceptions.InvalidRequestException(
-            "title required to create project")
-    description = request.get_json().get("description", "")
-    url = request.get_json().get("url", "")
-    # create project
-    project = create_api_project(project_folder, title, description, url)
-    response = dict(project=get_project_dict(project))
-    return response, 201
-'''
 
 
 @app.route('/api/causx/project/entities', methods=['GET']) #V
@@ -213,16 +151,6 @@ def get_project_entities():
     response = get_entities(project)
     return response, 200
 
-'''
-@app.route('/api/causx/project/entities', methods=['PUT'])
-@json_response
-def edit_entities():
-    project = get_project()
-    entity_file = request.get_json()["entity_file"]
-    updated_entries = request.get_json()["updated_entries"]
-    response = update_entities(project, entity_file, updated_entries)
-    return response, 200
-'''
 
 @app.route('/api/causx/auto_wikinodes', methods=['POST'])
 @json_response
@@ -244,40 +172,21 @@ def create_auto_nodes():
     return response, 200
 
 
-'''
-@app.route('/api/annotation/create', methods=['POST'])
-@json_response
-def save_annotation():
-    project = get_project()
-    dataFile = request.get_json()["dataFile"]
-    sheet_name = request.get_json()["sheetName"]
-    title = request.get_json()["title"]
-    annotations_path = Path(project.directory) / title
-    filename = save_annotations(
-        project, [], annotations_path, dataFile, sheet_name)
-    response = dict(project=get_project_dict(project), filename=filename)
-    return response, 200
-'''
-
 @app.route('/api/causx/annotation', methods=['POST'])
-@app.route('/api/annotation', methods=['POST'])
 @json_response
 def upload_annotation():
     project = get_project()
     calc_params = get_calc_params(project)
-    title = request.get_json()["title"]
     annotation = request.get_json()["annotations"]
-    annotations_path = Path(project.directory) / title
-    save_annotations(project, annotation, annotations_path,
+    save_annotations(project, annotation, calc_params.annotation_path,
                      calc_params.data_path, calc_params.sheet_name)
     response = dict(project=get_project_dict(project))
-    calc_response, code = get_mapping(annotations_path, "Annotation")
+    calc_response, code = get_mapping()
     response.update(calc_response)
     return response, code
 
 
 @app.route('/api/causx/annotation/suggest', methods=['PUT'])
-@app.route('/api/annotation/suggest', methods=['PUT']) #V
 @json_response
 def suggest_annotation_block():
     project = get_project()
@@ -301,7 +210,6 @@ def suggest_annotation_block():
 
 
 @app.route('/api/causx/annotation/guess-blocks', methods=['GET']) #V
-@app.route('/api/annotation/guess-blocks', methods=['GET'])
 @json_response
 def guess_annotation_blocks():
     project = get_project()
@@ -580,19 +488,19 @@ def causx_upload_annotation():
     #upload a project zip, extract the annotation file, and apply it to the current project
     project = get_project()
     in_file = causx_get_file([".t2wmlz"])
-
+    calc_params=get_calc_params(project)
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
         with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
             filemap=json.loads(zf.read("filemap.json"))
-            zf.extract(filemap["annotation"], project.directory)
-    calc_params=get_calc_params(project)
-    annotation_file=project.add_annotation_file(filemap["annotation"], calc_params.data_path, calc_params.sheet_name)
+            zf.extract(filemap["annotation"], calc_params.annotation_path)
+
+    annotation_file=project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
     ang=AnnotationNodeGenerator.load_from_path(annotation_file, project)
     ang.preload(calc_params.sheet, calc_params.wikifier)
     project.save()
-    response, code = get_mapping(annotation_file, "Annotation")
+    response, code = get_mapping()
     response["project"]=get_project_dict(project)
     return response, code
 
