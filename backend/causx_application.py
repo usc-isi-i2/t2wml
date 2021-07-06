@@ -388,7 +388,7 @@ def create_qnode():
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
-    t2wml_settings.wikidata_provider.save_entry(**entity_dict)
+    t2wml_settings.wikidata_provider.save_entry(node_id, **entity_dict)
 
     response = dict(entity=entity_dict, project=get_project_dict(project))
 
