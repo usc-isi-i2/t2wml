@@ -59,17 +59,16 @@ def decode_auth_token(auth_token):
 
 def get_project_folder():
     try:
-        request_folder = os.path.basename(request.args['project_folder'])
         auth_header=request.headers.get("Authentication")
-        if auth_header:
-            request_folder=decode_auth_token(auth_header)
+        request_folder=decode_auth_token(auth_header)
         base_dir=app.config["PROJECTS_DIR"]
         project_folder= Path(base_dir) / request_folder
         os.makedirs(project_folder, exist_ok=True)
         return project_folder
     except KeyError:
         raise web_exceptions.InvalidRequestException(
-            "project folder parameter not specified")
+            "no project folder available for this session"
+        )
 
 
 def get_project():
