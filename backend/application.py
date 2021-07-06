@@ -9,23 +9,23 @@ from flask import request
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 import web_exceptions
 from app_config import app
-from werkzeug.utils import secure_filename
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
-from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables, set_web_settings, get_layers, get_annotations, get_table, save_annotations,
-                       get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer, get_entities, suggest_annotations, update_entities, update_t2wml_settings, wikify, get_entities)
-from utils import (file_upload_validator, get_empty_layers, save_dataframe,
+from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables,
+                       set_web_settings, get_layers, get_annotations, get_table, save_annotations,
+                       get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer,
+                       suggest_annotations, update_entities, update_t2wml_settings, get_entities)
+from utils import (file_upload_validator, get_empty_layers,
                    get_yaml_content, save_yaml, create_user_wikification)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
 import path_utils
 from wikidata_utils import get_labels_and_descriptions
-from wikification import wikify_countries, wikify_selection
+from wikification import wikify_selection
 
 debug_mode = False
 
 set_web_settings()
-
 
 
 def get_project_folder():
@@ -59,7 +59,7 @@ def json_response(func):
             data = {"error": e.error_dict}
             return data, e.code
         except Exception as e:
-            #print(e)
+            # print(e)
             if "Permission denied" in str(e):
                 e = web_exceptions.FileOpenElsewhereError(
                     "Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
@@ -168,7 +168,7 @@ def partial_csv():
     try:
         response["partialCsv"] = get_partial_csv(calc_params)
     except Exception as e:
-        #print(e)
+        # print(e)
         response["partialCsv"] = dict(dims=[1, 3],
                                       firstRowIndex=0,
                                       cells=[["subject", "property", "value"]])
@@ -304,7 +304,8 @@ def call_wikifier_service():
 
     df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
     t2wml_settings.wikidata_provider.cache.update(entities_dict)
-    project.add_df_to_wikifier_file(calc_params.data_path, df, overwrite_existing)
+    project.add_df_to_wikifier_file(
+        calc_params.data_path, df, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -371,10 +372,6 @@ def apply_yaml():
     return response, code
 
 
-
-
-
-
 @app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
 @app.route('/api/project/download/<filetype>/<filename>', methods=['GET'])
 def download_results(filetype, filename):
@@ -386,28 +383,29 @@ def download_results(filetype, filename):
         "csv": "text/csv",
         "json": "application/json"
     }
-    attachment_filename=""
+    attachment_filename = filename
     project = get_project()
     if filetype == "csv":
         from t2wml.settings import t2wml_settings
         t2wml_settings.no_wikification = True
 
     if str(request.url_rule)[-3:] == "all":
-        with BytesIO() as binary_stream:
-            create_zip(project, filetype, binary_stream)
-            binary_stream.seek(0)
-            return send_file(binary_stream, attachment_filename, as_attachment=True, mimetype='application/zip'), 200
+        binary_stream = BytesIO()
+        create_zip(project, filetype, binary_stream)
+        binary_stream.seek(0)
+        return send_file(binary_stream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
 
     else:
         calc_params = get_calc_params(project)
         if not calc_params.yaml_path and not calc_params.annotation_path:
             raise web_exceptions.CellResolutionWithoutYAMLFileException(
                 "Cannot download report without uploading mapping file first")
+
         kg = get_kg(calc_params)
         data = kg.get_output(filetype, calc_params.project)
-        return send_file(data, attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
-
-
+        stream = BytesIO(data.encode('utf-8'))
+        stream.seek(0)
+        return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
 @app.route('/api/project/export/<filetype>/all', methods=['POST'])
@@ -516,7 +514,7 @@ def suggest_annotation_block():
     try:
         response = annotation_suggester(calc_params.sheet, block, annotation)
     except Exception as e:
-        pass #print(e)
+        pass  # print(e)
     return response, 200
 
 
@@ -656,7 +654,8 @@ def set_qnodes():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-    create_user_wikification(calc_params, project, selection, value, context, item)
+    create_user_wikification(calc_params, project,
+                             selection, value, context, item)
 
     # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
     # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
@@ -679,18 +678,16 @@ def delete_wikification():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
-
 
     top_left, bottom_right = selection
     col1, row1 = top_left
     col2, row2 = bottom_right
 
-    filepath, exists=project.get_wikifier_file(calc_params.data_path)
+    filepath, exists = project.get_wikifier_file(calc_params.data_path)
     if exists:
-        df=pd.read_csv(filepath)
+        df = pd.read_csv(filepath)
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
                 if value:
@@ -842,91 +839,6 @@ def add_mapping_file():
     return response, 200
 
 
-@app.route('/api/web/wikify_region', methods=['POST'])
-@json_response
-def causx_wikify():
-    project = get_project()
-    region = request.get_json()["selection"]
-    overwrite_existing = request.get_json().get("overwrite", False)
-    #context = request.get_json()["context"]
-    calc_params = get_calc_params(project)
-
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
-
-
-# for web version
-
-@app.route('/api/upload/<type>', methods=['POST'])
-@json_response
-def upload_file(type):
-    project = get_project()
-
-    allowed_types_map = {
-        "data": [".csv", ".xlsx"],
-        "annotation": [".json", ".annotation"],
-        "entities": [".tsv"]
-    }
-
-    if 'file' not in request.files:
-        raise web_exceptions.NoFilePartException(
-            "Missing 'file' parameter in the file upload request")
-
-    in_file = request.files['file']
-    if in_file.filename == '':
-        raise web_exceptions.BlankFileNameException(
-            "No file selected for uploading")
-
-    allowed_extensions = allowed_types_map[type]
-    file_extension = Path(in_file.filename).suffix
-    file_allowed = file_extension in allowed_extensions
-    if not file_allowed:
-        raise web_exceptions.FileTypeNotSupportedException(
-            "File with extension '"+file_extension+"' is not allowed")
-
-    folder = Path(project.directory)
-    # otherwise secure_filename does weird things on linux
-    shorter_name = Path(in_file.filename).name
-    filename = secure_filename(shorter_name)
-    file_path = folder/filename
-    in_file.save(str(file_path))
-
-    response = dict()
-    code = 200
-
-    if type == "data":
-        file_path = project.add_data_file(file_path)
-        sheet_name = project.data_files[file_path]["val_arr"][0]
-        project.save()
-        response["sheetName"] = sheet_name
-        calc_params = CalcParams(project, file_path, sheet_name)
-        response["table"] = get_table(calc_params)
-
-    if type == "entities":
-        file_path = project.add_entity_file(file_path)
-    if type == "annotation":
-        calc_params = get_calc_params(project)
-        file_path = project.add_annotation_file(
-            file_path, calc_params.data_path, calc_params.sheet_name)
-        mapping_response, code = get_mapping(file_path, "Annotation")
-        response.update(mapping_response)
-
-    project.save()
-    response.update(
-        dict(project=get_project_dict(project), filepath=file_path))
-    return response, code
-
-
 # app utils
 
 @app.route('/api/is-alive')
@@ -970,6 +882,7 @@ def windows_add_to_path():
 #         return send_from_directory(app.config['STATIC_FOLDER'], path)
 #     except NotFound:
 #         return serve_home_page()
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

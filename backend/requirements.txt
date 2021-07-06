@@ -5,3 +5,4 @@ pandas==1.2.2
 openpyxl==3.0.5
 xlrd==1.2.0
 rltk==2.0.0a15
+PyJWT==2.1.0
