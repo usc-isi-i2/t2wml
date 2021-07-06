@@ -102,6 +102,7 @@ def json_response(func):
             data, code = func(*args, **kwargs)
         except WebException as e:
             data = {"error": e.error_dict}
+            code = e.code
         except Exception as e:
             #print(e)
             if "Permission denied" in str(e):
