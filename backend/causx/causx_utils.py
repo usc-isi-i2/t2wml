@@ -13,6 +13,12 @@ from causx.cameos import cameos
 from causx.coords import coords
 from t2wml_web import get_entities
 
+CAUSX_CSV_COLS= ["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
+                    "time","time_precision", "country","country_id","country_cameo",
+                    "admin1","admin2","admin3",
+                    "region_coordinate","stated_in","stated_in_id","stated in",
+                    "FactorClass","Relevance","Normalizer","Units","DocID"]
+
 def clean_id(input):
     if not input:
         return ""
@@ -285,30 +291,40 @@ def causx_create_canonical_spreadsheet(statements, project):
     string_stream.close()
     return output
 
+@error_with_func
+def df_to_table(df):
+    #df.replace(to_replace=[None], value="", inplace=True)
+        #df = df[columns] # sort the columns
+    try:
+        df = df.filter(CAUSX_CSV_COLS)
+        dims = list(df.shape)
+        cells = json.loads(df.to_json(orient="values"))
+        cells.insert(0, list(df.columns))
+    except Exception as e:
+        raise ValueError(str(e)+"345")
+    return dict(dims=dims, firstRowIndex=0, cells=cells)
+
+
 
 @error_with_func
 def get_causx_partial_csv(calc_params, start=0, end=150):
+    columns = CAUSX_CSV_COLS
+
     try:
         cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    except Exception as e:
-        raise ValueError(str(e)+"297")
+    except FileNotFoundError as e:
+        df=pd.DataFrame({"dataset_id":[calc_params.project.dataset_id]}, columns=columns)
+        return df_to_table(df)
+
 
     try:
         kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, start, end)
     except Exception as e:
         raise ValueError(str(e)+"300")
-    columns=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
-                    "time","time_precision", "country","country_id","country_cameo",
-                    "admin1","admin2","admin3",
-                    "region_coordinate","stated_in","stated_in_id","stated in",
-                    "FactorClass","Relevance","Normalizer","Units","DocID"]
 
     if not kg.statements: #nonetheless add at least some of the annotation
-        try:
-            df=pd.DataFrame([], columns=columns)
-            role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
-        except Exception as e:
-            raise ValueError(str(e)+"300")
+        df=pd.DataFrame({"dataset_id":[calc_params.project.dataset_id]}, columns=columns)
+        role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
         for block in cell_mapper.annotation.annotations_array:
             if isinstance(block, list):
                 block=block[0]
@@ -322,30 +338,15 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
                     df[role_map[block.role]]=cells
                 except Exception as e:
                     raise ValueError(str(e)+"320"+block.role)
-        try:
-            df.dataset_id=calc_params.project.dataset_id
-        except Exception as e:
-            raise ValueError(str(e)+"328")
+        df.dataset_id=calc_params.project.dataset_id
     else:
         try:
             columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
-        except Exception as e:
-            raise ValueError(str(e)+"336")
-
-        try:
             df = pd.DataFrame.from_dict(dict_values)
         except Exception as e:
             raise ValueError(str(e)+"341")
-        #df.replace(to_replace=[None], value="", inplace=True)
-        #df = df[columns] # sort the columns
-    try:
-        df = df.filter(columns)
-        dims = list(df.shape)
-        cells = json.loads(df.to_json(orient="values"))
-        cells.insert(0, list(df.columns))
-    except Exception as e:
-        raise ValueError(str(e)+"345")
-    return dict(dims=dims, firstRowIndex=0, cells=cells)
+    return df_to_table(df)
+
 
 
 def causx_get_variable_dict(project):

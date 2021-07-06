@@ -576,20 +576,8 @@ def causx_download_project():
 def causx_partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
-
     response = dict()
-    try:
-        response["partialCsv"] = get_causx_partial_csv(calc_params)
-    except Exception as e:
-        raise e
-        response["partialCsv"] = dict(dims=[1, 22],
-                                      firstRowIndex=0,
-                                      cells=[["dataset_id", "variable_id", "variable", "main_subject",
-                                        "main_subject_id", "value",
-                                        "time","time_precision", "country","country_id","country_cameo",
-                                        "admin1","admin2","admin3",
-                                        "region_coordinate","stated_in","stated_in_id","stated in",
-                                        "FactorClass","Relevance","Normalizer","Units","DocID"]])
+    response["partialCsv"] = get_causx_partial_csv(calc_params)
     return response, 200
 
 @app.route('/api/causx/download_zip_results', methods=['GET'])
