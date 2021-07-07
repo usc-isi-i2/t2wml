@@ -350,7 +350,7 @@ def causx_set_variable(project, id, updated_fields):
     variable_dict=causx_get_variable_dict(project)
     variable=variable_dict.get(id, None)
     if variable:
-        filepath=variable["filename"]
+        filepath=variable_dict['filepath']['value']
         variable.update(updated_fields)
         full_contents = kgtk_to_dict(filepath)
         full_contents[id]=variable
