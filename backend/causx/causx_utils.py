@@ -3,7 +3,7 @@ import json
 import os
 from io import StringIO
 import pandas as pd
-from t2wml.input_processing.annotation_parsing import Annotation, create_nodes
+from t2wml.input_processing.annotation_parsing import Annotation, create_nodes, create_nodes_from_selection
 from t2wml.mapping.datamart_edges import clean_id as _clean_id
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.api import kgtk_to_dict, t2wml_settings, KnowledgeGraph
@@ -13,10 +13,11 @@ from causx.cameos import cameos
 from causx.coords import coords
 from t2wml_web import get_entities
 
-CAUSX_CSV_COLS= ["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
-                    "time","time_precision", "country","country_id","country_cameo",
-                    "admin1","admin2","admin3",
-                    "region_coordinate","stated_in","stated_in_id","stated in",
+
+#These are the columns displayed to the user in the preview
+CAUSX_DISPLAY_COLS= ["dataset_id", "variable", "main_subject", "value",
+                    "time","time_precision",
+                    "country","country_id","country_cameo","region_coordinate",
                     "FactorClass","Relevance","Normalizer","Units","DocID"]
 
 def clean_id(input):
@@ -97,42 +98,33 @@ class AnnotationNodeGenerator:
         except:
             raise ValueError("89")
 
+        country_selections=[]
+
         if subject_region:
             if isinstance(subject_region, list):
                 subject_region=subject_region[0]
             #check all main subject
-            try:
-                dcw=DatamartCountryWikifier()
-            except:
-                raise ValueError("96")
-            try:
-                df, problem_cells = dcw.wikify_region(subject_region.selection, sheet, wikifier)
-            except:
-                raise ValueError("100")
+            country_selections.append(subject_region.selection)
+            dcw=DatamartCountryWikifier()
+            df, problem_cells = dcw.wikify_region(subject_region.selection, sheet, wikifier)
+
 
         #check anything whose type is wikibaseitem
         for block in self.annotation.annotations_array:
             type=block.type
             if type in ["wikibaseitem", "WikibaseItem", "country", "Country"]:
-                try:
-                    df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
-                except:
-                    raise ValueError("109")
-                try:
-                    df = pd.concat([df, df2], ignore_index=True)
-                except:
-                    raise ValueError("113")
+                country_selections.append(subject_region.selection)
+                df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
+                df = pd.concat([df, df2], ignore_index=True)
                 problem_cells += problem_cells2
-        if not df.empty:
-            try:
-               self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
-            except:
-                raise ValueError("119")
+                
+        #anything that didn't successfully get country-wikified, auto-generate nodes for:
+        for selection in country_selections:
+            create_nodes_from_selection(selection, self.project, sheet, wikifier)
 
-            try:
+        if not df.empty:
+                self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
                 wikifier.add_dataframe(df)
-            except:
-                raise ValueError("124")
 
     @error_with_func
     def preload(self, sheet, wikifier):
@@ -284,7 +276,6 @@ def causx_create_canonical_spreadsheet(statements, project):
     for entry in dict_values:
         dict_columns=set(entry.keys())
         extra_columns=dict_columns-set(column_titles)
-
         writer.writerow(entry)
 
     output = string_stream.getvalue()
@@ -296,7 +287,7 @@ def df_to_table(df):
     #df.replace(to_replace=[None], value="", inplace=True)
         #df = df[columns] # sort the columns
     try:
-        df = df.filter(CAUSX_CSV_COLS)
+        df = df.filter(CAUSX_DISPLAY_COLS)
         dims = list(df.shape)
         cells = json.loads(df.to_json(orient="values"))
         cells.insert(0, list(df.columns))
@@ -308,7 +299,7 @@ def df_to_table(df):
 
 @error_with_func
 def get_causx_partial_csv(calc_params, start=0, end=150):
-    columns = CAUSX_CSV_COLS
+    columns = CAUSX_DISPLAY_COLS
 
     try:
         cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
