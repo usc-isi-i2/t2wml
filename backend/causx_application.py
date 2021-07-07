@@ -462,6 +462,7 @@ def causx_upload_data():
     response["sheetName"] = sheet_name
     calc_params = CalcParams(project, file_path, sheet_name)
     response["table"] = get_table(calc_params)
+    project.title=Path(file_path).stem
     project.save()
     response.update(dict(project=get_project_dict(project), filepath=file_path))
     return response, code
