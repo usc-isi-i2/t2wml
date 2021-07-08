@@ -13,13 +13,13 @@ import { observer } from "mobx-react";
 export interface Tag {
     part1: string;
     part2: string;
-    index: number;
+    index: string;
 }
 
 interface TagProperties {
     tag: Tag;
-    updateField: (index:number, part: "part1"|"part2", value: string, errorMsg: string) => void;
-    minusClick: (index: number) => void;
+    updateField: (index:string, part: "part1"|"part2", value: string, errorMsg: string) => void;
+    minusClick: (index: string) => void;
 }
 
 interface TagState{
@@ -48,7 +48,7 @@ class TagRow extends Component<TagProperties, TagState> {
         return errorMsg
     }
 
-    updateField(index: number, part: "part1" | "part2", value: string){
+    updateField(index: string, part: "part1" | "part2", value: string){
         let part1=this.props.tag.part1;
         let part2=this.props.tag.part2;
 

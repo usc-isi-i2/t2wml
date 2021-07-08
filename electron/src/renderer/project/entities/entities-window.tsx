@@ -74,15 +74,16 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
         this.setState({propertyData, hasError, labelContent: ""})
     }
 
-    updateTags(tags: string[]) {
+    updateTags(tags?: {[key: string]: string}) {
+        if (!tags) { return; }
         const propertyData={...this.state.propertyData!};
         propertyData["tags"]=tags;
         this.setState({propertyData, labelContent: ""})
     }
 
-    updateTag (index:number, value:string, hasError:boolean){
+    updateTag (index:string, hasError:boolean,  value?:string){
         const propertyData={...this.state.propertyData!};
-        if (propertyData["tags"]==undefined || propertyData["tags"][index]==undefined){
+        if (!value || propertyData["tags"]==undefined || propertyData["tags"][index]==undefined){
             console.log("editing tag that doesn't exist");
             return;
         }
@@ -97,10 +98,15 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
         const file = this.state.entityFile;
         const property = this.state.selectedProperty!;
         const propertyVals = {...this.state.propertyData};
-        let tags = propertyVals["tags"];
+        const tags = propertyVals["tags"];
+        const newTags: {[key: string]: string} = {};
         if (tags) {
-            tags = tags.filter(tag => tag.length > 0);
-            propertyVals["tags"] = tags;
+            for (const key in tags) {
+                if (tags[key].length > 0){
+                    newTags[key] = tags[key]
+                }
+            }
+            propertyVals["tags"] = newTags;
         }
         this.props.handleSaveEntities(file, property, propertyVals);
 
@@ -158,13 +164,16 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                                     }
                                 </Row>
                                 <Row>
-                                    {!this.state.selectedProperty ? null :
+                                    {this.state.selectedProperty && this.state.propertyData?
                                         <Tags
                                             property={this.state.selectedProperty}
                                             propertyData={this.state.propertyData}
                                             updateTags={(tags) => this.updateTags(tags)}
-                                            updateTag={(index, value, hasError) => this.updateTag(index, value, hasError)}
-                                        />}
+                                            updateTag={(index, hasError, value) => this.updateTag(index, hasError, value)}
+                                        />
+                                        :
+                                        null
+                                        }
                                 </Row>
                             </Col>
                         </Form.Group>

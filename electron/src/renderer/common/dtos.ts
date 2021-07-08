@@ -68,7 +68,7 @@ export interface QNode{
 
     //for property
     data_type?: string;
-    tags?: string[];
+    tags?: {[key: string]: string};
 }
 
 

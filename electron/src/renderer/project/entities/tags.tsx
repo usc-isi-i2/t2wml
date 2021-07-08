@@ -8,14 +8,15 @@ import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 
 import { observer } from "mobx-react";
 import TagRow, { Tag } from './tag-row';
+import { QNode } from '@/renderer/common/dtos';
 
 
 
 interface TagsProperties {
     property: string;
-    propertyData: any;
-    updateTags: (tags: string[]) => void;
-    updateTag: (index:number, value:string, hasError:boolean) => void;
+    propertyData: QNode;
+    updateTags: (tags?:{[key: string]: string}) => void;
+    updateTag: (index:string, hasError:boolean, value?:string) => void;
 }
 
 
@@ -32,39 +33,44 @@ class Tags extends Component <TagsProperties, {}> {
     }
 
     onPlusClick() {
-        let tagArr = [] as string[];
-        if (this.props.propertyData["tags"]) {
-            tagArr = [...this.props.propertyData["tags"]];
+        let tagArr: {[key: string]: string} = {};
+        const { propertyData } = this.props;
+        if (propertyData["tags"]) {
+            tagArr = propertyData["tags"];
         }
-        tagArr.push("")
+        tagArr[''] = ""
         this.props.updateTags(tagArr)
     }
 
-    onMinusClick(index: number) {
-        const tagArr = [...this.props.propertyData["tags"]];
-        tagArr.splice(index, 1)
+    onMinusClick(index: string) {
+        const { propertyData } = this.props
+        const tagArr = propertyData["tags"];
+        if (tagArr) {
+            delete tagArr[index]
+        }
         this.listItemKey+=1
         this.props.updateTags(tagArr)
     }
 
-    onEditField(index: number, part: "part1" | "part2", value: string, errorMsg:string) {
+    onEditField(index: string, part: "part1" | "part2", value: string, errorMsg:string) {
+        const { propertyData } = this.props;
         let hasError=false;
         if (errorMsg){
             hasError=true;
         }
         if (errorMsg.includes("colon")){
             //we can't split it properly, we don't send updated value at all
-            this.props.updateTag(index, this.props.propertyData["tags"][index], hasError);
+            this.props.updateTag(index, hasError, propertyData["tags"] ? propertyData["tags"][index]: undefined);
             return;
         }
-        const tag = this.backTagtoTag(index, this.props.propertyData["tags"][index])
+        const tag = this.backTagtoTag(index,  propertyData["tags"] ?propertyData["tags"][index]: undefined)
         tag[part] = value
-        this.props.updateTag(index, tag.part1 + ":" + tag.part2, hasError);
+        this.props.updateTag(index, hasError, tag.part1 + ":" + tag.part2);
     }
 
-    backTagtoTag(index:number, backTag:string): Tag{
+    backTagtoTag(index:string, backTag?:string): Tag{
         let tag;
-        if (backTag == "") {
+        if (backTag == "" || backTag==undefined) {
             tag = { part1: "", part2: "", index: index }
         } else {
             const splitParts = backTag.split(":")
@@ -78,14 +84,15 @@ class Tags extends Component <TagsProperties, {}> {
 
 
     render() {
-        if (this.props.propertyData["data_type"] == undefined) {
+        const { propertyData } = this.props;
+        if (propertyData["data_type"] == undefined) {
             return null;
         }
         const renderedTags = [];
 
-        const backendTags = this.props.propertyData["tags"];
+        const backendTags = propertyData["tags"];
         if (backendTags) {
-            for (const [index, backTag] of backendTags.entries()) {
+            for (const [index, backTag] of Object.keys(backendTags)) {
 
                 const tag = this.backTagtoTag(index, backTag)
                 const key = `${index}_${this.listItemKey}`;
