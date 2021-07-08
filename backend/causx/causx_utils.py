@@ -11,7 +11,6 @@ from t2wml.wikification.utility_functions import dict_to_kgtk
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
-from t2wml_web import get_entities
 
 
 def clean_id(input):
@@ -229,13 +228,12 @@ def get_cells_and_columns(statements, project):
                     new_columns.add(q_label)
                 statement_dict[q_label]=qualifier["value"]
 
-        entities=get_entities(project)
+        entities=causx_get_variable_dict(project)
         if statement.get("property"):
             variable_entry=entities.get(statement["property"], None)
             if variable_entry:
-                tags=variable_entry.get("tags", [])
-                for tag in tags:
-                    label, value = tag.split(":", 1)
+                tags=variable_entry.get("tags", {})
+                for label, value in tags.items():
                     statement_dict[label]=value
                     if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
                         new_columns.add(label)
@@ -335,12 +333,27 @@ def causx_get_variable_dict(project):
         entity_dict.update(kgtk_to_dict(project.get_full_path(entity_file)))
     return entity_dict
 
+
+def get_causx_tags(old_tags=None, new_tags=None):
+    tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","Units":"","DocID":""}
+    if old_tags:
+        tags_dict.update(old_tags)
+    if new_tags:
+        tags_dict.update(new_tags)
+    return tags_dict
+
+
 def causx_set_variable(project, id, updated_fields):
     variable_dict=causx_get_variable_dict(project)
     variable=variable_dict.get(id, None)
+
     if variable:
+        old_tags = variable.get("tags")
+        new_tags = updated_fields.get("tags", {})
+        tags = get_causx_tags(old_tags, new_tags)
         filepath=variable_dict['filepath']['value']
         variable.update(updated_fields)
+        variable["tags"]=tags
         full_contents = kgtk_to_dict(filepath)
         full_contents[id]=variable
         dict_to_kgtk(full_contents, filepath)
