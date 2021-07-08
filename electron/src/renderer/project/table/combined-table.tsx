@@ -833,8 +833,9 @@ class CombinedTable extends Component<{}, TableState> {
 
 
         // get coordinates
-        const x: number = element.cellIndex;
-        const y: number = element.parentElement.rowIndex;
+        debugger
+        const x: number = element.dataset.cellIndex;
+        const y: number = element.dataset.parentElement.rowIndex;
 
         wikiStore.table.selectedCell = { ...new Cell(x - 1, y - 1), value: element.textContent };
 
@@ -896,11 +897,11 @@ class CombinedTable extends Component<{}, TableState> {
 
 
             // Update the last x coordinate of the selection
-            const newCellIndex = element.cellIndex;
+            const newCellIndex = element.dataset.cellIndex;
             selection.x2 = newCellIndex;
 
             // Update the last y coordinate of the selection
-            const newRowIndex = element.parentElement.rowIndex;
+            const newRowIndex = element.parentElement.dataset.rowIndex;
             selection.y2 = newRowIndex;
 
             wikiStore.table.selection = selection
@@ -1175,7 +1176,8 @@ class CombinedTable extends Component<{}, TableState> {
                                         onMouseDown={this.handleOnMouseDown.bind(this)}
                                         onMouseMove={this.handleOnMouseMove.bind(this)}
                                         onClickHeader={this.handleOnClickHeader.bind(this)}
-                                        setTableReference={this.setTableReference.bind(this)} />
+                                        setTableReference={this.setTableReference.bind(this)} 
+                                        />
                                 </div>
                                 :
                                 <div className="dropcontainer w-100 h-100">

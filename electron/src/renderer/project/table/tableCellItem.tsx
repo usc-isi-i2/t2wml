@@ -12,13 +12,14 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
 
   render() {
     const {cellData, rowIndex, columnIndex} = this.props;
+    // console.log('columnIndex', columnIndex, 'rowIndex', rowIndex, cellData[1])
     const data = cellData[1]
     const classNames = (classNames = '', conditionalClassNames: any = {}) => (
       `${classNames} `.concat(Object.keys(conditionalClassNames).filter(key => (
         conditionalClassNames[key]
       )).join(' '))
     )
-    console.log('data.content', data.content)
+    // console.log('data.content', data.content)
     return (
       <div className={classNames(data.classNames.join(' '), {
         'active': data.active,

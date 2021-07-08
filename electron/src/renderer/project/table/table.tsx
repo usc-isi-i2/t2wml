@@ -1,14 +1,27 @@
 import React from 'react';
-import * as utils from './table-utils';
-import { TableData } from '../../common/dtos';
+import 'react-virtualized/styles.css'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
+
+import * as utils from './table-utils';
+import { TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
+import './table-virtual.css'
 
 
 const MIN_NUM_ROWS = 100;
 const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUpperCase());
+
+const DEFAULT_CELL_STATE = {
+  active: false,
+  activeTop: false,
+  activeLeft: false,
+  activeRight: false,
+  activeBottom: false,
+  activeCorner: false,
+  highlight: false,
+}
 
 
 interface TableProperties {
@@ -90,72 +103,83 @@ class Table extends React.Component<TableProperties>{
       return this.renderEmptyTable();
     }
 
-    console.log("tableData", tableData)
+    // console.log("tableData", tableData)
 
     const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
     const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
 
     return (
-      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
+      <div 
+      className='table-wrapper'
+      // className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}
+      >
         <AutoSizer>
           {
-            (Size: { height: number, width: number }) => (
-              <VirtualizedTable
-                height={Size.height} width={Size.width}
-                headerHeight={20}
-                rowHeight={30}
-                rowCount={Object.keys(tableData).length}
-                rowGetter={({ index }) => {
-                  console.log(index, tableData[index])
-                  return Object.entries(tableData[index])
-                }
-                }>
+            (Size: { height: number, width: number }) => {
+              return (
+                <VirtualizedTable id="virtualized-table"
+                  height={Size.height} width={Size.width}
+                  // height={500} width={800}
+                  headerHeight={30}
+                  rowHeight={30}
+                  ref={setTableReference}
+                  // rowCount={rows.length}
+                  rowCount={Object.keys(tableData).length}
+                  rowGetter={({ index }) => {
+                    // console.log(index, tableData[index])
+                    return Object.entries(tableData[index])
+                  }
+                  }>
 
-                <Column
-                  label=''
-                  dataKey=''
-                  headerRenderer={() => <div>&nbsp;</div>}
-                  width={50}
-                  cellDataGetter={data => {
-                    console.log("Column index-data.rowData", data.rowData, data.dataKey, data.rowData[data.dataKey])
-                    return data.rowData[data.dataKey]
-                  }}
-                  cellRenderer={data => {
-                    console.log("cellRenderer", data)
-                    return <div>{data.rowIndex + 1} {data.cellData}</div>
-                  }}
-                />
-                
-                {Object.keys(tableData[0]).map((r, i) => (
-                  <Column key={`col-${i}`}
-                    label={utils.columnToLetter(i + 1)}
-                    dataKey={i.toString()}
-                    headerRenderer={data => {
-                      return (
-                        <div
-                          data-row-index={0}
-                          data-col-index={i + 1}
-                          onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
-                          {data.label}
-                        </div>
-                      )
-                    }}
-                    width={100}
-                    cellDataGetter={(data: TableCellDataGetterParams) => {
-                      // console.log("cellDataGetter", data, data.rowData[data.dataKey])
+                  <Column
+                    label=''
+                    dataKey=''
+                    headerRenderer={() => <div>&nbsp;</div>}
+                    width={50}
+                    cellDataGetter={data => {
+                      // console.log("Column index-data.rowData", data.rowData, 'data.dataKey', data.dataKey, 'data.rowData[data.dataKey]', data.rowData[data.dataKey])
                       return data.rowData[data.dataKey]
                     }}
-                    cellRenderer={(data: TableCellProps) => {
-                      console.log('cellRenderer', data)
-                      return (
-                        <TableCellItem cellData={data.cellData} rowIndex={data.rowIndex} columnIndex={data.columnData} />
-                      )
+                    cellRenderer={data => {
+                      // console.log("cellRenderer", data)
+                      return <div>{data.rowIndex + 1}</div>
                     }}
                   />
-                ))}
 
-              </VirtualizedTable>
-            )}
+                  {Object.keys(tableData[0]).map((r, i) => (
+                    <Column key={`col-${i}`}
+                      label={utils.columnToLetter(i + 1)}
+                      dataKey={i.toString()}
+                      headerRenderer={data => {
+                        return (
+                          <div
+                            data-row-index={0}
+                            data-col-index={i + 1}
+                            onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
+                            {data.label}
+                          </div>
+                        )
+                      }}
+                      width={100}
+                      cellDataGetter={(data: TableCellDataGetterParams) => {
+                        // console.log("cellDataGetter", data, data.rowData[data.dataKey])
+                        return data.rowData[data.dataKey]
+                      }}
+                      cellRenderer={(data: TableCellProps) => {
+                        // console.log('cellRenderer', data)
+                        return (
+                          // <div data-row-index={data.rowIndex + 1} data-col-index={data.columnIndex}>
+                          //   {data.cellData[1].content}
+                          // </div>
+                          <TableCellItem cellData={data.cellData} rowIndex={data.rowIndex} columnIndex={data.columnIndex} />
+                        )
+                      }}
+                    />
+                  ))}
+
+                </VirtualizedTable>
+              )
+            }}
         </AutoSizer>
 
         {
