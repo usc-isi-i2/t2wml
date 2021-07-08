@@ -641,6 +641,28 @@ def causx_edit_an_entity(id):
 
 
 
+@app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
+def download_results(filetype, filename):
+    """
+    return as attachment
+    """
+    mimetype_dict = {
+        "tsv": "text/tab-separated-values",
+        "csv": "text/csv",
+        "json": "application/json"
+    }
+    attachment_filename = filename
+    project = get_project()
+    calc_params = get_calc_params(project)
+    annotation_path = calc_params.annotation_path
+    ang = AnnotationNodeGenerator.load_from_path(annotation_path, project)
+    ang.preload(calc_params.sheet, calc_params.wikifier)
+    kg = get_kg(calc_params)
+    data = kg.get_output(filetype, calc_params.project)
+    stream = BytesIO(data.encode('utf-8'))
+    stream.seek(0)
+    return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
+
 ###################end of section##############################
 
 
