@@ -14,12 +14,6 @@ from causx.coords import coords
 from t2wml_web import get_entities
 
 
-#These are the columns displayed to the user in the preview
-CAUSX_DISPLAY_COLS= ["dataset_id", "variable", "main_subject", "value",
-                    "time","time_precision",
-                    "country","country_id","country_cameo","region_coordinate",
-                    "FactorClass","Relevance","Normalizer","Units","DocID"]
-
 def clean_id(input):
     if not input:
         return ""
@@ -117,10 +111,11 @@ class AnnotationNodeGenerator:
                 df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
                 df = pd.concat([df, df2], ignore_index=True)
                 problem_cells += problem_cells2
-                
+
         #anything that didn't successfully get country-wikified, auto-generate nodes for:
         for selection in country_selections:
-            create_nodes_from_selection(selection, self.project, sheet, wikifier)
+            tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+            create_nodes_from_selection(tuple_selection, self.project, sheet, wikifier)
 
         if not df.empty:
                 self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
@@ -150,6 +145,11 @@ class AnnotationNodeGenerator:
         an = Annotation(annotation_nodes_array)
         return cls(an, project)
 
+@error_with_func
+def preload(calc_params):
+    ang=AnnotationNodeGenerator.load_from_path(calc_params.annotation_path, calc_params.project)
+    ang.preload(calc_params.sheet, calc_params.wikifier)
+    calc_params.project.save()
 
 
 @error_with_func
@@ -169,10 +169,10 @@ def try_get_label(input):
 @error_with_func
 def get_cells_and_columns(statements, project):
     column_titles=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
-                    "time","time_precision", "country","country_id","country_cameo",
-                    "admin1","admin2","admin3",
-                    "region_coordinate","stated_in","stated_in_id","stated in",
-                    "FactorClass","Relevance","Normalizer","Units","DocID"]
+                    "time","time_precision",
+                    "country","country_id","country_cameo", "region_coordinate",
+                    "FactorClass","Relevance","Normalizer","Units","DocID",
+                    "admin1","admin2","admin3","stated_in","stated_in_id"]
     dict_values=[]
     new_columns=set()
     for cell, statement in statements.items():
@@ -211,48 +211,34 @@ def get_cells_and_columns(statements, project):
             raise ValueError(str(e)+"211")
 
 
-        statement_dict["stated in"]=""
-
         for qualifier in statement.get("qualifier", []):
             if not qualifier.get("property"):
                 continue
             if qualifier["property"]=="P585": #time, time_precision
-                try:
-                    statement_dict["time"]=qualifier["value"]
-                    statement_dict["time_precision"]=qualifier.get("precision", "")
-                except Exception as e:
-                    raise ValueError(str(e)+"209")
-            elif qualifier["property"]=="P248": #stated_in, stated_in_id, stated
-                try:
-                    statement_dict["stated in"]=try_get_label(qualifier["value"])
-                except Exception as e:
-                    raise ValueError(str(e)+"215")
+                statement_dict["time"]=qualifier["value"]
+                statement_dict["time_precision"]=qualifier.get("precision", "")
+            elif qualifier["property"]=="P248": #stated_in, stated_in_id
+                stated_in_val=try_get_label(qualifier["value"])
+                statement_dict["stated_in"]=stated_in_val
+                if stated_in_val!=qualifier["value"]:
+                    statement_dict["stated_in_id"]=qualifier["value"]
 
             else:
-                try:
-                    q_label=try_get_label(qualifier["property"])
-                    if q_label not in new_columns:
-                        new_columns.add(q_label)
-                    statement_dict[q_label]=qualifier["value"]
-                except Exception as e:
-                    raise ValueError(str(e)+"221"+str(qualifier))
+                q_label=try_get_label(qualifier["property"])
+                if q_label not in new_columns:
+                    new_columns.add(q_label)
+                statement_dict[q_label]=qualifier["value"]
 
-        try:
-            entities=get_entities(project)
-        except Exception as e:
-            raise ValueError(str(e)+"246")
+        entities=get_entities(project)
         if statement.get("property"):
-            try:
-                variable_entry=entities.get(statement["property"], None)
-                if variable_entry:
-                    tags=variable_entry.get("tags", [])
-                    for tag in tags:
-                        label, value = tag.split(":", 1)
-                        statement_dict[label]=value
-                        if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
-                            new_columns.add(label)
-            except Exception as e:
-                raise ValueError(str(e)+"229"+str(statement["property"])+str(variable_entry))
+            variable_entry=entities.get(statement["property"], None)
+            if variable_entry:
+                tags=variable_entry.get("tags", [])
+                for tag in tags:
+                    label, value = tag.split(":", 1)
+                    statement_dict[label]=value
+                    if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
+                        new_columns.add(label)
         dict_values.append(statement_dict)
 
     new_columns=list(new_columns)
@@ -283,29 +269,32 @@ def causx_create_canonical_spreadsheet(statements, project):
     return output
 
 @error_with_func
-def df_to_table(df):
+def df_to_table(df, columns):
     #df.replace(to_replace=[None], value="", inplace=True)
-        #df = df[columns] # sort the columns
-    try:
-        df = df.filter(CAUSX_DISPLAY_COLS)
-        dims = list(df.shape)
-        cells = json.loads(df.to_json(orient="values"))
-        cells.insert(0, list(df.columns))
-    except Exception as e:
-        raise ValueError(str(e)+"345")
+    #df = df[columns] # sort the columns
+    df = df.filter(columns)
+    df.drop(['variable_id', 'main_subject_id', 'stated_in', 'stated_in_id', 'admin1', 'admin2', 'admin3'], axis=1, errors='ignore')
+    nan_value = float("NaN")
+    df.replace("", nan_value, inplace=True)
+    df.dropna(how='all', axis=1, inplace=True)
+    dims = list(df.shape)
+    cells = json.loads(df.to_json(orient="values"))
+    cells.insert(0, list(df.columns))
     return dict(dims=dims, firstRowIndex=0, cells=cells)
-
 
 
 @error_with_func
 def get_causx_partial_csv(calc_params, start=0, end=150):
-    columns = CAUSX_DISPLAY_COLS
+    columns = ["dataset_id", "variable", "main_subject", "value",
+                    "time","time_precision",
+                    "country","country_id","country_cameo","region_coordinate",
+                    "FactorClass","Relevance","Normalizer","Units","DocID"]
 
     try:
         cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
     except FileNotFoundError as e:
         df=pd.DataFrame({"dataset_id":[calc_params.project.dataset_id]}, columns=columns)
-        return df_to_table(df)
+        return df_to_table(df, columns)
 
 
     try:
@@ -314,7 +303,7 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
         raise ValueError(str(e)+"300")
 
     if not kg.statements: #nonetheless add at least some of the annotation
-        df=pd.DataFrame({"dataset_id":[calc_params.project.dataset_id]}, columns=columns)
+        df=pd.DataFrame([], columns=columns)
         role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
         for block in cell_mapper.annotation.annotations_array:
             if isinstance(block, list):
@@ -336,7 +325,7 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
             df = pd.DataFrame.from_dict(dict_values)
         except Exception as e:
             raise ValueError(str(e)+"341")
-    return df_to_table(df)
+    return df_to_table(df, columns)
 
 
 

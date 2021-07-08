@@ -21,7 +21,7 @@ from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                        get_project_instance, get_qnodes_layer,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet, preload
 from causx.wikification import wikify_countries
 from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
@@ -160,6 +160,10 @@ def get_mapping():
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
+    try:
+        preload(calc_params)
+    except Exception as e:
+        pass
     get_layers(response, calc_params)
     return response, 200
 
@@ -522,9 +526,7 @@ def causx_upload_annotation():
             zf.extract(filemap["annotation"], calc_params.annotation_path)
 
     annotation_file=project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
-    ang=AnnotationNodeGenerator.load_from_path(annotation_file, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
-    project.save()
+    preload(calc_params)
     response, code = get_mapping()
     response["project"]=get_project_dict(project)
     return response, code
@@ -590,8 +592,7 @@ def causx_save_zip_results():
     calc_params = get_calc_params(project)
 
     annotation_path=calc_params.annotation_path
-    ang=AnnotationNodeGenerator.load_from_path(annotation_path, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
+    preload(calc_params)
 
     kg = get_kg(calc_params)
 
