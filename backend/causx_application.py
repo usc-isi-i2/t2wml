@@ -621,6 +621,7 @@ def causx_get_an_entity(id):
     entities_dict=causx_get_variable_dict(project)
     entity=entities_dict.get(id, None)
     if entity:
+        entity['id'] = id
         return dict(entity=entity), 200
     else:
         return {}, 404
