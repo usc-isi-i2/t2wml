@@ -21,7 +21,7 @@ from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                        get_project_instance, get_qnodes_layer,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet, preload
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload
 from causx.wikification import wikify_countries
 from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
@@ -620,6 +620,7 @@ def causx_get_an_entity(id):
     project = get_project()
     entities_dict=causx_get_variable_dict(project)
     entity=entities_dict.get(id, None)
+    entity["tags"]=get_causx_tags(entity.get("tags", {}))
     if entity:
         entity['id'] = id
         return dict(entity=entity), 200
@@ -639,6 +640,28 @@ def causx_edit_an_entity(id):
     return response, 200
 
 
+
+@app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
+def download_results(filetype, filename):
+    """
+    return as attachment
+    """
+    mimetype_dict = {
+        "tsv": "text/tab-separated-values",
+        "csv": "text/csv",
+        "json": "application/json"
+    }
+    attachment_filename = filename
+    project = get_project()
+    calc_params = get_calc_params(project)
+    annotation_path = calc_params.annotation_path
+    ang = AnnotationNodeGenerator.load_from_path(annotation_path, project)
+    ang.preload(calc_params.sheet, calc_params.wikifier)
+    kg = get_kg(calc_params)
+    data = kg.get_output(filetype, calc_params.project)
+    stream = BytesIO(data.encode('utf-8'))
+    stream.seek(0)
+    return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 ###################end of section##############################
 
