@@ -247,7 +247,6 @@ def guess_annotation_blocks():
 
 
 @app.route('/api/causx/project/settings', methods=['PUT', 'GET']) #V
-@app.route('/api/project/settings', methods=['PUT', 'GET'])
 @json_response
 def update_settings():
     """
@@ -620,8 +619,8 @@ def causx_get_an_entity(id):
     project = get_project()
     entities_dict=causx_get_variable_dict(project)
     entity=entities_dict.get(id, None)
-    entity["tags"]=get_causx_tags(entity.get("tags", {}))
     if entity:
+        entity["tags"]=get_causx_tags(entity.get("tags", {}))
         entity['id'] = id
         return dict(entity=entity), 200
     else:
