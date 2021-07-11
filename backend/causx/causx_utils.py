@@ -3,7 +3,7 @@ import json
 import os
 from io import StringIO
 import pandas as pd
-from t2wml.input_processing.annotation_parsing import Annotation, create_nodes
+from t2wml.input_processing.annotation_parsing import Annotation, create_nodes, create_nodes_from_selection
 from t2wml.mapping.datamart_edges import clean_id as _clean_id
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.api import kgtk_to_dict, t2wml_settings, KnowledgeGraph
@@ -11,7 +11,7 @@ from t2wml.wikification.utility_functions import dict_to_kgtk
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
-from t2wml_web import get_entities
+
 
 def clean_id(input):
     if not input:
@@ -91,42 +91,34 @@ class AnnotationNodeGenerator:
         except:
             raise ValueError("89")
 
+        country_selections=[]
+
         if subject_region:
             if isinstance(subject_region, list):
                 subject_region=subject_region[0]
             #check all main subject
-            try:
-                dcw=DatamartCountryWikifier()
-            except:
-                raise ValueError("96")
-            try:
-                df, problem_cells = dcw.wikify_region(subject_region.selection, sheet, wikifier)
-            except:
-                raise ValueError("100")
+            country_selections.append(subject_region.selection)
+            dcw=DatamartCountryWikifier()
+            df, problem_cells = dcw.wikify_region(subject_region.selection, sheet, wikifier)
+
 
         #check anything whose type is wikibaseitem
         for block in self.annotation.annotations_array:
             type=block.type
             if type in ["wikibaseitem", "WikibaseItem", "country", "Country"]:
-                try:
-                    df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
-                except:
-                    raise ValueError("109")
-                try:
-                    df = pd.concat([df, df2], ignore_index=True)
-                except:
-                    raise ValueError("113")
+                country_selections.append(subject_region.selection)
+                df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
+                df = pd.concat([df, df2], ignore_index=True)
                 problem_cells += problem_cells2
-        if not df.empty:
-            try:
-               self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
-            except:
-                raise ValueError("119")
 
-            try:
+        #anything that didn't successfully get country-wikified, auto-generate nodes for:
+        for selection in country_selections:
+            tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+            create_nodes_from_selection(tuple_selection, self.project, sheet, wikifier)
+
+        if not df.empty:
+                self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
                 wikifier.add_dataframe(df)
-            except:
-                raise ValueError("124")
 
     @error_with_func
     def preload(self, sheet, wikifier):
@@ -152,6 +144,11 @@ class AnnotationNodeGenerator:
         an = Annotation(annotation_nodes_array)
         return cls(an, project)
 
+@error_with_func
+def preload(calc_params):
+    ang=AnnotationNodeGenerator.load_from_path(calc_params.annotation_path, calc_params.project)
+    ang.preload(calc_params.sheet, calc_params.wikifier)
+    calc_params.project.save()
 
 
 @error_with_func
@@ -171,10 +168,10 @@ def try_get_label(input):
 @error_with_func
 def get_cells_and_columns(statements, project):
     column_titles=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
-                    "time","time_precision", "country","country_id","country_cameo",
-                    "admin1","admin2","admin3",
-                    "region_coordinate","stated_in","stated_in_id","stated in",
-                    "FactorClass","Relevance","Normalizer","Units","DocID"]
+                    "time","time_precision",
+                    "country","country_id","country_cameo", "region_coordinate",
+                    "FactorClass","Relevance","Normalizer","Units","DocID",
+                    "admin1","admin2","admin3","stated_in","stated_in_id"]
     dict_values=[]
     new_columns=set()
     for cell, statement in statements.items():
@@ -213,48 +210,33 @@ def get_cells_and_columns(statements, project):
             raise ValueError(str(e)+"211")
 
 
-        statement_dict["stated in"]=""
-
         for qualifier in statement.get("qualifier", []):
             if not qualifier.get("property"):
                 continue
             if qualifier["property"]=="P585": #time, time_precision
-                try:
-                    statement_dict["time"]=qualifier["value"]
-                    statement_dict["time_precision"]=qualifier.get("precision", "")
-                except Exception as e:
-                    raise ValueError(str(e)+"209")
-            elif qualifier["property"]=="P248": #stated_in, stated_in_id, stated
-                try:
-                    statement_dict["stated in"]=try_get_label(qualifier["value"])
-                except Exception as e:
-                    raise ValueError(str(e)+"215")
+                statement_dict["time"]=qualifier["value"]
+                statement_dict["time_precision"]=qualifier.get("precision", "")
+            elif qualifier["property"]=="P248": #stated_in, stated_in_id
+                stated_in_val=try_get_label(qualifier["value"])
+                statement_dict["stated_in"]=stated_in_val
+                if stated_in_val!=qualifier["value"]:
+                    statement_dict["stated_in_id"]=qualifier["value"]
 
             else:
-                try:
-                    q_label=try_get_label(qualifier["property"])
-                    if q_label not in new_columns:
-                        new_columns.add(q_label)
-                    statement_dict[q_label]=qualifier["value"]
-                except Exception as e:
-                    raise ValueError(str(e)+"221"+str(qualifier))
+                q_label=try_get_label(qualifier["property"])
+                if q_label not in new_columns:
+                    new_columns.add(q_label)
+                statement_dict[q_label]=qualifier["value"]
 
-        try:
-            entities=get_entities(project)
-        except Exception as e:
-            raise ValueError(str(e)+"246")
+        entities=causx_get_variable_dict(project)
         if statement.get("property"):
-            try:
-                variable_entry=entities.get(statement["property"], None)
-                if variable_entry:
-                    tags=variable_entry.get("tags", [])
-                    for tag in tags:
-                        label, value = tag.split(":", 1)
-                        statement_dict[label]=value
-                        if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
-                            new_columns.add(label)
-            except Exception as e:
-                raise ValueError(str(e)+"229"+str(statement["property"])+str(variable_entry))
+            variable_entry=entities.get(statement["property"], None)
+            if variable_entry:
+                tags=variable_entry.get("tags", {})
+                for label, value in tags.items():
+                    statement_dict[label]=value
+                    if label not in ["FactorClass","Relevance","Normalizer","Units","DocID"]:
+                        new_columns.add(label)
         dict_values.append(statement_dict)
 
     new_columns=list(new_columns)
@@ -278,37 +260,49 @@ def causx_create_canonical_spreadsheet(statements, project):
     for entry in dict_values:
         dict_columns=set(entry.keys())
         extra_columns=dict_columns-set(column_titles)
-
         writer.writerow(entry)
 
     output = string_stream.getvalue()
     string_stream.close()
     return output
 
+@error_with_func
+def df_to_table(df, columns):
+    #df.replace(to_replace=[None], value="", inplace=True)
+    #df = df[columns] # sort the columns
+    df = df.filter(columns)
+    df.drop(['variable_id', 'main_subject_id', 'stated_in', 'stated_in_id', 'admin1', 'admin2', 'admin3'], axis=1, errors='ignore')
+    nan_value = float("NaN")
+    df.replace("", nan_value, inplace=True)
+    df.dropna(how='all', axis=1, inplace=True)
+    dims = list(df.shape)
+    cells = json.loads(df.to_json(orient="values"))
+    cells.insert(0, list(df.columns))
+    return dict(dims=dims, firstRowIndex=0, cells=cells)
+
 
 @error_with_func
 def get_causx_partial_csv(calc_params, start=0, end=150):
+    columns = ["dataset_id", "variable", "main_subject", "value",
+                    "time","time_precision",
+                    "country","country_id","country_cameo","region_coordinate",
+                    "FactorClass","Relevance","Normalizer","Units","DocID"]
+
     try:
         cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    except Exception as e:
-        raise ValueError(str(e)+"297")
+    except FileNotFoundError as e:
+        df=pd.DataFrame({"dataset_id":[calc_params.project.dataset_id]}, columns=columns)
+        return df_to_table(df, columns)
+
 
     try:
         kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, start, end)
     except Exception as e:
         raise ValueError(str(e)+"300")
-    columns=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
-                    "time","time_precision", "country","country_id","country_cameo",
-                    "admin1","admin2","admin3",
-                    "region_coordinate","stated_in","stated_in_id","stated in",
-                    "FactorClass","Relevance","Normalizer","Units","DocID"]
 
     if not kg.statements: #nonetheless add at least some of the annotation
-        try:
-            df=pd.DataFrame([], columns=columns)
-            role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
-        except Exception as e:
-            raise ValueError(str(e)+"300")
+        df=pd.DataFrame([], columns=columns)
+        role_map={"mainSubject":"main_subject", "dependentVar": "value", "property":"variable"}
         for block in cell_mapper.annotation.annotations_array:
             if isinstance(block, list):
                 block=block[0]
@@ -322,30 +316,15 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
                     df[role_map[block.role]]=cells
                 except Exception as e:
                     raise ValueError(str(e)+"320"+block.role)
-        try:
-            df.dataset_id=calc_params.project.dataset_id
-        except Exception as e:
-            raise ValueError(str(e)+"328")
+        df.dataset_id=calc_params.project.dataset_id
     else:
         try:
             columns, dict_values=get_cells_and_columns(kg.statements, calc_params.project)
-        except Exception as e:
-            raise ValueError(str(e)+"336")
-
-        try:
             df = pd.DataFrame.from_dict(dict_values)
         except Exception as e:
             raise ValueError(str(e)+"341")
-        #df.replace(to_replace=[None], value="", inplace=True)
-        #df = df[columns] # sort the columns
-    try:
-        df = df.filter(columns)
-        dims = list(df.shape)
-        cells = json.loads(df.to_json(orient="values"))
-        cells.insert(0, list(df.columns))
-    except Exception as e:
-        raise ValueError(str(e)+"345")
-    return dict(dims=dims, firstRowIndex=0, cells=cells)
+    return df_to_table(df, columns)
+
 
 
 def causx_get_variable_dict(project):
@@ -354,12 +333,27 @@ def causx_get_variable_dict(project):
         entity_dict.update(kgtk_to_dict(project.get_full_path(entity_file)))
     return entity_dict
 
+
+def get_causx_tags(old_tags=None, new_tags=None):
+    tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","Units":"","DocID":""}
+    if old_tags:
+        tags_dict.update(old_tags)
+    if new_tags:
+        tags_dict.update(new_tags)
+    return tags_dict
+
+
 def causx_set_variable(project, id, updated_fields):
     variable_dict=causx_get_variable_dict(project)
     variable=variable_dict.get(id, None)
+
     if variable:
-        filepath=variable["filename"]
+        old_tags = variable.get("tags")
+        new_tags = updated_fields.get("tags", {})
+        tags = get_causx_tags(old_tags, new_tags)
+        filepath=variable_dict['filepath']['value']
         variable.update(updated_fields)
+        variable["tags"]=tags
         full_contents = kgtk_to_dict(filepath)
         full_contents[id]=variable
         dict_to_kgtk(full_contents, filepath)

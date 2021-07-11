@@ -21,7 +21,7 @@ from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                        get_project_instance, get_qnodes_layer,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload
 from causx.wikification import wikify_countries
 from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
@@ -58,18 +58,12 @@ def decode_auth_token(auth_token):
 
 
 def get_project_folder():
-    try:
-        request_folder = os.path.basename(request.args['project_folder'])
-        auth_header=request.headers.get("Authentication")
-        if auth_header:
-            request_folder=decode_auth_token(auth_header)
-        base_dir=app.config["PROJECTS_DIR"]
-        project_folder= Path(base_dir) / request_folder
-        os.makedirs(project_folder, exist_ok=True)
-        return project_folder
-    except KeyError:
-        raise web_exceptions.InvalidRequestException(
-            "project folder parameter not specified")
+    auth_header=request.headers.get("Authentication")
+    request_folder=decode_auth_token(auth_header)
+    base_dir=app.config["PROJECTS_DIR"]
+    project_folder= Path(base_dir) / request_folder
+    os.makedirs(project_folder, exist_ok=True)
+    return project_folder
 
 
 def get_project():
@@ -102,6 +96,7 @@ def json_response(func):
             data, code = func(*args, **kwargs)
         except WebException as e:
             data = {"error": e.error_dict}
+            code = e.code
         except Exception as e:
             #print(e)
             if "Permission denied" in str(e):
@@ -165,6 +160,10 @@ def get_mapping():
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
+    try:
+        preload(calc_params)
+    except Exception as e:
+        pass
     get_layers(response, calc_params)
     return response, 200
 
@@ -387,7 +386,7 @@ def create_qnode():
     dict_to_kgtk(custom_nodes, filepath)
     project.add_entity_file(filepath)
     project.save()
-    t2wml_settings.wikidata_provider.save_entry(**entity_dict)
+    t2wml_settings.wikidata_provider.save_entry(node_id, **entity_dict)
 
     response = dict(entity=entity_dict, project=get_project_dict(project))
 
@@ -467,6 +466,7 @@ def causx_upload_data():
     response["sheetName"] = sheet_name
     calc_params = CalcParams(project, file_path, sheet_name)
     response["table"] = get_table(calc_params)
+    project.title=Path(file_path).stem
     project.save()
     response.update(dict(project=get_project_dict(project), filepath=file_path))
     return response, code
@@ -526,9 +526,7 @@ def causx_upload_annotation():
             zf.extract(filemap["annotation"], calc_params.annotation_path)
 
     annotation_file=project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
-    ang=AnnotationNodeGenerator.load_from_path(annotation_file, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
-    project.save()
+    preload(calc_params)
     response, code = get_mapping()
     response["project"]=get_project_dict(project)
     return response, code
@@ -576,20 +574,8 @@ def causx_download_project():
 def causx_partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
-
     response = dict()
-    try:
-        response["partialCsv"] = get_causx_partial_csv(calc_params)
-    except Exception as e:
-        raise e
-        response["partialCsv"] = dict(dims=[1, 22],
-                                      firstRowIndex=0,
-                                      cells=[["dataset_id", "variable_id", "variable", "main_subject",
-                                        "main_subject_id", "value",
-                                        "time","time_precision", "country","country_id","country_cameo",
-                                        "admin1","admin2","admin3",
-                                        "region_coordinate","stated_in","stated_in_id","stated in",
-                                        "FactorClass","Relevance","Normalizer","Units","DocID"]])
+    response["partialCsv"] = get_causx_partial_csv(calc_params)
     return response, 200
 
 @app.route('/api/causx/download_zip_results', methods=['GET'])
@@ -606,8 +592,7 @@ def causx_save_zip_results():
     calc_params = get_calc_params(project)
 
     annotation_path=calc_params.annotation_path
-    ang=AnnotationNodeGenerator.load_from_path(annotation_path, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
+    preload(calc_params)
 
     kg = get_kg(calc_params)
 
@@ -635,7 +620,9 @@ def causx_get_an_entity(id):
     project = get_project()
     entities_dict=causx_get_variable_dict(project)
     entity=entities_dict.get(id, None)
+    entity["tags"]=get_causx_tags(entity.get("tags", {}))
     if entity:
+        entity['id'] = id
         return dict(entity=entity), 200
     else:
         return {}, 404

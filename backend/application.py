@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 from flask import request
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
+from causx.wikification import wikify_countries #temporary?
 import web_exceptions
 from app_config import app
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
@@ -836,6 +837,49 @@ def add_mapping_file():
 
     project.save()
     response = dict(project=get_project_dict(project), filename=filename)
+    return response, 200
+
+
+@app.route('/api/auto_wikinodes', methods=['POST'])
+@json_response
+def create_auto_nodes():
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+    is_property = request.get_json()['is_property']
+    data_type = request.get_json().get("data_type", None)
+    autocreate_items(calc_params, selection, is_property, data_type)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+@app.route('/api/web/wikify_region', methods=['POST']) #V
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["selection"]
+    overwrite_existing = request.get_json().get("overwrite", False)
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
     return response, 200
 
 
