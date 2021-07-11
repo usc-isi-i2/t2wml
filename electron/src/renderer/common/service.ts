@@ -293,6 +293,7 @@ class RequestService {
 
   public async saveEntities(data: any) {
     const response = await backendPut(`/project/entities?${this.getDataFileParams()}`, data) as ResponseEntitiesPropertiesDTO;
+    console.log("saveEntities", response)
     wikiStore.entitiesData.entities = response;
   }
 
