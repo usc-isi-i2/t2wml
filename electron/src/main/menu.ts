@@ -190,7 +190,12 @@ export default class MainMenuManager {
             enabled,
         },
         {
-            label: 'Entities',
+            label: 'Upload entities file',
+            click: () => this.onUploadEntitiesClick(),
+            enabled,
+        },
+        {
+            label: 'View Entities',
             click: () => this.onProjectEntitiesClick(),
             enabled,
         },
@@ -249,6 +254,10 @@ export default class MainMenuManager {
 
     private onUploadWikifierClick() {
         rendererNotifier.uploadWikifier();
+    }
+
+    private onUploadEntitiesClick() {
+        rendererNotifier.uploadEntities();
     }
 
     private onProjectEntitiesClick() {

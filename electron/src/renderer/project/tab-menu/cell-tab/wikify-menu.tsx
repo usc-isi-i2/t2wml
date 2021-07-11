@@ -217,7 +217,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
 
     try {
       await this.requestService.call(this, () => (
-        this.requestService.createQnode(entityFields, selection)
+        this.requestService.createQnodes(entityFields, selection, selectedCell.value,)
       ));
     } catch (error) {
       error.errorDescription = `Wasn't able to create the qnode!\n` + error.errorDescription;

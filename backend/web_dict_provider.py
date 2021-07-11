@@ -40,13 +40,13 @@ class WebDictionaryProvider(FallbackSparql):
         except KeyError:
             raise ValueError(wikidata_property+" not found")
 
-    def save_entry(self, id, data_type=None, *args, **kwargs):
+    def save_entry(self, node_id, data_type=None, *args, **kwargs):
         added=True
-        if id in self.cache:
+        if node_id in self.cache:
             added=False
-        self.cache[id]=dict(kwargs)
+        self.cache[node_id]=dict(kwargs)
         if data_type:
-            self.cache[id]["data_type"]=data_type
+            self.cache[node_id]["data_type"]=data_type
         return added
 
     def __enter__(self):

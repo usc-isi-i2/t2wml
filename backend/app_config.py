@@ -31,6 +31,11 @@ class NumpyEncoder(json.JSONEncoder):
 app.json_encoder=NumpyEncoder
 CORS(app, supports_credentials=True)
 
+projects_dir= "/proj"
+if os.name == 'nt':
+    projects_dir=os.path.join(BASEDIR, "media")
+
+
 
 class AppConfig:
     USE_CACHE = True
@@ -39,6 +44,8 @@ class AppConfig:
                               'sqlite:///' + os.path.join(DATADIR, 'entitiesWithID.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     STATIC_FOLDER = os.path.join(BASEDIR, 'static')
+    PROJECTS_DIR=projects_dir
+    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious')
 
 
 app.config.from_object(AppConfig)

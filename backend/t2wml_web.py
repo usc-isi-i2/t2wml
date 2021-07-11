@@ -7,8 +7,7 @@ import zipfile
 from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
 from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
-                        kgtk_to_dict, dict_to_kgtk, AnnotationNodeGenerator, Annotation, block_finder,
-                        Project)
+                        kgtk_to_dict, dict_to_kgtk, Annotation, block_finder, Project)
 from t2wml.mapping.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.spreadsheets.conversions import cell_str_to_tuple
@@ -65,8 +64,6 @@ def get_kg(calc_params):
             return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
-        #ang=AnnotationNodeGenerator(cell_mapper.annotation, calc_params.project)
-        #ang.preload(calc_params.sheet, wikifier)
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
     with t2wml_settings.wikidata_provider as p:
@@ -300,7 +297,7 @@ def get_annotations(calc_params):
     except Exception as e:
         raise e
     try:
-        yamlContent=dga.generate_yaml()[0]
+        yamlContent=dga.generate_yaml(sheet=calc_params.sheet)[0]
     except Exception as e:
         yamlContent="#Error when generating yaml: "+str(e)
     annotation_block_array = dga.annotation_block_array
@@ -399,8 +396,11 @@ def create_zip(project, filetype, filestream):
                                 zip_filename = filename + "_" + sheet_name + "_a_" + annotation_file
                                 zip_filename= re.sub(r'[^A-Za-z0-9\s]+', '_', zip_filename)
                                 zip_filename = zip_filename + "." + filetype
-                                output = kg.get_output(filetype, calc_params.project)
-                                zf.writestr(zip_filename, output)
+                                try:
+                                    output = kg.get_output(filetype, calc_params.project)
+                                    zf.writestr(zip_filename, output)
+                                except Exception as e:
+                                    internalErrors.append(f"failed to generate result file for {filename} {sheet_name} {annotation_file}: {str(e)}")
                             if kg.errors:
                                 internalErrors.append(kg.errors)
 

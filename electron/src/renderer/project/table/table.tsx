@@ -209,10 +209,11 @@ class Table extends React.Component<TableProperties>{
                     if (overlay) {
                       return (
                         <OverlayTrigger
+                        key={`overlay-trigger cell-${j} row-${i}`}
                           placement="right"
                           delay={{ show: 50, hide: 200 }}
                           overlay={(props) => (
-                            <Tooltip id="button-tooltip" {...props} >
+                            <Tooltip id="button-tooltip" {...props} key={`tooltip cell-${j} row-${i}`}>
                               {overlay}
                             </Tooltip>
                           )}

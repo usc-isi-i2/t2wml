@@ -324,8 +324,17 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async createQnode(entityFields: EntityFields, selection?: number[][]) {
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields, selection: selection }) as ResponseWithQNodeLayerAndQnode;
+  public async createQnode(entityFields: EntityFields) {
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields}) as ResponseWithQNodeLayerAndQnode;
+    if (response.layers.qnode) {
+      this.updateProjectandQnode(response);
+    }
+    return response;
+  }
+
+
+  public async createQnodes(entityFields: EntityFields, selection?: number[][], value?:string) {
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields, selection: selection, value: value}) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);
     }

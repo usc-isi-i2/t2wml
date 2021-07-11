@@ -48,6 +48,14 @@ class RendererNotifier {
         this.mainWindow.webContents.send('upload-wikifier');
     }
 
+    public uploadEntities() {
+        if(!this.mainWindow) {
+            console.warn("mainWindow not set on RendererNotifier");
+            return;
+        }
+        this.mainWindow.webContents.send('upload-entities');
+    }
+
     public projectSettings() {
         if(!this.mainWindow) {
             console.warn("mainWindow not set on RendererNotifier");

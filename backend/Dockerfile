@@ -9,9 +9,8 @@ RUN pip install -e ./t2wml-api
 
 RUN pip install -r /src/requirements.txt
 
-COPY for-docker /proj
 COPY . /src
 
 WORKDIR /src
 EXPOSE 13000
-ENTRYPOINT python t2wml-server.py --public-server
+ENTRYPOINT python t2wml-server.py --public-server --causx

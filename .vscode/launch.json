@@ -31,6 +31,25 @@
             "jinja": true
         },
         {
+            "name": "Causx Backend",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "causx_application.py",
+                "FLASK_DEBUG": "0"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload",
+                "--port",
+                "13000"
+            ],
+            "cwd": "${workspaceFolder}/backend",
+            "jinja": true
+        },
+        {
             "name": "Package",
             "type": "python",
             "request": "launch",
