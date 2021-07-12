@@ -477,7 +477,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
           onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline label="Is property?" checked={entityFields.is_property || field==="property"}
+          <Form.Check id="check-property-search" type="checkbox" inline label="Is property?" defaultChecked={entityFields.is_property || field==="property"}
             disabled={disabledIsProperty || !!field} />
         </Form.Group>
         <Form.Group as={Row}>

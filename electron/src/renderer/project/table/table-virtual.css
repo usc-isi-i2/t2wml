@@ -23,8 +23,25 @@
   opacity: 0.5;
 }
 
+.ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.linked-block {
+  opacity: 0.90;
+}
+
 .ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.active {
   opacity: 1;
+  background-color: #111;
+}
+
+.ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.active-block {
+  opacity: 1;
+  background-color: #111;
+}
+.active-block {
+  opacity: 1;
+  background-color: #111;
+}
+active-cell {
+  filter: brightness(80%);
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Grid.ReactVirtualized__Table__Grid {

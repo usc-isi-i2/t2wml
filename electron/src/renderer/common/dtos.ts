@@ -172,7 +172,18 @@ export interface TableCell {
   content: string | JSX.Element;
   classNames: string[];
   overlay?: string;
-}
+
+  state: {
+    active: boolean;
+    activeTop: boolean;
+    activeLeft: boolean;
+    activeRight: boolean;
+    activeBottom: boolean;
+    activeCorner: boolean;
+    highlight: boolean;
+    maxWidth: boolean;
+  };
+};
 
 export type TableData = TableCell[][];
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import 'react-virtualized/styles.css'
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
 import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
 
@@ -8,20 +7,11 @@ import * as utils from './table-utils';
 import { TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
+import wikiStore from '@/renderer/data/store';
 
 
 const MIN_NUM_ROWS = 100;
 const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUpperCase());
-
-const DEFAULT_CELL_STATE = {
-  active: false,
-  activeTop: false,
-  activeLeft: false,
-  activeRight: false,
-  activeBottom: false,
-  activeCorner: false,
-  highlight: false,
-}
 
 
 interface TableProperties {
@@ -119,18 +109,15 @@ class Table extends React.Component<TableProperties>{
             (Size: { height: number, width: number }) => {
               return (
                 <VirtualizedTable id="virtualized-table"
-                  height={Size.height} width={Size.width}
-                  // height={500} width={800}
-                  headerHeight={30}
-                  rowHeight={30}
+                  height={Size.height} 
+                  width={Size.width}
+                  className={wikiStore.table.selection ? 'active': ''}
+                  headerHeight={25}
+                  rowHeight={25}
                   ref={setTableReference}
-                  // rowCount={rows.length}
                   rowCount={Object.keys(tableData).length}
-                  rowGetter={({ index }) => {
-                    // console.log(index, tableData[index])
-                    return Object.entries(tableData[index])
-                  }
-                  }>
+                  rowGetter={({ index }) => { return Object.entries(tableData[index]) }}
+                >
 
                   <Column
                     label=''
