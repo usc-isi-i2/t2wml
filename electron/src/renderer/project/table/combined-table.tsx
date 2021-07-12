@@ -160,13 +160,13 @@ class CombinedTable extends Component<{}, TableState> {
         //clear any existing qnode coloration
         const table = this.tableRef;
         if (table) {
-            table.querySelectorAll('td').forEach(e => {
-                e.classList.forEach(className => {
-                    if (className.startsWith('type-qNode')) {
-                        e.classList.remove(className);
-                    }
-                });
-            });
+            // table.querySelectorAll('td').forEach(e => {
+            //     e.classList.forEach(className => {
+            //         if (className.startsWith('type-qNode')) {
+            //             e.classList.remove(className);
+            //         }
+            //     });
+            // });
         }
 
         if (showQnode) {
@@ -897,6 +897,7 @@ class CombinedTable extends Component<{}, TableState> {
 
 
             // Update the last x coordinate of the selection
+            debugger
             const newCellIndex = element.dataset.cellIndex;
             selection.x2 = newCellIndex;
 

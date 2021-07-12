@@ -103,15 +103,16 @@ class Table extends React.Component<TableProperties>{
       return this.renderEmptyTable();
     }
 
-    // console.log("tableData", tableData)
-
-    const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-    const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
+    // const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
+    // const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
 
     return (
-      <div 
-      className='table-wrapper'
-      // className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}
+      <div
+        className='table-wrapper'
+        // className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}
+        onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+        onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+        onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
       >
         <AutoSizer>
           {
@@ -137,11 +138,9 @@ class Table extends React.Component<TableProperties>{
                     headerRenderer={() => <div>&nbsp;</div>}
                     width={50}
                     cellDataGetter={data => {
-                      // console.log("Column index-data.rowData", data.rowData, 'data.dataKey', data.dataKey, 'data.rowData[data.dataKey]', data.rowData[data.dataKey])
                       return data.rowData[data.dataKey]
                     }}
                     cellRenderer={data => {
-                      // console.log("cellRenderer", data)
                       return <div>{data.rowIndex + 1}</div>
                     }}
                   />
@@ -162,7 +161,6 @@ class Table extends React.Component<TableProperties>{
                       }}
                       width={100}
                       cellDataGetter={(data: TableCellDataGetterParams) => {
-                        // console.log("cellDataGetter", data, data.rowData[data.dataKey])
                         return data.rowData[data.dataKey]
                       }}
                       cellRenderer={(data: TableCellProps) => {
