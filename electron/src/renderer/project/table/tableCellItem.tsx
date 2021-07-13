@@ -22,7 +22,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
   render() {
     const { cellData, rowIndex, columnIndex } = this.props;
     if (!cellData) { return }
-    // console.log('columnIndex', columnIndex, 'rowIndex', rowIndex, 'data', cellData[1])
+    
     const data = cellData[1]
 
     const classNames = this.getClassNames(data.classNames.join(' '), {
@@ -31,9 +31,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
       'maxWidth': data.maxWidth,
       'qnode': !!data.qnode
     });
-    // if (rowIndex < 3 && columnIndex < 3) {
-    //   console.log(data)
-    // }
+    
     const cellDisplay = (
       <div data-row-index={rowIndex + 1} data-col-index={columnIndex}>
         {data.content}

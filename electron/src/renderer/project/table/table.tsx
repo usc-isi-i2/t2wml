@@ -10,16 +10,14 @@ import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
 
 
-const MIN_NUM_ROWS = 100;
-
 interface TableProperties {
   tableData?: TableData;
+  ableActivated?: boolean;
   onMouseUp?: (event: React.MouseEvent) => void;
   onMouseDown?: (event: React.MouseEvent) => void;
   onMouseMove?: (event: React.MouseEvent) => void;
   onClickHeader?: (event: React.MouseEvent) => void;
   setTableReference: any;
-  minCols?: number;
 }
 
 
@@ -37,20 +35,13 @@ class Table extends React.Component<TableProperties>{
       onMouseMove,
       onClickHeader,
       setTableReference,
-      minCols
+      ableActivated
     } = this.props;
 
-    let minimumColumns = 26;
-    if (minCols) {
-      minimumColumns = minCols
-    }
 
     if (!tableData) {
       return null;
     }
-
-    const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-    const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
 
     return (
       <div
@@ -64,9 +55,9 @@ class Table extends React.Component<TableProperties>{
             (Size: { height: number, width: number }) => {
               return (
                 <VirtualizedTable id="virtualized-table"
-                  height={Size.height} 
+                  height={Size.height}
                   width={Size.width}
-                  className={wikiStore.table.selection ? 'active': ''}
+                  className={wikiStore.table.selection && ableActivated ? 'active' : ''}
                   headerHeight={25}
                   rowHeight={25}
                   ref={setTableReference}
@@ -106,11 +97,7 @@ class Table extends React.Component<TableProperties>{
                         return data.rowData[data.dataKey]
                       }}
                       cellRenderer={(data: TableCellProps) => {
-                        // console.log('cellRenderer', data)
                         return (
-                          // <div data-row-index={data.rowIndex + 1} data-col-index={data.columnIndex}>
-                          //   {data.cellData[1].content}
-                          // </div>
                           <TableCellItem cellData={data.cellData} rowIndex={data.rowIndex} columnIndex={data.columnIndex} />
                         )
                       }}
@@ -121,68 +108,9 @@ class Table extends React.Component<TableProperties>{
               )
             }}
         </AutoSizer>
-
-        {
-        /* <table ref={setTableReference}
-          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
-          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
-          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
-          <thead>
-            <tr>
-              <th></th>
-              {cols.map((r, i) => (
-                <th key={i}>
-                  <div onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
-                    {utils.columnToLetter(i + 1)}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((e, i) => (
-              <tr key={`row-${i}`}>
-                <td>{i + 1}</td>
-                {cols.map((r, j) => {
-                  if (i < tableData.length && j < tableData[i].length && tableData[i][j]) {
-                    const { rawContent, content, classNames, overlay } = tableData[i][j];
-                    if (overlay) {
-                      return (
-                        <OverlayTrigger
-                        key={`overlay-trigger cell-${j} row-${i}`}
-                          placement="right"
-                          delay={{ show: 50, hide: 200 }}
-                          overlay={(props) => (
-                            <Tooltip id="button-tooltip" {...props} key={`tooltip cell-${j} row-${i}`}>
-                              {overlay}
-                            </Tooltip>
-                          )}
-                        >
-                          <td key={`cell-${j}`} title={rawContent}
-                            className={classNames ? classNames.join(' ') : ''}>
-                            {content}
-
-                          </td>
-                        </OverlayTrigger>
-                      )
-                    }
-                    else return (<td key={`cell-${j}`} title={rawContent}
-                      className={classNames ? classNames.join(' ') : ''}>
-                      {content}
-                    </td>)
-                  } else {
-                    return <td key={`cell-${j}`} />
-                  }
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-       */}
       </div >
     )
   }
 }
-
 
 export default Table

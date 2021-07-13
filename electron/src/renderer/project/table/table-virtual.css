@@ -23,17 +23,9 @@
   opacity: 0.5;
 }
 
-.ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.linked-block {
-  opacity: 0.90;
-}
-
 .ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.active {
   opacity: 1;
 }
-
-/* .ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.active-block {
-  opacity: 1;
-} */
 
 .ReactVirtualized__Table .ReactVirtualized__Grid.ReactVirtualized__Table__Grid {
   outline: none;
@@ -467,6 +459,24 @@
   background: #ffca38;
 }
 
-.expects-wiki {
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .expects-wiki {
   color: #fd4800
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .error::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  display: block;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF3333;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .active .error::after {
+  top: 2px;
+  right: 2px;
 }
