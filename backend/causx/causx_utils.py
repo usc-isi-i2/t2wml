@@ -348,9 +348,8 @@ def causx_set_variable(project, id, updated_fields):
     variable=variable_dict.get(id, None)
 
     if variable:
-        old_tags = variable.get("tags")
         new_tags = updated_fields.get("tags", {})
-        tags = get_causx_tags(old_tags, new_tags)
+        tags = get_causx_tags(new_tags=new_tags)
         filepath=variable_dict['filepath']['value']
         variable.update(updated_fields)
         variable["tags"]=tags
