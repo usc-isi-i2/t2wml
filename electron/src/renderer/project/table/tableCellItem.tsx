@@ -13,7 +13,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
 
   getClassNames(classNames = '', conditionalClassNames: any = {}) {
     return (
-      'cell-div'.concat(`${classNames} `.concat(Object.keys(conditionalClassNames).filter(key => (
+      'cell-div '.concat(`${classNames} `.concat(Object.keys(conditionalClassNames).filter(key => (
         conditionalClassNames[key]
       )).join(' ')))
     );
@@ -26,25 +26,27 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
     const data = cellData[1]
 
     const classNames = this.getClassNames(data.classNames.join(' '), {
-      'active': data.state.active,
-      'highlight': data.state.highlight,
-      'maxWidth': data.state.maxWidth,
-      'qnode': !!data.state.qnode
+      'active': data.active,
+      'highlight': data.highlight,
+      'maxWidth': data.maxWidth,
+      'qnode': !!data.qnode
     });
-
+    // if (rowIndex < 3 && columnIndex < 3) {
+    //   console.log(data)
+    // }
     const cellDisplay = (
-      <div className={classNames} data-row-index={rowIndex + 1} data-col-index={columnIndex}>
+      <div data-row-index={rowIndex + 1} data-col-index={columnIndex}>
         {data.content}
-        {data.state.activeTop && <div className="cell-border-top" />}
-        {data.state.activeLeft && <div className="cell-border-left" />}
-        {data.state.activeRight && <div className="cell-border-right" />}
-        {data.state.activeBottom && <div className="cell-border-bottom" />}
-        {data.state.activeCorner && <div className="cell-resize-corner" />}
+        {data.activeTop && <div className="cell-border-top" />}
+        {data.activeLeft && <div className="cell-border-left" />}
+        {data.activeRight && <div className="cell-border-right" />}
+        {data.activeBottom && <div className="cell-border-bottom" />}
+        {data.activeCorner && <div className="cell-resize-corner" />}
       </div>
     )
     // console.log('data.content', data.content)
     return (
-      <div className="cell-div" data-row-index={rowIndex + 1} data-col-index={columnIndex}>
+      <div className={classNames} data-row-index={rowIndex + 1} data-col-index={columnIndex}>
         {
           data.overlay ?
             <OverlayTrigger
@@ -60,7 +62,9 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
               {cellDisplay}
             </OverlayTrigger>
             :
-            <div className="cell-div" data-row-index={rowIndex + 1} data-col-index={columnIndex}>{cellDisplay}</div>
+            <div className="cell-div" data-row-index={rowIndex + 1} data-col-index={columnIndex}>
+              {cellDisplay}
+            </div>
         }
       </div>
     );

@@ -15,34 +15,35 @@
 }
 
 /* top left corner piece */
-.table-wrapper table th:nth-child(1),
-.table-wrapper.wikify-table table th:nth-child(1) {
-padding: 0.15em 0.5em;
-text-align: center;
-background: #f9f9f9;
-min-width: 1em;
-position: sticky;
-color: #777;
-z-index: 5;
-left: -1px;
-top: -1px;
-pointer-events: none;
+
+.table-wrapper table th:nth-child(1), .table-wrapper.wikify-table table th:nth-child(1) {
+  padding: 0.15em 0.5em;
+  text-align: center;
+  background: #f9f9f9;
+  min-width: 1em;
+  position: sticky;
+  color: #777;
+  z-index: 5;
+  left: -1px;
+  top: -1px;
+  pointer-events: none;
 }
-.table-wrapper table th:nth-child(1)::before,
-.table-wrapper.wikify-table table th:nth-child(1)::before {
-content: '';
-position: absolute;
-bottom: 0;
-right: 0;
-width: 0;
-height: 0;
-border-left: 1.25em solid transparent;
-border-right: 1.25em solid #ddd;
-border-top: 1.25em solid transparent;
-pointer-events: none;
+
+.table-wrapper table th:nth-child(1)::before, .table-wrapper.wikify-table table th:nth-child(1)::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-left: 1.25em solid transparent;
+  border-right: 1.25em solid #ddd;
+  border-top: 1.25em solid transparent;
+  pointer-events: none;
 }
 
 /* header row */
+
 .table-wrapper table thead tr th {
   border: 1px solid #c7c7c7;
   white-space: nowrap;
@@ -70,7 +71,8 @@ pointer-events: none;
   position: absolute;
   background: #c7c7c7;
 }
-.table-wrapper table thead tr th > div {
+
+.table-wrapper table thead tr th>div {
   padding: 0.15em 0.5em;
   width: 75px;
   min-width: 75px;
@@ -79,53 +81,55 @@ pointer-events: none;
   overflow: hidden;
   display: inline-table;
 }
-.table-wrapper.wikify-table table thead tr th:not(:nth-child(1)) > div {
+
+.table-wrapper.wikify-table table thead tr th:not(:nth-child(1))>div {
   min-width: 175px;
 }
 
 /* left column */
-.table-wrapper table tr td:nth-child(1),
-.table-wrapper.wikify-table table tr td:nth-child(1) {
-text-align: center;
-background: #f9f9f9;
-padding: 0.15em 0.5em;
-min-width: 1em;
-position: sticky;
-color: #777;
-z-index: 3;
-left: -1px;
-pointer-events: none;
+
+.table-wrapper table tr td:nth-child(1), .table-wrapper.wikify-table table tr td:nth-child(1) {
+  text-align: center;
+  background: #f9f9f9;
+  padding: 0.15em 0.5em;
+  min-width: 1em;
+  position: sticky;
+  color: #777;
+  z-index: 3;
+  left: -1px;
+  pointer-events: none;
 }
-.table-wrapper table tr td:nth-child(1)::after,
-.table-wrapper.wikify-table table tr td:nth-child(1)::after {
-content: '';
-display: block;
-top: 0;
-right: 0;
-bottom: 0;
-width: 1px;
-position: absolute;
-background: #c7c7c7;
-pointer-events: none;
+
+.table-wrapper table tr td:nth-child(1)::after, .table-wrapper.wikify-table table tr td:nth-child(1)::after {
+  content: '';
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  position: absolute;
+  background: #c7c7c7;
+  pointer-events: none;
 }
 
 .table-wrapper table tr td {
-border: 1px solid #c7c7c7;
-padding: 0.15em 0.5em;
-line-height: 1.25em;
-overflow: hidden;
-white-space: nowrap;
-text-overflow: ellipsis;
-position: relative;
-min-width: 75px;
-max-width: 75px;
-width: 75px;
-z-index: 1;
+  border: 1px solid #c7c7c7;
+  padding: 0.15em 0.5em;
+  line-height: 1.25em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: relative;
+  min-width: 75px;
+  max-width: 75px;
+  width: 75px;
+  z-index: 1;
 }
+
 .table-wrapper.wikify-table table tr td:not(:nth-child(1)) {
-min-width: 175px;
-max-width: 175px;
-width: 175px;
+  min-width: 175px;
+  max-width: 175px;
+  width: 175px;
 }
 
 /** selected and linked opacity and brightness **/
@@ -162,68 +166,43 @@ relevant classes:
   filter: brightness(90%);
 }*/
 
-
-
-
-
 /** borders **/
 
 /* border colors*/
-.table-wrapper table tr td div.cell-border-top,
-.table-wrapper table tr td div.cell-border-left,
-.table-wrapper table tr td div.cell-border-right,
-.table-wrapper table tr td div.cell-border-bottom,
-.table-wrapper table tr td div.cell-resize-corner {
-background: #555;
-z-index: 5;
-}
-.table-wrapper table tr td.role-property div.cell-border-top,
-.table-wrapper table tr td.role-property div.cell-border-left,
-.table-wrapper table tr td.role-property div.cell-border-right,
-.table-wrapper table tr td.role-property div.cell-border-bottom,
-.table-wrapper table tr td.role-property div.cell-resize-corner {
-background: #f1a655;
-}
-.table-wrapper table tr td.role-qualifier div.cell-border-top,
-.table-wrapper table tr td.role-qualifier div.cell-border-left,
-.table-wrapper table tr td.role-qualifier div.cell-border-right,
-.table-wrapper table tr td.role-qualifier div.cell-border-bottom,
-.table-wrapper table tr td.role-qualifier div.cell-resize-corner {
-background: #8867cb;
-}
-.table-wrapper table tr td.role-mainSubject div.cell-border-top,
-.table-wrapper table tr td.role-mainSubject div.cell-border-left,
-.table-wrapper table tr td.role-mainSubject div.cell-border-right,
-.table-wrapper table tr td.role-mainSubject div.cell-border-bottom,
-.table-wrapper table tr td.role-mainSubject div.cell-resize-corner {
-background: #499bc1;
-}
-.table-wrapper table tr td.role-dependentVar div.cell-border-top,
-.table-wrapper table tr td.role-dependentVar div.cell-border-left,
-.table-wrapper table tr td.role-dependentVar div.cell-border-right,
-.table-wrapper table tr td.role-dependentVar div.cell-border-bottom,
-.table-wrapper table tr td.role-dependentVar div.cell-resize-corner {
-background: #3bab75;
-}
-.table-wrapper table tr td.role-metadata div.cell-border-top,
-.table-wrapper table tr td.role-metadata div.cell-border-left,
-.table-wrapper table tr td.role-metadata div.cell-border-right,
-.table-wrapper table tr td.role-metadata div.cell-border-bottom,
-.table-wrapper table tr td.role-metadata div.cell-resize-corner {
-background: #556e8b;
-z-index: 10;
-}
-.table-wrapper table tr td.role-unit div.cell-border-top,
-.table-wrapper table tr td.role-unit div.cell-border-left,
-.table-wrapper table tr td.role-unit div.cell-border-right,
-.table-wrapper table tr td.role-unit div.cell-border-bottom,
-.table-wrapper table tr td.role-unit div.cell-resize-corner {
-background: #ffca38;
-z-index: 15;
+
+.table-wrapper table tr td div.cell-border-top, .table-wrapper table tr td div.cell-border-left, .table-wrapper table tr td div.cell-border-right, .table-wrapper table tr td div.cell-border-bottom, .table-wrapper table tr td div.cell-resize-corner {
+  background: #555;
+  z-index: 5;
 }
 
+.table-wrapper table tr td.role-property div.cell-border-top, .table-wrapper table tr td.role-property div.cell-border-left, .table-wrapper table tr td.role-property div.cell-border-right, .table-wrapper table tr td.role-property div.cell-border-bottom, .table-wrapper table tr td.role-property div.cell-resize-corner {
+  background: #f1a655;
+}
+
+.table-wrapper table tr td.role-qualifier div.cell-border-top, .table-wrapper table tr td.role-qualifier div.cell-border-left, .table-wrapper table tr td.role-qualifier div.cell-border-right, .table-wrapper table tr td.role-qualifier div.cell-border-bottom, .table-wrapper table tr td.role-qualifier div.cell-resize-corner {
+  background: #8867cb;
+}
+
+.table-wrapper table tr td.role-mainSubject div.cell-border-top, .table-wrapper table tr td.role-mainSubject div.cell-border-left, .table-wrapper table tr td.role-mainSubject div.cell-border-right, .table-wrapper table tr td.role-mainSubject div.cell-border-bottom, .table-wrapper table tr td.role-mainSubject div.cell-resize-corner {
+  background: #499bc1;
+}
+
+.table-wrapper table tr td.role-dependentVar div.cell-border-top, .table-wrapper table tr td.role-dependentVar div.cell-border-left, .table-wrapper table tr td.role-dependentVar div.cell-border-right, .table-wrapper table tr td.role-dependentVar div.cell-border-bottom, .table-wrapper table tr td.role-dependentVar div.cell-resize-corner {
+  background: #3bab75;
+}
+
+.table-wrapper table tr td.role-metadata div.cell-border-top, .table-wrapper table tr td.role-metadata div.cell-border-left, .table-wrapper table tr td.role-metadata div.cell-border-right, .table-wrapper table tr td.role-metadata div.cell-border-bottom, .table-wrapper table tr td.role-metadata div.cell-resize-corner {
+  background: #556e8b;
+  z-index: 10;
+}
+
+.table-wrapper table tr td.role-unit div.cell-border-top, .table-wrapper table tr td.role-unit div.cell-border-left, .table-wrapper table tr td.role-unit div.cell-border-right, .table-wrapper table tr td.role-unit div.cell-border-bottom, .table-wrapper table tr td.role-unit div.cell-resize-corner {
+  background: #ffca38;
+  z-index: 15;
+}
 
 /* top border */
+
 .table-wrapper table tr td div.cell-border-top {
   display: block;
   position: absolute;
@@ -235,6 +214,7 @@ z-index: 15;
 }
 
 /* left border */
+
 .table-wrapper table tr td div.cell-border-left {
   display: block;
   position: absolute;
@@ -246,6 +226,7 @@ z-index: 15;
 }
 
 /* right border */
+
 .table-wrapper table tr td div.cell-border-right {
   display: block;
   position: absolute;
@@ -257,6 +238,7 @@ z-index: 15;
 }
 
 /* bottom border */
+
 .table-wrapper table tr td div.cell-border-bottom {
   display: block;
   position: absolute;
@@ -285,8 +267,8 @@ z-index: 15;
   height: 2px;
 }
 
-
 /* resize corner piece */
+
 .table-wrapper table tr td div.cell-resize-corner {
   display: block;
   position: absolute;
@@ -300,18 +282,20 @@ z-index: 15;
   border: 1px solid whitesmoke;
 }
 
-
 /** colors, fonts, triangles **/
 
 /* cell cleaned data status */
+
 .table-wrapper table tr td.status-cleaned {
   font-weight: bold;
 }
 
 /* cell error status */
+
 .table-wrapper table tr td.error {
   position: relative;
 }
+
 .table-wrapper table tr td.error::after {
   content: '';
   position: absolute;
@@ -324,37 +308,28 @@ z-index: 15;
   border-bottom: 10px solid transparent;
   border-top: 10px solid #FF3333;
 }
+
 .table-wrapper table tr td.active.error::after {
   top: 2px;
   right: 2px;
 }
 
-
 /* cell roles */
+
 .table-wrapper table tr td.role-dependentVar {
   background: #D9F2E6;
 }
+
 .table-wrapper table tr td.role-dependentVar-no-property {
-  background: repeating-linear-gradient(
-  55deg,
-  #D9F2E6,
-  #D9F2E6 5px,
-  #ffffff 5px,
-  #ffffff 10px
-);
+  background: repeating-linear-gradient( 55deg, #D9F2E6, #D9F2E6 5px, #ffffff 5px, #ffffff 10px);
 }
+
 .table-wrapper table tr td.role-mainSubject {
   background: #D9EAF2;
 }
 
 .table-wrapper table tr td.role-mainSubject-no-link {
-  background: repeating-linear-gradient(
-  55deg,
-  #D9EAF2,
-  #D9EAF2 5px,
-  #ffffff 5px,
-  #ffffff 10px
-);
+  background: repeating-linear-gradient( 55deg, #D9EAF2, #D9EAF2 5px, #ffffff 5px, #ffffff 10px);
 }
 
 .table-wrapper table tr td.role-metadata {
@@ -364,14 +339,9 @@ z-index: 15;
 .table-wrapper table tr td.role-qualifier {
   background: #DDD9F2;
 }
+
 .table-wrapper table tr td.role-qualifier-no-property {
-  background: repeating-linear-gradient(
-  55deg,
-  #DDD9F2,
-  #DDD9F2 5px,
-  #ffffff 5px,
-  #ffffff 10px
-);
+  background: repeating-linear-gradient( 55deg, #DDD9F2, #DDD9F2 5px, #ffffff 5px, #ffffff 10px);
 }
 
 .table-wrapper table tr td.role-property {
@@ -379,33 +349,23 @@ z-index: 15;
 }
 
 .table-wrapper table tr td.role-property-no-link {
-  background: repeating-linear-gradient(
-  55deg,
-  #fbe5ce,
-  #fbe5ce 5px,
-  #ffffff 5px,
-  #ffffff 10px
-);
+  background: repeating-linear-gradient( 55deg, #fbe5ce, #fbe5ce 5px, #ffffff 5px, #ffffff 10px);
 }
+
 .table-wrapper table tr td.role-unit {
   background: #fff2ce;
 }
 
 .table-wrapper table tr td.role-unit-no-link {
-  background: repeating-linear-gradient(
-  55deg,
-  #fff2ce,
-  #fff2ce 5px,
-  #ffffff 5px,
-  #ffffff 10px
-);
+  background: repeating-linear-gradient( 55deg, #fff2ce, #fff2ce 5px, #ffffff 5px, #ffffff 10px);
 }
 
 /* wikified text*/
+
 .table-wrapper table tr td.expects-wiki {
   color: #fd4800
 }
-.table-wrapper table tr td.wikified{
+
+.table-wrapper table tr td.wikified {
   color: #006699;
 }
-

@@ -11,8 +11,6 @@ import wikiStore from '@/renderer/data/store';
 
 
 const MIN_NUM_ROWS = 100;
-const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUpperCase());
-
 
 interface TableProperties {
   tableData?: TableData;
@@ -21,7 +19,6 @@ interface TableProperties {
   onMouseMove?: (event: React.MouseEvent) => void;
   onClickHeader?: (event: React.MouseEvent) => void;
   setTableReference: any;
-  optionalClassNames?: string;
   minCols?: number;
 }
 
@@ -32,46 +29,6 @@ class Table extends React.Component<TableProperties>{
     super(props);
   }
 
-  renderEmptyTable() {
-    const {
-      onMouseUp,
-      onMouseDown,
-      onMouseMove,
-      setTableReference,
-      optionalClassNames,
-      minCols
-    } = this.props;
-    let minimumColumns = 26;
-    if (minCols) {
-      minimumColumns = minCols
-    }
-    return (
-      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
-        <table ref={setTableReference}
-          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
-          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
-          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
-          <thead>
-            <tr>
-              <th></th>
-              {CHARACTERS.slice(0, minimumColumns).map(c => <th key={c}><div>{c}</div></th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(MIN_NUM_ROWS)].map((e, i) => (
-              <tr key={`row-${i}`}>
-                <td>{i + 1}</td>
-                {CHARACTERS.slice(0, minimumColumns).map((c, j) => (
-                  <td key={`cell-${j}`}></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )
-  }
-
   render() {
     const {
       tableData,
@@ -80,7 +37,6 @@ class Table extends React.Component<TableProperties>{
       onMouseMove,
       onClickHeader,
       setTableReference,
-      optionalClassNames,
       minCols
     } = this.props;
 
@@ -90,16 +46,15 @@ class Table extends React.Component<TableProperties>{
     }
 
     if (!tableData) {
-      return this.renderEmptyTable();
+      return null;
     }
 
-    // const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-    // const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
+    const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
+    const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
 
     return (
       <div
         className='table-wrapper'
-        // className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}
         onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
         onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
         onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}

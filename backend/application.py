@@ -840,25 +840,6 @@ def add_mapping_file():
     return response, 200
 
 
-@app.route('/api/auto_wikinodes', methods=['POST'])
-@json_response
-def create_auto_nodes():
-    """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
-    """
-    project = get_project()
-    calc_params = get_calc_params(project)
-    selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
-    is_property = request.get_json()['is_property']
-    data_type = request.get_json().get("data_type", None)
-    autocreate_items(calc_params, selection, is_property, data_type)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
 
 @app.route('/api/web/wikify_region', methods=['POST']) #V
 @json_response

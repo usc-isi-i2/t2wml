@@ -37,17 +37,14 @@ interface TableState {
 }
 
 const DEFAULT_CELL_STATE = {
-    state: {
-        active: false,
-        activeTop: false,
-        activeLeft: false,
-        activeRight: false,
-        activeBottom: false,
-        activeCorner: false,
-        highlight: false,
-        maxWidth: false
-    }
-
+    active: false,
+    activeTop: false,
+    activeLeft: false,
+    activeRight: false,
+    activeBottom: false,
+    activeCorner: false,
+    highlight: false,
+    maxWidth: false
 }
 
 @observer
@@ -198,6 +195,8 @@ class CombinedTable extends Component<{}, TableState> {
 
     getClasslessTableData(table?: TableDTO): TableData {
         if (!table) { table = wikiStore.table.table }
+        const MIN_ROWS = 100;
+        const MIN_COLUMNS = 26;
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
             const rowData = [];
@@ -210,10 +209,29 @@ class CombinedTable extends Component<{}, TableState> {
                 };
                 rowData.push(cell);
             }
+            while (rowData.length < MIN_COLUMNS) { // add columns to the display table
+                rowData.push({
+                    content: '',
+                    rawContent: '',
+                    classNames: [],
+                    ...DEFAULT_CELL_STATE
+                })
+            }
             tableData.push(rowData);
         }
+        while (tableData.length < MIN_ROWS) { // add rows to the display table
+            const rowData = [];
+            while (rowData.length < MIN_COLUMNS) {
+                rowData.push({
+                    content: '',
+                    rawContent: '',
+                    classNames: [],
+                    ...DEFAULT_CELL_STATE
+                })
+            }
+            tableData.push(rowData)
+        }
         return tableData;
-
     }
 
     updateTableData(table?: TableDTO) {
@@ -224,7 +242,6 @@ class CombinedTable extends Component<{}, TableState> {
         }
         const tableData = this.getClasslessTableData(table);
         this.setState({ tableData })
-        console.log("resetting wikistore selections from update table data")
         { this.createAnnotationIfDoesNotExist(); }
     }
 
@@ -238,13 +255,13 @@ class CombinedTable extends Component<{}, TableState> {
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
             try {
-                tableData.forEach(row => {
-                    row.forEach(cell => {
-                        cell.classNames = cell.classNames.filter((value) =>
+                for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+                    for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                        tableData[indexRow][indexCol].classNames = tableData[indexRow][indexCol].classNames.filter((value) =>
                             !value.startsWith("error")
                         )
-                    })
-                })
+                    }
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -286,17 +303,16 @@ class CombinedTable extends Component<{}, TableState> {
             //if we're taking existing table data, gotta clean it:
 
             try {
-                tableData.forEach(row => {
-                    row.forEach(cell => {
-                        cell.classNames = cell.classNames.filter((value) =>
+                for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+                    for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                        tableData[indexRow][indexCol].classNames = tableData[indexRow][indexCol].classNames.filter((value) =>
                             !value.startsWith("wikified")
                         )
-                    })
-                })
+                    }
+                }
             } catch (error) {
                 console.log(error);
             }
-            //if we're taking existing table data, gotta clean it:
         }
 
 
@@ -304,15 +320,14 @@ class CombinedTable extends Component<{}, TableState> {
         for (const entry of qnodes.entries) {
             for (const indexPair of entry.indices) {
                 try {
-                    const tableCell = tableData[indexPair[0]][indexPair[1]];
-                    tableCell.classNames.push(`wikified`);
+                    tableData[indexPair[0]][indexPair[1]].classNames.push(`wikified`);
                 }
                 catch {
                     //pass
                 }
             }
         }
-
+        this.setState({ tableData })
         this.updateQnodeCells(wikiStore.table.showQnodes);
     }
 
@@ -325,13 +340,17 @@ class CombinedTable extends Component<{}, TableState> {
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
             try {
-                tableData.forEach(row => {
-                    row.forEach(cell => {
-                        cell.classNames = cell.classNames.filter((value) =>
-                            !value.startsWith("role-") && !value.startsWith("expects-wiki")
-                        )
-                    })
-                })
+                for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+                    for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                        tableData[indexRow][indexCol] = {
+                            ...tableData[indexRow][indexCol],
+                            ...DEFAULT_CELL_STATE,
+                            classNames: tableData[indexRow][indexCol].classNames.filter((value) =>
+                                !value.startsWith("role-") && !value.startsWith("expects-wiki")
+                            )
+                        }
+                    }
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -373,24 +392,25 @@ class CombinedTable extends Component<{}, TableState> {
                         classNames.push("expects-wiki")
                     }
                 }
-
                 if (type == "wikibaseitem") {
                     classNames.push("expects-wiki")
                 }
 
-
                 const { x1, y1, x2, y2 } = selection;
                 const leftCol = Math.min(x1, x2) - 1;
-                const rightCol = Math.max(x1, x2);
+                const rightCol = Math.max(x1, x2) - 1;
                 const topRow = Math.min(y1, y2) - 1;
-                const bottomRow = Math.max(y1, y2);
+                const bottomRow = Math.max(y1, y2) - 1;
                 let rowIndex = topRow;
-                while (rowIndex < bottomRow) {
+                while (rowIndex <= bottomRow) {
                     let colIndex = leftCol;
-                    while (colIndex < rightCol) {
+                    while (colIndex <= rightCol) {
                         try {
-                            const tableCell = tableData[rowIndex][colIndex];
-                            tableCell.classNames.push(...classNames);
+                            tableData[rowIndex][colIndex] = {
+                                ...tableData[rowIndex][colIndex],
+                                ...DEFAULT_CELL_STATE,
+                                classNames: classNames
+                            }
                         }
                         catch {
                             //TODO: handle annotating imaginary cells
@@ -401,42 +421,47 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
-
+        this.setState({ tableData })
     }
 
     applyCsstoBlock(tableData: TableData, selection: CellSelection, classNames: string[]) {
         const { x1, x2, y1, y2 } = selection;
-        console.log("applyCsstoBlock selection:", selection)
 
-        const leftCol = Math.min(x1 - 1, x2 - 1);
-        const rightCol = Math.max(x1 - 1, x2 - 1);
-        const topRow = Math.min(y1 - 1, y2 - 1);
-        const bottomRow = Math.max(y1 - 1, y2 - 1);
-        for (let rowIndex = topRow; rowIndex <= bottomRow; rowIndex++) {
-            const row = tableData[rowIndex];
-            for (let colIndex = 0; colIndex <= rightCol; colIndex++) {
-                const cell = row[colIndex];
-                if (rowIndex === topRow) { cell.state.activeTop = true; }
-                if (colIndex === leftCol) { cell.state.activeLeft = true; }
-                if (colIndex === rightCol) { cell.state.activeRight = true; }
-                if (rowIndex === bottomRow) { cell.state.activeBottom = true; }
-                if (classNames.includes('selected')) { cell.state.activeCorner = true; }
-                classNames.forEach(className => {
-                    if (!cell.classNames.includes(className)) {
-                        cell.classNames.push(className)
-                    } 
-                    if(className=='selected'){
-                        cell.state.active = true;
-                    }
-                });
+        const leftCol = Math.min(x1, x2) - 1;
+        const rightCol = Math.max(x1, x2) - 1;
+        const topRow = Math.min(y1, y2) - 1;
+        const bottomRow = Math.max(y1, y2) - 1;
+
+        let rowIndex = topRow
+        while (rowIndex <= bottomRow) {
+            let colIndex = leftCol
+            while (colIndex <= rightCol) {
+                const cellData = tableData[rowIndex][colIndex]
+                cellData.active = true
+
+                cellData.activeTop = false
+                cellData.activeLeft = false
+                cellData.activeRight = false
+                cellData.activeBottom = false
+                cellData.activeCorner = false
+                if (rowIndex === topRow) { cellData.activeTop = true; }
+                if (colIndex === leftCol) { cellData.activeLeft = true; }
+                if (colIndex === rightCol) { cellData.activeRight = true; }
+                if (rowIndex === bottomRow) { cellData.activeBottom = true; }
+                if (rowIndex === bottomRow && colIndex === rightCol) { cellData.activeCorner = true; }
+
+                classNames.forEach(className => cellData.classNames.push(className));
+                tableData[rowIndex][colIndex] = { ...cellData }
+
+                colIndex += 1
             }
+            rowIndex += 1
         }
         return tableData;
     }
 
 
     updateActiveCellStyle(selectedCell?: Cell) {
-        console.log("start updateActiveCellStyle")
         // Get a reference to the table elements
         const { tableData: oldTableData } = this.state;
         if (!oldTableData) { return; }
@@ -448,7 +473,7 @@ class CombinedTable extends Component<{}, TableState> {
         const statement = wikiStore.layers.statement.find(selectedCell);
 
         const activeCell = tableData[selectedCell.row + 1][selectedCell.col + 1]
-        activeCell.state.active = true;
+        activeCell.active = true;
 
         //select related cells
         if (statement && statement.cells) {
@@ -500,8 +525,7 @@ class CombinedTable extends Component<{}, TableState> {
                     classNames.push(`role-${role}-no-property`);
                 } else if ((role == "unit" || role == "mainSubject" || role == "property") && !link) {
                     classNames.push(`role-${role}-no-link`);
-                }
-                {
+                } else {
                     classNames.push(`role-${role}`);
                 }
             }
@@ -532,11 +556,9 @@ class CombinedTable extends Component<{}, TableState> {
         }
 
         this.setState({ tableData });
-        console.log("end updateActiveCellStyle")
     }
 
     updateSelectionStyle(selection?: CellSelection) {
-        console.log("start updateSelectionStyle", selection)
         if (currentFilesService.currentState.mappingType == "Yaml") { return; }
         let { tableData } = this.state;
         if (!tableData) { return; }
@@ -545,7 +567,6 @@ class CombinedTable extends Component<{}, TableState> {
         const classNames: string[] = ['selected'];
         tableData = this.applyCsstoBlock(tableData, selection, classNames);
         this.setState({ tableData })
-        console.log("end updateSelectionStyle", selection,' tableData[9][2]', tableData[9][2])
     }
 
 
@@ -673,36 +694,58 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     removeClassNameFromTableData(tableData: TableData, classNameToDelete?: string) {
-        if (tableData && classNameToDelete) {
-            tableData.forEach(row => {
-                row.forEach(cell => {
-                    cell.classNames = cell.classNames.filter(className => !className.startsWith(classNameToDelete))
-                })
-            })
+        if (classNameToDelete) {
+            for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+                for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                    const cell = tableData[indexRow][indexCol]
+                    tableData[indexRow][indexCol] = {
+                        ...cell,
+                        classNames: cell.classNames.filter(className => className !== classNameToDelete)
+                    }
+                }
+            }
         }
         return tableData;
     }
 
     resetSelectionCss(tableData: TableData) {
         tableData = this.removeClassNameFromTableData(tableData, 'selected')
+        for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+            for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                tableData[indexRow][indexCol] = {
+                    ...tableData[indexRow][indexCol],
+                    ...DEFAULT_CELL_STATE
+                }
+            }
+        }
         return tableData;
     }
 
     resetActiveBlockCss(tableData: TableData) {
         tableData = this.removeClassNameFromTableData(tableData, 'active-block');
         tableData = this.removeClassNameFromTableData(tableData, 'linked-block');
-        tableData.forEach(row => {
-            row.forEach(cell => cell = {
-                ...cell,
-                ...DEFAULT_CELL_STATE
-            })
-        })
+        for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+            for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                tableData[indexRow][indexCol] = {
+                    ...tableData[indexRow][indexCol],
+                    ...DEFAULT_CELL_STATE
+                }
+            }
+        }
         return tableData;
     }
 
     resetActiveCellCss(tableData: TableData) {
         tableData = this.removeClassNameFromTableData(tableData, 'active-cell')
         tableData = this.removeClassNameFromTableData(tableData, 'linked-cell')
+        for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+            for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                tableData[indexRow][indexCol] = {
+                    ...tableData[indexRow][indexCol],
+                    ...DEFAULT_CELL_STATE,
+                }
+            }
+        }
         return tableData
     }
 
@@ -812,10 +855,8 @@ class CombinedTable extends Component<{}, TableState> {
                         selection.y2 = y1;
                     }
                 }
-                console.log('handleOnMouseDown- selection', selection)
                 wikiStore.table.selection = selection;
             } else {
-                console.log('handleOnMouseDown- selection cell', { x1, x2, y1, y2 })
                 wikiStore.table.selection = { x1, x2, y1, y2 };
             }
         }
@@ -826,7 +867,6 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     handleOnMouseMove(event: React.MouseEvent) {
-        // console.log('onMouseMove')
         const element = event.target as any;
         if (element === this.prevElement) { return; }
 
@@ -847,7 +887,6 @@ class CombinedTable extends Component<{}, TableState> {
             selection.x2 = newColIndex;
             // Update the last y coordinate of the selection
             selection.y2 = newRowIndex;
-            console.log("handleOnMouseMove- selection", selection)
             wikiStore.table.selection = selection
 
             // Update reference to the previous element
@@ -1005,15 +1044,13 @@ class CombinedTable extends Component<{}, TableState> {
         const { tableData } = this.state;
         if (!tableData) { return; }
 
-        tableData.forEach(row => {
-            row[colIndex - 1].state.maxWidth = true;
-        })
+        for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+            tableData[indexRow][colIndex - 1].maxWidth = true;
+        }
 
         // const element = event.target as any;
         element.setAttribute('style', 'width: 100%;');
         element.parentElement.setAttribute('style', 'max-width: 1%');
-
-
 
         const index = element.dataset.colIndex;
         tableData.forEach((row: any) => {

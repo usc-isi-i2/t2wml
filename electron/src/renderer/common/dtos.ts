@@ -6,10 +6,10 @@ import { CellSelection } from "./general";
 
 /* base types*/
 
- interface CurrentAndArrayDTO{
-     selected: string;
-     val_arr: string[];
- }
+interface CurrentAndArrayDTO {
+    selected: string;
+    val_arr: string[];
+}
 
 export interface ProjectDTO {
     directory: string;
@@ -18,8 +18,8 @@ export interface ProjectDTO {
     yaml_files: string[];
     wikifier_files: string[];
     entity_files: string[];
-    yaml_sheet_associations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
-    annotations: { [key: string]: { [key: string] : CurrentAndArrayDTO } };
+    yaml_sheet_associations: { [key: string]: { [key: string]: CurrentAndArrayDTO } };
+    annotations: { [key: string]: { [key: string]: CurrentAndArrayDTO } };
     sparql_endpoint: string;
     warn_for_empty_cells: boolean;
     handle_calendar: string;
@@ -53,14 +53,14 @@ export interface Entry {
     indices: CellIndex[];
 }
 
-export type LayerType = "qnode" | "statement" | "error" | "type"| "cleaned";
+export type LayerType = "qnode" | "statement" | "error" | "type" | "cleaned";
 
 export interface LayerDTO<T extends Entry> {
     layerType: LayerType;
     entries: T[];
 }
 
-export interface QNode{
+export interface QNode {
     label: string;
     description: string;
     id: string;
@@ -73,7 +73,7 @@ export interface QNode{
 
 
 export interface StatementLayerDTO extends LayerDTO<StatementEntry> {
-    qnodes: {[key: string]: QNode };
+    qnodes: { [key: string]: QNode };
 }
 
 export interface LayersDTO {
@@ -98,13 +98,13 @@ export interface TypeEntry extends Entry {
     type: string;
 }
 
-export type ErrorRole= "value"|"qualifier"|"property"|"subject"|"unit"
+export type ErrorRole = "value" | "qualifier" | "property" | "subject" | "unit"
 
-export interface Error{
+export interface Error {
     role: ErrorRole;
     message: string;
     qualifier_index: number;
-    level: "Major"|"Minor";
+    level: "Major" | "Minor";
     field: string; //can be role, but could also be "calendar" or any other yaml key
 }
 
@@ -113,7 +113,7 @@ export interface ErrorEntry extends Entry {
     error: Error[];
 }
 
-export interface StatementEntry extends Entry{
+export interface StatementEntry extends Entry {
     subject: string;
     property: string;
     cells: any;
@@ -136,7 +136,7 @@ export interface EntityFields {
     data_type: string;
 }
 
-export interface AnnotationBlock{
+export interface AnnotationBlock {
     selection: CellSelection;
     role: AnnotationBlockRole;
     type?: AnnotationBlockType;
@@ -168,12 +168,11 @@ export interface AnnotationBlock{
 }
 
 export interface TableCell {
-  rawContent?: string;
-  content: string | JSX.Element;
-  classNames: string[];
-  overlay?: string;
+    rawContent?: string;
+    content: string | JSX.Element;
+    classNames: string[];
+    overlay?: string;
 
-  state: {
     active: boolean;
     activeTop: boolean;
     activeLeft: boolean;
@@ -182,7 +181,6 @@ export interface TableCell {
     activeCorner: boolean;
     highlight: boolean;
     maxWidth: boolean;
-  };
 };
 
 export type TableData = TableCell[][];
@@ -196,15 +194,15 @@ export interface ResponseWithProjectDTO {
     project: ProjectDTO;
 }
 
-export interface ResponseWithProjectandFileName extends ResponseWithProjectDTO{
+export interface ResponseWithProjectandFileName extends ResponseWithProjectDTO {
     filename: string;
 }
 
-export interface ResponseWithPartialCsvDTO{
+export interface ResponseWithPartialCsvDTO {
     partialCsv: TableDTO;
 }
 
-export interface ResponseWithMappingDTO{
+export interface ResponseWithMappingDTO {
     project: ProjectDTO;
     layers: LayersDTO;
     yamlContent: string;
@@ -212,11 +210,11 @@ export interface ResponseWithMappingDTO{
     annotations: AnnotationBlock[];
 }
 
-export interface ResponseWithTableDTO extends ResponseWithMappingDTO{
+export interface ResponseWithTableDTO extends ResponseWithMappingDTO {
     table: TableDTO;
 }
 
-export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO{
+export interface ResponseWithQNodeLayerDTO extends ResponseWithProjectDTO {
     layers: LayersDTO; //only contains the qnode layer, but leaving it like this for now
 }
 
@@ -226,18 +224,18 @@ export interface ResponseUploadEntitiesDTO extends ResponseWithQNodeLayerDTO {
 
 
 export interface ResponseEntitiesPropertiesDTO {
-    [file: string]: { [property: string] : QNode };
+    [file: string]: { [property: string]: QNode };
 }
 
 export interface ResponseCallWikifierServiceDTO extends ResponseWithQNodeLayerDTO {
     wikifierError: string;
 }
 
-export interface ResponseWithProjectAndMappingDTO extends ResponseWithProjectDTO, ResponseWithMappingDTO{
+export interface ResponseWithProjectAndMappingDTO extends ResponseWithProjectDTO, ResponseWithMappingDTO {
 
 }
 
-export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO{
+export interface ResponseWithEverythingDTO extends ResponseWithProjectDTO, ResponseWithTableDTO {
 
 }
 
@@ -251,7 +249,7 @@ export interface ResponseWithSuggestion {
     children: any;
 }
 
-export interface ResponseWithQNodeLayerAndQnode extends ResponseWithQNodeLayerDTO, ResponseWithProjectDTO{
+export interface ResponseWithQNodeLayerAndQnode extends ResponseWithQNodeLayerDTO, ResponseWithProjectDTO {
     entity: QNode;
 }
 
