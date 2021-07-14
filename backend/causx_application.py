@@ -486,10 +486,9 @@ def causx_upload_project():
         with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
             filemap=json.loads(zf.read("filemap.json"))
             for file in zf.namelist():
-                if ".." in file:
+                if ".." in file or file=="filemap.json":
                     continue
-                if file.startswith(filemap["dir"]):
-                    zf.extract(file, path=project.directory)
+                zf.extract(file, path=project.directory)
 
 
     sheet_name=filemap["sheet"]
@@ -552,12 +551,11 @@ def causx_download_project():
             for file in files:
                 zf.write(os.path.join(root, file),
                        os.path.relpath(os.path.join(root, file),
-                                       os.path.join(project.directory, '..')))
+                                       project.directory))
         dir=Path(project.directory).stem
-        zf.writestr("filemap.json", json.dumps(dict(dir=Path(project.directory).stem,
-                                                        data=str((Path(dir)/calc_params._data_path).as_posix()),
-                                                        sheet=calc_params.sheet_name,
-                                                        annotation=str((Path(dir)/calc_params._annotation_path).as_posix())
+        zf.writestr("filemap.json", json.dumps(dict(data=str(Path(calc_params._data_path).as_posix()),
+                                                    sheet=calc_params.sheet_name,
+                                                    annotation=str(Path(calc_params._annotation_path).as_posix())
                                                         )))
 
     filestream.seek(0)
