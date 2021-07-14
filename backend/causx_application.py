@@ -116,7 +116,7 @@ def json_response(func):
             response.status_code=code
             #if new_cookie:
             #    response.set_cookie("user-id", new_cookie)
-            return response
+            return response, code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
@@ -448,7 +448,10 @@ def causx_wikify():
 @json_response
 def causx_upload_data():
     project = get_project()
-    in_file=causx_get_file([".csv", ".xlsx"])
+    in_file=causx_get_file([".csv", ".xlsx", ".t2wmlz"])
+    if Path(in_file.filename).suffix == ".t2wmlz": #redirect
+        response, code = causx_upload_project()
+        return response, code
 
     folder = Path(project.directory)
     shorter_name = Path(in_file.filename).name
@@ -477,35 +480,27 @@ def causx_upload_project():
     project = get_project()
     in_file = causx_get_file([".t2wmlz"])
 
-    proj_dir=Path(project.directory)
-
-    new_project=Project(project.directory)
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
         with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
             filemap=json.loads(zf.read("filemap.json"))
-            zf.extract(filemap["data"], proj_dir)
-            zf.extract(filemap["annotation"], proj_dir)
-            for entity_file in filemap["entities"]:
-                zf.extract(entity_file, proj_dir)
-            if filemap["wikifier_exists"]:
-                zf.extract(filemap["wikifier_path"], proj_dir)
+            for file in zf.namelist():
+                if ".." in file:
+                    continue
+                if file.startswith(filemap["dir"]):
+                    zf.extract(file, path=project.directory)
 
-    new_project.add_data_file(filemap["data"])
+
     sheet_name=filemap["sheet"]
-    new_project.add_annotation_file(filemap["annotation"], filemap["data"], sheet_name)
-    for entity_file in filemap["entities"]:
-        new_project.add_entity_file(entity_file)
-    new_project.save()
-    calc_params=CalcParams(new_project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
+    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
     response=dict()
     response["table"] = get_table(calc_params)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
     response["layers"] = get_qnodes_layer(calc_params)
-    response["project"]=get_project_dict(new_project)
+    response["project"]=get_project_dict(project)
     response["sheetName"]=sheet_name
-    response["filePath"]=filemap["data"]
+    response["filepath"]=filemap["data"]
     return response, 200
 
 def process_annotation(calc_params, source_annotations, source_df):
@@ -542,39 +537,28 @@ def causx_upload_annotation():
     response["project"]=get_project_dict(project)
     return response, code
 
+
 @app.route('/api/causx/download_project', methods=['GET'])
 @json_response
 def causx_download_project():
     #download a .t2wmlz file with the files needed to restore current project state
     project = get_project()
     calc_params = get_calc_params(project)
-    data_path = calc_params.data_path
-    data_path_arcname=(Path(data_path).name)
-    sheet_name=calc_params.sheet_name
-    annotation_path=calc_params.annotation_path
-    annotation_path_arcname = Path(calc_params._annotation_path).as_posix()
-    wikifier_path, wikifier_exists = project.get_wikifier_file(data_path)
-    if wikifier_exists:
-        wikifier_partial_path=Path(wikifier_path).relative_to(project.directory).as_posix()
-    else:
-        wikifier_partial_path=""
-
-    attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
+    attachment_filename = project.title + "_" + Path(calc_params.data_path).stem +"_"+ Path(calc_params.sheet_name).stem +".t2wmlz"
 
     filestream=BytesIO()
     with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
-            zf.write(data_path, arcname=data_path_arcname)
-            zf.write(annotation_path, arcname=annotation_path_arcname)
-            for entity_file in project.entity_files:
-                zf.write(project.get_full_path(entity_file), arcname=entity_file)
-            if wikifier_exists:
-                zf.write(wikifier_path, arcname=wikifier_partial_path)
-            zf.writestr("filemap.json", json.dumps(dict(data=data_path_arcname,
-                                                        sheet=sheet_name,
-                                                        annotation=annotation_path_arcname,
-                                                        entities=project.entity_files,
-                                                        wikifier_exists=wikifier_exists,
-                                                        wikifier_path=wikifier_partial_path)))
+        for root, dirs, files in os.walk(project.directory):
+            for file in files:
+                zf.write(os.path.join(root, file),
+                       os.path.relpath(os.path.join(root, file),
+                                       os.path.join(project.directory, '..')))
+        dir=Path(project.directory).stem
+        zf.writestr("filemap.json", json.dumps(dict(dir=Path(project.directory).stem,
+                                                        data=str((Path(dir)/calc_params._data_path).as_posix()),
+                                                        sheet=calc_params.sheet_name,
+                                                        annotation=str((Path(dir)/calc_params._annotation_path).as_posix())
+                                                        )))
 
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
