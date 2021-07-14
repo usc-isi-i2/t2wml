@@ -27,6 +27,10 @@
   opacity: 1;
 }
 
+.ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.linked-block {
+  opacity: 0.9;
+}
+
 .ReactVirtualized__Table .ReactVirtualized__Grid.ReactVirtualized__Table__Grid {
   outline: none;
 }

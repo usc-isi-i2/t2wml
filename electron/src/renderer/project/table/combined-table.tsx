@@ -482,13 +482,19 @@ class CombinedTable extends Component<{}, TableState> {
         const { tableData: oldTableData } = this.state;
         if (!oldTableData) { return; }
 
-        // table.classList.remove('highlight'); //todo
+        for (let indexRow = 0; indexRow < oldTableData.length; indexRow++) {
+            for (let indexCol = 0; indexCol < oldTableData[indexRow].length; indexCol++) {
+                oldTableData[indexRow][indexCol].highlight = false;
+            }
+        }
+
         if (!selectedCell) { return; }
 
         let tableData = this.resetActiveCellCss(oldTableData)
         const statement = wikiStore.layers.statement.find(selectedCell);
 
         const activeCell = tableData[selectedCell.row][selectedCell.col]
+        activeCell.highlight = true;
         activeCell.active = true;
 
         //select related cells
@@ -528,8 +534,6 @@ class CombinedTable extends Component<{}, TableState> {
         }
 
         if (selectedBlock && selectedBlock != wikiStore.table.selectedBlock) {
-            //select block:
-            // table.classList.add('highlight'); //todo
             const classNames: string[] = [];
             const linksBlocks: { block: AnnotationBlock, classNames: string[] }[] = [];
 
@@ -751,14 +755,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     resetActiveCellCss(tableData: TableData) {
         tableData = this.removeClassNameFromTableData(tableData, 'linked-cell')
-        // for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
-        //     for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
-        //         tableData[indexRow][indexCol] = {
-        //             ...tableData[indexRow][indexCol],
-        //             ...DEFAULT_CELL_STATE,
-        //         }
-        //     }
-        // }
+
         return tableData
     }
 
