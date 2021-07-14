@@ -2,7 +2,6 @@
 
 import React, { ChangeEvent, Component } from 'react';
 import * as path from 'path';
-// import './table-component.css';
 import './drop-container.css';
 import Dropzone from 'react-dropzone';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';

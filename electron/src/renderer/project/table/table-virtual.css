@@ -49,17 +49,19 @@
   top: -1px;
   box-shadow: inset -1px 0px 0px 0px #c7c7c7;
   pointer-events: none;
+
+  margin-left: 0;
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__headerColumn:nth-child(1)::before {
-  content: "";
+  content: '';
   position: absolute;
-  bottom: 7px;
+  bottom: 3px;
   right: 3px;
   width: 0;
   height: 0;
   border-left: 20px solid transparent;
-  border-right: ( 20px solid #ddd);
+  border-right: 20px solid #ddd;
   border-top: 20px solid transparent;
   pointer-events: none;
 }
@@ -76,14 +78,16 @@
   z-index: 3;
   width: 75px;
   top: -1px;
+
+  margin-right: 0;
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__headerColumn::after {
-  content: "";
+  content: '';
   display: block;
   left: 0;
   right: 0;
-  bottom: 5px;
+  bottom: 0;
   height: 1px;
   position: absolute;
   background: #c7c7c7;
@@ -91,14 +95,12 @@
 
 .ReactVirtualized__Table .ReactVirtualized__Table__headerColumn>div {
   padding: 0.15em 0.5em;
-  margin-right: 1px;
+  /* margin-right: 1px;
   width: 73px;
   min-width: 73px;
-  max-width: 73px;
+  max-width: 73px; */
   overflow: hidden;
-  display: inline-block;
-  /* resize: horizontal; */
-  /* cursor: col-resize; */
+  display: inline-block; 
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row {
