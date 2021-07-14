@@ -16,6 +16,7 @@ from app_config import app
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
+from copy_annotations.annotator import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, get_qnodes_layer,
@@ -502,8 +503,7 @@ def causx_upload_project():
     response["filepath"]=filemap["data"]
     return response, 200
 
-def process_annotation(calc_params, source_annotations, source_df):
-    return source_annotations
+
 
 
 @app.route('/api/causx/upload/annotation', methods=['POST'])
@@ -526,7 +526,10 @@ def causx_upload_annotation():
             else:
                 source_df = pd.read_excel(data_file, sheet_name=filemap["sheet"])
 
-    processed_annotation=process_annotation(calc_params, source_annotations, source_df)
+    try:
+        processed_annotation = copy_annotation(source_annotations, source_df, calc_params.sheet.data)
+    except:
+        processed_annotation = []
     with open(calc_params.annotation_path, 'w') as f:
         f.write(json.dumps(processed_annotation))
 
