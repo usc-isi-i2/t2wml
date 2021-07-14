@@ -508,6 +508,8 @@ def causx_upload_project():
     response["filePath"]=filemap["data"]
     return response, 200
 
+def process_annotation(calc_params, source_annotations, source_df):
+    return source_annotations
 
 
 @app.route('/api/causx/upload/annotation', methods=['POST'])
@@ -522,9 +524,19 @@ def causx_upload_annotation():
         in_file.save(str(file_path))
         with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
             filemap=json.loads(zf.read("filemap.json"))
-            zf.extract(filemap["annotation"], calc_params.annotation_path)
+            source_annotations=json.loads(zf.read(filemap["annotation"]))
+            data_file_name=filemap["data"]
+            data_file=BytesIO(zf.read(data_file_name))
+            if Path(data_file_name).suffix==".csv":
+                source_df = pd.read_csv(data_file)
+            else:
+                source_df = pd.read_excel(data_file, sheet_name=filemap["sheet"])
 
-    annotation_file=project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
+    processed_annotation=process_annotation(calc_params, source_annotations, source_df)
+    with open(calc_params.annotation_path, 'w') as f:
+        f.write(json.dumps(processed_annotation))
+
+    project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
     preload(calc_params)
     response, code = get_mapping()
     response["project"]=get_project_dict(project)
