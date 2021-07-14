@@ -42,7 +42,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
         {data.activeCorner && <div className="cell-resize-corner" />}
       </div>
     )
-    // console.log('data.content', data.content)
+
     return (
       <div className={classNames} data-row-index={rowIndex + 1} data-col-index={columnIndex}>
         {

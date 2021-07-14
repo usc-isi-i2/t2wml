@@ -6,7 +6,7 @@ import './drop-container.css';
 import Dropzone from 'react-dropzone';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
-import { AnnotationBlock, QNode, TableCell, TableData, TableDTO } from '../../common/dtos';
+import { AnnotationBlock, DEFAULT_CELL_STATE, QNode, TableCell, TableData, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -35,16 +35,6 @@ interface TableState {
     errorMessage: ErrorMessage;
 }
 
-const DEFAULT_CELL_STATE = {
-    active: false,
-    activeTop: false,
-    activeLeft: false,
-    activeRight: false,
-    activeBottom: false,
-    activeCorner: false,
-    highlight: false,
-    maxWidth: false
-}
 
 @observer
 class CombinedTable extends Component<{}, TableState> {

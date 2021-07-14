@@ -92,7 +92,7 @@ class Table extends React.Component<TableProperties>{
                           </div>
                         )
                       }}
-                      width={100}
+                      width={75}
                       cellDataGetter={(data: TableCellDataGetterParams) => {
                         return data.rowData[data.dataKey]
                       }}

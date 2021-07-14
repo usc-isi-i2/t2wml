@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
 
-import { Card, Spinner} from 'react-bootstrap';
+import { Card, Spinner } from 'react-bootstrap';
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { reaction, IReactionDisposer } from 'mobx';
 import Table from '../table/table';
-import { TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
+import { DEFAULT_CELL_STATE, TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
 import "../project.css";
 
 
@@ -47,19 +47,28 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
   }
 
   updateTableData(table?: TableDTO) {
-    if ( !table || !table.cells ) {
+    if (!table || !table.cells) {
       this.setState({ partialCsv: undefined });
       return;
     }
     const tableData = [];
-    for ( let i = 0; i < table.cells.length; i++ ) {
+    const MIN_COLUMNS = 6;
+    for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
-      for ( let j = 0; j < table.cells[i].length; j++ ) {
+      for (let j = 0; j < table.cells[i].length; j++) {
         const cell: TableCell = {
           content: table.cells[i][j],
           classNames: [],
+          ...DEFAULT_CELL_STATE
         };
         rowData.push(cell);
+      }
+      while (rowData.length < MIN_COLUMNS) { // add columns to the display table
+        rowData.push({
+          content: '',
+          classNames: [],
+          ...DEFAULT_CELL_STATE
+        })
       }
       tableData.push(rowData);
     }
@@ -67,11 +76,12 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
   }
 
   render() {
+    const { partialCsv } =this.state;
     return (
       <Fragment>
         <Card
           className="shadow-sm"
-          style={{ height: "88vh"}}>
+          style={{ height: "88vh" }}>
 
           {/* wikifier */}
           <Card.Body className="p-0">
@@ -82,10 +92,28 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
 
             {/* wikifier output */}
             <div className="w-100 h-100">
-              <Table
-              minCols={6}
-              tableData={this.state.partialCsv}
-              setTableReference={()=>(null)}/>
+              {
+                partialCsv && partialCsv.length > 1 ?
+                  <Table
+                    tableData={this.state.partialCsv}
+                    setTableReference={() => (null)} />
+                  :
+                  <div style={{padding: '2rem'}}>
+                    <h6>
+                      In order to annotate the data:
+                    </h6>
+                    <h6>
+                      1. Select the main subject
+                    </h6>
+                    <h6>
+                      2. Select the dependent variable
+                    </h6>
+                    <h6>
+                      3. Select data properties and qualifiers
+                    </h6>
+                  </div>
+              }
+
             </div>
           </Card.Body>
         </Card >
