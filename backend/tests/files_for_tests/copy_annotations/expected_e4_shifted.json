@@ -1,0 +1,72 @@
+[
+  {
+    "id": "headings_data",
+    "link": "",
+    "links": {
+      "mainSubject": "main_subject"
+    },
+    "role": "dependentVar",
+    "selection": {
+      "x1": 4,
+      "x2": 6,
+      "y1": 6,
+      "y2": 11
+    },
+    "type": "quantity"
+  },
+  {
+    "id": "columns_data",
+    "link": "",
+    "links": {
+      "mainSubject": "main_subject"
+    },
+    "role": "dependentVar",
+    "selection": {
+      "x1": 4,
+      "x2": 6,
+      "y1": 13,
+      "y2": 17
+    },
+    "type": "quantity"
+  },
+  {
+    "id": "headings",
+    "link": "",
+    "links": {},
+    "property": "P585",
+    "role": "qualifier",
+    "selection": {
+      "x1": 4,
+      "x2": 6,
+      "y1": 5,
+      "y2": 5
+    },
+    "type": "time"
+  },
+  {
+    "id": "columns",
+    "link": "",
+    "links": {},
+    "property": "P585",
+    "role": "qualifier",
+    "selection": {
+      "x1": 4,
+      "x2": 6,
+      "y1": 12,
+      "y2": 12
+    },
+    "type": "time"
+  },
+  {
+    "id": "main_subject",
+    "link": "headings_data",
+    "links": {},
+    "role": "mainSubject",
+    "selection": {
+      "x1": 4,
+      "x2": 4,
+      "y1": 4,
+      "y2": 4
+    }
+  }
+]

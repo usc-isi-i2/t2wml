@@ -1,0 +1,126 @@
+[
+  {
+    "id": "1b9b5f78-0f71-4918-a959-77aedb1c5933",
+    "link": "",
+    "links": {
+      "property": "15274b56-9c95-412e-9254-949f00847ff3",
+      "unit": "3e0bdde8-1829-4541-be07-22e431f11df0",
+      "mainSubject": "b7e69f29-86b8-48bb-85e4-2ff5e6793c9f"
+    },
+    "role": "dependentVar",
+    "selection": {
+      "x1": 3,
+      "x2": 15,
+      "y1": 10,
+      "y2": 21
+    },
+    "type": "quantity"
+  },
+  {
+    "id": "b7e69f29-86b8-48bb-85e4-2ff5e6793c9f",
+    "link": "1b9b5f78-0f71-4918-a959-77aedb1c5933",
+    "links": {},
+    "role": "mainSubject",
+    "selection": {
+      "x1": 2,
+      "x2": 2,
+      "y1": 3,
+      "y2": 3
+    }
+  },
+  {
+    "id": "e9b41b15-0f21-4f42-a380-3285216ee40c",
+    "link": "",
+    "links": {},
+    "property": "P585",
+    "role": "qualifier",
+    "selection": {
+      "x1": 3,
+      "x2": 15,
+      "y1": 9,
+      "y2": 9
+    },
+    "type": "time"
+  },
+  {
+    "id": "194ed1d0-b7d1-4236-863e-d9f753e3be61",
+    "link": "",
+    "links": {
+      "property": "d71aeb75-06c3-4bb1-95cd-6ab2738000ea"
+    },
+    "role": "qualifier",
+    "selection": {
+      "x1": 2,
+      "x2": 2,
+      "y1": 2,
+      "y2": 2
+    },
+    "type": "wikibaseitem"
+  },
+  {
+    "id": "d71aeb75-06c3-4bb1-95cd-6ab2738000ea",
+    "link": "194ed1d0-b7d1-4236-863e-d9f753e3be61",
+    "links": {},
+    "role": "property",
+    "selection": {
+      "x1": 1,
+      "x2": 1,
+      "y1": 2,
+      "y2": 2
+    },
+    "type": "string"
+  },
+  {
+    "id": "a121ab91-e2ff-4adf-9bf3-4523fca626ac",
+    "link": "",
+    "links": {
+      "property": "f30de483-781d-4aa5-94b6-e1c488fca6ac"
+    },
+    "role": "qualifier",
+    "selection": {
+      "x1": 2,
+      "x2": 2,
+      "y1": 4,
+      "y2": 4
+    },
+    "type": "wikibaseitem"
+  },
+  {
+    "id": "f30de483-781d-4aa5-94b6-e1c488fca6ac",
+    "link": "a121ab91-e2ff-4adf-9bf3-4523fca626ac",
+    "links": {},
+    "role": "property",
+    "selection": {
+      "x1": 1,
+      "x2": 1,
+      "y1": 4,
+      "y2": 4
+    },
+    "type": "string"
+  },
+  {
+    "id": "3e0bdde8-1829-4541-be07-22e431f11df0",
+    "link": "1b9b5f78-0f71-4918-a959-77aedb1c5933",
+    "links": {},
+    "role": "unit",
+    "selection": {
+      "x1": 2,
+      "x2": 2,
+      "y1": 10,
+      "y2": 21
+    }
+  },
+  {
+    "selection": {
+      "x1": 1,
+      "x2": 1,
+      "y1": 10,
+      "y2": 21
+    },
+    "role": "property",
+    "type": "quantity",
+    "id": "15274b56-9c95-412e-9254-949f00847ff3",
+    "link": "1b9b5f78-0f71-4918-a959-77aedb1c5933",
+    "links": {}
+  }
+]
