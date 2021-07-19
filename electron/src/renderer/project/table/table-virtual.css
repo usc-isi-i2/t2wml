@@ -1,17 +1,33 @@
 .table-wrapper {
-  flex: 1;
+  /* flex: 1;
   width: 100vw;
   height: 95vh;
   overflow-x: scroll;
   overflow-y: hidden;
+  position: relative; */
+
+  /* flex: 1;
   position: relative;
+  display: block;
+  box-sizing: border-box;
+  overflow-x: scroll; */
+  overflow-y: hidden;
+  height: 100%;
 }
 
 .ReactVirtualized__Table {
-  table-layout: fixed;
+  /* table-layout: fixed;
   transform: rotateX(0deg);
   border-collapse: collapse;
   display: table;
+  border-spacing: 0;
+  font-weight: 400;
+  user-select: none;
+  position: relative;
+  cursor: crosshair; */
+
+  border: 1px solid #c7c7c7;
+  border-collapse: collapse;
   border-spacing: 0;
   font-weight: 400;
   user-select: none;
@@ -32,6 +48,7 @@
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Grid.ReactVirtualized__Table__Grid {
+  overflow: hidden;
   outline: none;
 }
 

@@ -191,7 +191,7 @@ export interface TableCell {
     activeCorner: boolean;
     highlight: boolean;
     maxWidth: boolean;
-};
+}
 
 export type TableData = TableCell[][];
 

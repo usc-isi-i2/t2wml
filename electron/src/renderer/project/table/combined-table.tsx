@@ -184,8 +184,6 @@ class CombinedTable extends Component<{}, TableState> {
 
     getClasslessTableData(table?: TableDTO): TableData {
         if (!table) { table = wikiStore.table.table }
-        const MIN_ROWS = 100;
-        const MIN_COLUMNS = 26;
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
             const rowData = [];
@@ -198,28 +196,9 @@ class CombinedTable extends Component<{}, TableState> {
                 };
                 rowData.push(cell);
             }
-            while (rowData.length < MIN_COLUMNS) { // add columns to the display table
-                rowData.push({
-                    content: '',
-                    rawContent: '',
-                    classNames: [],
-                    ...DEFAULT_CELL_STATE
-                })
-            }
             tableData.push(rowData);
         }
-        while (tableData.length < MIN_ROWS) { // add rows to the display table
-            const rowData = [];
-            while (rowData.length < MIN_COLUMNS) {
-                rowData.push({
-                    content: '',
-                    rawContent: '',
-                    classNames: [],
-                    ...DEFAULT_CELL_STATE
-                })
-            }
-            tableData.push(rowData)
-        }
+
         return tableData;
     }
 
@@ -1168,6 +1147,8 @@ class CombinedTable extends Component<{}, TableState> {
                                         onMouseMove={this.handleOnMouseMove.bind(this)}
                                         onClickHeader={this.handleOnClickHeader.bind(this)}
                                         setTableReference={this.setTableReference.bind(this)}
+                                        MIN_ROWS={100}
+                                        MIN_COLUMNS={26}
                                     />
                                 </div>
                                 :

@@ -1,13 +1,13 @@
 import React from 'react';
 import 'react-virtualized/styles.css'
 import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
-import { AutoSizer } from 'react-virtualized/dist/es/AutoSizer';
 
 import * as utils from './table-utils';
-import { TableData } from '../../common/dtos';
+import { DEFAULT_CELL_STATE, TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
+import { AutoSizer } from 'react-virtualized';
 
 
 interface TableProperties {
@@ -18,6 +18,8 @@ interface TableProperties {
   onMouseMove?: (event: React.MouseEvent) => void;
   onClickHeader?: (event: React.MouseEvent) => void;
   setTableReference: any;
+  MIN_ROWS: number;
+  MIN_COLUMNS: number;
 }
 
 
@@ -35,12 +37,40 @@ class Table extends React.Component<TableProperties>{
       onMouseMove,
       onClickHeader,
       setTableReference,
-      ableActivated
+      ableActivated,
+      MIN_COLUMNS,
+      MIN_ROWS
     } = this.props;
 
 
     if (!tableData) {
       return null;
+    }
+    console.log("render tableData")
+    // add one column and one row to the table:
+    for (let index = 0; index < tableData.length; index++) {
+      const rowData = tableData[index]
+      while (rowData.length < MIN_COLUMNS + 1) { // add columns to the display table
+        rowData.push({
+          content: '',
+          rawContent: '',
+          classNames: [],
+          ...DEFAULT_CELL_STATE
+        })
+      }
+    }
+
+    while (tableData.length < MIN_ROWS + 1) { // add rows to the display table
+      const rowData = [];
+      while (rowData.length < MIN_COLUMNS + 1) {
+        rowData.push({
+          content: '',
+          rawContent: '',
+          classNames: [],
+          ...DEFAULT_CELL_STATE
+        })
+      }
+      tableData.push(rowData);
     }
 
     return (
@@ -50,13 +80,13 @@ class Table extends React.Component<TableProperties>{
         onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
         onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
       >
-        <AutoSizer>
+        <AutoSizer disableWidth>
           {
-            (Size: { height: number, width: number }) => {
+            (Size: { height: number }) => {
               return (
                 <VirtualizedTable id="virtualized-table"
                   height={Size.height}
-                  width={Size.width}
+                  width={tableData[0].length * 75}
                   className={wikiStore.table.selection && ableActivated ? 'active' : ''}
                   headerHeight={25}
                   rowHeight={25}
@@ -97,10 +127,14 @@ class Table extends React.Component<TableProperties>{
                         return data.rowData[data.dataKey]
                       }}
                       cellRenderer={(data: TableCellProps) => {
+                        if (data.isScrolling && data.cellData && data.cellData.length && data.cellData[1].content) {
+                          return (<div style={{ color: 'lightgray' }}> scrolling... </div>);
+                        }
                         return (
                           <TableCellItem cellData={data.cellData} rowIndex={data.rowIndex} columnIndex={data.columnIndex} />
-                        )
-                      }}
+                        );
+                      }
+                      }
                     />
                   ))}
 

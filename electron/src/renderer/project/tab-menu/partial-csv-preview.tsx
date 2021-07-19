@@ -52,7 +52,6 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
       return;
     }
     const tableData = [];
-    const MIN_COLUMNS = 6;
     for (let i = 0; i < table.cells.length; i++) {
       const rowData = [];
       for (let j = 0; j < table.cells[i].length; j++) {
@@ -63,20 +62,13 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
         };
         rowData.push(cell);
       }
-      while (rowData.length < MIN_COLUMNS) { // add columns to the display table
-        rowData.push({
-          content: '',
-          classNames: [],
-          ...DEFAULT_CELL_STATE
-        })
-      }
       tableData.push(rowData);
     }
     this.setState({ partialCsv: tableData });
   }
 
   render() {
-    const { partialCsv } =this.state;
+    const { partialCsv } = this.state;
     return (
       <Fragment>
         <Card
@@ -96,9 +88,11 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
                 partialCsv && partialCsv.length > 1 ?
                   <Table
                     tableData={this.state.partialCsv}
-                    setTableReference={() => (null)} />
+                    setTableReference={() => (null)}
+                    MIN_ROWS={0}
+                    MIN_COLUMNS={6} />
                   :
-                  <div style={{padding: '2rem'}}>
+                  <div style={{ padding: '2rem' }}>
                     <h6>
                       In order to annotate the data:
                     </h6>
