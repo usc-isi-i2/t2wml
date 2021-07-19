@@ -1,7 +1,9 @@
 Flask==1.1.2
 Flask-Cors==3.0.9
 numpy==1.19.1
+mip==1.13.0
 pandas==1.2.2
+pytest==6.2.4
 openpyxl==3.0.5
 xlrd==1.2.0
 rltk==2.0.0a15
