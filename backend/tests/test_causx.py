@@ -244,7 +244,7 @@ class TestCausxWorkflow:
         stored_results["upload_project"] = data
         assert self.expected_results["upload_project"]["layers"] == data["layers"]
 
-    def test_22_upload_annotation(self, client):
+    def xtest_22_upload_annotation(self, client):
         url = "/api/causx/upload/annotation"
         url = url+get_data_url()
         with open(os.path.join(self.files_dir, "results.t2wmlz"), 'rb') as f:
