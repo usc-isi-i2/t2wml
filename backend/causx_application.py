@@ -12,10 +12,11 @@ from io import BytesIO
 from pathlib import Path
 from flask import request
 from werkzeug.utils import secure_filename
-from app_config import app
+from app_config import app, BASEDIR
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
+from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, get_qnodes_layer,
@@ -34,7 +35,12 @@ debug_mode = False
 
 set_web_settings()
 
-os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
+try:
+    os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
+except:
+    app.config["PROJECTS_DIR"] = os.path.join(BASEDIR, "media")
+    os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
+
 
 def encode_auth_token():
     """
@@ -116,7 +122,7 @@ def json_response(func):
             response.status_code=code
             #if new_cookie:
             #    response.set_cookie("user-id", new_cookie)
-            return response
+            return response, code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
     return wrapper
@@ -174,7 +180,7 @@ def get_token():
 
 @app.route('/api/causx/project/entities', methods=['GET']) #V
 @json_response
-def get_project_entities():
+def get_project_entities_for_causx():
     project = get_project()
     response = get_entities(project)
     return response, 200
@@ -182,7 +188,7 @@ def get_project_entities():
 
 @app.route('/api/causx/auto_wikinodes', methods=['POST'])
 @json_response
-def create_auto_nodes():
+def create_auto_nodes_for_causx():
     """
     This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
@@ -202,7 +208,7 @@ def create_auto_nodes():
 
 @app.route('/api/causx/annotation', methods=['POST'])
 @json_response
-def upload_annotation():
+def upload_annotation_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     annotation = request.get_json()["annotations"]
@@ -216,7 +222,7 @@ def upload_annotation():
 
 @app.route('/api/causx/annotation/suggest', methods=['PUT'])
 @json_response
-def suggest_annotation_block():
+def suggest_annotation_block_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
@@ -239,7 +245,7 @@ def suggest_annotation_block():
 
 @app.route('/api/causx/annotation/guess-blocks', methods=['GET']) #V
 @json_response
-def guess_annotation_blocks():
+def guess_annotation_blocks_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     suggest_annotations(calc_params)
@@ -248,7 +254,7 @@ def guess_annotation_blocks():
 
 @app.route('/api/causx/project/settings', methods=['PUT', 'GET']) #V
 @json_response
-def update_settings():
+def update_settings_for_causx():
     """
     This function updates the settings from GUI
     :return:
@@ -295,7 +301,7 @@ def update_settings():
 
 @app.route('/api/causx/delete_wikification', methods=['POST'])
 @json_response
-def delete_wikification():
+def delete_wikification_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name = calc_params.sheet.name
@@ -340,7 +346,7 @@ def delete_wikification():
 
 @app.route('/api/causx/create_node', methods=['POST'])
 @json_response
-def create_qnode():
+def create_qnode_for_causx():
     project = get_project()
     request_json = request.get_json()
     try:
@@ -424,7 +430,7 @@ def causx_get_file(allowed_extensions):
 
 @app.route('/api/causx/wikify_region', methods=['POST']) #V
 @json_response
-def causx_wikify():
+def causx_wikify_for_causx():
     project = get_project()
     region = request.get_json()["selection"]
     overwrite_existing = request.get_json().get("overwrite", False)
@@ -448,7 +454,10 @@ def causx_wikify():
 @json_response
 def causx_upload_data():
     project = get_project()
-    in_file=causx_get_file([".csv", ".xlsx"])
+    in_file=causx_get_file([".csv", ".xlsx", ".t2wmlz"])
+    if Path(in_file.filename).suffix == ".t2wmlz": #redirect
+        response, code = causx_upload_project()
+        return response, code
 
     folder = Path(project.directory)
     shorter_name = Path(in_file.filename).name
@@ -477,39 +486,29 @@ def causx_upload_project():
     project = get_project()
     in_file = causx_get_file([".t2wmlz"])
 
-    proj_dir=Path(project.directory)
-
-    new_project=Project(project.directory)
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
         with zipfile.ZipFile(file_path, mode='r', compression=zipfile.ZIP_DEFLATED) as zf:
             filemap=json.loads(zf.read("filemap.json"))
-            zf.extract(filemap["data"], proj_dir)
-            zf.extract(filemap["annotation"], proj_dir)
-            for entity_file in filemap["entities"]:
-                zf.extract(entity_file, proj_dir)
-            if filemap["wikifier_exists"]:
-                zf.extract(filemap["wikifier_path"], proj_dir)
+            for file in zf.namelist():
+                if ".." in file or file=="filemap.json":
+                    continue
+                zf.extract(file, path=project.directory)
 
-    new_project.add_data_file(filemap["data"])
+
     sheet_name=filemap["sheet"]
-    new_project.add_annotation_file(filemap["annotation"], filemap["data"], sheet_name)
-    for entity_file in filemap["entities"]:
-        new_project.add_entity_file(entity_file)
-    new_project.save()
-    calc_params=CalcParams(new_project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
+    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
     response=dict()
     response["table"] = get_table(calc_params)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
     response["layers"] = get_qnodes_layer(calc_params)
-    response["project"]=get_project_dict(new_project)
+    response["project"]=get_project_dict(project)
     response["sheetName"]=sheet_name
-    response["filePath"]=filemap["data"]
+    response["filepath"]=filemap["data"]
     return response, 200
 
-def process_annotation(calc_params, source_annotations, source_df):
-    return source_annotations
+
 
 
 @app.route('/api/causx/upload/annotation', methods=['POST'])
@@ -532,7 +531,10 @@ def causx_upload_annotation():
             else:
                 source_df = pd.read_excel(data_file, sheet_name=filemap["sheet"])
 
-    processed_annotation=process_annotation(calc_params, source_annotations, source_df)
+    try:
+        processed_annotation = copy_annotation(source_annotations, source_df, calc_params.sheet.data)
+    except:
+        processed_annotation = []
     with open(calc_params.annotation_path, 'w') as f:
         f.write(json.dumps(processed_annotation))
 
@@ -542,39 +544,27 @@ def causx_upload_annotation():
     response["project"]=get_project_dict(project)
     return response, code
 
+
 @app.route('/api/causx/download_project', methods=['GET'])
 @json_response
 def causx_download_project():
     #download a .t2wmlz file with the files needed to restore current project state
     project = get_project()
     calc_params = get_calc_params(project)
-    data_path = calc_params.data_path
-    data_path_arcname=(Path(data_path).name)
-    sheet_name=calc_params.sheet_name
-    annotation_path=calc_params.annotation_path
-    annotation_path_arcname = Path(calc_params._annotation_path).as_posix()
-    wikifier_path, wikifier_exists = project.get_wikifier_file(data_path)
-    if wikifier_exists:
-        wikifier_partial_path=Path(wikifier_path).relative_to(project.directory).as_posix()
-    else:
-        wikifier_partial_path=""
-
-    attachment_filename = project.title + "_" + Path(data_path).stem +"_"+ Path(sheet_name).stem +".t2wmlz"
+    attachment_filename = project.title + "_" + Path(calc_params.data_path).stem +"_"+ Path(calc_params.sheet_name).stem +".t2wmlz"
 
     filestream=BytesIO()
     with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
-            zf.write(data_path, arcname=data_path_arcname)
-            zf.write(annotation_path, arcname=annotation_path_arcname)
-            for entity_file in project.entity_files:
-                zf.write(project.get_full_path(entity_file), arcname=entity_file)
-            if wikifier_exists:
-                zf.write(wikifier_path, arcname=wikifier_partial_path)
-            zf.writestr("filemap.json", json.dumps(dict(data=data_path_arcname,
-                                                        sheet=sheet_name,
-                                                        annotation=annotation_path_arcname,
-                                                        entities=project.entity_files,
-                                                        wikifier_exists=wikifier_exists,
-                                                        wikifier_path=wikifier_partial_path)))
+        for root, dirs, files in os.walk(project.directory):
+            for file in files:
+                zf.write(os.path.join(root, file),
+                       os.path.relpath(os.path.join(root, file),
+                                       project.directory))
+        dir=Path(project.directory).stem
+        zf.writestr("filemap.json", json.dumps(dict(data=str(Path(calc_params._data_path).as_posix()),
+                                                    sheet=calc_params.sheet_name,
+                                                    annotation=str(Path(calc_params._annotation_path).as_posix())
+                                                        )))
 
     filestream.seek(0)
     return send_file(filestream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
@@ -653,7 +643,7 @@ def causx_edit_an_entity(id):
 
 
 @app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results(filetype, filename):
+def download_results_for_causx(filetype, filename):
     """
     return as attachment
     """
