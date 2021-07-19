@@ -12,7 +12,7 @@ from io import BytesIO
 from pathlib import Path
 from flask import request
 from werkzeug.utils import secure_filename
-from app_config import app
+from app_config import app, BASEDIR
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
@@ -35,7 +35,12 @@ debug_mode = False
 
 set_web_settings()
 
-os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
+try:
+    os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
+except:
+    app.config["PROJECTS_DIR"] = os.path.join(BASEDIR, "media")
+    os.makedirs(app.config["PROJECTS_DIR"], exist_ok=True)
+
 
 def encode_auth_token():
     """
