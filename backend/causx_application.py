@@ -175,7 +175,7 @@ def get_token():
 
 @app.route('/api/causx/project/entities', methods=['GET']) #V
 @json_response
-def get_project_entities():
+def get_project_entities_for_causx():
     project = get_project()
     response = get_entities(project)
     return response, 200
@@ -183,7 +183,7 @@ def get_project_entities():
 
 @app.route('/api/causx/auto_wikinodes', methods=['POST'])
 @json_response
-def create_auto_nodes():
+def create_auto_nodes_for_causx():
     """
     This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
     :return:
@@ -203,7 +203,7 @@ def create_auto_nodes():
 
 @app.route('/api/causx/annotation', methods=['POST'])
 @json_response
-def upload_annotation():
+def upload_annotation_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     annotation = request.get_json()["annotations"]
@@ -217,7 +217,7 @@ def upload_annotation():
 
 @app.route('/api/causx/annotation/suggest', methods=['PUT'])
 @json_response
-def suggest_annotation_block():
+def suggest_annotation_block_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
@@ -240,7 +240,7 @@ def suggest_annotation_block():
 
 @app.route('/api/causx/annotation/guess-blocks', methods=['GET']) #V
 @json_response
-def guess_annotation_blocks():
+def guess_annotation_blocks_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     suggest_annotations(calc_params)
@@ -249,7 +249,7 @@ def guess_annotation_blocks():
 
 @app.route('/api/causx/project/settings', methods=['PUT', 'GET']) #V
 @json_response
-def update_settings():
+def update_settings_for_causx():
     """
     This function updates the settings from GUI
     :return:
@@ -296,7 +296,7 @@ def update_settings():
 
 @app.route('/api/causx/delete_wikification', methods=['POST'])
 @json_response
-def delete_wikification():
+def delete_wikification_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name = calc_params.sheet.name
@@ -341,7 +341,7 @@ def delete_wikification():
 
 @app.route('/api/causx/create_node', methods=['POST'])
 @json_response
-def create_qnode():
+def create_qnode_for_causx():
     project = get_project()
     request_json = request.get_json()
     try:
@@ -425,7 +425,7 @@ def causx_get_file(allowed_extensions):
 
 @app.route('/api/causx/wikify_region', methods=['POST']) #V
 @json_response
-def causx_wikify():
+def causx_wikify_for_causx():
     project = get_project()
     region = request.get_json()["selection"]
     overwrite_existing = request.get_json().get("overwrite", False)
@@ -638,7 +638,7 @@ def causx_edit_an_entity(id):
 
 
 @app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results(filetype, filename):
+def download_results_for_causx(filetype, filename):
     """
     return as attachment
     """
