@@ -16,7 +16,7 @@ from app_config import app
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
-from copy_annotations.annotator import copy_annotation
+from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, get_qnodes_layer,
