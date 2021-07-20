@@ -496,3 +496,57 @@
   top: 2px;
   right: 2px;
 }
+
+.GridRow {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+.GridColumn {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+.LeftSideGridContainer {
+  flex: 0 0 75px;
+  z-index: 10;
+}
+
+.LeftSideGrid {
+  overflow: hidden !important;
+}
+.HeaderGrid {
+  width: 100%;
+  overflow: hidden !important;
+}
+.BodyGrid {
+  width: 100%;
+}
+
+.evenRow {
+}
+.oddRow {
+  /* background-color: rgba(0, 0, 0, .1); */
+}
+
+.cell,
+.headerCell,
+.leftCell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 .5em;
+  border: 0.5px solid #c7c7c7;
+  overflow: hidden;
+}
+.headerCell,
+.leftCell {
+  font-weight: bold;
+  z-index: 50;
+  background-color: grey;
+  color: white;
+}

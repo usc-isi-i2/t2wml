@@ -3,11 +3,12 @@ import 'react-virtualized/styles.css'
 import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
 
 import * as utils from './table-utils';
-import { DEFAULT_CELL_STATE, TableData } from '../../common/dtos';
+import { DEFAULT_CELL_STATE, TableCell, TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
-import { AutoSizer } from 'react-virtualized';
+import { AutoSizer, Grid, List, ScrollSync } from 'react-virtualized';
+import scrollbarSize from 'dom-helpers/scrollbarSize';
 
 
 interface TableProperties {
@@ -27,6 +28,63 @@ class Table extends React.Component<TableProperties>{
 
   constructor(props: TableProperties) {
     super(props);
+  }
+
+  _renderBodyCell(data: TableCell, rowIndex: number, columnIndex: number, style: any) {
+    if (columnIndex < 1) {
+      return;
+    }
+    const rowClass = this.getRowClass(rowIndex, columnIndex)
+    const classNames = rowClass + " " + "cell";
+
+    return (
+      <div className={classNames} key={`${rowIndex} ${columnIndex}`} style={style}>
+        {data.content}
+
+      </div>
+    );
+  }
+
+  _renderLeftHeaderCell(rowIndex: number, columnIndex: number, style: any) {
+    // data-row-index={rowIndex} data-col-index={columnIndex + 1}
+    return (
+      <div className="headerCell" key={`${rowIndex} ${columnIndex}`}
+        style={style}>
+        {utils.columnToLetter(columnIndex + 1)}
+      </div>
+    );
+  }
+
+  getRowClass(rowIndex: number, columnIndex: number) {
+    const rowClass =
+      rowIndex % 2 === 0
+        ? columnIndex % 2 === 0
+          ? "evenRow"
+          : "oddRow"
+        : columnIndex % 2 !== 0
+          ? "evenRow"
+          : "oddRow";
+    return rowClass
+  }
+
+  _renderLeftSideCell(rowIndex: number, columnIndex: number, style: any) {
+    const rowClass = this.getRowClass(rowIndex, columnIndex)
+    const classNames = rowClass + " " + "cell";
+
+    return (
+      <div className={classNames} key={`${rowIndex} ${columnIndex}`} style={style}>
+        {rowIndex + 1}
+
+      </div>
+    );
+  }
+
+  _renderHeaderCell(rowIndex: number, columnIndex: number, style: any) {
+    if (columnIndex < 1) {
+      return;
+    }
+
+    return this._renderLeftHeaderCell(rowIndex, columnIndex, style);
   }
 
   render() {
@@ -74,75 +132,132 @@ class Table extends React.Component<TableProperties>{
     }
 
     return (
-      <div
-        className='table-wrapper'
-        onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
-        onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
-        onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
-      >
-        <AutoSizer disableWidth>
-          {
-            (Size: { height: number }) => {
-              return (
-                <VirtualizedTable id="virtualized-table"
-                  height={Size.height}
-                  width={tableData[0].length * 75}
-                  className={wikiStore.table.selection && ableActivated ? 'active' : ''}
-                  headerHeight={25}
-                  rowHeight={25}
-                  ref={setTableReference}
-                  rowCount={Object.keys(tableData).length}
-                  rowGetter={({ index }) => { return Object.entries(tableData[index]) }}
-                >
+      <ScrollSync>
+        {({
+          // clientHeight,
+          // clientWidth,
+          onScroll,
+          // scrollHeight,
+          scrollLeft,
+          scrollTop,
+          // scrollWidth,
+        }) => {
 
-                  <Column
-                    label=''
-                    dataKey=''
-                    headerRenderer={() => <div>&nbsp;</div>}
-                    width={50}
-                    cellDataGetter={data => {
-                      return data.rowData[data.dataKey]
-                    }}
-                    cellRenderer={data => {
-                      return <div>{data.rowIndex + 1}</div>
-                    }}
-                  />
+          const rowHeight = 25;
+          const columnWidth = 75;
+          const height = 800;
+          const rowCount = tableData.length;
+          const columnCount = tableData[0].length;
+          const overscanColumnCount = 0;
+          const overscanRowCount = 5;
 
-                  {Object.keys(tableData[0]).map((r, i) => (
-                    <Column key={`col-${i}`}
-                      label={utils.columnToLetter(i + 1)}
-                      dataKey={i.toString()}
-                      headerRenderer={data => {
-                        return (
-                          <div
-                            data-row-index={0}
-                            data-col-index={i + 1}
-                            onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
-                            {data.label}
-                          </div>
-                        )
-                      }}
-                      width={75}
-                      cellDataGetter={(data: TableCellDataGetterParams) => {
-                        return data.rowData[data.dataKey]
-                      }}
-                      cellRenderer={(data: TableCellProps) => {
-                        if (data.isScrolling && data.cellData && data.cellData.length && data.cellData[1].content) {
-                          return (<div style={{ color: 'lightgray' }}> scrolling... </div>);
-                        }
-                        return (
-                          <TableCellItem cellData={data.cellData} rowIndex={data.rowIndex} columnIndex={data.columnIndex} />
-                        );
-                      }
-                      }
-                    />
-                  ))}
+          return (
+            <div className="GridRow">
+              <div
+                className="LeftSideGridContainer"
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0
+                }}>
+                <Grid
+                  cellRenderer={data => {
+                    return this._renderLeftHeaderCell(data.rowIndex, data.columnIndex, data.style)
+                  }}
+                  className="HeaderGrid"
+                  width={columnWidth}
+                  height={rowHeight}
+                  rowHeight={rowHeight}
+                  columnWidth={columnWidth}
+                  rowCount={1}
+                  columnCount={1}
+                />
+              </div>
+              <div
+                className="LeftSideGridContainer"
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: rowHeight
+                }}>
+                <Grid
+                  overscanColumnCount={overscanColumnCount}
+                  overscanRowCount={overscanRowCount}
+                  cellRenderer={data => {
+                    return this._renderLeftSideCell(data.rowIndex, data.columnIndex, data.style)
+                  }}
+                  columnWidth={columnWidth}
+                  columnCount={1}
+                  className='LeftSideGrid'
+                  height={height - scrollbarSize()}
+                  rowHeight={rowHeight}
+                  rowCount={rowCount}
+                  scrollTop={scrollTop}
+                  width={columnWidth}
+                />
+              </div>
+              <div className='GridColumn'>
+                <AutoSizer disableHeight>
+                  {({ width }) => (
+                    <div>
+                      <div
+                        style={{
+                          // backgroundColor: `rgb(${topBackgroundColor.r},${topBackgroundColor.g},${topBackgroundColor.b})`,
+                          // color: topColor,
+                          height: rowHeight,
+                          width: width - scrollbarSize(),
+                        }}
+                        onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+                        onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+                        onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
+                      >
+                        <Grid
+                          className="HeaderGrid"
+                          columnWidth={columnWidth}
+                          columnCount={columnCount}
+                          height={rowHeight}
+                          overscanColumnCount={overscanColumnCount}
+                          cellRenderer={data => {
+                            return this._renderHeaderCell(data.rowIndex, data.columnIndex, data.style)
+                          }}
+                          rowHeight={rowHeight}
+                          rowCount={1}
+                          scrollLeft={scrollLeft}
+                          width={width - scrollbarSize()}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          // backgroundColor: `rgb(${middleBackgroundColor.r},${middleBackgroundColor.g},${middleBackgroundColor.b})`,
+                          // color: middleColor,
+                          height,
+                          width,
+                        }}>
+                        <Grid
+                          className="BodyGrid"
+                          columnWidth={columnWidth}
+                          columnCount={columnCount}
+                          height={height}
+                          onScroll={onScroll}
+                          overscanColumnCount={overscanColumnCount}
+                          overscanRowCount={overscanRowCount}
+                          cellRenderer={data => {
+                            return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex], data.rowIndex, data.columnIndex, data.style)
+                          }}
+                          rowHeight={rowHeight}
+                          rowCount={rowCount}
+                          width={width}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </AutoSizer>
+              </div>
+            </div>
 
-                </VirtualizedTable>
-              )
-            }}
-        </AutoSizer>
-      </div >
+          );
+        }}
+      </ScrollSync>
     )
   }
 }
