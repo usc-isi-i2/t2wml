@@ -16,7 +16,7 @@
 }
 
 .ReactVirtualized__Table {
-  /* table-layout: fixed;
+  table-layout: fixed;
   transform: rotateX(0deg);
   border-collapse: collapse;
   display: table;
@@ -24,15 +24,8 @@
   font-weight: 400;
   user-select: none;
   position: relative;
-  cursor: crosshair; */
-
-  border: 1px solid #c7c7c7;
-  border-collapse: collapse;
-  border-spacing: 0;
-  font-weight: 400;
-  user-select: none;
-  position: relative;
   cursor: crosshair;
+
 }
 
 .ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>div {
