@@ -333,7 +333,7 @@ def get_entities(project: Project):
     for file in project.entity_files:
         full_path=project.get_full_path(file)
         entity_dict[file]=kgtk_to_dict(full_path)
-        entity_dict[file].pop("filename", None) #api compatibility
+        entity_dict[file].pop("filepath", None) #api compatibility
     return entity_dict
 
 def update_entities(project, entity_file, updated_entries):
