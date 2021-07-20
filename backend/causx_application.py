@@ -12,7 +12,7 @@ from io import BytesIO
 from pathlib import Path
 from flask import request
 from werkzeug.utils import secure_filename
-from app_config import app, BASEDIR
+from app_config import app, BASEDIR, NumpyEncoder
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.spreadsheets.utilities import PandasLoader
@@ -540,7 +540,7 @@ def causx_upload_annotation():
     except:
         processed_annotation = []
     with open(calc_params.annotation_path, 'w') as f:
-        f.write(json.dumps(processed_annotation))
+        f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
     project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
     preload(calc_params)
