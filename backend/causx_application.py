@@ -484,7 +484,7 @@ def causx_upload_data():
 def causx_upload_project():
     #upload a project zip and load it as the active project
     project = get_project()
-    in_file = causx_get_file([".t2wmlz"])
+    in_file = causx_get_file([".t2wmlz", ".zip"])
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
@@ -516,7 +516,7 @@ def causx_upload_project():
 def causx_upload_annotation():
     #upload a project zip, extract the annotation file, and apply it to the current project
     project = get_project()
-    in_file = causx_get_file([".t2wmlz"])
+    in_file = causx_get_file([".t2wmlz", ".zip"])
     calc_params=get_calc_params(project)
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
