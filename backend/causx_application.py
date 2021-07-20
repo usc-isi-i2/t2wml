@@ -15,6 +15,7 @@ from werkzeug.utils import secure_filename
 from app_config import app, BASEDIR
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
+from t2wml.spreadsheets.utilities import PandasLoader
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
 from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
@@ -526,10 +527,13 @@ def causx_upload_annotation():
             source_annotations=json.loads(zf.read(filemap["annotation"]))
             data_file_name=filemap["data"]
             data_file=BytesIO(zf.read(data_file_name))
+
             if Path(data_file_name).suffix==".csv":
-                source_df = pd.read_csv(data_file)
+                source_df = pd.read_csv(data_file, dtype=str, header=None)
             else:
-                source_df = pd.read_excel(data_file, sheet_name=filemap["sheet"])
+                source_df = pd.read_excel(data_file, sheet_name=filemap["sheet"], dtype=str, header=None)
+            source_df.fillna("")
+            source_df.replace(r'^\s+$', "", regex=True)
 
     try:
         processed_annotation = copy_annotation(source_annotations, source_df, calc_params.sheet.data)
