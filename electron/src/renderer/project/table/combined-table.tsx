@@ -610,15 +610,13 @@ class CombinedTable extends Component<{}, TableState> {
         wikiStore.partialCsv.showSpinner = true;
 
         // send request
-        debugger
         try {
-            files.forEach(async file => {
+            for (const file of files) {
                 console.log("<TableComponent> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
                 const data = { "filepath": file.path };
-
                 await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
                 console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
-            });
+            }
         } catch (error) {
             error.errorDescription += "\n\nCannot load one of the files: " + files.map(file => file.name).join(', ');
             this.setState({ errorMessage: error });
@@ -1142,8 +1140,9 @@ class CombinedTable extends Component<{}, TableState> {
         const { showSpinner, tableData } = this.state;
 
         return (
+            //  maxFiles={1} 
             <Dropzone accept=".csv, .tsv, .xls, .xlsx" onDrop={(files) => this.onDrop(files)}>
-                {/* maxFiles={1} */}
+
                 {({ getRootProps, getInputProps }) => (
                     <div {...getRootProps({ className: 'dropzone w-100 h-100' })}>
 
