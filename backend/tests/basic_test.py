@@ -188,8 +188,11 @@ class TestLoadingProject(BaseClass):
         self.results_dict['load_from_path']=data
         #with open(self.expected_results_path, 'w') as f:
         #    json.dump(self.results_dict, f, sort_keys=False, indent=4)
-
-        self.compare_jsons(data, 'load_from_path')
+        assert data["layers"]["error"]==self.results_dict['load_from_path']["layers"]["error"]
+        assert data["layers"]["statement"]==self.results_dict['load_from_path']["layers"]["statement"]
+        assert data["layers"]["qnode"]==self.results_dict['load_from_path']["layers"]["qnode"]
+        assert data["layers"]["type"]==self.results_dict['load_from_path']["layers"]["type"]
+        #self.compare_jsons(data, 'load_from_path')
 
 
 class TestCleaning(BaseClass):
