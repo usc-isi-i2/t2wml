@@ -4,13 +4,23 @@ import { AutoSizer, CellMeasurer, CellMeasurerCache, Grid, ScrollSync } from 're
 import scrollbarSize from 'dom-helpers/scrollbarSize';
 
 import * as utils from './table-utils';
-import { DEFAULT_CELL_STATE, TableCell, TableData } from '../../common/dtos';
+import { TableCell, TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 
-
+export const DEFAULT_CELL_STATE = {
+  active: false,
+  activeTop: false,
+  activeLeft: false,
+  activeRight: false,
+  activeBottom: false,
+  activeCorner: false,
+  highlight: false,
+  maxWidth: false,
+  qnode: false
+}
 
 interface TableProperties {
   tableData?: TableData;
@@ -36,20 +46,21 @@ class Table extends React.Component<TableProperties, TableState>{
 
   private disposers: IReactionDisposer[] = [];
   // private cache: CellMeasurerCache;
+  //refs are for resizing -- recomputeGridSize is a gridvirtualized internal function
   private mainGridRef?: any;
-  private headerGridRef?: any;
-  private leftGridRef?: any;
-  private cornerGridRef?: any;
+  private headerGridRef?: any; //column titles
+  private leftGridRef?: any; //row titles
+  private cornerGridRef?: any; //top left corner
 
   constructor(props: TableProperties) {
     super(props);
 
     this.state = {
-      overscanColumnCount: 2,
-      overscanRowCount: 5,
-      rowHeight: 25,
-      columnWidth: 75,
-      height: 800,
+      overscanColumnCount: 2, //how much to preload
+      overscanRowCount: 5,  //how much to preload
+      rowHeight: 25, //can be replaced with a function which receives row index
+      columnWidth: 75, //can be replaced with a function which receives col index
+      height: 800, //the height of the entire grid in pixels
     }
 
     this.mainGridRef = null;
@@ -77,7 +88,7 @@ class Table extends React.Component<TableProperties, TableState>{
   updateShowQNodes() {
     if (wikiStore.table.showQnodes) {
       this.setState({ rowHeight: 50, columnWidth: 120 }, () => {
-        this.mainGridRef.recomputeGridSize();
+        this.mainGridRef.recomputeGridSize(); //recomputeGridSize is a gridvirtualized internal function
         this.cornerGridRef.recomputeGridSize();
         this.headerGridRef.recomputeGridSize();
         this.leftGridRef.recomputeGridSize();
@@ -139,6 +150,7 @@ class Table extends React.Component<TableProperties, TableState>{
     }
     const { onClickHeader } = this.props;
 
+    //something something index needs to be fixed
     return (
       <div className="cell headerCell" key={`headerCell ${columnIndex}`} onClick={(event) => onClickHeader ? onClickHeader(event) : null}
         style={style}>
@@ -178,6 +190,13 @@ class Table extends React.Component<TableProperties, TableState>{
     if (!tableData) {
       return null;
     }
+
+    //overscanrowcount, overscancolumncount, should not be in state, they can simply be constants
+    // rowheight might need to be a property, not a state, but it needs to be ajudtsable -- if we switch
+    // it to property, can get rid of ref
+    // however, probably better for both rowHeight and columnWidth to be changed to arrow functions instead
+    // note that a change in calculation of arrow function does not affect already rendered cells
+    // currently height is fixed, we need to somehow make it adjust to the window sizing (especially because of table sheets)
 
     const {
       rowHeight, columnWidth, height, overscanColumnCount, overscanRowCount
@@ -320,7 +339,7 @@ class Table extends React.Component<TableProperties, TableState>{
                           onScroll={onScroll}
                           overscanColumnCount={overscanColumnCount}
                           overscanRowCount={overscanRowCount}
-                          cellRenderer={data => {
+                          cellRenderer={data => { //in order to make it be 0, 0  we have to subtract 1
                             return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex - 1], data.rowIndex, data.columnIndex - 1, data.style)
                           }}
                           rowHeight={() => wikiStore.table.showQnodes ? 70 : rowHeight}

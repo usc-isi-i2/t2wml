@@ -128,17 +128,7 @@ export interface StatementEntry extends Entry {
 export type AnnotationBlockRole = "dependentVar" | "qualifier" | "metadata" | "property" | "mainSubject" | "unit";
 export type AnnotationBlockType = "string" | "quantity" | "time" | "wikibaseitem";
 
-export const DEFAULT_CELL_STATE = {
-    active: false,
-    activeTop: false,
-    activeLeft: false,
-    activeRight: false,
-    activeBottom: false,
-    activeCorner: false,
-    highlight: false,
-    maxWidth: false,
-    qnode: false
-}
+
 
 export interface EntityFields {
     is_property: boolean;
@@ -181,18 +171,26 @@ export interface AnnotationBlock {
 export interface TableCell {
     rawContent?: string;
     content: string | JSX.Element;
-    classNames: string[];
+    classNames: string[]; //role, link, etc
     overlay?: string;
 
+    //fade or not
     active: boolean;
+
+    //show single cell selected
+    highlight: boolean;
+
+    //decide if borders are thick
     activeTop: boolean;
     activeLeft: boolean;
     activeRight: boolean;
     activeBottom: boolean;
+
+    //do i add a draggy corner
     activeCorner: boolean;
-    highlight: boolean;
-    maxWidth: boolean;
-    qnode: boolean;
+
+    maxWidth: boolean; //currently not used
+    qnode: boolean; //currently not used
 }
 
 export type TableData = TableCell[][];
