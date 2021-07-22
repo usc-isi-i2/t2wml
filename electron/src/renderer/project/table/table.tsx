@@ -1,14 +1,14 @@
 import React from 'react';
 import 'react-virtualized/styles.css'
-import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
+import { AutoSizer, Grid, ScrollSync } from 'react-virtualized';
+import scrollbarSize from 'dom-helpers/scrollbarSize';
 
 import * as utils from './table-utils';
 import { DEFAULT_CELL_STATE, TableCell, TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
-import { AutoSizer, Grid, List, ScrollSync } from 'react-virtualized';
-import scrollbarSize from 'dom-helpers/scrollbarSize';
+
 
 
 interface TableProperties {
@@ -18,7 +18,6 @@ interface TableProperties {
   onMouseDown?: (event: React.MouseEvent) => void;
   onMouseMove?: (event: React.MouseEvent) => void;
   onClickHeader?: (event: React.MouseEvent) => void;
-  setTableReference: any;
   MIN_ROWS: number;
   MIN_COLUMNS: number;
 }
@@ -31,26 +30,25 @@ class Table extends React.Component<TableProperties>{
   }
 
   _renderBodyCell(data: TableCell, rowIndex: number, columnIndex: number, style: any) {
-    if (columnIndex < 1) {
+    if (!data) {
       return;
     }
-    const rowClass = this.getRowClass(rowIndex, columnIndex)
-    const classNames = rowClass + " " + "cell";
+    // const rowClass = this.getRowClass(rowIndex, columnIndex)
+    // const classNames = rowClass + " " + "cell";
 
     return (
-      <div className={classNames} key={`${rowIndex} ${columnIndex}`} style={style}>
-        {data.content}
 
+      <div className="cell" key={`${rowIndex} ${columnIndex}`} style={style}>
+        {/* {rowIndex} {columnIndex} */}
+        <TableCellItem cellData={data} rowIndex={rowIndex} columnIndex={columnIndex} />
       </div>
     );
   }
 
   _renderLeftHeaderCell(rowIndex: number, columnIndex: number, style: any) {
-    // data-row-index={rowIndex} data-col-index={columnIndex + 1}
     return (
-      <div className="headerCell" key={`${rowIndex} ${columnIndex}`}
+      <div className="headerCell headerLeftCell" key={`${rowIndex} ${columnIndex}`}
         style={style}>
-        {utils.columnToLetter(columnIndex + 1)}
       </div>
     );
   }
@@ -69,12 +67,11 @@ class Table extends React.Component<TableProperties>{
 
   _renderLeftSideCell(rowIndex: number, columnIndex: number, style: any) {
     const rowClass = this.getRowClass(rowIndex, columnIndex)
-    const classNames = rowClass + " " + "cell";
+    const classNames = rowClass + " " + "cell" + " " + "leftCell";
 
     return (
-      <div className={classNames} key={`${rowIndex} ${columnIndex}`} style={style}>
+      <div className={classNames} key={`${rowIndex} leftCell`} style={style}>
         {rowIndex + 1}
-
       </div>
     );
   }
@@ -83,8 +80,15 @@ class Table extends React.Component<TableProperties>{
     if (columnIndex < 1) {
       return;
     }
+    const { onClickHeader } = this.props;
 
-    return this._renderLeftHeaderCell(rowIndex, columnIndex, style);
+    return (
+      <div className="cell headerCell" key={`headerCell ${columnIndex}`} onClick={(event) => onClickHeader ? onClickHeader(event) : null}
+        style={style}>
+        {/* {columnIndex} */}
+        {utils.columnToLetter(columnIndex-1)}
+      </div>
+    );
   }
 
   render() {
@@ -93,8 +97,6 @@ class Table extends React.Component<TableProperties>{
       onMouseUp,
       onMouseDown,
       onMouseMove,
-      onClickHeader,
-      setTableReference,
       ableActivated,
       MIN_COLUMNS,
       MIN_ROWS
@@ -108,7 +110,7 @@ class Table extends React.Component<TableProperties>{
     // add one column and one row to the table:
     for (let index = 0; index < tableData.length; index++) {
       const rowData = tableData[index]
-      while (rowData.length < MIN_COLUMNS + 1) { // add columns to the display table
+      while (rowData.length < MIN_COLUMNS) { // add columns to the display table
         rowData.push({
           content: '',
           rawContent: '',
@@ -118,9 +120,9 @@ class Table extends React.Component<TableProperties>{
       }
     }
 
-    while (tableData.length < MIN_ROWS + 1) { // add rows to the display table
+    while (tableData.length < MIN_ROWS) { // add rows to the display table
       const rowData = [];
-      while (rowData.length < MIN_COLUMNS + 1) {
+      while (rowData.length < MIN_COLUMNS) {
         rowData.push({
           content: '',
           rawContent: '',
@@ -148,11 +150,15 @@ class Table extends React.Component<TableProperties>{
           const height = 800;
           const rowCount = tableData.length;
           const columnCount = tableData[0].length;
-          const overscanColumnCount = 0;
+          const overscanColumnCount = 2;
           const overscanRowCount = 5;
 
           return (
-            <div className="GridRow">
+            <div className='GridRow'
+              onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+              onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+              onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
+            >
               <div
                 className="LeftSideGridContainer"
                 style={{
@@ -207,9 +213,6 @@ class Table extends React.Component<TableProperties>{
                           height: rowHeight,
                           width: width - scrollbarSize(),
                         }}
-                        onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
-                        onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
-                        onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
                       >
                         <Grid
                           className="HeaderGrid"
@@ -234,7 +237,7 @@ class Table extends React.Component<TableProperties>{
                           width,
                         }}>
                         <Grid
-                          className="BodyGrid"
+                          className={wikiStore.table.selection && ableActivated ? 'BodyGrid active' : 'BodyGrid'}
                           columnWidth={columnWidth}
                           columnCount={columnCount}
                           height={height}
@@ -242,7 +245,7 @@ class Table extends React.Component<TableProperties>{
                           overscanColumnCount={overscanColumnCount}
                           overscanRowCount={overscanRowCount}
                           cellRenderer={data => {
-                            return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex], data.rowIndex, data.columnIndex, data.style)
+                            return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex - 1], data.rowIndex, data.columnIndex - 1, data.style)
                           }}
                           rowHeight={rowHeight}
                           rowCount={rowCount}

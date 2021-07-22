@@ -120,10 +120,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       const { selectedCell } = this.props;
       const { col, row } = selectedCell;
       const selection: CellSelection = {
-        x1: col + 1,
-        x2: col + 1,
-        y1: row + 1,
-        y2: row + 1,
+        x1: col,
+        x2: col,
+        y1: row,
+        y2: row,
       };
       const cellInBlock = checkSelectedAnnotationBlocks(selection);
       this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })

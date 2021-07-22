@@ -51,10 +51,10 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
     if (applyToBlock && selectedCell) {
       const { col, row } = selectedCell;
       const selection: CellSelection = {
-        x1: col + 1,
-        x2: col + 1,
-        y1: row + 1,
-        y2: row + 1,
+        x1: col,
+        x2: col,
+        y1: row,
+        y2: row,
       };
       const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
       if (selectedBlock) {
@@ -98,12 +98,12 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
 
     let selection = [[col, row], [col, row]];
     if (applyToBlock) {
-      const cellSelection: CellSelection = { x1: col + 1, x2: col + 1, y1: row + 1, y2: row + 1 };
+      const cellSelection: CellSelection = { x1: col, x2: col, y1: row, y2: row };
       const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
       if (selectedBlock) {
         selection = [
-          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
-          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+          [selectedBlock.selection.x1, selectedBlock.selection.y1],
+          [selectedBlock.selection.x2, selectedBlock.selection.y2],
         ];
       }
     }
@@ -163,12 +163,12 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
 
     let selection = [[col, row], [col, row]];
     if (applyToBlock) {
-      const cellSelection: CellSelection = { x1: col + 1, x2: col + 1, y1: row + 1, y2: row + 1 };
+      const cellSelection: CellSelection = { x1: col, x2: col, y1: row, y2: row };
       const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
       if (selectedBlock) {
         selection = [
-          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
-          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+          [selectedBlock.selection.x1, selectedBlock.selection.y1],
+          [selectedBlock.selection.x2, selectedBlock.selection.y2],
         ];
       }
     }
@@ -205,12 +205,12 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
 
     let selection = [[col, row], [col, row]];
     if (applyToBlock) {
-      const cellSelection: CellSelection = { x1: col + 1, x2: col + 1, y1: row + 1, y2: row + 1 };
+      const cellSelection: CellSelection = { x1: col, x2: col, y1: row, y2: row };
       const selectedBlock = utils.checkSelectedAnnotationBlocks(cellSelection);
       if (selectedBlock) {
         selection = [
-          [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
-          [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+          [selectedBlock.selection.x1, selectedBlock.selection.y1],
+          [selectedBlock.selection.x2, selectedBlock.selection.y2],
         ];
       }
     }
@@ -257,7 +257,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       <div className="header">
         <strong className="mr-auto">
           Selected: {selectedCell ?
-            utils.columnToLetter(col + 1) + (row + 1)
+            utils.columnToLetter(col) + (row)
             : ""
           }
         </strong>

@@ -3,6 +3,7 @@ import { CellSelection } from '../../common/general';
 import wikiStore from '@/renderer/data/store';
 
 export function columnToLetter(column: number) {
+  column += 1;
   let temp, letter = '';
   while (column > 0) {
     temp = (column - 1) % 26;
@@ -23,16 +24,18 @@ export function letterToColumn(letter: String) {
 
 export function humanReadableSelection(selection: CellSelection) {
   const { x1, y1, x2, y2 } = selection;
+  const y1_h = y1 + 1;
+  const y2_h = y2 + 1;
   let text = '';
-  if (x1 === x2 && y1 === y2) {
-    text += `${columnToLetter(x1)}${y1}`;
+  if (x1 === x2 && y1_h === y2_h) {
+    text += `${columnToLetter(x1)}${y1_h}`;
   } else {
     if (x1 <= x2) {
-      text += `${columnToLetter(x1)}${y1 <= y2 ? y1 : y2}`;
-      text += `:${columnToLetter(x2)}${y1 <= y2 ? y2 : y1}`;
+      text += `${columnToLetter(x1)}${y1_h <= y2_h ? y1_h : y2_h}`;
+      text += `:${columnToLetter(x2)}${y1_h <= y2_h ? y2_h : y1_h}`;
     } else {
-      text += ` ${columnToLetter(x2)}${y2 <= y1 ? y2 : y1}`;
-      text += `:${columnToLetter(x1)}${y2 <= y1 ? y1 : y2}`;
+      text += ` ${columnToLetter(x2)}${y2_h <= y1_h ? y2_h : y1_h}`;
+      text += `:${columnToLetter(x1)}${y2_h <= y1_h ? y1_h : y2_h}`;
     }
   }
   return text;
@@ -40,12 +43,12 @@ export function humanReadableSelection(selection: CellSelection) {
 
 export function standardizeSelection(selection: CellSelection): CellSelection {
   let temp;
-  if ( selection.x2 < selection.x1 ) {
+  if (selection.x2 < selection.x1) {
     temp = selection.x1;
     selection.x1 = selection.x2;
     selection.x2 = temp;
   }
-  if ( selection.y2 < selection.y1 ) {
+  if (selection.y2 < selection.y1) {
     temp = selection.y1;
     selection.y1 = selection.y2;
     selection.y2 = temp;
@@ -56,6 +59,7 @@ export function standardizeSelection(selection: CellSelection): CellSelection {
 export function checkSelectedAnnotationBlocks(selection: CellSelection): AnnotationBlock | undefined {
   // checks if a given selection is part of an annotation block
   // if so, returns the annotation block
+  selection = { x1: selection.x1 + 1, x2: selection.x2 + 1, y1: selection.y1 + 1, y2: selection.y2 + 1 } // todo index 0
   const { x1, x2, y1, y2 } = selection;
   for (const block of wikiStore.annotations.blocks) {
     if (block.selection['y1'] <= block.selection['y2']) {
@@ -64,14 +68,22 @@ export function checkSelectedAnnotationBlocks(selection: CellSelection): Annotat
           x2 <= block.selection['x2'] &&
           y1 >= block.selection['y1'] &&
           y2 <= block.selection['y2']) {
-          return block;
+          const rblock = {// todo index 0
+            ...block,
+            selection: { x1: block.selection.x1 - 1, x2: block.selection.x2 - 1, y1: block.selection.y1 - 1, y2: block.selection.y2 - 1 }
+          }
+          return rblock;
         }
       } else {
         if (x1 <= block.selection['x1'] &&
           x2 >= block.selection['x2'] &&
           y1 >= block.selection['y1'] &&
           y2 <= block.selection['y2']) {
-          return block;
+          const rblock = {  // todo index 0
+            ...block,
+            selection: { x1: block.selection.x1 - 1, x2: block.selection.x2 - 1, y1: block.selection.y1 - 1, y2: block.selection.y2 - 1 }
+          }
+          return rblock;
         }
       }
     } else {
@@ -80,14 +92,22 @@ export function checkSelectedAnnotationBlocks(selection: CellSelection): Annotat
           x2 <= block.selection['x2'] &&
           y1 <= block.selection['y1'] &&
           y2 >= block.selection['y2']) {
-          return block;
+          const rblock = {  // todo index 0
+            ...block,
+            selection: { x1: block.selection.x1 - 1, x2: block.selection.x2 - 1, y1: block.selection.y1 - 1, y2: block.selection.y2 - 1 }
+          }
+          return rblock;
         }
       } else {
         if (x1 <= block.selection['x1'] &&
           x2 >= block.selection['x2'] &&
           y1 <= block.selection['y1'] &&
           y2 >= block.selection['y2']) {
-          return block;
+          const rblock = {  // todo index 0
+            ...block,
+            selection: { x1: block.selection.x1 - 1, x2: block.selection.x2 - 1, y1: block.selection.y1 - 1, y2: block.selection.y2 - 1 }
+          }
+          return rblock;
         }
       }
     }
@@ -99,9 +119,9 @@ function isLetter(char: string) {
   return char.length === 1 && char.toLowerCase().match(/[a-z]/i);
 }
 
-export function isValidLabel(label?: string){
-  if(!label || label.length===0){ return false; }
-  for(const char of label){
+export function isValidLabel(label?: string) {
+  if (!label || label.length === 0) { return false; }
+  for (const char of label) {
     if (isLetter(char)) return true;
   }
   return false;

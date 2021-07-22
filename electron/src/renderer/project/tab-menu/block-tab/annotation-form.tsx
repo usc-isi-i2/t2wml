@@ -128,12 +128,21 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.setState({ showWikifyBlockMenu: false });
   }
 
+  compareSelections(s1?: CellSelection, s2?:CellSelection):boolean {
+    if(!s1 && s2 ) {return false;}
+    if(s1 && !s2) {return false;}
+    if(s1?.x1 !== s2?.x1 || s1?.x2 !== s2?.x2 || s1?.y1 !== s2?.y1 || s1?.y2 !== s2?.y2){
+      return false;
+    }
+    return true;
+  }
 
   updateSelection(selection?: CellSelection) {
-    if ((!wikiStore.table.selectedBlock) || wikiStore.table.selectedBlock.selection !== selection) {
+    if (!wikiStore.table.selectedBlock || ! this.compareSelections(wikiStore.table.selectedBlock?.selection, selection)) {
       const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
       const fields = { ...this.state.fields }
       if ((!wikiStore.table.selectedBlock)) {
+        console.log("updateSelection- delete")
         /* eslint-disable */
         for (const [key, val] of Object.entries(fields)) {
           fields[key as keyof AnnotationFields] = undefined;
@@ -153,6 +162,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         window.clearTimeout(this.timeoutSuggest);
       }
       const selectedArea = utils.humanReadableSelection(selectedBlock.selection)
+      console.log("updateSelectedBlock", selectedArea, selectedBlock.role)
 
       this.setState({
         selectedBlock: selectedBlock,
@@ -256,10 +266,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const groups = regex.exec(value);
     if (groups && groups[1] && groups[2] && groups[3] && groups[4]) {
       const selection: CellSelection = {
-        x1: utils.letterToColumn(groups[1]),
-        x2: utils.letterToColumn(groups[3]),
-        y1: parseInt(groups[2]),
-        y2: parseInt(groups[4]),
+        x1: utils.letterToColumn(groups[1]) - 1, //to do index 0
+        x2: utils.letterToColumn(groups[3]) - 1,//to do index 0
+        y1: parseInt(groups[2]) - 1,//to do index 0
+        y2: parseInt(groups[4]) - 1,//to do index 0
       };
       this.validationSelectionArea(selection);
       if (this.timeoutChangeAreaId) {
@@ -299,7 +309,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           //do nothing...
         }
       }
-      wikiStore.table.selectBlock(utils.checkSelectedAnnotationBlocks(annotation.selection))
+      wikiStore.table.selectBlock(utils.checkSelectedAnnotationBlocks({ x1: annotation.selection.x1 - 1, x2: annotation.selection.x2 - 1, y1: annotation.selection.y1 - 1, y2: annotation.selection.y2 - 1 })) // todo index 0
     } else {
       wikiStore.table.resetSelections();
     }
@@ -324,7 +334,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       return block.id !== selectedBlock?.id;
     });
     const annotation: any = {
-      selection: selection
+      selection: { x1: selection.x1 + 1, x2: selection.x2 + 1, y1: selection.y1 + 1, y2: selection.y2 + 1 } // todo index 0
     };
 
     // Add all updated values from the annotation form

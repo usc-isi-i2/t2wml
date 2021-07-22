@@ -182,8 +182,8 @@ class WikiBlockMenu extends Component<WikiBlockMenuProps, { overwrite: boolean, 
         wikiStore.yaml.showSpinner = true;
 
         const selection = [
-            [selectedBlock.selection.x1 - 1, selectedBlock.selection.y1 - 1],
-            [selectedBlock.selection.x2 - 1, selectedBlock.selection.y2 - 1],
+            [selectedBlock.selection.x1, selectedBlock.selection.y1],
+            [selectedBlock.selection.x2, selectedBlock.selection.y2],
         ];
 
         try {

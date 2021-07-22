@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { TableCell } from '@/renderer/common/dtos';
 
 
 @observer
-class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, cellData?: any[] }, {}>{
+class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, cellData?: TableCell }, {}>{
 
 
-  constructor(props: { rowIndex: number, columnIndex: number, cellData?: any[] }) {
+  constructor(props: { rowIndex: number, columnIndex: number, cellData?: TableCell }) {
     super(props);
   }
 
@@ -23,7 +24,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
     const { cellData, rowIndex, columnIndex } = this.props;
     if (!cellData) { return }
     
-    const data = cellData[1]
+    const data= cellData;
 
     const classNames = this.getClassNames(data.classNames.join(' '), {
       'active': data.active,
@@ -33,8 +34,9 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
     });
     
     const cellDisplay = (
-      <div data-row-index={rowIndex + 1} data-col-index={columnIndex}>
+      <div className="cell-div" data-row-index={rowIndex} data-col-index={columnIndex}>
         {data.content}
+        {/* {rowIndex} {columnIndex} */}
         {data.activeTop && <div className="cell-border-top" />}
         {data.activeLeft && <div className="cell-border-left" />}
         {data.activeRight && <div className="cell-border-right" />}
@@ -44,7 +46,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
     )
 
     return (
-      <div className={classNames} data-row-index={rowIndex + 1} data-col-index={columnIndex}>
+      <div className={classNames} data-row-index={rowIndex} data-col-index={columnIndex}>
         {
           data.overlay ?
             <OverlayTrigger
@@ -60,7 +62,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
               {cellDisplay}
             </OverlayTrigger>
             :
-            <div className="cell-div" data-row-index={rowIndex + 1} data-col-index={columnIndex}>
+            <div className="cell-div" data-row-index={rowIndex} data-col-index={columnIndex}>
               {cellDisplay}
             </div>
         }

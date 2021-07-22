@@ -39,15 +39,10 @@ interface TableState {
 @observer
 class CombinedTable extends Component<{}, TableState> {
     private requestService: RequestService;
-    private tableRef = React.createRef<HTMLTableElement>().current!;
     private selecting = false;
     private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
     private prevDirection?: Direction;
 
-    setTableReference(reference?: HTMLTableElement) {
-        if (!reference) { return; }
-        this.tableRef = reference;
-    }
 
     constructor(props: {}) {
         super(props);
@@ -290,6 +285,7 @@ class CombinedTable extends Component<{}, TableState> {
                     tableData[indexPair[0]][indexPair[1]].classNames.push(`wikified`);
                 }
                 catch {
+                    console.log("catch updateQnode")
                     //pass
                 }
             }
@@ -343,7 +339,9 @@ class CombinedTable extends Component<{}, TableState> {
 
         if (wikiStore.annotations.blocks && tableData) {
             for (const block of wikiStore.annotations.blocks) {
-                const { role, selection, property, links, subject, link, type } = block;
+                const { role, property, links, subject, link, type } = block;
+                let selection = {...block.selection};
+                selection = { x1: selection.x1 - 1, x2: selection.x2 - 1, y1: selection.y1 - 1, y2: selection.y2 - 1 } // TODO index 0
                 const classNames: string[] = [];
                 if (role) {
                     if ((role == "qualifier") && !property && !links?.property) {
@@ -366,10 +364,10 @@ class CombinedTable extends Component<{}, TableState> {
                 }
 
                 const { x1, y1, x2, y2 } = selection;
-                const leftCol = Math.min(x1, x2) - 1;
-                const rightCol = Math.max(x1, x2) - 1;
-                const topRow = Math.min(y1, y2) - 1;
-                const bottomRow = Math.max(y1, y2) - 1;
+                const leftCol = Math.min(x1, x2);
+                const rightCol = Math.max(x1, x2);
+                const topRow = Math.min(y1, y2);
+                const bottomRow = Math.max(y1, y2);
                 let rowIndex = topRow;
                 while (rowIndex <= bottomRow) {
                     let colIndex = leftCol;
@@ -407,10 +405,11 @@ class CombinedTable extends Component<{}, TableState> {
     applyCsstoBlock(tableData: TableData, selection: CellSelection, classNames: string[]) {
         const { x1, x2, y1, y2 } = selection;
 
-        const leftCol = Math.min(x1, x2) - 1;
-        const rightCol = Math.max(x1, x2) - 1;
-        const topRow = Math.min(y1, y2) - 1;
-        const bottomRow = Math.max(y1, y2) - 1;
+
+        const leftCol = Math.min(x1, x2);
+        const rightCol = Math.max(x1, x2);
+        const topRow = Math.min(y1, y2);
+        const bottomRow = Math.max(y1, y2);
 
         let rowIndex = topRow
         while (rowIndex <= bottomRow) {
@@ -473,7 +472,7 @@ class CombinedTable extends Component<{}, TableState> {
                     for (const key in cell) {
                         const y = cell[key][0];
                         const x = cell[key][1];
-                        const qualCell = tableData[y + 1][x + 1]
+                        const qualCell = tableData[y][x]
                         qualCell.classNames.push('linked-cell')
                     }
                 });
@@ -483,7 +482,7 @@ class CombinedTable extends Component<{}, TableState> {
                 if (key === 'qualifiers') { continue; }
                 const y = statement.cells[key][0];
                 const x = statement.cells[key][1];
-                const keyCell = tableData[y + 1][x + 1];
+                const keyCell = tableData[y][x];
                 keyCell.classNames.push('linked-cell');
             }
         }
@@ -491,10 +490,10 @@ class CombinedTable extends Component<{}, TableState> {
         if (currentFilesService.currentState.mappingType == "Yaml") { return; }
 
         const selectedBlock = checkSelectedAnnotationBlocks({
-            x1: selectedCell.col + 1,
-            y1: selectedCell.row + 1,
-            x2: selectedCell.col + 1,
-            y2: selectedCell.row + 1
+            x1: selectedCell.col,
+            y1: selectedCell.row,
+            x2: selectedCell.col,
+            y2: selectedCell.row
         });
 
         if (selectedBlock != wikiStore.table.selectedBlock) {
@@ -522,6 +521,7 @@ class CombinedTable extends Component<{}, TableState> {
                     if ((links.property && block.id == links.property) || (links.mainSubject && block.id == links.mainSubject)
                         || (links.unit && block.id == links.unit)) {
                         const linkedBlock = { ...block };
+                        linkedBlock.selection = { x1: linkedBlock.selection.x1 - 1, x2: linkedBlock.selection.x2 - 1, y1: linkedBlock.selection.y1 - 1, y2: linkedBlock.selection.y2 - 1 } // TODO index 0
                         linksBlocks.push({ classNames: ['linked-block', `role-${linkedBlock.role}`], block: linkedBlock })
                     }
                 }
@@ -530,6 +530,7 @@ class CombinedTable extends Component<{}, TableState> {
                 for (const block of wikiStore.annotations.blocks) {
                     if (block.id == link) {
                         const linkedBlock = { ...block };
+                        linkedBlock.selection = { x1: linkedBlock.selection.x1 - 1, x2: linkedBlock.selection.x2 - 1, y1: linkedBlock.selection.y1 - 1, y2: linkedBlock.selection.y2 - 1 } // TODO index 0
                         linksBlocks.push({ classNames: ['linked-block', `role-${linkedBlock.role}`], block: linkedBlock })
                     }
                 }
@@ -790,7 +791,6 @@ class CombinedTable extends Component<{}, TableState> {
             this.selecting = true;
             return;
         }
-        console.log("handleOnMouseDown")
         // else if (element.className !== "ReactVirtualized__Table__rowColumn") {
         //     // if the "show qnode" is selecting in the menu.
         //     if (element.className.startsWith("cell-div")) {
@@ -808,9 +808,9 @@ class CombinedTable extends Component<{}, TableState> {
         // get coordinates
         const x: number = parseInt(element.dataset.colIndex);
         const y: number = parseInt(element.dataset.rowIndex);
-        if (!x || !y) { return; }
+        if ((!x && x !== 0) || (!y && y !== 0)) { return; }
 
-        wikiStore.table.selectedCell = { ...new Cell(x - 1, y - 1), value: element.textContent };
+        wikiStore.table.selectedCell = { ...new Cell(x, y), value: element.textContent };
 
         // check if the user is selecting an annotation block
         const selectedBlock = checkSelectedAnnotationBlocks({ x1: x, y1: y, x2: x, y2: y });
@@ -859,9 +859,9 @@ class CombinedTable extends Component<{}, TableState> {
         const newColIndex = parseInt(element.dataset.colIndex)
         const newRowIndex = parseInt(element.dataset.rowIndex)
 
-        // Don't allow out-of-bounds selecting / resizing
-        if (!newColIndex || newColIndex === 0) { return }
-        if (!newRowIndex || newRowIndex === 0) { return }
+        // // Don't allow out-of-bounds selecting / resizing
+        // if (!newColIndex && newColIndex !== 0) { return }
+        // if (!newRowIndex && newRowIndex !== 0) { return }
 
         if (this.selecting && !event.shiftKey) {
             if (!wikiStore.table.selection) {
@@ -932,8 +932,8 @@ class CombinedTable extends Component<{}, TableState> {
                         col = col + 1;
                     }
                 }
-                const irow = row < tableData.length ? row + 1 : row;
-                const icol = col < tableData[row].length ? col + 1 : col;
+                const irow = row < tableData.length ? row : row;
+                const icol = col < tableData[row].length ? col : col;
                 const textContent = tableData[irow][icol].rawContent
 
                 wikiStore.table.selectedCell = { ...new Cell(col, row), value: textContent };
@@ -1008,15 +1008,15 @@ class CombinedTable extends Component<{}, TableState> {
                     }
                 }
                 else { //moved arrow potentially into new block;
-                    const selectedBlock = checkSelectedAnnotationBlocks({ x1: col + 1, y1: row + 1, x2: col + 1, y2: row + 1 });
+                    const selectedBlock = checkSelectedAnnotationBlocks({ x1: col, y1: row, x2: col, y2: row });
                     console.log("handleOnKeyDown selected block:", selectedBlock)
                     wikiStore.table.selectBlock(selectedBlock);
                     if (!selectedBlock) {
                         wikiStore.table.selection = {
-                            x1: wikiStore.table.selectedCell.col + 1,
-                            y1: wikiStore.table.selectedCell.row + 1,
-                            x2: wikiStore.table.selectedCell.col + 1,
-                            y2: wikiStore.table.selectedCell.row + 1
+                            x1: wikiStore.table.selectedCell.col,
+                            y1: wikiStore.table.selectedCell.row,
+                            x2: wikiStore.table.selectedCell.col,
+                            y2: wikiStore.table.selectedCell.row
                         }
                     }
                 }
@@ -1031,7 +1031,7 @@ class CombinedTable extends Component<{}, TableState> {
         if (!tableData) { return; }
 
         for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
-            tableData[indexRow][colIndex - 1].maxWidth = true;
+            tableData[indexRow][colIndex].maxWidth = true;
         }
 
         // const element = event.target as any;
@@ -1156,7 +1156,6 @@ class CombinedTable extends Component<{}, TableState> {
                                         onMouseDown={this.handleOnMouseDown.bind(this)}
                                         onMouseMove={this.handleOnMouseMove.bind(this)}
                                         onClickHeader={this.handleOnClickHeader.bind(this)}
-                                        setTableReference={this.setTableReference.bind(this)}
                                         MIN_ROWS={100}
                                         MIN_COLUMNS={26}
                                     />

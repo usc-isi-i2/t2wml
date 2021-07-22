@@ -136,7 +136,8 @@ export const DEFAULT_CELL_STATE = {
     activeBottom: false,
     activeCorner: false,
     highlight: false,
-    maxWidth: false
+    maxWidth: false,
+    qnode: false
 }
 
 export interface EntityFields {
@@ -191,6 +192,7 @@ export interface TableCell {
     activeCorner: boolean;
     highlight: boolean;
     maxWidth: boolean;
+    qnode: boolean;
 }
 
 export type TableData = TableCell[][];

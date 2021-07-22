@@ -193,6 +193,7 @@ class RequestService {
   }
 
   public async getAnnotationSuggestions(data: any): Promise<ResponseWithSuggestion> {
+    data.selection = { x1: data.selection.x1 + 1, x2: data.selection.x2 + 1, y1: data.selection.y1 + 1, y2: data.selection.y2 + 1 } // TODO index 0
     const response = await backendPut(`/annotation/suggest?${this.getDataFileParams()}`, data) as ResponseWithSuggestion; //TODO
     return response
   }
@@ -230,11 +231,13 @@ class RequestService {
   }
 
   public async callWikifierService(data: any) {
+    data.selection = { x1: data.selection.x1 + 1, x2: data.selection.x2 + 1, y1: data.selection.y1 + 1, y2: data.selection.y2 + 1 }  // TODO index 0
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}`, data) as ResponseCallWikifierServiceDTO;
     this.updateProjectandQnode(response);
   }
 
   public async callAutoCreateWikinodes(data: any) {
+    data.selection = { x1: data.selection.x1 + 1, x2: data.selection.x2 + 1, y1: data.selection.y1 + 1, y2: data.selection.y2 + 1 }
     const response = await backendPost(`/auto_wikinodes?${this.getDataFileParams()}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
@@ -326,7 +329,7 @@ class RequestService {
   }
 
   public async createQnode(entityFields: EntityFields) {
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields}) as ResponseWithQNodeLayerAndQnode;
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields }) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);
     }
@@ -334,8 +337,8 @@ class RequestService {
   }
 
 
-  public async createQnodes(entityFields: EntityFields, selection?: number[][], value?:string) {
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields, selection: selection, value: value}) as ResponseWithQNodeLayerAndQnode;
+  public async createQnodes(entityFields: EntityFields, selection?: number[][], value?: string) {
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}`, { ...entityFields, selection: selection, value: value }) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);
     }
@@ -345,7 +348,7 @@ class RequestService {
   public async getQnodeById(id?: string) {
     if (!id || id.length < 2) { return; }
     try {
-      const response = await backendGet(`/query_node/${id[0].toLocaleUpperCase()+id.slice(1)}?${this.getDataFileParams()}`) as QNode;
+      const response = await backendGet(`/query_node/${id[0].toLocaleUpperCase() + id.slice(1)}?${this.getDataFileParams()}`) as QNode;
       return response;
     } catch (error) {
       if (error.errorCode === 404) {

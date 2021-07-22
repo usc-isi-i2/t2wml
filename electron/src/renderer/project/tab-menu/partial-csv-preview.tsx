@@ -88,7 +88,6 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
                 partialCsv && partialCsv.length > 1 ?
                   <Table
                     tableData={this.state.partialCsv}
-                    setTableReference={() => (null)}
                     MIN_ROWS={0}
                     MIN_COLUMNS={6} />
                   :
