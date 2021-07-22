@@ -486,7 +486,6 @@ def causx_upload_project():
     #upload a project zip and load it as the active project
     project = get_project()
     in_file = causx_get_file([".t2wmlz", ".zip"])
-
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
