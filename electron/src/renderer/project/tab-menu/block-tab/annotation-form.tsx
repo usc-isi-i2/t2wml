@@ -299,6 +299,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
 
     if (annotation) {
+      /* //call country wikifier... commented out for now.
       if (annotation.role && annotation.selection && annotation.role == "mainSubject") {
         try {
           await this.requestService.call(this, () => (
@@ -308,7 +309,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         catch (error) {
           //do nothing...
         }
-      }
+      }*/
       wikiStore.table.selectBlock(utils.checkSelectedAnnotationBlocks({ x1: annotation.selection.x1 - 1, x2: annotation.selection.x2 - 1, y1: annotation.selection.y1 - 1, y2: annotation.selection.y2 - 1 })) // todo index 0
     } else {
       wikiStore.table.resetSelections();
