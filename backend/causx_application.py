@@ -12,9 +12,10 @@ from io import BytesIO
 from pathlib import Path
 from flask import request
 from werkzeug.utils import secure_filename
-from app_config import app, BASEDIR
+from app_config import app, BASEDIR, NumpyEncoder
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
+from t2wml.spreadsheets.utilities import PandasLoader
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
 from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
@@ -484,8 +485,7 @@ def causx_upload_data():
 def causx_upload_project():
     #upload a project zip and load it as the active project
     project = get_project()
-    in_file = causx_get_file([".t2wmlz"])
-
+    in_file = causx_get_file([".t2wmlz", ".zip"])
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
@@ -516,7 +516,7 @@ def causx_upload_project():
 def causx_upload_annotation():
     #upload a project zip, extract the annotation file, and apply it to the current project
     project = get_project()
-    in_file = causx_get_file([".t2wmlz"])
+    in_file = causx_get_file([".t2wmlz", ".zip"])
     calc_params=get_calc_params(project)
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
@@ -526,17 +526,20 @@ def causx_upload_annotation():
             source_annotations=json.loads(zf.read(filemap["annotation"]))
             data_file_name=filemap["data"]
             data_file=BytesIO(zf.read(data_file_name))
+
             if Path(data_file_name).suffix==".csv":
-                source_df = pd.read_csv(data_file)
+                source_df = pd.read_csv(data_file, dtype=str, header=None)
             else:
-                source_df = pd.read_excel(data_file, sheet_name=filemap["sheet"])
+                source_df = pd.read_excel(data_file, sheet_name=filemap["sheet"], dtype=str, header=None)
+            source_df.fillna("")
+            source_df.replace(r'^\s+$', "", regex=True)
 
     try:
         processed_annotation = copy_annotation(source_annotations, source_df, calc_params.sheet.data)
     except:
         processed_annotation = []
     with open(calc_params.annotation_path, 'w') as f:
-        f.write(json.dumps(processed_annotation))
+        f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
     project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
     preload(calc_params)
