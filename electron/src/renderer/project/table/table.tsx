@@ -1,6 +1,6 @@
 import React from 'react';
 import 'react-virtualized/styles.css'
-import { AutoSizer, Grid, ScrollSync } from 'react-virtualized';
+import { AutoSizer, CellMeasurer, CellMeasurerCache, Grid, ScrollSync } from 'react-virtualized';
 import scrollbarSize from 'dom-helpers/scrollbarSize';
 
 import * as utils from './table-utils';
@@ -8,6 +8,7 @@ import { DEFAULT_CELL_STATE, TableCell, TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
+import { IReactionDisposer, reaction } from 'mobx';
 
 
 
@@ -22,14 +23,58 @@ interface TableProperties {
   MIN_COLUMNS: number;
 }
 
+interface TableState {
+  overscanColumnCount: number;
+  overscanRowCount: number;
+  rowHeight: number;
+  columnWidth: number;
+  height: number;
+}
 
-class Table extends React.Component<TableProperties>{
+
+class Table extends React.Component<TableProperties, TableState>{
+
+  private disposers: IReactionDisposer[] = [];
+  private cache: CellMeasurerCache;
 
   constructor(props: TableProperties) {
     super(props);
+
+    this.state = {
+      overscanColumnCount: 2,
+      overscanRowCount: 5,
+      rowHeight: 25,
+      columnWidth: 75,
+      height: 800,
+    }
+
+    this.cache = new CellMeasurerCache({
+      defaultWidth: 100,
+      minWidth: 75,
+      fixedHeight: true
+    });
   }
 
-  _renderBodyCell(data: TableCell, rowIndex: number, columnIndex: number, style: any) {
+  // componentDidMount() {
+  //   // this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
+  // }
+
+  // componentWillUnmount() {
+  //   for (const disposer of this.disposers) {
+  //     disposer();
+  //   }
+  // }
+
+  // updateShowQNodes() {
+  //   if (wikiStore.table.showQnodes) {
+  //     this.setState({ rowHeight: 75, columnWidth: 100 })
+  //   } else{
+  //     this.setState({ rowHeight: 25, columnWidth: 75 })
+  //   }
+
+  // }
+
+  _renderBodyCell(data: TableCell, rowIndex: number, columnIndex: number, style: any, parent: any) {
     if (!data) {
       return;
     }
@@ -37,11 +82,20 @@ class Table extends React.Component<TableProperties>{
     // const classNames = rowClass + " " + "cell";
 
     return (
+      <CellMeasurer
+        cache={this.cache}
+        columnIndex={columnIndex}
+        key={`${rowIndex} ${columnIndex}`}
+        parent={parent}
+        rowIndex={rowIndex}
+      >
 
-      <div className="cell" key={`${rowIndex} ${columnIndex}`} style={style}>
-        {/* {rowIndex} {columnIndex} */}
-        <TableCellItem cellData={data} rowIndex={rowIndex} columnIndex={columnIndex} />
-      </div>
+        <div className="cell" key={`${rowIndex} ${columnIndex}`} style={style}>
+          {/* {rowIndex} {columnIndex} */}
+          <TableCellItem cellData={data} rowIndex={rowIndex} columnIndex={columnIndex} />
+        </div>
+      </CellMeasurer>
+
     );
   }
 
@@ -86,7 +140,7 @@ class Table extends React.Component<TableProperties>{
       <div className="cell headerCell" key={`headerCell ${columnIndex}`} onClick={(event) => onClickHeader ? onClickHeader(event) : null}
         style={style}>
         {/* {columnIndex} */}
-        {utils.columnToLetter(columnIndex-1)}
+        {utils.columnToLetter(columnIndex - 1)}
       </div>
     );
   }
@@ -102,11 +156,17 @@ class Table extends React.Component<TableProperties>{
       MIN_ROWS
     } = this.props;
 
-
     if (!tableData) {
       return null;
     }
-    console.log("render tableData")
+
+    const {
+      rowHeight, columnWidth, height, overscanColumnCount, overscanRowCount
+    } = this.state;
+
+    const rowCount = tableData.length;
+    const columnCount = tableData[0].length;
+
     // add one column and one row to the table:
     for (let index = 0; index < tableData.length; index++) {
       const rowData = tableData[index]
@@ -144,14 +204,6 @@ class Table extends React.Component<TableProperties>{
           scrollTop,
           // scrollWidth,
         }) => {
-
-          const rowHeight = 25;
-          const columnWidth = 75;
-          const height = 800;
-          const rowCount = tableData.length;
-          const columnCount = tableData[0].length;
-          const overscanColumnCount = 2;
-          const overscanRowCount = 5;
 
           return (
             <div className='GridRow'
@@ -238,18 +290,21 @@ class Table extends React.Component<TableProperties>{
                         }}>
                         <Grid
                           className={wikiStore.table.selection && ableActivated ? 'BodyGrid active' : 'BodyGrid'}
-                          columnWidth={columnWidth}
+                          // columnWidth={columnWidth}
                           columnCount={columnCount}
                           height={height}
                           onScroll={onScroll}
                           overscanColumnCount={overscanColumnCount}
                           overscanRowCount={overscanRowCount}
                           cellRenderer={data => {
-                            return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex - 1], data.rowIndex, data.columnIndex - 1, data.style)
+                            return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex - 1], data.rowIndex, data.columnIndex - 1, data.style, data.parent)
                           }}
-                          rowHeight={rowHeight}
+                          rowHeight={() => wikiStore.table.showQnodes ? 70 : rowHeight}
                           rowCount={rowCount}
                           width={width}
+
+                          columnWidth={this.cache.columnWidth}
+                          deferredMeasurementCache={this.cache}
                         />
                       </div>
                     </div>
