@@ -257,7 +257,7 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       <div className="header">
         <strong className="mr-auto">
           Selected: {selectedCell ?
-            utils.columnToLetter(col) + (row)
+            utils.columnToLetter(col) + (row + 1) //todo index 0
             : ""
           }
         </strong>
