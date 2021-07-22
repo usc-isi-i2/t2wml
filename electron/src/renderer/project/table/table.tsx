@@ -35,7 +35,11 @@ interface TableState {
 class Table extends React.Component<TableProperties, TableState>{
 
   private disposers: IReactionDisposer[] = [];
-  private cache: CellMeasurerCache;
+  // private cache: CellMeasurerCache;
+  private mainGridRef?: any;
+  private headerGridRef?: any;
+  private leftGridRef?: any;
+  private cornerGridRef?: any;
 
   constructor(props: TableProperties) {
     super(props);
@@ -48,53 +52,65 @@ class Table extends React.Component<TableProperties, TableState>{
       height: 800,
     }
 
-    this.cache = new CellMeasurerCache({
-      defaultWidth: 100,
-      minWidth: 75,
-      fixedHeight: true
-    });
+    this.mainGridRef = null;
+    this.leftGridRef = null;
+    this.headerGridRef = null;
+    this.cornerGridRef = null;
+
+    // this.cache = new CellMeasurerCache({
+    //   defaultWidth: 100,
+    //   minWidth: 75,
+    //   fixedHeight: true
+    // });
   }
 
-  // componentDidMount() {
-  //   // this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
-  // }
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
+  }
 
-  // componentWillUnmount() {
-  //   for (const disposer of this.disposers) {
-  //     disposer();
-  //   }
-  // }
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
+  }
 
-  // updateShowQNodes() {
-  //   if (wikiStore.table.showQnodes) {
-  //     this.setState({ rowHeight: 75, columnWidth: 100 })
-  //   } else{
-  //     this.setState({ rowHeight: 25, columnWidth: 75 })
-  //   }
+  updateShowQNodes() {
+    if (wikiStore.table.showQnodes) {
+      this.setState({ rowHeight: 50, columnWidth: 120 }, () => {
+        this.mainGridRef.recomputeGridSize();
+        this.cornerGridRef.recomputeGridSize();
+        this.headerGridRef.recomputeGridSize();
+        this.leftGridRef.recomputeGridSize();
+      })
+    } else {
+      this.setState({ rowHeight: 25, columnWidth: 75 }, () => {
+        this.mainGridRef.recomputeGridSize();
+        this.headerGridRef.recomputeGridSize();
+        this.cornerGridRef.recomputeGridSize();
+        this.leftGridRef.recomputeGridSize();
+      })
+    }
+  }
 
-  // }
-
-  _renderBodyCell(data: TableCell, rowIndex: number, columnIndex: number, style: any, parent: any) {
+  _renderBodyCell(data: TableCell, rowIndex: number, columnIndex: number, style: any) {
     if (!data) {
       return;
     }
-    // const rowClass = this.getRowClass(rowIndex, columnIndex)
-    // const classNames = rowClass + " " + "cell";
 
     return (
-      <CellMeasurer
-        cache={this.cache}
-        columnIndex={columnIndex}
-        key={`${rowIndex} ${columnIndex}`}
-        parent={parent}
-        rowIndex={rowIndex}
-      >
+      // <CellMeasurer
+      //   cache={this.cache}
+      //   columnIndex={columnIndex}
+      //   key={`${rowIndex} ${columnIndex}`}
+      //   parent={parent}
+      //   rowIndex={rowIndex}
+      // >
 
-        <div className="cell" key={`${rowIndex} ${columnIndex}`} style={style}>
-          {/* {rowIndex} {columnIndex} */}
-          <TableCellItem cellData={data} rowIndex={rowIndex} columnIndex={columnIndex} />
-        </div>
-      </CellMeasurer>
+      <div className="cell" key={`${rowIndex} ${columnIndex}`} style={style}>
+        {/* {rowIndex} {columnIndex} */}
+        <TableCellItem cellData={data} rowIndex={rowIndex} columnIndex={columnIndex} />
+      </div>
+      // </CellMeasurer>
 
     );
   }
@@ -107,21 +123,8 @@ class Table extends React.Component<TableProperties, TableState>{
     );
   }
 
-  getRowClass(rowIndex: number, columnIndex: number) {
-    const rowClass =
-      rowIndex % 2 === 0
-        ? columnIndex % 2 === 0
-          ? "evenRow"
-          : "oddRow"
-        : columnIndex % 2 !== 0
-          ? "evenRow"
-          : "oddRow";
-    return rowClass
-  }
-
   _renderLeftSideCell(rowIndex: number, columnIndex: number, style: any) {
-    const rowClass = this.getRowClass(rowIndex, columnIndex)
-    const classNames = rowClass + " " + "cell" + " " + "leftCell";
+    const classNames = "cell" + " " + "leftCell";
 
     return (
       <div className={classNames} key={`${rowIndex} leftCell`} style={style}>
@@ -143,6 +146,22 @@ class Table extends React.Component<TableProperties, TableState>{
         {utils.columnToLetter(columnIndex - 1)}
       </div>
     );
+  }
+
+  _setRefMainGrid(ref: any) {
+    this.mainGridRef = ref;
+  }
+
+  _setRefHeaderGrid(ref: any) {
+    this.headerGridRef = ref;
+  }
+
+  _setRefLeftGrid(ref: any) {
+    this.leftGridRef = ref;
+  }
+
+  _setRefHeaderLeftGrid(ref: any) {
+    this.cornerGridRef = ref;
   }
 
   render() {
@@ -193,6 +212,7 @@ class Table extends React.Component<TableProperties, TableState>{
       tableData.push(rowData);
     }
 
+
     return (
       <ScrollSync>
         {({
@@ -219,6 +239,7 @@ class Table extends React.Component<TableProperties, TableState>{
                   top: 0
                 }}>
                 <Grid
+                  ref={(ref) => this._setRefHeaderLeftGrid(ref)}
                   cellRenderer={data => {
                     return this._renderLeftHeaderCell(data.rowIndex, data.columnIndex, data.style)
                   }}
@@ -239,6 +260,7 @@ class Table extends React.Component<TableProperties, TableState>{
                   top: rowHeight
                 }}>
                 <Grid
+                  ref={(ref) => this._setRefLeftGrid(ref)}
                   overscanColumnCount={overscanColumnCount}
                   overscanRowCount={overscanRowCount}
                   cellRenderer={data => {
@@ -267,6 +289,7 @@ class Table extends React.Component<TableProperties, TableState>{
                         }}
                       >
                         <Grid
+                          ref={(ref) => this._setRefHeaderGrid(ref)}
                           className="HeaderGrid"
                           columnWidth={columnWidth}
                           columnCount={columnCount}
@@ -289,22 +312,23 @@ class Table extends React.Component<TableProperties, TableState>{
                           width,
                         }}>
                         <Grid
+                          ref={(ref) => this._setRefMainGrid(ref)}
                           className={wikiStore.table.selection && ableActivated ? 'BodyGrid active' : 'BodyGrid'}
-                          // columnWidth={columnWidth}
+                          columnWidth={columnWidth}
                           columnCount={columnCount}
                           height={height}
                           onScroll={onScroll}
                           overscanColumnCount={overscanColumnCount}
                           overscanRowCount={overscanRowCount}
                           cellRenderer={data => {
-                            return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex - 1], data.rowIndex, data.columnIndex - 1, data.style, data.parent)
+                            return this._renderBodyCell(tableData[data.rowIndex][data.columnIndex - 1], data.rowIndex, data.columnIndex - 1, data.style)
                           }}
                           rowHeight={() => wikiStore.table.showQnodes ? 70 : rowHeight}
                           rowCount={rowCount}
                           width={width}
 
-                          columnWidth={this.cache.columnWidth}
-                          deferredMeasurementCache={this.cache}
+                        // columnWidth={this.cache.columnWidth}
+                        // deferredMeasurementCache={this.cache}
                         />
                       </div>
                     </div>

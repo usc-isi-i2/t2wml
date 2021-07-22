@@ -340,7 +340,7 @@ class CombinedTable extends Component<{}, TableState> {
         if (wikiStore.annotations.blocks && tableData) {
             for (const block of wikiStore.annotations.blocks) {
                 const { role, property, links, subject, link, type } = block;
-                let selection = {...block.selection};
+                let selection = { ...block.selection };
                 selection = { x1: selection.x1 - 1, x2: selection.x2 - 1, y1: selection.y1 - 1, y2: selection.y2 - 1 } // TODO index 0
                 const classNames: string[] = [];
                 if (role) {
@@ -784,25 +784,26 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     handleOnMouseDown(event: React.MouseEvent) {
-        const element = event.target as any;
+        let element = event.target as any;
         // Allow users to select the resize-corner of the cell
         if (element.className === 'cell-resize-corner') {
             this.prevElement = element.parentElement;
             this.selecting = true;
             return;
         }
-        // else if (element.className !== "ReactVirtualized__Table__rowColumn") {
-        //     // if the "show qnode" is selecting in the menu.
-        //     if (element.className.startsWith("cell-div")) {
-        //         let count = 4
-        //         while (element.className !== "ReactVirtualized__Table__rowColumn" && count && element.parentNode) {
-        //             element = element.parentNode
-        //             count -= 1
-        //         }
-        //         if (element.className !== "ReactVirtualized__Table__rowColumn") return;
 
-        //     } else { return; }
-        // }
+        if (!element.className.startsWith("cell")) {
+            // if the "show qnode" is selecting in the menu.
+            if (element.className.startsWith("qnode-cell-content")) {
+                let count = 4
+                while (!element.className.startsWith("cell") && count && element.parentNode) {
+                    element = element.parentNode
+                    count -= 1
+                }
+                if (!element.className.startsWith("cell")) { return; }
+
+            } else { return; }
+        }
 
 
         // get coordinates
@@ -932,9 +933,8 @@ class CombinedTable extends Component<{}, TableState> {
                         col = col + 1;
                     }
                 }
-                const irow = row < tableData.length ? row : row;
-                const icol = col < tableData[row].length ? col : col;
-                const textContent = tableData[irow][icol].rawContent
+
+                const textContent = tableData[row][col].rawContent
 
                 wikiStore.table.selectedCell = { ...new Cell(col, row), value: textContent };
 

@@ -24,7 +24,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
     const { cellData, rowIndex, columnIndex } = this.props;
     if (!cellData) { return }
     
-    const data= cellData;
+    const data = cellData;
 
     const classNames = this.getClassNames(data.classNames.join(' '), {
       'active': data.active,
