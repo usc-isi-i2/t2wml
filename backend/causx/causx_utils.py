@@ -423,6 +423,9 @@ def create_fidil_json(calc_params, statements):
                 variable_dict=causx_get_variable_dict(calc_params.project).get(variable_id, {})
                 tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","DocID":""}
                 tags_dict.update(variable_dict.get("tags", {}))
+                if tags_dict["FactorClass"]:
+                    if "http://ontology.causeex.com/ontology/odps/ICM#" not in tags_dict["FactorClass"]:
+                        tags_dict["FactorClass"]="http://ontology.causeex.com/ontology/odps/ICM#"+tags_dict["FactorClass"]
                 units = tags_dict.pop("Units", "")
                 main_subject_id = statement["subject"]
                 id = hashlib.md5(id_str.encode()).hexdigest()
