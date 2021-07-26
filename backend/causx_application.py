@@ -164,6 +164,10 @@ def get_calc_params(project, data_required=True):
 def get_mapping():
     project = get_project()
     calc_params = get_calc_params(project)
+    start = int(request.args.get("map_start", 0))
+    end = int(request.args.get("map_end", 0))
+    if end == 0:
+        end = None
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
@@ -171,7 +175,7 @@ def get_mapping():
         preload(calc_params)
     except Exception as e:
         pass
-    get_layers(response, calc_params)
+    get_layers(response, calc_params, start, end)
     return response, 200
 
 @app.route('/api/causx/token', methods=['GET'])
@@ -474,7 +478,12 @@ def causx_upload_data():
     project.save()
     response["sheetName"] = sheet_name
     calc_params = CalcParams(project, file_path, sheet_name)
-    response["table"] = get_table(calc_params)
+    start = int(request.args.get("data_start", 0))
+    end = int(request.args.get("data_end", 0))
+    if end == 0:
+        end = None
+
+    response["table"] = get_table(calc_params, start, end)
     project.title=Path(file_path).stem
     project.save()
     response.update(dict(project=get_project_dict(project), filepath=file_path))
@@ -500,7 +509,12 @@ def causx_upload_project():
     sheet_name=filemap["sheet"]
     calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
     response=dict()
-    response["table"] = get_table(calc_params)
+    start = int(request.args.get("data_start", 0))
+    end = int(request.args.get("data_end", 0))
+    if end == 0:
+        end = None
+
+    response["table"] = get_table(calc_params, start, end)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
     response["layers"] = get_qnodes_layer(calc_params)
     response["project"]=get_project_dict(project)
@@ -578,8 +592,10 @@ def causx_download_project():
 def causx_partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
+    start = int(request.args.get("part_start", 0))
+    end = int(request.args.get(")part_end", 150))
     response = dict()
-    response["partialCsv"] = get_causx_partial_csv(calc_params)
+    response["partialCsv"] = get_causx_partial_csv(calc_params, start, end)
     return response, 200
 
 @app.route('/api/causx/download_zip_results', methods=['GET'])
