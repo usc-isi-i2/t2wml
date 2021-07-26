@@ -1,8 +1,10 @@
+from collections import defaultdict
 import csv
 import json
 import os
 from io import StringIO
 import pandas as pd
+import hashlib
 from t2wml.input_processing.annotation_parsing import Annotation, create_nodes, create_nodes_from_selection
 from t2wml.mapping.datamart_edges import clean_id as _clean_id
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
@@ -151,6 +153,22 @@ def preload(calc_params):
     calc_params.project.save()
 
 
+
+@error_with_func
+def try_get_description(input):
+    provider = t2wml_settings.wikidata_provider
+    if not input:
+        return ""
+    if input[0] in ["P", "Q"]:
+        try:
+            entry = provider.get_entity(input)
+            if entry:
+                return entry.get("description", "")
+        except Exception as e:
+            pass
+    return ""
+
+
 @error_with_func
 def try_get_label(input):
     provider = t2wml_settings.wikidata_provider
@@ -177,13 +195,9 @@ def get_cells_and_columns(statements, project):
     for cell, statement in statements.items():
         variable=try_get_label(statement.get("property", ""))
         main_subject_id=statement.get("subject", "")
-        statement_dict={}
-        try:
-            statement_dict=dict(dataset_id=project.dataset_id,
-            admin1="", admin2="", admin3="",
-            stated_in="", stated_in_id="")
-        except Exception as e:
-            raise ValueError(str(e)+"188")
+        statement_dict=dict(dataset_id=project.dataset_id,
+        admin1="", admin2="", admin3="",
+        stated_in="", stated_in_id="")
 
         try:
             statement_dict.update(dict(
@@ -393,4 +407,55 @@ def causx_get_variable_metadata(calc_params, statements):
             )
             var_arr.append(var_dict)
     return var_arr
+
+
+
+def create_fidil_json(calc_params, statements):
+    time_series = dict()
+    for cell, statement in statements.items():
+        try:
+            dataset_id = calc_params.project.dataset_id
+            variable_id = statement["property"]
+            country = try_get_label(statement["subject"])
+            id_str = dataset_id + variable_id + country
+
+            if id_str not in time_series:
+                variable_dict=causx_get_variable_dict(calc_params.project).get(variable_id, {})
+                tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","DocID":""}
+                tags_dict.update(variable_dict.get("tags", {}))
+                if tags_dict["FactorClass"]:
+                    if "http://ontology.causeex.com/ontology/odps/ICM#" not in tags_dict["FactorClass"]:
+                        tags_dict["FactorClass"]="http://ontology.causeex.com/ontology/odps/ICM#"+tags_dict["FactorClass"]
+                units = tags_dict.pop("Units", "")
+                main_subject_id = statement["subject"]
+                id = hashlib.md5(id_str.encode()).hexdigest()
+                time_series[id_str] = dict(
+                    id=id,
+                    country = country,
+                    country_cameo=cameos.get(main_subject_id, ""),
+                    label = try_get_label(statement["property"]),
+                    description = calc_params.project.description + " " + try_get_description(variable_id),
+                    excelFile = [calc_params.sheet.data_file_name],
+                    sheet=[calc_params.sheet.name.rstrip(".csv")],
+                    units = units,
+                    structuredDataMapping = tags_dict,
+                    structuredData = []
+                )
+
+            timestamp=""
+            for qualifier in statement.get("qualifier", []):
+                if qualifier["property"]=="P585":
+                    timestamp=qualifier["value"]
+            value=statement.get("value", "")
+            if not timestamp or not value:
+                print("statement missing value or timestamp")
+                continue
+            time_series[id_str]["structuredData"].append(dict(timestamp=timestamp, value=value))
+
+        except Exception as e:
+            print("Error in cell", cell, str(e))
+    return list(time_series.values())
+
+
+
 

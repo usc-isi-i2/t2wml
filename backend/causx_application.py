@@ -23,7 +23,7 @@ from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                        get_project_instance, get_qnodes_layer,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload
 from causx.wikification import wikify_countries
 from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
@@ -495,7 +495,6 @@ def causx_upload_project():
     #upload a project zip and load it as the active project
     project = get_project()
     in_file = causx_get_file([".t2wmlz", ".zip"])
-
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
         in_file.save(str(file_path))
@@ -683,6 +682,19 @@ def download_results_for_causx(filetype, filename):
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
     return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
+
+
+
+@app.route('/api/causx/project/fidil_json/<filename>', methods=['GET'])
+def download_fidil_json(filename):
+    project = get_project()
+    calc_params = get_calc_params(project)
+    kg = get_kg(calc_params)
+    data = json.dumps(create_fidil_json(calc_params, kg.statements))
+    stream = BytesIO(data.encode('utf-8'))
+    stream.seek(0)
+    return send_file(stream, attachment_filename=filename, as_attachment=True, mimetype="application/json"), 200
+
 
 ###################end of section##############################
 
