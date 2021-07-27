@@ -161,7 +161,7 @@ def get_calc_params(project, data_required=True):
     return calc_params
 
 
-def get_mapping():
+def get_mapping(preload=False):
     project = get_project()
     calc_params = get_calc_params(project)
     start = int(request.args.get("map_start", 0))
@@ -171,10 +171,12 @@ def get_mapping():
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-    try:
-        preload(calc_params)
-    except Exception as e:
-        pass
+
+    if preload:
+        try:
+            preload(calc_params)
+        except Exception as e:
+            pass
     get_layers(response, calc_params, start, end)
     return response, 200
 
