@@ -267,7 +267,7 @@ def get_table(calc_params, first_index=0, last_index=None):
 
     if last_index:
         last_index+=1
-        last_index = max(int(last_index), int(dims[0])) #if last_index greater than num rows, do num rows
+        last_index = min(int(last_index), int(dims[0])) #if last_index greater than num rows, do num rows
 
         if first_index>last_index:
             raise ValueError("first index requested cannot be greater than last index")
