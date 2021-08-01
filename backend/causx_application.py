@@ -696,8 +696,7 @@ def download_results_for_causx(filetype, filename):
 def download_fidil_json(filename):
     project = get_project()
     calc_params = get_calc_params(project)
-    kg = get_kg(calc_params)
-    data = json.dumps(create_fidil_json(calc_params, kg.statements))
+    data = create_fidil_json(calc_params)
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
     return send_file(stream, attachment_filename=filename, as_attachment=True, mimetype="application/json"), 200
