@@ -263,6 +263,10 @@ def get_table(calc_params, first_index=0, last_index=None):
 
     if last_index:
         last_index+=1
+    last_index = max(last_index, dims[0]) #if last_index greater than num rows, do num rows
+
+    if first_index>last_index:
+        raise ValueError("first index requestedb cannot be greater than last index or greater than total num rows")
 
     #There's no need to check for overflow, as pandas handles that automatically
     cells = json.loads(df[first_index:last_index].to_json(orient="values"))
