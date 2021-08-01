@@ -255,18 +255,22 @@ def get_yaml_layers(calc_params, start=0, end=None):
 
 
 def get_table(calc_params, first_index=0, last_index=None):
+    first_index=int(first_index)
     sheet = calc_params.sheet
     if not sheet:
         raise ValueError("Calc params does not have sheet loaded")
     df = sheet.data
     dims = list(df.shape)
 
+    if first_index>int(dims[0]):
+        raise ValueError("start index cannot be greater than number of rows")
+
     if last_index:
         last_index+=1
-    last_index = max(last_index, dims[0]) #if last_index greater than num rows, do num rows
+        last_index = max(int(last_index), int(dims[0])) #if last_index greater than num rows, do num rows
 
-    if first_index>last_index:
-        raise ValueError("first index requestedb cannot be greater than last index or greater than total num rows")
+        if first_index>last_index:
+            raise ValueError("first index requested cannot be greater than last index")
 
     #There's no need to check for overflow, as pandas handles that automatically
     cells = json.loads(df[first_index:last_index].to_json(orient="values"))
