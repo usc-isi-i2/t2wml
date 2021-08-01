@@ -289,6 +289,30 @@ def edit_entities():
     return response, 200
 
 
+
+@app.route('/api/web/wikify_region', methods=['POST']) #V
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["selection"]
+    overwrite_existing = request.get_json().get("overwrite", False)
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
+
+    
 @app.route('/api/wikifier', methods=['POST'])
 @json_response
 def upload_wikifier_output():
@@ -860,30 +884,6 @@ def add_mapping_file():
     return response, 200
 
 
-
-
-
-@app.route('/api/web/wikify_region', methods=['POST']) #V
-@json_response
-def causx_wikify():
-    project = get_project()
-    region = request.get_json()["selection"]
-    overwrite_existing = request.get_json().get("overwrite", False)
-    #context = request.get_json()["context"]
-    calc_params = get_calc_params(project)
-
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
 
 
 # app utils
