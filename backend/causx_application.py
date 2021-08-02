@@ -702,7 +702,7 @@ def download_fidil_json(filename):
     return send_file(stream, attachment_filename=filename, as_attachment=True, mimetype="application/json"), 200
 
 @app.route('/api/causx/project/upload_fidil_json/', methods=['PUT'])
-def upload_fidil_json():
+def upload_fidil():
     project = get_project()
     calc_params = get_calc_params(project)
     status_code = upload_fidil_json(calc_params)
