@@ -11,6 +11,7 @@ import jwt
 from io import BytesIO
 from pathlib import Path
 from flask import request
+from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
 from werkzeug.utils import secure_filename
 from app_config import app, BASEDIR, NumpyEncoder
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
@@ -161,7 +162,7 @@ def get_calc_params(project, data_required=True):
     return calc_params
 
 
-def get_mapping():
+def get_mapping(preload=False):
     project = get_project()
     calc_params = get_calc_params(project)
     start = int(request.args.get("map_start", 0))
@@ -171,10 +172,12 @@ def get_mapping():
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-    try:
-        preload(calc_params)
-    except Exception as e:
-        pass
+
+    if preload:
+        try:
+            preload(calc_params)
+        except Exception as e:
+            pass
     get_layers(response, calc_params, start, end)
     return response, 200
 
@@ -437,13 +440,17 @@ def causx_get_file(allowed_extensions):
 @json_response
 def causx_wikify_for_causx():
     project = get_project()
-    region = request.get_json()["selection"]
+    selection = request.get_json()["selection"]
     overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
 
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
     project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+
+    #auto-create nodes for anything that failed to wikify
+    tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+    create_nodes_from_selection(tuple_selection, project, calc_params.sheet, calc_params.wikifier)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -689,8 +696,7 @@ def download_results_for_causx(filetype, filename):
 def download_fidil_json(filename):
     project = get_project()
     calc_params = get_calc_params(project)
-    kg = get_kg(calc_params)
-    data = json.dumps(create_fidil_json(calc_params, kg.statements))
+    data = create_fidil_json(calc_params)
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
     return send_file(stream, attachment_filename=filename, as_attachment=True, mimetype="application/json"), 200

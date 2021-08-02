@@ -256,5 +256,6 @@ cameos={
     "Q6250": "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOesh",
     "Q805": "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOyem",
     "Q953": "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOzmb",
-    "Q954": "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOzwe"
+    "Q954": "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOzwe",
+    "Q25279":"http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOcuw",
 }

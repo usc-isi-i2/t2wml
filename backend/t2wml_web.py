@@ -87,6 +87,7 @@ def get_qnodes_layer(calc_params, start=0, end=None):
     item_table = wikifier.item_table
     if end is None:
         end=sheet.row_len
+    end= min(int(end), sheet.row_len)
 
     qnode_entries=dict()
     if len(item_table.lookup_table):

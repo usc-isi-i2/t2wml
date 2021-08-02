@@ -6,9 +6,9 @@ import numpy as np
 from functools import partial
 import rltk.similarity as sim
 from abc import ABC, abstractmethod
-from t2wml.wikification.country_wikifier_cache import countries
+from t2wml.wikification.country_wikifier_cache import countries, causx_only_countries
 
-no_wifiy_memo = set()
+failed_to_wikify_cache = set()
 
 FILE_FOLDER=os.path.abspath(os.path.dirname(__file__))
 
@@ -95,7 +95,6 @@ class DatamartCountryWikifier:
         self.memo=countries
 
     def wikify(self, sheet, start_row, end_row, start_col, end_col, wikifier=None) -> dict:
-        wikifier_result = []
         wikified = {}
 
         df_rows = [] #"column", "row", "value", "context", "item", "file", "sheet"
@@ -103,20 +102,63 @@ class DatamartCountryWikifier:
         file=sheet.data_file_name
         sheet_name=sheet.name
 
-        #for value, item in result_dict.items():
-        #    if item:
-        #        df_rows.append(["", "", value, "", item, "", ""])
+
+        flattened_sheet_data = set(sheet[start_row:end_row,
+                                     start_col:end_col].to_numpy().flatten())
+        for value in flattened_sheet_data:
+            wikification=None
+            if value in failed_to_wikify_cache:
+                continue
+            if value in wikified:
+                continue
+            if value in causx_only_countries: #impossible to wikify, don't bother
+                continue
+
+            input_str = " ".join(str(value).lower().strip().split())
+            input_str_processed = " ".join(
+                    input_str.replace("&", "and").replace("-", " ").replace(".", " ").replace(",", " ").strip().split())
+            input_str_processed_no_bracket = input_str.split("(")[0].strip()
+                # if not exact match, try use hybrid jaccard (for now) to get the highest similarity candidate
+            if input_str not in self.memo and \
+                        input_str_processed not in self.memo and \
+                        input_str_processed_no_bracket not in self.memo:
+                    # if not exact matched and the length is less than 4, ignore it
+                    if len(input_str) < 4:
+                        failed_to_wikify_cache.add(value)
+                        continue
+
+                    self._logger.warning("`{}` not in record, will try to find the closest result".format(value))
+                    highest_score = 0
+                    best_res = ""
+                    for each_candidate in self.memo.keys():
+                        score = self.similarity_unit.similarity(input_str, each_candidate)
+                        if score > highest_score:
+                            best_res = each_candidate
+                            highest_score = score
+
+                    if highest_score > 0:
+                        self._logger.info("get best match: `{}` with score `{}`".format(best_res, highest_score))
+                        if highest_score > 0.9:
+                            self._logger.info("will add `{}` to memo as `{}`".format(input_str, best_res))
+                            self.memo[input_str]=self.memo[best_res]
+                            wikification = self.memo[best_res]
+
+                        else:
+                            failed_to_wikify_cache.add(value)
+                            self._logger.warning("Did not wikify input value `{}`".format(value))
+            else:
+                wikification = self.memo.get(input_str, None) or \
+                    self.memo.get(input_str_processed, None) or \
+                    self.memo.get(input_str_processed_no_bracket, None)
+            if wikification:
+                wikified[value]=wikification
 
 
-        flattened_sheet_data = sheet[start_row:end_row,
-                                     start_col:end_col].to_numpy().flatten()
+
         for row in range(start_row, end_row):
             for column in range(start_col, end_col):
                 value = sheet[row, column]
                 item=None
-                # skip those input we already confirm no candidate
-                if value in no_wifiy_memo:
-                    continue
 
                 already_wikified=False
                 try:
@@ -133,48 +175,11 @@ class DatamartCountryWikifier:
                 if already_wikified:
                     continue
 
-
-                input_str = " ".join(str(value).lower().strip().split())
-                input_str_processed = " ".join(
-                    input_str.replace("&", "and").replace("-", " ").replace(".", " ").replace(",", " ").strip().split())
-                input_str_processed_no_bracket = input_str.split("(")[0].strip()
-                # if not exact match, try use hybrid jaccard (for now) to get the highest similarity candidate
-                if input_str not in self.memo and \
-                        input_str_processed not in self.memo and \
-                        input_str_processed_no_bracket not in self.memo:
-                    # if not exact matched and the length is less than 4, ignore it
-                    if len(input_str) < 4:
-                        no_wifiy_memo.add(value)
-                        wikifier_result.append("")
-                        continue
-
-                    self._logger.warning("`{}` not in record, will try to find the closest result".format(value))
-                    highest_score = 0
-                    best_res = ""
-                    for each_candidate in self.memo.keys():
-                        score = self.similarity_unit.similarity(input_str, each_candidate)
-                        if score > highest_score:
-                            best_res = each_candidate
-                            highest_score = score
-
-                    if highest_score > 0:
-                        self._logger.info("get best match: `{}` with score `{}`".format(best_res, highest_score))
-                        if highest_score > 0.9:
-                            self._logger.info("will add `{}` to memo as `{}`".format(input_str, best_res))
-                            item = self.memo[best_res]
-
-                        else:
-                            no_wifiy_memo.add(value)
-                            self._logger.warning("Did not wikify input value `{}`".format(value))
-                else:
-                    item = self.memo.get(input_str, None) or self.memo.get(input_str_processed,
-                                                                                     None) or self.memo.get(
-                        input_str_processed_no_bracket, None)
-
+                item = wikified.get(value, None)
                 if item:
                     df_rows.append([column, row, value, context, item, file, sheet_name])
 
-        return df_rows, no_wifiy_memo
+        return df_rows, failed_to_wikify_cache
 
     def wikify_region(self, selection, sheet, wikifier=None):
         (start_col, start_row), (end_col, end_row) = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)

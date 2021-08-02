@@ -1,7 +1,7 @@
-from collections import defaultdict
 import csv
 import json
 import os
+import requests
 from io import StringIO
 import pandas as pd
 import hashlib
@@ -13,6 +13,7 @@ from t2wml.wikification.utility_functions import dict_to_kgtk
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
+from t2wml_web import get_kg
 
 
 def clean_id(input):
@@ -410,7 +411,9 @@ def causx_get_variable_metadata(calc_params, statements):
 
 
 
-def create_fidil_json(calc_params, statements):
+def create_fidil_json(calc_params):
+    kg = get_kg(calc_params)
+    statements=kg.statements
     time_series = dict()
     for cell, statement in statements.items():
         try:
@@ -454,8 +457,16 @@ def create_fidil_json(calc_params, statements):
 
         except Exception as e:
             print("Error in cell", cell, str(e))
-    return list(time_series.values())
+    return json.dumps(list(time_series.values()))
 
 
 
 
+def upload_fidil_json(calc_params):
+    fidil_json = create_fidil_json(calc_params)
+    hmi_server_port = os.environ.get("HMI_SERVER_HOST_PORT")
+    if not hmi_server_port:
+        hmi_server_port = "hmi-server:8080"
+    url = f"{hmi_server_port}:/fidil/structured/datasets/upload"
+    response = requests.post(url, json=fidil_json)
+    return response.status_code

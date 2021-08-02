@@ -164,8 +164,8 @@ class TestCausxWorkflow:
                                json=dict(annotations=annotations))
         data = response.data.decode("utf-8")
         data = json.loads(data)
-        stored_results["upload_annotation"] = data["layers"]["statement"]
-        assert self.expected_results["upload_annotation"]["entries"][0]==data["layers"]["statement"]["entries"][0]
+        stored_results["upload_annotation"] = data["layers"]["statement"]["entries"][0]
+        assert self.expected_results["upload_annotation"]==data["layers"]["statement"]["entries"][0]
         assert len(data["layers"]["error"]["entries"])==0
 
 
