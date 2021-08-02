@@ -128,16 +128,6 @@ export interface StatementEntry extends Entry {
 export type AnnotationBlockRole = "dependentVar" | "qualifier" | "metadata" | "property" | "mainSubject" | "unit";
 export type AnnotationBlockType = "string" | "quantity" | "time" | "wikibaseitem";
 
-export const DEFAULT_CELL_STATE = {
-    active: false,
-    activeTop: false,
-    activeLeft: false,
-    activeRight: false,
-    activeBottom: false,
-    activeCorner: false,
-    highlight: false,
-    maxWidth: false
-}
 
 export interface EntityFields {
     is_property: boolean;
@@ -191,6 +181,7 @@ export interface TableCell {
     activeCorner: boolean;
     highlight: boolean;
     maxWidth: boolean;
+    qnode: boolean;
 }
 
 export type TableData = TableCell[][];

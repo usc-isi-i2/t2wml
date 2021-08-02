@@ -4,8 +4,8 @@ import { Card, Spinner } from 'react-bootstrap';
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { reaction, IReactionDisposer } from 'mobx';
-import Table from '../table/table';
-import { DEFAULT_CELL_STATE, TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
+import Table, { DEFAULT_CELL_STATE } from '../table/table';
+import { TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
 import "../project.css";
 
 

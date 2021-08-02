@@ -6,7 +6,7 @@ import './drop-container.css';
 import Dropzone from 'react-dropzone';
 import { Button, Card, OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 
-import { AnnotationBlock, DEFAULT_CELL_STATE, QNode, TableCell, TableData, TableDTO } from '../../common/dtos';
+import { AnnotationBlock, QNode, TableCell, TableData, TableDTO } from '../../common/dtos';
 import { LOG, ErrorMessage, Cell, CellSelection } from '../../common/general';
 import RequestService from '../../common/service';
 import SheetSelector from '../sheet-selector/sheet-selector';
@@ -18,7 +18,7 @@ import { observer } from 'mobx-react';
 import wikiStore from '../../data/store';
 import { IReactionDisposer, reaction } from 'mobx';
 import { currentFilesService } from '../../common/current-file-service';
-import Table from './table';
+import Table, { DEFAULT_CELL_STATE } from './table';
 type Direction = 'up' | 'down' | 'left' | 'right';
 
 interface TableState {
@@ -797,6 +797,19 @@ class CombinedTable extends Component<{}, TableState> {
         //             count -= 1
         //         }
         //         if (element.className !== "ReactVirtualized__Table__rowColumn") return;
+
+        //     } else { return; }
+        // }
+
+        // if (!element.className.startsWith("cell-div")) {
+        //     // if the "show qnode" is selecting in the menu.
+        //     if (element.className.startsWith("qnode-cell-content")) {
+        //         let count = 4
+        //         while (!element.className.startsWith("cell") && count && element.parentNode) {
+        //             element = element.parentNode
+        //             count -= 1
+        //         }
+        //         if (!element.className.startsWith("cell")) { return; }
 
         //     } else { return; }
         // }

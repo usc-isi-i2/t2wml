@@ -3,12 +3,23 @@ import 'react-virtualized/styles.css'
 import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
 
 import * as utils from './table-utils';
-import { DEFAULT_CELL_STATE, TableData } from '../../common/dtos';
+import { TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
 import { AutoSizer } from 'react-virtualized';
 
+export const DEFAULT_CELL_STATE = {
+  active: false,
+  activeTop: false,
+  activeLeft: false,
+  activeRight: false,
+  activeBottom: false,
+  activeCorner: false,
+  highlight: false,
+  maxWidth: false,
+  qnode: false
+}
 
 interface TableProperties {
   tableData?: TableData;

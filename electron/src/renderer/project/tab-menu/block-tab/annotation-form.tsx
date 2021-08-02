@@ -128,9 +128,18 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.setState({ showWikifyBlockMenu: false });
   }
 
+  compareSelections(s1?: CellSelection, s2?:CellSelection):boolean {
+    if(!s1 && s2 ) {return false;}
+    if(s1 && !s2) {return false;}
+    if(s1?.x1 !== s2?.x1 || s1?.x2 !== s2?.x2 || s1?.y1 !== s2?.y1 || s1?.y2 !== s2?.y2){
+      return false;
+    }
+    return true;
+  }
+
 
   updateSelection(selection?: CellSelection) {
-    if ((!wikiStore.table.selectedBlock) || wikiStore.table.selectedBlock.selection !== selection) {
+    if ((!wikiStore.table.selectedBlock) || ! this.compareSelections(wikiStore.table.selectedBlock?.selection, selection)) {
       const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
       const fields = { ...this.state.fields }
       if ((!wikiStore.table.selectedBlock)) {
