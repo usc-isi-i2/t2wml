@@ -1,0 +1,43 @@
+[
+  {
+    "id": "1b9b5f78-0f71-4918-a959-77aedb1c5933",
+    "link": "",
+    "links": {
+      "mainSubject": "b7e69f29-86b8-48bb-85e4-2ff5e6793c9f"
+    },
+    "role": "dependentVar",
+    "selection": {
+      "x1": 2,
+      "x2": 4,
+      "y1": 5,
+      "y2": 10
+    },
+    "type": "quantity"
+  },
+  {
+    "id": "e9b41b15-0f21-4f42-a380-3285216ee40c",
+    "link": "",
+    "links": {},
+    "property": "P585",
+    "role": "qualifier",
+    "selection": {
+      "x1": 2,
+      "x2": 4,
+      "y1": 4,
+      "y2": 4
+    },
+    "type": "time"
+  },
+  {
+    "id": "b7e69f29-86b8-48bb-85e4-2ff5e6793c9f",
+    "link": "1b9b5f78-0f71-4918-a959-77aedb1c5933",
+    "links": {},
+    "role": "mainSubject",
+    "selection": {
+      "x1": 2,
+      "x2": 2,
+      "y1": 3,
+      "y2": 3
+    }
+  }
+]

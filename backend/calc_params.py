@@ -7,6 +7,7 @@ class CalcParams:
     def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
         self.project = project
         self.project_path = project.directory
+        self._data_path = data_path
         self.data_path = Path(project.directory) / data_path
         self.sheet_name = sheet_name
         self._sheet = None

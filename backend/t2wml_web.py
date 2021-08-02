@@ -55,7 +55,7 @@ def autocreate_items(calc_params, selection, is_property=False, data_type=None):
 
 
 
-def get_kg(calc_params):
+def get_kg(calc_params, start=0, end=None):
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
     if calc_params.cache and not annotation:
@@ -67,7 +67,7 @@ def get_kg(calc_params):
     else:
         cell_mapper = YamlMapper(calc_params.yaml_path)
     with t2wml_settings.wikidata_provider as p:
-        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier)
+        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, start, end)
     return kg
 
 
@@ -81,15 +81,18 @@ def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
 
 
 
-def get_qnodes_layer(calc_params):
+def get_qnodes_layer(calc_params, start=0, end=None):
     sheet = calc_params.sheet
     wikifier = calc_params.wikifier
     item_table = wikifier.item_table
+    if end is None:
+        end=sheet.row_len
+
     qnode_entries=dict()
     if len(item_table.lookup_table):
         ids_to_get = set()
         for col in range(sheet.col_len):
-            for row in range(sheet.row_len):
+            for row in range(start, end):
                 id, context, value = item_table.get_cell_info(col, row, sheet)
                 if id:
                     ids_to_get.add(id)
@@ -110,7 +113,6 @@ def get_qnodes_layer(calc_params):
             qnode_entries[id].update(qNode.__dict__)
 
     return {"qnode": dict(layerType="qNode", entries=list(qnode_entries.values()))}
-
 
 
 def indexer(cell):
@@ -145,7 +147,7 @@ def get_cell_qnodes(statement, qnodes):
                     qnodes[str(outer_value)] = None
 
 
-def get_yaml_layers(calc_params):
+def get_yaml_layers(calc_params, start=0, end=None):
     if calc_params.cache:
         layers=calc_params.cache.get_layers()
         if layers:
@@ -169,7 +171,7 @@ def get_yaml_layers(calc_params):
     qnodes={} #passed by reference everywhere, so gets updated simultaneously across all of them
 
     if calc_params.yaml_path or calc_params.annotation_path:
-        kg = get_kg(calc_params)
+        kg = get_kg(calc_params, start, end)
         statements=kg.statements
         errors=kg.errors
 
@@ -252,17 +254,23 @@ def get_yaml_layers(calc_params):
 
 
 
-def get_table(calc_params, first_index=0, num_rows=None):
+def get_table(calc_params, first_index=0, last_index=None):
+    first_index=int(first_index)
     sheet = calc_params.sheet
     if not sheet:
         raise ValueError("Calc params does not have sheet loaded")
     df = sheet.data
     dims = list(df.shape)
 
-    if num_rows:
-        last_index=first_index+num_rows
-    else:
-        last_index=None
+    if first_index>int(dims[0]):
+        raise ValueError("start index cannot be greater than number of rows")
+
+    if last_index:
+        last_index+=1
+        last_index = min(int(last_index), int(dims[0])) #if last_index greater than num rows, do num rows
+
+        if first_index>last_index:
+            raise ValueError("first index requested cannot be greater than last index")
 
     #There's no need to check for overflow, as pandas handles that automatically
     cells = json.loads(df[first_index:last_index].to_json(orient="values"))
@@ -272,13 +280,13 @@ def get_table(calc_params, first_index=0, num_rows=None):
 
 
 
-def get_layers(response, calc_params):
+def get_layers(response, calc_params, start=0, end=None):
     #convenience function for code that repeats three times
     response["layers"]=get_empty_layers()
 
 
     try:
-        response["layers"].update(get_yaml_layers(calc_params))
+        response["layers"].update(get_yaml_layers(calc_params, start, end))
     except Exception as e:
         response["yamlError"] = str(e)
 
@@ -286,7 +294,7 @@ def get_layers(response, calc_params):
                                 firstRowIndex=0,
                                 cells=[["subject", "property", "value"]])
 
-    response["layers"].update(get_qnodes_layer(calc_params)) #needs to be after layers, since layers can update qnodes
+    response["layers"].update(get_qnodes_layer(calc_params, start, end)) #needs to be after layers, since layers can update qnodes
 
 def get_annotations(calc_params):
     annotations_path=calc_params.annotation_path
@@ -348,11 +356,11 @@ def update_entities(project, entity_file, updated_entries):
     return get_entities(project)
 
 
-def get_partial_csv(calc_params):
+def get_partial_csv(calc_params, start=0, end=150):
     wikifier=calc_params.wikifier
     annotation= calc_params.annotation_path
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, start=0, end=150)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, start, end)
     if not kg.statements:
         if cell_mapper.annotation.subject_annotations:
             df=pd.DataFrame([], columns=["subject", "property", "value"])
