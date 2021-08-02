@@ -149,10 +149,13 @@ class CombinedTable extends Component<{}, TableState> {
         );
     }
 
-    updateQnodeCells(showQnode: boolean) {
-        let { tableData } = this.state;
+    updateQnodeCells(showQnode: boolean, tableData?: TableData) {
         if (!tableData) {
-            return;
+            if (!this.state.tableData) {
+                return;
+            }
+            const { tableData: tableDataState } = this.state;
+            tableData = tableDataState
         }
 
         const qnodes = wikiStore.layers.qnode;
@@ -160,7 +163,6 @@ class CombinedTable extends Component<{}, TableState> {
         //clear any existing qnode coloration
 
         tableData = this.removeClassNameFromTableData(tableData, 'type-qNode')
-        if (!tableData) { return; }
 
         if (showQnode) {
             for (const entry of qnodes.entries) {
@@ -178,6 +180,7 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
+        console.log("1 setState data");
         this.setState({ tableData });
     }
 
@@ -209,6 +212,7 @@ class CombinedTable extends Component<{}, TableState> {
             return;
         }
         const tableData = this.getClasslessTableData(table);
+        console.log("2 setState data");
         this.setState({ tableData })
         { this.createAnnotationIfDoesNotExist(); }
     }
@@ -294,8 +298,7 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
-        this.setState({ tableData })
-        this.updateQnodeCells(wikiStore.table.showQnodes);
+        this.updateQnodeCells(wikiStore.table.showQnodes, tableData);
     }
 
     setAnnotationColors(tableData?: TableData) {
@@ -401,6 +404,7 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
+        console.log("4 setState data");
         this.setState({ tableData })
     }
 
@@ -543,6 +547,7 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
+        console.log("5 setState data");
         this.setState({ tableData });
     }
 
@@ -554,6 +559,7 @@ class CombinedTable extends Component<{}, TableState> {
         if (!selection) { return }
         const classNames: string[] = [];
         tableData = this.applyCsstoBlock(tableData, selection, classNames);
+        console.log("6 setState data");
         this.setState({ tableData })
     }
 
@@ -686,7 +692,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     }
 
-    removeClassNameFromTableData(tableData: TableData, classNameToDelete?: string) {
+    removeClassNameFromTableData(tableData: TableData, classNameToDelete?: string): TableData {
         if (classNameToDelete) {
             for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
                 for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
