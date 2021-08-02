@@ -597,29 +597,35 @@ class CombinedTable extends Component<{}, TableState> {
         }
     }
 
-    async addFile(file: File) {
+    async addFiles(files: File[]) {
         this.setState({
             errorMessage: {} as ErrorMessage,
             showToast: false,
         });
-        console.log(file)
+        console.log(files)
+        if (!files.length) { return; }
 
         // before sending request
         wikiStore.table.showSpinner = true;
         wikiStore.partialCsv.showSpinner = true;
 
         // send request
-        console.log("<TableComponent> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
-        const data = { "filepath": file.path };
         try {
-            await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
-            console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
-
-            //update in files state
-            currentFilesService.changeDataFile(file.name);
-
+            for (const file of files) {
+                console.log("<TableComponent> -> %c/upload_data_file%c for table file: %c" + file.name, LOG.link, LOG.default, LOG.highlight);
+                const data = { "filepath": file.path };
+                await this.requestService.call(this, () => this.requestService.uploadDataFile(wikiStore.projects.current!.folder, data));
+                console.log("<TableComponent> <- %c/upload_data_file%c with:", LOG.link, LOG.default);
+            }
         } catch (error) {
-            error.errorDescription += "\n\nCannot open file!";
+            error.errorDescription += "\n\nCannot load one of the files: " + files.map(file => file.name).join(', ');
+            this.setState({ errorMessage: error });
+        }
+
+        try {
+            currentFilesService.changeDataFile(files[0].name);
+        } catch (error) {
+            error.errorDescription += "\n\nCannot open file " + files[0].name;
             this.setState({ errorMessage: error });
         } finally {
             wikiStore.table.showSpinner = false;
@@ -629,15 +635,14 @@ class CombinedTable extends Component<{}, TableState> {
 
     async onDrop(files: File[]) {
         // get table file
-        const file = files[0]
-        await this.addFile(file)
+        await this.addFiles(files)
     }
 
     async handleOpenTableFile(event: ChangeEvent) {
         // get table file
         const file = (event.target as HTMLInputElement).files![0];
         if (!file) { return; }
-        this.addFile(file)
+        this.addFiles([file]) // send the file into a list
     }
 
     async handleSelectSheet(event: React.MouseEvent) {
@@ -1132,7 +1137,7 @@ class CombinedTable extends Component<{}, TableState> {
         const { showSpinner, tableData } = this.state;
 
         return (
-            <Dropzone maxFiles={1} accept=".csv, .tsv, .xls, .xlsx" onDrop={(files) => this.onDrop(files)}>
+            <Dropzone accept=".csv, .tsv, .xls, .xlsx" onDrop={(files) => this.onDrop(files)}>
                 {({ getRootProps, getInputProps }) => (
                     <div {...getRootProps({ className: 'dropzone w-100 h-100' })}>
 
