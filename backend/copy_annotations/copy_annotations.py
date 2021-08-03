@@ -1,5 +1,6 @@
 from itertools import combinations
 
+import numpy as np
 from mip import Model, MAXIMIZE, CBC, maximize, OptimizationStatus
 
 from copy_annotations.selection import X1, X2, Y1, Y2, Selection
@@ -12,6 +13,9 @@ from copy_annotations.utils import generate_block_constraints, initialize_block
 
 
 def copy_annotation(source_annotation, source_df, target_df):
+    source_df = source_df.replace(r'^\s*$', np.NaN, regex=True)
+    target_df = target_df.replace(r'^\s*$', np.NaN, regex=True)
+
     source = Sheet(source_df, source_annotation)
     target = Sheet(target_df)
 
@@ -20,12 +24,10 @@ def copy_annotation(source_annotation, source_df, target_df):
 
     bounded_selection = Selection(1, target.transformed_df.shape[1], 1, target.transformed_df.shape[0])
     for annotation in source.annotations:
-        objective_expressions.append(
-            initialize_block(annotation, model, bounded_selection))
+        objective_expressions.append(initialize_block(annotation, model, bounded_selection))
 
     for annotation_pair in list(combinations(source.annotations, 2)):
-        generate_block_constraints(annotation_pair[0], annotation_pair[1],
-                                   model, False)
+        generate_block_constraints(annotation_pair[0], annotation_pair[1], model, False)
 
     anchors = source.find_anchors(target.transformed_df)
     for anchor in anchors:

@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from copy_annotations.selection import Selection
 
 ID = 'id'
@@ -14,6 +16,6 @@ class Annotation:
         return f"{self.id}_{index}"
 
     def generate_target_annotations(self, x1, x2, y1, y2):
-        annotation = self.annotation
+        annotation = deepcopy(self.annotation)
         annotation[SELECTION] = Selection(x1, x2, y1, y2).__dict__
         return annotation
