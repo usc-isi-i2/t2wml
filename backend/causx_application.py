@@ -30,6 +30,7 @@ from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
+import numpy as np
 
 
 
@@ -556,7 +557,9 @@ def causx_upload_annotation():
             source_df.replace(r'^\s+$', "", regex=True)
 
     try:
-        processed_annotation = copy_annotation(source_annotations, source_df, calc_params.sheet.data)
+        target_df = calc_params.sheet.data
+        target_df = target_df.replace(r'^\s*$', np.NaN, regex=True)
+        processed_annotation = copy_annotation(source_annotations, source_df, target_df)
     except:
         processed_annotation = []
     with open(calc_params.annotation_path, 'w') as f:
