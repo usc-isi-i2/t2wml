@@ -39,15 +39,10 @@ interface TableState {
 @observer
 class CombinedTable extends Component<{}, TableState> {
     private requestService: RequestService;
-    private tableRef = React.createRef<HTMLTableElement>().current!;
+    
     private selecting = false;
     private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
     private prevDirection?: Direction;
-
-    setTableReference(reference?: HTMLTableElement) {
-        if (!reference) { return; }
-        this.tableRef = reference;
-    }
 
     constructor(props: {}) {
         super(props);
@@ -1170,7 +1165,6 @@ class CombinedTable extends Component<{}, TableState> {
                                         onMouseDown={this.handleOnMouseDown.bind(this)}
                                         onMouseMove={this.handleOnMouseMove.bind(this)}
                                         onClickHeader={this.handleOnClickHeader.bind(this)}
-                                        setTableReference={this.setTableReference.bind(this)}
                                         MIN_ROWS={100}
                                         MIN_COLUMNS={26}
                                     />

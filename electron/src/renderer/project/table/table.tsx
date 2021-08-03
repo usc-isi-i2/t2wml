@@ -8,6 +8,7 @@ import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
 import { AutoSizer } from 'react-virtualized';
+import { IReactionDisposer, reaction } from 'mobx';
 
 export const DEFAULT_CELL_STATE = {
   active: false,
@@ -28,16 +29,55 @@ interface TableProperties {
   onMouseDown?: (event: React.MouseEvent) => void;
   onMouseMove?: (event: React.MouseEvent) => void;
   onClickHeader?: (event: React.MouseEvent) => void;
-  setTableReference: any;
   MIN_ROWS: number;
   MIN_COLUMNS: number;
 }
 
 
-class Table extends React.Component<TableProperties>{
+class Table extends React.Component<TableProperties, {rowHeight: number, columnWidth: number}>{
+
+  private tableRef: any;
+  private disposers: IReactionDisposer[] = [];
 
   constructor(props: TableProperties) {
     super(props);
+
+    this.state = {
+      rowHeight: 25,
+      columnWidth: 75
+    }
+
+    this.tableRef = null;
+  }
+
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
+    }
+  }
+
+  updateShowQNodes() {
+    console.log("updateShowQNodes");
+    if (wikiStore.table.showQnodes) {
+      this.setState({ rowHeight: 60, columnWidth: 90 }, () => {
+        this.tableRef.recomputeRowHeights();
+        this.tableRef.forceUpdateGrid();
+      })
+    } else {
+      this.setState({ rowHeight: 25, columnWidth: 75 }, () => {
+        this.tableRef.recomputeRowHeights();
+        this.tableRef.forceUpdateGrid();
+      })
+    }
+  }
+
+  setTableReference(reference: VirtualizedTable | null) {
+    if (!reference) { return; }
+    this.tableRef = reference;
   }
 
   render() {
@@ -47,11 +87,12 @@ class Table extends React.Component<TableProperties>{
       onMouseDown,
       onMouseMove,
       onClickHeader,
-      setTableReference,
       ableActivated,
       MIN_COLUMNS,
       MIN_ROWS
     } = this.props;
+
+    const { rowHeight, columnWidth} = this.state
 
 
     if (!tableData) {
@@ -97,11 +138,12 @@ class Table extends React.Component<TableProperties>{
               return (
                 <VirtualizedTable id="virtualized-table"
                   height={Size.height}
-                  width={tableData[0].length * 75}
+                  width={tableData[0].length * columnWidth}
                   className={wikiStore.table.selection && ableActivated ? 'active' : ''}
-                  headerHeight={25}
-                  rowHeight={25}
-                  ref={setTableReference}
+                  headerHeight={rowHeight}
+                  rowHeight={rowHeight}
+
+                  ref={(ref: VirtualizedTable | null) => this.setTableReference(ref)}
                   rowCount={Object.keys(tableData).length}
                   rowGetter={({ index }) => { return Object.entries(tableData[index]) }}
                 >
@@ -133,7 +175,7 @@ class Table extends React.Component<TableProperties>{
                           </div>
                         )
                       }}
-                      width={75}
+                      width={columnWidth}
                       cellDataGetter={(data: TableCellDataGetterParams) => {
                         return data.rowData[data.dataKey]
                       }}
