@@ -85,7 +85,7 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
             {/* wikifier output */}
             <div className="w-100 h-100">
               {
-                partialCsv && partialCsv.length > 1 ?
+                partialCsv && Object.keys(partialCsv).length > 1 ?
                   <Table
                     tableData={this.state.partialCsv}
                     MIN_ROWS={0}

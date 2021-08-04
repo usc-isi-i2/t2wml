@@ -184,7 +184,7 @@ export interface TableCell {
     qnode: boolean;
 }
 
-export type TableData = TableCell[][];
+export type TableData = { [indexRow: number]: TableCell[] };
 
 
 /* responses: */

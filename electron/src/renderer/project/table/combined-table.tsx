@@ -222,7 +222,7 @@ class CombinedTable extends Component<{}, TableState> {
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
             try {
-                for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+                for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
                     for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                         tableData[indexRow][indexCol].classNames = tableData[indexRow][indexCol].classNames.filter((value) =>
                             !value.startsWith("error")
@@ -236,9 +236,9 @@ class CombinedTable extends Component<{}, TableState> {
 
         this.setAnnotationColors(tableData)
 
-        for (const row of tableData) {
-            for (const cell of row) {
-                cell.overlay = undefined;
+        for (const rowIndex of Object.keys(tableData)) {
+            for (const colIndex of Object.keys(tableData[+rowIndex])) {
+                tableData[+rowIndex][+colIndex].overlay = undefined;
             }
         }
 
@@ -269,7 +269,7 @@ class CombinedTable extends Component<{}, TableState> {
             //if we're taking existing table data, gotta clean it:
 
             try {
-                for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+                for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
                     for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                         tableData[indexRow][indexCol].classNames = tableData[indexRow][indexCol].classNames.filter((value) =>
                             !value.startsWith("wikified")
@@ -305,7 +305,7 @@ class CombinedTable extends Component<{}, TableState> {
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
             try {
-                for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+                for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
                     for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                         tableData[indexRow][indexCol] = {
                             ...tableData[indexRow][indexCol],
@@ -449,7 +449,7 @@ class CombinedTable extends Component<{}, TableState> {
         const { tableData: oldTableData } = this.state;
         if (!oldTableData) { return; }
 
-        for (let indexRow = 0; indexRow < oldTableData.length; indexRow++) {
+        for (let indexRow = 0; indexRow < Object.keys(oldTableData).length; indexRow++) {
             for (let indexCol = 0; indexCol < oldTableData[indexRow].length; indexCol++) {
                 oldTableData[indexRow][indexCol].highlight = false;
             }
@@ -689,7 +689,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     removeClassNameFromTableData(tableData: TableData, classNameToDelete?: string): TableData {
         if (classNameToDelete) {
-            for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+            for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
                 for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                     const cell = tableData[indexRow][indexCol]
                     tableData[indexRow][indexCol] = {
@@ -703,7 +703,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     resetSelectionCss(tableData: TableData) {
-        for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+        for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
             for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                 tableData[indexRow][indexCol] = {
                     ...tableData[indexRow][indexCol],
@@ -716,7 +716,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     resetActiveBlockCss(tableData: TableData) {
         tableData = this.removeClassNameFromTableData(tableData, 'linked-block');
-        for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+        for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
             for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                 tableData[indexRow][indexCol] = {
                     ...tableData[indexRow][indexCol],
@@ -925,7 +925,7 @@ class CombinedTable extends Component<{}, TableState> {
 
                 // arrow down
                 if (event.code === 'ArrowDown') {
-                    if (row < tableData.length) {
+                    if (row < Object.keys(tableData).length) {
                         row = row + 1;
                     }
                 }
@@ -943,7 +943,7 @@ class CombinedTable extends Component<{}, TableState> {
                         col = col + 1;
                     }
                 }
-                const irow = row < tableData.length ? row + 1 : row;
+                const irow = row < Object.keys(tableData).length ? row + 1 : row;
                 const icol = col < tableData[row].length ? col + 1 : col;
                 const textContent = tableData[irow][icol].rawContent
 
@@ -969,7 +969,7 @@ class CombinedTable extends Component<{}, TableState> {
                             this.prevElement = nextElement;
                         }
 
-                        if (event.code === 'ArrowDown' && y1 < tableData.length - 1) {
+                        if (event.code === 'ArrowDown' && y1 < Object.keys(tableData).length - 1) {
                             const nextElement = tableData[y1 + 1][x1];
                             if (y1 === y2) {
                                 selection = { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 + 1 };
@@ -1041,7 +1041,7 @@ class CombinedTable extends Component<{}, TableState> {
         const { tableData } = this.state;
         if (!tableData) { return; }
 
-        for (let indexRow = 0; indexRow < tableData.length; indexRow++) {
+        for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
             tableData[indexRow][colIndex - 1].maxWidth = true;
         }
 
@@ -1049,10 +1049,10 @@ class CombinedTable extends Component<{}, TableState> {
         element.setAttribute('style', 'width: 100%;');
         element.parentElement.setAttribute('style', 'max-width: 1%');
 
-        const index = element.dataset.colIndex;
-        tableData.forEach((row: any) => {
-            row[index].setAttribute('style', 'max-width: 1%');
-        });
+        // const index = element.dataset.colIndex;
+        // tableData.forEach((row: any) => {
+        //     row[index].setAttribute('style', 'max-width: 1%');
+        // });
 
         setTimeout(() => {
             element.setAttribute('style', `min-width: ${element.clientWidth}px`);
