@@ -248,10 +248,17 @@ class RequestService {
     })
   }
 
-  public async getTable() {
+  public async getTable(startIndex=0, endIndex=40) {
     const updater = currentFilesService.createUpdater();
-    const response = await backendGet(`/table?${this.getMappingParams()}`) as ResponseWithTableDTO;
+    const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
     updater.update(() => this.fillTable(response), "getTable");
+  }
+
+  public async getTableByRows(startIndex=0, endIndex=0): Promise<TableDTO> {
+    const updater = currentFilesService.createUpdater();
+    const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
+    updater.update(() => this.fillMapping(response), "getTableByRows");
+    return response.table
   }
 
   public async getMappingCalculation() {

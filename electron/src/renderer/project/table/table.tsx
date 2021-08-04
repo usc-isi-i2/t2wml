@@ -3,7 +3,7 @@ import 'react-virtualized/styles.css'
 import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
 
 import * as utils from './table-utils';
-import { TableData } from '../../common/dtos';
+import { TableCell, TableData } from '../../common/dtos';
 import TableCellItem from './tableCellItem';
 import './table-virtual.css'
 import wikiStore from '@/renderer/data/store';
@@ -23,7 +23,7 @@ export const DEFAULT_CELL_STATE = {
 }
 
 interface TableProperties {
-  tableData?: TableData;
+  tableData: TableData;
   ableActivated?: boolean;
   onMouseUp?: (event: React.MouseEvent) => void;
   onMouseDown?: (event: React.MouseEvent) => void;
@@ -31,10 +31,13 @@ interface TableProperties {
   onClickHeader?: (event: React.MouseEvent) => void;
   MIN_ROWS: number;
   MIN_COLUMNS: number;
+
+  rowCount: number;
+  rowGetter: (index: number) => TableCell[];
 }
 
 
-class Table extends React.Component<TableProperties, {rowHeight: number, columnWidth: number}>{
+class Table extends React.Component<TableProperties, { rowHeight: number, columnWidth: number }>{
 
   private tableRef: any;
   private disposers: IReactionDisposer[] = [];
@@ -80,6 +83,10 @@ class Table extends React.Component<TableProperties, {rowHeight: number, columnW
     this.tableRef = reference;
   }
 
+  rowGetter(index: number) {
+    return this.props.rowGetter(index);
+  }
+
   render() {
     const {
       tableData,
@@ -89,41 +96,56 @@ class Table extends React.Component<TableProperties, {rowHeight: number, columnW
       onClickHeader,
       ableActivated,
       MIN_COLUMNS,
-      MIN_ROWS
+      MIN_ROWS,
+
+      rowCount
     } = this.props;
 
-    const { rowHeight, columnWidth} = this.state
+    const { rowHeight, columnWidth } = this.state
 
 
     if (!tableData) {
       return null;
     }
     console.log("render tableData")
-    // add one column and one row to the table:
-    for (let index = 0; index < Object.keys(tableData).length; index++) {
-      const rowData = tableData[index]
-      while (rowData.length < MIN_COLUMNS + 1) { // add columns to the display table
-        rowData.push({
-          content: '',
-          rawContent: '',
-          classNames: [],
-          ...DEFAULT_CELL_STATE
-        })
-      }
-    }
+    // // add one column and one row to the table:
+    // for (let index = 0; index < Object.keys(tableData).length; index++) {
+    //   const rowData = tableData[index]
+    //   while (rowData.length < MIN_COLUMNS + 1) { // add columns to the display table
+    //     rowData.push({
+    //       content: '',
+    //       rawContent: '',
+    //       classNames: [],
+    //       ...DEFAULT_CELL_STATE
+    //     })
+    //   }
+    // }
 
-    while (Object.keys(tableData).length < MIN_ROWS + 1) { // add rows to the display table
-      const rowData = [];
-      while (rowData.length < MIN_COLUMNS + 1) {
-        rowData.push({
-          content: '',
-          rawContent: '',
-          classNames: [],
-          ...DEFAULT_CELL_STATE
-        })
-      }
-      tableData[Object.keys(tableData).length] = rowData;
-    }
+    // while (Object.keys(tableData).length < MIN_ROWS + 1) { // add rows to the display table
+    //   const rowData = [];
+    //   while (rowData.length < MIN_COLUMNS + 1) {
+    //     rowData.push({
+    //       content: '',
+    //       rawContent: '',
+    //       classNames: [],
+    //       ...DEFAULT_CELL_STATE
+    //     })
+    //   }
+    //   tableData[Object.keys(tableData).length] = rowData;
+    // }
+
+    // while (Object.keys(tableData).length < rowCount) { // add rows to the display table
+    //   const rowData = [];
+    //   while (rowData.length < MIN_COLUMNS + 1) {
+    //     rowData.push({
+    //       content: '',
+    //       rawContent: '',
+    //       classNames: [],
+    //       ...DEFAULT_CELL_STATE
+    //     })
+    //   }
+    //   tableData[Object.keys(tableData).length] = rowData;
+    // }
 
     return (
       <div
@@ -144,8 +166,8 @@ class Table extends React.Component<TableProperties, {rowHeight: number, columnW
                   rowHeight={rowHeight}
 
                   ref={(ref: VirtualizedTable | null) => this.setTableReference(ref)}
-                  rowCount={Object.keys(tableData).length}
-                  rowGetter={({ index }) => { return Object.entries(tableData[index]) }}
+                  rowCount={rowCount}
+                  rowGetter={({ index }) => this.rowGetter(index)}
                 >
 
                   <Column

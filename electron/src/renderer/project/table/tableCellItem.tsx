@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { TableCell } from '@/renderer/common/dtos';
 
 
 @observer
-class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, cellData?: any[] }, {}>{
+class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, cellData?: TableCell }, {}>{
 
 
-  constructor(props: { rowIndex: number, columnIndex: number, cellData?: any[] }) {
+  constructor(props: { rowIndex: number, columnIndex: number, cellData?: TableCell }) {
     super(props);
   }
 
@@ -23,7 +24,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
     const { cellData, rowIndex, columnIndex } = this.props;
     if (!cellData) { return }
     
-    const data = cellData[1]
+    const data = cellData;
 
     const classNames = this.getClassNames(data.classNames.join(' '), {
       'active': data.active,

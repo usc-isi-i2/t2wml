@@ -87,9 +87,11 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
               {
                 partialCsv && Object.keys(partialCsv).length > 1 ?
                   <Table
-                    tableData={this.state.partialCsv}
+                    tableData={partialCsv}
                     MIN_ROWS={0}
-                    MIN_COLUMNS={6} />
+                    MIN_COLUMNS={6}
+                    rowGetter={(index: number) => { return partialCsv[index]; }}
+                    rowCount={Object.keys(partialCsv).length} />
                   :
                   <div style={{ padding: '2rem' }}>
                     <h6>
