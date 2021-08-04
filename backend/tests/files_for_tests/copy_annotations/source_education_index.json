@@ -1,0 +1,123 @@
+[
+  {
+    "id": "08d42e8b-17d5-4a35-95a1-a7f11415315f",
+    "link": "",
+    "links": {},
+    "property": {
+      "data_type": "time",
+      "description": "time and date something took place, existed or a statement was true",
+      "id": "P585",
+      "label": "point in time"
+    },
+    "role": "qualifier",
+    "selection": {
+      "x1": 3,
+      "x2": 15,
+      "y1": 4,
+      "y2": 4
+    },
+    "type": "time"
+  },
+  {
+    "id": "e4d1b52b-6474-4a93-aa06-4a981de4e43e",
+    "link": "8449af9d-93ff-4fd7-97ca-457df770a0e2",
+    "links": {},
+    "role": "mainSubject",
+    "selection": {
+      "x1": 2,
+      "x2": 2,
+      "y1": 5,
+      "y2": 45
+    },
+    "type": "wikibaseitem"
+  },
+  {
+    "id": "8449af9d-93ff-4fd7-97ca-457df770a0e2",
+    "link": "",
+    "links": {
+      "mainSubject": "e4d1b52b-6474-4a93-aa06-4a981de4e43e"
+    },
+    "role": "dependentVar",
+    "selection": {
+      "x1": 3,
+      "x2": 15,
+      "y1": 5,
+      "y2": 45
+    },
+    "type": "quantity"
+  },
+  {
+    "children": {},
+    "id": "e0ab7d8f-3210-4bfc-b90c-47f277d7a36c",
+    "link": "a09d3c4b-53c8-4ba0-b7a6-3e79f0c952a7",
+    "links": {},
+    "role": "property",
+    "selection": {
+      "x1": 1,
+      "x2": 1,
+      "y1": 2,
+      "y2": 2
+    },
+    "type": "string"
+  },
+  {
+    "calendar": "",
+    "format": "",
+    "id": "a09d3c4b-53c8-4ba0-b7a6-3e79f0c952a7",
+    "language": "",
+    "link": "",
+    "links": {
+      "property": "e0ab7d8f-3210-4bfc-b90c-47f277d7a36c"
+    },
+    "precision": "",
+    "property": "",
+    "role": "qualifier",
+    "selection": {
+      "x1": 1,
+      "x2": 1,
+      "y1": 5,
+      "y2": 45
+    },
+    "type": "quantity"
+  },
+  {
+    "calendar": "",
+    "format": "",
+    "id": "05ca17a2-e6b9-405d-88f5-0e9455746a88",
+    "language": "",
+    "link": "",
+    "links": {},
+    "precision": "",
+    "property": {
+      "description": [
+        "rank"
+      ],
+      "id": "Pworldeducationindextruncated-rank",
+      "label": [
+        "rank"
+      ]
+    },
+    "role": "qualifier",
+    "selection": {
+      "x1": 1,
+      "x2": 1,
+      "y1": 5,
+      "y2": 12
+    },
+    "type": "quantity"
+  },
+  {
+    "selection": {
+      "x1": 1,
+      "x2": 1,
+      "y1": 5,
+      "y2": 12
+    },
+    "children": {},
+    "role": "qualifier",
+    "type": "quantity",
+    "id": "ca6e6931-13b3-4af0-8686-aaf6df58cb5b",
+    "link": "",
+    "links": {}
+  }
+]
