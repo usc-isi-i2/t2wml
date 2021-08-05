@@ -227,6 +227,20 @@ class TestCausxWorkflow:
         with open(os.path.join(self.files_dir, "results.tsv"), 'wb') as f:
             f.write(response.data)
 
+    def test_17_download_fidil(self, client):
+        url = "/api/causx/project/fidil_json/"
+        url = url+get_data_url()
+        response = client.get(url, headers=headers)
+        with open(os.path.join(self.files_dir, "results.fidil"), 'wb') as f:
+            f.write(response.data)
+
+    def xtest_18_upload_fidil(self, client):
+        url = "/api/causx/project/upload_fidil_json/"
+        url = url+get_data_url()
+        response = client.put(url, headers=headers)
+        with open(os.path.join(self.files_dir, "results.tsv"), 'wb') as f:
+            f.write(response.data)
+
     def test_20_download_project(self, client):
         url = "/api/causx/download_project"
         url = url+get_data_url()
