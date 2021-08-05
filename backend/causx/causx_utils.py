@@ -466,6 +466,6 @@ def upload_fidil_json(calc_params):
     fidil_json = create_fidil_json(calc_params)
     fidil_endpoint = os.environ.get("FIDIL_UPLOAD_ENDPOINT")
     if not fidil_endpoint:
-        fidil_endpoint = "http://hmi-server:8080/fidil/structured/datasets/upload"
+        fidil_endpoint = "http://icm-provider:8080/fidil/structured/datasets/upload"
     response = requests.post(fidil_endpoint, json=fidil_json)
     return response.status_code
