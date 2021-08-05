@@ -457,7 +457,7 @@ def create_fidil_json(calc_params):
 
         except Exception as e:
             print("Error in cell", cell, str(e))
-    return json.dumps(list(time_series.values()))
+    return list(time_series.values())
 
 
 

@@ -692,11 +692,12 @@ def download_results_for_causx(filetype, filename):
 
 
 
-@app.route('/api/causx/project/fidil_json/<filename>', methods=['GET'])
-def download_fidil_json(filename):
+@app.route('/api/causx/project/fidil_json', methods=['GET'])
+def download_fidil_json():
+    filename="fidil.json"
     project = get_project()
     calc_params = get_calc_params(project)
-    data = create_fidil_json(calc_params)
+    data = json.dumps(create_fidil_json(calc_params))
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
     return send_file(stream, attachment_filename=filename, as_attachment=True, mimetype="application/json"), 200
