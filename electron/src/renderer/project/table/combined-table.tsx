@@ -48,6 +48,7 @@ class CombinedTable extends Component<{}, TableState> {
     private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
     private prevDirection?: Direction;
     private penddingRowTimeout?: number;
+    private penddingRowIndex?: number;
 
     constructor(props: {}) {
         super(props);
@@ -908,17 +909,16 @@ class CombinedTable extends Component<{}, TableState> {
         const element = event.target as any;
         if (element === this.prevElement) { return; }
 
-        const newColIndex = parseInt(element.dataset.colIndex)
-        const newRowIndex = parseInt(element.dataset.rowIndex)
-
-        // Don't allow out-of-bounds selecting / resizing
-        if (!newColIndex || newColIndex === 0) { return }
-        if (!newRowIndex || newRowIndex === 0) { return }
-
         if (this.selecting && !event.shiftKey) {
             if (!wikiStore.table.selection) {
                 return;
             }
+            const newColIndex = parseInt(element.dataset.colIndex)
+            const newRowIndex = parseInt(element.dataset.rowIndex)
+            // Don't allow out-of-bounds selecting / resizing
+            if (!newColIndex || newColIndex === 0) { return }
+            if (!newRowIndex || newRowIndex === 0) { return }
+
             const selection = { ...wikiStore.table.selection };
 
             // Update the last x coordinate of the selection
@@ -1189,30 +1189,38 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     rowGetter(index: number): TableCell[] {
-        console.log("combined table rowGetter", index)
+        // console.log("combined table rowGetter", index)
         const { tableData, loadedRows } = this.state;
         if (!tableData) { return [] as TableCell[]; }
         if (!loadedRows[index]) {
             this.fetchRows(index);
         }
+        console.log("return line")
         return tableData[index];
     }
 
     async fetchRows(index: number) {
         // console.log("loadMoreRows", startIndex, stopIndex)
+        if (index === this.penddingRowIndex) { return; }
         if (this.penddingRowTimeout) {
             window.clearTimeout(this.penddingRowTimeout);
         }
         this.penddingRowTimeout = window.setTimeout(async () => {
             if (this.requestService) {
+                this.penddingRowIndex = index;
+                const { tableData, loadedRows } = this.state;
                 let startIndex = index - 25;
-                const endIndex = index + 25;
+                let endIndex = index + 25;
                 const table = await this.requestService.getTableByRows(startIndex, endIndex) as TableDTO;
 
-                const { tableData, loadedRows } = this.state;
-                for (let i = startIndex; i <= endIndex; i++) {
+                for (let i = startIndex; i < endIndex; i++) {
                     if (loadedRows[i]) {
                         startIndex += 1;
+                    }
+                }
+                for (let i = endIndex; i > startIndex; i--) {
+                    if (loadedRows[i]) {
+                        endIndex -= 1;
                     }
                 }
                 if (startIndex == endIndex) { return; }
@@ -1233,9 +1241,10 @@ class CombinedTable extends Component<{}, TableState> {
                     tableData[i + table.firstRowIndex] = rowData;
                     loadedRows[i + table.firstRowIndex] = true;
                 }
+                console.log("return line fetch", index)
                 this.setState({ tableData, rowCount: table.dims[0], loadedRows }, () => {
                     this.updateStatement();
-                    console.log('size loadedRows',  Object.keys(this.state.loadedRows || []).length)
+                    console.log('size loadedRows', Object.keys(this.state.loadedRows || []).length)
                     console.log('size this.state.tableData', Object.keys(this.state.tableData || []).length)
                     console.log('size wikiStore', Object.keys(wikiStore.table.table.cells).length)
                 })

@@ -95,8 +95,8 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
       onMouseMove,
       onClickHeader,
       ableActivated,
-      MIN_COLUMNS,
-      MIN_ROWS,
+      // MIN_COLUMNS,
+      // MIN_ROWS,
 
       rowCount
     } = this.props;

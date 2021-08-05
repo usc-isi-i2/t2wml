@@ -248,7 +248,7 @@ class RequestService {
     })
   }
 
-  public async getTable(startIndex=0, endIndex=40) {
+  public async getTable(startIndex=0, endIndex=50) {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
     updater.update(() => this.fillTable(response), "getTable");
