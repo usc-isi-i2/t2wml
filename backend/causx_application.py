@@ -691,7 +691,7 @@ def download_results_for_causx(filetype):
     return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
-@app.route('/api/causx/project/fidil_json/', methods=['GET'])
+@app.route('/api/causx/project/fidil_json', methods=['GET'])
 def download_fidil_json():
     project = get_project()
     calc_params = get_calc_params(project)
