@@ -189,6 +189,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     getClasslessTableData(table?: TableDTO): TableData {
         if (!table) { table = wikiStore.table.table }
+        const { loadedRows } = this.state;
         const tableData = [];
         for (let i = 0; i < table.cells.length; i++) {
             const rowData = [];
@@ -203,22 +204,34 @@ class CombinedTable extends Component<{}, TableState> {
             }
             tableData.push(rowData);
         }
+        for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
+            loadedRows[indexRow] = true;
+        }
+        while (Object.keys(tableData).length < table.dims[0]) { // add rows to the display table
+            const rowData = [];
+            while (rowData.length < tableData[0].length) {
+                rowData.push({
+                    content: '',
+                    rawContent: '',
+                    classNames: [],
+                    ...DEFAULT_CELL_STATE
+                })
+            }
+            tableData[Object.keys(tableData).length] = rowData;
+        }
+        this.setState({ loadedRows })
         return tableData;
     }
 
     updateTableData(table?: TableDTO) {
-        const { loadedRows } = this.state;
         wikiStore.table.resetSelections();
         if (!table || !table.cells) {
             this.setState({ tableData: undefined, rowCount: 0, loadedRows: {} });
             return;
         }
         const tableData = this.getClasslessTableData(table);
-        for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-            loadedRows[indexRow] = true;
-        }
         console.log("2 setState data");
-        this.setState({ tableData, rowCount: table.dims[0], loadedRows })
+        this.setState({ tableData, rowCount: table.dims[0] })
         { this.createAnnotationIfDoesNotExist(); }
     }
 
@@ -228,12 +241,12 @@ class CombinedTable extends Component<{}, TableState> {
             if (!this.state.tableData) {
                 return;
             }
-            const { tableData: tableDataTmp } = this.state;
+            const { tableData: tableDataTmp, loadedRows } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
             try {
                 for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-                    if (tableData[indexRow]) {
+                    if (tableData[indexRow] && loadedRows[indexRow]) {
                         for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                             tableData[indexRow][indexCol].classNames = tableData[indexRow][indexCol].classNames.filter((value) =>
                                 !value.startsWith("error")
@@ -276,13 +289,13 @@ class CombinedTable extends Component<{}, TableState> {
             if (!this.state.tableData) {
                 return;
             }
-            const { tableData: tableDataTmp } = this.state;
+            const { tableData: tableDataTmp, loadedRows } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
 
             try {
                 for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-                    if (tableData[indexRow]) {
+                    if (tableData[indexRow] && loadedRows[indexRow]) {
                         for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                             tableData[indexRow][indexCol].classNames = tableData[indexRow][indexCol].classNames.filter((value) =>
                                 !value.startsWith("wikified")
@@ -315,12 +328,12 @@ class CombinedTable extends Component<{}, TableState> {
             if (!this.state.tableData) {
                 return;
             }
-            const { tableData: tableDataTmp } = this.state;
+            const { tableData: tableDataTmp, loadedRows } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
             try {
                 for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-                    if (tableData[indexRow]) {
+                    if (tableData[indexRow] && loadedRows[indexRow]) {
                         for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                             tableData[indexRow][indexCol] = {
                                 ...tableData[indexRow][indexCol],
@@ -706,9 +719,10 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     removeClassNameFromTableData(tableData: TableData, classNameToDelete?: string): TableData {
+        const { loadedRows } = this.state;
         if (classNameToDelete) {
             for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-                if (tableData[indexRow]) {
+                if (tableData[indexRow] && loadedRows[indexRow]) {
                     for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                         const cell = tableData[indexRow][indexCol]
                         tableData[indexRow][indexCol] = {
@@ -724,8 +738,9 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     resetSelectionCss(tableData: TableData) {
+        const { loadedRows } = this.state;
         for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-            if (tableData[indexRow]) {
+            if (tableData[indexRow] && loadedRows[indexRow]) {
                 for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                     tableData[indexRow][indexCol] = {
                         ...tableData[indexRow][indexCol],
@@ -738,9 +753,10 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     resetActiveBlockCss(tableData: TableData) {
+        const { loadedRows } = this.state;
         tableData = this.removeClassNameFromTableData(tableData, 'linked-block');
         for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-            if (tableData[indexRow]) {
+            if (tableData[indexRow] && loadedRows[indexRow]) {
                 for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                     tableData[indexRow][indexCol] = {
                         ...tableData[indexRow][indexCol],
@@ -1176,19 +1192,9 @@ class CombinedTable extends Component<{}, TableState> {
         console.log("combined table rowGetter", index)
         const { tableData, loadedRows } = this.state;
         if (!tableData) { return [] as TableCell[]; }
-        if (!loadedRows[index] || !tableData[index]) {
-            const rowData = [];
-            while (rowData.length < tableData[0].length) {
-                rowData.push({
-                    content: '',
-                    rawContent: '',
-                    classNames: [],
-                    ...DEFAULT_CELL_STATE
-                })
-            }
-            tableData[index] = rowData;
+        if (!loadedRows[index]) {
+            this.fetchRows(index);
         }
-        this.fetchRows(index)
         return tableData[index];
     }
 
@@ -1199,12 +1205,18 @@ class CombinedTable extends Component<{}, TableState> {
         }
         this.penddingRowTimeout = window.setTimeout(async () => {
             if (this.requestService) {
-                const startIndex = index - 25;
+                let startIndex = index - 25;
                 const endIndex = index + 25;
                 const table = await this.requestService.getTableByRows(startIndex, endIndex) as TableDTO;
 
-                const { tableData, loadedRows } = this.state
-                if (!tableData) { return }
+                const { tableData, loadedRows } = this.state;
+                for (let i = startIndex; i <= endIndex; i++) {
+                    if (loadedRows[i]) {
+                        startIndex += 1;
+                    }
+                }
+                if (startIndex == endIndex) { return; }
+                if (!tableData) { return; }
 
                 for (let i = 0; i < table.cells.length; i++) {
                     const rowData = [];
@@ -1215,6 +1227,7 @@ class CombinedTable extends Component<{}, TableState> {
                             classNames: [],
                             ...DEFAULT_CELL_STATE
                         };
+
                         rowData.push(cell);
                     }
                     tableData[i + table.firstRowIndex] = rowData;
@@ -1222,8 +1235,9 @@ class CombinedTable extends Component<{}, TableState> {
                 }
                 this.setState({ tableData, rowCount: table.dims[0], loadedRows }, () => {
                     this.updateStatement();
-                    console.log('this.state.tableData', Object.keys(this.state.tableData || []).length)
-                    console.log('wikiStore', Object.keys(wikiStore.table.table.cells).length)
+                    console.log('size loadedRows',  Object.keys(this.state.loadedRows || []).length)
+                    console.log('size this.state.tableData', Object.keys(this.state.tableData || []).length)
+                    console.log('size wikiStore', Object.keys(wikiStore.table.table.cells).length)
                 })
             }
         }, 250);

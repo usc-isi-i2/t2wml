@@ -103,10 +103,6 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
 
     const { rowHeight, columnWidth } = this.state
 
-
-    if (!tableData) {
-      return null;
-    }
     console.log("render tableData")
     // // add one column and one row to the table:
     // for (let index = 0; index < Object.keys(tableData).length; index++) {
