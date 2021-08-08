@@ -207,6 +207,31 @@ export class LayerState {
     }
 
     @action
+    public updateFromDTOWithoutStatement(dto: LayersDTO) {
+        console.debug('Updating layers: ', dto);
+        if ( !dto ) { return; }
+
+        if (dto.qnode) {
+            this.qnode = new Layer(dto.qnode);
+            // dto.qnode.entries.forEach(entry => {
+            //     this.qnode.entries.push(entry)
+            // });
+        }
+        if (dto.type) {
+            this.type = new Layer(dto.type);
+        }
+        // if (dto.statement) {
+        //     this.statement = new StatementLayer(dto.statement);
+        // }
+        if (dto.error) {
+            this.error = new Layer(dto.error);
+        }
+        if (dto.cleaned) {
+            this.cleaned = new Layer(dto.cleaned);
+        }
+    }
+
+    @action
     resetLayers() {
         this.qnode = new Layer<QNodeEntry>();
         this.type = new Layer<TypeEntry>();

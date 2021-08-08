@@ -255,9 +255,12 @@ class RequestService {
   }
 
   public async getTableByRows(startIndex=0, endIndex=0): Promise<TableDTO> {
-    const updater = currentFilesService.createUpdater();
+    // const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
-    updater.update(() => this.fillMapping(response), "getTableByRows");
+    // updater.update(() => this.fillMapping(response), "getTableByRows");
+    wikiStore.layers.updateFromDTOWithoutStatement(response.layers);
+    // wikiStore.yaml.yamlContent = response.yamlContent;
+    // wikiStore.yaml.yamlError = response.yamlError;
     return response.table
   }
 
