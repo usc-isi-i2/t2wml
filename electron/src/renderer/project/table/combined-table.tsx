@@ -49,7 +49,6 @@ class CombinedTable extends Component<{}, TableState> {
     private prevDirection?: Direction;
     private penddingRowTimeout?: number;
     private penddingRowIndex?: number;
-    private prevShowQnode?: boolean;
 
     constructor(props: {}) {
         super(props);
@@ -69,7 +68,6 @@ class CombinedTable extends Component<{}, TableState> {
             loadedRows: {}
         };
 
-        this.prevShowQnode = wikiStore.table.showQnodes;
         this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
         this.handleOnMouseUp = this.handleOnMouseUp.bind(this);
     }
@@ -89,7 +87,7 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelectionStyle(selection)));
         this.disposers.push(reaction(() => wikiStore.table.selectedCell, (cell) => this.updateActiveCellStyle(cell)));
         this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (block) => { wikiStore.table.selection = block?.selection }));
-        this.disposers.push(reaction(() => wikiStore.table.showQnodes, (showQnode) => this.updateQnodeCells(showQnode)));
+        this.disposers.push(reaction(() => wikiStore.table.showQnodes, (showQnode) => this.updateQnodeCells(showQnode, undefined, true)));
     }
 
     componentWillUnmount() {
@@ -154,7 +152,7 @@ class CombinedTable extends Component<{}, TableState> {
         );
     }
 
-    updateQnodeCells(showQnode: boolean, tableData?: TableData) {
+    updateQnodeCells(showQnode: boolean, tableData?: TableData, upadateQnodeContent = false) {
         console.log("updateQnodeCells")
         if (!tableData) {
             if (!this.state.tableData) {
@@ -167,12 +165,11 @@ class CombinedTable extends Component<{}, TableState> {
         const { loadedRows } = this.state;
         const { qnode: qnodes } = wikiStore.layers;
 
-        //clear any existing qnode coloration
+        // clear any existing qnode coloration
 
         // tableData = this.removeClassNameFromTableData(tableData, 'type-qNode')
 
-        if (this.prevShowQnode != showQnode) {
-            this.prevShowQnode = showQnode;
+        if (upadateQnodeContent || showQnode) {
             if (showQnode) {
                 for (const entry of qnodes.entries) {
                     for (const indexPair of entry.indices) {
@@ -462,6 +459,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     applyCsstoBlock(tableData: TableData, selection: CellSelection, classNames: string[]) {
         const { x1, x2, y1, y2 } = selection;
+        const { loadedRows } = this.state;
 
         const leftCol = Math.min(x1, x2) - 1;
         const rightCol = Math.max(x1, x2) - 1;
@@ -470,30 +468,32 @@ class CombinedTable extends Component<{}, TableState> {
 
         let rowIndex = topRow
         while (rowIndex <= bottomRow) {
-            let colIndex = leftCol
-            while (colIndex <= rightCol) {
-                const cellData = tableData[rowIndex][colIndex]
-                cellData.active = true
+            if (loadedRows[rowIndex]) {
+                let colIndex = leftCol
+                while (colIndex <= rightCol) {
+                    const cellData = tableData[rowIndex][colIndex]
+                    cellData.active = true
 
-                cellData.activeTop = false
-                cellData.activeLeft = false
-                cellData.activeRight = false
-                cellData.activeBottom = false
-                cellData.activeCorner = false
-                if (rowIndex === topRow) { cellData.activeTop = true; }
-                if (colIndex === leftCol) { cellData.activeLeft = true; }
-                if (colIndex === rightCol) { cellData.activeRight = true; }
-                if (rowIndex === bottomRow) { cellData.activeBottom = true; }
-                if (rowIndex === bottomRow && colIndex === rightCol) { cellData.activeCorner = true; }
+                    cellData.activeTop = false
+                    cellData.activeLeft = false
+                    cellData.activeRight = false
+                    cellData.activeBottom = false
+                    cellData.activeCorner = false
+                    if (rowIndex === topRow) { cellData.activeTop = true; }
+                    if (colIndex === leftCol) { cellData.activeLeft = true; }
+                    if (colIndex === rightCol) { cellData.activeRight = true; }
+                    if (rowIndex === bottomRow) { cellData.activeBottom = true; }
+                    if (rowIndex === bottomRow && colIndex === rightCol) { cellData.activeCorner = true; }
 
-                classNames.forEach(className => {
-                    if (!cellData.classNames.includes(className)) {
-                        cellData.classNames.push(className)
-                    }
-                });
-                tableData[rowIndex][colIndex] = { ...cellData }
+                    classNames.forEach(className => {
+                        if (!cellData.classNames.includes(className)) {
+                            cellData.classNames.push(className)
+                        }
+                    });
+                    tableData[rowIndex][colIndex] = { ...cellData }
 
-                colIndex += 1
+                    colIndex += 1
+                }
             }
             rowIndex += 1
         }
@@ -504,11 +504,11 @@ class CombinedTable extends Component<{}, TableState> {
     updateActiveCellStyle(selectedCell?: Cell) {
         console.log("updateActiveCellStyle")
         // Get a reference to the table elements
-        const { tableData: oldTableData } = this.state;
+        const { tableData: oldTableData, loadedRows } = this.state;
         if (!oldTableData) { return; }
 
         for (let indexRow = 0; indexRow < Object.keys(oldTableData).length; indexRow++) {
-            if (oldTableData[indexRow]) {
+            if (oldTableData[indexRow] && loadedRows[indexRow]) {
                 for (let indexCol = 0; indexCol < oldTableData[indexRow].length; indexCol++) {
                     oldTableData[indexRow][indexCol].highlight = false;
                 }
@@ -550,12 +550,13 @@ class CombinedTable extends Component<{}, TableState> {
 
         if (currentFilesService.currentState.mappingType == "Yaml") { return; }
 
-        const selectedBlock = checkSelectedAnnotationBlocks({
+        const selectionToCheck = {
             x1: selectedCell.col + 1,
             y1: selectedCell.row + 1,
             x2: selectedCell.col + 1,
             y2: selectedCell.row + 1
-        });
+        }
+        const selectedBlock = checkSelectedAnnotationBlocks(selectionToCheck);
 
         if (selectedBlock != wikiStore.table.selectedBlock) {
             tableData = this.resetActiveBlockCss(tableData)
@@ -611,8 +612,12 @@ class CombinedTable extends Component<{}, TableState> {
         if (currentFilesService.currentState.mappingType == "Yaml") { return; }
         let { tableData } = this.state;
         if (!tableData) { return; }
-        tableData = this.resetSelectionCss(tableData)
-        if (!selection) { return }
+        tableData = this.resetActiveBlockCss(tableData)
+        if (!selection) {
+            console.log("6 setState data");
+            this.setState({ tableData });
+            return;
+        }
         const classNames: string[] = [];
         tableData = this.applyCsstoBlock(tableData, selection, classNames);
         console.log("6 setState data");
@@ -767,20 +772,6 @@ class CombinedTable extends Component<{}, TableState> {
         return tableData;
     }
 
-    resetSelectionCss(tableData: TableData) {
-        const { loadedRows } = this.state;
-        for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
-            if (tableData[indexRow] && loadedRows[indexRow]) {
-                for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
-                    tableData[indexRow][indexCol] = {
-                        ...tableData[indexRow][indexCol],
-                        ...DEFAULT_CELL_STATE
-                    }
-                }
-            }
-        }
-        return tableData;
-    }
 
     resetActiveBlockCss(tableData: TableData) {
         const { loadedRows } = this.state;
@@ -1225,7 +1216,7 @@ class CombinedTable extends Component<{}, TableState> {
         if (!loadedRows[index]) {
             this.fetchRows(index);
         }
-        console.log("return line")
+        // console.log("return line")
         return tableData[index];
     }
 
@@ -1242,7 +1233,7 @@ class CombinedTable extends Component<{}, TableState> {
 
                 if (!tableData) { return; }
 
-                // calculate  the indexes to send to the backend - find the maximum range between [startIndex, endIndex]
+                // calculate the indexes to send to the backend - find the maximum range between [startIndex, endIndex]
                 let startIndex = index - 50;
                 let endIndex = index + 50;
                 let addEnd = 0; // add extra rows to the end, if the startIndex is early loaded.
@@ -1262,7 +1253,7 @@ class CombinedTable extends Component<{}, TableState> {
                         endIndex -= 1;
                         if (!addEnd) { addStart += 1 }
                     } else { // subtract 1 from the endIndex if it's loaded before, to end on the last index that not loaded.
-                        break; 
+                        break;
                     }
                 }
                 if (startIndex == endIndex) { return; }
