@@ -2,8 +2,10 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
-        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
+import {
+    CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
+    StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO
+} from '../common/dtos';
 import { Cell, CellSelection } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
@@ -31,19 +33,19 @@ class TableState {
         this.showQnodes = false;
     }
 
-    updateTable(table: TableDTO){
-        this.table=table;
+    updateTable(table: TableDTO) {
+        this.table = table;
         console.log("resetting wikistore selections from wikistore update table")
         this.resetSelections();
     }
 
-    resetSelections(){
+    resetSelections() {
         this.selectedCell = undefined;
-        this.selectedBlock= undefined;
+        this.selectedBlock = undefined;
         this.selection = undefined;
     }
 
-    selectBlock(block?: AnnotationBlock){
+    selectBlock(block?: AnnotationBlock) {
         this.selectedBlock = block;
         this.selection = block?.selection || undefined;
     }
@@ -94,10 +96,12 @@ class YamlEditorState {
         wikiStore.yaml.showSpinner = true;
 
         // send request
-        const data = {"yaml": this.yamlContent!,
-                      "title": currentFilesService.currentState.mappingFile!,
-                      "dataFile": currentFilesService.currentState.dataFile,
-                      "sheetName": currentFilesService.currentState.sheetName};
+        const data = {
+            "yaml": this.yamlContent!,
+            "title": currentFilesService.currentState.mappingFile!,
+            "dataFile": currentFilesService.currentState.dataFile,
+            "sheetName": currentFilesService.currentState.sheetName
+        };
 
         try {
             await this.requestService.saveYaml(data);
@@ -141,6 +145,23 @@ export class Layer<T extends Entry> {
             return this.entryMap.get(index);
         }
         return undefined;
+    }
+
+    public append(responseLayer?: LayerDTO<T>) {
+        if (!responseLayer) {
+            return;
+        }
+        else {
+            for (const entry of responseLayer.entries) {
+                for (const index_pair of entry.indices) {
+                    this.entryMap.set(`${index_pair[0]},${index_pair[1]}`, entry);
+                }
+            }
+            responseLayer.entries.forEach(entry => {
+                this.entries.push(entry)
+            });
+        }
+        console.log("append", this.entries)
     }
 }
 
@@ -187,7 +208,7 @@ export class LayerState {
     @action
     public updateFromDTO(dto: LayersDTO) {
         console.debug('Updating layers: ', dto);
-        if ( !dto ) { return; }
+        if (!dto) { return; }
 
         if (dto.qnode) {
             this.qnode = new Layer(dto.qnode);
@@ -208,14 +229,12 @@ export class LayerState {
 
     @action
     public updateFromDTOWithoutStatement(dto: LayersDTO) {
-        console.debug('Updating layers: ', dto);
-        if ( !dto ) { return; }
+        console.debug('updateFromDTOWithoutStatement: ', dto);
+        if (!dto) { return; }
 
         if (dto.qnode) {
-            this.qnode = new Layer(dto.qnode);
-            // dto.qnode.entries.forEach(entry => {
-            //     this.qnode.entries.push(entry)
-            // });
+            // this.qnode = new Layer(dto.qnode);
+            this.qnode.append(dto.qnode);
         }
         if (dto.type) {
             this.type = new Layer(dto.type);
@@ -243,19 +262,19 @@ export class LayerState {
 
 
 export class AnnotationState {
-    @observable public blocks: AnnotationBlock[] =[];
+    @observable public blocks: AnnotationBlock[] = [];
 }
 
 
-export class ProjectState{
+export class ProjectState {
     @observable public projectDTO?: ProjectDTO;
 
-    constructor(projectdto?: ProjectDTO){
-        this.projectDTO=projectdto;
+    constructor(projectdto?: ProjectDTO) {
+        this.projectDTO = projectdto;
     }
 }
 
-export class GlobalSettings{
+export class GlobalSettings {
     @observable datamart_api = "";
 }
 
