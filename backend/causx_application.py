@@ -24,7 +24,7 @@ from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                        get_project_instance, get_qnodes_layer,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload, upload_fidil_json
 from causx.wikification import wikify_countries
 from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
@@ -668,8 +668,8 @@ def causx_edit_an_entity(id):
 
 
 
-@app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results_for_causx(filetype, filename):
+@app.route('/api/causx/project/download/<filetype>', methods=['GET'])
+def download_results_for_causx(filetype):
     """
     return as attachment
     """
@@ -678,7 +678,6 @@ def download_results_for_causx(filetype, filename):
         "csv": "text/csv",
         "json": "application/json"
     }
-    attachment_filename = filename
     project = get_project()
     calc_params = get_calc_params(project)
     annotation_path = calc_params.annotation_path
@@ -688,18 +687,26 @@ def download_results_for_causx(filetype, filename):
     data = kg.get_output(filetype, calc_params.project)
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
+    attachment_filename = request.args.get('data_file')
     return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
-
-@app.route('/api/causx/project/fidil_json/<filename>', methods=['GET'])
-def download_fidil_json(filename):
+@app.route('/api/causx/project/fidil_json', methods=['GET'])
+def download_fidil_json():
     project = get_project()
     calc_params = get_calc_params(project)
-    data = create_fidil_json(calc_params)
+    data = json.dumps(create_fidil_json(calc_params))
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
+    filename = request.args.get('data_file')
     return send_file(stream, attachment_filename=filename, as_attachment=True, mimetype="application/json"), 200
+
+@app.route('/api/causx/project/upload_fidil_json/', methods=['PUT'])
+def upload_fidil():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    status_code = upload_fidil_json(calc_params)
+    return {}, status_code
 
 
 ###################end of section##############################

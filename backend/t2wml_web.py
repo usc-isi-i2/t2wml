@@ -36,7 +36,6 @@ def wikify(calc_params, region, context):
 def set_web_settings():
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
-    t2wml_settings.cache_data_files_folder = CACHE_FOLDER
     t2wml_settings.wikidata_provider = WebDictionaryProvider()
 
 def update_t2wml_settings(project):
