@@ -92,7 +92,7 @@ def get_qnodes_layer(calc_params, start=0, end=None):
     if len(item_table.lookup_table):
         ids_to_get = set()
         for col in range(sheet.col_len):
-            for row in range(start, end):
+            for row in range(start, end+1):
                 id, context, value = item_table.get_cell_info(col, row, sheet)
                 if id:
                     ids_to_get.add(id)
