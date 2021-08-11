@@ -220,19 +220,20 @@ class CombinedTable extends Component<{}, TableState> {
         }
         console.log("end for first 49 rows");
 
+        const emptyRow: TableCell[] = [];
+        while (emptyRow.length < tableData[0].length) {
+           emptyRow.push({
+                content: '',
+                rawContent: '',
+                classNames: [],
+                ...DEFAULT_CELL_STATE
+            })
+        }
+
         for (let i = Math.min(table.cells.length, 50); i<numRows; i++){ // add rows to the display table- infinitive!!!
-            const rowData: TableCell[] = [];
-            while (rowData.length < tableData[0].length) {
-                rowData.push({
-                    content: '',
-                    rawContent: '',
-                    classNames: [],
-                    ...DEFAULT_CELL_STATE
-                })
-            }
             if(i%1000==0){
             console.log("while getClasslessTableData", i)}
-            tableData[i + table.firstRowIndex] = rowData;
+            tableData[i + table.firstRowIndex] = emptyRow;
         }
         console.log("end while getClasslessTableData")
         this.setState({ loadedRows })
